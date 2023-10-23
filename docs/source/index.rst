@@ -11,7 +11,7 @@ Welcome to PQAnalysis's documentation!
    :hidden:
    :maxdepth: 2
    
-   developerGuide
+   developerGuide/developerGuide
 
 
 :ref:`developerGuide`
