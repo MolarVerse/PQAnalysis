@@ -19,9 +19,6 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
-[tool.setuptools_scm]
-version_file = "_version.py"
-
 [project.scripts]
 traj2box = "traj2box:main"
 traj2qmcfc = "traj2qmcfc:main"
