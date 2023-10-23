@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
+requires = ["setuptools>=42", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -18,6 +18,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[tool.setuptools_scm]
+write_to = "_version.py"
 
 [project.scripts]
 traj2box = "traj2box:main"
