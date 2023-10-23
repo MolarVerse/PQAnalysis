@@ -1,5 +1,0 @@
-.. _developerGuide:
-
-###############
-Developer Guide
-###############
