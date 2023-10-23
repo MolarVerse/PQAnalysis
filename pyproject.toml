@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42"]
+requires = ["setuptools>=64", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.setuptools_scm]
-write_to = "_version.py"
+version_file = "_version.py"
 
 [project.scripts]
 traj2box = "traj2box:main"
