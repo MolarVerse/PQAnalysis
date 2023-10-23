@@ -1,22 +1,25 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "PQAnalysis"
 version = "0.0.1"
 authors = [
   { name="Jakob Gamper", email="97gamjak@gmail.com" },
-  { name="Josef M. Gallmetzer", email="" },
+  { name="Josef M. Gallmetzer", email="josef.gallmetzer@uibk.ac.at" },
 ]
 description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
-readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[project.scripts]
+traj2box = "traj2box:main"
+traj2qmcfc = "traj2qmcfc:main"
 
 [project.urls]
 "Homepage" = "https://github.com/97gamjak/PQAnalysis"

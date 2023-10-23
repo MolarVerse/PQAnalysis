@@ -1,0 +1,3 @@
+[console_scripts]
+traj2box = traj2box:main
+traj2qmcfc = traj2qmcfc:main
