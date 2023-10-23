@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PQAnalysis"
+dynamic = [
+    "version"
+]
+authors = [
+  { name="Jakob Gamper", email="97gamjak@gmail.com" },
+  { name="Josef M. Gallmetzer", email="josef.gallmetzer@uibk.ac.at" },
+]
+description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools_scm]
+write_to = "_version.py"
+
+[project.scripts]
+traj2box = "traj2box:main"
+traj2qmcfc = "traj2qmcfc:main"
+
+[project.urls]
+"Homepage" = "https://github.com/97gamjak/PQAnalysis"
+"PIMD-QMCF" = "https://github.com/97gamjak/pimd_qmcf"
