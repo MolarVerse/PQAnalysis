@@ -4,7 +4,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PQAnalysis"
-version = "0.0.1"
+dynamic = [
+    "version"
+]
 authors = [
   { name="Jakob Gamper", email="97gamjak@gmail.com" },
   { name="Josef M. Gallmetzer", email="josef.gallmetzer@uibk.ac.at" },
@@ -16,6 +18,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+
+[tool.setuptools_scm]
+write_to = "_version.py"
 
 [project.scripts]
 traj2box = "traj2box:main"
