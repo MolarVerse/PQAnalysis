@@ -9,7 +9,7 @@ dynamic = [
 ]
 authors = [
   { name="Jakob Gamper", email="97gamjak@gmail.com" },
-  { name="Josef M. Gallmetzer", email="josef.gallmetzer@uibk.ac.at" },
+  { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
 ]
 description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
 requires-python = ">=3.7"
@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.setuptools_scm]
-write_to = "_version.py"
+version_file = "_version.py"
 
 [project.scripts]
 traj2box = "traj2box:main"
