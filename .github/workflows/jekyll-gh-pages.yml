@@ -36,7 +36,7 @@ jobs:
 
       - name: Build
         run: |
-          cd docs/sphinx
+          cd docs
           make html
           cd build/html
           touch .nojekyll
