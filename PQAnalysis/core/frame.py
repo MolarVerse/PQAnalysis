@@ -16,7 +16,7 @@ def read_frame(filename):
         n_atoms= int(splitted_line[0])
         cell = None
     else:
-        raise ValueError('Invalid file format.')
+        raise ValueError('Invalid file format in header line of Frame.')
     
     file.readline() # Skip the second line
 
