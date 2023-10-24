@@ -1,3 +1,5 @@
 dist/
 build/
 **/PQAnalysis.egg-info/
+
+_version.py
