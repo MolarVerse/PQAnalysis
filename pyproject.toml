@@ -20,11 +20,11 @@ classifiers = [
 ]
 
 [tool.setuptools_scm]
-version_file = "_version.py"
+version_file = "PQAnalysis/_version.py"
 
 [project.scripts]
-traj2box = "traj2box:main"
-traj2qmcfc = "traj2qmcfc:main"
+traj2box = "PQAnalysis.cli.traj2box:main"
+traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 
 [project.urls]
 "Homepage" = "https://github.com/97gamjak/PQAnalysis"
