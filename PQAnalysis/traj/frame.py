@@ -31,7 +31,7 @@ def read_frame(frame_string):
         xyz[i] = np.array([float(x) for x in line.split()[1:4]])
         atoms.append(line.split()[0])
 
-    return Frame(n_atoms, xyz, atoms, cell)
+    return Frame(n_atoms, xyz, np.array(atoms), cell)
 
 
 class Frame:
