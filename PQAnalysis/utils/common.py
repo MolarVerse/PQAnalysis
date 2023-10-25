@@ -1,10 +1,14 @@
 '''Common things needed by command line scripts.'''
 
 import sys
+from PQAnalysis._version import __version__
 
 
 def print_header():
-    header = """
+
+    line = "                                                                              *"
+
+    header = f"""
 **********************************************************************************************  
 *                                                                                            *
 *  $$$$$$$\   $$$$$$\   $$$$$$\                      $$\                     $$\             *  
@@ -18,6 +22,10 @@ def print_header():
 *                 \___|                                  $$\   $$ |                          *
 *                                                        \$$$$$$  |                          *
 *                                                         \______/                           *
+*                                                                                            *
+*                                                                                            *
+*  authors:    Jakob Gamper, Josef M. Gallmetzer                                             *
+*  version:    {__version__}{line[len(__version__):]}
 *                                                                                            *
 **********************************************************************************************
     """
