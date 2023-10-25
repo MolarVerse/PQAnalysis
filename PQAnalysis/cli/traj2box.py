@@ -2,13 +2,12 @@ import numpy as np
 import argparse
 
 from PQAnalysis.traj.trajectory import read
-from PQAnalysis.utils.common import print_header
 from PQAnalysis.utils import decorators
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Converts a trajectory file to a box file.')
+        description='Converts multiple trajectory files to a box file.')
     parser.add_argument('trajectory_file', type=str, nargs='+',
                         help='The trajectory file(s) to be converted.')
     parser.add_argument('-v', '--vmd', action='store_true',

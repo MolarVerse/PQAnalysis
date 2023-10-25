@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 [tool.setuptools_scm]
-version_file = "_version.py"
+version_file = "PQAnalysis/_version.py"
 
 [project.scripts]
 traj2box = "PQAnalysis.cli.traj2box:main"

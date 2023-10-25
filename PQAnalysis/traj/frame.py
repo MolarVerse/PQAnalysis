@@ -49,3 +49,12 @@ class Frame:
             self.PBC = True
         else:
             self.PBC = False
+
+    def print_xyz_header(self):
+        print(
+            f"{self.n_atoms} {self.cell.x} {self.cell.y} {self.cell.z} {self.cell.alpha} {self.cell.beta} {self.cell.gamma}")
+
+    def print_coordinates(self):
+        for i in range(self.n_atoms):
+            print(
+                f"{self.atoms[i]} {self.xyz[i][0]} {self.xyz[i][1]} {self.xyz[i][2]}")
