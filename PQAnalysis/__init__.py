@@ -1,2 +1,5 @@
-from .core.frame import read_frame
-from .core import frame, cell
+import sys
+
+from .pbc import cell
+from .traj.frame import read_frame
+from .traj import frame

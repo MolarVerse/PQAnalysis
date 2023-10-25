@@ -1,5 +1,5 @@
 import numpy as np
-from .cell import Cell
+from PQAnalysis.pbc.cell import Cell
 
 
 def read_frame(frame_string):
@@ -8,6 +8,7 @@ def read_frame(frame_string):
     '''
 
     splitted_frame_string = frame_string.split('\n')
+
     header_line = splitted_frame_string[0].split()
     if len(header_line) == 4:
         n_atoms = int(header_line[0])
