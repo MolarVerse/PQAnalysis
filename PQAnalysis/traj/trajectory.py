@@ -1,4 +1,5 @@
 import PQAnalysis.traj.frame as frame
+import numpy as np
 
 
 def read(filename):
@@ -30,7 +31,7 @@ def read_xyz(filename):
                 frame_string += line
         frames.append(frame.read_frame(frame_string))
 
-    return Trajectory(frames)
+    return Trajectory(np.array(frames))
 
 
 class Trajectory:
