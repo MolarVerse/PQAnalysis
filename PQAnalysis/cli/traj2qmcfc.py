@@ -4,6 +4,7 @@ import sys
 
 from PQAnalysis.traj.trajectory import read
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter
+from PQAnalysis.io.trajectoryReader import TrajectoryReader
 
 
 def main():
@@ -17,5 +18,7 @@ def main():
 
     writer = TrajectoryWriter(filename=args.output, format="qmcfc")
     for filename in args.trajectory_file:
-        trajectory = read(filename)
+        reader = TrajectoryReader(filename)
+        trajectory = reader.read()
+
         writer.write(trajectory)
