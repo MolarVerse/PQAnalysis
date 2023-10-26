@@ -11,32 +11,6 @@ def read_frame(frame_string):
     Read a frame from a file.
     '''
 
-    splitted_frame_string = frame_string.split('\n')
-
-    header_line = splitted_frame_string[0].split()
-    if len(header_line) == 4:
-        n_atoms = int(header_line[0])
-        a, b, c = map(float, header_line[1:4])
-        cell = Cell(a, b, c)
-    elif len(header_line) == 7:
-        n_atoms = int(header_line[0])
-        a, b, c, alpha, beta, gamma = map(float, header_line[1:7])
-        cell = Cell(a, b, c, alpha, beta, gamma)
-    elif len(header_line) == 1:
-        n_atoms = int(header_line[0])
-        cell = None
-    else:
-        raise ValueError('Invalid file format in header line of Frame.')
-
-    xyz = np.zeros((n_atoms, 3))
-    atoms = []
-    for i in range(n_atoms):
-        line = splitted_frame_string[2+i]
-        xyz[i] = np.array([float(x) for x in line.split()[1:4]])
-        atoms.append(line.split()[0])
-
-    return Frame(n_atoms, xyz, np.array(atoms), cell)
-
 
 class Frame:
     '''
@@ -66,26 +40,6 @@ class Frame:
             raise ValueError('Selection is empty.')
 
         return frame
-
-    def write_xyz_header(self, filename):
-        print(
-            f"{self.n_atoms} {self.cell.x} {self.cell.y} {self.cell.z} {self.cell.alpha} {self.cell.beta} {self.cell.gamma}", file=filename)
-
-    def write_coordinates(self, filename):
-        for i in range(self.n_atoms):
-            print(
-                f"{self.atoms[i]} {self.xyz[i][0]} {self.xyz[i][1]} {self.xyz[i][2]}", file=filename)
-
-    def write(self, filename=sys.stdout, format=None):
-        '''
-        Write a frame in to a file.
-        '''
-
-        self.write_xyz_header(filename)
-        print('', file=filename)
-        if format == "qmcfc":
-            print("X   0.0 0.0 0.0", file=filename)
-        self.write_coordinates(filename)
 
     def compute_com(self, group=None):
 

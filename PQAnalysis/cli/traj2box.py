@@ -4,6 +4,7 @@ import sys
 
 from PQAnalysis.traj.trajectory import read
 from PQAnalysis.io.boxWriter import BoxWriter
+from PQAnalysis.io.trajectoryReader import TrajectoryReader
 
 
 def main():
@@ -19,5 +20,7 @@ def main():
 
     writer = BoxWriter(filename=args.output, format="vmd")
     for filename in args.trajectory_file:
-        trajectory = read(filename)
+        reader = TrajectoryReader(filename)
+        trajectory = reader.read(filename)
+
         writer.write(trajectory)

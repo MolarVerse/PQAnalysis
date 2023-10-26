@@ -8,10 +8,12 @@ class Element:
             self.atomic_number = id
             self.name = elements.keys()[self.id - 1]
             self.mass = elements.values()[self.id - 1]
+            # TODO: add exception handling for invalid atomic number
         elif isinstance(id, str):
             self.name = id
             self.atomic_number = elements.keys().index(self.name) + 1
             self.mass = elements.values()[self.atomic_number - 1]
+            # TODO: add exception handling for invalid atomic number
         else:
             raise ValueError(
                 'Invalid element id - must be either atomic number or element name.')
