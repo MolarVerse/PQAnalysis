@@ -6,6 +6,7 @@ import numpy as np
 class Selection:
     def __init__(self, selection):
         self.selection = selection
+        self.n_atoms = len(selection)
 
 
 class AtomSelection(Selection):
