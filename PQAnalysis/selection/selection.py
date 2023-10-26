@@ -1,6 +1,6 @@
-from PQAnalysis.utils.instance import isinstance_of_list
-from collections.abc import Iterable
 import numpy as np
+
+from collections.abc import Iterable
 
 
 class Selection:

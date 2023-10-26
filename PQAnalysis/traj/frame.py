@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 
 from PQAnalysis.selection.selection import Selection
 from PQAnalysis.pbc.cell import Cell
@@ -66,14 +67,25 @@ class Frame:
 
         return frame
 
-    def print_xyz_header(self):
+    def write_xyz_header(self, filename):
         print(
-            f"{self.n_atoms} {self.cell.x} {self.cell.y} {self.cell.z} {self.cell.alpha} {self.cell.beta} {self.cell.gamma}")
+            f"{self.n_atoms} {self.cell.x} {self.cell.y} {self.cell.z} {self.cell.alpha} {self.cell.beta} {self.cell.gamma}", file=filename)
 
-    def print_coordinates(self):
+    def write_coordinates(self, filename):
         for i in range(self.n_atoms):
             print(
-                f"{self.atoms[i]} {self.xyz[i][0]} {self.xyz[i][1]} {self.xyz[i][2]}")
+                f"{self.atoms[i]} {self.xyz[i][0]} {self.xyz[i][1]} {self.xyz[i][2]}", file=filename)
+
+    def write(self, filename=sys.stdout, format=None):
+        '''
+        Write a frame in to a file.
+        '''
+
+        self.write_xyz_header(filename)
+        print('', file=filename)
+        if format == "qmcfc":
+            print("X   0.0 0.0 0.0", file=filename)
+        self.write_coordinates(filename)
 
     def compute_com(self, group=None):
 

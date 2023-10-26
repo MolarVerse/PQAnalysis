@@ -32,5 +32,15 @@ class Cell:
         return matrix
 
     @property
+    def bounding_edges(self):
+        edges = np.zeros((8, 3))
+        for i, x in enumerate([-0.5, 0.5]):
+            for j, y in enumerate([-0.5, 0.5]):
+                for k, z in enumerate([-0.5, 0.5]):
+                    edges[i*4+j*2+k, :] = self.box_matrix @ np.array([x, y, z])
+
+        return edges
+
+    @property
     def volume(self):
         return np.linalg.det(self.box_matrix)
