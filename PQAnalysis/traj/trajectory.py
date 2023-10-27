@@ -1,39 +1,3 @@
-import PQAnalysis.traj.frame as frame
-import numpy as np
-
-
-def read(filename):
-    '''
-    Read a trajectory from a file.
-    '''
-
-    if filename.endswith('.xyz'):
-        return read_xyz(filename)
-
-
-def read_xyz(filename):
-    '''
-    Read a trajectory from a .xyz file.
-    '''
-
-    frames = []
-    with open(filename, 'r') as f:
-        frame_string = ''
-        for line in f:
-            if line.strip() == '':
-                frame_string += line
-                continue
-            elif line.split()[0].isdigit():
-                if frame_string != '':
-                    frames.append(frame.read_frame(frame_string))
-                frame_string = line
-            else:
-                frame_string += line
-        frames.append(frame.read_frame(frame_string))
-
-    return Trajectory(np.array(frames))
-
-
 class Trajectory:
     '''
     A trajectory is a sequence of frames.

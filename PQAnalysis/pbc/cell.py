@@ -1,4 +1,3 @@
-from math import pi, sin, cos, sqrt
 import numpy as np
 
 
@@ -20,17 +19,39 @@ class Cell:
 
         matrix = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
 
+        alpha = np.deg2rad(self.alpha)
+        beta = np.deg2rad(self.beta)
+        gamma = np.deg2rad(self.gamma)
+
         matrix[0][0] = self.x
-        matrix[0][1] = self.y * cos(self.gamma * pi / 180)
-        matrix[0][2] = self.z * cos(self.beta * pi / 180)
-        matrix[1][1] = self.y * sin(self.gamma * pi / 180)
-        matrix[1][2] = self.z * (cos(self.alpha * pi / 180) - cos(
-            self.beta * pi / 180) * cos(self.gamma * pi / 180)) / sin(self.gamma * pi / 180)
-        matrix[2][2] = self.z * sqrt(1 - cos(self.beta * pi / 180)**2 - (cos(self.alpha * pi / 180) - cos(
-            self.beta * pi / 180) * cos(self.gamma * pi / 180))**2 / sin(self.gamma * pi / 180)**2)
+        matrix[0][1] = self.y * np.cos(gamma)
+        matrix[0][2] = self.z * np.cos(beta)
+        matrix[1][1] = self.y * np.sin(gamma)
+        matrix[1][2] = self.z * \
+            (np.cos(alpha) - np.cos(beta) * np.cos(gamma)) / np.sin(gamma)
+        matrix[2][2] = self.z * np.sqrt(1 - np.cos(beta)**2 - (
+            np.cos(alpha) - np.cos(beta) * np.cos(gamma))**2 / np.sin(gamma)**2)
 
         return matrix
 
     @property
+    def bounding_edges(self):
+        edges = np.zeros((8, 3))
+        for i, x in enumerate([-0.5, 0.5]):
+            for j, y in enumerate([-0.5, 0.5]):
+                for k, z in enumerate([-0.5, 0.5]):
+                    edges[i*4+j*2+k, :] = self.box_matrix @ np.array([x, y, z])
+
+        return edges
+
+    @property
     def volume(self):
         return np.linalg.det(self.box_matrix)
+
+    @property
+    def box_lengths(self):
+        return np.array([self.x, self.y, self.z])
+
+    @property
+    def box_angles(self):
+        return np.array([self.alpha, self.beta, self.gamma])
