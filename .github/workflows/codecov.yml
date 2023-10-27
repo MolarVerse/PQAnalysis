@@ -12,9 +12,13 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
-      uses: actions/setup-python@master
+      uses: actions/setup-python@name: codecov-umbrellamaster
       with:
-        python-version: 3.10
+        python-version: '3.10'
+
+    - name: build PQAnalysis
+      run: |
+        pip install .
 
     - name: Generate coverage report
       run: |
