@@ -8,7 +8,7 @@
 
 project = 'PQAnalysis'
 copyright = '2023, Josef M. Gallmetzer, Jakob Gamper'
-author = 'Josef M. Gallmetzer, Jakob Gamper'
+author = 'Jakob Gamper, Josef M. Gallmetzer'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
