@@ -1,14 +1,18 @@
-'''Common things needed by command line scripts.'''
+import pytest
+from _pytest.capture import CaptureFixture
 
-import sys
+from PQAnalysis.utils.common import print_header
 from PQAnalysis._version import __version__
 
 
-def print_header():
+def test_print_header(capsys: CaptureFixture):
+    print_header()
+
+    captured = capsys.readouterr()
 
     line = "                                              *"
 
-    header = f"""
+    assert captured.err == f"""
 **************************************************************
 *                                                            *
 *      ____  ____    ___                __           _       *
@@ -23,5 +27,5 @@ def print_header():
 *  version:    {__version__}{line[len(__version__):]}
 *                                                            *
 **************************************************************
+
 """
-    print(header, file=sys.stderr)
