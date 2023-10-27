@@ -25,7 +25,9 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
-    "pytest"
+    "pytest",
+    "coverage",
+    "pytest-cov"
 ]
 
 [tool.setuptools_scm]
