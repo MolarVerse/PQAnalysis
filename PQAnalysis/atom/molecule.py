@@ -1,3 +1,5 @@
+import numpy as np
+
 from PQAnalysis.atom.element import Element
 
 
@@ -11,13 +13,27 @@ class Molecule:
         else:
             self.name = name
 
+    @property
     def atom_masses(self):
         return [atom.mass for atom in self.atoms]
 
-    def compute_com(self):
-        _atom_masses = self.atom_masses()
+    @property
+    def mass(self):
+        return sum(self.atom_masses)
 
+    def com(self, cell=None):
         if self.xyz is None:
             raise ValueError('xyz must be provided when computing com.')
 
-        return sum(_atom_masses * self.xyz) / sum(_atom_masses)
+        if cell is not None:
+            xyz_imaged = cell.image(self.xyz - self.xyz[0]) + self.xyz[0]
+        else:
+            xyz_imaged = self.xyz
+
+        com = sum(np.array([self.atom_masses]).T *
+                  xyz_imaged) / sum(self.atom_masses)
+
+        if cell is not None:
+            com = cell.image(com)
+
+        return com

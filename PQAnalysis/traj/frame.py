@@ -48,7 +48,7 @@ class Frame:
             molecule = Molecule(self.xyz[i:i+group],
                                 self.atoms[i:i+group])
 
-            com[i] = molecule.compute_com()
+            com[i] = molecule.com(self.cell)
 
             molecule_names[i] = molecule.name
 

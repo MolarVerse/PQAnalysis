@@ -23,6 +23,11 @@ dependencies = [
     'numpy'
 ]
 
+[project.optional-dependencies]
+test = [
+    "pytest"
+]
+
 [tool.setuptools_scm]
 version_file = "PQAnalysis/_version.py"
 
