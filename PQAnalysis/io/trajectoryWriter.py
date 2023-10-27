@@ -1,5 +1,3 @@
-import sys
-
 from PQAnalysis.io.base import BaseWriter
 
 

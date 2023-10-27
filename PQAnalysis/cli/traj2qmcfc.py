@@ -1,8 +1,5 @@
-import numpy as np
 import argparse
-import sys
 
-from PQAnalysis.traj.trajectory import read
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter
 from PQAnalysis.io.trajectoryReader import TrajectoryReader
 

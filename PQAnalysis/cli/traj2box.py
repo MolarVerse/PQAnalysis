@@ -1,8 +1,5 @@
-import numpy as np
 import argparse
-import sys
 
-from PQAnalysis.traj.trajectory import read
 from PQAnalysis.io.boxWriter import BoxWriter
 from PQAnalysis.io.trajectoryReader import TrajectoryReader
 
@@ -18,9 +15,14 @@ def main():
                         help='The output file. If not specified, the output is printed to stdout.')
     args = parser.parse_args()
 
-    writer = BoxWriter(filename=args.output, format="vmd")
+    if args.vmd:
+        output_format = "vmd"
+    else:
+        output_format = None
+
+    writer = BoxWriter(filename=args.output, format=output_format)
     for filename in args.trajectory_file:
         reader = TrajectoryReader(filename)
-        trajectory = reader.read(filename)
+        trajectory = reader.read()
 
         writer.write(trajectory)

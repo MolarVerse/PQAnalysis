@@ -41,9 +41,8 @@ class BoxWriter(BaseWriter):
             for edge in edges:
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
-    @count_decorator
     def write_box_file(self, traj):
-        for frame in traj:
+        for i, frame in enumerate(traj):
             cell = frame.cell
             print(
-                f"{self.write_box_file.counter} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}")
+                f"{i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}")
