@@ -55,3 +55,21 @@ class Cell:
     @property
     def box_angles(self):
         return np.array([self.alpha, self.beta, self.gamma])
+
+    def image(self, pos):
+        '''
+        Returns the image of a position vector in the unit cell.
+        '''
+        if np.shape(pos) == (3,):
+            pos = np.reshape(pos, (1, 3))
+
+        fractional_pos = [np.linalg.inv(self.box_matrix) @ i for i in pos]
+
+        fractional_pos -= np.round(fractional_pos)
+
+        pos = [self.box_matrix @ i for i in fractional_pos]
+
+        if np.shape(pos) == (1, 3):
+            pos = np.reshape(pos, (3,))
+
+        return pos

@@ -53,3 +53,16 @@ def test_bounding_edges():
     assert np.allclose(edges[5], np.array([1, 0, 1.22474487]))
     assert np.allclose(edges[6], np.array([0, 0, -1.22474487]))
     assert np.allclose(edges[7], np.array([0, 1.73205081, 1.22474487]))
+
+
+def test_image():
+    cell = Cell(1, 2, 3, 60, 90, 120)
+    pos = np.array([-2, -3, 5])
+
+    assert np.allclose(cell.image(pos), np.array(
+        [0,  0.464101615, 0.101020514]))
+
+    cell = Cell(1, 2, 3)
+    pos = np.array([-0.5, -3.5, 5.5])
+
+    assert np.allclose(cell.image(pos), np.array([0.5, 0.5, -0.5]))

@@ -7,16 +7,23 @@ class Element:
         if isinstance(id, int):
             self.atomic_number = id
             self.name = elements.keys()[self.id - 1]
-            self.mass = elements.values()[self.id - 1]
+            self.mass = list(elements.values())[self.id - 1]
             # TODO: add exception handling for invalid atomic number
         elif isinstance(id, str):
-            self.name = id
-            self.atomic_number = elements.keys().index(self.name) + 1
-            self.mass = elements.values()[self.atomic_number - 1]
+            self.name = id.lower()
+            self.atomic_number = list(elements).index(self.name) + 1
+            self.mass = elements[self.name]
             # TODO: add exception handling for invalid atomic number
         else:
             raise ValueError(
                 'Invalid element id - must be either atomic number or element name.')
+
+    def __eq__(self, other) -> bool:
+        is_equal = True
+        is_equal &= self.atomic_number == other.atomic_number
+        is_equal &= self.name == other.name
+        is_equal &= self.mass == other.mass
+        return is_equal
 
 
 elements = {"h":    1.00794,    "d":    2.014101778,   "t": 3.0160492675,
