@@ -2,6 +2,7 @@ import numpy as np
 
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.traj.trajectory import Trajectory
+from PQAnalysis.pbc.cell import Cell
 
 
 class TrajectoryReader:
@@ -23,13 +24,10 @@ class TrajectoryReader:
                 else:
                     frame_string += line
             self.frames.append(frame_reader.read(frame_string))
-        return self.frames
+        return Trajectory(self.frames)
 
 
 class FrameReader:
-    def __init__(self):
-        pass
-
     def read(self, frame_string):
 
         splitted_frame_string = frame_string.split('\n')

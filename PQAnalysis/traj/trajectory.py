@@ -1,7 +1,3 @@
-import PQAnalysis.traj.frame as frame
-import numpy as np
-
-
 class Trajectory:
     '''
     A trajectory is a sequence of frames.

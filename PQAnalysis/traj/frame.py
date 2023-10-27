@@ -1,15 +1,7 @@
 import numpy as np
-import sys
 
 from PQAnalysis.selection.selection import Selection
-from PQAnalysis.pbc.cell import Cell
 from PQAnalysis.atom.molecule import Molecule
-
-
-def read_frame(frame_string):
-    '''
-    Read a frame from a file.
-    '''
 
 
 class Frame:
