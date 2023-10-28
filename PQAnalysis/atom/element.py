@@ -1,25 +1,85 @@
+from typing import Union
+
+from PQAnalysis.utils.exceptions import ElementNotFoundError
+
+
 class Element:
     """
-    Element class
+    A class representing an Element
+
+    ...
+
+    Attributes
+    ----------
+    atomic_number : int
+        The atomic number of the element
+    name : str
+        The name of the element
+    mass : float
+        The mass of the element
+
+    Methods
+    -------
+    __init__(id)
+        Initializes the element with the given id. The id can be either the atomic number or the element name.
+    __eq__(other)
+        Checks if the given element is equal to the current element.
     """
 
-    def __init__(self, id):
+    def __init__(self, id: Union[int, str]):
+        """
+        Parameters
+        ----------
+        id : int or str
+            The id of the element. Can be either the atomic number or the element name.
+
+        Raises
+        ------
+        TypeError
+            If the given id is not an int or str.
+        ElementNotFoundError
+            If the given id is not a valid element identifier.
+        """
         if isinstance(id, int):
             self.atomic_number = id
-            index = list(atomicNumbers.values()).index(self.atomic_number)
-            self.name = list(atomicNumbers)[index]
-            self.mass = atomicMasses[self.name]
-            # TODO: add exception handling for invalid atomic number
+            try:
+                index = list(atomicNumbers.values()).index(self.atomic_number)
+                self.name = list(atomicNumbers)[index]
+                self.mass = atomicMasses[self.name]
+            except Exception:
+                raise ElementNotFoundError(id)
         elif isinstance(id, str):
-            self.name = id.lower()
-            self.atomic_number = atomicNumbers[self.name]
-            self.mass = atomicMasses[self.name]
-            # TODO: add exception handling for invalid atomic number
+            try:
+                self.name = id.lower()
+                self.atomic_number = atomicNumbers[self.name]
+                self.mass = atomicMasses[self.name]
+            except Exception:
+                raise ElementNotFoundError(id)
         else:
-            raise ValueError(
-                'Invalid element id - must be either atomic number or element name.')
+            raise TypeError(
+                "Invalid type for element id - must be either int (atomic number) or str (element name).")
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: 'Element') -> bool:
+        """
+        Checks if the given element is equal to the current element.
+
+        Parameters
+        ----------
+        other : Element
+
+        Returns
+        -------
+        bool
+
+        Raises
+        ------
+        TypeError
+            If the given object is not an Element.
+        """
+
+        if not isinstance(other, Element):
+            raise TypeError("Can only compare Element to Element.")
+
         is_equal = True
         is_equal &= self.atomic_number == other.atomic_number
         is_equal &= self.name == other.name
