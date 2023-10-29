@@ -14,10 +14,13 @@ write_box(traj, filename=None, format=None)
     Wrapper for BoxWriter to write a trajectory to a file.
 """
 
+from typing import Union
+
 from PQAnalysis.io.base import BaseWriter
+from PQAnalysis.traj.trajectory import Trajectory
 
 
-def write_box(traj, filename=None, format=None):
+def write_box(traj, filename: Union[str, None] = None, format: Union[str, None] = None):
     '''
     Wrapper for BoxWriter to write a trajectory to a file.
 
@@ -55,8 +58,6 @@ class BoxWriter(BaseWriter):
 
     Methods
     -------
-    __init__(filename, format, mode)
-        Initializes the BoxWriter with the given filename, format and mode.
     write(traj)
         Writes the given trajectory to the file.
     write_vmd(traj)
@@ -66,34 +67,7 @@ class BoxWriter(BaseWriter):
     """
     formats = [None, 'vmd']
 
-    def __init__(self, filename=None, format=None, mode='w'):
-        """
-        Initializes the BoxWriter with the given filename, format and mode.
-
-        Parameters
-        ----------
-        filename : str, optional
-            The name of the file to write to. If None, the output is printed to stdout.
-        format : str, optional
-            The format of the file. If None, the format is inferred as a data file format.
-            (see BoxWriter.formats for available formats)
-        mode : str, optional
-            The mode of the file. Either 'w' for write or 'a' for append.
-
-        Raises
-        ------
-        ValueError
-            If the given mode is not 'w' or 'a'.
-        """
-
-        super().__init__(filename, mode)
-        if format not in self.formats:
-            raise ValueError(
-                'Invalid format. Has to be either \'vmd\' or \'None\'.')
-
-        self.format = format
-
-    def write(self, traj):
+    def write(self, traj: Trajectory):
         """
         Wrapper to write the given trajectory to the file.
         Depending on the format, either write_vmd or write_box_file is called.
@@ -112,7 +86,7 @@ class BoxWriter(BaseWriter):
 
         self.close()
 
-    def write_vmd(self, traj):
+    def write_vmd(self, traj: Trajectory):
         """
         Writes the given trajectory to the file in VMD format.
 
@@ -146,7 +120,7 @@ class BoxWriter(BaseWriter):
         ValueError
             If the cell of a frame of the trajectory is None.
         """
-        self.check_if_PBC(traj)
+        self.__check_if_PBC__(traj)
 
         for frame in traj:
             cell = frame.cell
@@ -158,7 +132,7 @@ class BoxWriter(BaseWriter):
             for edge in edges:
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
-    def write_box_file(self, traj):
+    def write_box_file(self, traj: Trajectory):
         """
         Writes the given trajectory to the file in data file format.
 
@@ -182,14 +156,41 @@ class BoxWriter(BaseWriter):
         ValueError
             If the cell of a frame of the trajectory is None.
         """
-        self.check_if_PBC(traj)
+        self.__check_if_PBC__(traj)
 
         for i, frame in enumerate(traj):
             cell = frame.cell
             print(
                 f"{i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}")
 
-    def check_if_PBC(self, traj):
+    def __init__(self, filename: Union[str, None] = None, format: Union[str, None] = None, mode='w'):
+        """
+        Initializes the BoxWriter with the given filename, format and mode.
+
+        Parameters
+        ----------
+        filename : str, optional
+            The name of the file to write to. If None, the output is printed to stdout.
+        format : str, optional
+            The format of the file. If None, the format is inferred as a data file format.
+            (see BoxWriter.formats for available formats)
+        mode : str, optional
+            The mode of the file. Either 'w' for write or 'a' for append.
+
+        Raises
+        ------
+        ValueError
+            If the given mode is not 'w' or 'a'.
+        """
+
+        super().__init__(filename, mode)
+        if format not in self.formats:
+            raise ValueError(
+                'Invalid format. Has to be either \'vmd\' or \'None\'.')
+
+        self.format = format
+
+    def __check_if_PBC__(self, traj: Trajectory):
         """
         Checks if the cell of the trajectory is not None.
 
@@ -203,7 +204,7 @@ class BoxWriter(BaseWriter):
         ValueError
             If the cell of a frame of the trajectory is None.
         """
-        for frame in traj:
-            if not frame.PBC:
-                raise ValueError(
-                    "Cell of trajectory is None. Cannot write box file.")
+
+        if not all(frame.PBC for frame in traj):
+            raise ValueError(
+                "Cell of trajectory is None. Cannot write box file.")
