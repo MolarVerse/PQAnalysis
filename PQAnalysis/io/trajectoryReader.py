@@ -38,6 +38,26 @@ class TrajectoryReader:
         Reads the trajectory from the file.
     """
 
+    def __init__(self, filename: str):
+        """
+        Initializes the TrajectoryReader with the given filename.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read from.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the given filename does not exist.
+        """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(f"File {filename} not found.")
+
+        self.filename = filename
+        self.frames = []
+
     def read(self) -> Trajectory:
         """
         Reads the trajectory from the file.
@@ -77,26 +97,6 @@ class TrajectoryReader:
                 self.frames[-1].cell = self.frames[-2].cell
 
         return Trajectory(self.frames)
-
-    def __init__(self, filename: str):
-        """
-        Initializes the TrajectoryReader with the given filename.
-
-        Parameters
-        ----------
-        filename : str
-            The name of the file to read from.
-
-        Raises
-        ------
-        FileNotFoundError
-            If the given filename does not exist.
-        """
-        if not os.path.isfile(filename):
-            raise FileNotFoundError(f"File {filename} not found.")
-
-        self.filename = filename
-        self.frames = []
 
 
 class FrameReader:

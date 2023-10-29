@@ -38,3 +38,5 @@ def test__eq__():
     element3 = Element('H')
     assert element1 == element2
     assert element1 != element3
+
+    assert element1 != 1

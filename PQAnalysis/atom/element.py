@@ -81,15 +81,10 @@ class Element:
         Returns
         -------
         bool
-
-        Raises
-        ------
-        TypeError
-            If the given object is not an Element.
         """
 
         if not isinstance(other, Element):
-            raise TypeError("Can only compare Element to Element.")
+            return False
 
         is_equal = True
         is_equal &= self.atomic_number == other.atomic_number

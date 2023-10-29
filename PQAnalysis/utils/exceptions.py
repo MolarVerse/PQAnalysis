@@ -1,3 +1,8 @@
+"""
+A module containing different exceptions which could be useful.
+"""
+
+
 class ElementNotFoundError(Exception):
     """
     Exception raised if the given element id is not valid
