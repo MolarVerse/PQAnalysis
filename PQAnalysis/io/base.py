@@ -30,15 +30,27 @@ class BaseWriter:
 
     Methods
     -------
-    __init__(filename, mode)
-        It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
     open()
         Opens the file to write to.
     close()
         Closes the file to write to.
     """
 
-    def __init__(self, filename, mode):
+    def open(self):
+        """
+        Opens the file to write to.
+        """
+        if self.filename is not None:
+            self.file = open(self.filename, self.mode)
+
+    def close(self):
+        """
+        Closes the file to write to.
+        """
+        if self.file is not None:
+            self.file.close()
+
+    def __init__(self, filename: str, mode: str):
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
 
@@ -70,17 +82,3 @@ class BaseWriter:
         self.mode = 'a'
         self.filename = filename
         self.format = format
-
-    def open(self):
-        """
-        Opens the file to write to.
-        """
-        if self.filename is not None:
-            self.file = open(self.filename, self.mode)
-
-    def close(self):
-        """
-        Closes the file to write to.
-        """
-        if self.file is not None:
-            self.file.close()

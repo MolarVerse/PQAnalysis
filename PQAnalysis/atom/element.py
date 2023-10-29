@@ -35,16 +35,9 @@ class Element:
         The name of the element
     mass : float
         The mass of the element
-
-    Methods
-    -------
-    __init__(id)
-        Initializes the element with the given id. The id can be either the atomic number or the element name.
-    __eq__(other)
-        Checks if the given element is equal to the current element.
     """
 
-    def __init__(self, id: int | str):
+    def __init__(self, id: Union[int, str]):
         """
         Parameters
         ----------
