@@ -24,7 +24,7 @@ from PQAnalysis.pbc.cell import Cell
 
 
 def write_trajectory(traj, filename: str = None, format: str = None):
-    '''
+    """
     Wrapper for TrajectoryWriter to write a trajectory to a file.
 
     if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
@@ -36,7 +36,7 @@ def write_trajectory(traj, filename: str = None, format: str = None):
         The trajectory to write.
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
-    '''
+    """
 
     writer = TrajectoryWriter(filename, format)
     writer.write(traj)
