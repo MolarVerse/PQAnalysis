@@ -43,6 +43,8 @@ class Molecule:
         Returns the total mass of the molecule.
     com(cell)
         Returns the center of mass of the molecule.
+    _get_name_from_atoms_(atoms)
+        Returns the name of the molecule from the given atoms.
     """
 
     def __init__(self, atoms: List[str] | List[Element], xyz: np.array = None, name: str = None):
@@ -77,9 +79,7 @@ class Molecule:
         if not isinstance(name, str) and name is not None:
             raise TypeError('name must be a str.')
         elif name is None:
-            self.name(atoms)
-        else:
-            self.name = name
+            name = self._get_name_from_atoms_(atoms)
 
         self.atoms = atoms
         self.xyz = xyz
@@ -129,9 +129,20 @@ class Molecule:
 
         return com
 
-    @name.setter
-    def name(self, atoms):
+    def _get_name_from_atoms_(self, atoms: List[Element] | List[str]) -> str:
+        """
+        Returns the name of the molecule from the given atoms.
+
+        The name is the concatenation of the names of the atoms.
+
+        Parameters
+        ----------
+        atoms : list of Element or list of str
+            The list of atoms in the molecule. Can be either a list of Element or str.
+        """
         if all(isinstance(atom, str) for atom in atoms):
-            self.name = ''.join(atoms)
+            name = ''.join(atoms)
         else:
-            self.name = ''.join([atom.name for atom in atoms])
+            name = ''.join([atom.name for atom in atoms])
+
+        return name
