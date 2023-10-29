@@ -6,6 +6,8 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
+import sys
+import os
 project = 'PQAnalysis'
 copyright = '2023, Josef M. Gallmetzer, Jakob Gamper'
 author = 'Jakob Gamper, Josef M. Gallmetzer'
@@ -25,6 +27,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
+    'sphinx.ext.napoleon',
     'sphinx_sitemap',
     'sphinx.ext.inheritance_diagram',
 ]
@@ -68,3 +71,5 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+sys.path.insert(0, os.path.abspath('../../'))
