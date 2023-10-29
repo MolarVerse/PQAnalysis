@@ -20,7 +20,7 @@ class Selection:
     A class for atom selections.
     """
 
-    def __init__(self, selection: Union[List[int], List[str], int, str], frame=None):
+    def __init__(self, selection_param: Union[List[int], List[str], int, str], frame=None):
         """
         Initializes the AtomSelection with the given selection.
 
@@ -39,14 +39,14 @@ class Selection:
             If the selection is a list of str and no frame is provided.
         """
 
-        if isinstance(selection, Iterable) and not isinstance(selection, str):
-            self.selection = np.array(selection)
+        if isinstance(selection_param, Iterable) and not isinstance(selection_param, str):
+            self.selection = np.array(selection_param)
         else:
-            self.selection = np.array([selection])
+            self.selection = np.array([selection_param])
 
-        if isinstance(selection[0], int):
+        if isinstance(self.selection[0], np.int64):
             self.selection = self.selection
-        elif isinstance(selection[0], str):
+        elif isinstance(self.selection[0], str):
             if frame is None:
                 raise ValueError(
                     'Frame must be provided when selection is a string.')
