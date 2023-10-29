@@ -43,6 +43,44 @@ class Molecule:
         Returns the center of mass of the molecule.
     """
 
+    def __init__(self, atoms: Union[List[str], List[Element]], xyz: np.array = None, name: str = None):
+        """
+        Parameters
+        ----------
+        atoms : list of str or list of Element
+            The list of atoms in the molecule. Can be either a list of Element or str.
+        xyz : np.array, optional
+            The xyz coordinates of the molecule. If not provided, the com method will not work.
+        name : str, optional
+            The name of the molecule. If not provided, the name will be the concatenation of the atoms.
+
+        Raises
+        ------
+        TypeError
+            If the given atoms is not a list of Element or str.
+        TypeError
+            If the given name is not a str.
+        """
+        # setting up the atoms
+        if not isinstance(atoms, Iterable) or isinstance(atoms, str):
+            raise TypeError('atoms must be iterable or list of str.')
+        elif all(isinstance(atom, Element) for atom in atoms):
+            atoms = atoms
+        elif all(isinstance(atom, str) for atom in atoms):
+            atoms = [Element(atom) for atom in atoms]
+        else:
+            raise TypeError('atoms must be either a list of Element or str.')
+
+        # setting up name
+        if not isinstance(name, str) and name is not None:
+            raise TypeError('name must be a str.')
+        elif name is None:
+            name = self.__atoms_to_name__(atoms)
+
+        self.atoms = atoms
+        self.xyz = xyz
+        self.name = name
+
     @property
     def atom_masses(self) -> List[float]:
         """
@@ -86,44 +124,6 @@ class Molecule:
             com = cell.image(com)
 
         return com
-
-    def __init__(self, atoms: Union[List[str], List[Element]], xyz: np.array = None, name: str = None):
-        """
-        Parameters
-        ----------
-        atoms : list of str or list of Element
-            The list of atoms in the molecule. Can be either a list of Element or str.
-        xyz : np.array, optional
-            The xyz coordinates of the molecule. If not provided, the com method will not work.
-        name : str, optional
-            The name of the molecule. If not provided, the name will be the concatenation of the atoms.
-
-        Raises
-        ------
-        TypeError
-            If the given atoms is not a list of Element or str.
-        TypeError
-            If the given name is not a str.
-        """
-        # setting up the atoms
-        if not isinstance(atoms, Iterable):
-            raise TypeError('atoms must be iterable.')
-        elif all(isinstance(atom, Element) for atom in atoms):
-            atoms = atoms
-        elif all(isinstance(atom, str) for atom in atoms):
-            atoms = [Element(atom) for atom in atoms]
-        else:
-            raise TypeError('atoms must be either a list of Element or str.')
-
-        # setting up name
-        if not isinstance(name, str) and name is not None:
-            raise TypeError('name must be a str.')
-        elif name is None:
-            name = self.__atoms_to_name__(atoms)
-
-        self.atoms = atoms
-        self.xyz = xyz
-        self.name = name
 
     def __atoms_to_name__(self, atoms: Union[List[Element], List[str]]) -> str:
         """

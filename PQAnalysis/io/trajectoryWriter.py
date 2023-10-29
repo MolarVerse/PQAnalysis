@@ -78,21 +78,6 @@ class TrajectoryWriter(BaseWriter):
 
     formats = [None, 'qmcfc']
 
-    def write(self, trajectory: Trajectory):
-        """
-        Writes the trajectory to the file.
-
-        Parameters
-        ----------
-        traj : Trajectory
-            The trajectory to write.
-        """
-        self.open()
-        for frame in trajectory:
-            self.__write_header__(frame.n_atoms, frame.cell)
-            self.__write_coordinates__(frame.xyz, frame.atoms)
-        self.close()
-
     def __init__(self, filename: str = None, format: str = None, mode: str = 'w'):
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
@@ -114,6 +99,21 @@ class TrajectoryWriter(BaseWriter):
                 'Invalid format. Has to be either \'qmcfc\' or \'None\'.')
 
         self.format = format
+
+    def write(self, trajectory: Trajectory):
+        """
+        Writes the trajectory to the file.
+
+        Parameters
+        ----------
+        traj : Trajectory
+            The trajectory to write.
+        """
+        self.open()
+        for frame in trajectory:
+            self.__write_header__(frame.n_atoms, frame.cell)
+            self.__write_coordinates__(frame.xyz, frame.atoms)
+        self.close()
 
     def __write_header__(self, n_atoms: int, cell: Cell):
         """

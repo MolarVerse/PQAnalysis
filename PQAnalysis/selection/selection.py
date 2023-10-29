@@ -1,30 +1,57 @@
+"""
+A module containing the selection class.
+
+...
+
+Classes
+-------
+Selection
+    A class for atom selections.
+"""
+
 import numpy as np
 
 from collections.abc import Iterable
+from typing import List, Union
 
 
 class Selection:
-    def __init__(self, selection):
-        self.selection = selection
-        self.n_atoms = len(selection)
+    """
+    A class for atom selections.
+    """
 
+    def __init__(self, selection: Union[List[int], List[str], int, str], frame=None):
+        """
+        Initializes the AtomSelection with the given selection.
 
-class AtomSelection(Selection):
-    def __init__(self, selection, frame=None):
+        Parameters
+        ----------
+        selection : np.array or list of int or list of str
+            The selection. Can be either a list of int or str, or a np.array.
+        frame : Frame, optional
+            The frame to select from. Required if selection is a list of str.
 
-        if isinstance(selection, Iterable):
-            selection = np.array(selection)
+        Raises
+        ------
+        TypeError
+            If the selection is not a list of int or str or a single int or str.
+        ValueError
+            If the selection is a list of str and no frame is provided.
+        """
+
+        if isinstance(selection, Iterable) and not isinstance(selection, str):
+            self.selection = np.array(selection)
         else:
-            selection = np.array([selection])
+            self.selection = np.array([selection])
 
         if isinstance(selection[0], int):
-            super().__init__(selection)
+            self.selection = self.selection
         elif isinstance(selection[0], str):
             if frame is None:
                 raise ValueError(
                     'Frame must be provided when selection is a string.')
             else:
-                selection = np.nonzero(np.in1d(frame.atoms, selection))
-                super().__init__(selection)
+                self.selection = np.nonzero(
+                    np.in1d(frame.atoms, self.selection))[0]
         else:
-            raise ValueError('Invalid selection type.')
+            raise TypeError('Invalid selection type.')

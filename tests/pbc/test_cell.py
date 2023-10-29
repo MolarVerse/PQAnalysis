@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from PQAnalysis.pbc.cell import Cell
 
@@ -66,3 +67,16 @@ def test_image():
     pos = np.array([-0.5, -3.5, 5.5])
 
     assert np.allclose(cell.image(pos), np.array([0.5, 0.5, -0.5]))
+
+
+def test__eq__():
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    cell2 = Cell(1, 2, 3, 60, 90, 120)
+    assert cell1 == cell2
+
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    cell2 = Cell(1, 2, 3, 60, 90, 90)
+    assert cell1 != cell2
+
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    assert cell1 != 1

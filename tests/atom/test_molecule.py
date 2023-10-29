@@ -26,6 +26,18 @@ def test__init__():
         [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]]))
     assert molecule.name == "my_name"
 
+    with pytest.raises(TypeError) as exception:
+        Molecule("H")
+    assert str(exception.value) == 'atoms must be iterable or list of str.'
+
+    with pytest.raises(TypeError) as exception:
+        Molecule([1.2, 2.3])
+    assert str(exception.value) == 'atoms must be either a list of Element or str.'
+
+    with pytest.raises(TypeError) as exception:
+        Molecule(["H"], name=1)
+    assert str(exception.value) == 'name must be a str.'
+
 
 def test_atom_masses():
     molecule = Molecule(['C', 'H', 'H', 'O'])
@@ -55,3 +67,13 @@ def test_com():
         molecule.com()
 
     assert str(exception.value) == 'xyz must be provided when computing com.'
+
+
+def test__atoms_to_name__():
+    atoms = ["C", "H", "H", "O"]
+    assert Molecule(atoms).__atoms_to_name__(
+        atoms).lower() == str("CHHO").lower()
+
+    atoms = [Element("C"), Element("H"), Element("H"), Element("O")]
+    assert Molecule(atoms).__atoms_to_name__(
+        atoms).lower() == str("CHHO").lower()

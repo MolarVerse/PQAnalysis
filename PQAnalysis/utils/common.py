@@ -1,10 +1,18 @@
-'''Common things needed by command line scripts.'''
+"""
+Common things needed by command line scripts.
+"""
 
 import sys
 from PQAnalysis._version import __version__
 
 
 def print_header():
+    """
+    A function to print the header of the program.
+
+    This header is printed to stderr so that it can be used
+    by all cli scripts without interfering with the output.
+    """
 
     line = "                                              *"
 

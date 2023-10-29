@@ -1,9 +1,31 @@
+"""
+A module containing the tool to compute a center of mass trajectory for a given selection.
+"""
+
+from typing import Union, List
+
 from PQAnalysis.selection.selection import Selection
 from PQAnalysis.traj.trajectory import Trajectory
 
 
-def traj2comtraj(trajectory, selection=None, group=None, map_name_to_element=None):
+# TODO: add atom to element mapper if atomname not element names
+def traj_to_com_traj(trajectory: Trajectory, selection: Union[List[int], Selection] = None, group=None):
+    """
+    Function that computes the center of mass trajectory for a given selection.
 
+    With the group parameter, the trajectory will be group according to the given group.
+    For example if group = 2, the trajectory will be grouped in pairs of 2 and the center 
+    of mass of each pair will be computed.
+
+    Parameters
+    ----------
+    trajectory : Trajectory
+        The trajectory to compute the center of mass trajectory for.
+    selection : Selection, optional
+        The selection to compute the center of mass trajectory for. If None, the selection is all atoms.
+    group : int, optional
+        The group to compute the center of mass trajectory for. If None, the group is all atoms.
+    """
     if not isinstance(selection, Selection):
         selection = Selection(selection)
 
