@@ -13,7 +13,7 @@ def test__init__():
     assert molecule.atoms[2] == Element('H')
     assert molecule.atoms[3] == Element('O')
     assert molecule.xyz is None
-    assert molecule.name == "CHHO"
+    assert molecule.name == str("CHHO").lower()
 
     molecule = Molecule(['C', 'H', 'H', 'O'], xyz=np.array([[0, 0, 0], [1, 0, 0], [
                         0, 1, 0], [0, 0, 1]]), name='my_name')
