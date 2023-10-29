@@ -24,6 +24,8 @@ class TrajectoryReader:
                 else:
                     frame_string += line
             self.frames.append(frame_reader.read(frame_string))
+            if self.frames[-1].cell is None:
+                self.frames[-1].cell = self.frames[-2].cell
         return Trajectory(self.frames)
 
 

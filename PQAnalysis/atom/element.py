@@ -1,3 +1,21 @@
+"""
+A module containing the Element class and its associated methods.
+
+...
+
+Classes
+-------
+Element
+    A class representing an Element
+
+Methods
+-------
+atomicMasses
+    A dictionary containing the mass of each element.
+atomicNumbers
+    A dictionary containing the atomic number of each element.
+"""
+
 from typing import Union
 
 from PQAnalysis.utils.exceptions import ElementNotFoundError
@@ -26,7 +44,7 @@ class Element:
         Checks if the given element is equal to the current element.
     """
 
-    def __init__(self, id: Union[int, str]):
+    def __init__(self, id: int | str):
         """
         Parameters
         ----------

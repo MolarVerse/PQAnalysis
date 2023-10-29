@@ -15,7 +15,9 @@ class Frame:
         self.atoms = atoms
         self.cell = cell
 
-        if cell is not None:
+    @property
+    def PBC(self):
+        if self.cell is not None:
             self.PBC = True
         else:
             self.PBC = False
