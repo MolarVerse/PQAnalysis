@@ -68,7 +68,7 @@ class TrajectoryWriter(BaseWriter):
         The format of the file.
     """
 
-    formats = [None, 'qmcfc']
+    formats = [None, 'pimd-qmcf', 'qmcfc']
 
     def __init__(self, filename: str = None, format: str = None, mode: str = 'w'):
         """
@@ -88,7 +88,10 @@ class TrajectoryWriter(BaseWriter):
         super().__init__(filename, mode)
         if format not in self.formats:
             raise ValueError(
-                'Invalid format. Has to be either \'qmcfc\' or \'None\'.')
+                'Invalid format. Has to be either \'pimd-qmcf\', \'qmcfc\' or \'None\'.')
+
+        if format is None:
+            format = 'pimd-qmcf'
 
         self.format = format
 
@@ -107,7 +110,7 @@ class TrajectoryWriter(BaseWriter):
             self.__write_coordinates__(frame.xyz, frame.atoms)
         self.close()
 
-    def __write_header__(self, n_atoms: int, cell: Cell):
+    def __write_header__(self, n_atoms: int, cell: Cell = None):
         """
         Writes the header line of the frame to the file.
 
