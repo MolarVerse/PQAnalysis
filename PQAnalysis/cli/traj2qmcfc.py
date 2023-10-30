@@ -1,3 +1,12 @@
+"""
+Converts a PIMD-QMCF trajectory to a QMCFC trajectory format output.
+
+Both formats are adapted xyz file formats with the box dimensions and box angles
+being placed in the same line after the number of atoms. The QMCFC contains an 
+additional dummy 'X' particle as first entry of the coordinates section for
+visibility and debugging reasons in conjunction with vmd.
+"""
+
 import argparse
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter
