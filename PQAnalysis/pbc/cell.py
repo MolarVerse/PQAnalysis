@@ -35,19 +35,6 @@ class Cell:
         The angle between the first and second box vector.
     box_matrix : np.array
         The matrix containing the box vectors as columns.
-
-    Methods
-    -------
-    bounding_edges
-        Returns the coordinates of the eight corners of the unit cell.
-    volume
-        Returns the volume of the unit cell.
-    box_lengths
-        Returns the lengths of the box vectors.
-    box_angles
-        Returns the angles between the box vectors.
-    image(pos)
-        Images a position vector in the unit cell.
     '''
 
     def __init__(self, x: float, y: float, z: float, alpha: float = 90, beta: float = 90, gamma: float = 90):

@@ -32,13 +32,6 @@ class Frame:
         The atoms in the frame.
     cell : Cell
         The cell of the frame.
-
-    Methods
-    -------
-    __getindex__(index)
-        Returns a new Frame with the given index.
-    compute_com(group=None)
-        Computes the center of mass of the frame.
     '''
 
     def __init__(self, n_atoms: int, xyz: np.array, atoms: np.array, cell: Cell = None):

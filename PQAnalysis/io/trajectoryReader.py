@@ -31,11 +31,6 @@ class TrajectoryReader:
         The name of the file to read from.
     frames : list of Frame
         The list of frames read from the file.
-
-    Methods
-    -------
-    read()
-        Reads the trajectory from the file.
     """
 
     def __init__(self, filename: str):
@@ -102,13 +97,6 @@ class TrajectoryReader:
 class FrameReader:
     """
     FrameReader reads a frame from a string.
-
-    ...
-
-    Methods
-    -------
-    read(frame_string)
-        Reads a frame from a string.
     """
 
     def read(self, frame_string: str) -> Frame:

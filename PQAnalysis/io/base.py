@@ -27,13 +27,6 @@ class BaseWriter:
         The mode of the file. Either 'w' for write or 'a' for append.
     filename : str
         The name of the file to write to. If None, the output is printed to stdout.
-
-    Methods
-    -------
-    open()
-        Opens the file to write to.
-    close()
-        Closes the file to write to.
     """
 
     def __init__(self, filename: str, mode: str):

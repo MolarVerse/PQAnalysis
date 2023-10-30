@@ -7,11 +7,6 @@ Classes
 -------
 BoxWriter
     A class for writing a trajectory to a box file.
-
-Methods
--------
-write_box(traj, filename=None, format=None)
-    Wrapper for BoxWriter to write a trajectory to a file.
 """
 
 from typing import Union
@@ -48,22 +43,16 @@ class BoxWriter(BaseWriter):
 
     ...
 
-    Attributes
-    ----------
+    Class Attributes
+    ----------------
     formats : list of str
         The available formats for the box file.
+
+    Attributes
+    ----------
     format : str
         The format of the file. If None, the format is inferred as a data file format.
         (see BoxWriter.formats for available formats)
-
-    Methods
-    -------
-    write(traj)
-        Writes the given trajectory to the file.
-    write_vmd(traj)
-        Writes the given trajectory to the file in VMD format.
-    write_box_file(traj)
-        Writes the given trajectory to the file in data file format.
     """
     formats = [None, 'vmd']
 
