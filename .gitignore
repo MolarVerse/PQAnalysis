@@ -5,3 +5,7 @@ build/
 
 _version.py
 **/*.ipynb
+
+.coverage
+coverage.xml
+htmlcov/

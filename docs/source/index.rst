@@ -12,6 +12,8 @@ PQAnalysis
    :maxdepth: 2
    
    developerGuide/developerGuide
+   code/modules.rst
 
 
 :ref:`developerGuide`
+:ref:`modules`

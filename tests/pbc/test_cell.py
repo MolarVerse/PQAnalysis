@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from PQAnalysis.pbc.cell import Cell
 
@@ -53,3 +54,29 @@ def test_bounding_edges():
     assert np.allclose(edges[5], np.array([1, 0, 1.22474487]))
     assert np.allclose(edges[6], np.array([0, 0, -1.22474487]))
     assert np.allclose(edges[7], np.array([0, 1.73205081, 1.22474487]))
+
+
+def test_image():
+    cell = Cell(1, 2, 3, 60, 90, 120)
+    pos = np.array([-2, -3, 5])
+
+    assert np.allclose(cell.image(pos), np.array(
+        [0,  0.464101615, 0.101020514]))
+
+    cell = Cell(1, 2, 3)
+    pos = np.array([-0.5, -3.5, 5.5])
+
+    assert np.allclose(cell.image(pos), np.array([0.5, 0.5, -0.5]))
+
+
+def test__eq__():
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    cell2 = Cell(1, 2, 3, 60, 90, 120)
+    assert cell1 == cell2
+
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    cell2 = Cell(1, 2, 3, 60, 90, 90)
+    assert cell1 != cell2
+
+    cell1 = Cell(1, 2, 3, 60, 90, 120)
+    assert cell1 != 1
