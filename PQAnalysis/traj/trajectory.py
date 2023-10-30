@@ -45,6 +45,21 @@ class Trajectory:
         else:
             self.frames = frames
 
+    def check_PBC(self):
+        """
+        Checks if one cell of the trajectory is not None.
+
+        Returns
+        -------
+        bool
+            False if one cell of the trajectory is None, True otherwise.
+        """
+
+        if not all(frame.PBC for frame in self.frames):
+            return False
+        else:
+            return True
+
     def __len__(self) -> int:
         return len(self.frames)
 
@@ -67,6 +82,13 @@ class Trajectory:
         other : Trajectory
             The other trajectory to add.
         """
+
+        if not isinstance(other, Trajectory):
+            raise TypeError('only Trajectory can be added to Trajectory.')
+
+        if len(self.frames) != 0 and len(other) != 0 and not self.frames[0].is_combinable(other.frames[0]):
+            raise ValueError('Frames are not compatible.')
+
         return Trajectory(self.frames + other.frames)
 
     def __eq__(self, other) -> bool:

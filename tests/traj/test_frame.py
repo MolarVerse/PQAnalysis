@@ -3,11 +3,11 @@ import pytest
 
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.pbc.cell import Cell
-from PQAnalysis.selection.selection import Selection
+from PQAnalysis.traj.selection import Selection
 
 
 def test__init__():
-    frame = Frame(2, [[0, 0, 0], [1, 0, 0]], ['C', 'H'])
+    frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'])
 
     assert frame.n_atoms == 2
     assert np.allclose(frame.xyz, np.array([[0, 0, 0], [1, 0, 0]]))
@@ -15,7 +15,7 @@ def test__init__():
     assert frame.atoms[1] == 'H'
     assert frame.cell is None
 
-    frame = Frame(2, [[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
+    frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
 
     assert frame.n_atoms == 2
     assert np.allclose(frame.xyz, np.array([[0, 0, 0], [1, 0, 0]]))
@@ -23,17 +23,32 @@ def test__init__():
     assert frame.atoms[1] == 'H'
     assert frame.cell == Cell(10, 10, 10)
 
+    with pytest.raises(ValueError) as exception:
+        Frame([[0, 0, 0]], 'C', Cell(10, 10, 10))
+    assert str(
+        exception.value) == 'atoms must be a iterable with following shape - (n_atoms,).'
+
+    with pytest.raises(ValueError) as exception:
+        Frame([0, 0, 0], ['H'], Cell(10, 10, 10))
+    assert str(
+        exception.value) == 'xyz must be a iterable with following shape - (n_atoms, 3).'
+
+    with pytest.raises(ValueError) as exception:
+        Frame([[0, 0, 0], [1, 0, 0]], ['C'])
+    assert str(
+        exception.value) == 'xyz and atoms must have the same length.'
+
 
 def test_PBC():
-    frame = Frame(2, [[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
+    frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
     assert frame.PBC
 
-    frame = Frame(2, [[0, 0, 0], [1, 0, 0]], ['C', 'H'])
+    frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'])
     assert not frame.PBC
 
 
-def test__getindex__():
-    frame = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+def test__getitem__():
+    frame = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                   ['C', 'H', 'H'], Cell(10, 10, 10))
 
     assert frame[0].n_atoms == 1
@@ -62,7 +77,7 @@ def test__getindex__():
 
 
 def test_compute_com():
-    frame = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+    frame = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                   ['C', 'H', 'H'], Cell(10, 10, 10))
 
     com_frame = frame.compute_com()
@@ -83,21 +98,41 @@ def test_compute_com():
 
 
 def test__eq__():
-    frame1 = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+    frame1 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                    ['C', 'H', 'H'], Cell(10, 10, 10))
-    frame2 = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+    frame2 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                    ['C', 'H', 'H'], Cell(10, 10, 10))
     assert frame1 == frame2
-    frame2 = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+    frame2 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                    ['C', 'H', 'H'])
     assert frame1 != frame2
 
-    frame2 = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 1]],
+    frame2 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 1]],
                    ['C', 'H', 'H'], Cell(10, 10, 10))
     assert frame1 != frame2
 
-    frame2 = Frame(3, [[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+    frame2 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
                    ['C', 'H', 'O'], Cell(10, 10, 10))
     assert frame1 != frame2
 
     assert frame1 != 1
+
+    frame2 = Frame([[0, 0, 0], [1, 0, 0]],
+                   ['C', 'H'], Cell(10, 10, 10))
+
+    assert frame1 != frame2
+
+
+def test_is_combinable():
+    frame1 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]], ['C', 'H', 'H'])
+    frame2 = Frame([[0, 0, 0], [1, 0, 0], [2, 0, 0]],
+                   ['C', 'H', 'H'], Cell(10, 10, 10))
+    frame3 = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'])
+    frame4 = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'O'])
+
+    assert frame1.is_combinable(frame2)
+    assert not frame1.is_combinable(frame3)
+    assert not frame1.is_combinable(frame4)
+    assert not frame1.is_combinable(1)
+
+    assert not frame3.is_combinable(frame4)

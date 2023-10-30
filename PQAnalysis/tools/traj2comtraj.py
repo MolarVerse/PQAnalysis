@@ -4,7 +4,7 @@ A module containing the tool to compute a center of mass trajectory for a given 
 
 from typing import Union, List
 
-from PQAnalysis.selection.selection import Selection
+from PQAnalysis.traj.selection import Selection
 from PQAnalysis.traj.trajectory import Trajectory
 
 

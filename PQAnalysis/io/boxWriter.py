@@ -54,9 +54,9 @@ class BoxWriter(BaseWriter):
         The format of the file. If None, the format is inferred as a data file format.
         (see BoxWriter.formats for available formats)
     """
-    formats = [None, 'vmd']
+    formats = [None, 'data', 'vmd']
 
-    def __init__(self, filename: Union[str, None] = None, format: Union[str, None] = None, mode='w'):
+    def __init__(self, filename: str = None, format: str = None, mode='w'):
         """
         Initializes the BoxWriter with the given filename, format and mode.
 
@@ -79,7 +79,10 @@ class BoxWriter(BaseWriter):
         super().__init__(filename, mode)
         if format not in self.formats:
             raise ValueError(
-                'Invalid format. Has to be either \'vmd\' or \'None\'.')
+                'Invalid format. Has to be either \'vmd\', \'data\' or \'None\'.')
+
+        if format is None:
+            format = 'data'
 
         self.format = format
 
@@ -136,7 +139,7 @@ class BoxWriter(BaseWriter):
         ValueError
             If the cell of a frame of the trajectory is None.
         """
-        self.__check_if_PBC__(traj)
+        self.__check_PBC__(traj)
 
         for frame in traj:
             cell = frame.cell
@@ -172,14 +175,14 @@ class BoxWriter(BaseWriter):
         ValueError
             If the cell of a frame of the trajectory is None.
         """
-        self.__check_if_PBC__(traj)
+        self.__check_PBC__(traj)
 
         for i, frame in enumerate(traj):
             cell = frame.cell
             print(
                 f"{i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}")
 
-    def __check_if_PBC__(self, traj: Trajectory):
+    def __check_PBC__(self, traj: Trajectory):
         """
         Checks if the cell of the trajectory is not None.
 
@@ -194,6 +197,6 @@ class BoxWriter(BaseWriter):
             If the cell of a frame of the trajectory is None.
         """
 
-        if not all(frame.PBC for frame in traj):
+        if not traj.check_PBC():
             raise ValueError(
-                "Cell of trajectory is None. Cannot write box file.")
+                "At least on cell of the trajectory is None. Cannot write box file.")

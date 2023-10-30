@@ -2,12 +2,12 @@ import pytest
 import numpy as np
 
 from PQAnalysis.traj.frame import Frame
-from PQAnalysis.selection.selection import Selection
+from PQAnalysis.traj.selection import Selection
 
 
 def test__init__():
 
-    frame = Frame(2, [[0, 0, 0], [1, 0, 0]], ['C', 'H'])
+    frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'])
 
     with pytest.raises(ValueError) as exception:
         Selection(['C', 'H'])
