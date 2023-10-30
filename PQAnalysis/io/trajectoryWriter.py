@@ -7,11 +7,6 @@ Classes
 -------
 TrajectoryWriter
     A class for writing a trajectory to a file.
-
-Methods
--------
-write_trajectory(traj, filename=None, format=None)
-    Wrapper for TrajectoryWriter to write a trajectory to a file.
 """
 
 import numpy as np
@@ -51,8 +46,8 @@ class TrajectoryWriter(BaseWriter):
 
     ...
 
-    Attributes
-    ----------
+    Class Attributes
+    ----------------
     formats : list of str
         The available formats for the trajectory file.
 
@@ -67,13 +62,10 @@ class TrajectoryWriter(BaseWriter):
                 X 0.0 0.0 0.0
                 coordinates of the atoms in the format 'element x y z'
 
+    Attributes
+    ----------
     format : str
         The format of the file.
-
-    Methods
-    -------
-    write(traj)
-        Writes the trajectory to the file.
     """
 
     formats = [None, 'qmcfc']

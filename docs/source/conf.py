@@ -21,7 +21,6 @@ author = 'Jakob Gamper, Josef M. Gallmetzer'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
-    'sphinx.ext.autosectionlabel',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
@@ -30,6 +29,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx_sitemap',
     'sphinx.ext.inheritance_diagram',
+    'myst_parser',
 ]
 
 # source_suffix = '.rst'
