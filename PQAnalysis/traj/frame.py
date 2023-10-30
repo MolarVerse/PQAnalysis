@@ -11,7 +11,7 @@ Frame
 
 import numpy as np
 
-from PQAnalysis.selection.selection import Selection
+from PQAnalysis.traj.selection import Selection
 from PQAnalysis.atom.molecule import Molecule
 from PQAnalysis.pbc.cell import Cell
 
@@ -34,7 +34,7 @@ class Frame:
         The cell of the frame.
     '''
 
-    def __init__(self, n_atoms: int, xyz: np.array, atoms: np.array, cell: Cell = None):
+    def __init__(self, xyz: np.array, atoms: np.array, cell: Cell = None):
         """
         Initializes the Frame with the given number of atoms, xyz coordinates, atoms, and cell.
 
@@ -50,7 +50,21 @@ class Frame:
             The cell of the frame.
         """
 
-        self.n_atoms = n_atoms
+        xyz = np.array(xyz)
+        atoms = np.array(atoms)
+
+        if len(np.shape(xyz)) != 2 or np.shape(xyz)[1] != 3:
+            raise ValueError(
+                'xyz must be a iterable with following shape - (n_atoms, 3).')
+
+        if len(np.shape(atoms)) != 1:
+            raise ValueError(
+                'atoms must be a iterable with following shape - (n_atoms,).')
+
+        if len(xyz) != len(atoms):
+            raise ValueError('xyz and atoms must have the same length.')
+
+        self.n_atoms = len(atoms)
         self.xyz = np.array(xyz)
         self.atoms = np.array(atoms)
         self.cell = cell
@@ -92,10 +106,14 @@ class Frame:
         if isinstance(index, Selection):
             index = index.selection
 
-        atoms = self.atoms[index]
-        xyz = self.xyz[index]
+        if isinstance(index, int):
+            atoms = np.array([self.atoms[index]])
+            xyz = np.array([self.xyz[index]])
+        else:
+            atoms = self.atoms[index]
+            xyz = self.xyz[index]
 
-        frame = Frame(len(atoms), xyz, atoms, cell=self.cell)
+        frame = Frame(xyz, atoms, cell=self.cell)
 
         if frame.n_atoms == 0:
             raise ValueError('Selection is empty.')
@@ -140,7 +158,33 @@ class Frame:
 
             molecule_names[i] = molecule.name
 
-        return Frame(self.n_atoms // group, com, molecule_names, cell=self.cell)
+        return Frame(com, molecule_names, cell=self.cell)
+
+    def is_combinable(self, other: 'Frame') -> bool:
+        """
+        Checks if two Frames can be combined.
+
+        Parameters
+        ----------
+        other : Frame
+            The Frame to check if it can be combined with.
+
+        Returns
+        -------
+        bool
+            True if the Frames can be combined, False otherwise.
+        """
+
+        if not isinstance(other, Frame):
+            return False
+
+        if self.n_atoms != other.n_atoms:
+            return False
+
+        if not np.array_equal(self.atoms, other.atoms):
+            return False
+
+        return True
 
     def __eq__(self, other: 'Frame') -> bool:
         """
