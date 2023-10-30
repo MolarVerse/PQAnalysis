@@ -72,7 +72,7 @@ class BaseWriter:
         """
         Closes the file to write to.
         """
-        if self.file is not None:
+        if self.file is not None and self.filename is not None:
             self.file.close()
 
         self.file = None

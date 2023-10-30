@@ -5,6 +5,7 @@ import sys
 from PQAnalysis.io.base import BaseWriter
 
 
+@pytest.mark.usefixtures("tmpdir")
 def test__init__():
 
     filename = "tmp"
@@ -39,6 +40,7 @@ def test__init__():
     assert writer.filename is None
 
 
+@pytest.mark.usefixtures("tmpdir")
 def test_open():
 
     filename = "tmp"
@@ -58,6 +60,7 @@ def test_open():
     assert writer.file is not None
 
 
+@pytest.mark.usefixtures("tmpdir")
 def test_close():
 
     filename = "tmp"
@@ -70,5 +73,3 @@ def test_close():
 
     writer.close()
     assert writer.file is None
-
-    os.remove(filename)

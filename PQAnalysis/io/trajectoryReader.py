@@ -112,16 +112,24 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
+
+        Raises
+        ------
+        TypeError
+            If the given frame_string is not a string.
         """
 
+        if not isinstance(frame_string, str):
+            raise TypeError('frame_string must be a str type.')
+
         splitted_frame_string = frame_string.split('\n')
-        header_line = splitted_frame_string[0].split()
+        header_line = splitted_frame_string[0]
 
         n_atoms, cell = self.__read_header_line__(header_line)
 
         xyz, atoms = self.__read_xyz__(splitted_frame_string, n_atoms)
 
-        return Frame(n_atoms, xyz, np.array(atoms), cell)
+        return Frame(xyz, np.array(atoms), cell)
 
     def __read_header_line__(self, header_line: str) -> (int, Cell):
         """
@@ -149,6 +157,9 @@ class FrameReader:
         ValueError
             If the header line is not valid. Either it contains too many or too few values.
         """
+
+        header_line = header_line.split()
+
         if len(header_line) == 4:
             n_atoms = int(header_line[0])
             a, b, c = map(float, header_line[1:4])
