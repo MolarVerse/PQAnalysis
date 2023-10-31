@@ -122,3 +122,14 @@ def test__eq__():
     assert Trajectory() != traj1
 
     assert Trajectory() != 1
+
+
+def test_append():
+    traj = Trajectory()
+
+    traj.append(Frame(atoms=["H"], xyz=[[0, 1, 2]]))
+    assert traj.frames == [Frame(atoms=["H"], xyz=[[0, 1, 2]])]
+
+    with pytest.raises(TypeError) as exception:
+        traj.append([[1, 1, 2]])
+    assert str(exception.value) == "only Frame can be appended to Trajectory."

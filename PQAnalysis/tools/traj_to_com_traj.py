@@ -26,6 +26,13 @@ def traj_to_com_traj(trajectory: Trajectory, selection: Union[List[int], Selecti
     group : int, optional
         The group to compute the center of mass trajectory for. If None, the group is all atoms.
     """
+
+    if len(trajectory) == 0:
+        return Trajectory()
+
+    if selection is None:
+        selection = Selection(list(range(len(trajectory[0].atoms))))
+
     if not isinstance(selection, Selection):
         selection = Selection(selection)
 
