@@ -37,6 +37,9 @@ jobs:
       - name: Build
         run: |
           cd docs
+          make clean
+          rm source/code/*
+          sphinx-apidoc -o source/code/ ../PQAnalysis
           make html
           cd build/html
           touch .nojekyll

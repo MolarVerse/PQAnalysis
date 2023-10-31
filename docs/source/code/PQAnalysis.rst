@@ -10,7 +10,6 @@ Subpackages
    PQAnalysis.cli
    PQAnalysis.io
    PQAnalysis.pbc
-   PQAnalysis.selection
    PQAnalysis.tools
    PQAnalysis.traj
    PQAnalysis.utils
