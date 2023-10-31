@@ -11,6 +11,7 @@ BoxWriter
 
 from typing import Union
 
+from PQAnalysis.utils.decorators import instance_function_count_decorator
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.traj.trajectory import Trajectory
 
@@ -86,7 +87,7 @@ class BoxWriter(BaseWriter):
 
         self.format = format
 
-    def write(self, traj: Trajectory):
+    def write(self, traj: Trajectory, reset_counter: bool = True):
         """
         Wrapper to write the given trajectory to the file.
         Depending on the format, either write_vmd or write_box_file is called.
@@ -95,13 +96,16 @@ class BoxWriter(BaseWriter):
         ----------
         traj : Trajectory
             The trajectory to write.
+        reset_counter : bool, optional
+            If True, the function execution counter of write_box_file 
+            is reset to 0, otherwise it is not reset.
         """
 
         self.open()
         if self.format == "vmd":
             self.write_vmd(traj)
         else:
-            self.write_box_file(traj)
+            self.write_box_file(traj, reset_counter=reset_counter)
 
         self.close()
 
@@ -151,7 +155,8 @@ class BoxWriter(BaseWriter):
             for edge in edges:
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
-    def write_box_file(self, traj: Trajectory):
+    @instance_function_count_decorator
+    def write_box_file(self, traj: Trajectory, reset_counter: bool = True):
         """
         Writes the given trajectory to the file in data file format.
 
@@ -165,10 +170,17 @@ class BoxWriter(BaseWriter):
         where the first column represents the step starting from 1, the second to fourth column
         represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
 
+        The @count_decorator is used to count the number of frames written to the file. The default
+        way is that the counter is reset to 0 after each call of the function. This can be changed
+        by setting the reset_counter parameter to False.
+
+
         Parameters
         ----------
         traj : Trajectory
             The trajectory to write.
+        reset_counter : bool, optional
+            If True, the counter is reset to 0, otherwise it is not reset.
 
         Raises
         ------
@@ -177,10 +189,13 @@ class BoxWriter(BaseWriter):
         """
         self.__check_PBC__(traj)
 
+        counter = self.counter[BoxWriter.write_box_file.__name__]
+        counter = len(traj)*(counter - 1)
+
         for i, frame in enumerate(traj):
             cell = frame.cell
             print(
-                f"{i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}")
+                f"{counter + i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
 
     def __check_PBC__(self, traj: Trajectory):
         """

@@ -59,7 +59,7 @@ def test_write_box_file(capsys: CaptureFixture):
     traj = Trajectory([Frame(atoms=["H"], xyz=[[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90)), Frame(
         atoms=["H"], xyz=[[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 120))])
 
-    writer.write_box_file(traj)
+    writer.write_box_file(traj, reset_counter=True)
 
     captured = capsys.readouterr()
 

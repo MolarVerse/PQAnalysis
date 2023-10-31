@@ -60,6 +60,21 @@ class Trajectory:
         else:
             return True
 
+    def append(self, frame: Frame):
+        """
+        Appends a frame to the trajectory.
+
+        Parameters
+        ----------
+        frame : Frame
+            The frame to append.
+        """
+
+        if not isinstance(frame, Frame):
+            raise TypeError('only Frame can be appended to Trajectory.')
+
+        self.frames.append(frame)
+
     def __len__(self) -> int:
         return len(self.frames)
 

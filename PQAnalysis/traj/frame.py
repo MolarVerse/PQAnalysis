@@ -151,12 +151,15 @@ class Frame:
         com = np.zeros((self.n_atoms // group, 3))
         molecule_names = np.zeros(self.n_atoms // group, dtype=object)
 
+        j = 0
         for i in range(0, self.n_atoms, group):
             molecule = Molecule(self.atoms[i:i+group], self.xyz[i:i+group])
 
-            com[i] = molecule.com(self.cell)
+            com[j] = molecule.com(self.cell)
 
-            molecule_names[i] = molecule.name
+            molecule_names[j] = molecule.name
+
+            j += 1
 
         return Frame(com, molecule_names, cell=self.cell)
 
