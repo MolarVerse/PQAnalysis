@@ -11,7 +11,7 @@ class EnergyFileReader(BaseReader):
 
         self.withInfoFile = self.__info_file_found__()
 
-    def __info_file_found__(self):
+    def __info_file_found__(self) -> bool:
         """
         Checks if a info file exists for the given file.
 
