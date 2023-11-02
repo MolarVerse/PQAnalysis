@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from collections import defaultdict
+
 from PQAnalysis.io.energyFileReader import EnergyFileReader
 from PQAnalysis.io.infoFileReader import InfoFileReader
 
@@ -87,10 +89,13 @@ class TestEnergyReader:
         assert np.allclose(energy.data, data_ref)
         assert energy.info == info
         assert energy.units == units
+        assert energy.info_given == True
+        assert energy.units_given == True
 
         reader = EnergyFileReader("md-01_noinfo.en")
         energy = reader.read()
         assert np.allclose(energy.data, data_ref)
-        assert energy.info.keys() == energy.units.keys()
-        assert list(energy.info.keys()) == list(energy.info.values())
-        assert all(x is None for x in energy.units.values())
+        assert energy.info == defaultdict(lambda: None)
+        assert energy.units == defaultdict(lambda: None)
+        assert energy.info_given == False
+        assert energy.units_given == False
