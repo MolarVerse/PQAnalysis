@@ -83,30 +83,30 @@ class Energy():
         self.info = info
         self.units = units
 
-        if units.keys() != info.keys():
+        if self.info_given and self.units_given and units.keys() != info.keys():
             raise ValueError(
                 "The keys of the info and units dictionary do not match.")
 
-    __data_attributes__ = {"simulation_time": "SIMULATION-TIME",
-                           "temperature": "TEMPERATURE",
-                           "pressure": "PRESSURE",
-                           "total_energy": "E(TOT)",
-                           "qm_energy": "E(QM)",
-                           "number_of_qm_atoms": "N(QM-ATOMS)",
-                           "kinetic_energy": "E(KIN)",
-                           "intramolecular_energy": "E(INTRA)",
-                           "volume": "VOLUME",
-                           "density": "DENSITY",
-                           "momentum": "MOMENTUM",
-                           "looptime": "LOOPTIME"}
+    __data_attributes__ = {"SIMULATION-TIME": "simulation_time",
+                           "TEMPERATURE": "temperature",
+                           "PRESSURE": "pressure",
+                           "E(TOT)": "total_energy",
+                           "E(QM)": "qm_energy",
+                           "N(QM-ATOMS)": "number_of_qm_atoms",
+                           "E(KIN)": "kinetic_energy",
+                           "E(INTRA)": "intramolecular_energy",
+                           "VOLUME": "volume",
+                           "DENSITY": "density",
+                           "MOMENTUM": "momentum",
+                           "LOOPTIME": "looptime"}
 
     def __make_attributes__(self):
         for attribute in self.__data_attributes__:
-            info_string = self.__data_attributes__[attribute]
+            info_string = attribute
             if info_string in self.info or info_string in self.units:
-                setattr(self.__class__, attribute,
-                        self.info[self.__data_attributes__[attribute]])
-                setattr(self.__class__, attribute + "_unit",
-                        self.units[self.__data_attributes__[attribute]])
-                setattr(self.__class__, attribute + "_with_unit", (self.info[self.__data_attributes__[
-                        attribute]], self.units[self.__data_attributes__[attribute]]))
+                setattr(self.__class__, self.__data_attributes__[attribute],
+                        self.data[self.info[attribute]])
+                setattr(self.__class__, self.__data_attributes__[attribute] + "_unit",
+                        self.units[attribute])
+                setattr(self.__class__, self.__data_attributes__[attribute] + "_with_unit", (self.data[self.info[
+                        attribute]], self.units[attribute]))
