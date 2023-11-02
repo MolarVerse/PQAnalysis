@@ -63,7 +63,8 @@ html_theme_options = {
     'includehidden': True,
     'titles_only': False
 }
-# html_logo = ''
+
+html_logo = 'logo/PQAnalysis.png'
 # github_url = ''
 # html_baseurl = ''
 
