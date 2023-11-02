@@ -1,6 +1,7 @@
 import numpy as np
 
-from collections import Iterable, defaultdict
+from collections import defaultdict
+from collections.abc import Iterable
 
 
 class Energy():
@@ -55,6 +56,7 @@ class Energy():
 
         if info is None:
             self.info = defaultdict(int)
+            self.units = {}
             for i in range(len(self.data)):
                 self.info[i] = i
                 self.units[i] = None
@@ -71,5 +73,6 @@ class Energy():
                     "The keys of the info and units dictionary have to be the same.")
 
             self.info = info
+            self.units = units
 
         return info
