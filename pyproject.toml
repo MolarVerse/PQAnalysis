@@ -20,7 +20,7 @@ classifiers = [
 ]
 
 dependencies = [
-    'numpy'
+    "numpy"
 ]
 
 [project.optional-dependencies]
@@ -28,6 +28,12 @@ test = [
     "pytest",
     "coverage",
     "pytest-cov"
+]
+docs = [
+    "sphinx",
+    "sphinx-sitemap",
+    "myst-parser",
+    "sphinx-rtd-theme"
 ]
 
 [tool.setuptools_scm]
