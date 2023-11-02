@@ -18,7 +18,9 @@ class Energy():
 
         self.__setup_info_dictionary__(info, units)
 
-    def __setup_info_dictionary__(self, info: dict, units: dict):
+        # self.__make_attributes__()
+
+    def __setup_info_dictionary__(self, info: dict = None, units: dict = None):
         """
         Sets up the info dictionary.
 
@@ -44,6 +46,8 @@ class Energy():
         ------
         TypeError
             If info is not a dictionary or None.
+        TypeError
+            if units is not a dictionary or None.
         ValueError
             If the length of info is not equal to the length of data.
         ValueError
@@ -54,25 +58,32 @@ class Energy():
         if info is not None and not isinstance(info, dict):
             raise TypeError("info has to be a dictionary.")
 
+        if units is not None and not isinstance(units, dict):
+            raise TypeError("units has to be a dictionary.")
+
         if info is None:
-            self.info = defaultdict(int)
-            self.units = {}
-            for i in range(len(self.data)):
-                self.info[i] = i
-                self.units[i] = None
+            self.info_given = False
+            info = defaultdict(lambda: None)
         else:
+            self.info_given = True
             if len(info) != len(self.data):
                 raise ValueError(
                     "The length of info dictionary has to be equal to the length of data.")
+
+        if units is None:
+            self.units_given = False
+            units = defaultdict(lambda: None)
+        else:
+            self.units_given = True
             if len(units) != len(self.data):
                 raise ValueError(
                     "The length of units dictionary has to be equal to the length of data.")
 
-            if units.keys() != info.keys():
-                raise ValueError(
-                    "The keys of the info and units dictionary have to be the same.")
+        self.info = info
+        self.units = units
 
-            self.info = info
-            self.units = units
+        if units.keys() != info.keys():
+            raise ValueError(
+                "The keys of the info and units dictionary have to be the same.")
 
         return info
