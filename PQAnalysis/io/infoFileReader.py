@@ -20,9 +20,18 @@ class InfoFileReader(BaseReader):
     ----------
     BaseReader : BaseReader
         A base class for all readers.
+
+    Attributes
+    ----------
+    filename : str
+        The name of the file to read from.
+    format : str
+        The format of the info file.
     """
 
-    def __init__(self, filename: str):
+    formats = ["pimd-qmcf", "qmcfc"]
+
+    def __init__(self, filename: str, format: str = "pimd-qmcf"):
         """
         Initializes the InfoFileReader with the given filename.
 
@@ -30,12 +39,44 @@ class InfoFileReader(BaseReader):
         ----------
         filename : str
             The name of the file to read from.
+        format : str, optional
+            The format of the info file, by default "pimd-qmcf"
+
+        Raises
+        ------
+        ValueError
+            If the format is not supported.
         """
         super().__init__(filename)
+
+        if format not in self.formats:
+            raise ValueError(
+                f"The format {format} is not supported. Supported formats are {self.formats}.")
+
+        self.format = format
 
     def read(self) -> (dict, dict):
         """
         Reads the info file.
+
+        Returns
+        -------
+        dict
+            The information strings of the info file as a dictionary.
+            The keys are the names of the information strings. The values are the
+            corresponding data entry (columns in energy file).
+        dict
+            The units of the info file as a dictionary. The keys are the names of the
+            information strings. The values are the corresponding units.
+        """
+        if self.format == "pimd-qmcf":
+            return self.read_pimd_qmcf()
+        elif self.format == "qmcfc":
+            return self.read_qmcfc()
+
+    def read_pimd_qmcf(self) -> (dict, dict):
+        """
+        Reads the info file in pimd-qmcf format.
 
         Returns
         -------
@@ -66,3 +107,33 @@ class InfoFileReader(BaseReader):
                     entry_counter += 1
 
         return info, units
+
+    def read_qmcfc(self) -> (dict, None):
+        """
+        Reads the info file in qmcfc format.
+
+        Returns
+        -------
+        dict
+            The information strings of the info file as a dictionary.
+            The keys are the names of the information strings. The values are the
+            corresponding data entry (columns in energy file).
+        None
+            For the qmcfc format, no units are given.
+        """
+        info = {}
+
+        with open(self.filename, "r") as file:
+
+            entry_counter = 0
+
+            for line in file:
+                line = line.split()
+
+                if len(line) == 6:
+                    info[line[1]] = entry_counter
+                    entry_counter += 1
+                    info[line[3]] = entry_counter
+                    entry_counter += 1
+
+        return info, None

@@ -18,16 +18,19 @@ class TestEnergyReader:
         assert reader.filename == "md-01.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
+        assert reader.format == "pimd-qmcf"
 
         reader = EnergyFileReader("md-01.en", use_info_file=False)
         assert reader.filename == "md-01.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
+        assert reader.format == "pimd-qmcf"
 
         reader = EnergyFileReader("md-01_noinfo.en")
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
+        assert reader.format == "pimd-qmcf"
 
         with pytest.raises(FileNotFoundError) as exception:
             EnergyFileReader(
@@ -40,6 +43,19 @@ class TestEnergyReader:
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
+        assert reader.format == "pimd-qmcf"
+
+        with pytest.raises(ValueError) as exception:
+            EnergyFileReader(
+                "md-01.en", format=None)
+        assert str(
+            exception.value) == "The format None is not supported. Supported formats are ['pimd-qmcf', 'qmcfc']."
+
+        reader = EnergyFileReader("md-01.en", format="qmcfc")
+        assert reader.filename == "md-01.en"
+        assert reader.info_filename == "md-01.info"
+        assert reader.withInfoFile == True
+        assert reader.format == "qmcfc"
 
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test__info_file_found__(self, test_with_data_dir, capsys):

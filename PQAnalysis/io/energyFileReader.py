@@ -36,7 +36,9 @@ class EnergyFileReader(BaseReader):
         If True, the info file was found.
     """
 
-    def __init__(self, filename: str, info_filename: str = None, use_info_file: bool = True):
+    formats = ["pimd-qmcf", "qmcfc"]
+
+    def __init__(self, filename: str, info_filename: str = None, use_info_file: bool = True, format: str = "pimd-qmcf"):
         """
         Initializes the EnergyFileReader with the given filename.
 
@@ -54,6 +56,13 @@ class EnergyFileReader(BaseReader):
             The name of the info file to read from, by default None
         use_info_file : bool, optional
             If True, the info file is searched for, by default True
+        format : str, optional
+            The format of the info file, by default "pimd-qmcf"
+
+        Raises
+        ------
+        ValueError
+            If the format is not supported.
         """
         super().__init__(filename)
         self.info_filename = info_filename
@@ -62,6 +71,12 @@ class EnergyFileReader(BaseReader):
             self.withInfoFile = self.__info_file_found__()
         else:
             self.withInfoFile = False
+
+        if format not in self.formats:
+            raise ValueError(
+                f"The format {format} is not supported. Supported formats are {self.formats}.")
+
+        self.format = format
 
     def read(self) -> Energy:
         """
@@ -81,7 +96,7 @@ class EnergyFileReader(BaseReader):
         info, units = None, None
 
         if self.withInfoFile:
-            reader = InfoFileReader(self.info_filename)
+            reader = InfoFileReader(self.info_filename, format=self.format)
             info, units = reader.read()
 
         with open(self.filename, "r") as file:
