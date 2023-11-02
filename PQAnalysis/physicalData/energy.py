@@ -1,3 +1,14 @@
+"""
+A module containing the Energy class.
+
+...
+
+Classes
+-------
+Energy
+    A class to store the data of an energy file.
+"""
+
 import numpy as np
 
 from collections import defaultdict
@@ -5,8 +16,54 @@ from collections.abc import Iterable
 
 
 class Energy():
+    """
+    A class to store the data of an energy file.
+
+    The data array is stored in a way that each column corresponds to a physical
+    quantity. The order of the columns is the same as in the info file. The info
+    and units of the info file are stored in the Energy object, if an info file
+    was found.
+
+    Attributes
+    ----------
+    data : np.array
+        The data of the energy file as a np.array with shape (n, m), where n is the
+        number of data entries and m is the number of physical properties.
+    info : dict
+        The information strings of the info file as a dictionary.
+        The keys are the names of the information strings. The values are the
+        corresponding data entry (columns in energy file).
+    units : dict
+        The units of the info file as a dictionary. The keys are the names of the
+        information strings. The values are the corresponding units.
+    info_given : bool
+        A info dictionary was given.
+    units_given : bool
+        A units dictionary was given.
+    """
 
     def __init__(self, data: np.array, info: dict = None, units: dict = None):
+        """
+        Creates an Energy object.
+
+        Parameters
+        ----------
+        data : np.array
+            The data of the energy file as a np.array with shape (n, m), where n is the
+            number of data entries and m is the number of physical properties. If the data
+            is a 1D array, it is converted to a 2D array with shape (1, n).
+        info : dict, optional
+            the info dictionary, by default None
+        units : dict, optional
+            the units dictionary, by default None
+
+        Raises
+        ------
+        TypeError
+            If data is not iterable.
+        ValueError
+            If data is not a 1D or 2D array.
+        """
         if not isinstance(data, Iterable):
             raise TypeError("data has to be iterable.")
 
@@ -101,6 +158,27 @@ class Energy():
                            "LOOPTIME": "looptime"}
 
     def __make_attributes__(self):
+        """
+        Creates attributes for the physical properties of the Energy object.
+
+        The attributes are created for each physical property found in the info file.
+        The attribute names can be found in the __data_attributes__ dictionary. The
+        attribute names are the keys of the dictionary and the values are the names
+        of the physical properties found in the info file. The attributes are created
+        as follows:
+
+        - The attribute name is the key of the __data_attributes__ dictionary.
+        - The attribute value is the corresponding data entry (column in energy file).
+        - The attribute name + "_unit" is the corresponding unit.
+        - The attribute name + "_with_unit" is a tuple of the corresponding data entry
+          and the corresponding unit.
+
+        For example, the attribute "simulation_time" is created for the physical property
+        "SIMULATION-TIME" found in the info file. The attribute "simulation_time" is the
+        corresponding data entry (column in energy file). The attribute "simulation_time_unit"
+        is the corresponding unit. The attribute "simulation_time_with_unit" is a tuple of
+        the corresponding data entry and the corresponding unit.
+        """
         for attribute in self.__data_attributes__:
             info_string = attribute
             if info_string in self.info or info_string in self.units:
