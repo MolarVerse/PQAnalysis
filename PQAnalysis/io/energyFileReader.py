@@ -1,3 +1,14 @@
+"""
+A module containing the EnergyFileReader class.
+
+...
+
+Classes
+-------
+EnergyFileReader
+    A class to read energy files.
+"""
+
 import os
 import numpy as np
 
@@ -7,8 +18,43 @@ from PQAnalysis.physicalData.energy import Energy
 
 
 class EnergyFileReader(BaseReader):
-    def __init__(self, filename: str, info_filename: str = None, use_info_file: bool = True):
+    """
+    A class to read energy files.
 
+    Parameters
+    ----------
+    BaseReader : BaseReader
+        A base class for all readers.
+
+    Attributes
+    ----------
+    filename : str
+        The name of the file to read from.
+    info_filename : str
+        The name of the info file to read from.
+    withInfoFile : bool
+        If True, the info file was found.
+    """
+
+    def __init__(self, filename: str, info_filename: str = None, use_info_file: bool = True):
+        """
+        Initializes the EnergyFileReader with the given filename.
+
+        If no info_filename is given, the energy filename is used to find the
+        info file. If a info_filename is given, this filename is used to find the
+        info file. If the info_filename was explicitly set to a non-existing file,
+        a FileNotFoundError is raised. If use_info_file is set to False, no info
+        file is searched for.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read from.
+        info_filename : str, optional
+            The name of the info file to read from, by default None
+        use_info_file : bool, optional
+            If True, the info file is searched for, by default True
+        """
         super().__init__(filename)
         self.info_filename = info_filename
 
