@@ -38,6 +38,11 @@ def test__init__():
     assert str(
         exception.value) == 'xyz and atoms must have the same length.'
 
+    with pytest.raises(TypeError) as exception:
+        Frame([[0, 0, 0], [1, 0, 0]], [1, 2])
+    assert str(
+        exception.value) == 'atoms must be either an Iterable of Element objects or an Iterable of strings.'
+
 
 def test_PBC():
     frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
