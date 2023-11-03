@@ -1,5 +1,5 @@
 """
-A module containing the base class for all writers.
+A module containing the base class for all writers and readers.
 
 ...
 
@@ -7,6 +7,8 @@ Classes
 -------
 BaseWriter
     A base class for all writers.
+BaseReader
+    A base class for all readers.
 """
 
 import sys
@@ -76,3 +78,35 @@ class BaseWriter:
             self.file.close()
 
         self.file = None
+
+
+class BaseReader:
+    """
+    A base class for all readers.
+
+    ...
+
+    Attributes
+    ----------
+    filename : str
+        The name of the file to read from.
+    """
+
+    def __init__(self, filename: str):
+        """
+        Initializes the BaseReader with the given filename.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read from.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the given file does not exist.
+        """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(f"File {filename} not found.")
+
+        self.filename = filename

@@ -17,11 +17,14 @@ import os
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.traj.trajectory import Trajectory
 from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.io.base import BaseReader
 
 
-class TrajectoryReader:
+class TrajectoryReader(BaseReader):
     """
     A class for reading a trajectory from a file.
+
+    Inherited from BaseReader.
 
     ...
 
@@ -41,16 +44,8 @@ class TrajectoryReader:
         ----------
         filename : str
             The name of the file to read from.
-
-        Raises
-        ------
-        FileNotFoundError
-            If the given filename does not exist.
         """
-        if not os.path.isfile(filename):
-            raise FileNotFoundError(f"File {filename} not found.")
-
-        self.filename = filename
+        super().__init__(filename)
         self.frames = []
 
     def read(self) -> Trajectory:
