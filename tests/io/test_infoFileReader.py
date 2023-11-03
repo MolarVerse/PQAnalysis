@@ -64,3 +64,31 @@ def test_read(test_with_data_dir):
 
     assert info["LOOPTIME"] == 11
     assert units["LOOPTIME"] == "s"
+
+    reader = InfoFileReader("md-01.qmcfc.info", format="qmcfc")
+    info, units = reader.read()
+
+    assert info["SIMULATION TIME"] == 0
+    assert info["QM_MOLECULES"] == 1
+    assert info["TEMPERATURE"] == 2
+    assert info["PRESSURE"] == 3
+    assert info["E(QM)"] == 4
+    assert info["E(MM)"] == 5
+    assert info["E(KIN)"] == 6
+    assert info["E(INTRA)"] == 7
+    assert info["E(BOND)"] == 8
+    assert info["E(ANGLE)"] == 9
+    assert info["E(DIHEDRAL)"] == 10
+    assert info["E(IMPROPER)"] == 11
+    assert info["E(COULOMB)"] == 12
+    assert info["E(NONCOULOMB)"] == 13
+    assert info["E(CF)"] == 14
+    assert info["E(CF_RF)"] == 15
+    assert info["E(RF)"] == 16
+    assert info["E(THREEBODY)"] == 17
+    assert info["E(NH_MOM)"] == 18
+    assert info["E(NH_FRIC)"] == 19
+    assert info["VOLUME"] == 20
+    assert info["DENSITY"] == 21
+    assert info["MOMENTUM"] == 22
+    assert info["LOOPTIME"] == 23

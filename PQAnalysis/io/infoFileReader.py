@@ -135,5 +135,10 @@ class InfoFileReader(BaseReader):
                     entry_counter += 1
                     info[line[3]] = entry_counter
                     entry_counter += 1
+                elif len(line) == 7:
+                    info[' '.join(line[1:3])] = entry_counter
+                    entry_counter += 1
+                    info[line[4]] = entry_counter
+                    entry_counter += 1
 
         return info, None
