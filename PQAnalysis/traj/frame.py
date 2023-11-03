@@ -14,6 +14,8 @@ import numpy as np
 from PQAnalysis.traj.selection import Selection
 from PQAnalysis.atom.molecule import Molecule
 from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.atom.element import Element
+from PQAnalysis.utils.exceptions import ElementNotFoundError
 
 
 class Frame:
@@ -34,7 +36,7 @@ class Frame:
         The cell of the frame.
     '''
 
-    def __init__(self, xyz: np.array, atoms: np.array, cell: Cell = None):
+    def __init__(self, xyz: np.array, atoms: np.array, cell: Cell = None, atom_types_map: dict[str: Element] = None):
         """
         Initializes the Frame with the given number of atoms, xyz coordinates, atoms, and cell.
 
@@ -45,29 +47,150 @@ class Frame:
         xyz : np.array(n_atoms, 3)
             The xyz coordinates of the frame.
         atoms : np.array(n_atoms)
-            The atoms in the frame.
+            The atoms in the frame. Can be either an Iterable of strings
+            with the atomic symbols or atom type names or an Iterable of 
+            Element objects (recommended). For all post processing involving
+            atomic masses and atomic numbers (e.g. computing the center of mass)
+            it is required to use atomic symbols or Element objects otherwise a
+            dicitonary with types {str, Element} has to be given.
         cell : Cell, optional
             The cell of the frame.
+        atom_types_map : dict[str: Element], optional
+            A dictionary mapping the atom type names to Element objects.
+
+        Raises
+        ------
+        ValueError
+            If the xyz coordinates and atoms are not of the same length.
         """
 
+        self._xyz = xyz
+        self._atoms = atoms
+
+        self._atom_types_map = atom_types_map
+
+        self.cell = cell
+
+        if len(self.xyz) != len(self.atoms):
+            raise ValueError('xyz and atoms must have the same length.')
+
+    @property
+    def atom_types_names(self):
+        """
+        Returns the atom type names in the frame.
+
+        Returns
+        -------
+        np.array(n_atoms)
+            The atom type names in the frame.
+        """
+        return self._atom_type_names
+
+    @atom_types_names.setter
+    def atom_types_names(self, atom_type_names):
+        self._atom_type_names = np.array(atom_type_names)
+
+    @property
+    def atom_types_map(self):
+        """
+        Returns the atom types map in the frame.
+
+        Returns
+        -------
+        dict[str: Element]
+            The atom types map in the frame.
+        """
+        return self._atom_types_map
+
+    @atom_types_map.setter
+    def atom_types_map(self, atom_types_map):
+        if atom_types_map is None:
+            self._atom_types_map = None
+            return
+
+        if not all(isinstance(atom_type, str) for atom_type in list(atom_types_map.keys())):
+            raise TypeError(
+                'atom_types_map must be a dictionary with str keys and Element values.')
+
+        if not all(isinstance(atom_type, Element) for atom_type in list(atom_types_map.values())):
+            raise TypeError(
+                'atom_types_map must be a dictionary with str keys and Element values.')
+
+        self._atom_types_map = atom_types_map
+
+        try:
+            self.atoms = np.array([atom_types_map[atom_type_name]
+                                  for atom_type_name in self.atom_type_names])
+        except ElementNotFoundError:
+            raise ElementNotFoundError(
+                'atom_types_map does not contain all atom type names.')
+
+    @property
+    def n_atoms(self):
+        """
+        Returns the number of atoms in the frame.
+
+        Returns
+        -------
+        int
+            The number of atoms in the frame.
+        """
+        return len(self.atoms)
+
+    @property
+    def xyz(self):
+        """
+        Returns the xyz coordinates of the frame.
+
+        Returns
+        -------
+        np.array(n_atoms, 3)
+            The xyz coordinates of the frame.
+        """
+        return self._xyz
+
+    @xyz.setter
+    def xyz(self, xyz):
+
         xyz = np.array(xyz)
-        atoms = np.array(atoms)
 
         if len(np.shape(xyz)) != 2 or np.shape(xyz)[1] != 3:
             raise ValueError(
                 'xyz must be a iterable with following shape - (n_atoms, 3).')
 
+        self._xyz = xyz
+
+    @property
+    def atoms(self):
+        """
+        Returns the atoms in the frame.
+
+        Returns
+        -------
+        np.array(n_atoms)
+            The atoms in the frame.
+        """
+        return self._atoms
+
+    @atoms.setter
+    def atoms(self, atoms):
+
+        atoms = np.array(atoms)
+
         if len(np.shape(atoms)) != 1:
             raise ValueError(
                 'atoms must be a iterable with following shape - (n_atoms,).')
 
-        if len(xyz) != len(atoms):
-            raise ValueError('xyz and atoms must have the same length.')
+        if all(isinstance(atom, Element) for atom in atoms):
+            self.atom_type_names = np.array(
+                [atom.name for atom in atoms])
+        elif all(isinstance(atom, str) for atom in atoms):
+            self.atom_type_names = np.array(atoms)
+        else:
+            raise TypeError(
+                'atoms must be either an Iterable of Element objects or an Iterable of strings.')
 
-        self.n_atoms = len(atoms)
-        self.xyz = np.array(xyz)
-        self.atoms = np.array(atoms)
-        self.cell = cell
+        self._atoms = atoms
 
     @property
     def PBC(self):
@@ -220,3 +343,32 @@ class Frame:
             return False
 
         return True
+
+    def __setup_atoms__(self):
+
+        if all(isinstance(atom, Element) for atom in self.atoms):
+            self.atom_type_names = np.array(
+                [atom.name for atom in self.atoms])
+            return
+
+        self.atom_type_names = self.atoms
+        self.atoms = None
+
+        if self.atom_types_map is None:
+            try:
+                self.atoms = np.array([Element(atom) for atom in self.atoms])
+                self.atom_type_names = np.array(
+                    [atom.name for atom in self.atoms])
+
+            except ElementNotFoundError:
+                pass
+
+            return
+
+        if not all(isinstance(atom_type, str) for atom_type in list(self.atom_types_map.keys())):
+            raise TypeError(
+                'atom_types_map must be a dictionary with str keys and Element values.')
+
+        if not all(isinstance(atom_type, Element) for atom_type in list(self.atom_types_map.values())):
+            raise TypeError(
+                'atom_types_map must be a dictionary with str keys and Element values.')
