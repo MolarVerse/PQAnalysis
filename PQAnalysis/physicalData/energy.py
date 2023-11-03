@@ -144,19 +144,6 @@ class Energy():
             raise ValueError(
                 "The keys of the info and units dictionary do not match.")
 
-    __data_attributes__ = {"SIMULATION-TIME": "simulation_time",
-                           "TEMPERATURE": "temperature",
-                           "PRESSURE": "pressure",
-                           "E(TOT)": "total_energy",
-                           "E(QM)": "qm_energy",
-                           "N(QM-ATOMS)": "number_of_qm_atoms",
-                           "E(KIN)": "kinetic_energy",
-                           "E(INTRA)": "intramolecular_energy",
-                           "VOLUME": "volume",
-                           "DENSITY": "density",
-                           "MOMENTUM": "momentum",
-                           "LOOPTIME": "looptime"}
-
     def __make_attributes__(self):
         """
         Creates attributes for the physical properties of the Energy object.
@@ -188,3 +175,43 @@ class Energy():
                         self.units[attribute])
                 setattr(self.__class__, self.__data_attributes__[attribute] + "_with_unit", (self.data[self.info[
                         attribute]], self.units[attribute]))
+
+    ################################################
+    #                                              #
+    # from here all attributes possible are listed #
+    #                                              #
+    ################################################
+
+    __data_attributes__ = {}
+
+    __data_attributes__["SIMULATION-TIME"] = "simulation_time"
+    __data_attributes__["SIMULATION TIME"] = "simulation_time"
+
+    __data_attributes__["TEMPERATURE"] = "temperature"
+
+    __data_attributes__["PRESSURE"] = "pressure"
+
+    __data_attributes__["E(TOT)"] = "total_energy"
+
+    __data_attributes__["E(QM)"] = "qm_energy"
+    __data_attributes__["E(MM)"] = "mm_energy"
+
+    __data_attributes__["N(QM-ATOMS)"] = "number_of_qm_atoms"
+    __data_attributes__["QM_MOLECULES"] = "number_of_qm_molecules"
+
+    __data_attributes__["E(KIN)"] = "kinetic_energy"
+
+    __data_attributes__["E(INTRA)"] = "intramolecular_energy"
+
+    __data_attributes__["E(BOND)"] = "bond_energy"
+    __data_attributes__["E(ANGLE)"] = "angle_energy"
+    __data_attributes__["E(DIHEDRAL)"] = "dihedral_energy"
+    __data_attributes__["E(IMPROPER)"] = "improper_energy"
+
+    __data_attributes__["VOLUME"] = "volume"
+
+    __data_attributes__["DENSITY"] = "density"
+
+    __data_attributes__["MOMENTUM"] = "momentum"
+
+    __data_attributes__["LOOPTIME"] = "looptime"
