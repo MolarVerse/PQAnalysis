@@ -9,7 +9,7 @@ from PQAnalysis.cli.traj2qmcfc import traj2qmcfc, main
 
 
 @pytest.mark.parametrize("example_dir", ["traj2qmcfc"], indirect=False)
-def test_traj2qmcfc(cli_test):
+def test_traj2qmcfc(test_with_data_dir):
     traj2qmcfc(trajectory_files=[
         "acof_triclinic.xyz", "acof_triclinic_2.xyz"], output="test_traj.qmcfc.xyz")
 
@@ -17,7 +17,7 @@ def test_traj2qmcfc(cli_test):
 
 
 @pytest.mark.parametrize("example_dir", ["traj2qmcfc"], indirect=False)
-def test_main(cli_test):
+def test_main(test_with_data_dir):
     main_traj2qmcfc()
 
 

@@ -21,7 +21,7 @@ def tmpdir():
 
 
 @pytest.fixture(scope="function")
-def cli_test(example_dir):
+def test_with_data_dir(example_dir):
 
     tmpdir = "tmpdir"
 
