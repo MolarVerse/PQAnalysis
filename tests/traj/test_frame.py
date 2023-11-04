@@ -10,7 +10,7 @@ def test__init__():
     frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'])
 
     assert frame.n_atoms == 2
-    assert np.allclose(frame.xyz, np.array([[0, 0, 0], [1, 0, 0]]))
+    assert np.allclose(frame.coordinates, np.array([[0, 0, 0], [1, 0, 0]]))
     assert frame.atoms[0] == 'C'
     assert frame.atoms[1] == 'H'
     assert frame.cell is None
@@ -18,15 +18,15 @@ def test__init__():
     frame = Frame([[0, 0, 0], [1, 0, 0]], ['C', 'H'], Cell(10, 10, 10))
 
     assert frame.n_atoms == 2
-    assert np.allclose(frame.xyz, np.array([[0, 0, 0], [1, 0, 0]]))
+    assert np.allclose(frame.coordinates, np.array([[0, 0, 0], [1, 0, 0]]))
     assert frame.atoms[0] == 'C'
     assert frame.atoms[1] == 'H'
     assert frame.cell == Cell(10, 10, 10)
 
     with pytest.raises(ValueError) as exception:
-        Frame([[0, 0, 0]], 'C', Cell(10, 10, 10))
+        Frame(coordinates=[[0, 0, 0]], atoms='C', cell=Cell(10, 10, 10))
     assert str(
-        exception.value) == 'atoms must be a iterable with following shape - (n_atoms,).'
+        exception.value) == 'atoms must be defined as Elements or atom_types_map must be defined.'
 
     with pytest.raises(ValueError) as exception:
         Frame([0, 0, 0], ['H'], Cell(10, 10, 10))
@@ -57,20 +57,22 @@ def test__getitem__():
                   ['C', 'H', 'H'], Cell(10, 10, 10))
 
     assert frame[0].n_atoms == 1
-    assert np.allclose(frame[0].xyz, np.array([[0, 0, 0]]))
+    assert np.allclose(frame[0].coordinates, np.array([[0, 0, 0]]))
     assert frame[0].atoms == 'C'
     assert frame[0].cell == Cell(10, 10, 10)
 
     sel = Selection(['H'], frame)
     assert frame[sel].n_atoms == 2
-    assert np.allclose(frame[sel].xyz, np.array([[1, 0, 0], [2, 0, 0]]))
+    assert np.allclose(frame[sel].coordinates,
+                       np.array([[1, 0, 0], [2, 0, 0]]))
     assert frame[sel].atoms[0] == 'H'
     assert frame[sel].atoms[1] == 'H'
     assert frame[sel].cell == Cell(10, 10, 10)
 
     sel = Selection([1, 2], frame)
     assert frame[sel].n_atoms == 2
-    assert np.allclose(frame[sel].xyz, np.array([[1, 0, 0], [2, 0, 0]]))
+    assert np.allclose(frame[sel].coordinates,
+                       np.array([[1, 0, 0], [2, 0, 0]]))
     assert frame[sel].atoms[0] == 'H'
     assert frame[sel].atoms[1] == 'H'
     assert frame[sel].cell == Cell(10, 10, 10)
@@ -87,13 +89,13 @@ def test_compute_com():
 
     com_frame = frame.compute_com()
     assert com_frame.n_atoms == 1
-    assert np.allclose(com_frame.xyz, np.array([[0.21557785, 0, 0]]))
+    assert np.allclose(com_frame.coordinates, np.array([[0.21557785, 0, 0]]))
     assert com_frame.atoms == "chh"
 
     sel = Selection(['H'], frame)
     com_frame = frame[sel].compute_com()
     assert com_frame.n_atoms == 1
-    assert np.allclose(com_frame.xyz, np.array([[1.5, 0, 0]]))
+    assert np.allclose(com_frame.coordinates, np.array([[1.5, 0, 0]]))
     assert com_frame.atoms == "hh"
 
     with pytest.raises(ValueError) as exception:

@@ -147,36 +147,6 @@ class Cell:
         """
         return np.array([self.alpha, self.beta, self.gamma])
 
-    def image(self, pos: np.array) -> np.array:
-        '''
-        Images a position vector in the unit cell.
-
-        This method works for both single position vectors and arrays of position vectors.
-
-        Parameters
-        ----------
-        pos : np.array
-            The position vector to image.
-
-        Returns
-        -------
-        np.array
-            The imaged position vector.
-        '''
-        if np.shape(pos) == (3,):
-            pos = np.reshape(pos, (1, 3))
-
-        fractional_pos = [np.linalg.inv(self.box_matrix) @ i for i in pos]
-
-        fractional_pos -= np.round(fractional_pos)
-
-        pos = [self.box_matrix @ i for i in fractional_pos]
-
-        if np.shape(pos) == (1, 3):
-            pos = np.reshape(pos, (3,))
-
-        return pos
-
     def __eq__(self, __value: 'Cell') -> bool:
         """
         Checks if the Cell is equal to another Cell.
