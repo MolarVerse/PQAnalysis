@@ -9,30 +9,31 @@ def test_traj_to_com_traj():
 
     assert traj_to_com_traj(traj) == Trajectory()
 
-    frame = Frame(atoms=['C', 'C', 'C'], xyz=[
+    frame = Frame(atoms=['C', 'C', 'C'], coordinates=[
                   [0, 0, 0], [1, 1, 1], [2, 2, 2]])
     traj.append(frame)
 
     assert traj_to_com_traj(traj) == Trajectory(
-        frames=[Frame(atoms=['ccc'], xyz=[[1, 1, 1]])])
+        frames=[Frame(atoms=['ccc'], coordinates=[[1, 1, 1]])])
 
-    frame = Frame(atoms=['C', 'C', 'C'], xyz=[[0, 0, 1], [1, 1, 2], [2, 2, 3]])
+    frame = Frame(atoms=['C', 'C', 'C'], coordinates=[
+                  [0, 0, 1], [1, 1, 2], [2, 2, 3]])
 
     traj.append(frame)
 
     assert traj_to_com_traj(traj) == Trajectory(frames=[Frame(
-        atoms=['ccc'], xyz=[[1, 1, 1]]), Frame(atoms=['ccc'], xyz=[[1, 1, 2]])])
+        atoms=['ccc'], coordinates=[[1, 1, 1]]), Frame(atoms=['ccc'], coordinates=[[1, 1, 2]])])
 
     assert traj_to_com_traj(traj, selection=[0, 1]) == Trajectory(frames=[Frame(
-        atoms=['cc'], xyz=[[0.5, 0.5, 0.5]]), Frame(atoms=['cc'], xyz=[[0.5, 0.5, 1.5]])])
+        atoms=['cc'], coordinates=[[0.5, 0.5, 0.5]]), Frame(atoms=['cc'], coordinates=[[0.5, 0.5, 1.5]])])
 
     traj = Trajectory()
-    frame = Frame(atoms=['C', 'C', 'H', 'H'], xyz=[
+    frame = Frame(atoms=['C', 'C', 'H', 'H'], coordinates=[
                   [0, 0, 1], [1, 1, 2], [2, 2, 3], [3, 3, 4]])
     traj.append(frame)
-    frame = Frame(atoms=['C', 'C', 'H', 'H'], xyz=[
+    frame = Frame(atoms=['C', 'C', 'H', 'H'], coordinates=[
                   [0, 1, 1], [1, 2, 2], [2, 3, 3], [3, 4, 4]])
     traj.append(frame)
 
-    assert traj_to_com_traj(traj, group=2) == Trajectory(frames=[Frame(atoms=['cc', 'hh'], xyz=[
-        [0.5, 0.5, 1.5], [2.5, 2.5, 3.5]]), Frame(atoms=['cc', 'hh'], xyz=[[0.5, 1.5, 1.5], [2.5, 3.5, 3.5]])])
+    assert traj_to_com_traj(traj, group=2) == Trajectory(frames=[Frame(atoms=['cc', 'hh'], coordinates=[
+        [0.5, 0.5, 1.5], [2.5, 2.5, 3.5]]), Frame(atoms=['cc', 'hh'], coordinates=[[0.5, 1.5, 1.5], [2.5, 3.5, 3.5]])])

@@ -5,6 +5,8 @@ A module containing the Element class and its associated methods.
 
 Classes
 -------
+Elements
+    A class representing a list of elements.
 Element
     A class representing an Element
 
@@ -16,9 +18,184 @@ atomicNumbers
     A dictionary containing the atomic number of each element.
 """
 
+import numpy as np
+
 from typing import Union
 
 from PQAnalysis.utils.exceptions import ElementNotFoundError
+from PQAnalysis.traj.selection import Selection
+
+
+class Elements:
+    """
+    A class representing a list of elements.
+
+    ...
+
+    Attributes
+    ----------
+    elements : list
+        A list of elements.
+    names : list
+        A list of names of the elements.
+    atomic_numbers : list
+        A list of atomic numbers of the elements.
+    masses : list
+        A list of masses of the elements.
+    n_atoms : int
+        The number of atoms in the elements.
+    """
+
+    def __init__(self, elements: list):
+        """
+        Initializes an Elements object by calling the elements setter method.
+
+        Parameters
+        ----------
+        elements : list
+            A list of elements.
+        """
+        self.elements = elements
+
+    @property
+    def elements(self) -> list:
+        """
+        Returns
+        -------
+        list
+            A list of elements.
+        """
+        return self._elements
+
+    @elements.setter
+    def elements(self, elements: list):
+        """
+        Parameters
+        ----------
+        elements : list
+            A list of elements.
+
+        Raises
+        ------
+        ElementNotFoundError
+            If the given element is not a valid element identifier.
+        TypeError
+            If the given element is not a list of strings (elements symbols), ints (atomic numbers) or a list of Element objects.
+
+        """
+
+        if isinstance(elements, Elements):
+            elements = elements.elements
+
+        if all(isinstance(element, str) or isinstance(element, int) for element in elements):
+            try:
+                elements = [Element(element) for element in elements]
+            except ElementNotFoundError as e:
+                raise ElementNotFoundError(e.id)
+
+        elif not all(isinstance(element, Element) for element in elements):
+            raise TypeError(
+                "elements must be either a list of strings (elements symbols), ints (atomic numbers) or a list of Element objects.")
+
+        self._elements = np.array(elements)
+
+    @property
+    def names(self) -> list:
+        """
+        Returns
+        -------
+        list
+            A list of names of the elements.
+
+        """
+        return np.array([element.name for element in self.elements])
+
+    @property
+    def atomic_numbers(self) -> list:
+        """
+        Returns
+        -------
+        list
+            A list of atomic numbers of the elements.
+        """
+        return np.array([element.atomic_number for element in self.elements])
+
+    @property
+    def masses(self) -> list:
+        """
+        Returns
+        -------
+        list
+            A list of masses of the elements.
+        """
+        return np.array([element.mass for element in self.elements])
+
+    @property
+    def n_atoms(self) -> int:
+        """
+        Returns
+        -------
+        int
+            The number of atoms in the elements.
+        """
+        return len(self.elements)
+
+    def __getitem__(self, index) -> 'Elements':
+        """
+        Defines the behavior for the [] operator. If the given index is a Selection object, the selection attribute is used.
+
+        Parameters
+        ----------
+        index : int or Selection
+            The index of the new Elements.
+
+        Returns
+        -------
+        Elements
+            The new Elements with the given index.
+        """
+        if isinstance(index, Selection):
+            index = index.selection
+
+        elements = self.elements[index]
+
+        # if the selection is a single element, transform it to a list
+        if len(np.shape(self.elements[index])) == 0:
+            elements = [self.elements[index]]
+
+        return Elements(np.array(elements))
+
+    def __eq__(self, other: 'Elements') -> bool:
+        """
+        Checks if the given Elements object is equal to the current Elements object.
+
+        Parameters
+        ----------
+        other : Elements or Element
+            check if the given Elements object is equal to the current Elements object.
+
+        Returns
+        -------
+        bool
+            returns True if the given Elements object is equal to the current Elements object, False otherwise.
+            It is also possible to compare an Elements object with an Element object.
+        """
+        if isinstance(other, Element):
+            other = Elements([other])
+
+        if not isinstance(other, Elements):
+            return False
+
+        return np.array_equal(self.elements, other.elements)
+
+    def __len__(self) -> int:
+        return len(self.elements)
+
+    def __iter__(self):
+        return iter(self.elements)
+
+    def __contains__(self, item) -> bool:
+        return item in self.elements
 
 
 class Element:
@@ -76,12 +253,17 @@ class Element:
 
         Parameters
         ----------
-        other : Element
+        other : Element or Elements
 
         Returns
         -------
         bool
+            returns True if the given element is equal to the current element, False otherwise.
+            It is also possible to compare an Element object with an Elements object.
         """
+
+        if isinstance(other, Elements) and len(other) == 1:
+            other = other.elements[0]
 
         if not isinstance(other, Element):
             return False

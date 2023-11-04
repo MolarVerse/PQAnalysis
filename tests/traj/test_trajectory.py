@@ -6,8 +6,8 @@ from PQAnalysis.pbc.cell import Cell
 
 
 def test__init__():
-    frames = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
     traj = Trajectory(frames)
     assert traj.frames == frames
 
@@ -15,20 +15,20 @@ def test__init__():
 
 
 def test_check_PBC():
-    frames = [Frame(atoms=["H"], xyz=[[0, 0, 0]], cell=Cell(10, 10, 10)),
-              Frame(atoms=["H"], xyz=[[0, 0, 0]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10)),
+              Frame(atoms=["H"], coordinates=[[0, 0, 0]])]
     traj = Trajectory(frames)
     assert traj.check_PBC() == False
 
-    frames = [Frame(atoms=["H"], xyz=[[0, 0, 0]], cell=Cell(10, 10, 10)),
-              Frame(atoms=["H"], xyz=[[0, 0, 0]], cell=Cell(10, 10, 10))]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10)),
+              Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10))]
     traj = Trajectory(frames)
     assert traj.check_PBC() == True
 
 
 def test__len__():
-    frames = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
     traj = Trajectory(frames)
     assert len(traj) == 3
 
@@ -36,8 +36,8 @@ def test__len__():
 
 
 def test__getitem__():
-    frames = [Frame(atoms=["H"], xyz=[[0, 2, 3]]), Frame(
-        atoms=["C"], xyz=[[1, 2, 3]]), Frame(atoms=["O"], xyz=[[2, 2, 3]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 2, 3]]), Frame(
+        atoms=["C"], coordinates=[[1, 2, 3]]), Frame(atoms=["O"], coordinates=[[2, 2, 3]])]
     traj = Trajectory(frames)
     assert traj[0] == frames[0]
     assert traj[1] == frames[1]
@@ -53,8 +53,8 @@ def test__getitem__():
 
 
 def test__iter__():
-    frames = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
     traj = Trajectory(frames)
     assert [frame for frame in traj] == frames
 
@@ -62,25 +62,25 @@ def test__iter__():
 
 
 def test__contains__():
-    frames = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
+    frames = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
     traj = Trajectory(frames)
-    assert Frame(atoms=["H"], xyz=[[0, 1, 2]]) in traj
-    assert Frame(atoms=["C"], xyz=[[1, 1, 2]]) in traj
-    assert Frame(atoms=["O"], xyz=[[2, 1, 2]]) in traj
-    assert Frame(atoms=["N"], xyz=[[2, 1, 2]]) not in traj
+    assert Frame(atoms=["H"], coordinates=[[0, 1, 2]]) in traj
+    assert Frame(atoms=["C"], coordinates=[[1, 1, 2]]) in traj
+    assert Frame(atoms=["O"], coordinates=[[2, 1, 2]]) in traj
+    assert Frame(atoms=["N"], coordinates=[[2, 1, 2]]) not in traj
 
-    assert Frame(atoms=["H"], xyz=[[0, 1, 2]]) not in Trajectory()
-    assert Frame(atoms=["C"], xyz=[[1, 1, 2]]) not in Trajectory()
-    assert Frame(atoms=["O"], xyz=[[2, 1, 2]]) not in Trajectory()
-    assert Frame(atoms=["N"], xyz=[[2, 1, 2]]) not in Trajectory()
+    assert Frame(atoms=["H"], coordinates=[[0, 1, 2]]) not in Trajectory()
+    assert Frame(atoms=["C"], coordinates=[[1, 1, 2]]) not in Trajectory()
+    assert Frame(atoms=["O"], coordinates=[[2, 1, 2]]) not in Trajectory()
+    assert Frame(atoms=["N"], coordinates=[[2, 1, 2]]) not in Trajectory()
 
 
 def test__add__():
-    frames1 = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["H"], xyz=[[1, 1, 2]]), Frame(atoms=["H"], xyz=[[2, 1, 2]])]
-    frames2 = [Frame(atoms=["H"], xyz=[[3, 1, 2]]), Frame(
-        atoms=["H"], xyz=[[4, 1, 2]]), Frame(atoms=["H"], xyz=[[5, 1, 2]])]
+    frames1 = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["H"], coordinates=[[1, 1, 2]]), Frame(atoms=["H"], coordinates=[[2, 1, 2]])]
+    frames2 = [Frame(atoms=["H"], coordinates=[[3, 1, 2]]), Frame(
+        atoms=["H"], coordinates=[[4, 1, 2]]), Frame(atoms=["H"], coordinates=[[5, 1, 2]])]
     traj1 = Trajectory(frames1)
     traj2 = Trajectory(frames2)
     assert traj1 + traj2 == Trajectory(frames1 + frames2)
@@ -89,8 +89,8 @@ def test__add__():
     assert Trajectory() + traj1 == traj1
     assert traj1 + Trajectory() == traj1
 
-    frames2 = [Frame(atoms=["O"], xyz=[[3, 1, 2]]), Frame(
-        atoms=["O"], xyz=[[4, 1, 2]]), Frame(atoms=["O"], xyz=[[5, 1, 2]])]
+    frames2 = [Frame(atoms=["O"], coordinates=[[3, 1, 2]]), Frame(
+        atoms=["O"], coordinates=[[4, 1, 2]]), Frame(atoms=["O"], coordinates=[[5, 1, 2]])]
 
     with pytest.raises(ValueError) as exception:
         traj1 + Trajectory(frames2)
@@ -102,12 +102,12 @@ def test__add__():
 
 
 def test__eq__():
-    frames1 = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
-    frames2 = [Frame(atoms=["N"], xyz=[[3, 1, 2]]), Frame(
-        atoms=["He"], xyz=[[4, 1, 2]]), Frame(atoms=["Ne"], xyz=[[5, 1, 2]])]
-    frames3 = [Frame(atoms=["H"], xyz=[[0, 1, 2]]), Frame(
-        atoms=["C"], xyz=[[1, 1, 2]]), Frame(atoms=["O"], xyz=[[2, 1, 2]])]
+    frames1 = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
+    frames2 = [Frame(atoms=["N"], coordinates=[[3, 1, 2]]), Frame(
+        atoms=["He"], coordinates=[[4, 1, 2]]), Frame(atoms=["Ne"], coordinates=[[5, 1, 2]])]
+    frames3 = [Frame(atoms=["H"], coordinates=[[0, 1, 2]]), Frame(
+        atoms=["C"], coordinates=[[1, 1, 2]]), Frame(atoms=["O"], coordinates=[[2, 1, 2]])]
     traj1 = Trajectory(frames1)
     traj2 = Trajectory(frames2)
     traj3 = Trajectory(frames3)
@@ -127,8 +127,8 @@ def test__eq__():
 def test_append():
     traj = Trajectory()
 
-    traj.append(Frame(atoms=["H"], xyz=[[0, 1, 2]]))
-    assert traj.frames == [Frame(atoms=["H"], xyz=[[0, 1, 2]])]
+    traj.append(Frame(atoms=["H"], coordinates=[[0, 1, 2]]))
+    assert traj.frames == [Frame(atoms=["H"], coordinates=[[0, 1, 2]])]
 
     with pytest.raises(TypeError) as exception:
         traj.append([[1, 1, 2]])

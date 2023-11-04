@@ -94,5 +94,6 @@ class TestFrameReader:
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
         assert frame.n_atoms == 2
         assert all(frame.atoms == np.array(["h", "o"]))
-        assert np.allclose(frame.xyz, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert np.allclose(frame.coordinates, [
+                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
