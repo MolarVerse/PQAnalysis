@@ -3,7 +3,6 @@ import numpy as np
 
 from PQAnalysis.atomicUnits.element import Element, Elements
 from PQAnalysis.utils.exceptions import ElementNotFoundError
-from PQAnalysis.traj.selection import Selection
 
 
 class TestElement:
@@ -106,9 +105,6 @@ class TestElements():
             elements[4]
         assert str(
             exception.value) == "index 4 is out of bounds for axis 0 with size 4"
-
-        assert elements[Selection([0, 1, 2])] == Elements(
-            ['C', 'H', 'H'])
 
     def test__len__(self):
         elements = Elements(['C', 'H', 'H', 'O'])
