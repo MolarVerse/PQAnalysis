@@ -23,7 +23,6 @@ import numpy as np
 from typing import Union
 
 from PQAnalysis.utils.exceptions import ElementNotFoundError
-from PQAnalysis.traj.selection import Selection
 
 
 class Elements:
@@ -87,6 +86,9 @@ class Elements:
         if isinstance(elements, Elements):
             elements = elements.elements
 
+        if isinstance(elements, Element):
+            elements = [elements]
+
         if all(isinstance(element, str) or isinstance(element, int) for element in elements):
             try:
                 elements = [Element(element) for element in elements]
@@ -146,7 +148,7 @@ class Elements:
 
         Parameters
         ----------
-        index : int or Selection
+        index : int or slice
             The index of the new Elements.
 
         Returns
@@ -154,16 +156,13 @@ class Elements:
         Elements
             The new Elements with the given index.
         """
-        if isinstance(index, Selection):
-            index = index.selection
-
         elements = self.elements[index]
 
         # if the selection is a single element, transform it to a list
         if len(np.shape(self.elements[index])) == 0:
-            elements = [self.elements[index]]
-
-        return Elements(np.array(elements))
+            return self.elements[index]
+        else:
+            return Elements(np.array(elements))
 
     def __eq__(self, other: 'Elements') -> bool:
         """
@@ -228,6 +227,7 @@ class Element:
         ElementNotFoundError
             If the given id is not a valid element identifier.
         """
+
         if isinstance(id, int):
             self.atomic_number = id
             try:

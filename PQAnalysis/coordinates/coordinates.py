@@ -1,7 +1,6 @@
 import numpy as np
 
 from PQAnalysis.pbc.cell import Cell
-from PQAnalysis.traj.selection import Selection
 
 
 def image(coordinates: 'Coordinates') -> 'Coordinates':
@@ -45,6 +44,10 @@ class Coordinates():
             The cell of the frame.
         """
 
+        if isinstance(xyz, Coordinates):
+            cell = xyz.cell
+            xyz = xyz.xyz
+
         if xyz is None:
             xyz = np.zeros((0, 3))
 
@@ -76,19 +79,26 @@ class Coordinates():
 
     def __add__(self, other):
 
-        return Coordinates(self.xyz + other.xyz, self.cell)
+        if self.__cell_compatible__(other) is False:
+            raise ValueError(
+                'The cells of the two Coordinates objects must be the same.')
+
+        if self.cell is None:
+            cell = other.cell
+        else:
+            cell = self.cell
+
+        return Coordinates(self.xyz + other.xyz, cell)
 
     def __sub__(self, other):
 
-        return Coordinates(self.xyz - other.xyz, self.cell)
+        other_copy = other.copy()
+        other_copy.xyz *= -1
 
-    def __mul__(self, other):
+        return self + other_copy
 
-        return Coordinates(self.xyz * other, self.cell)
-
-    def __truediv__(self, other):
-
-        return Coordinates(self.xyz / other, self.cell)
+    def __cell_compatible__(self, other):
+        return self.cell == other.cell or any(cell is None for cell in [self.cell, other.cell])
 
     def __getitem__(self, index):
         """
@@ -96,22 +106,14 @@ class Coordinates():
 
         Parameters
         ----------
-        index : int or Selection
+        index : int or slice
             The index of the new Coordinates.
-
-        Raises
-        ------
-        ValueError
-            If the selection is empty.
 
         Returns
         -------
         Coordinates
             The new Coordinates with the given index.
         """
-        if isinstance(index, Selection):
-            index = index.selection
-
         return Coordinates(self.xyz[index], cell=self.cell)
 
     def append(self, other):
@@ -129,9 +131,15 @@ class Coordinates():
             If the cells of the two Coordinates objects are not the same and if the other Coordinates object any cell defined.
         """
 
+        if self.n_atoms == 0:
+            self.xyz = other.xyz
+            self.cell = other.cell
+
+            return
+
         if self.cell != other.cell and other.cell is not None:
             raise ValueError(
-                'The cells of the two Coordinates objects must be the same.')
+                'The cells of the two Coordinates objects must be the same or the one of the appended None.')
 
         self.xyz = np.append(self.xyz, other.xyz, axis=0)
 

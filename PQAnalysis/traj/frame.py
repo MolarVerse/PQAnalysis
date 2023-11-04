@@ -11,7 +11,6 @@ Frame
 
 import numpy as np
 
-from PQAnalysis.traj.selection import Selection
 from PQAnalysis.atomicUnits.molecule import Molecule
 from PQAnalysis.pbc.cell import Cell
 from PQAnalysis.atomicUnits.element import Elements
@@ -27,9 +26,12 @@ class BaseFrame:
 class Frame(BaseFrame):
     def __init__(self, coordinates: Coordinates, atoms: Elements):
 
-        super().__init__(coordinates)
         # just to make sure it is an Elements object
         self.atoms = Elements(atoms)
+        # just to make sure it is a Coordinates object
+        coordinates = Coordinates(coordinates)
+
+        super().__init__(coordinates)
 
         if self.coordinates.n_atoms != self.atoms.n_atoms:
             raise ValueError(
@@ -37,16 +39,20 @@ class Frame(BaseFrame):
 
     @property
     def n_atoms(self):
-        return self.coordinates.n_atoms
+        try:
+            return self.coordinates.n_atoms
+        except AttributeError:
+            return 0
+
+    @property
+    def cell(self):
+        return self.coordinates.cell
 
     @property
     def PBC(self):
         return self.coordinates.PBC
 
     def __getitem__(self, index):
-        if isinstance(index, Selection):
-            index = index.selection
-
         frame = Frame(self.coordinates[index], self.atoms[index])
 
         if frame.n_atoms == 0:
@@ -96,10 +102,7 @@ class Frame(BaseFrame):
         if self.n_atoms != other.n_atoms:
             return False
 
-        if not np.array_equal(self.atoms, other.atoms):
-            return False
-
-        if not np.array_equal(self.atom_type_names, other.atom_type_names):
+        if self.atoms != other.atoms:
             return False
 
         return True
@@ -125,13 +128,10 @@ class Frame(BaseFrame):
         if self.n_atoms != other.n_atoms:
             return False
 
-        if not np.array_equal(self.coordinates, other.coordinates):
+        if self.atoms != other.atoms:
             return False
 
-        if not np.array_equal(self.atoms, other.atoms):
-            return False
-
-        if not np.array_equal(self.atom_type_names, other.atom_type_names):
+        if self.coordinates != other.coordinates:
             return False
 
         if self.cell != other.cell:
@@ -164,4 +164,10 @@ class MolecularFrame(BaseFrame):
         coordinates = Coordinates()
 
         for molecule in self.molecules:
-            coordinates.append(molecule.com())
+            coordinates.append(molecule.center_of_mass)
+
+        return coordinates
+
+    @property
+    def n_molecules(self):
+        return len(self.molecules)
