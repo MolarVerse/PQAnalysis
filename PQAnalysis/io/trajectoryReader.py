@@ -14,10 +14,13 @@ FrameReader
 import numpy as np
 import os
 
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.pbc.cell import Cell
-from PQAnalysis.io.base import BaseReader
+from base import BaseReader
+from ..traj.frame import Frame
+from ..traj.trajectory import Trajectory
+from ..core.cell import Cell
+from ..core.atom import Atom
+from ..core.atomicSystem import AtomicSystem
+from ..utils.exceptions import ElementNotFoundError
 
 
 class TrajectoryReader(BaseReader):
@@ -124,7 +127,12 @@ class FrameReader:
 
         xyz, atoms = self.__read_xyz__(splitted_frame_string, n_atoms)
 
-        return Frame(xyz, np.array(atoms), cell)
+        try:
+            atoms = [Atom(atom) for atom in atoms]
+        except ElementNotFoundError:
+            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+
+        return Frame(AtomicSystem(atoms=atoms, pos=xyz, cell=cell))
 
     def __read_header_line__(self, header_line: str) -> (int, Cell):
         """

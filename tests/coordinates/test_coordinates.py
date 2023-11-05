@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from PQAnalysis.coordinates.coordinates import Coordinates, image
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
 
 
 def test_image():

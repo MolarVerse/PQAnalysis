@@ -147,6 +147,34 @@ class Cell:
         """
         return np.array([self.alpha, self.beta, self.gamma])
 
+    def image(self, pos: np.array) -> np.array:
+        """
+        Returns the image of the given position in the unit cell.
+
+        Parameters
+        ----------
+        pos : np.array
+            The position to get the image of.
+
+        Returns
+        -------
+        np.array
+            The image of the position in the unit cell.
+        """
+
+        original_shape = np.shape(pos)
+
+        if original_shape == (3,):
+            pos = np.reshape(pos, (1, 3))
+
+        fractional_pos = np.linalg.inv(self.box_matrix) @ pos.T
+
+        fractional_pos -= np.round(fractional_pos)
+
+        pos = self.box_matrix @ fractional_pos
+
+        return np.reshape(pos, original_shape)
+
     def __eq__(self, __value: 'Cell') -> bool:
         """
         Checks if the Cell is equal to another Cell.

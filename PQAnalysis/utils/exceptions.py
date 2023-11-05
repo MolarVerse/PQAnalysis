@@ -10,6 +10,6 @@ class ElementNotFoundError(Exception):
 
     def __init__(self, id):
         self.id = id
-        self.message = f"""Element with id {
+        self.message = f"""Id {
             self.id} is not a valid element identifier."""
         super().__init__(self.message)

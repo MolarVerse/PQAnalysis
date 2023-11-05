@@ -2,7 +2,8 @@ import pytest
 
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
+from PQAnalysis.coordinates.coordinates import Coordinates
 
 
 def test__init__():
@@ -15,13 +16,13 @@ def test__init__():
 
 
 def test_check_PBC():
-    frames = [Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10)),
+    frames = [Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10))),
               Frame(atoms=["H"], coordinates=[[0, 0, 0]])]
     traj = Trajectory(frames)
     assert traj.check_PBC() == False
 
-    frames = [Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10)),
-              Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10))]
+    frames = [Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10))),
+              Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10)))]
     traj = Trajectory(frames)
     assert traj.check_PBC() == True
 

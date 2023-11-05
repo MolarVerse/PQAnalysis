@@ -20,7 +20,9 @@ classifiers = [
 ]
 
 dependencies = [
-    'numpy'
+    'numpy',
+    "beartype",
+    "multimethod",
 ]
 
 [project.optional-dependencies]

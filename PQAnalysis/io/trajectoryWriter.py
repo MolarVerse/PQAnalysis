@@ -11,11 +11,12 @@ TrajectoryWriter
 
 import numpy as np
 
-from typing import Union, List
+from typing import List
 
-from PQAnalysis.io.base import BaseWriter
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.pbc.cell import Cell
+from base import BaseWriter
+from ..traj.trajectory import Trajectory
+from ..core.cell import Cell
+from ..core.atom import Atom
 
 
 def write_trajectory(traj, filename: str = None, format: str = None):
@@ -107,7 +108,7 @@ class TrajectoryWriter(BaseWriter):
         self.open()
         for frame in trajectory:
             self.__write_header__(frame.n_atoms, frame.cell)
-            self.__write_coordinates__(frame.xyz, frame.atoms)
+            self.__write_coordinates__(frame.pos, frame.atoms)
         self.close()
 
     def __write_header__(self, n_atoms: int, cell: Cell = None):
@@ -128,7 +129,7 @@ class TrajectoryWriter(BaseWriter):
         else:
             print(f"{n_atoms}\n", file=self.file)
 
-    def __write_coordinates__(self, xyz: np.array, atoms: List[str]):
+    def __write_coordinates__(self, xyz: np.array, atoms: List[Atom]):
         """
         Writes the coordinates of the frame to the file.
 
@@ -138,8 +139,8 @@ class TrajectoryWriter(BaseWriter):
         ----------
         xyz : np.array
             The xyz coordinates of the atoms.
-        atoms : list of str
-            The names of the atoms.
+        atoms : Elements
+            The elements of the frame.
         """
 
         if self.format == "qmcfc":
@@ -147,4 +148,4 @@ class TrajectoryWriter(BaseWriter):
 
         for i in range(len(atoms)):
             print(
-                f"{atoms[i]} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)
+                f"{atoms[i].name} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)

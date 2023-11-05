@@ -5,7 +5,8 @@ from _pytest.capture import CaptureFixture
 from PQAnalysis.io.boxWriter import BoxWriter, write_box
 from PQAnalysis.traj.trajectory import Trajectory
 from PQAnalysis.traj.frame import Frame
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
+from PQAnalysis.coordinates.coordinates import Coordinates
 
 
 def test__init__():
@@ -34,10 +35,10 @@ def test__init__():
 
 
 def test__check_PBC__():
-    traj1 = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(
-        10, 10, 10)), Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10))])
+    traj1 = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(
+        10, 10, 10))), Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10)))])
 
-    traj2 = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10)),
+    traj2 = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10))),
                         Frame(atoms=["H"], coordinates=[[0, 0, 0]])])
 
     writer = BoxWriter()
@@ -56,8 +57,8 @@ def test__check_PBC__():
 def test_write_box_file(capsys: CaptureFixture):
     writer = BoxWriter()
 
-    traj = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90)), Frame(
-        atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 120))])
+    traj = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90))), Frame(
+        atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 120)))])
 
     writer.write_box_file(traj, reset_counter=True)
 
@@ -69,8 +70,8 @@ def test_write_box_file(capsys: CaptureFixture):
 def test_write_vmd(capsys: CaptureFixture):
     writer = BoxWriter()
 
-    traj = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90)), Frame(
-        atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90))])
+    traj = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90))), Frame(
+        atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90)))])
 
     print("")
     writer.write_vmd(traj)
@@ -104,8 +105,8 @@ X   5.0 5.0 5.5
 def test_write(capsys: CaptureFixture):
     writer = BoxWriter()
 
-    traj = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90)), Frame(
-        atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90))])
+    traj = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90))), Frame(
+        atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90)))])
 
     print("")
     writer.format = "data"
@@ -144,8 +145,8 @@ X   5.0 5.0 5.5
 
 
 def test_write_box(capsys: CaptureFixture):
-    traj = Trajectory([Frame(atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90)), Frame(
-        atoms=["H"], coordinates=[[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90))])
+    traj = Trajectory([Frame(atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 10, 90, 90, 90))), Frame(
+        atoms=["H"], coordinates=Coordinates([[0, 0, 0]], cell=Cell(10, 10, 11, 90, 90, 90)))])
 
     print("")
     write_box(traj, format="data")

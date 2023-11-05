@@ -4,12 +4,17 @@ import sys
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter, write_trajectory
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
+from PQAnalysis.coordinates.coordinates import Coordinates
+from PQAnalysis.atomicUnits.element import Elements
 
 
 def test_write_trajectory(capsys):
-    traj = Trajectory([Frame([[0, 0, 0], [0, 0, 1]], ["h", "o"], Cell(
-        10, 10, 10)), Frame([[0, 0, 0], [0, 0, 1]], ["h", "o"], Cell(11, 10, 10))])
+    coordinates1 = Coordinates([[0, 0, 0], [0, 0, 1]], cell=Cell(10, 10, 10))
+    atoms = Elements(['h', 'o'])
+    coordinates2 = Coordinates([[0, 0, 0], [0, 0, 1]], cell=Cell(11, 10, 10))
+    traj = Trajectory([Frame(coordinates=coordinates1, atoms=atoms), Frame(
+        coordinates=coordinates2, atoms=atoms)])
 
     write_trajectory(traj, format="pimd-qmcf")
 
@@ -53,23 +58,28 @@ class TestTrajectoryWriter:
 
         writer = TrajectoryWriter()
         writer.__write_coordinates__(
-            atoms=["h", "o"], xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=Elements(["h", "o"]), xyz=[[0, 0, 0], [0, 0, 1]])
 
         captured = capsys.readouterr()
         assert captured.out == "h 0 0 0\no 0 0 1\n"
 
         writer.format = "qmcfc"
         writer.__write_coordinates__(
-            atoms=["h", "o"], xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=Elements(["h", "o"]), xyz=[[0, 0, 0], [0, 0, 1]])
 
         captured = capsys.readouterr()
         assert captured.out == "X   0.0 0.0 0.0\nh 0 0 0\no 0 0 1\n"
 
     def test_write(self, capsys):
 
+        coordinates1 = Coordinates(
+            [[0, 0, 0], [0, 0, 1]], cell=Cell(10, 10, 10))
+        atoms = Elements(['h', 'o'])
+        coordinates2 = Coordinates(
+            [[0, 0, 0], [0, 0, 1]], cell=Cell(11, 10, 10))
+        traj = Trajectory([Frame(coordinates=coordinates1, atoms=atoms), Frame(
+            coordinates=coordinates2, atoms=atoms)])
         writer = TrajectoryWriter()
-        traj = Trajectory([Frame([[0, 0, 0], [0, 0, 1]], ["h", "o"], Cell(
-            10, 10, 10)), Frame([[0, 0, 0], [0, 0, 1]], ["h", "o"], Cell(11, 10, 10))])
 
         writer.write(traj)
 
