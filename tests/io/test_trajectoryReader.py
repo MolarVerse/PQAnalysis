@@ -5,8 +5,8 @@ import numpy as np
 from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader
 from PQAnalysis.core.cell import Cell
 from PQAnalysis.traj.frame import Frame
-from PQAnalysis.coordinates.coordinates import Coordinates
-from PQAnalysis.atomicUnits.element import Elements
+from PQAnalysis.core.atomicSystem import AtomicSystem
+from PQAnalysis.core.atom import Atom
 
 
 class TestTrajectoryReader:
@@ -38,12 +38,19 @@ class TestTrajectoryReader:
         reader = TrajectoryReader("tmp")
 
         traj = reader.read()
-        assert traj[0] == Frame(coordinates=Coordinates(
-            [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], cell=Cell(1.0, 1.0, 1.0)), atoms=["h", "o"])
+
+        cell = Cell(1.0, 1.0, 1.0)
+        atoms = [Atom(atom) for atom in ["h", "o"]]
+
+        frame1 = Frame(system=AtomicSystem(
+            atoms=atoms, pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]), cell=cell))
+        frame2 = Frame(system=AtomicSystem(
+            atoms=atoms, pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]), cell=cell))
+
+        assert traj[0] == frame1
         # NOTE: here cell is not none because of the consecutive reading of frames
         # Cell will be taken from the previous frame
-        assert traj[1] == Frame(coordinates=Coordinates(
-            [[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]], cell=Cell(1.0, 1.0, 1.0)), atoms=["h", "o"])
+        assert traj[1] == frame2
 
 
 class TestFrameReader:
@@ -95,7 +102,16 @@ class TestFrameReader:
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
         assert frame.n_atoms == 2
-        assert frame.atoms == Elements(["h", "o"])
-        assert np.allclose(frame.coordinates.xyz, [
+        assert frame.atoms == [Atom(atom) for atom in ["h", "o"]]
+        assert np.allclose(frame.pos, [
+                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
+
+        frame = reader.read(
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0")
+        assert frame.n_atoms == 2
+        assert frame.atoms == [Atom(atom, use_guess_element=False)
+                               for atom in ["h", "o1"]]
+        assert np.allclose(frame.pos, [
                            [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)

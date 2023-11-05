@@ -9,11 +9,17 @@ Trajectory
     A trajectory is a sequence of frames.
 """
 
-from typing import List
+from __future__ import annotations
 
-from frame import Frame
+import numpy as np
+
+from beartype import beartype
+from beartype.typing import List, Iterator as Iter
+
+from .frame import Frame
 
 
+@beartype
 class Trajectory:
     """
     A trajectory object is a sequence of frames.
@@ -45,7 +51,7 @@ class Trajectory:
         else:
             self.frames = frames
 
-    def check_PBC(self):
+    def check_PBC(self) -> bool:
         """
         Checks if one cell of the trajectory is not None.
 
@@ -70,25 +76,25 @@ class Trajectory:
             The frame to append.
         """
 
-        if not isinstance(frame, Frame):
-            raise TypeError('only Frame can be appended to Trajectory.')
-
         self.frames.append(frame)
 
     def __len__(self) -> int:
         return len(self.frames)
 
-    def __getitem__(self, key) -> Frame:
-        return self.frames[key]
+    def __getitem__(self, key: int | slice) -> Frame | Trajectory:
+        frames = self.frames[key]
+        if np.shape(frames) != ():
+            return Trajectory(frames)
+        else:
+            return frames
 
-    def __iter__(self) -> iter:
+    def __iter__(self) -> Iter:
         return iter(self.frames)
 
     def __contains__(self, item) -> bool:
         return item in self.frames
 
-    # TODO: check if frames are compatible with each other
-    def __add__(self, other) -> 'Trajectory':
+    def __add__(self, other: 'Trajectory') -> 'Trajectory':
         """
         This method allows two trajectories to be added together.
 
@@ -97,12 +103,6 @@ class Trajectory:
         other : Trajectory
             The other trajectory to add.
         """
-
-        if not isinstance(other, Trajectory):
-            raise TypeError('only Trajectory can be added to Trajectory.')
-
-        # if len(self.frames) != 0 and len(other) != 0 and not self.frames[0].is_combinable(other.frames[0]):
-        #     raise ValueError('Frames are not compatible.')
 
         return Trajectory(self.frames + other.frames)
 

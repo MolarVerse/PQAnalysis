@@ -17,10 +17,10 @@ check_atoms_has_mass
 """
 
 import numpy as np
-import numpy.typing as npt
 
 from beartype import beartype
 from beartype.typing import List
+from types import NoneType
 
 from .atom import Atom
 from .cell import Cell
@@ -95,11 +95,11 @@ class AtomicSystem:
     """
 
     def __init__(self,
-                 atoms: List[Atom] = None,
-                 pos: Numpy2DFloatArray = np.zeros((0, 3)),
-                 vel: Numpy2DFloatArray = np.zeros((0, 3)),
-                 forces: Numpy2DFloatArray = np.zeros((0, 3)),
-                 charges: Numpy1DFloatArray = np.zeros(0),
+                 atoms: List[Atom] | None = None,
+                 pos: Numpy2DFloatArray | None = None,
+                 vel: Numpy2DFloatArray | None = None,
+                 forces: Numpy2DFloatArray | None = None,
+                 charges: Numpy1DFloatArray | None = None,
                  cell: Cell | None = None
                  ):
         """
@@ -123,84 +123,24 @@ class AtomicSystem:
         if atoms is None:
             atoms = []
 
+        if pos is None:
+            pos = np.zeros((0, 3))
+
+        if vel is None:
+            vel = np.zeros((0, 3))
+
+        if forces is None:
+            forces = np.zeros((0, 3))
+
+        if charges is None:
+            charges = np.zeros(0)
+
         self._atoms = atoms
         self._pos = pos
         self._vel = vel
         self._forces = forces
         self._charges = charges
         self._cell = cell
-
-    @property
-    def atoms(self) -> List[Atom]:
-        """
-        Returns the atoms in the system.
-
-        Returns
-        -------
-        List[Atom]
-            The atoms in the system.
-        """
-        return self._atoms
-
-    @property
-    def pos(self) -> Numpy2DFloatArray:
-        """
-        Returns the positions of the atoms in the system.
-
-        Returns
-        -------
-        Numpy2DFloatArray
-            The positions of the atoms in the system.
-        """
-        return self._pos
-
-    @property
-    def vel(self) -> Numpy2DFloatArray:
-        """
-        Returns the velocities of the atoms in the system.
-
-        Returns
-        -------
-        Numpy2DFloatArray
-            The velocities of the atoms in the system.
-        """
-        return self._vel
-
-    @property
-    def forces(self) -> Numpy2DFloatArray:
-        """
-        Returns the forces on the atoms in the system.
-
-        Returns
-        -------
-        Numpy2DFloatArray
-            The forces on the atoms in the system.
-        """
-        return self._forces
-
-    @property
-    def charges(self) -> Numpy1DFloatArray:
-        """
-        Returns the charges of the atoms in the system.
-
-        Returns
-        -------
-        Numpy1DFloatArray
-            The charges of the atoms in the system.
-        """
-        return self._charges
-
-    @property
-    def cell(self) -> Cell | None:
-        """
-        Returns the unit cell of the system.
-
-        Returns
-        -------
-        Cell | None
-            The unit cell of the system.
-        """
-        return self._cell
 
     @property
     def PBC(self) -> bool:
@@ -298,3 +238,192 @@ class AtomicSystem:
             The combined name of the system.
         """
         return ''.join([atom.name for atom in self.atoms])
+
+    def __eq__(self, other) -> bool:
+        """
+        Checks whether the AtomicSystem is equal to another AtomicSystem.
+
+        Parameters
+        ----------
+        other : AtomicSystem
+            The other AtomicSystem to compare to.
+
+        Returns
+        -------
+        bool
+            Whether the AtomicSystem is equal to the other AtomicSystem.
+        """
+        if not isinstance(other, AtomicSystem):
+            return False
+
+        elif self.n_atoms != other.n_atoms:
+            return False
+
+        elif self.cell != other.cell:
+            return False
+
+        elif self.atoms != other.atoms:
+            return False
+
+        elif np.shape(self.pos) != np.shape(other.pos):
+            return False
+
+        elif np.shape(self.vel) != np.shape(other.vel):
+            return False
+
+        elif np.shape(self.forces) != np.shape(other.forces):
+            return False
+
+        elif np.shape(self.charges) != np.shape(other.charges):
+            return False
+
+        is_equal = True
+        is_equal &= np.allclose(self.pos, other.pos)
+        is_equal &= np.allclose(self.vel, other.vel)
+        is_equal &= np.allclose(self.forces, other.forces)
+        is_equal &= np.allclose(self.charges, other.charges)
+
+        return is_equal
+
+    def __getitem__(self, key: int | slice) -> 'AtomicSystem':
+        """
+        Returns a new AtomicSystem with the given key.
+
+        Parameters
+        ----------
+        key : int | slice
+            The key to get the new AtomicSystem with.
+
+        Returns
+        -------
+        AtomicSystem
+            The new AtomicSystem with the given key.
+        """
+
+        if self.atoms != []:
+            atoms = self.atoms[key]
+        else:
+            atoms = None
+
+        if not isinstance(atoms, list) and atoms is not None:
+            atoms = [atoms]
+
+        if np.shape(self.pos)[0] > 0:
+            pos = self.pos[key]
+            if pos.ndim == 1:
+                pos = np.reshape(pos, (1, 3))
+        else:
+            pos = None
+
+        if np.shape(self.vel)[0] > 0:
+            vel = self.vel[key]
+            if vel.ndim == 1:
+                vel = np.reshape(vel, (1, 3))
+        else:
+            vel = None
+
+        if np.shape(self.forces)[0] > 0:
+            forces = self.forces[key]
+            if forces.ndim == 1:
+                forces = np.reshape(forces, (1, 3))
+        else:
+            forces = None
+
+        if np.shape(self.charges)[0] > 0:
+            charges = self.charges[key]
+            if charges.ndim == 0:
+                charges = np.reshape(charges, (1))
+        else:
+            charges = None
+
+        return AtomicSystem(atoms=atoms, pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell)
+
+    #######################
+    #                     #
+    # standard properties #
+    #                     #
+    #######################
+
+    @property
+    def atoms(self) -> List[Atom]:
+        """
+        Returns the atoms in the system.
+
+        Returns
+        -------
+        List[Atom]
+            The atoms in the system.
+        """
+        return self._atoms
+
+    @property
+    def pos(self) -> Numpy2DFloatArray:
+        """
+        Returns the positions of the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The positions of the atoms in the system.
+        """
+        return self._pos
+
+    @property
+    def vel(self) -> Numpy2DFloatArray:
+        """
+        Returns the velocities of the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The velocities of the atoms in the system.
+        """
+        return self._vel
+
+    @property
+    def forces(self) -> Numpy2DFloatArray:
+        """
+        Returns the forces on the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The forces on the atoms in the system.
+        """
+        return self._forces
+
+    @property
+    def charges(self) -> Numpy1DFloatArray:
+        """
+        Returns the charges of the atoms in the system.
+
+        Returns
+        -------
+        Numpy1DFloatArray
+            The charges of the atoms in the system.
+        """
+        return self._charges
+
+    @property
+    def cell(self) -> Cell | None:
+        """
+        Returns the unit cell of the system.
+
+        Returns
+        -------
+        Cell | None
+            The unit cell of the system.
+        """
+        return self._cell
+
+    @cell.setter
+    def cell(self, cell: Cell | None) -> Cell | None:
+        """
+        Sets the unit cell of the system.
+
+        Parameters
+        ----------
+        cell : Cell | None
+            The unit cell of the system.
+        """
+        self._cell = cell

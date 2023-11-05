@@ -165,22 +165,6 @@ class Atom:
         self._symbol, self._atomic_number, self._mass = guess_element(id)
         self._name = self._symbol
 
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def symbol(self) -> str:
-        return self._symbol
-
-    @property
-    def atomic_number(self) -> int:
-        return self._atomic_number
-
-    @property
-    def mass(self) -> float:
-        return self._mass
-
     def __eq__(self, other: 'Atom') -> bool:
         if not isinstance(other, Atom):
             return False
@@ -197,6 +181,60 @@ class Atom:
 
     def __repr__(self) -> str:
         return self.__str__()
+
+    #######################
+    #                     #
+    # standard properties #
+    #                     #
+    #######################
+
+    @property
+    def name(self) -> str:
+        """
+        The name of the atom_type (e.g. 'C1')
+
+        Returns
+        -------
+        str
+            The name of the atom_type (e.g. 'C1')
+        """
+        return self._name
+
+    @property
+    def symbol(self) -> str:
+        """
+        The symbol of the atom_type (e.g. 'c')
+
+        Returns
+        -------
+        str
+            The symbol of the atom_type (e.g. 'c')
+        """
+        return self._symbol
+
+    @property
+    def atomic_number(self) -> int:
+        """
+        The atomic number of the atom_type (e.g. 6)
+
+        Returns
+        -------
+        int
+            The atomic number of the atom_type (e.g. 6)
+        """
+        return self._atomic_number
+
+    @property
+    def mass(self) -> float:
+        """
+        The mass of the atom_type (e.g. 12.0107)
+
+        Returns
+        -------
+        float
+            The mass of the atom_type (e.g. 12.0107)
+        """
+        return self._mass
 
 
 atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,

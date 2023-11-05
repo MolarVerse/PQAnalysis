@@ -10,6 +10,7 @@ from PQAnalysis.traj.trajectory import Trajectory
 
 
 # TODO: add atom to element mapper if atomname not element names
+# TODO rethink concept of selection/getitem/slices
 def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None):
     """
     Function that computes the center of mass trajectory for a given selection.
@@ -31,15 +32,13 @@ def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None):
     if len(trajectory) == 0:
         return Trajectory()
 
-    if selection is None:
-        selection = list(range(trajectory[0].n_atoms))
-
-    if np.shape(selection) == ():
-        selection = [selection]
-
     com_traj = Trajectory()
     for frame in trajectory:
-        frame = frame[tuple(slice(x) for x in selection)[0]]
-        com_traj.append(frame.compute_com(group=group))
+
+        if selection is None:
+            selection = slice(0, frame.n_atoms)
+
+        frame = frame[selection]
+        com_traj.append(frame.compute_com_frame(group=group))
 
     return com_traj

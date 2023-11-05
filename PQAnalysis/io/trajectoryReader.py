@@ -14,7 +14,7 @@ FrameReader
 import numpy as np
 import os
 
-from base import BaseReader
+from .base import BaseReader
 from ..traj.frame import Frame
 from ..traj.trajectory import Trajectory
 from ..core.cell import Cell
