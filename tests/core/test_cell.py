@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
 
 
 class TestCell:

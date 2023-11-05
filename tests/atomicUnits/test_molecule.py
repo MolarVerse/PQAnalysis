@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 
 from PQAnalysis.atomicUnits.molecule import Molecule
-from PQAnalysis.atomicUnits.element import Element, Elements
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.atomicUnits.element import Atom, Elements
+from PQAnalysis.core.cell import Cell
 from PQAnalysis.coordinates.coordinates import Coordinates
 
 
@@ -15,7 +15,7 @@ class TestMolecule:
     def test__init__(self):
         molecule = Molecule(atoms=self.elements)
         assert molecule.atoms == self.elements
-        assert molecule.coordinates is None
+        assert molecule.coordinates == Coordinates()
         assert molecule.name == str("CHHO").lower()
 
         molecule = Molecule(atoms=self.elements,
@@ -24,15 +24,6 @@ class TestMolecule:
         assert molecule.atoms == self.elements
         assert molecule.coordinates == self.coords
         assert molecule.name == "my_name"
-
-        with pytest.raises(TypeError) as exception:
-            Molecule(atoms="H")
-        assert str(exception.value) == 'atoms must be an Elements object.'
-
-        with pytest.raises(TypeError) as exception:
-            Molecule(coordinates=[1.2, 2.3])
-        assert str(
-            exception.value) == 'coordinates must be a Coordinates object.'
 
         with pytest.raises(TypeError) as exception:
             Molecule(atoms=Elements(["H"]), name=1)

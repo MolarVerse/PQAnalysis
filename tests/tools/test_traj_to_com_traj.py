@@ -1,7 +1,8 @@
 from PQAnalysis.tools.traj_to_com_traj import traj_to_com_traj
 
 from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.traj.frame import Frame
+from PQAnalysis.traj.frame import MolecularFrame, Frame
+from PQAnalysis.atomicUnits.molecule import Molecule
 
 
 def test_traj_to_com_traj():
@@ -14,7 +15,7 @@ def test_traj_to_com_traj():
     traj.append(frame)
 
     assert traj_to_com_traj(traj) == Trajectory(
-        frames=[Frame(atoms=['ccc'], coordinates=[[1, 1, 1]])])
+        frames=[MolecularFrame(molecules=[Molecule(name="ccc", coordinates=[[1, 1, 1]])])])
 
     frame = Frame(atoms=['C', 'C', 'C'], coordinates=[
                   [0, 0, 1], [1, 1, 2], [2, 2, 3]])

@@ -16,7 +16,7 @@ from typing import List, Union
 
 from PQAnalysis.atomicUnits.element import Elements
 from PQAnalysis.coordinates.coordinates import Coordinates, image
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
 
 
 class Molecule:
@@ -47,19 +47,10 @@ class Molecule:
             the atoms in the molecule as elements, by default None
         name : str, optional
             the name of the molecule, by default None
-
-        Raises
-        ------
-        TypeError
-            If atoms is not an Elements object.
-        TypeError
-            If coordinates is not a Coordinates object.
         """
-        if not isinstance(atoms, Elements) and atoms is not None:
-            raise TypeError('atoms must be an Elements object.')
 
-        if not isinstance(coordinates, Coordinates) and coordinates is not None:
-            raise TypeError('coordinates must be a Coordinates object.')
+        coordinates = Coordinates(coordinates)
+        atoms = Elements(atoms)
 
         self.coordinates = coordinates
         self.atoms = atoms
@@ -142,7 +133,7 @@ class Molecule:
             If coordinates is None.
         """
 
-        if self.coordinates is None:
+        if self.coordinates.n_atoms == 0:
             raise ValueError(
                 'coordinates must be provided when computing com.')
 

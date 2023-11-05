@@ -13,7 +13,7 @@ from typing import Union
 
 from PQAnalysis.utils.decorators import instance_function_count_decorator
 from PQAnalysis.io.base import BaseWriter
-from PQAnalysis.traj.trajectory import Trajectory
+from ..traj.trajectory import Trajectory, Frame
 
 
 def write_box(traj, filename: Union[str, None] = None, format: Union[str, None] = None):

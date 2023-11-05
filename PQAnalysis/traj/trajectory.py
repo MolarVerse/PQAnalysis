@@ -11,7 +11,7 @@ Trajectory
 
 from typing import List
 
-from PQAnalysis.traj.frame import Frame
+from frame import Frame
 
 
 class Trajectory:
@@ -101,8 +101,8 @@ class Trajectory:
         if not isinstance(other, Trajectory):
             raise TypeError('only Trajectory can be added to Trajectory.')
 
-        if len(self.frames) != 0 and len(other) != 0 and not self.frames[0].is_combinable(other.frames[0]):
-            raise ValueError('Frames are not compatible.')
+        # if len(self.frames) != 0 and len(other) != 0 and not self.frames[0].is_combinable(other.frames[0]):
+        #     raise ValueError('Frames are not compatible.')
 
         return Trajectory(self.frames + other.frames)
 

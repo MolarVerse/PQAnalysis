@@ -3,8 +3,10 @@ import os
 import numpy as np
 
 from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
 from PQAnalysis.traj.frame import Frame
+from PQAnalysis.coordinates.coordinates import Coordinates
+from PQAnalysis.atomicUnits.element import Elements
 
 
 class TestTrajectoryReader:
@@ -36,12 +38,12 @@ class TestTrajectoryReader:
         reader = TrajectoryReader("tmp")
 
         traj = reader.read()
-        assert traj[0] == Frame([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
-                                ["h", "o"], Cell(1.0, 1.0, 1.0))
+        assert traj[0] == Frame(coordinates=Coordinates(
+            [[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]], cell=Cell(1.0, 1.0, 1.0)), atoms=["h", "o"])
         # NOTE: here cell is not none because of the consecutive reading of frames
         # Cell will be taken from the previous frame
-        assert traj[1] == Frame([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]], [
-                                "h", "o"], Cell(1.0, 1.0, 1.0))
+        assert traj[1] == Frame(coordinates=Coordinates(
+            [[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]], cell=Cell(1.0, 1.0, 1.0)), atoms=["h", "o"])
 
 
 class TestFrameReader:
@@ -93,7 +95,7 @@ class TestFrameReader:
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
         assert frame.n_atoms == 2
-        assert all(frame.atoms == np.array(["h", "o"]))
-        assert np.allclose(frame.coordinates, [
+        assert frame.atoms == Elements(["h", "o"])
+        assert np.allclose(frame.coordinates.xyz, [
                            [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
