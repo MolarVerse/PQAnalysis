@@ -63,3 +63,14 @@ class TestCell:
 
         cell1 = Cell(1, 2, 3, 60, 90, 120)
         assert cell1 != 1
+
+    def test_image(self):
+        cell = Cell(1, 2, 3, 60, 90, 120)
+        assert np.allclose(cell.image(
+            np.array([0, 0, 0])), np.array([0, 0, 0]))
+        assert np.allclose(cell.image(
+            np.array([0.5, 0.5, 0.5])), np.array([0.5, -1.23205081, -1.23205081]))
+        assert np.allclose(cell.image(
+            np.array([1, 2, 3])), np.array([0., -0.46410162, -0.46410162]))
+        assert np.allclose(cell.image(
+            np.array([-1, -2, -3])), np.array([0., 0.46410162, 0.46410162]))
