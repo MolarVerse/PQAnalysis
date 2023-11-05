@@ -13,7 +13,7 @@ import numpy as np
 
 from typing import List
 
-from base import BaseWriter
+from .base import BaseWriter
 from ..traj.trajectory import Trajectory
 from ..core.cell import Cell
 from ..core.atom import Atom

@@ -1,20 +1,24 @@
 import pytest
 import sys
+import numpy as np
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter, write_trajectory
 from PQAnalysis.traj.frame import Frame
 from PQAnalysis.traj.trajectory import Trajectory
 from PQAnalysis.core.cell import Cell
-from PQAnalysis.coordinates.coordinates import Coordinates
-from PQAnalysis.atomicUnits.element import Elements
+from PQAnalysis.core.atomicSystem import AtomicSystem
+from PQAnalysis.core.atom import Atom
 
 
 def test_write_trajectory(capsys):
-    coordinates1 = Coordinates([[0, 0, 0], [0, 0, 1]], cell=Cell(10, 10, 10))
-    atoms = Elements(['h', 'o'])
-    coordinates2 = Coordinates([[0, 0, 0], [0, 0, 1]], cell=Cell(11, 10, 10))
-    traj = Trajectory([Frame(coordinates=coordinates1, atoms=atoms), Frame(
-        coordinates=coordinates2, atoms=atoms)])
+    atoms = [Atom(atom) for atom in ['h', 'o']]
+    coordinates1 = np.array([[0, 0, 0], [0, 0, 1]])
+    coordinates2 = np.array([[0, 0, 0], [0, 0, 1]])
+    frame1 = Frame(AtomicSystem(
+        atoms=atoms, pos=coordinates1, cell=Cell(10, 10, 10)))
+    frame2 = Frame(AtomicSystem(
+        atoms=atoms, pos=coordinates2, cell=Cell(11, 10, 10)))
+    traj = Trajectory([frame1, frame2])
 
     write_trajectory(traj, format="pimd-qmcf")
 
@@ -58,27 +62,30 @@ class TestTrajectoryWriter:
 
         writer = TrajectoryWriter()
         writer.__write_coordinates__(
-            atoms=Elements(["h", "o"]), xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=[[0, 0, 0], [0, 0, 1]])
 
         captured = capsys.readouterr()
         assert captured.out == "h 0 0 0\no 0 0 1\n"
 
         writer.format = "qmcfc"
         writer.__write_coordinates__(
-            atoms=Elements(["h", "o"]), xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=[[0, 0, 0], [0, 0, 1]])
 
         captured = capsys.readouterr()
         assert captured.out == "X   0.0 0.0 0.0\nh 0 0 0\no 0 0 1\n"
 
     def test_write(self, capsys):
 
-        coordinates1 = Coordinates(
-            [[0, 0, 0], [0, 0, 1]], cell=Cell(10, 10, 10))
-        atoms = Elements(['h', 'o'])
-        coordinates2 = Coordinates(
-            [[0, 0, 0], [0, 0, 1]], cell=Cell(11, 10, 10))
-        traj = Trajectory([Frame(coordinates=coordinates1, atoms=atoms), Frame(
-            coordinates=coordinates2, atoms=atoms)])
+        atoms = [Atom(atom) for atom in ['h', 'o']]
+        coordinates1 = np.array([[0, 0, 0], [0, 0, 1]])
+        coordinates2 = np.array([[0, 0, 0], [0, 0, 1]])
+
+        frame1 = Frame(AtomicSystem(
+            atoms=atoms, pos=coordinates1, cell=Cell(10, 10, 10)))
+        frame2 = Frame(AtomicSystem(
+            atoms=atoms, pos=coordinates2, cell=Cell(11, 10, 10)))
+
+        traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()
 
         writer.write(traj)
