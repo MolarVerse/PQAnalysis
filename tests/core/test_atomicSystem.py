@@ -60,3 +60,26 @@ class TestAtomicSystem:
         assert np.allclose(system.center_of_mass, [
                            0.01935571, 0.01935571, 0.01935571])
         assert system.combined_name == 'CH'
+
+        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
+                              atoms=[Atom('C'), Atom('H')])
+
+        assert np.allclose(system.center_of_mass, np.array(
+            [0.07742283, 0.07742283, 0.07742283]))
+
+        system = AtomicSystem(
+            atoms=[Atom('C', use_guess_element=False)], pos=np.array([[0, 0, 0]]))
+
+        assert system.atoms == [Atom('C', use_guess_element=False)]
+        with pytest.raises(ValueError) as exception:
+            system.atomic_masses
+        assert str(
+            exception.value) == "AtomicSystem contains atoms without mass information."
+        with pytest.raises(ValueError) as exception:
+            system.mass
+        assert str(
+            exception.value) == "AtomicSystem contains atoms without mass information."
+        with pytest.raises(ValueError) as exception:
+            system.center_of_mass
+        assert str(
+            exception.value) == "AtomicSystem contains atoms without mass information."
