@@ -15,6 +15,12 @@ def test__init__(test_with_data_dir):
         InfoFileReader(
             "md-01.info", format=None)
 
+    with pytest.raises(ValueError) as exception:
+        InfoFileReader(
+            "md-01.info", format="tmp")
+    assert str(
+        exception.value) == "Format tmp is not supported. Supported formats are ['pimd-qmcf', 'qmcfc']."
+
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"
     assert reader.format == "pimd-qmcf"

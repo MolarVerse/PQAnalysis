@@ -82,7 +82,7 @@ class EnergyFileReader(BaseReader):
 
         if format not in self.formats:
             raise ValueError(
-                f"The format {format} is not supported. Supported formats are {self.formats}.")
+                f"Format {format} is not supported. Supported formats are {self.formats}.")
 
         self.format = format
 
