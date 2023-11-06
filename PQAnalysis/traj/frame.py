@@ -9,9 +9,12 @@ Frame
     A class for storing atomic systems with topology information.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
 from beartype import beartype
+from beartype.typing import Any, List
 
 from ..core.topology import Topology
 from ..core.atomicSystem import AtomicSystem
@@ -35,7 +38,7 @@ class Frame:
         The topology of the atomic system.
     """
 
-    def __init__(self, system: AtomicSystem = AtomicSystem(), topology: Topology = None):
+    def __init__(self, system: AtomicSystem = AtomicSystem(), topology: Topology | None = None) -> None:
         """
         Initializes the Frame with the given parameters.
 
@@ -49,7 +52,7 @@ class Frame:
         self.system = system
         self.topology = topology
 
-    def compute_com_frame(self, group=None) -> 'Frame':
+    def compute_com_frame(self, group=None) -> Frame:
         """
         Computes a new Frame with the center of mass of the system or groups of atoms.  
 
@@ -98,7 +101,7 @@ class Frame:
 
         return Frame(AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell))
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         """
         Checks whether the Frame is equal to another Frame.
 
@@ -190,7 +193,7 @@ class Frame:
         return self.system.pos
 
     @property
-    def atoms(self) -> list[Atom]:
+    def atoms(self) -> List[Atom]:
         """
         The atoms in the system.
 

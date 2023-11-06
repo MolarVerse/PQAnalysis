@@ -11,10 +11,15 @@ Energy
 
 import numpy as np
 
+from beartype import beartype
+from beartype.typing import Dict
 from collections import defaultdict
 from collections.abc import Iterable
 
+from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
 
+
+@beartype
 class Energy():
     """
     A class to store the data of an energy file.
@@ -42,7 +47,11 @@ class Energy():
         A units dictionary was given.
     """
 
-    def __init__(self, data: np.array, info: dict = None, units: dict = None):
+    def __init__(self,
+                 data: Numpy1DFloatArray | Numpy2DFloatArray,
+                 info: Dict | None = None,
+                 units: Dict | None = None
+                 ) -> None:
         """
         Creates an Energy object.
 
@@ -64,9 +73,6 @@ class Energy():
         ValueError
             If data is not a 1D or 2D array.
         """
-        if not isinstance(data, Iterable):
-            raise TypeError("data has to be iterable.")
-
         if len(np.shape(data)) == 1:
             data = np.array([data])
         elif len(np.shape(data)) > 2:
@@ -78,7 +84,7 @@ class Energy():
 
         self.__make_attributes__()
 
-    def __setup_info_dictionary__(self, info: dict = None, units: dict = None):
+    def __setup_info_dictionary__(self, info: Dict | None = None, units: Dict | None = None) -> None:
         """
         Sets up the info dictionary.
 
@@ -144,7 +150,7 @@ class Energy():
             raise ValueError(
                 "The keys of the info and units dictionary do not match.")
 
-    def __make_attributes__(self):
+    def __make_attributes__(self) -> None:
         """
         Creates attributes for the physical properties of the Energy object.
 

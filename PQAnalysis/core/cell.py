@@ -9,9 +9,18 @@ Cell
     A class for storing unit cell parameters.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
+from beartype import beartype
+from beartype.typing import Any
+from numbers import Real
 
+from ..utils.mytypes import Numpy3x3FloatArray, Numpy2DFloatArray, Numpy1DFloatArray
+
+
+@beartype
 class Cell:
     '''
     Class for storing unit cell parameters.
@@ -21,23 +30,30 @@ class Cell:
     Attributes
     ----------
 
-    x : float
+    x : Real
         The length of the first box vector.
-    y : float
+    y : Real
         The length of the second box vector.
-    z : float
+    z : Real
         The length of the third box vector.
-    alpha : float
+    alpha : Real
         The angle between the second and third box vector.
-    beta : float
+    beta : Real
         The angle between the first and third box vector.
-    gamma : float
+    gamma : Real
         The angle between the first and second box vector.
     box_matrix : np.array
         The matrix containing the box vectors as columns.
     '''
 
-    def __init__(self, x: float, y: float, z: float, alpha: float = 90, beta: float = 90, gamma: float = 90):
+    def __init__(self,
+                 x: Real,
+                 y: Real,
+                 z: Real,
+                 alpha: Real = 90,
+                 beta: Real = 90,
+                 gamma: Real = 90
+                 ) -> None:
         """
         Initializes the Cell with the given parameters.
 
@@ -46,17 +62,17 @@ class Cell:
 
         Parameters
         ----------
-        x : float
+        x : Real
             The length of the first box vector.
-        y : float
+        y : Real
             The length of the second box vector.
-        z : float
+        z : Real
             The length of the third box vector.
-        alpha : float, optional
+        alpha : Real, optional
             The angle between the second and third box vector.
-        beta : float, optional
+        beta : Real, optional
             The angle between the first and third box vector.
-        gamma : float, optional
+        gamma : Real, optional
             The angle between the first and second box vector.
         """
         self.x = x
@@ -67,7 +83,7 @@ class Cell:
         self.gamma = gamma
         self.box_matrix = self.setup_box_matrix()
 
-    def setup_box_matrix(self) -> np.array:
+    def setup_box_matrix(self) -> Numpy3x3FloatArray:
         """
         Calculates the box matrix from the given parameters.
 
@@ -94,7 +110,7 @@ class Cell:
         return matrix
 
     @property
-    def bounding_edges(self) -> np.array:
+    def bounding_edges(self) -> Numpy2DFloatArray:
         """
         calculates the coordinates of the eight corners of the unit cell.
 
@@ -112,19 +128,19 @@ class Cell:
         return edges
 
     @property
-    def volume(self) -> float:
+    def volume(self) -> Real:
         """
         Returns the volume of the unit cell.
 
         Returns
         -------
-        float
+        Real
             The volume of the unit cell.
         """
         return np.linalg.det(self.box_matrix)
 
     @property
-    def box_lengths(self) -> np.array:
+    def box_lengths(self) -> Numpy1DFloatArray:
         """
         Returns the lengths of the box vectors.
 
@@ -136,7 +152,7 @@ class Cell:
         return np.array([self.x, self.y, self.z])
 
     @property
-    def box_angles(self) -> np.array:
+    def box_angles(self) -> Numpy1DFloatArray:
         """
         Returns the angles between the box vectors.
 
@@ -147,7 +163,7 @@ class Cell:
         """
         return np.array([self.alpha, self.beta, self.gamma])
 
-    def image(self, pos: np.array) -> np.array:
+    def image(self, pos: Numpy2DFloatArray | Numpy1DFloatArray) -> Numpy2DFloatArray | Numpy1DFloatArray:
         """
         Returns the image of the given position in the unit cell.
 
@@ -175,7 +191,7 @@ class Cell:
 
         return np.reshape(pos, original_shape)
 
-    def __eq__(self, __value: 'Cell') -> bool:
+    def __eq__(self, __value: Any) -> bool:
         """
         Checks if the Cell is equal to another Cell.
 

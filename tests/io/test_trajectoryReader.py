@@ -1,6 +1,7 @@
 import pytest
-import os
 import numpy as np
+
+from beartype.roar import BeartypeException
 
 from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader
 from PQAnalysis.core.cell import Cell
@@ -95,9 +96,8 @@ class TestFrameReader:
     def test_read(self):
         reader = FrameReader()
 
-        with pytest.raises(TypeError) as exception:
+        with pytest.raises(BeartypeException):
             reader.read(["tmp"])
-        assert str(exception.value) == "frame_string must be a str type."
 
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")

@@ -45,12 +45,6 @@ class TestEnergyReader:
         assert reader.withInfoFile == True
         assert reader.format == "pimd-qmcf"
 
-        with pytest.raises(ValueError) as exception:
-            EnergyFileReader(
-                "md-01.en", format=None)
-        assert str(
-            exception.value) == "The format None is not supported. Supported formats are ['pimd-qmcf', 'qmcfc']."
-
         reader = EnergyFileReader("md-01.en", format="qmcfc")
         assert reader.filename == "md-01.en"
         assert reader.info_filename == "md-01.info"

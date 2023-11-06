@@ -14,7 +14,7 @@ from __future__ import annotations
 import numpy as np
 
 from beartype import beartype
-from beartype.typing import List, Iterator as Iter
+from beartype.typing import List, Iterator, Any
 
 from .frame import Frame
 
@@ -37,7 +37,7 @@ class Trajectory:
 
     """
 
-    def __init__(self, frames: List[Frame] = None):
+    def __init__(self, frames: List[Frame] = None) -> None:
         """
         Initializes the Trajectory with the given frames.
 
@@ -66,7 +66,7 @@ class Trajectory:
         else:
             return True
 
-    def append(self, frame: Frame):
+    def append(self, frame: Frame) -> None:
         """
         Appends a frame to the trajectory.
 
@@ -79,22 +79,69 @@ class Trajectory:
         self.frames.append(frame)
 
     def __len__(self) -> int:
+        """
+        This method allows the length of a trajectory to be computed.
+
+        Returns
+        -------
+        int
+            The number of frames in the trajectory.
+        """
         return len(self.frames)
 
     def __getitem__(self, key: int | slice) -> Frame | Trajectory:
+        """
+        This method allows a frame or a trajectory to be retrieved from the trajectory.
+
+        For example, if traj is a trajectory, then traj[0] is the first frame of the trajectory.
+        If traj is a trajectory, then traj[0:2] is a trajectory containing the first two frames of the trajectory.
+
+
+
+        Parameters
+        ----------
+        key : int | slice
+            The index or slice to retrieve the frame or trajectory from.
+
+        Returns
+        -------
+        Frame | Trajectory
+            The frame or trajectory retrieved from the trajectory.
+        """
         frames = self.frames[key]
         if np.shape(frames) != ():
             return Trajectory(frames)
         else:
             return frames
 
-    def __iter__(self) -> Iter:
+    def __iter__(self) -> Iterator:
+        """
+        This method allows a trajectory to be iterated over.
+
+        Returns
+        -------
+        Iter
+            The iterator over the frames in the trajectory.
+        """
         return iter(self.frames)
 
-    def __contains__(self, item) -> bool:
+    def __contains__(self, item: Frame) -> bool:
+        """
+        This method allows a frame to be checked for membership in a trajectory.
+
+        Parameters
+        ----------
+        item : Frame
+            The frame to check for membership in the trajectory.
+
+        Returns
+        -------
+        bool
+            Whether the frame is in the trajectory.
+        """
         return item in self.frames
 
-    def __add__(self, other: 'Trajectory') -> 'Trajectory':
+    def __add__(self, other: Trajectory) -> Trajectory:
         """
         This method allows two trajectories to be added together.
 
@@ -106,7 +153,7 @@ class Trajectory:
 
         return Trajectory(self.frames + other.frames)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         """
         This method allows two trajectories to be compared for equality.
 

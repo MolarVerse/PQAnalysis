@@ -12,10 +12,11 @@ line contains the information about the box dimensions a, b and c and the box an
 
 import argparse
 
-from typing import List
+from beartype import beartype
+from beartype.typing import List
 
-from PQAnalysis.io.boxWriter import BoxWriter
-from PQAnalysis.io.trajectoryReader import TrajectoryReader
+from ..io.boxWriter import BoxWriter
+from ..io.trajectoryReader import TrajectoryReader
 
 
 def main():
@@ -35,7 +36,8 @@ def main():
     traj2box(args.trajectory_file, args.vmd, args.output)
 
 
-def traj2box(trajectory_files: List[str], vmd: bool, output: str = None):
+@beartype
+def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) -> None:
     """
     Converts multiple trajectory files to a box file.
 

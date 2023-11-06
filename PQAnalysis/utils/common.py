@@ -3,10 +3,14 @@ Common things needed by command line scripts.
 """
 
 import sys
-from PQAnalysis._version import __version__
+
+from beartype import beartype
+
+from .._version import __version__
 
 
-def print_header():
+@beartype
+def print_header() -> None:
     """
     A function to print the header of the program.
 

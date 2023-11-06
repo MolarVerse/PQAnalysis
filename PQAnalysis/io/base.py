@@ -14,7 +14,10 @@ BaseReader
 import sys
 import os
 
+from beartype import beartype
 
+
+@beartype
 class BaseWriter:
     """
     A base class for all writers.
@@ -31,7 +34,7 @@ class BaseWriter:
         The name of the file to write to. If None, the output is printed to stdout.
     """
 
-    def __init__(self, filename: str = None, mode: str = 'w'):
+    def __init__(self, filename: str | None = None, mode: str | None = 'w') -> None:
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
 
@@ -63,14 +66,14 @@ class BaseWriter:
         self.mode = 'a'
         self.filename = filename
 
-    def open(self):
+    def open(self) -> None:
         """
         Opens the file to write to.
         """
         if self.filename is not None:
             self.file = open(self.filename, self.mode)
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the file to write to.
         """
@@ -80,6 +83,7 @@ class BaseWriter:
         self.file = None
 
 
+@beartype
 class BaseReader:
     """
     A base class for all readers.
@@ -92,7 +96,7 @@ class BaseReader:
         The name of the file to read from.
     """
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str) -> None:
         """
         Initializes the BaseReader with the given filename.
 
