@@ -8,6 +8,16 @@ from collections import defaultdict
 def count_decorator(func):
     """
     Decorator which counts the number of times a function is called.
+
+    Parameters
+    ----------
+    func : function
+        Function to be decorated.
+
+    Returns
+    -------
+    wrapper : function
+        Decorated function.
     """
     def wrapper(*args, **kwargs):
         wrapper.counter += 1
@@ -24,6 +34,16 @@ def count_decorator(func):
 def instance_function_count_decorator(func):
     """
     Decorator which counts the number of times a function is called for an instance of a class.
+
+    Parameters
+    ----------
+    func : function
+        Function to be decorated.
+
+    Returns
+    -------
+    new_func : function
+        Decorated function.
     """
 
     def new_func(self, *args, **kwargs):

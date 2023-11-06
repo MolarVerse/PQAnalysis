@@ -9,9 +9,13 @@ InfoFileReader
     A class to read info files.
 """
 
-from PQAnalysis.io.base import BaseReader
+from beartype import beartype
+from beartype.typing import Tuple, Dict
+
+from .base import BaseReader
 
 
+@beartype
 class InfoFileReader(BaseReader):
     """
     A class to read info files.
@@ -31,7 +35,7 @@ class InfoFileReader(BaseReader):
 
     formats = ["pimd-qmcf", "qmcfc"]
 
-    def __init__(self, filename: str, format: str = "pimd-qmcf"):
+    def __init__(self, filename: str, format: str = "pimd-qmcf") -> None:
         """
         Initializes the InfoFileReader with the given filename.
 
@@ -51,11 +55,11 @@ class InfoFileReader(BaseReader):
 
         if format not in self.formats:
             raise ValueError(
-                f"The format {format} is not supported. Supported formats are {self.formats}.")
+                f"Format {format} is not supported. Supported formats are {self.formats}.")
 
         self.format = format
 
-    def read(self) -> (dict, dict):
+    def read(self) -> Tuple[Dict, Dict | None]:
         """
         Reads the info file.
 
@@ -74,7 +78,7 @@ class InfoFileReader(BaseReader):
         elif self.format == "qmcfc":
             return self.read_qmcfc()
 
-    def read_pimd_qmcf(self) -> (dict, dict):
+    def read_pimd_qmcf(self) -> Tuple[Dict, Dict]:
         """
         Reads the info file in pimd-qmcf format.
 
@@ -108,7 +112,7 @@ class InfoFileReader(BaseReader):
 
         return info, units
 
-    def read_qmcfc(self) -> (dict, None):
+    def read_qmcfc(self) -> Tuple[Dict, None]:
         """
         Reads the info file in qmcfc format.
 
