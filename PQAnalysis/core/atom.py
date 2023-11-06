@@ -30,13 +30,16 @@ guess_element
 
 import numpy as np
 
-from typing import Union
 from multimethod import multimethod
+from beartype import beartype
+from beartype.typing import Any, Tuple
+from numbers import Real
 
 from PQAnalysis.utils.exceptions import ElementNotFoundError
 
 
-def guess_element(id: int | str) -> (str, int, float):
+@beartype
+def guess_element(id: int | str) -> Tuple[str, int, Real]:
     """
     Guesses the symbol, atomic number and mass of an atom from a string or
     integer identifier.
@@ -54,7 +57,7 @@ def guess_element(id: int | str) -> (str, int, float):
         The symbol of the atom (e.g. 'c')
     atomic_number : int
         The atomic number of the atom (e.g. 6)
-    mass : float
+    mass : Real
         The mass of the atom (e.g. 12.0107)
 
     Raises
@@ -80,11 +83,9 @@ def guess_element(id: int | str) -> (str, int, float):
             return symbol, atomic_number, mass
         except Exception:
             raise ElementNotFoundError(id)
-    else:
-        raise TypeError(
-            "Invalid type for atom id - must be either int (atomic number) or str (element name).")
 
 
+@beartype
 class Atom:
     """
     A class used to represent an atom in a molecule.
@@ -97,12 +98,12 @@ class Atom:
         The symbol of the atom_type (e.g. 'c')
     atomic_number : int
         The atomic number of the atom_type (e.g. 6)
-    mass : float
+    mass : Real
         The mass of the atom_type (e.g. 12.0107)
     """
 
     @multimethod
-    def __init__(self, name: str, use_guess_element: bool = True):
+    def __init__(self, name: str, use_guess_element: bool = True) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
 
@@ -129,7 +130,7 @@ class Atom:
             self._mass = None
 
     @multimethod
-    def __init__(self, name: str, id: int | str):
+    def __init__(self, name: str, id: int | str) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
 
@@ -149,7 +150,7 @@ class Atom:
         self._symbol, self._atomic_number, self._mass = guess_element(id)
 
     @multimethod
-    def __init__(self, id: int):
+    def __init__(self, id: int) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
 
@@ -165,7 +166,20 @@ class Atom:
         self._symbol, self._atomic_number, self._mass = guess_element(id)
         self._name = self._symbol
 
-    def __eq__(self, other: 'Atom') -> bool:
+    def __eq__(self, other: Any) -> bool:
+        """
+        Checks whether the Atom is equal to another Atom.
+
+        Parameters
+        ----------
+        other : Any
+            The other Atom to compare to.
+
+        Returns
+        -------
+        bool
+            True if the Atom is equal to the other Atom, False otherwise.
+        """
         if not isinstance(other, Atom):
             return False
 
@@ -177,9 +191,25 @@ class Atom:
         return is_equal
 
     def __str__(self) -> str:
+        """
+        Returns a string representation of the Atom.
+
+        Returns
+        -------
+        str
+            A string representation of the Atom.
+        """
         return f"Atom({self.name}, {self.atomic_number}, {self.symbol}, {self.mass})"
 
     def __repr__(self) -> str:
+        """
+        Returns a representation of the Atom.
+
+        Returns
+        -------
+        str
+            A representation of the Atom.
+        """
         return self.__str__()
 
     #######################
@@ -201,7 +231,7 @@ class Atom:
         return self._name
 
     @property
-    def symbol(self) -> str:
+    def symbol(self) -> str | None:
         """
         The symbol of the atom_type (e.g. 'c')
 
@@ -213,7 +243,7 @@ class Atom:
         return self._symbol
 
     @property
-    def atomic_number(self) -> int:
+    def atomic_number(self) -> int | None:
         """
         The atomic number of the atom_type (e.g. 6)
 
@@ -225,13 +255,13 @@ class Atom:
         return self._atomic_number
 
     @property
-    def mass(self) -> float:
+    def mass(self) -> Real | None:
         """
         The mass of the atom_type (e.g. 12.0107)
 
         Returns
         -------
-        float
+        Real
             The mass of the atom_type (e.g. 12.0107)
         """
         return self._mass

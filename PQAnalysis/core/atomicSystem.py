@@ -19,8 +19,8 @@ check_atoms_has_mass
 import numpy as np
 
 from beartype import beartype
-from beartype.typing import List
-from types import NoneType
+from beartype.typing import List, Any
+from numbers import Real
 
 from .atom import Atom
 from .cell import Cell
@@ -101,7 +101,7 @@ class AtomicSystem:
                  forces: Numpy2DFloatArray | None = None,
                  charges: Numpy1DFloatArray | None = None,
                  cell: Cell | None = None
-                 ):
+                 ) -> None:
         """
         Initializes the AtomicSystem with the given parameters.
 
@@ -180,13 +180,13 @@ class AtomicSystem:
         return np.array([atom.mass for atom in self._atoms])
 
     @property
-    def mass(self) -> float:
+    def mass(self) -> Real:
         """
         Returns the total mass of the system.
 
         Returns
         -------
-        float
+        Real
             The total mass of the system.
         """
         return np.sum(self.atomic_masses)
@@ -239,7 +239,7 @@ class AtomicSystem:
         """
         return ''.join([atom.name for atom in self.atoms])
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         """
         Checks whether the AtomicSystem is equal to another AtomicSystem.
 

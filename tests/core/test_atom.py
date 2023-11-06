@@ -16,11 +16,6 @@ def test_guess_element():
         guess_element(-1)
     assert str(exception.value) == "Id -1 is not a valid element identifier."
 
-    with pytest.raises(TypeError) as exception:
-        guess_element(1.2)
-    assert str(
-        exception.value) == "Invalid type for atom id - must be either int (atomic number) or str (element name)."
-
     symbol, atomic_number, mass = guess_element('C')
     assert symbol == 'c'
     assert atomic_number == 6

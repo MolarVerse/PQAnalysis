@@ -9,14 +9,15 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from typing import Union
+from beartype import beartype
 
-from PQAnalysis.utils.decorators import instance_function_count_decorator
-from PQAnalysis.io.base import BaseWriter
-from ..traj.trajectory import Trajectory, Frame
+from .base import BaseWriter
+from ..utils.decorators import instance_function_count_decorator
+from ..traj.trajectory import Trajectory
 
 
-def write_box(traj, filename: Union[str, None] = None, format: Union[str, None] = None):
+@beartype
+def write_box(traj, filename: str | None = None, format: str | None = None) -> None:
     '''
     Wrapper for BoxWriter to write a trajectory to a file.
 
@@ -35,6 +36,7 @@ def write_box(traj, filename: Union[str, None] = None, format: Union[str, None] 
     writer.write(traj)
 
 
+@beartype
 class BoxWriter(BaseWriter):
     """
     A class for writing a trajectory to a box file.
@@ -57,7 +59,7 @@ class BoxWriter(BaseWriter):
     """
     formats = [None, 'data', 'vmd']
 
-    def __init__(self, filename: str = None, format: str = None, mode='w'):
+    def __init__(self, filename: str | None = None, format: str | None = None, mode='w') -> None:
         """
         Initializes the BoxWriter with the given filename, format and mode.
 
@@ -87,7 +89,7 @@ class BoxWriter(BaseWriter):
 
         self.format = format
 
-    def write(self, traj: Trajectory, reset_counter: bool = True):
+    def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
         Wrapper to write the given trajectory to the file.
         Depending on the format, either write_vmd or write_box_file is called.
@@ -109,7 +111,7 @@ class BoxWriter(BaseWriter):
 
         self.close()
 
-    def write_vmd(self, traj: Trajectory):
+    def write_vmd(self, traj: Trajectory) -> None:
         """
         Writes the given trajectory to the file in VMD format.
 
@@ -156,7 +158,7 @@ class BoxWriter(BaseWriter):
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
     @instance_function_count_decorator
-    def write_box_file(self, traj: Trajectory, reset_counter: bool = True):
+    def write_box_file(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
         Writes the given trajectory to the file in data file format.
 
@@ -197,7 +199,7 @@ class BoxWriter(BaseWriter):
             print(
                 f"{counter + i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
 
-    def __check_PBC__(self, traj: Trajectory):
+    def __check_PBC__(self, traj: Trajectory) -> None:
         """
         Checks if the cell of the trajectory is not None.
 

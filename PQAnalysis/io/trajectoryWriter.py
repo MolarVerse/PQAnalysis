@@ -11,15 +11,18 @@ TrajectoryWriter
 
 import numpy as np
 
-from typing import List
+from beartype import beartype
+from beartype.typing import List
 
 from .base import BaseWriter
 from ..traj.trajectory import Trajectory
 from ..core.cell import Cell
 from ..core.atom import Atom
+from ..utils.mytypes import Numpy2DFloatArray
 
 
-def write_trajectory(traj, filename: str = None, format: str = None):
+@beartype
+def write_trajectory(traj, filename: str | None = None, format: str | None = None) -> None:
     """
     Wrapper for TrajectoryWriter to write a trajectory to a file.
 
@@ -38,6 +41,7 @@ def write_trajectory(traj, filename: str = None, format: str = None):
     writer.write(traj)
 
 
+@beartype
 class TrajectoryWriter(BaseWriter):
     """
     A class for writing a trajectory to a file.
@@ -71,7 +75,11 @@ class TrajectoryWriter(BaseWriter):
 
     formats = [None, 'pimd-qmcf', 'qmcfc']
 
-    def __init__(self, filename: str = None, format: str = None, mode: str = 'w'):
+    def __init__(self,
+                 filename: str | None = None,
+                 format: str | None = None,
+                 mode: str = 'w'
+                 ) -> None:
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
 
@@ -96,7 +104,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = format
 
-    def write(self, trajectory: Trajectory):
+    def write(self, trajectory: Trajectory) -> None:
         """
         Writes the trajectory to the file.
 
@@ -111,7 +119,7 @@ class TrajectoryWriter(BaseWriter):
             self.__write_coordinates__(frame.pos, frame.atoms)
         self.close()
 
-    def __write_header__(self, n_atoms: int, cell: Cell = None):
+    def __write_header__(self, n_atoms: int, cell: Cell | None = None) -> None:
         """
         Writes the header line of the frame to the file.
 
@@ -129,7 +137,7 @@ class TrajectoryWriter(BaseWriter):
         else:
             print(f"{n_atoms}\n", file=self.file)
 
-    def __write_coordinates__(self, xyz: np.array, atoms: List[Atom]):
+    def __write_coordinates__(self, xyz: Numpy2DFloatArray, atoms: List[Atom]) -> None:
         """
         Writes the coordinates of the frame to the file.
 

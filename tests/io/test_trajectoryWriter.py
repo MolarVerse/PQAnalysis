@@ -62,14 +62,14 @@ class TestTrajectoryWriter:
 
         writer = TrajectoryWriter()
         writer.__write_coordinates__(
-            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
 
         captured = capsys.readouterr()
         assert captured.out == "h 0 0 0\no 0 0 1\n"
 
         writer.format = "qmcfc"
         writer.__write_coordinates__(
-            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=[[0, 0, 0], [0, 0, 1]])
+            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
 
         captured = capsys.readouterr()
         assert captured.out == "X   0.0 0.0 0.0\nh 0 0 0\no 0 0 1\n"

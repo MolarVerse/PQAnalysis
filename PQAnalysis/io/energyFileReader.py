@@ -12,11 +12,14 @@ EnergyFileReader
 import os
 import numpy as np
 
-from PQAnalysis.io.base import BaseReader
-from PQAnalysis.io.infoFileReader import InfoFileReader
-from PQAnalysis.physicalData.energy import Energy
+from beartype import beartype
+
+from .base import BaseReader
+from .infoFileReader import InfoFileReader
+from ..physicalData.energy import Energy
 
 
+@beartype
 class EnergyFileReader(BaseReader):
     """
     A class to read energy files.
@@ -38,7 +41,12 @@ class EnergyFileReader(BaseReader):
 
     formats = ["pimd-qmcf", "qmcfc"]
 
-    def __init__(self, filename: str, info_filename: str = None, use_info_file: bool = True, format: str = "pimd-qmcf"):
+    def __init__(self,
+                 filename: str,
+                 info_filename: str | None = None,
+                 use_info_file: bool = True,
+                 format: str = "pimd-qmcf"
+                 ) -> None:
         """
         Initializes the EnergyFileReader with the given filename.
 
