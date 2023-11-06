@@ -10,6 +10,7 @@ dynamic = [
 authors = [
   { name="Jakob Gamper", email="97gamjak@gmail.com" },
   { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
+  { name="Clarissa A. Seidler", email="clarissa.seidler@gmail.com" },
 ]
 description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
 requires-python = ">=3.7"

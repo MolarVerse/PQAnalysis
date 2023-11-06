@@ -75,23 +75,6 @@ def check_atoms_has_mass(func):
 class AtomicSystem:
     """
     A class for storing atomic systems.
-
-    ...
-
-    Attributes
-    ----------
-    atoms : list
-        A list of Atom objects, by default []
-    pos : Numpy2DFloatArray
-        A 2d numpy.ndarray containing the positions of the atoms, by default np.zeros((0, 3)).
-    vel : Numpy2DFloatArray
-        A 2d numpy.ndarray containing the velocities of the atoms, by default np.zeros((0, 3)).
-    forces : Numpy2DFloatArray
-        A 2d numpy.ndarray containing the forces on the atoms, by default np.zeros((0, 3)).
-    charges : Numpy1DFloatArray
-        A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).
-    cell : Cell
-        The unit cell of the system, by default None.
     """
 
     def __init__(self,

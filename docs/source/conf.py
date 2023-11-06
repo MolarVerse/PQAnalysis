@@ -9,8 +9,8 @@
 import sys
 import os
 project = 'PQAnalysis'
-copyright = '2023, Josef M. Gallmetzer, Jakob Gamper'
-author = 'Jakob Gamper, Josef M. Gallmetzer'
+copyright = '2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler'
+author = 'Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

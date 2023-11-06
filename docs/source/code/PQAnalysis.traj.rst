@@ -12,14 +12,6 @@ PQAnalysis.traj.frame module
    :undoc-members:
    :show-inheritance:
 
-PQAnalysis.traj.selection module
---------------------------------
-
-.. automodule:: PQAnalysis.traj.selection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 PQAnalysis.traj.trajectory module
 ---------------------------------
 

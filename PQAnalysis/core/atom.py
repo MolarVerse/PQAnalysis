@@ -89,17 +89,6 @@ def guess_element(id: int | str) -> Tuple[str, int, Real]:
 class Atom:
     """
     A class used to represent an atom in a molecule.
-
-    Attributes
-    ----------
-    name : str
-        The name of the atom_type (e.g. 'C1')
-    symbol : str
-        The symbol of the atom_type (e.g. 'c')
-    atomic_number : int
-        The atomic number of the atom_type (e.g. 6)
-    mass : Real
-        The mass of the atom_type (e.g. 12.0107)
     """
 
     @multimethod

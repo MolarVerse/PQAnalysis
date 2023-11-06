@@ -20,6 +20,22 @@ PQAnalysis.io.boxWriter module
    :undoc-members:
    :show-inheritance:
 
+PQAnalysis.io.energyFileReader module
+-------------------------------------
+
+.. automodule:: PQAnalysis.io.energyFileReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.io.infoFileReader module
+-----------------------------------
+
+.. automodule:: PQAnalysis.io.infoFileReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 PQAnalysis.io.trajectoryReader module
 -------------------------------------
 
