@@ -16,4 +16,3 @@ PQAnalysis
 
 
 :ref:`developerGuide`
-:ref:`modules`
