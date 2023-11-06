@@ -75,8 +75,6 @@ class Energy():
         """
         if len(np.shape(data)) == 1:
             data = np.array([data])
-        elif len(np.shape(data)) > 2:
-            raise ValueError("data has to be a 1D or 2D array.")
 
         self.data = np.array(data)
 
@@ -119,11 +117,6 @@ class Energy():
         ValueError
             If the keys of the info and units dictionary do not match.
         """
-        if info is not None and not isinstance(info, dict):
-            raise TypeError("info has to be a dictionary.")
-
-        if units is not None and not isinstance(units, dict):
-            raise TypeError("units has to be a dictionary.")
 
         if info is None:
             self.info_given = False
