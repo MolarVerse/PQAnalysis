@@ -4,12 +4,9 @@ Common things needed by command line scripts.
 
 import sys
 
-from beartype import beartype
-
 from .._version import __version__
 
 
-@beartype
 def print_header() -> None:
     """
     A function to print the header of the program.

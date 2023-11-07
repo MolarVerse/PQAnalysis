@@ -2,11 +2,9 @@
 A module containing different exceptions which could be useful.
 """
 
-from beartype import beartype
 from beartype.typing import Any
 
 
-@beartype
 class ElementNotFoundError(Exception):
     """
     Exception raised if the given element id is not valid

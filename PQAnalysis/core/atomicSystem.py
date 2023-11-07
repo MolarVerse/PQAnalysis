@@ -18,7 +18,6 @@ check_atoms_has_mass
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import List, Any
 from numbers import Real
 
@@ -71,7 +70,6 @@ def check_atoms_has_mass(func):
     return wrapper
 
 
-@beartype
 class AtomicSystem:
     """
     A class for storing atomic systems.

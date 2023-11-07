@@ -14,10 +14,7 @@ BaseReader
 import sys
 import os
 
-from beartype import beartype
 
-
-@beartype
 class BaseWriter:
     """
     A base class for all writers.
@@ -83,7 +80,6 @@ class BaseWriter:
         self.file = None
 
 
-@beartype
 class BaseReader:
     """
     A base class for all readers.

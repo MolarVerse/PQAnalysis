@@ -13,13 +13,11 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import List, Iterator, Any
 
 from .frame import Frame
 
 
-@beartype
 class Trajectory:
     """
     A trajectory object is a sequence of frames.

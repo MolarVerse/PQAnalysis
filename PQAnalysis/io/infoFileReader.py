@@ -9,13 +9,11 @@ InfoFileReader
     A class to read info files.
 """
 
-from beartype import beartype
 from beartype.typing import Tuple, Dict
 
 from .base import BaseReader
 
 
-@beartype
 class InfoFileReader(BaseReader):
     """
     A class to read info files.

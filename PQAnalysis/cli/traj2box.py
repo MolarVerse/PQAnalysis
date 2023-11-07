@@ -12,7 +12,6 @@ line contains the information about the box dimensions a, b and c and the box an
 
 import argparse
 
-from beartype import beartype
 from beartype.typing import List
 
 from ..io.boxWriter import BoxWriter
@@ -36,7 +35,6 @@ def main():
     traj2box(args.trajectory_file, args.vmd, args.output)
 
 
-@beartype
 def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) -> None:
     """
     Converts multiple trajectory files to a box file.

@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import Any, List
 
 from ..core.topology import Topology
@@ -23,7 +22,6 @@ from ..core.cell import Cell
 from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
 
 
-@beartype
 class Frame:
     """
     A class for storing atomic systems with topology information.

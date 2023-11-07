@@ -11,15 +11,12 @@ Energy
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import Dict
 from collections import defaultdict
-from collections.abc import Iterable
 
 from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
 
 
-@beartype
 class Energy():
     """
     A class to store the data of an energy file.
