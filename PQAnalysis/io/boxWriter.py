@@ -9,14 +9,11 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from beartype import beartype
-
 from .base import BaseWriter
 from ..utils.decorators import instance_function_count_decorator
 from ..traj.trajectory import Trajectory
 
 
-@beartype
 def write_box(traj, filename: str | None = None, format: str | None = None) -> None:
     '''
     Wrapper for BoxWriter to write a trajectory to a file.
@@ -36,7 +33,6 @@ def write_box(traj, filename: str | None = None, format: str | None = None) -> N
     writer.write(traj)
 
 
-@beartype
 class BoxWriter(BaseWriter):
     """
     A class for writing a trajectory to a box file.

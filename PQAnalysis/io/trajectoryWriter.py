@@ -11,7 +11,6 @@ TrajectoryWriter
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import List
 
 from .base import BaseWriter
@@ -21,7 +20,6 @@ from ..core.atom import Atom
 from ..utils.mytypes import Numpy2DFloatArray
 
 
-@beartype
 def write_trajectory(traj, filename: str | None = None, format: str | None = None) -> None:
     """
     Wrapper for TrajectoryWriter to write a trajectory to a file.
@@ -41,7 +39,6 @@ def write_trajectory(traj, filename: str | None = None, format: str | None = Non
     writer.write(traj)
 
 
-@beartype
 class TrajectoryWriter(BaseWriter):
     """
     A class for writing a trajectory to a file.

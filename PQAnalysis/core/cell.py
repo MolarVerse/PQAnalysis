@@ -13,14 +13,12 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import Any
 from numbers import Real
 
 from ..utils.mytypes import Numpy3x3FloatArray, Numpy2DFloatArray, Numpy1DFloatArray
 
 
-@beartype
 class Cell:
     '''
     Class for storing unit cell parameters.

@@ -13,7 +13,6 @@ FrameReader
 
 import numpy as np
 
-from beartype import beartype
 from beartype.typing import Tuple, List
 
 from .base import BaseReader
@@ -26,7 +25,6 @@ from ..utils.exceptions import ElementNotFoundError
 from ..utils.mytypes import Numpy2DFloatArray
 
 
-@beartype
 class TrajectoryReader(BaseReader):
     """
     A class for reading a trajectory from a file.
@@ -96,7 +94,6 @@ class TrajectoryReader(BaseReader):
         return Trajectory(self.frames)
 
 
-@beartype
 class FrameReader:
     """
     FrameReader reads a frame from a string.

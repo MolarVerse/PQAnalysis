@@ -31,14 +31,12 @@ guess_element
 import numpy as np
 
 from multimethod import multimethod
-from beartype import beartype
 from beartype.typing import Any, Tuple
 from numbers import Real
 
 from PQAnalysis.utils.exceptions import ElementNotFoundError
 
 
-@beartype
 def guess_element(id: int | str) -> Tuple[str, int, Real]:
     """
     Guesses the symbol, atomic number and mass of an atom from a string or
@@ -85,7 +83,6 @@ def guess_element(id: int | str) -> Tuple[str, int, Real]:
             raise ElementNotFoundError(id)
 
 
-@beartype
 class Atom:
     """
     A class used to represent an atom in a molecule.

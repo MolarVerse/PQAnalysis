@@ -12,14 +12,11 @@ EnergyFileReader
 import os
 import numpy as np
 
-from beartype import beartype
-
 from .base import BaseReader
 from .infoFileReader import InfoFileReader
 from ..physicalData.energy import Energy
 
 
-@beartype
 class EnergyFileReader(BaseReader):
     """
     A class to read energy files.

@@ -9,7 +9,7 @@ visibility and debugging reasons in conjunction with vmd.
 
 import argparse
 
-from typing import List
+from beartype.typing import List
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter
 from PQAnalysis.io.trajectoryReader import TrajectoryReader
