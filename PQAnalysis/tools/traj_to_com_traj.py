@@ -2,14 +2,16 @@
 A module containing the tool to compute a center of mass trajectory for a given selection.
 """
 
-from typing import Union, List
+import numpy as np
 
-from PQAnalysis.traj.selection import Selection
+from beartype.typing import List
+
 from PQAnalysis.traj.trajectory import Trajectory
 
 
 # TODO: add atom to element mapper if atomname not element names
-def traj_to_com_traj(trajectory: Trajectory, selection: Union[List[int], Selection] = None, group=None):
+# TODO rethink concept of selection/getitem/slices
+def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Trajectory:
     """
     Function that computes the center of mass trajectory for a given selection.
 
@@ -30,15 +32,13 @@ def traj_to_com_traj(trajectory: Trajectory, selection: Union[List[int], Selecti
     if len(trajectory) == 0:
         return Trajectory()
 
-    if selection is None:
-        selection = Selection(list(range(len(trajectory[0].atoms))))
-
-    if not isinstance(selection, Selection):
-        selection = Selection(selection)
-
     com_traj = Trajectory()
     for frame in trajectory:
+
+        if selection is None:
+            selection = slice(0, frame.n_atoms)
+
         frame = frame[selection]
-        com_traj.append(frame.compute_com(group=group))
+        com_traj.append(frame.compute_com_frame(group=group))
 
     return com_traj

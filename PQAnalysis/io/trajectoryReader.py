@@ -12,16 +12,24 @@ FrameReader
 """
 
 import numpy as np
-import os
 
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.pbc.cell import Cell
+from beartype.typing import Tuple, List
+
+from .base import BaseReader
+from ..traj.frame import Frame
+from ..traj.trajectory import Trajectory
+from ..core.cell import Cell
+from ..core.atom import Atom
+from ..core.atomicSystem import AtomicSystem
+from ..utils.exceptions import ElementNotFoundError
+from ..utils.mytypes import Numpy2DFloatArray
 
 
-class TrajectoryReader:
+class TrajectoryReader(BaseReader):
     """
     A class for reading a trajectory from a file.
+
+    Inherited from BaseReader.
 
     ...
 
@@ -33,7 +41,7 @@ class TrajectoryReader:
         The list of frames read from the file.
     """
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str) -> None:
         """
         Initializes the TrajectoryReader with the given filename.
 
@@ -41,16 +49,8 @@ class TrajectoryReader:
         ----------
         filename : str
             The name of the file to read from.
-
-        Raises
-        ------
-        FileNotFoundError
-            If the given filename does not exist.
         """
-        if not os.path.isfile(filename):
-            raise FileNotFoundError(f"File {filename} not found.")
-
-        self.filename = filename
+        super().__init__(filename)
         self.frames = []
 
     def read(self) -> Trajectory:
@@ -119,9 +119,6 @@ class FrameReader:
             If the given frame_string is not a string.
         """
 
-        if not isinstance(frame_string, str):
-            raise TypeError('frame_string must be a str type.')
-
         splitted_frame_string = frame_string.split('\n')
         header_line = splitted_frame_string[0]
 
@@ -129,9 +126,14 @@ class FrameReader:
 
         xyz, atoms = self.__read_xyz__(splitted_frame_string, n_atoms)
 
-        return Frame(xyz, np.array(atoms), cell)
+        try:
+            atoms = [Atom(atom) for atom in atoms]
+        except ElementNotFoundError:
+            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
 
-    def __read_header_line__(self, header_line: str) -> (int, Cell):
+        return Frame(AtomicSystem(atoms=atoms, pos=xyz, cell=cell))
+
+    def __read_header_line__(self, header_line: str) -> Tuple[int, Cell | None]:
         """
         Reads the header line of a frame.
 
@@ -176,7 +178,7 @@ class FrameReader:
 
         return n_atoms, cell
 
-    def __read_xyz__(self, splitted_frame_string: str, n_atoms: int) -> (np.array, list):
+    def __read_xyz__(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy2DFloatArray, List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 

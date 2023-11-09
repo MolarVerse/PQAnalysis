@@ -28,6 +28,14 @@ PQAnalysis.utils.exceptions module
    :undoc-members:
    :show-inheritance:
 
+PQAnalysis.utils.mytypes module
+-------------------------------
+
+.. automodule:: PQAnalysis.utils.mytypes
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
