@@ -1,5 +1,5 @@
 """
-A module containing the base class for all writers.
+A module containing the base class for all writers and readers.
 
 ...
 
@@ -7,6 +7,8 @@ Classes
 -------
 BaseWriter
     A base class for all writers.
+BaseReader
+    A base class for all readers.
 """
 
 import sys
@@ -29,7 +31,7 @@ class BaseWriter:
         The name of the file to write to. If None, the output is printed to stdout.
     """
 
-    def __init__(self, filename: str = None, mode: str = 'w'):
+    def __init__(self, filename: str | None = None, mode: str | None = 'w') -> None:
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
 
@@ -61,14 +63,14 @@ class BaseWriter:
         self.mode = 'a'
         self.filename = filename
 
-    def open(self):
+    def open(self) -> None:
         """
         Opens the file to write to.
         """
         if self.filename is not None:
             self.file = open(self.filename, self.mode)
 
-    def close(self):
+    def close(self) -> None:
         """
         Closes the file to write to.
         """
@@ -76,3 +78,35 @@ class BaseWriter:
             self.file.close()
 
         self.file = None
+
+
+class BaseReader:
+    """
+    A base class for all readers.
+
+    ...
+
+    Attributes
+    ----------
+    filename : str
+        The name of the file to read from.
+    """
+
+    def __init__(self, filename: str) -> None:
+        """
+        Initializes the BaseReader with the given filename.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to read from.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the given file does not exist.
+        """
+        if not os.path.isfile(filename):
+            raise FileNotFoundError(f"File {filename} not found.")
+
+        self.filename = filename

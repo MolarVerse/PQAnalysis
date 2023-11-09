@@ -1,10 +1,13 @@
 import pytest
-import os
 import numpy as np
 
+from beartype.roar import BeartypeException
+
 from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader
-from PQAnalysis.pbc.cell import Cell
+from PQAnalysis.core.cell import Cell
 from PQAnalysis.traj.frame import Frame
+from PQAnalysis.core.atomicSystem import AtomicSystem
+from PQAnalysis.core.atom import Atom
 
 
 class TestTrajectoryReader:
@@ -36,12 +39,19 @@ class TestTrajectoryReader:
         reader = TrajectoryReader("tmp")
 
         traj = reader.read()
-        assert traj[0] == Frame([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]],
-                                ["h", "o"], Cell(1.0, 1.0, 1.0))
+
+        cell = Cell(1.0, 1.0, 1.0)
+        atoms = [Atom(atom) for atom in ["h", "o"]]
+
+        frame1 = Frame(system=AtomicSystem(
+            atoms=atoms, pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]), cell=cell))
+        frame2 = Frame(system=AtomicSystem(
+            atoms=atoms, pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]), cell=cell))
+
+        assert traj[0] == frame1
         # NOTE: here cell is not none because of the consecutive reading of frames
         # Cell will be taken from the previous frame
-        assert traj[1] == Frame([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]], [
-                                "h", "o"], Cell(1.0, 1.0, 1.0))
+        assert traj[1] == frame2
 
 
 class TestFrameReader:
@@ -86,13 +96,22 @@ class TestFrameReader:
     def test_read(self):
         reader = FrameReader()
 
-        with pytest.raises(TypeError) as exception:
+        with pytest.raises(BeartypeException):
             reader.read(["tmp"])
-        assert str(exception.value) == "frame_string must be a str type."
 
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
         assert frame.n_atoms == 2
-        assert all(frame.atoms == np.array(["h", "o"]))
-        assert np.allclose(frame.xyz, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.atoms == [Atom(atom) for atom in ["h", "o"]]
+        assert np.allclose(frame.pos, [
+                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
+
+        frame = reader.read(
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0")
+        assert frame.n_atoms == 2
+        assert frame.atoms == [Atom(atom, use_guess_element=False)
+                               for atom in ["h", "o1"]]
+        assert np.allclose(frame.pos, [
+                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)

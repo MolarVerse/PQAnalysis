@@ -1,0 +1,17 @@
+---------------------------------------------------------------------------------
+| This file gives some information about the running simulation:    		|
+---------------------------------------------------------------------------------
+|     SIMULATION TIME	      90.000		QM_MOLECULES	    1.000000	|
+|     TEMPERATURE	     300.359		PRESSURE	      33.888	|
+|     E(QM)		 -681669.630		E(MM)		       0.000	|
+|     E(KIN)		     504.359		E(INTRA)	       0.000	|
+|     E(BOND)		       0.000		E(ANGLE)	       0.000	|
+|     E(DIHEDRAL)	       0.000		E(IMPROPER)	       0.000	|
+|     E(COULOMB)	       0.000		E(NONCOULOMB)	       0.000	|
+|     E(CF)		       0.000		E(CF_RF)	       0.000	|
+|     E(RF)		       0.000		E(THREEBODY)	       0.000	|
+|     E(NH_MOM)		       4.530		E(NH_FRIC)	    1901.373	|
+|     VOLUME		   34404.991		DENSITY		    0.370546	|
+|     MOMENTUM		   2.296e-14		LOOPTIME 	      11.000	|
+---------------------------------------------------------------------------------
+

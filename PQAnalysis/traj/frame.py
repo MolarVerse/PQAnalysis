@@ -1,222 +1,203 @@
 """
-A module containing the Frame class and its associated methods.
+A module containing the Frame class.
 
 ...
 
 Classes
 -------
 Frame
-    A class to represent a frame of a trajectory.
+    A class for storing atomic systems with topology information.
 """
+
+from __future__ import annotations
 
 import numpy as np
 
-from PQAnalysis.traj.selection import Selection
-from PQAnalysis.atom.molecule import Molecule
-from PQAnalysis.pbc.cell import Cell
+from beartype.typing import Any, List
+
+from ..core.topology import Topology
+from ..core.atomicSystem import AtomicSystem
+from ..core.atom import Atom
+from ..core.cell import Cell
+from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class Frame:
-    '''
-    A class to represent a frame of a trajectory.
+    """
+    A class for storing atomic systems with topology information.
 
     ...
 
     Attributes
     ----------
-    n_atoms : int
-        The number of atoms in the frame.
-    xyz : np.array(n_atoms, 3)
-        The xyz coordinates of the frame.
-    atoms : np.array(n_atoms)
-        The atoms in the frame.
-    cell : Cell
-        The cell of the frame.
-    '''
+    system : AtomicSystem
+        The atomic system.
+    topology : Topology
+        The topology of the atomic system.
+    """
 
-    def __init__(self, xyz: np.array, atoms: np.array, cell: Cell = None):
+    def __init__(self, system: AtomicSystem = AtomicSystem(), topology: Topology | None = None) -> None:
         """
-        Initializes the Frame with the given number of atoms, xyz coordinates, atoms, and cell.
+        Initializes the Frame with the given parameters.
 
         Parameters
         ----------
-        n_atoms : int
-            The number of atoms in the frame.
-        xyz : np.array(n_atoms, 3)
-            The xyz coordinates of the frame.
-        atoms : np.array(n_atoms)
-            The atoms in the frame.
-        cell : Cell, optional
-            The cell of the frame.
+        system : AtomicSystem, optional
+            The atomic system, by default AtomicSystem()    
+        topology : Topology, optional
+            The topology of the atomic system, by default None
         """
+        self.system = system
+        self.topology = topology
 
-        xyz = np.array(xyz)
-        atoms = np.array(atoms)
-
-        if len(np.shape(xyz)) != 2 or np.shape(xyz)[1] != 3:
-            raise ValueError(
-                'xyz must be a iterable with following shape - (n_atoms, 3).')
-
-        if len(np.shape(atoms)) != 1:
-            raise ValueError(
-                'atoms must be a iterable with following shape - (n_atoms,).')
-
-        if len(xyz) != len(atoms):
-            raise ValueError('xyz and atoms must have the same length.')
-
-        self.n_atoms = len(atoms)
-        self.xyz = np.array(xyz)
-        self.atoms = np.array(atoms)
-        self.cell = cell
-
-    @property
-    def PBC(self):
+    def compute_com_frame(self, group=None) -> Frame:
         """
-        Returns True if the frame has a cell, False otherwise.
-
-        Returns
-        -------
-        bool
-            True if the frame has a cell, False otherwise.
-        """
-        if self.cell is not None:
-            return True
-        else:
-            return False
-
-    def __getitem__(self, index):
-        """
-        Makes the Frame indexable.
-
-        Parameters
-        ----------
-        index : int or Selection
-            The index of the new Frame.
-
-        Raises
-        ------
-        ValueError
-            If the selection is empty.
-
-        Returns
-        -------
-        Frame
-            The new Frame with the given index.
-        """
-        if isinstance(index, Selection):
-            index = index.selection
-
-        if isinstance(index, int):
-            atoms = np.array([self.atoms[index]])
-            xyz = np.array([self.xyz[index]])
-        else:
-            atoms = self.atoms[index]
-            xyz = self.xyz[index]
-
-        frame = Frame(xyz, atoms, cell=self.cell)
-
-        if frame.n_atoms == 0:
-            raise ValueError('Selection is empty.')
-
-        return frame
-
-    def compute_com(self, group=None):
-        """
-        Computes the center of mass of the frame.
-
-        Divides the frame into groups of atoms and computes the center of mass of each group.
-        If group is None, the group is all atoms.
+        Computes a new Frame with the center of mass of the system or groups of atoms.  
 
         Parameters
         ----------
         group : int, optional
-            The group to compute the center of mass for.
+            group of atoms to compute the center of mass of, by default None (all atoms)
+
+        Returns
+        -------
+        Frame
+            A new Frame with the center of mass of the system or groups of atoms.
 
         Raises
         ------
         ValueError
             If the number of atoms in the selection is not a multiple of group.
-
-        Returns
-        -------
-        Frame
-            The new Frame with the center of mass of each group.
         """
         if group is None:
             group = self.n_atoms
+
         elif self.n_atoms % group != 0:
             raise ValueError(
                 'Number of atoms in selection is not a multiple of group.')
 
-        com = np.zeros((self.n_atoms // group, 3))
-        molecule_names = np.zeros(self.n_atoms // group, dtype=object)
+        pos = []
+        names = []
+
+        print(self.n_atoms)
 
         j = 0
         for i in range(0, self.n_atoms, group):
-            molecule = Molecule(self.atoms[i:i+group], self.xyz[i:i+group])
+            atomic_system = AtomicSystem(
+                atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
 
-            com[j] = molecule.com(self.cell)
-
-            molecule_names[j] = molecule.name
+            print(atomic_system.center_of_mass)
+            pos.append(atomic_system.center_of_mass)
+            print(pos)
+            names.append(atomic_system.combined_name)
 
             j += 1
 
-        return Frame(com, molecule_names, cell=self.cell)
+        names = [Atom(name, use_guess_element=False) for name in names]
 
-    def is_combinable(self, other: 'Frame') -> bool:
+        print(pos)
+
+        return Frame(AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell))
+
+    def __eq__(self, other: Any) -> bool:
         """
-        Checks if two Frames can be combined.
+        Checks whether the Frame is equal to another Frame.
 
         Parameters
         ----------
         other : Frame
-            The Frame to check if it can be combined with.
+            The other Frame to compare to.
 
         Returns
         -------
         bool
-            True if the Frames can be combined, False otherwise.
+            Whether the Frame is equal to the other Frame.
         """
-
         if not isinstance(other, Frame):
             return False
 
-        if self.n_atoms != other.n_atoms:
-            return False
+        return self.system == other.system and self.topology == other.topology
 
-        if not np.array_equal(self.atoms, other.atoms):
-            return False
+    def __getitem__(self, key: int | slice) -> 'Frame':
+        if self.topology is None:
+            return Frame(system=self.system[key])
+        else:
+            return Frame(system=self.system[key], topology=self.topology[key])
 
-        return True
+    #########################
+    #                       #
+    #  Forwarded properties #
+    #                       #
+    #########################
 
-    def __eq__(self, other: 'Frame') -> bool:
+    @property
+    def PBC(self) -> bool:
         """
-        Checks if two Frames are equal.
-
-        Parameters
-        ----------
-        other : Frame
-            The Frame to compare to.
+        Whether the system has periodic boundary conditions.
 
         Returns
         -------
         bool
-            True if the Frames are equal, False otherwise.
+            Whether the system has periodic boundary conditions.
         """
+        return self.system.PBC
 
-        if not isinstance(other, Frame):
-            return False
+    @property
+    def cell(self) -> Cell | None:
+        """
+        The unit cell of the system.
 
-        if self.n_atoms != other.n_atoms:
-            return False
+        Returns
+        -------
+        Cell | None
+            The unit cell of the system.
+        """
+        return self.system.cell
 
-        if not np.array_equal(self.xyz, other.xyz):
-            return False
+    @cell.setter
+    def cell(self, cell: Cell | None) -> Cell | None:
+        """
+        The unit cell of the system.
 
-        if not np.array_equal(self.atoms, other.atoms):
-            return False
+        Returns
+        -------
+        Cell | None
+            The unit cell of the system.
+        """
+        self.system.cell = cell
 
-        if self.cell != other.cell:
-            return False
+    @property
+    def n_atoms(self) -> int:
+        """
+        The number of atoms in the system.
 
-        return True
+        Returns
+        -------
+        int
+            The number of atoms in the system.
+        """
+        return self.system.n_atoms
+
+    @property
+    def pos(self) -> Numpy2DFloatArray:
+        """
+        The positions of the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The positions of the atoms in the system.
+        """
+        return self.system.pos
+
+    @property
+    def atoms(self) -> List[Atom]:
+        """
+        The atoms in the system.
+
+        Returns
+        -------
+        list[Atom]
+            The atoms in the system.
+        """
+        return self.system.atoms

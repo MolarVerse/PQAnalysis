@@ -10,9 +10,10 @@ dynamic = [
 authors = [
   { name="Jakob Gamper", email="97gamjak@gmail.com" },
   { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
+  { name="Clarissa A. Seidler", email="clarissa.seidler@gmail.com" },
 ]
 description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
@@ -20,7 +21,9 @@ classifiers = [
 ]
 
 dependencies = [
-    'numpy'
+    "numpy",
+    "beartype",
+    "multimethod",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +31,12 @@ test = [
     "pytest",
     "coverage",
     "pytest-cov"
+]
+docs = [
+    "sphinx",
+    "sphinx-sitemap",
+    "myst-parser",
+    "sphinx-rtd-theme"
 ]
 
 [tool.setuptools_scm]
@@ -38,5 +47,5 @@ traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 
 [project.urls]
-"Homepage" = "https://github.com/97gamjak/PQAnalysis"
-"PIMD-QMCF" = "https://github.com/97gamjak/pimd_qmcf"
+"Homepage" = "https://github.com/pimd-qmcf/PQAnalysis"
+"PIMD-QMCF" = "https://github.com/pimd-qmcf/pimd_qmcf"
