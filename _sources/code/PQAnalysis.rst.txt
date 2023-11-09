@@ -8,8 +8,9 @@ Subpackages
    :maxdepth: 4
 
    PQAnalysis.cli
+   PQAnalysis.core
    PQAnalysis.io
-   PQAnalysis.pbc
+   PQAnalysis.physicalData
    PQAnalysis.tools
    PQAnalysis.traj
    PQAnalysis.utils
