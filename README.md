@@ -1,8 +1,9 @@
-# PQAnalysis
+#PQAnalysis
 
 [![CI](https://github.com/97gamjak/PQAnalysis/actions/workflows/ci.yml/badge.svg)](https://github.com/97gamjak/PQAnalysis/actions/workflows/ci.yml)
 [![Docs](https://github.com/97gamjak/PQAnalysis/actions/workflows/docs.yml/badge.svg)](https://97gamjak.github.io/PQAnalysis/)
 [![codecov](https://codecov.io/gh/97gamjak/PQAnalysis/graph/badge.svg?token=IDFK8L6IIQ)](https://codecov.io/gh/97gamjak/PQAnalysis)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 The main purpose of this package is to provide useful tools for the analysis of the Molecular Dynamics software package [PIMD-QMCF](https://github.com/97gamjak/pimd_qmcf). Furthermore, the intent of this package is to enable straightforward implementations of newly developed analysis tools on top of the provided API.
 
