@@ -47,5 +47,5 @@ traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 
 [project.urls]
-"Homepage" = "https://github.com/97gamjak/PQAnalysis"
-"PIMD-QMCF" = "https://github.com/97gamjak/pimd_qmcf"
+"Homepage" = "https://github.com/pimd-qmcf/PQAnalysis"
+"PIMD-QMCF" = "https://github.com/pimd-qmcf/pimd_qmcf"
