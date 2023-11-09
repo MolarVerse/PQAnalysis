@@ -1,4 +1,4 @@
-#PQAnalysis
+# PQAnalysis
 
 [![CI](https://github.com/97gamjak/PQAnalysis/actions/workflows/ci.yml/badge.svg)](https://github.com/97gamjak/PQAnalysis/actions/workflows/ci.yml)
 [![Docs](https://github.com/97gamjak/PQAnalysis/actions/workflows/docs.yml/badge.svg)](https://97gamjak.github.io/PQAnalysis/)
