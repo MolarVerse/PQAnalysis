@@ -20,7 +20,6 @@ import numpy as np
 
 from beartype import beartype
 from beartype.typing import List
-from types import NoneType
 
 from .atom import Atom
 from .cell import Cell
