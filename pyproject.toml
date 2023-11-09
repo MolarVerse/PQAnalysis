@@ -12,7 +12,7 @@ authors = [
   { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
 ]
 description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
-requires-python = ">=3.7"
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
