@@ -14,8 +14,48 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import List, Iterator, Any
+from enum import Enum
 
 from .frame import Frame
+
+
+class TrajectoryFormat(Enum):
+    """
+    An enumeration of the supported trajectory formats.
+
+    ...
+
+    Attributes
+    ----------
+    XYZ : str
+        The XYZ format.
+    VEL : str
+        The VEL format.
+    """
+
+    XYZ = "XYZ"
+    VEL = "VEL"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Any:
+        """
+        This method allows a trajectory format to be retrieved from a string.
+
+        Parameters
+        ----------
+        value : str
+            _description_
+
+        Returns
+        -------
+        Any
+            _description_
+        """
+        value = value.lower()
+        for member in cls:
+            if member.value.lower() == value:
+                return member
+        return None
 
 
 class Trajectory:
