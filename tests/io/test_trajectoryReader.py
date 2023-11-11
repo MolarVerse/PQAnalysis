@@ -60,22 +60,22 @@ class TestFrameReader:
         reader = FrameReader()
 
         with pytest.raises(ValueError) as exception:
-            reader.__read_header_line__("1 2.0 3.0")
+            reader._read_header_line("1 2.0 3.0")
         assert str(
             exception.value) == "Invalid file format in header line of Frame."
 
-        n_atoms, cell = reader.__read_header_line__(
+        n_atoms, cell = reader._read_header_line(
             "1 2.0 3.0 4.0 5.0 6.0 7.0")
         assert n_atoms == 1
         assert np.allclose(cell.box_lengths, [2.0, 3.0, 4.0])
         assert np.allclose(cell.box_angles, [5.0, 6.0, 7.0])
 
-        n_atoms, cell = reader.__read_header_line__("2 2.0 3.0 4.0")
+        n_atoms, cell = reader._read_header_line("2 2.0 3.0 4.0")
         assert n_atoms == 2
         assert np.allclose(cell.box_lengths, [2.0, 3.0, 4.0])
         assert np.allclose(cell.box_angles, [90.0, 90.0, 90.0])
 
-        n_atoms, cell = reader.__read_header_line__("3")
+        n_atoms, cell = reader._read_header_line("3")
         assert n_atoms == 3
         assert cell is None
 
@@ -83,12 +83,12 @@ class TestFrameReader:
         reader = FrameReader()
 
         with pytest.raises(ValueError) as exception:
-            reader.__read_xyz__(
+            reader._read_xyz(
                 ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0"], n_atoms=2)
         assert str(
             exception.value) == "Invalid file format in xyz coordinates of Frame."
 
-        xyz, atoms = reader.__read_xyz__(
+        xyz, atoms = reader._read_xyz(
             ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0 2.0"], n_atoms=2)
         assert np.allclose(xyz, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert atoms == ["h", "o"]

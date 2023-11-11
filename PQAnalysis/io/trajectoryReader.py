@@ -14,10 +14,11 @@ FrameReader
 import numpy as np
 
 from beartype.typing import Tuple, List
+from enum import Enum
 
 from .base import BaseReader
 from ..traj.frame import Frame
-from ..traj.trajectory import Trajectory
+from ..traj.trajectory import Trajectory, TrajectoryFormat
 from ..core.cell import Cell
 from ..core.atom import Atom
 from ..core.atomicSystem import AtomicSystem
@@ -41,7 +42,7 @@ class TrajectoryReader(BaseReader):
         The list of frames read from the file.
     """
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str, format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
         Initializes the TrajectoryReader with the given filename.
 
@@ -52,6 +53,7 @@ class TrajectoryReader(BaseReader):
         """
         super().__init__(filename)
         self.frames = []
+        self.format = format
 
     def read(self) -> Trajectory:
         """
@@ -79,7 +81,8 @@ class TrajectoryReader(BaseReader):
                     frame_string += line
                 elif line.split()[0].isdigit():
                     if frame_string != '':
-                        self.frames.append(frame_reader.read(frame_string))
+                        self.frames.append(frame_reader.read(
+                            frame_string, format=self.format))
                     frame_string = line
                 else:
                     frame_string += line
@@ -99,9 +102,37 @@ class FrameReader:
     FrameReader reads a frame from a string.
     """
 
-    def read(self, frame_string: str) -> Frame:
+    def read(self, frame_string: str, format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> Frame:
         """
         Reads a frame from a string.
+
+        Parameters
+        ----------
+        frame_string : str
+            The string to read the frame from.
+        format : TrajectoryFormat | str, optional
+            The format of the trajectory. Default is TrajectoryFormat.XYZ.
+
+        Returns
+        -------
+        Frame
+            The frame read from the string.
+
+        Raises
+        ------
+        ValueError
+            If the given format is not valid.
+        """
+        if format == TrajectoryFormat.XYZ:
+            return self.read_positions(frame_string)
+        elif format == TrajectoryFormat.VELOCS:
+            return self.read_velocities(frame_string)
+        else:
+            raise ValueError('Invalid format.')
+
+    def read_positions(self, frame_string: str) -> Frame:
+        """
+        Reads the positions of the atoms in a frame from a string.
 
         Parameters
         ----------
@@ -122,9 +153,9 @@ class FrameReader:
         splitted_frame_string = frame_string.split('\n')
         header_line = splitted_frame_string[0]
 
-        n_atoms, cell = self.__read_header_line__(header_line)
+        n_atoms, cell = self._read_header_line(header_line)
 
-        xyz, atoms = self.__read_xyz__(splitted_frame_string, n_atoms)
+        xyz, atoms = self._read_xyz(splitted_frame_string, n_atoms)
 
         try:
             atoms = [Atom(atom) for atom in atoms]
@@ -133,7 +164,41 @@ class FrameReader:
 
         return Frame(AtomicSystem(atoms=atoms, pos=xyz, cell=cell))
 
-    def __read_header_line__(self, header_line: str) -> Tuple[int, Cell | None]:
+    def read_velocities(self, frame_string: str) -> Frame:
+        """
+        Reads the velocities of the atoms in a frame from a string.
+
+        Parameters
+        ----------
+        frame_string : str
+            The string to read the frame from.
+
+        Returns
+        -------
+        Frame
+            The frame read from the string.
+
+        Raises
+        ------
+        TypeError
+            If the given frame_string is not a string.
+        """
+
+        splitted_frame_string = frame_string.split('\n')
+        header_line = splitted_frame_string[0]
+
+        n_atoms, cell = self._read_header_line(header_line)
+
+        velocs, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+
+        try:
+            atoms = [Atom(atom) for atom in atoms]
+        except ElementNotFoundError:
+            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+
+        return Frame(AtomicSystem(atoms=atoms, velocs=velocs, cell=cell))
+
+    def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
         """
         Reads the header line of a frame.
 
@@ -178,7 +243,7 @@ class FrameReader:
 
         return n_atoms, cell
 
-    def __read_xyz__(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy2DFloatArray, List[str]]:
+    def _read_xyz(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy2DFloatArray, List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
