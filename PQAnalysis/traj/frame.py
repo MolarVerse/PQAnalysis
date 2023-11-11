@@ -191,6 +191,18 @@ class Frame:
         return self.system.pos
 
     @property
+    def vel(self) -> Numpy2DFloatArray:
+        """
+        The positions of the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The positions of the atoms in the system.
+        """
+        return self.system.vel
+
+    @property
     def atoms(self) -> List[Atom]:
         """
         The atoms in the system.
