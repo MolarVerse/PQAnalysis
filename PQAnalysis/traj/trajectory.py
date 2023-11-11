@@ -14,8 +14,27 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import List, Iterator, Any
+from enum import Enum
 
 from .frame import Frame
+
+
+class TrajectoryFormat(Enum):
+    """
+    An enumeration of the supported trajectory formats.
+
+    ...
+
+    Attributes
+    ----------
+    XYZ : str
+        The XYZ format.
+    VELOCS : str
+        The VELOCS format.
+    """
+
+    XYZ = "xyz"
+    VELOCS = "velocs"
 
 
 class Trajectory:
