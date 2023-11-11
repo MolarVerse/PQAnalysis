@@ -123,12 +123,13 @@ class FrameReader:
         ValueError
             If the given format is not valid.
         """
-        if format == TrajectoryFormat.XYZ:
+
+        # Note: TrajectoryFormat(format) automatically gives an error if format is not a valid TrajectoryFormat
+
+        if TrajectoryFormat(format) is TrajectoryFormat.XYZ:
             return self.read_positions(frame_string)
-        elif format == TrajectoryFormat.VELOCS:
+        elif TrajectoryFormat(format) is TrajectoryFormat.VEL:
             return self.read_velocities(frame_string)
-        else:
-            raise ValueError('Invalid format.')
 
     def read_positions(self, frame_string: str) -> Frame:
         """
@@ -189,14 +190,14 @@ class FrameReader:
 
         n_atoms, cell = self._read_header_line(header_line)
 
-        velocs, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+        vel, atoms = self._read_xyz(splitted_frame_string, n_atoms)
 
         try:
             atoms = [Atom(atom) for atom in atoms]
         except ElementNotFoundError:
             atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
 
-        return Frame(AtomicSystem(atoms=atoms, velocs=velocs, cell=cell))
+        return Frame(AtomicSystem(atoms=atoms, vel=vel, cell=cell))
 
     def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
         """

@@ -29,12 +29,33 @@ class TrajectoryFormat(Enum):
     ----------
     XYZ : str
         The XYZ format.
-    VELOCS : str
-        The VELOCS format.
+    VEL : str
+        The VEL format.
     """
 
-    XYZ = "xyz"
-    VELOCS = "velocs"
+    XYZ = "XYZ"
+    VEL = "VEL"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Any:
+        """
+        This method allows a trajectory format to be retrieved from a string.
+
+        Parameters
+        ----------
+        value : str
+            _description_
+
+        Returns
+        -------
+        Any
+            _description_
+        """
+        value = value.lower()
+        for member in cls:
+            if member.value.lower() == value:
+                return member
+        return None
 
 
 class Trajectory:
