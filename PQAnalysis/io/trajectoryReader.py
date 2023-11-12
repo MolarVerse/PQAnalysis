@@ -81,7 +81,7 @@ class TrajectoryReader(BaseReader):
             self.frames.append(frame_reader.read(frame_string))
 
             # If the read frame does not have cell information, use the cell information of the previous frame
-            if self.frames[-1].cell == Cell():
+            if len(self.frames) > 1 and self.frames[-1].cell == Cell():
                 self.frames[-1].cell = self.frames[-2].cell
 
         return Trajectory(self.frames)

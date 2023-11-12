@@ -152,7 +152,7 @@ class Frame:
         return self.system.cell
 
     @cell.setter
-    def cell(self, cell: Cell) -> Cell:
+    def cell(self, cell: Cell) -> None:
         """
         The unit cell of the system.
 

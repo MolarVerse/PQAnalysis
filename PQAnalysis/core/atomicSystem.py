@@ -398,7 +398,7 @@ class AtomicSystem:
         return self._cell
 
     @cell.setter
-    def cell(self, cell: Cell) -> Cell:
+    def cell(self, cell: Cell) -> None:
         """
         Sets the unit cell of the system.
 
