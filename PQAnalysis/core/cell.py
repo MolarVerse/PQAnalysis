@@ -16,7 +16,7 @@ import numpy as np
 from beartype.typing import Any
 from numbers import Real
 
-from ..utils.mytypes import Numpy3x3FloatArray, Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Numpy3x3FloatArray, Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class Cell:

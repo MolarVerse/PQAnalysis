@@ -28,13 +28,11 @@ guess_element
 
 """
 
-import numpy as np
-
 from multimethod import multimethod
 from beartype.typing import Any, Tuple
 from numbers import Real
 
-from PQAnalysis.utils.exceptions import ElementNotFoundError
+from PQAnalysis.exceptions import ElementNotFoundError
 
 
 def guess_element(id: int | str) -> Tuple[str, int, Real]:

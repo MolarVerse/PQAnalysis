@@ -3,9 +3,6 @@ import numpy as np
 from beartype.vale import Is
 from typing import Annotated
 
-# Import the requisite machinery.
-from beartype import beartype, BeartypeConf
-
 
 Numpy2DFloatArray = Annotated[np.ndarray, Is[lambda array:
                                              array.ndim == 2 and

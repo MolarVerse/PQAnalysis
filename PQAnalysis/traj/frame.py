@@ -19,7 +19,7 @@ from ..core.topology import Topology
 from ..core.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
-from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class Frame:
@@ -201,6 +201,30 @@ class Frame:
             The positions of the atoms in the system.
         """
         return self.system.vel
+
+    @property
+    def forces(self) -> Numpy2DFloatArray:
+        """
+        The forces on the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The forces on the atoms in the system.
+        """
+        return self.system.forces
+
+    @property
+    def charges(self) -> Numpy1DFloatArray:
+        """
+        The charges of the atoms in the system.
+
+        Returns
+        -------
+        Numpy1DFloatArray
+            The charges of the atoms in the system.
+        """
+        return self.system.charges
 
     @property
     def atoms(self) -> List[Atom]:

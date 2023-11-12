@@ -3,11 +3,12 @@ import numpy as np
 
 from beartype.roar import BeartypeException
 
-from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader
-from PQAnalysis.core.cell import Cell
+from PQAnalysis.io.trajectoryReader import TrajectoryReader, FrameReader, TrajectoryFormat
 from PQAnalysis.traj.frame import Frame
+from PQAnalysis.core.cell import Cell
 from PQAnalysis.core.atomicSystem import AtomicSystem
 from PQAnalysis.core.atom import Atom
+from PQAnalysis.exceptions import TrajectoryFormatError
 
 
 class TestTrajectoryReader:
@@ -56,7 +57,7 @@ class TestTrajectoryReader:
 
 class TestFrameReader:
 
-    def test__read_header_line__(self):
+    def test__read_header_line(self):
         reader = FrameReader()
 
         with pytest.raises(ValueError) as exception:
@@ -79,7 +80,7 @@ class TestFrameReader:
         assert n_atoms == 3
         assert cell is None
 
-    def test__read_xyz__(self):
+    def test__read_xyz(self):
         reader = FrameReader()
 
         with pytest.raises(ValueError) as exception:
@@ -92,6 +93,18 @@ class TestFrameReader:
             ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0 2.0"], n_atoms=2)
         assert np.allclose(xyz, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert atoms == ["h", "o"]
+
+    def test__read_scalar(self):
+        reader = FrameReader()
+
+        with pytest.raises(ValueError) as exception:
+            reader._read_scalar(["", "", "h 1.0 2.0 3.0"], n_atoms=1)
+        assert str(
+            exception.value) == "Invalid file format in scalar values of Frame."
+
+        scalar, atoms = reader._read_scalar(["", "", "h 1.0"], n_atoms=1)
+        assert np.allclose(scalar, [1.0])
+        assert atoms == ["h"]
 
     def test_read(self):
         reader = FrameReader()
@@ -125,10 +138,30 @@ class TestFrameReader:
                            [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
+        frame = reader.read(
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", format="force")
+        assert frame.n_atoms == 2
+        assert frame.atoms == [Atom(atom, use_guess_element=False)
+                               for atom in ["h", "o1"]]
+        assert np.allclose(frame.forces, [
+                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
+
+        frame = reader.read(
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0\no1 2.0", format="charge")
+        assert frame.n_atoms == 2
+        assert frame.atoms == [Atom(atom, use_guess_element=False)
+                               for atom in ["h", "o1"]]
+        assert np.allclose(frame.charges, [1.0, 2.0])
+        assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
+
     def test_read_invalid_format(self):
         reader = FrameReader()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(TrajectoryFormatError) as exception:
             reader.read("", format="invalid")
         assert str(
-            exception.value) == "'invalid' is not a valid TrajectoryFormat"
+            exception.value) == f"""
+'invalid' is not a valid TrajectoryFormat.
+Possible values are: {TrajectoryFormat.member_repr()}
+or their case insensitive string representation: {TrajectoryFormat.value_repr()}"""
