@@ -28,6 +28,14 @@ PQAnalysis.io.energyFileReader module
    :undoc-members:
    :show-inheritance:
 
+PQAnalysis.io.frameReader module
+--------------------------------
+
+.. automodule:: PQAnalysis.io.frameReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 PQAnalysis.io.infoFileReader module
 -----------------------------------
 
