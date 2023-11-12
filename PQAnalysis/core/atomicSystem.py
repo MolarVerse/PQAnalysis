@@ -23,7 +23,7 @@ from numbers import Real
 
 from .atom import Atom
 from .cell import Cell
-from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 def check_atoms_pos(func):

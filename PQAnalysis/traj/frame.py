@@ -19,7 +19,7 @@ from ..core.topology import Topology
 from ..core.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
-from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class Frame:
@@ -81,7 +81,6 @@ class Frame:
 
         print(self.n_atoms)
 
-        j = 0
         for i in range(0, self.n_atoms, group):
             atomic_system = AtomicSystem(
                 atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
@@ -90,8 +89,6 @@ class Frame:
             pos.append(atomic_system.center_of_mass)
             print(pos)
             names.append(atomic_system.combined_name)
-
-            j += 1
 
         names = [Atom(name, use_guess_element=False) for name in names]
 
@@ -189,6 +186,42 @@ class Frame:
             The positions of the atoms in the system.
         """
         return self.system.pos
+
+    @property
+    def vel(self) -> Numpy2DFloatArray:
+        """
+        The positions of the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The positions of the atoms in the system.
+        """
+        return self.system.vel
+
+    @property
+    def forces(self) -> Numpy2DFloatArray:
+        """
+        The forces on the atoms in the system.
+
+        Returns
+        -------
+        Numpy2DFloatArray
+            The forces on the atoms in the system.
+        """
+        return self.system.forces
+
+    @property
+    def charges(self) -> Numpy1DFloatArray:
+        """
+        The charges of the atoms in the system.
+
+        Returns
+        -------
+        Numpy1DFloatArray
+            The charges of the atoms in the system.
+        """
+        return self.system.charges
 
     @property
     def atoms(self) -> List[Atom]:
