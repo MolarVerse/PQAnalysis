@@ -81,7 +81,6 @@ class Frame:
 
         print(self.n_atoms)
 
-        j = 0
         for i in range(0, self.n_atoms, group):
             atomic_system = AtomicSystem(
                 atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
@@ -90,8 +89,6 @@ class Frame:
             pos.append(atomic_system.center_of_mass)
             print(pos)
             names.append(atomic_system.combined_name)
-
-            j += 1
 
         names = [Atom(name, use_guess_element=False) for name in names]
 

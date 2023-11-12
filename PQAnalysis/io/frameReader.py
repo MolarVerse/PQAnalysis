@@ -20,7 +20,7 @@ from ..core.atom import Atom
 from ..core.cell import Cell
 from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 from ..traj.frame import Frame
-from ..traj.trajectory import TrajectoryFormat
+from ..traj.formats import TrajectoryFormat
 from ..exceptions import ElementNotFoundError
 
 

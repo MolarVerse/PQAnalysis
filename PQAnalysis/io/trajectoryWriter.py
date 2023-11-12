@@ -14,14 +14,19 @@ import numpy as np
 from beartype.typing import List
 
 from .base import BaseWriter
-from ..traj.trajectory import Trajectory, TrajectoryFormat
+from ..traj.trajectory import Trajectory
+from ..traj.formats import TrajectoryFormat, MDEngineFormat
 from ..traj.frame import Frame
 from ..core.cell import Cell
 from ..core.atom import Atom
 from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
-def write_trajectory(traj, filename: str | None = None, format: str | None = None, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+def write_trajectory(traj,
+                     filename: str | None = None,
+                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+                     ) -> None:
     """
     Wrapper for TrajectoryWriter to write a trajectory to a file.
 
@@ -34,8 +39,8 @@ def write_trajectory(traj, filename: str | None = None, format: str | None = Non
         The trajectory to write.
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
-    format : str, optional
-        The format of the file. If None, the default PIMD-QMCF format is used.
+    format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     type : TrajectoryFormat | str, optional
         The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
 
@@ -59,6 +64,7 @@ class TrajectoryWriter(BaseWriter):
     formats : list of str
         The available formats for the trajectory file.
 
+            #TODO: put this description into formats!!!
             PIMD-QMCF format for one frame:
                 header line containing the number of atoms and the cell information (if available)
                 arbitrary comment line
@@ -75,16 +81,16 @@ class TrajectoryWriter(BaseWriter):
 
     Attributes
     ----------
-    format : str
-        The format of the file.
+    format : MDEngineFormat
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     """
 
-    formats = [None, 'pimd-qmcf', 'qmcfc']
+    _format: MDEngineFormat
     _type: TrajectoryFormat = TrajectoryFormat.XYZ
 
     def __init__(self,
                  filename: str | None = None,
-                 format: str | None = None,
+                 format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                  mode: str = 'w'
                  ) -> None:
         """
@@ -94,22 +100,15 @@ class TrajectoryWriter(BaseWriter):
         ----------
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        format : str, optional
-            The format of the file. If None, the default PIMD-QMCF format is used.
-            (see TrajectoryWriter.formats for available formats)
+        format : MDEngineFormat | str, optional
+            The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
         mode : str, optional
             The mode of the file. Either 'w' for write or 'a' for append.
         """
 
         super().__init__(filename, mode)
-        if format not in self.formats:
-            raise ValueError(
-                'Invalid format. Has to be either \'pimd-qmcf\', \'qmcfc\' or \'None\'.')
 
-        if format is None:
-            format = 'pimd-qmcf'
-
-        self.format = format
+        self.format = MDEngineFormat(format)
 
     def write(self, trajectory: Trajectory, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
@@ -253,7 +252,7 @@ class TrajectoryWriter(BaseWriter):
             The elements of the frame.
         """
 
-        if self.format == "qmcfc" and self._type == TrajectoryFormat.XYZ:
+        if self.format == MDEngineFormat.QMCFC and self._type == TrajectoryFormat.XYZ:
             print("X   0.0 0.0 0.0", file=self.file)
 
         for i in range(len(atoms)):
@@ -275,3 +274,11 @@ class TrajectoryWriter(BaseWriter):
         for i in range(len(atoms)):
             print(
                 f"{atoms[i].name} {scalar[i]}", file=self.file)
+
+    @property
+    def format(self) -> MDEngineFormat:
+        return self._format
+
+    @format.setter
+    def format(self, format: MDEngineFormat | str) -> None:
+        self._format = MDEngineFormat(format)

@@ -4,10 +4,12 @@ import numpy as np
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter, write_trajectory
 from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory, TrajectoryFormat
+from PQAnalysis.traj.trajectory import Trajectory
+from PQAnalysis.traj.formats import TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core.cell import Cell
 from PQAnalysis.core.atomicSystem import AtomicSystem
 from PQAnalysis.core.atom import Atom
+from PQAnalysis.exceptions import MDEngineFormatError
 
 # TODO: here only one option is tested - think of a better way to test all options
 
@@ -31,22 +33,25 @@ def test_write_trajectory(capsys):
 class TestTrajectoryWriter:
     def test__init__(self):
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(MDEngineFormatError) as exception:
             TrajectoryWriter(format="notAFormat")
         assert str(
-            exception.value) == "Invalid format. Has to be either \'pimd-qmcf\', \'qmcfc\' or \'None\'."
+            exception.value) == f"""
+'notaformat' is not a valid MDEngineFormat.
+Possible values are: {MDEngineFormat.member_repr()}
+or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
 
         writer = TrajectoryWriter()
         assert writer.file == sys.stdout
         assert writer.filename is None
         assert writer.mode == "a"
-        assert writer.format == "pimd-qmcf"
+        assert writer.format == MDEngineFormat.PIMD_QMCF
 
         writer = TrajectoryWriter(format="qmcfc")
-        assert writer.format == "qmcfc"
+        assert writer.format == MDEngineFormat.QMCFC
 
         writer = TrajectoryWriter(format="pimd-qmcf")
-        assert writer.format == "pimd-qmcf"
+        assert writer.format == MDEngineFormat.PIMD_QMCF
 
     def test__write_header(self, capsys):
 

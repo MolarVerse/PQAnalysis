@@ -7,7 +7,7 @@ from PQAnalysis.io.frameReader import FrameReader
 from PQAnalysis.core.cell import Cell
 from PQAnalysis.core.atom import Atom
 from PQAnalysis.exceptions import TrajectoryFormatError
-from PQAnalysis.traj.trajectory import TrajectoryFormat
+from PQAnalysis.traj.formats import TrajectoryFormat
 
 
 class TestFrameReader:

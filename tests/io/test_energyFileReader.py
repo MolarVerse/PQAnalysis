@@ -5,6 +5,8 @@ from collections import defaultdict
 
 from PQAnalysis.io.energyFileReader import EnergyFileReader
 from PQAnalysis.io.infoFileReader import InfoFileReader
+from PQAnalysis.traj.formats import MDEngineFormat
+from PQAnalysis.exceptions import MDEngineFormatError
 
 
 class TestEnergyReader:
@@ -18,19 +20,19 @@ class TestEnergyReader:
         assert reader.filename == "md-01.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
-        assert reader.format == "pimd-qmcf"
+        assert reader.format == MDEngineFormat.PIMD_QMCF
 
         reader = EnergyFileReader("md-01.en", use_info_file=False)
         assert reader.filename == "md-01.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
-        assert reader.format == "pimd-qmcf"
+        assert reader.format == MDEngineFormat.PIMD_QMCF
 
         reader = EnergyFileReader("md-01_noinfo.en")
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
-        assert reader.format == "pimd-qmcf"
+        assert reader.format == MDEngineFormat.PIMD_QMCF
 
         with pytest.raises(FileNotFoundError) as exception:
             EnergyFileReader(
@@ -43,18 +45,21 @@ class TestEnergyReader:
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
-        assert reader.format == "pimd-qmcf"
+        assert reader.format == MDEngineFormat.PIMD_QMCF
 
         reader = EnergyFileReader("md-01.en", format="qmcfc")
         assert reader.filename == "md-01.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
-        assert reader.format == "qmcfc"
+        assert reader.format == MDEngineFormat.QMCFC
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(MDEngineFormatError) as exception:
             EnergyFileReader("md-01.en", format="tmp")
         assert str(
-            exception.value) == "Format tmp is not supported. Supported formats are ['pimd-qmcf', 'qmcfc']."
+            exception.value) == f"""
+'tmp' is not a valid MDEngineFormat.
+Possible values are: {MDEngineFormat.member_repr()}
+or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
 
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test__info_file_found__(self, test_with_data_dir, capsys):
