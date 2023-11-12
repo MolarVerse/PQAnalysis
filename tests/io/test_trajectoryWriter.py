@@ -4,10 +4,12 @@ import numpy as np
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter, write_trajectory
 from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
+from PQAnalysis.traj.trajectory import Trajectory, TrajectoryFormat
 from PQAnalysis.core.cell import Cell
 from PQAnalysis.core.atomicSystem import AtomicSystem
 from PQAnalysis.core.atom import Atom
+
+# TODO: here only one option is tested - think of a better way to test all options
 
 
 def test_write_trajectory(capsys):
@@ -46,33 +48,59 @@ class TestTrajectoryWriter:
         writer = TrajectoryWriter(format="pimd-qmcf")
         assert writer.format == "pimd-qmcf"
 
-    def test__write_header__(self, capsys):
+    def test__write_header(self, capsys):
 
         writer = TrajectoryWriter()
-        writer.__write_header__(1, Cell(10, 10, 10))
+        writer._write_header(1, Cell(10, 10, 10))
 
         captured = capsys.readouterr()
-        assert captured.out == "1 10 10 10 90 90 90\n\n"
+        assert captured.out == "1 10 10 10 90 90 90\n"
 
-        writer.__write_header__(1)
+        writer._write_header(1)
         captured = capsys.readouterr()
-        assert captured.out == "1\n\n"
+        assert captured.out == "1\n"
 
-    def test__write_coordinates__(self, capsys):
+    def test__write_comment(self, capsys):
 
         writer = TrajectoryWriter()
-        writer.__write_coordinates__(
+        writer._write_comment(Frame(AtomicSystem(
+            atoms=[Atom(atom) for atom in ["h", "o"]], cell=Cell(10, 10, 10))))
+
+        captured = capsys.readouterr()
+        assert captured.out == "\n"
+
+        forces = np.array([[1, 0, 3], [0, 2, 1]])
+        writer._type = TrajectoryFormat.FORCE
+        writer._write_comment(Frame(AtomicSystem(
+            atoms=[Atom(atom) for atom in ["h", "o"]], cell=Cell(10, 10, 10), forces=forces)))
+
+        captured = capsys.readouterr()
+        assert captured.out == "sum of forces: 1 2 4\n"
+
+    def test__write_xyz(self, capsys):
+
+        writer = TrajectoryWriter()
+        writer._write_xyz(
             atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
 
         captured = capsys.readouterr()
         assert captured.out == "h 0 0 0\no 0 0 1\n"
 
         writer.format = "qmcfc"
-        writer.__write_coordinates__(
+        writer._write_xyz(
             atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
 
         captured = capsys.readouterr()
         assert captured.out == "X   0.0 0.0 0.0\nh 0 0 0\no 0 0 1\n"
+
+    def test__write_scalar(self, capsys):
+
+        writer = TrajectoryWriter()
+        writer._write_scalar(
+            atoms=[Atom(atom) for atom in ["h", "o"]], scalar=np.array([1, 2]))
+
+        captured = capsys.readouterr()
+        assert captured.out == "h 1\no 2\n"
 
     def test_write(self, capsys):
 
@@ -92,3 +120,45 @@ class TestTrajectoryWriter:
 
         captured = capsys.readouterr()
         assert captured.out == "2 10 10 10 90 90 90\n\nh 0 0 0\no 0 0 1\n2 11 10 10 90 90 90\n\nh 0 0 0\no 0 0 1\n"
+
+        frame1 = Frame(AtomicSystem(
+            atoms=atoms, vel=coordinates1, cell=Cell(10, 10, 10)))
+        frame2 = Frame(AtomicSystem(
+            atoms=atoms, vel=coordinates2, cell=Cell(11, 10, 10)))
+
+        traj = Trajectory([frame1, frame2])
+        writer = TrajectoryWriter()
+
+        writer.write(traj, type="vel")
+
+        captured = capsys.readouterr()
+        assert captured.out == "2 10 10 10 90 90 90\n\nh 0 0 0\no 0 0 1\n2 11 10 10 90 90 90\n\nh 0 0 0\no 0 0 1\n"
+
+        frame1 = Frame(AtomicSystem(
+            atoms=atoms, forces=coordinates1, cell=Cell(10, 10, 10)))
+        frame2 = Frame(AtomicSystem(
+            atoms=atoms, forces=coordinates2, cell=Cell(11, 10, 10)))
+
+        traj = Trajectory([frame1, frame2])
+        writer = TrajectoryWriter()
+
+        writer.write(traj, type="force")
+
+        captured = capsys.readouterr()
+        assert captured.out == "2 10 10 10 90 90 90\nsum of forces: 0 0 1\nh 0 0 0\no 0 0 1\n2 11 10 10 90 90 90\nsum of forces: 0 0 1\nh 0 0 0\no 0 0 1\n"
+
+        charges1 = np.array([1, 2])
+        charges2 = np.array([3, 4])
+
+        frame1 = Frame(AtomicSystem(
+            atoms=atoms, charges=charges1, cell=Cell(10, 10, 10)))
+        frame2 = Frame(AtomicSystem(
+            atoms=atoms, charges=charges2, cell=Cell(11, 10, 10)))
+
+        traj = Trajectory([frame1, frame2])
+        writer = TrajectoryWriter()
+
+        writer.write(traj, type="charge")
+
+        captured = capsys.readouterr()
+        assert captured.out == "2 10 10 10 90 90 90\n\nh 1\no 2\n2 11 10 10 90 90 90\n\nh 3\no 4\n"
