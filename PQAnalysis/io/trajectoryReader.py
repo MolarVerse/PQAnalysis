@@ -22,8 +22,8 @@ from ..traj.trajectory import Trajectory, TrajectoryFormat
 from ..core.cell import Cell
 from ..core.atom import Atom
 from ..core.atomicSystem import AtomicSystem
-from ..utils.exceptions import ElementNotFoundError
-from ..utils.mytypes import Numpy2DFloatArray
+from ..exceptions import ElementNotFoundError
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class TrajectoryReader(BaseReader):
@@ -130,6 +130,10 @@ class FrameReader:
             return self.read_positions(frame_string)
         elif TrajectoryFormat(format) is TrajectoryFormat.VEL:
             return self.read_velocities(frame_string)
+        elif TrajectoryFormat(format) is TrajectoryFormat.FORCE:
+            return self.read_forces(frame_string)
+        elif TrajectoryFormat(format) is TrajectoryFormat.CHARGE:
+            return self.read_charges(frame_string)
 
     def read_positions(self, frame_string: str) -> Frame:
         """
@@ -198,6 +202,74 @@ class FrameReader:
             atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
 
         return Frame(AtomicSystem(atoms=atoms, vel=vel, cell=cell))
+
+    def read_forces(self, frame_string: str) -> Frame:
+        """
+        Reads the forces of the atoms in a frame from a string.
+
+        Parameters
+        ----------
+        frame_string : str
+            The string to read the frame from.
+
+        Returns
+        -------
+        Frame
+            The frame read from the string.
+
+        Raises
+        ------
+        TypeError
+            If the given frame_string is not a string.
+        """
+
+        splitted_frame_string = frame_string.split('\n')
+        header_line = splitted_frame_string[0]
+
+        n_atoms, cell = self._read_header_line(header_line)
+
+        forces, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+
+        try:
+            atoms = [Atom(atom) for atom in atoms]
+        except ElementNotFoundError:
+            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+
+        return Frame(AtomicSystem(atoms=atoms, forces=forces, cell=cell))
+
+    def read_charges(self, frame_string: str) -> Frame:
+        """
+        Reads the charge values of the atoms in a frame from a string.
+
+        Parameters
+        ----------
+        frame_string : str
+            The string to read the frame from.
+
+        Returns
+        -------
+        Frame
+            The frame read from the string.
+
+        Raises
+        ------
+        TypeError
+            If the given frame_string is not a string.
+        """
+
+        splitted_frame_string = frame_string.split('\n')
+        header_line = splitted_frame_string[0]
+
+        n_atoms, cell = self._read_header_line(header_line)
+
+        charges, atoms = self._read_scalar(splitted_frame_string, n_atoms)
+
+        try:
+            atoms = [Atom(atom) for atom in atoms]
+        except ElementNotFoundError:
+            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+
+        return Frame(AtomicSystem(atoms=atoms, charges=charges, cell=cell))
 
     def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
         """
@@ -281,3 +353,41 @@ class FrameReader:
             atoms.append(line.split()[0])
 
         return xyz, atoms
+
+    def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy1DFloatArray, List[str]]:
+        """
+        Reads the scalar values and the atom names from the given string.
+
+        Parameters
+        ----------
+        splitted_frame_string : str
+            The string to read the scalar values and the atom names from.
+        n_atoms : int
+            The number of atoms in the frame.
+
+        Returns
+        -------
+        scalar : np.array
+            The scalar values of the atoms.
+        atoms : list of str
+            The names of the atoms.
+
+        Raises
+        ------
+        ValueError
+            If the given string does not contain the correct number of lines.
+        """
+
+        scalar = np.zeros((n_atoms))
+        atoms = []
+        for i in range(n_atoms):
+            line = splitted_frame_string[2+i]
+
+            if len(line.split()) != 2:
+                raise ValueError(
+                    'Invalid file format in scalar values of Frame.')
+
+            scalar[i] = float(line.split()[1])
+            atoms.append(line.split()[0])
+
+        return scalar, atoms

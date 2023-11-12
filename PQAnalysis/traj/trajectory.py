@@ -5,6 +5,8 @@ A module containing the Trajectory class.
 
 Classes
 -------
+TrajectoryFormat
+    An enumeration of the supported trajectory formats.
 Trajectory
     A trajectory is a sequence of frames.
 """
@@ -17,6 +19,7 @@ from beartype.typing import List, Iterator, Any
 from enum import Enum
 
 from .frame import Frame
+from ..exceptions import TrajectoryFormatError
 
 
 class TrajectoryFormat(Enum):
@@ -31,10 +34,16 @@ class TrajectoryFormat(Enum):
         The XYZ format.
     VEL : str
         The VEL format.
+    FORCE : str
+        The FORCE format.
+    CHARGE : str
+        The CHARGE format.
     """
 
     XYZ = "XYZ"
     VEL = "VEL"
+    FORCE = "FORCE"
+    CHARGE = "CHARGE"
 
     @classmethod
     def _missing_(cls, value: object) -> Any:
@@ -55,7 +64,34 @@ class TrajectoryFormat(Enum):
         for member in cls:
             if member.value.lower() == value:
                 return member
-        return None
+
+        raise TrajectoryFormatError(value, cls)
+
+    @classmethod
+    def member_repr(cls) -> str:
+        """
+        This method returns a string representation of the members of the enumeration.
+
+        Returns
+        -------
+        str
+            A string representation of the members of the enumeration.
+        """
+
+        return ', '.join([str(member) for member in cls])
+
+    @classmethod
+    def value_repr(cls) -> str:
+        """
+        This method returns a string representation of the values of the members of the enumeration.
+
+        Returns
+        -------
+        str
+            A string representation of the values of the members of the enumeration.
+        """
+
+        return ', '.join([str(member.value) for member in cls])
 
 
 class Trajectory:

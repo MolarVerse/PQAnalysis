@@ -17,7 +17,7 @@ from .base import BaseWriter
 from ..traj.trajectory import Trajectory
 from ..core.cell import Cell
 from ..core.atom import Atom
-from ..utils.mytypes import Numpy2DFloatArray
+from ..types import Numpy2DFloatArray
 
 
 def write_trajectory(traj, filename: str | None = None, format: str | None = None) -> None:

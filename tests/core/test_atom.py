@@ -4,7 +4,7 @@ import numpy as np
 from multimethod import DispatchError
 
 from PQAnalysis.core.atom import Atom, guess_element
-from PQAnalysis.utils.exceptions import ElementNotFoundError
+from PQAnalysis.exceptions import ElementNotFoundError
 
 
 def test_guess_element():
