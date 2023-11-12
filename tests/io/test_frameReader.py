@@ -33,7 +33,7 @@ class TestFrameReader:
 
         n_atoms, cell = reader._read_header_line("3")
         assert n_atoms == 3
-        assert cell is None
+        assert cell == Cell()
 
     def test__read_xyz(self):
         reader = FrameReader()

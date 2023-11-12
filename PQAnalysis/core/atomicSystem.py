@@ -81,7 +81,7 @@ class AtomicSystem:
                  vel: Numpy2DFloatArray | None = None,
                  forces: Numpy2DFloatArray | None = None,
                  charges: Numpy1DFloatArray | None = None,
-                 cell: Cell | None = None
+                 cell: Cell = Cell()
                  ) -> None:
         """
         Initializes the AtomicSystem with the given parameters.
@@ -98,8 +98,8 @@ class AtomicSystem:
             A 2d numpy.ndarray containing the forces on the atoms, by default np.zeros((0, 3)).
         charges : Numpy1DFloatArray, optional
             A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).
-        cell : Cell | None, optional
-            The unit cell of the system, by default None.
+        cell : Cell, optional
+            The unit cell of the system. Defaults to a Cell with no periodic boundary conditions, by default Cell()
         """
         if atoms is None:
             atoms = []
@@ -133,7 +133,7 @@ class AtomicSystem:
         bool
             Whether the system has periodic boundary conditions. True if the system has a unit cell, False otherwise.
         """
-        return self._cell is not None
+        return self._cell != Cell()
 
     @property
     def n_atoms(self) -> int:
@@ -191,20 +191,20 @@ class AtomicSystem:
         if self.n_atoms == 0:
             return np.zeros(3)
 
-        # if sell is not None image the positions relative to the first atom
-        if self.cell is not None:
-            pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
-        else:
-            pos = self.pos
+        pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
 
         pos = np.sum(
             pos * self.atomic_masses[:, None], axis=0) / self.mass
 
-        # back imaging
-        if self.cell is not None:
-            pos = self.cell.image(pos)
+        pos = self.cell.image(pos)
 
         return pos
+
+    # def nearest_neighbours(self, n: int = 1):
+    #     for atom_position in self.pos:
+    #         delta_pos = self.pos - atom_position
+
+    #         delta_pos = cell.image(delta_pos)
 
     @property
     def combined_name(self) -> str:
@@ -386,25 +386,25 @@ class AtomicSystem:
         return self._charges
 
     @property
-    def cell(self) -> Cell | None:
+    def cell(self) -> Cell:
         """
         Returns the unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         return self._cell
 
     @cell.setter
-    def cell(self, cell: Cell | None) -> Cell | None:
+    def cell(self, cell: Cell) -> Cell:
         """
         Sets the unit cell of the system.
 
         Parameters
         ----------
-        cell : Cell | None
+        cell : Cell
             The unit cell of the system.
         """
         self._cell = cell
