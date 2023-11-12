@@ -198,12 +198,12 @@ class FrameReader:
 
         return Frame(AtomicSystem(atoms=atoms, charges=charges, cell=cell))
 
-    def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
+    def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:
         """
         Reads the header line of a frame.
 
         It reads the number of atoms and the cell information from the header line.
-        If the header line contains only the number of atoms, the cell is set to None.
+        If the header line contains only the number of atoms, the cell is set Cell().
         If the header line contains only the number of atoms and the box dimensions,
          the cell is set to a Cell object with the given box dimensions and box angles set to 90°.
 
@@ -237,7 +237,7 @@ class FrameReader:
             cell = Cell(a, b, c, alpha, beta, gamma)
         elif len(header_line) == 1:
             n_atoms = int(header_line[0])
-            cell = None
+            cell = Cell()
         else:
             raise ValueError('Invalid file format in header line of Frame.')
 

@@ -14,7 +14,7 @@ class TestAtomicSystem:
         assert system.vel.shape == (0, 3)
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
-        assert system.cell is None
+        assert system.cell == Cell()
         assert system.PBC is False
         assert system.n_atoms == 0
         assert system.atomic_masses.shape == (0,)
@@ -28,7 +28,7 @@ class TestAtomicSystem:
         assert system.vel.shape == (0, 3)
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
-        assert system.cell is None
+        assert system.cell == Cell()
         assert system.PBC is False
         assert system.n_atoms == 0
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])

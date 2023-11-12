@@ -140,25 +140,25 @@ class Frame:
         return self.system.PBC
 
     @property
-    def cell(self) -> Cell | None:
+    def cell(self) -> Cell:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         return self.system.cell
 
     @cell.setter
-    def cell(self, cell: Cell | None) -> Cell | None:
+    def cell(self, cell: Cell) -> Cell:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         self.system.cell = cell

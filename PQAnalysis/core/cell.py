@@ -12,6 +12,7 @@ Cell
 from __future__ import annotations
 
 import numpy as np
+import sys
 
 from beartype.typing import Any
 from numbers import Real
@@ -28,26 +29,26 @@ class Cell:
     Attributes
     ----------
 
-    x : Real
-        The length of the first box vector.
-    y : Real
-        The length of the second box vector.
-    z : Real
-        The length of the third box vector.
-    alpha : Real
-        The angle between the second and third box vector.
-    beta : Real
-        The angle between the first and third box vector.
-    gamma : Real
-        The angle between the first and second box vector.
+    x : Real, optional
+        The length of the first box vector. Default is sys.float_info.max.
+    y : Real, optional
+        The length of the second box vector. Default is sys.float_info.max.
+    z : Real, optional
+        The length of the third box vector. Default is sys.float_info.max.
+    alpha : Real, optional
+        The angle between the second and third box vector. Default is 90.
+    beta : Real, optional
+        The angle between the first and third box vector. Default is 90.
+    gamma : Real, optional
+        The angle between the first and second box vector. Default is 90.
     box_matrix : np.array
         The matrix containing the box vectors as columns.
     '''
 
     def __init__(self,
-                 x: Real,
-                 y: Real,
-                 z: Real,
+                 x: Real = sys.float_info.max,
+                 y: Real = sys.float_info.max,
+                 z: Real = sys.float_info.max,
                  alpha: Real = 90,
                  beta: Real = 90,
                  gamma: Real = 90
@@ -189,13 +190,13 @@ class Cell:
 
         return np.reshape(pos, original_shape)
 
-    def __eq__(self, __value: Any) -> bool:
+    def __eq__(self, other: Any) -> bool:
         """
         Checks if the Cell is equal to another Cell.
 
         Parameters
         ----------
-        __value : Cell
+        other : Cell
             The Cell to compare with.
 
         Returns
@@ -204,14 +205,14 @@ class Cell:
             True if the Cells are equal, False otherwise.
         """
 
-        if not isinstance(__value, Cell):
+        if not isinstance(other, Cell):
             return False
 
         is_equal = True
-        is_equal &= self.x == __value.x
-        is_equal &= self.y == __value.y
-        is_equal &= self.z == __value.z
-        is_equal &= self.alpha == __value.alpha
-        is_equal &= self.beta == __value.beta
-        is_equal &= self.gamma == __value.gamma
+        is_equal &= np.allclose(self.x, other.x)
+        is_equal &= np.allclose(self.y, other.y)
+        is_equal &= np.allclose(self.z, other.z)
+        is_equal &= np.allclose(self.alpha, other.alpha)
+        is_equal &= np.allclose(self.beta, other.beta)
+        is_equal &= np.allclose(self.gamma, other.gamma)
         return is_equal

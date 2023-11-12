@@ -139,7 +139,7 @@ class BoxWriter(BaseWriter):
         Raises
         ------
         ValueError
-            If the cell of a frame of the trajectory is None.
+            If the cell of a frame of the trajectory is Cell().
         """
         self.__check_PBC__(traj)
 
