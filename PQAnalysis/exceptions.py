@@ -37,7 +37,7 @@ class ElementNotFoundError(PQException):
         super().__init__(self.message)
 
 
-class TrajectoryFormatError(PQException):
+class FormatEnumError(PQException):
     """
     Exception raised if the given enum is not valid
     """
@@ -46,7 +46,25 @@ class TrajectoryFormatError(PQException):
         self.enum = enum
         self.value = value
         self.message = f"""
-'{self.value}' is not a valid TrajectoryFormat.
+'{self.value}' is not a valid {enum.__name__}.
 Possible values are: {enum.member_repr()}
 or their case insensitive string representation: {enum.value_repr()}"""
         super().__init__(self.message)
+
+
+class TrajectoryFormatError(FormatEnumError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    def __init__(self, value: object, enum: object) -> None:
+        super().__init__(value, enum)
+
+
+class MDEngineFormatError(FormatEnumError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    def __init__(self, value: object, enum: object) -> None:
+        super().__init__(value, enum)

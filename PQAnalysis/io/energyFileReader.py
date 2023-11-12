@@ -15,6 +15,7 @@ import numpy as np
 from .base import BaseReader
 from .infoFileReader import InfoFileReader
 from ..physicalData.energy import Energy
+from ..traj.formats import MDEngineFormat
 
 
 class EnergyFileReader(BaseReader):
@@ -34,15 +35,15 @@ class EnergyFileReader(BaseReader):
         The name of the info file to read from.
     withInfoFile : bool
         If True, the info file was found.
+    format : MDEngineFormat
+        The format of the file. Default is MDEngineFormat.PIMD_QMCF.
     """
-
-    formats = ["pimd-qmcf", "qmcfc"]
 
     def __init__(self,
                  filename: str,
                  info_filename: str | None = None,
                  use_info_file: bool = True,
-                 format: str = "pimd-qmcf"
+                 format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
                  ) -> None:
         """
         Initializes the EnergyFileReader with the given filename.
@@ -61,13 +62,8 @@ class EnergyFileReader(BaseReader):
             The name of the info file to read from, by default None
         use_info_file : bool, optional
             If True, the info file is searched for, by default True
-        format : str, optional
-            The format of the info file, by default "pimd-qmcf"
-
-        Raises
-        ------
-        ValueError
-            If the format is not supported.
+        format : MDEngineFormat | str, optional
+            The format of the file, by default MDEngineFormat.PIMD_QMCF
         """
         super().__init__(filename)
         self.info_filename = info_filename
@@ -77,11 +73,7 @@ class EnergyFileReader(BaseReader):
         else:
             self.withInfoFile = False
 
-        if format not in self.formats:
-            raise ValueError(
-                f"Format {format} is not supported. Supported formats are {self.formats}.")
-
-        self.format = format
+        self.format = MDEngineFormat(format)
 
     def read(self) -> Energy:
         """

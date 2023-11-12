@@ -10,7 +10,8 @@ TrajectoryReader
 """
 
 from .base import BaseReader
-from ..traj.trajectory import Trajectory, TrajectoryFormat
+from ..traj.trajectory import Trajectory
+from ..traj.formats import TrajectoryFormat
 from .frameReader import FrameReader
 
 
