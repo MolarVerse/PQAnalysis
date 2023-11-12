@@ -14,7 +14,7 @@ import numpy as np
 from beartype.typing import Dict
 from collections import defaultdict
 
-from ..utils.mytypes import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
 class Energy():

@@ -3,6 +3,8 @@ import pytest
 from beartype.roar import BeartypeException
 
 from PQAnalysis.io.infoFileReader import InfoFileReader
+from PQAnalysis.traj.formats import MDEngineFormat
+from PQAnalysis.exceptions import MDEngineFormatError
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
@@ -15,19 +17,22 @@ def test__init__(test_with_data_dir):
         InfoFileReader(
             "md-01.info", format=None)
 
-    with pytest.raises(ValueError) as exception:
+    with pytest.raises(MDEngineFormatError) as exception:
         InfoFileReader(
             "md-01.info", format="tmp")
     assert str(
-        exception.value) == "Format tmp is not supported. Supported formats are ['pimd-qmcf', 'qmcfc']."
+        exception.value) == f"""
+'tmp' is not a valid MDEngineFormat.
+Possible values are: {MDEngineFormat.member_repr()}
+or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
 
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"
-    assert reader.format == "pimd-qmcf"
+    assert reader.format == MDEngineFormat.PIMD_QMCF
 
     reader = InfoFileReader("md-01.info", format="qmcfc")
     assert reader.filename == "md-01.info"
-    assert reader.format == "qmcfc"
+    assert reader.format == MDEngineFormat.QMCFC
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)

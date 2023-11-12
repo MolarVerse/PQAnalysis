@@ -12,6 +12,7 @@ InfoFileReader
 from beartype.typing import Tuple, Dict
 
 from .base import BaseReader
+from ..traj.formats import MDEngineFormat
 
 
 class InfoFileReader(BaseReader):
@@ -27,13 +28,11 @@ class InfoFileReader(BaseReader):
     ----------
     filename : str
         The name of the file to read from.
-    format : str
-        The format of the info file.
+    format : MDEngineFormat
+        The format of the info file. Default is MDEngineFormat.PIMD_QMCF.
     """
 
-    formats = ["pimd-qmcf", "qmcfc"]
-
-    def __init__(self, filename: str, format: str = "pimd-qmcf") -> None:
+    def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
         """
         Initializes the InfoFileReader with the given filename.
 
@@ -41,21 +40,12 @@ class InfoFileReader(BaseReader):
         ----------
         filename : str
             The name of the file to read from.
-        format : str, optional
-            The format of the info file, by default "pimd-qmcf"
-
-        Raises
-        ------
-        ValueError
-            If the format is not supported.
+        format : MDEngineFormat | str, optional
+            The format of the info file. Default is MDEngineFormat.PIMD_QMCF.
         """
         super().__init__(filename)
 
-        if format not in self.formats:
-            raise ValueError(
-                f"Format {format} is not supported. Supported formats are {self.formats}.")
-
-        self.format = format
+        self.format = MDEngineFormat(format)
 
     def read(self) -> Tuple[Dict, Dict | None]:
         """
@@ -71,9 +61,9 @@ class InfoFileReader(BaseReader):
             The units of the info file as a dictionary. The keys are the names of the
             information strings. The values are the corresponding units.
         """
-        if self.format == "pimd-qmcf":
+        if self.format == MDEngineFormat.PIMD_QMCF:
             return self.read_pimd_qmcf()
-        elif self.format == "qmcfc":
+        elif self.format == MDEngineFormat.QMCFC:
             return self.read_qmcfc()
 
     def read_pimd_qmcf(self) -> Tuple[Dict, Dict]:
