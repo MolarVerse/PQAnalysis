@@ -14,13 +14,14 @@ import numpy as np
 from beartype.typing import List
 
 from .base import BaseWriter
-from ..traj.trajectory import Trajectory
+from ..traj.trajectory import Trajectory, TrajectoryFormat
+from ..traj.frame import Frame
 from ..core.cell import Cell
 from ..core.atom import Atom
-from ..types import Numpy2DFloatArray
+from ..types import Numpy2DFloatArray, Numpy1DFloatArray
 
 
-def write_trajectory(traj, filename: str | None = None, format: str | None = None) -> None:
+def write_trajectory(traj, filename: str | None = None, format: str | None = None, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
     """
     Wrapper for TrajectoryWriter to write a trajectory to a file.
 
@@ -33,10 +34,15 @@ def write_trajectory(traj, filename: str | None = None, format: str | None = Non
         The trajectory to write.
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
+    format : str, optional
+        The format of the file. If None, the default PIMD-QMCF format is used.
+    type : TrajectoryFormat | str, optional
+        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+
     """
 
-    writer = TrajectoryWriter(filename, format)
-    writer.write(traj)
+    writer = TrajectoryWriter(filename, format=format)
+    writer.write(traj, type=type)
 
 
 class TrajectoryWriter(BaseWriter):
@@ -64,6 +70,9 @@ class TrajectoryWriter(BaseWriter):
                 X 0.0 0.0 0.0
                 coordinates of the atoms in the format 'element x y z'
 
+    _type : TrajectoryFormat
+        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+
     Attributes
     ----------
     format : str
@@ -71,6 +80,7 @@ class TrajectoryWriter(BaseWriter):
     """
 
     formats = [None, 'pimd-qmcf', 'qmcfc']
+    _type: TrajectoryFormat = TrajectoryFormat.XYZ
 
     def __init__(self,
                  filename: str | None = None,
@@ -101,7 +111,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = format
 
-    def write(self, trajectory: Trajectory) -> None:
+    def write(self, trajectory: Trajectory, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
         Writes the trajectory to the file.
 
@@ -110,13 +120,91 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self.open()
-        for frame in trajectory:
-            self.__write_header__(frame.n_atoms, frame.cell)
-            self.__write_coordinates__(frame.pos, frame.atoms)
+        self._type = TrajectoryFormat(type)
+        if self._type == TrajectoryFormat.XYZ:
+            self.write_positions(trajectory)
+        elif self._type == TrajectoryFormat.VEL:
+            self.write_velocities(trajectory)
+        elif self._type == TrajectoryFormat.FORCE:
+            self.write_forces(trajectory)
+        elif self._type == TrajectoryFormat.CHARGE:
+            self.write_charges(trajectory)
+
         self.close()
 
-    def __write_header__(self, n_atoms: int, cell: Cell | None = None) -> None:
+    def write_positions(self, trajectory: Trajectory) -> None:
+        """
+        Writes the positions of the trajectory to the file.
+
+        Parameters
+        ----------
+        traj : Trajectory
+            The trajectory to write.
+        """
+        self._type = TrajectoryFormat.XYZ
+        self.open()
+        for frame in trajectory:
+            self._write_header(frame.n_atoms, frame.cell)
+            self._write_comment(frame)
+            self._write_xyz(frame.pos, frame.atoms)
+
+        self.close()
+
+    def write_velocities(self, trajectory: Trajectory) -> None:
+        """
+        Writes the velocities of the trajectory to the file.
+
+        Parameters
+        ----------
+        traj : Trajectory
+            The trajectory to write.
+        """
+        self._type = TrajectoryFormat.VEL
+        self.open()
+        for frame in trajectory:
+            self._write_header(frame.n_atoms, frame.cell)
+            self._write_comment(frame)
+            self._write_xyz(frame.vel, frame.atoms)
+
+        self.close()
+
+    def write_forces(self, trajectory: Trajectory) -> None:
+        """
+        Writes the forces of the trajectory to the file.
+
+        Parameters
+        ----------
+        traj : Trajectory
+            The trajectory to write.
+        """
+        self._type = TrajectoryFormat.FORCE
+        self.open()
+        for frame in trajectory:
+            self._write_header(frame.n_atoms, frame.cell)
+            self._write_comment(frame)
+            self._write_xyz(frame.forces, frame.atoms)
+
+        self.close()
+
+    def write_charges(self, trajectory: Trajectory) -> None:
+        """
+        Writes the charges of the trajectory to the file.
+
+        Parameters
+        ----------
+        traj : Trajectory
+            The trajectory to write.
+        """
+        self._type = TrajectoryFormat.CHARGE
+        self.open()
+        for frame in trajectory:
+            self._write_header(frame.n_atoms, frame.cell)
+            self._write_comment(frame)
+            self._write_scalar(frame.charges, frame.atoms)
+
+        self.close()
+
+    def _write_header(self, n_atoms: int, cell: Cell | None = None) -> None:
         """
         Writes the header line of the frame to the file.
 
@@ -130,27 +218,60 @@ class TrajectoryWriter(BaseWriter):
 
         if cell is not None:
             print(
-                f"{n_atoms} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}\n", file=self.file)
+                f"{n_atoms} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
         else:
-            print(f"{n_atoms}\n", file=self.file)
+            print(f"{n_atoms}", file=self.file)
 
-    def __write_coordinates__(self, xyz: Numpy2DFloatArray, atoms: List[Atom]) -> None:
+    def _write_comment(self, frame: Frame) -> None:
         """
-        Writes the coordinates of the frame to the file.
+        Writes the comment line of the frame to the file.
+
+        Parameters
+        ----------
+        frame : Frame
+            The frame to write the comment line of.
+        """
+
+        if self._type == TrajectoryFormat.FORCE:
+            sum_forces = sum(frame.forces)
+            print(
+                f"sum of forces: {sum_forces[0]} {sum_forces[1]} {sum_forces[2]}", file=self.file)
+        else:
+            print("", file=self.file)
+
+    def _write_xyz(self, xyz: Numpy2DFloatArray, atoms: List[Atom]) -> None:
+        """
+        Writes the xyz of the frame to the file.
 
         If format is 'qmcfc', an additional X 0.0 0.0 0.0 line is written.
 
         Parameters
         ----------
         xyz : np.array
-            The xyz coordinates of the atoms.
+            The xyz data of the atoms (either positions, velocities or forces).
         atoms : Elements
             The elements of the frame.
         """
 
-        if self.format == "qmcfc":
+        if self.format == "qmcfc" and self._type == TrajectoryFormat.XYZ:
             print("X   0.0 0.0 0.0", file=self.file)
 
         for i in range(len(atoms)):
             print(
                 f"{atoms[i].name} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)
+
+    def _write_scalar(self, scalar: Numpy1DFloatArray, atoms: List[Atom]) -> None:
+        """
+        Writes the charges of the frame to the file.
+
+        Parameters
+        ----------
+        scalar : np.array
+            scalar data of the atoms (atm only charges).
+        atoms : Elements
+            The elements of the frame.
+        """
+
+        for i in range(len(atoms)):
+            print(
+                f"{atoms[i].name} {scalar[i]}", file=self.file)
