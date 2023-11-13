@@ -1,4 +1,8 @@
+from multimethod import multimethod
+
 from ..core.atom import Atom
+from ..traj.trajectory import Trajectory
+from ..types import Np1DIntArray
 
 
 class ShakeTopology:
@@ -7,6 +11,28 @@ class ShakeTopology:
             atoms = []
 
         self.atoms = atoms
+
+    @multimethod
+    def generate_topology(self, trajectory: Trajectory, type: Atom) -> None:
+        """
+        Generates the topology.
+        """
+
+        for frame in trajectory:
+            pass
+
+        raise NotImplementedError
+
+    @multimethod
+    def generate_topology(self, trajectory: Trajectory, indices: Np1DIntArray) -> None:
+        """
+        Generates the topology.
+        """
+        raise NotImplementedError
+
+    ##############
+    # Properties #
+    ##############
 
     @property
     def atoms(self) -> list[Atom]:
