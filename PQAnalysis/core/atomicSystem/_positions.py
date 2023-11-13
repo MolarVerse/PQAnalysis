@@ -16,6 +16,7 @@ from beartype.typing import List, Tuple
 from beartype.door import is_bearable
 
 from ._decorators import check_atoms_pos
+
 from ..atom import Atom
 from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray
 
@@ -101,33 +102,8 @@ class _PositionsMixin:
         Tuple[Np2DIntArray, Np2DNumberArray]
             The n nearest neighbours of the given atoms in the system.
             The first array contains the indices of the nearest neighbours and the second array contains the distances to the nearest neighbours.
-
-        Raises
-        ------
-        ValueError
-            If use_full_atom_info is True and atoms is not a List[Atom]
         """
 
-        if atoms is None:
-            indices = None
-
-        elif not isinstance(atoms[0], Atom) and use_full_atom_info:
-            raise ValueError(
-                "use_full_atom_info can only be used with List[Atom]")
-
-        elif isinstance(atoms[0], str):
-            indices = self._indices_by_atom_type_names(atoms)
-
-        elif isinstance(atoms[0], Atom) and use_full_atom_info:
-            indices = self._indices_by_atom(atoms)
-
-        elif isinstance(atoms[0], Atom) and not use_full_atom_info:
-            indices = self._indices_by_element_types(atoms)
-
-        # Note: here is is_bearable used instead of isinstance because
-        #       isinstance(atoms, Np1DIntArray) returns False as
-        #       Np1DIntArray is defined as a type alias and not a class.
-        elif is_bearable(atoms, Np1DIntArray):
-            indices = atoms
+        indices = self.indices_from_atoms(atoms, use_full_atom_info)
 
         return self._nearest_neighbours(n=n, indices=indices)
