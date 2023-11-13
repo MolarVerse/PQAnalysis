@@ -15,7 +15,7 @@ import numpy as np
 
 from beartype.typing import Any, List
 
-from ..core.topology import Topology
+from ..topology.topology import Topology
 from ..core.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell

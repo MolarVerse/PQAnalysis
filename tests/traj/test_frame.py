@@ -5,7 +5,6 @@ from PQAnalysis.traj.frame import Frame
 from PQAnalysis.core.cell import Cell
 from PQAnalysis.core.atomicSystem import AtomicSystem
 from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.topology import Topology
 
 
 class TestFrame:
