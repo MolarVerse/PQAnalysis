@@ -16,14 +16,17 @@ check_atoms_has_mass
     Decorator which checks that all atoms have mass information.
 """
 
+from __future__ import annotations
+
 import numpy as np
 
-from beartype.typing import List, Any, Tuple
+from beartype.typing import List, Any, Tuple, Iterable
 from numbers import Real
+from multimethod import multimethod
 
 from .atom import Atom
 from .cell import Cell
-from ..types import Np2DNumberArray, Np1DNumberArray, Np2DIntArray
+from ..types import Np2DNumberArray, Np1DNumberArray, Np2DIntArray, Np1DIntArray
 
 
 def check_atoms_pos(func):
@@ -295,13 +298,33 @@ class AtomicSystem:
 
         return is_equal
 
-    def __getitem__(self, key: int | slice) -> 'AtomicSystem':
+    @multimethod
+    def __getitem__(self, key: Atom) -> AtomicSystem:
         """
         Returns a new AtomicSystem with the given key.
 
         Parameters
         ----------
-        key : int | slice
+        key : Atom
+            The key as an atom to get the new AtomicSystem with only the matching atoms.
+
+        Returns
+        -------
+        AtomicSystem
+            The new AtomicSystem with the given key.
+        """
+        indices = np.argwhere(np.array(self.atoms) == key)
+
+        return self.__getitem__(indices)
+
+    @multimethod
+    def __getitem__(self, key: int | slice | Np1DIntArray) -> AtomicSystem:
+        """
+        Returns a new AtomicSystem with the given key.
+
+        Parameters
+        ----------
+        key : int | slice | Np1DIntArray
             The key to get the new AtomicSystem with.
 
         Returns
@@ -310,39 +333,33 @@ class AtomicSystem:
             The new AtomicSystem with the given key.
         """
 
+        if isinstance(key, int):
+            keys = np.array([key])
+        elif isinstance(key, slice):
+            keys = np.array(range(self.n_atoms)[key])
+
         if self.atoms != []:
-            atoms = self.atoms[key]
+            atoms = [self.atoms[key] for key in keys]
         else:
             atoms = None
 
-        if not isinstance(atoms, list) and atoms is not None:
-            atoms = [atoms]
-
         if np.shape(self.pos)[0] > 0:
-            pos = self.pos[key]
-            if pos.ndim == 1:
-                pos = np.reshape(pos, (1, 3))
+            pos = self.pos[keys]
         else:
             pos = None
 
         if np.shape(self.vel)[0] > 0:
-            vel = self.vel[key]
-            if vel.ndim == 1:
-                vel = np.reshape(vel, (1, 3))
+            vel = self.vel[keys]
         else:
             vel = None
 
         if np.shape(self.forces)[0] > 0:
-            forces = self.forces[key]
-            if forces.ndim == 1:
-                forces = np.reshape(forces, (1, 3))
+            forces = self.forces[keys]
         else:
             forces = None
 
         if np.shape(self.charges)[0] > 0:
-            charges = self.charges[key]
-            if charges.ndim == 0:
-                charges = np.reshape(charges, (1))
+            charges = self.charges[keys]
         else:
             charges = None
 

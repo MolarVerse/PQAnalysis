@@ -20,3 +20,7 @@ Np3x3NumberArray = Annotated[np.ndarray, Is[lambda array:
 Np2DIntArray = Annotated[np.ndarray, Is[lambda array:
                                         array.ndim == 2 and
                                         (np.issubdtype(array.dtype, np.integer))]]
+
+Np1DIntArray = Annotated[np.ndarray, Is[lambda array:
+                                        array.ndim == 1 and
+                                        (np.issubdtype(array.dtype, np.integer))]]

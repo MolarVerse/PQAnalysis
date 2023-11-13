@@ -14,6 +14,7 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import Any, List
+from multimethod import multimethod
 
 from ..topology.topology import Topology
 from ..core.atomicSystem import AtomicSystem
@@ -115,11 +116,20 @@ class Frame:
 
         return self.system == other.system and self.topology == other.topology
 
+    @multimethod
     def __getitem__(self, key: int | slice) -> 'Frame':
         if self.topology is None:
             return Frame(system=self.system[key])
         else:
             return Frame(system=self.system[key], topology=self.topology[key])
+
+    @multimethod
+    def __getitem__(self, atoms: Atom) -> 'Frame':
+
+        if self.topology is None:
+            return Frame(system=self.system[atoms])
+        else:
+            return Frame(system=self.system[atoms], topology=self.topology[atoms])
 
     #########################
     #                       #
