@@ -28,11 +28,30 @@ guess_element
 
 """
 
+from __future__ import annotations
+
 from multimethod import multimethod
 from beartype.typing import Any, Tuple
 from numbers import Real
 
 from PQAnalysis.exceptions import ElementNotFoundError
+
+
+def is_same_element_type(atom1: Atom, atom2: Atom) -> bool:
+    """
+    Checks whether two atoms are of the same element type.
+
+    Parameters
+    ----------
+    atom1 : Atom
+    atom2 : Atom
+
+    Returns
+    -------
+    bool
+        True if the atoms are of the same element type, False otherwise.
+    """
+    return atom1.atomic_number == atom2.atomic_number
 
 
 def guess_element(id: int | str) -> Tuple[str, int, Real]:
