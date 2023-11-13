@@ -19,7 +19,7 @@ from ..traj.formats import TrajectoryFormat, MDEngineFormat
 from ..traj.frame import Frame
 from ..core.cell import Cell
 from ..core.atom import Atom
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 def write_trajectory(traj,
@@ -238,7 +238,7 @@ class TrajectoryWriter(BaseWriter):
         else:
             print("", file=self.file)
 
-    def _write_xyz(self, xyz: Numpy2DFloatArray, atoms: List[Atom]) -> None:
+    def _write_xyz(self, xyz: Np2DNumberArray, atoms: List[Atom]) -> None:
         """
         Writes the xyz of the frame to the file.
 
@@ -259,7 +259,7 @@ class TrajectoryWriter(BaseWriter):
             print(
                 f"{atoms[i].name} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)
 
-    def _write_scalar(self, scalar: Numpy1DFloatArray, atoms: List[Atom]) -> None:
+    def _write_scalar(self, scalar: Np1DNumberArray, atoms: List[Atom]) -> None:
         """
         Writes the charges of the frame to the file.
 

@@ -17,7 +17,7 @@ import sys
 from beartype.typing import Any
 from numbers import Real
 
-from ..types import Numpy3x3FloatArray, Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
 
 
 class Cell:
@@ -82,13 +82,13 @@ class Cell:
         self.gamma = gamma
         self.box_matrix = self.setup_box_matrix()
 
-    def setup_box_matrix(self) -> Numpy3x3FloatArray:
+    def setup_box_matrix(self) -> Np3x3NumberArray:
         """
         Calculates the box matrix from the given parameters.
 
         Returns
         -------
-        np.array(3, 3)
+        box matrix: Np3x3NumberArray
             The box matrix.
         """
         matrix = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
@@ -109,13 +109,13 @@ class Cell:
         return matrix
 
     @property
-    def bounding_edges(self) -> Numpy2DFloatArray:
+    def bounding_edges(self) -> Np2DNumberArray:
         """
         calculates the coordinates of the eight corners of the unit cell.
 
         Returns
         -------
-        np.array(8, 3)
+        edges: Np2DNumberArray of shape (8, 3)
             The coordinates of the eight corners of the unit cell.
         """
         edges = np.zeros((8, 3))
@@ -139,42 +139,42 @@ class Cell:
         return np.linalg.det(self.box_matrix)
 
     @property
-    def box_lengths(self) -> Numpy1DFloatArray:
+    def box_lengths(self) -> Np1DNumberArray:
         """
         Returns the lengths of the box vectors.
 
         Returns
         -------
-        np.array(3)
+        box_lengths: Np1DNumberArray of shape (3,)
             The lengths of the box vectors.
         """
         return np.array([self.x, self.y, self.z])
 
     @property
-    def box_angles(self) -> Numpy1DFloatArray:
+    def box_angles(self) -> Np1DNumberArray:
         """
         Returns the angles between the box vectors.
 
         Returns
         -------
-        np.array(3)
+        box_angles: Np1DNumberArray of shape (3,)
             The lengths of the box vectors.
         """
         return np.array([self.alpha, self.beta, self.gamma])
 
-    def image(self, pos: Numpy2DFloatArray | Numpy1DFloatArray) -> Numpy2DFloatArray | Numpy1DFloatArray:
+    def image(self, pos: Np2DNumberArray | Np1DNumberArray) -> Np2DNumberArray | Np1DNumberArray:
         """
         Returns the image of the given position in the unit cell.
 
         Parameters
         ----------
-        pos : np.array
+        pos : Np2DNumberArray, Np1DNumberArray
             The position to get the image of.
 
         Returns
         -------
-        np.array
-            The image of the position in the unit cell.
+        imaged_positions: Np2DNumberArray, Np1DNumberArray
+            The image of the position(s) in the unit cell.
         """
 
         original_shape = np.shape(pos)

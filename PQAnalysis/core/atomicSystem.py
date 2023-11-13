@@ -18,12 +18,12 @@ check_atoms_has_mass
 
 import numpy as np
 
-from beartype.typing import List, Any
+from beartype.typing import List, Any, Tuple
 from numbers import Real
 
 from .atom import Atom
 from .cell import Cell
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray, Np2DIntArray
 
 
 def check_atoms_pos(func):
@@ -77,10 +77,10 @@ class AtomicSystem:
 
     def __init__(self,
                  atoms: List[Atom] | None = None,
-                 pos: Numpy2DFloatArray | None = None,
-                 vel: Numpy2DFloatArray | None = None,
-                 forces: Numpy2DFloatArray | None = None,
-                 charges: Numpy1DFloatArray | None = None,
+                 pos: Np2DNumberArray | None = None,
+                 vel: Np2DNumberArray | None = None,
+                 forces: Np2DNumberArray | None = None,
+                 charges: Np1DNumberArray | None = None,
                  cell: Cell = Cell()
                  ) -> None:
         """
@@ -90,13 +90,13 @@ class AtomicSystem:
         ----------
         atoms : List[Atom], optional
             A list of Atom objects, by default []
-        pos : Numpy2DFloatArray, optional
+        pos : Np2DNumberArray, optional
             A 2d numpy.ndarray containing the positions of the atoms, by default np.zeros((0, 3)).
-        vel : Numpy2DFloatArray, optional
+        vel : Np2DNumberArray, optional
             A 2d numpy.ndarray containing the velocities of the atoms, by default np.zeros((0, 3)).
-        forces : Numpy2DFloatArray, optional
+        forces : Np2DNumberArray, optional
             A 2d numpy.ndarray containing the forces on the atoms, by default np.zeros((0, 3)).
-        charges : Numpy1DFloatArray, optional
+        charges : Np1DNumberArray, optional
             A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).
         cell : Cell, optional
             The unit cell of the system. Defaults to a Cell with no periodic boundary conditions, by default Cell()
@@ -149,13 +149,13 @@ class AtomicSystem:
 
     @property
     @check_atoms_has_mass
-    def atomic_masses(self) -> Numpy1DFloatArray:
+    def atomic_masses(self) -> Np1DNumberArray:
         """
         Returns the masses of the atoms in the system.
 
         Returns
         -------
-        Numpy1DFloatArray
+        Np1DNumberArray
             The masses of the atoms in the system.
         """
         return np.array([atom.mass for atom in self._atoms])
@@ -175,7 +175,7 @@ class AtomicSystem:
     @property
     @check_atoms_pos
     @check_atoms_has_mass
-    def center_of_mass(self) -> Numpy1DFloatArray:
+    def center_of_mass(self) -> Np1DNumberArray:
         """
         Returns the center of mass of the system.
 
@@ -184,7 +184,7 @@ class AtomicSystem:
 
         Returns
         -------
-        Numpy1DFloatArray
+        Np1DNumberArray
             The center of mass of the system.
         """
         # check if there are any atoms in the system otherwise self.mass would be 0
@@ -200,11 +200,40 @@ class AtomicSystem:
 
         return pos
 
-    # def nearest_neighbours(self, n: int = 1):
-    #     for atom_position in self.pos:
-    #         delta_pos = self.pos - atom_position
+    @check_atoms_pos
+    def nearest_neighbours(self, n: int = 1) -> Tuple[Np2DIntArray, Np2DNumberArray]:
+        """
+        Returns the n nearest neighbours of each atom in the system.
 
-    #         delta_pos = cell.image(delta_pos)
+        Parameters
+        ----------
+        n : int, optional
+            The number of nearest neighbours to return, by default 1
+
+        Returns
+        -------
+        nearest_neighbours : Np2DIntArray
+            The n nearest neighbours of each atom in the system.
+        nearest_neighbours_distances : Np2DNumberArray
+            The distances to the n nearest neighbours of each atom in the system.
+        """
+        nearest_neighbours = []
+        nearest_neighbours_distances = []
+
+        for atom_position in self.pos:
+            delta_pos = self.pos - atom_position
+
+            delta_pos = self.cell.image(delta_pos)
+
+            distances = np.linalg.norm(delta_pos, axis=1)
+
+            nearest_neighbours_atom = np.argsort(distances)[1:n+1]
+
+            nearest_neighbours.append(nearest_neighbours_atom)
+            nearest_neighbours_distances.append(
+                distances[nearest_neighbours_atom])
+
+        return np.array(nearest_neighbours), np.array(nearest_neighbours_distances)
 
     @property
     def combined_name(self) -> str:
@@ -338,49 +367,49 @@ class AtomicSystem:
         return self._atoms
 
     @property
-    def pos(self) -> Numpy2DFloatArray:
+    def pos(self) -> Np2DNumberArray:
         """
         Returns the positions of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The positions of the atoms in the system.
         """
         return self._pos
 
     @property
-    def vel(self) -> Numpy2DFloatArray:
+    def vel(self) -> Np2DNumberArray:
         """
         Returns the velocities of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The velocities of the atoms in the system.
         """
         return self._vel
 
     @property
-    def forces(self) -> Numpy2DFloatArray:
+    def forces(self) -> Np2DNumberArray:
         """
         Returns the forces on the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The forces on the atoms in the system.
         """
         return self._forces
 
     @property
-    def charges(self) -> Numpy1DFloatArray:
+    def charges(self) -> Np1DNumberArray:
         """
         Returns the charges of the atoms in the system.
 
         Returns
         -------
-        Numpy1DFloatArray
+        Np1DNumberArray
             The charges of the atoms in the system.
         """
         return self._charges
