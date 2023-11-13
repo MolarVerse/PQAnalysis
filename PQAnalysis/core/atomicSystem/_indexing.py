@@ -12,6 +12,7 @@ _IndexingMixin
 import numpy as np
 
 from beartype.typing import List
+from beartype.door import is_bearable
 
 from ..atom import Atom, is_same_element_type
 from ...types import Np1DIntArray
@@ -21,6 +22,51 @@ class _IndexingMixin:
     """
     A mixin class containing methods for indexing the atomic system.
     """
+
+    def indices_from_atoms(self,
+                           atoms: List[str] | List[Atom] | Np1DIntArray | None,
+                           use_full_atom_info: bool = False
+                           ) -> Np1DIntArray:
+        """
+        Returns the indices of the atoms with the given atom type names or atoms.
+
+        Parameters
+        ----------
+        atoms : List[str] | List[Atom] | Np1DIntArray | None
+            The atom type names or atoms to get the indices of. If None, all atoms are returned.
+
+        Returns
+        -------
+        Np1DIntArray
+            The indices of the atoms with the given atom type names or atoms.
+
+        Raises
+        ------
+        ValueError
+            If use_full_atom_info is True and atoms is not a List[Atom].
+        """
+
+        if atoms is None:
+            return np.arange(self.n_atoms)
+
+        elif not isinstance(atoms[0], Atom) and use_full_atom_info:
+            raise ValueError(
+                "use_full_atom_info can only be used with List[Atom]")
+
+        elif isinstance(atoms[0], str):
+            return self._indices_by_atom_type_names(atoms)
+
+        elif isinstance(atoms[0], Atom) and use_full_atom_info:
+            return self._indices_by_atom(atoms)
+
+        elif isinstance(atoms[0], Atom) and not use_full_atom_info:
+            return self._indices_by_element_types(atoms)
+
+        # Note: here is is_bearable used instead of isinstance because
+        #       isinstance(atoms, Np1DIntArray) returns False as
+        #       Np1DIntArray is defined as a type alias and not a class.
+        elif is_bearable(atoms, Np1DIntArray):
+            return atoms
 
     def _indices_by_atom_type_names(self, names: List[str]) -> Np1DIntArray:
         """
