@@ -10,9 +10,9 @@ TrajectoryReader
 """
 
 from .base import BaseReader
-from ..traj.trajectory import Trajectory
-from ..traj.formats import TrajectoryFormat
 from .frameReader import FrameReader
+from ..traj.trajectory import Trajectory
+from ..traj.formats import TrajectoryFormat, MDEngineFormat
 from ..core.cell import Cell
 
 
@@ -45,7 +45,7 @@ class TrajectoryReader(BaseReader):
         self.frames = []
         self.format = format
 
-    def read(self) -> Trajectory:
+    def read(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> Trajectory:
         """
         Reads the trajectory from the file.
 
@@ -77,8 +77,13 @@ class TrajectoryReader(BaseReader):
                 else:
                     frame_string += line
 
-            # Read the last frame and append it to the list of frames
-            self.frames.append(frame_reader.read(frame_string))
+            frame = frame_reader.read(frame_string, format=self.format)
+
+            # to make sure X particle is not included in the trajectory for QMCFC
+            if MDEngineFormat(md_format) == MDEngineFormat.PIMD_QMCF:
+                self.frames.append(frame)
+            elif MDEngineFormat(md_format) == MDEngineFormat.QMCFC:
+                self.frames.append(frame[1:])
 
             # If the read frame does not have cell information, use the cell information of the previous frame
             if len(self.frames) > 1 and self.frames[-1].cell == Cell():

@@ -9,8 +9,6 @@ TrajectoryWriter
     A class for writing a trajectory to a file.
 """
 
-import numpy as np
-
 from beartype.typing import List
 
 from .base import BaseWriter
