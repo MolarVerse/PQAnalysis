@@ -71,22 +71,38 @@ class TrajectoryReader(BaseReader):
                     frame_string += line
                 elif line.split()[0].isdigit():
                     if frame_string != '':
-                        self.frames.append(frame_reader.read(
-                            frame_string, format=self.format))
+                        self._read_single_frame(
+                            frame_string, frame_reader, md_format)
+
                     frame_string = line
                 else:
                     frame_string += line
 
-            frame = frame_reader.read(frame_string, format=self.format)
-
-            # to make sure X particle is not included in the trajectory for QMCFC
-            if MDEngineFormat(md_format) == MDEngineFormat.PIMD_QMCF:
-                self.frames.append(frame)
-            elif MDEngineFormat(md_format) == MDEngineFormat.QMCFC:
-                self.frames.append(frame[1:])
-
-            # If the read frame does not have cell information, use the cell information of the previous frame
-            if len(self.frames) > 1 and self.frames[-1].cell == Cell():
-                self.frames[-1].cell = self.frames[-2].cell
+            self._read_single_frame(frame_string, frame_reader, md_format)
 
         return Trajectory(self.frames)
+
+    def _read_single_frame(self, frame_string: str, frame_reader: FrameReader,  md_format: MDEngineFormat | str) -> None:
+        """
+        Reads a single frame from the given string.
+
+        Parameters
+        ----------
+        frame_string : str
+            The string containing the frame information.
+        """
+        frame = frame_reader.read(frame_string, format=self.format)
+
+        # to make sure X particle is not included in the trajectory for QMCFC
+        if MDEngineFormat(md_format) == MDEngineFormat.PIMD_QMCF:
+            self.frames.append(frame)
+        elif MDEngineFormat(md_format) == MDEngineFormat.QMCFC:
+            if frame.atoms[0].name.upper() != 'X':
+                raise ValueError(
+                    "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead")
+            else:
+                self.frames.append(frame[1:])
+
+        # If the read frame does not have cell information, use the cell information of the previous frame
+        if len(self.frames) > 1 and self.frames[-1].cell == Cell():
+            self.frames[-1].cell = self.frames[-2].cell

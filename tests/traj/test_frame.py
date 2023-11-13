@@ -68,3 +68,10 @@ class TestFrame:
 
         with pytest.raises(IndexError) as exception:
             frame[2]
+        assert str(
+            exception.value) == 'index 2 is out of bounds for axis 0 with size 2'
+
+        atoms = [Atom(atom) for atom in ['C', 'H']]
+
+        assert np.allclose(frame[Atom('C')].pos, [[0, 0, 0]])
+        assert np.allclose(frame[Atom('H')].pos, [[1, 1, 1]])

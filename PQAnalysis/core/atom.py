@@ -190,7 +190,7 @@ class Atom:
         is_equal &= self.atomic_number == other.atomic_number
         is_equal &= self.symbol == other.symbol
         is_equal &= self.mass == other.mass
-        is_equal &= self.name == other.name
+        is_equal &= self.name.lower() == other.name.lower()
         return is_equal
 
     def __str__(self) -> str:
