@@ -9,8 +9,6 @@ TrajectoryWriter
     A class for writing a trajectory to a file.
 """
 
-import numpy as np
-
 from beartype.typing import List
 
 from .base import BaseWriter
@@ -19,7 +17,7 @@ from ..traj.formats import TrajectoryFormat, MDEngineFormat
 from ..traj.frame import Frame
 from ..core.cell import Cell
 from ..core.atom import Atom
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 def write_trajectory(traj,
@@ -203,7 +201,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def _write_header(self, n_atoms: int, cell: Cell | None = None) -> None:
+    def _write_header(self, n_atoms: int, cell: Cell = Cell()) -> None:
         """
         Writes the header line of the frame to the file.
 
@@ -212,10 +210,10 @@ class TrajectoryWriter(BaseWriter):
         n_atoms : int
             The number of atoms in the frame.
         cell : Cell
-            The cell of the frame. If None, only the number of atoms is written.
+            The cell of the frame. Default is Cell().
         """
 
-        if cell is not None:
+        if cell != Cell():
             print(
                 f"{n_atoms} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
         else:
@@ -238,7 +236,7 @@ class TrajectoryWriter(BaseWriter):
         else:
             print("", file=self.file)
 
-    def _write_xyz(self, xyz: Numpy2DFloatArray, atoms: List[Atom]) -> None:
+    def _write_xyz(self, xyz: Np2DNumberArray, atoms: List[Atom]) -> None:
         """
         Writes the xyz of the frame to the file.
 
@@ -259,7 +257,7 @@ class TrajectoryWriter(BaseWriter):
             print(
                 f"{atoms[i].name} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)
 
-    def _write_scalar(self, scalar: Numpy1DFloatArray, atoms: List[Atom]) -> None:
+    def _write_scalar(self, scalar: Np1DNumberArray, atoms: List[Atom]) -> None:
         """
         Writes the charges of the frame to the file.
 

@@ -14,12 +14,13 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import Any, List
+from multimethod import multimethod
 
-from ..core.topology import Topology
+from ..topology.topology import Topology
 from ..core.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 class Frame:
@@ -115,11 +116,20 @@ class Frame:
 
         return self.system == other.system and self.topology == other.topology
 
+    @multimethod
     def __getitem__(self, key: int | slice) -> 'Frame':
         if self.topology is None:
             return Frame(system=self.system[key])
         else:
             return Frame(system=self.system[key], topology=self.topology[key])
+
+    @multimethod
+    def __getitem__(self, atoms: Atom) -> 'Frame':
+
+        if self.topology is None:
+            return Frame(system=self.system[atoms])
+        else:
+            return Frame(system=self.system[atoms], topology=self.topology[atoms])
 
     #########################
     #                       #
@@ -140,25 +150,25 @@ class Frame:
         return self.system.PBC
 
     @property
-    def cell(self) -> Cell | None:
+    def cell(self) -> Cell:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         return self.system.cell
 
     @cell.setter
-    def cell(self, cell: Cell | None) -> Cell | None:
+    def cell(self, cell: Cell) -> None:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         self.system.cell = cell
@@ -176,49 +186,49 @@ class Frame:
         return self.system.n_atoms
 
     @property
-    def pos(self) -> Numpy2DFloatArray:
+    def pos(self) -> Np2DNumberArray:
         """
         The positions of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The positions of the atoms in the system.
         """
         return self.system.pos
 
     @property
-    def vel(self) -> Numpy2DFloatArray:
+    def vel(self) -> Np2DNumberArray:
         """
         The positions of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The positions of the atoms in the system.
         """
         return self.system.vel
 
     @property
-    def forces(self) -> Numpy2DFloatArray:
+    def forces(self) -> Np2DNumberArray:
         """
         The forces on the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The forces on the atoms in the system.
         """
         return self.system.forces
 
     @property
-    def charges(self) -> Numpy1DFloatArray:
+    def charges(self) -> Np1DNumberArray:
         """
         The charges of the atoms in the system.
 
         Returns
         -------
-        Numpy1DFloatArray
+        Np1DNumberArray
             The charges of the atoms in the system.
         """
         return self.system.charges
