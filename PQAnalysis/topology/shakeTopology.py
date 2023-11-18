@@ -3,7 +3,7 @@ import numpy as np
 from multimethod import multimethod
 from beartype.typing import Tuple
 
-from ..core.atom import Atom
+from ..core import Atom, Atoms
 from ..traj.trajectory import Trajectory
 from ..types import Np1DIntArray, Np1DNumberArray
 
@@ -15,9 +15,15 @@ class ShakeTopologyGenerator:
         self._use_full_atom_info = False
 
     @multimethod
-    def __init__(self, atoms: list[Atom], use_full_atom_info: bool = False) -> None:
+    def __init__(self, atoms: Atoms, use_full_atom_info: bool) -> None:
         self._atoms = atoms
         self._use_full_atom_info = use_full_atom_info
+
+    # hack to add default value for use_full_atom_info
+    @multimethod
+    def __init__(self, atoms: Atoms) -> None:
+        self._atoms = atoms
+        self._use_full_atom_info = False
 
     @multimethod
     def __init__(self, atoms: list[str]):
@@ -29,7 +35,6 @@ class ShakeTopologyGenerator:
         self._atoms = indices
         self._use_full_atom_info = False
 
-    @multimethod
     def generate_topology(self, trajectory: Trajectory) -> Tuple[Np1DIntArray, Np1DIntArray, Np1DNumberArray]:
         """
         Generates the topology.
