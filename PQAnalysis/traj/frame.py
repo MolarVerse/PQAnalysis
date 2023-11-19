@@ -17,7 +17,7 @@ from beartype.typing import Any, List
 from multimethod import multimethod
 
 from ..topology.topology import Topology
-from ..core.atomicSystem import AtomicSystem
+from ..core.atomicSystem.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
 from ..types import Np2DNumberArray, Np1DNumberArray

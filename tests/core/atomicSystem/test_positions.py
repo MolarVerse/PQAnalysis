@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.core.atomicSystem import AtomicSystem
+from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
 from PQAnalysis.core.atom import Atom
 
 
@@ -13,6 +13,11 @@ class TestPositionsMixin:
         system = AtomicSystem(pos=positions, atoms=atoms)
 
         indices, distances = system.nearest_neighbours()
+        assert np.allclose(indices, [[3], [2], [3], [0]])
+        assert np.allclose(
+            distances, [[1.0], [np.sqrt(8*8+1*1)], [np.sqrt(2)], [1.0]])
+
+        indices, distances = system._nearest_neighbours()
         assert np.allclose(indices, [[3], [2], [3], [0]])
         assert np.allclose(
             distances, [[1.0], [np.sqrt(8*8+1*1)], [np.sqrt(2)], [1.0]])
