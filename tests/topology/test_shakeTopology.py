@@ -37,8 +37,9 @@ class TestShakeTopologyGenerator:
         traj = Trajectory([Frame(system), Frame(system2)])
 
         generator = ShakeTopologyGenerator(atoms=[Atom('H')])
-        indices, target_indices, distances = generator.generate_topology(traj)
+        generator.generate_topology(traj)
+        indices, target_indices, distances = generator.indices, generator.target_indices, generator.distances
 
         assert np.allclose(indices, [1, 2, 4])
         assert np.allclose(target_indices, [0, 3, 3])
-        assert np.allclose(distances, [1.0, 1.0, 1.0])
+        assert np.allclose(distances, [0.80355339, 0.80355339, 1.29056942])

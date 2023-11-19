@@ -15,7 +15,7 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from ..core.atomicSystem import AtomicSystem
+from ..core.atomicSystem.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
 from ..types import Np2DNumberArray, Np1DNumberArray
