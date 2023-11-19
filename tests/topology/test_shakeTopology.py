@@ -39,6 +39,6 @@ class TestShakeTopologyGenerator:
         generator = ShakeTopologyGenerator(atoms=[Atom('H')])
         indices, target_indices, distances = generator.generate_topology(traj)
 
-        assert np.allclose(indices, [[1], [2], [4]])
-        assert np.allclose(target_indices, [[0], [3], [3]])
-        assert np.allclose(distances, [[1.0], [1.0], [1.0]])
+        assert np.allclose(indices, [1, 2, 4])
+        assert np.allclose(target_indices, [0, 3, 3])
+        assert np.allclose(distances, [1.0, 1.0, 1.0])
