@@ -151,8 +151,18 @@ class ShakeTopologyGenerator:
             The filename to write the topology to.
         """
 
-        baseWriter = BaseWriter(filename)
-        baseWriter.open()
+        writer = BaseWriter(filename)
+        writer.open()
+
+        print(
+            f"SHAKE {len(self.indices)}  {len(np.unique(self.target_indices))}  0", file=writer.file)
+        for i, index in enumerate(self.indices):
+            target_index = self.target_indices[i]
+            distance = self.distances[i]
+
+            print(f"{index} {target_index} {distance}", file=writer.file)
+
+        print("END", file=writer.file)
 
     @property
     def atoms(self) -> List[Atom] | Np1DIntArray | None:
