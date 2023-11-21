@@ -9,14 +9,16 @@ RestartFileReader
 
 import numpy as np
 
-from beartype.typing import Tuple, List
+from beartype.typing import List
 
 from .base import BaseReader
 from ..core.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
 from ..traj.formats import MDEngineFormat
-from ..types import Np1DIntArray, FILE, Np2DNumberArray
+from ..traj.frame import Frame
+from ..topology.topology import Topology
+from ..types import Np1DIntArray, Np2DNumberArray
 
 
 class RestartFileReader(BaseReader):
@@ -54,16 +56,14 @@ class RestartFileReader(BaseReader):
 
         self.format = MDEngineFormat(format)
 
-    def read(self) -> Tuple[AtomicSystem, Np1DIntArray]:
+    def read(self) -> Frame:
         """
         Reads the restart file and returns an AtomicSystem and a Np1DIntArray containing the molecular types.
 
         Returns
         -------
-        AtomicSystem
-            The AtomicSystem object.
-        Np1DIntArray
-            An np.ndarray containing the molecular types of each atom.
+        Frame:
+            The Frame object including the AtomicSystem and the Topology with the molecular types.
         """
 
         cell = Cell()
@@ -129,7 +129,7 @@ class RestartFileReader(BaseReader):
                 f"Invalid number of arguments for box: {len(line)}")
 
     @classmethod
-    def _parse_atoms(cls, lines: List[str], cell: Cell = Cell()) -> Tuple[AtomicSystem, Np1DIntArray]:
+    def _parse_atoms(cls, lines: List[str], cell: Cell = Cell()) -> Frame:
         """
         Parses the atom lines of the restart file.
 
@@ -185,10 +185,8 @@ class RestartFileReader(BaseReader):
 
         Returns
         -------
-        AtomicSystem
-            The AtomicSystem object.
-        Np1DIntArray
-            An np.ndarray containing the molecular types of each atom.
+        Frame:
+            The Frame object including the AtomicSystem and the Topology with the molecular types.
 
         Raises
         ------
@@ -222,4 +220,7 @@ class RestartFileReader(BaseReader):
         system = AtomicSystem(atoms=atoms, pos=np.array(positions), vel=np.array(
             velocities), forces=np.array(forces), cell=cell)
 
-        return system, np.array(mol_types)
+        topology = Topology()
+        topology.mol_types = np.array(mol_types)
+
+        return Frame(system=system, topology=topology)
