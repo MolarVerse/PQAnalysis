@@ -1,3 +1,12 @@
+"""
+A module containing the RestartFileReader class
+
+Classes
+-------
+RestartFileReader
+    A class for reading restart files.
+"""
+
 import numpy as np
 
 from beartype.typing import Tuple, List
@@ -11,12 +20,51 @@ from ..types import Np1DIntArray, FILE, Np2DNumberArray
 
 
 class RestartFileReader(BaseReader):
+    """
+    A class for reading restart files.
+
+    Inherits from the BaseReader class.
+    It reads restart files from the following molecular dynamics engines:
+        - PIMD_QMCF
+        - QMCFC
+
+
+    Attributes
+    ----------
+    filename : str
+        The filename of the restart file.
+    format : MDEngineFormat
+        The format of the restart file.
+    """
+
     def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
+        """
+        Initializes the RestartFileReader with the given parameters.
+
+        It automatically checks if the file exists.
+
+        Parameters
+        ----------
+        filename : str
+            The filename of the restart file.
+        format : MDEngineFormat | str, optional
+            The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+        """
         super().__init__(filename)
 
         self.format = MDEngineFormat(format)
 
     def read(self) -> Tuple[AtomicSystem, Np1DIntArray]:
+        """
+        Reads the restart file and returns an AtomicSystem and a Np1DIntArray containing the molecular types.
+
+        Returns
+        -------
+        AtomicSystem
+            The AtomicSystem object.
+        Np1DIntArray
+            An np.ndarray containing the molecular types of each atom.
+        """
 
         cell = Cell()
         atom_lines = []
@@ -44,6 +92,29 @@ class RestartFileReader(BaseReader):
 
     @classmethod
     def _parse_box(cls, line: List[str]) -> Cell:
+        """
+        Parses the box line of the restart file.
+
+        The box line can have 1, 4 or 7 arguments.
+        If it has 1 argument, the box is assumed to be a vacuum box.
+        If it has 4 arguments, the box is assumed to be a orthorhombic box.
+        If it has 7 arguments, the box is assumed to be a triclinic box.
+
+        Parameters
+        ----------
+        line : List[str]
+            The box line of the restart file.
+
+        Returns
+        -------
+        Cell
+            The Cell object.
+
+        Raises
+        ------
+        ValueError
+            If the number of arguments is not 1, 4 or 7.
+        """
         if len(line) == 1:
             return Cell()
         elif len(line) == 4:
@@ -59,7 +130,73 @@ class RestartFileReader(BaseReader):
 
     @classmethod
     def _parse_atoms(cls, lines: List[str], cell: Cell = Cell()) -> Tuple[AtomicSystem, Np1DIntArray]:
+        """
+        Parses the atom lines of the restart file.
 
+        An atom line can have 12 or 21 arguments.
+        if it has 12 arguments, the atom line is assumed to be from a PIMD_QMCF restart file.
+        if it has 21 arguments, the atom line is assumed to be from a QMCFC restart file.
+
+        For the PIMD_QMCF restart file, the arguments are:
+            - atom name
+            - atom id
+            - molecule id
+            - x position
+            - y position
+            - z position
+            - x velocity
+            - y velocity
+            - z velocity
+            - x force
+            - y force
+            - z force
+
+        For the QMCFC restart file, the arguments are:
+            - atom name
+            - atom id
+            - molecule id
+            - x position
+            - y position
+            - z position
+            - x velocity
+            - y velocity
+            - z velocity
+            - x force
+            - y force
+            - z force
+            - x pos of previous step
+            - y pos of previous step
+            - z pos of previous step
+            - x vel of previous step
+            - y vel of previous step
+            - z vel of previous step
+            - x force of previous step
+            - y force of previous step
+            - z force of previous step
+
+            where all old values are ignored.
+
+        Parameters
+        ----------
+        lines : List[str]
+            The atom lines of the restart file.
+        cell : Cell, optional
+            The cell of the AtomicSystem, by default Cell()
+
+        Returns
+        -------
+        AtomicSystem
+            The AtomicSystem object.
+        Np1DIntArray
+            An np.ndarray containing the molecular types of each atom.
+
+        Raises
+        ------
+        ValueError
+            If the number of arguments is not 12 or 21.
+        ValueError
+            If no atoms are found in the restart file.
+        """
         atoms = []
         positions = []
         velocities = []
