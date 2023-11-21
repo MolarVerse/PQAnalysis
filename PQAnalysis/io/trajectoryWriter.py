@@ -108,7 +108,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = MDEngineFormat(format)
 
-    def write(self, trajectory: Trajectory, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+    def write(self, trajectory: Trajectory | Frame, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
         Writes the trajectory to the file.
 
@@ -117,6 +117,10 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
+
+        if isinstance(trajectory, Frame):
+            trajectory = Trajectory([trajectory])
+
         self._type = TrajectoryFormat(type)
         if self._type == TrajectoryFormat.XYZ:
             self.write_positions(trajectory)
