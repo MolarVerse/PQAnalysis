@@ -15,10 +15,10 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from ..core.atomicSystem import AtomicSystem
+from ..core.atomicSystem.atomicSystem import AtomicSystem
 from ..core.atom import Atom
 from ..core.cell import Cell
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 from ..traj.frame import Frame
 from ..traj.formats import TrajectoryFormat
 from ..exceptions import ElementNotFoundError
@@ -198,12 +198,12 @@ class FrameReader:
 
         return Frame(AtomicSystem(atoms=atoms, charges=charges, cell=cell))
 
-    def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
+    def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:
         """
         Reads the header line of a frame.
 
         It reads the number of atoms and the cell information from the header line.
-        If the header line contains only the number of atoms, the cell is set to None.
+        If the header line contains only the number of atoms, the cell is set Cell().
         If the header line contains only the number of atoms and the box dimensions,
          the cell is set to a Cell object with the given box dimensions and box angles set to 90°.
 
@@ -237,13 +237,13 @@ class FrameReader:
             cell = Cell(a, b, c, alpha, beta, gamma)
         elif len(header_line) == 1:
             n_atoms = int(header_line[0])
-            cell = None
+            cell = Cell()
         else:
             raise ValueError('Invalid file format in header line of Frame.')
 
         return n_atoms, cell
 
-    def _read_xyz(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy2DFloatArray, List[str]]:
+    def _read_xyz(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np2DNumberArray, List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
@@ -281,7 +281,7 @@ class FrameReader:
 
         return xyz, atoms
 
-    def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy1DFloatArray, List[str]]:
+    def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np1DNumberArray, List[str]]:
         """
         Reads the scalar values and the atom names from the given string.
 
