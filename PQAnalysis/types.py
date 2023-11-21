@@ -1,4 +1,5 @@
 import numpy as np
+import _io
 
 from beartype.vale import Is
 from typing import Annotated
@@ -24,3 +25,5 @@ Np2DIntArray = Annotated[np.ndarray, Is[lambda array:
 Np1DIntArray = Annotated[np.ndarray, Is[lambda array:
                                         array.ndim == 1 and
                                         (np.issubdtype(array.dtype, np.integer))]]
+
+FILE = _io.TextIOWrapper
