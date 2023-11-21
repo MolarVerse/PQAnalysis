@@ -44,12 +44,10 @@ def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True
         If True, the box is printed. If False, the box is not printed. Default is True.
     """
     reader = RestartFileReader(restart_file)
-    system, _ = reader.read()
+    frame = reader.read()
 
     if not print_box:
-        system.cell = Cell()
-
-    frame = Frame(system)
+        frame.cell = Cell()
 
     writer = TrajectoryWriter(filename=output)
     writer.write(frame, type="xyz")

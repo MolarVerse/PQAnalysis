@@ -9,7 +9,6 @@ ShakeTopologyGenerator
     A class for generating the shake topology for a given trajectory.
 """
 import numpy as np
-import sys
 
 from beartype.typing import Tuple, List
 
