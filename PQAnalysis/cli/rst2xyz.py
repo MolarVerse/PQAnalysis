@@ -1,3 +1,10 @@
+"""
+Converts a restart file to a xyz file.
+
+If the box information from the restart file should not be included in the xyz file, 
+please use the --nobox option.
+"""
+
 import argparse
 
 from ..io.restartReader import RestartFileReader
@@ -23,7 +30,19 @@ def main():
     rst2xyz(args.restart_file, args.output, not args.nobox)
 
 
-def rst2xyz(restart_file: str, output: str | None, print_box: bool):
+def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True):
+    """
+    Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
+
+    Parameters
+    ----------
+    restart_file : str
+        The restart file to be converted.
+    output : str | None
+        The output file. If not specified, the output is printed to stdout.
+    print_box : bool
+        If True, the box is printed. If False, the box is not printed. Default is True.
+    """
     reader = RestartFileReader(restart_file)
     system, _ = reader.read()
 
