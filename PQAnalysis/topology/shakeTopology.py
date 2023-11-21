@@ -116,7 +116,7 @@ class ShakeTopologyGenerator:
         self.target_indices = target_indices
         self.distances = np.mean(np.array(distances), axis=0)
 
-    def average_equivalents(self, indices: Np2DIntArray) -> None:
+    def average_equivalents(self, indices: List[Np1DIntArray]) -> None:
         """
         Averages the distances for equivalent atoms.
 
@@ -131,7 +131,7 @@ class ShakeTopologyGenerator:
         """
 
         for equivalent_indices in indices:
-            _indices = np.argwhere(self.indices == equivalent_indices)
+            _indices = np.nonzero(np.in1d(self.indices, equivalent_indices))[0]
 
             mean_distance = np.mean(self.distances[_indices])
 
@@ -160,7 +160,7 @@ class ShakeTopologyGenerator:
             target_index = self.target_indices[i]
             distance = self.distances[i]
 
-            print(f"{index} {target_index} {distance}", file=writer.file)
+            print(f"{index+1} {target_index+1} {distance}", file=writer.file)
 
         print("END", file=writer.file)
 
