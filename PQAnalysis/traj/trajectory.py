@@ -51,12 +51,12 @@ class Trajectory:
 
     def check_PBC(self) -> bool:
         """
-        Checks if one cell of the trajectory is not None.
+        Checks if one cell of the trajectory is Cell().
 
         Returns
         -------
         bool
-            False if one cell of the trajectory is None, True otherwise.
+            False if one cell of the trajectory is Cell(), True otherwise.
         """
 
         if not all(frame.PBC for frame in self.frames):

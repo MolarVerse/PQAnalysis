@@ -14,7 +14,7 @@ import numpy as np
 from beartype.typing import Dict
 from collections import defaultdict
 
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 class Energy():
@@ -45,7 +45,7 @@ class Energy():
     """
 
     def __init__(self,
-                 data: Numpy1DFloatArray | Numpy2DFloatArray,
+                 data: Np1DNumberArray | Np2DNumberArray,
                  info: Dict | None = None,
                  units: Dict | None = None
                  ) -> None:
