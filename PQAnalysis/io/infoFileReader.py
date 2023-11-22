@@ -13,6 +13,7 @@ from beartype.typing import Tuple, Dict
 
 from .base import BaseReader
 from ..traj.formats import MDEngineFormat
+from ..exceptions import MDEngineFormatError
 
 
 class InfoFileReader(BaseReader):
@@ -85,9 +86,11 @@ class InfoFileReader(BaseReader):
 
         with open(self.filename, "r") as file:
 
+            lines = file.readlines()
+
             entry_counter = 0
 
-            for line in file:
+            for line in lines[3:-2]:
                 line = line.split()
 
                 if len(line) == 8:
@@ -97,6 +100,9 @@ class InfoFileReader(BaseReader):
                     info[line[4]] = entry_counter
                     units[line[4]] = line[6]
                     entry_counter += 1
+                else:
+                    raise MDEngineFormatError(
+                        f"Info file {self.filename} is not in pimd-qmcf format.")
 
         return info, units
 
@@ -117,9 +123,11 @@ class InfoFileReader(BaseReader):
 
         with open(self.filename, "r") as file:
 
+            lines = file.readlines()
+
             entry_counter = 0
 
-            for line in file:
+            for line in lines[3:-2]:
                 line = line.split()
 
                 if len(line) == 6:
@@ -132,5 +140,8 @@ class InfoFileReader(BaseReader):
                     entry_counter += 1
                     info[line[4]] = entry_counter
                     entry_counter += 1
+                else:
+                    raise MDEngineFormatError(
+                        f"Info file {self.filename} is not in qmcfc format.")
 
         return info, None
