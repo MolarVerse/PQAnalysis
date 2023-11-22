@@ -1,3 +1,12 @@
+"""
+A module for reading moldescriptor files.
+
+Classes
+-------
+MoldescriptorReader
+    A class for reading moldescriptor files.
+"""
+
 from beartype.typing import List
 
 from .base import BaseReader
@@ -6,10 +15,42 @@ from ..core.atom import Atom
 
 
 class MoldescriptorReader(BaseReader):
+    """
+    A class for reading moldescriptor files.
+
+    Inherits from the BaseReader class.
+
+    Attributes
+    ----------
+    filename : str
+        The filename of the moldescriptor file.
+    """
+
     def __init__(self, filename: str) -> None:
+        """
+        Initializes the MoldescriptorReader with the given parameters.
+
+        Parameters
+        ----------
+        filename : str
+            The filename of the moldescriptor file.
+        """
         super().__init__(filename)
 
     def read(self) -> List[MolType]:
+        """
+        Reads the moldescriptor file and returns the mol types.
+
+        Returns
+        -------
+        List[MolType]
+            The mol types.
+
+        Raises
+        ------
+        ValueError
+            If the number of columns in the header of a mol type is not 3.
+        """
         with open(self.filename, 'r') as f:
             lines = f.readlines()
 
@@ -49,6 +90,24 @@ class MoldescriptorReader(BaseReader):
 
     @classmethod
     def _read_mol_type(cls, lines: List[str]) -> MolType:
+        """
+        Parses a mol type from the given lines.
+
+        Parameters
+        ----------
+        lines : List[str]
+            The header line and the body lines of the mol type.
+
+        Returns
+        -------
+        MolType
+            The mol type.
+
+        Raises
+        ------
+        ValueError
+            If the number of columns in the body lines is not 3 or 4.
+        """
         header_line = lines[0].strip().split()
         name = header_line[0]
         total_charge = float(header_line[2])
@@ -59,6 +118,11 @@ class MoldescriptorReader(BaseReader):
 
         for line in lines[1:]:
             line = line.strip().split()
+
+            if len(line) != 3 and len(line) != 4:
+                raise ValueError(
+                    "The number of columns in the body of a mol type must be 3 or 4.")
+
             elements.append(Atom(line[0]))
             atom_types.append(int(line[1]))
             partial_charges.append(float(line[2]))
