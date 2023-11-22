@@ -16,6 +16,10 @@ class RestartFileWriter(BaseWriter):
 
         self.format = MDEngineFormat(format)
 
+        if self.format == MDEngineFormat.AUTO:
+            raise ValueError(
+                "The format AUTO is not supported for writing restart files.")
+
     def write(self, frame: Frame) -> None:
         """
         Writes the frame to the file.
