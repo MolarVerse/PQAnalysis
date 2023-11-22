@@ -82,14 +82,14 @@ class MoldescriptorReader(BaseReader):
                     n_atoms = int(line[1])
 
                     mol_types.append(self._read_mol_type(
-                        lines[counter:counter+n_atoms+1]))
+                        lines[counter:counter+n_atoms+1]), len(mol_types) + 1)
 
                     counter += n_atoms + 1
 
         return mol_types
 
     @classmethod
-    def _read_mol_type(cls, lines: List[str]) -> MolType:
+    def _read_mol_type(cls, lines: List[str], mol_type_id: int) -> MolType:
         """
         Parses a mol type from the given lines.
 
@@ -97,6 +97,8 @@ class MoldescriptorReader(BaseReader):
         ----------
         lines : List[str]
             The header line and the body lines of the mol type.
+        mol_type_id : int
+            The id of the mol type.
 
         Returns
         -------
@@ -127,4 +129,4 @@ class MoldescriptorReader(BaseReader):
             atom_types.append(int(line[1]))
             partial_charges.append(float(line[2]))
 
-        return MolType(name, total_charge, elements, atom_types, partial_charges)
+        return MolType(name, mol_type_id, total_charge, elements, atom_types, partial_charges)
