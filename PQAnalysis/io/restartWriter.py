@@ -1,3 +1,12 @@
+"""
+A module for writing restart files.
+
+Classes
+-------
+RestartFileWriter
+    A class for writing restart files.
+"""
+
 import numpy as np
 
 from .base import BaseWriter
@@ -7,11 +16,29 @@ from ..core.cell import Cell
 
 
 class RestartFileWriter(BaseWriter):
+    """
+    A class for writing restart files.
+
+    Inherits from the BaseWriter class.
+    """
+
     def __init__(self,
                  filename: str | None = None,
                  format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                  mode: str = 'w'
                  ) -> None:
+        """
+        Initializes the RestartFileWriter with the given parameters.
+
+        Parameters
+        ----------
+        filename : str | None, optional
+            The filename of the restart file, by default None (stdout)
+        format : MDEngineFormat | str, optional
+            The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+        mode : str, optional
+            The mode of the file, by default 'w'
+        """
         super().__init__(filename, mode)
 
         self.format = MDEngineFormat(format)
@@ -62,8 +89,17 @@ class RestartFileWriter(BaseWriter):
         for i in range(frame.n_atoms):
             atom = frame.system.atoms[i]
             pos = frame.system.pos[i]
-            vel = frame.system.vel[i]
-            force = frame.system.forces[i]
+
+            try:
+                vel = frame.system.vel[i]
+            except:
+                vel = np.zeros(3)
+
+            try:
+                force = frame.system.forces[i]
+            except:
+                force = np.zeros(3)
+
             mol_type = mol_types[i]
             print(f"{atom.name}    {i}    {mol_type}",
                   file=self.file, end="    ")
