@@ -14,8 +14,7 @@ import argparse
 
 from beartype.typing import List
 
-from ..io.boxWriter import BoxWriter
-from ..io.trajectoryReader import TrajectoryReader
+from ..io import BoxWriter, TrajectoryReader
 
 
 def main():

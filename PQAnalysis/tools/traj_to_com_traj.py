@@ -2,7 +2,7 @@
 A module containing the tool to compute a center of mass trajectory for a given selection.
 """
 
-from PQAnalysis.traj.trajectory import Trajectory
+from ..traj import Trajectory
 
 
 # TODO: add atom to element mapper if atomname not element names

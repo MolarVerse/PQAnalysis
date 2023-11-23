@@ -11,13 +11,10 @@ import numpy as np
 
 from beartype.typing import List
 
-from .base import BaseReader
-from ..core.atomicSystem import AtomicSystem
-from ..core.atom import Atom
-from ..core.cell import Cell
-from ..traj.formats import MDEngineFormat
-from ..traj.frame import Frame
-from ..topology.topology import Topology
+from . import BaseReader
+from ..core import AtomicSystem, Atom, Cell
+from ..traj import MDEngineFormat, Frame
+from ..topology import Topology
 from ..types import Np1DIntArray, Np2DNumberArray
 
 

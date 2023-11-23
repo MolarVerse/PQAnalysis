@@ -1,7 +1,6 @@
 import numpy as np
 
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, AtomicSystem
 
 
 class Test_IndexingMixin:

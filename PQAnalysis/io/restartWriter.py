@@ -9,10 +9,9 @@ RestartFileWriter
 
 import numpy as np
 
-from .base import BaseWriter
-from ..traj.formats import MDEngineFormat
-from ..traj.frame import Frame
-from ..core.cell import Cell
+from . import BaseWriter
+from ..traj import MDEngineFormat, Frame
+from ..core import Cell
 
 
 class RestartFileWriter(BaseWriter):

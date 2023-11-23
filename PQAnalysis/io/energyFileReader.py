@@ -12,10 +12,9 @@ EnergyFileReader
 import os
 import numpy as np
 
-from .base import BaseReader
-from .infoFileReader import InfoFileReader
-from ..physicalData.energy import Energy
-from ..traj.formats import MDEngineFormat
+from . import BaseReader, InfoFileReader
+from ..physicalData import Energy
+from ..traj import MDEngineFormat
 
 
 class EnergyFileReader(BaseReader):

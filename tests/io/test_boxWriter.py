@@ -4,11 +4,8 @@ import numpy as np
 from _pytest.capture import CaptureFixture
 
 from PQAnalysis.io.boxWriter import BoxWriter, write_box
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.traj import Trajectory, Frame
+from PQAnalysis.core import Cell, Atom, AtomicSystem
 
 
 class TestBoxWriter:
