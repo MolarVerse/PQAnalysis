@@ -1,10 +1,8 @@
 import numpy as np
 
 from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.atomicSystem import AtomicSystem
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
+from PQAnalysis.core import Atom, AtomicSystem
+from PQAnalysis.traj import Frame, Trajectory
 
 
 class TestShakeTopologyGenerator:

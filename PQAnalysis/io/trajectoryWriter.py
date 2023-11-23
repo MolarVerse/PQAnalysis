@@ -11,12 +11,9 @@ TrajectoryWriter
 
 from beartype.typing import List
 
-from .base import BaseWriter
-from ..traj.trajectory import Trajectory
-from ..traj.formats import TrajectoryFormat, MDEngineFormat
-from ..traj.frame import Frame
-from ..core.cell import Cell
-from ..core.atom import Atom
+from . import BaseWriter
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from ..core import Cell, Atom
 from ..types import Np2DNumberArray, Np1DNumberArray
 
 

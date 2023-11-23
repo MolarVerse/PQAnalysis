@@ -3,11 +3,10 @@ import numpy as np
 
 from beartype.roar import BeartypeException
 
-from PQAnalysis.io.frameReader import FrameReader
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.io import FrameReader
+from PQAnalysis.core import Cell, Atom
 from PQAnalysis.exceptions import TrajectoryFormatError
-from PQAnalysis.traj.formats import TrajectoryFormat
+from PQAnalysis.traj import TrajectoryFormat
 
 
 class TestFrameReader:

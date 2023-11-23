@@ -11,7 +11,7 @@ from numbers import Real
 from beartype.typing import List
 
 from ..types import Np1DIntArray, Np1DNumberArray
-from ..core.atom import Atom
+from ..core import Atom
 
 
 class MolType:

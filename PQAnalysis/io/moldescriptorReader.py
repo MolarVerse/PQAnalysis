@@ -9,9 +9,9 @@ MoldescriptorReader
 
 from beartype.typing import List
 
-from .base import BaseReader
+from . import BaseReader
 from ..topology import MolType
-from ..core.atom import Atom
+from ..core import Atom
 
 
 class MoldescriptorReader(BaseReader):

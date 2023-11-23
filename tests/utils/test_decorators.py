@@ -1,4 +1,4 @@
-from PQAnalysis.utils.decorators import count_decorator, instance_function_count_decorator
+from PQAnalysis.utils import count_decorator, instance_function_count_decorator
 
 
 def test_count_decorator():

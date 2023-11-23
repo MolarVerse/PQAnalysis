@@ -4,7 +4,7 @@ import numpy as np
 from collections import defaultdict
 from beartype.roar import BeartypeException
 
-from PQAnalysis.physicalData.energy import Energy
+from PQAnalysis.physicalData import Energy
 
 
 class TestEnergy:

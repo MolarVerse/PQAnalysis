@@ -2,8 +2,7 @@ import pytest
 import os
 import sys
 
-from PQAnalysis.io.base import BaseWriter
-from PQAnalysis.io.base import BaseReader
+from PQAnalysis.io import BaseWriter, BaseReader
 
 
 class TestBaseWriter:

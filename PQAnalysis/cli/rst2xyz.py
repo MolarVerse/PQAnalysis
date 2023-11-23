@@ -7,10 +7,8 @@ please use the --nobox option.
 
 import argparse
 
-from ..io.restartReader import RestartFileReader
-from ..io.trajectoryWriter import TrajectoryWriter
-from ..traj.frame import Frame
-from ..core.cell import Cell
+from ..io import RestartFileReader, TrajectoryWriter
+from ..core import Cell
 
 
 def main():

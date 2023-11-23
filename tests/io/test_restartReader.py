@@ -1,11 +1,9 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.io.restartReader import RestartFileReader
-from PQAnalysis.traj.formats import MDEngineFormat
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.atomicSystem import AtomicSystem
-from PQAnalysis.core.cell import Cell
+from PQAnalysis.io import RestartFileReader
+from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.core import Atom, Cell
 
 
 class Test_RestartFileReader:

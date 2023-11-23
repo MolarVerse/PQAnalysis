@@ -11,11 +11,10 @@ TrajectoryReader
 
 from beartype.typing import List
 
-from .base import BaseReader
+from . import BaseReader
 from .frameReader import FrameReader
-from ..traj.trajectory import Trajectory
-from ..traj.formats import TrajectoryFormat, MDEngineFormat
-from ..core.cell import Cell
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from ..core import Cell
 
 
 class TrajectoryReader(BaseReader):

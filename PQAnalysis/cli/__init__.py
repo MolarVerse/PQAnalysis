@@ -1,3 +1,3 @@
-from PQAnalysis.utils.common import print_header
+from ..utils import print_header
 
 print_header()

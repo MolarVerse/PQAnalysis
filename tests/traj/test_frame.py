@@ -1,10 +1,8 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.traj import Frame
+from PQAnalysis.core import Cell, Atom, AtomicSystem
 
 
 class TestFrame:

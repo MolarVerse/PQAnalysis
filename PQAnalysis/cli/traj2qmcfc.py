@@ -11,8 +11,7 @@ import argparse
 
 from beartype.typing import List
 
-from PQAnalysis.io.trajectoryWriter import TrajectoryWriter
-from PQAnalysis.io.trajectoryReader import TrajectoryReader
+from ..io import TrajectoryWriter, TrajectoryReader
 
 
 def main():
