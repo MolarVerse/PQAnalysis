@@ -14,6 +14,8 @@ BaseReader
 import sys
 import os
 
+from beartype.typing import List
+
 
 class BaseWriter:
     """
@@ -90,23 +92,37 @@ class BaseReader:
     ----------
     filename : str
         The name of the file to read from.
+    filenames : list of str
+        The filenames to read from.
+    multiple_files : bool
+        Whether the reader reads from a single file or multiple files.
     """
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self, filename: str | List[str]) -> None:
         """
         Initializes the BaseReader with the given filename.
 
         Parameters
         ----------
-        filename : str
-            The name of the file to read from.
+        filename : str or list of str
+            The name of the file to read from or a list of filenames to read from.
 
         Raises
         ------
         FileNotFoundError
             If the given file does not exist.
         """
-        if not os.path.isfile(filename):
-            raise FileNotFoundError(f"File {filename} not found.")
 
-        self.filename = filename
+        if isinstance(filename, str):
+            if not os.path.isfile(filename):
+                raise FileNotFoundError(f"File {filename} not found.")
+
+            self.filename = filename
+            self.multiple_files = False
+        else:
+            if not all([os.path.isfile(f) for f in filename]):
+                raise FileNotFoundError(
+                    f"At least one of the given files does not exist.")
+
+            self.filenames = filename
+            self.multiple_files = True
