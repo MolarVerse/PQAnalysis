@@ -7,6 +7,8 @@ MoldescriptorReader
     A class for reading moldescriptor files.
 """
 
+import numpy as np
+
 from beartype.typing import List
 
 from . import BaseReader
@@ -61,9 +63,11 @@ class MoldescriptorReader(BaseReader):
                 line = lines[counter]
 
                 if line.strip().startswith('#'):
+                    counter += 1
                     continue
 
                 if len(line.strip().split()) == 0:
+                    counter += 1
                     continue
 
                 line = line.strip().split()
@@ -82,7 +86,7 @@ class MoldescriptorReader(BaseReader):
                     n_atoms = int(line[1])
 
                     mol_types.append(self._read_mol_type(
-                        lines[counter:counter+n_atoms+1]), len(mol_types) + 1)
+                        lines[counter:counter+n_atoms+1], len(mol_types) + 1))
 
                     counter += n_atoms + 1
 
@@ -129,4 +133,4 @@ class MoldescriptorReader(BaseReader):
             atom_types.append(int(line[1]))
             partial_charges.append(float(line[2]))
 
-        return MolType(name, mol_type_id, total_charge, elements, atom_types, partial_charges)
+        return MolType(name, mol_type_id, total_charge, elements, np.array(atom_types), np.array(partial_charges))
