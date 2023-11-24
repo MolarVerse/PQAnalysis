@@ -3,6 +3,7 @@ import pytest
 
 from PQAnalysis.traj import Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.topology import Topology
 
 
 class TestFrame:
@@ -73,3 +74,9 @@ class TestFrame:
 
         assert np.allclose(frame[Atom('C')].pos, [[0, 0, 0]])
         assert np.allclose(frame[Atom('H')].pos, [[1, 1, 1]])
+
+        with pytest.raises(NotImplementedError) as exception:
+            frame.topology = Topology()
+            frame[Atom('C'):Atom('H')]
+        assert str(
+            exception.value) == 'Indexing of a frame with a topology is not implemented yet.'
