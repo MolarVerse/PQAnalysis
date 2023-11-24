@@ -1,8 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.core import AtomicSystem, Atom
 
 
 class TestPositionsMixin:

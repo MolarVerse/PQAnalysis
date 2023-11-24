@@ -11,12 +11,9 @@ TrajectoryWriter
 
 from beartype.typing import List
 
-from .base import BaseWriter
-from ..traj.trajectory import Trajectory
-from ..traj.formats import TrajectoryFormat, MDEngineFormat
-from ..traj.frame import Frame
-from ..core.cell import Cell
-from ..core.atom import Atom
+from . import BaseWriter
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from ..core import Cell, Atom
 from ..types import Np2DNumberArray, Np1DNumberArray
 
 
@@ -108,7 +105,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = MDEngineFormat(format)
 
-    def write(self, trajectory: Trajectory, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+    def write(self, trajectory: Trajectory | Frame, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
         Writes the trajectory to the file.
 
@@ -117,6 +114,10 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
+
+        if isinstance(trajectory, Frame):
+            trajectory = Trajectory([trajectory])
+
         self._type = TrajectoryFormat(type)
         if self._type == TrajectoryFormat.XYZ:
             self.write_positions(trajectory)

@@ -14,16 +14,14 @@ import argparse
 
 from beartype.typing import List
 
-from ..io.boxWriter import BoxWriter
-from ..io.trajectoryReader import TrajectoryReader
+from ..io import BoxWriter, TrajectoryReader
 
 
 def main():
     """
     Wrapper for the command line interface of traj2box.
     """
-    parser = argparse.ArgumentParser(
-        description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('trajectory_file', type=str, nargs='+',
                         help='The trajectory file(s) to be converted.')
     parser.add_argument('-v', '--vmd', action='store_true',

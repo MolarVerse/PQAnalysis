@@ -9,14 +9,13 @@ ShakeTopologyGenerator
     A class for generating the shake topology for a given trajectory.
 """
 import numpy as np
-import sys
 
-from beartype.typing import Tuple, List
+from beartype.typing import List
 
-from ..core.atom import Atom
-from ..traj.trajectory import Trajectory
+from ..core import Atom
+from ..traj import Trajectory
 from ..types import Np1DIntArray, Np2DIntArray, Np1DNumberArray
-from ..io.base import BaseWriter
+from ..io import BaseWriter
 
 
 class ShakeTopologyGenerator:

@@ -1,11 +1,9 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.io.trajectoryReader import TrajectoryReader
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.traj import Frame
+from PQAnalysis.core import Cell, Atom, AtomicSystem
 
 
 class TestTrajectoryReader:
@@ -82,3 +80,11 @@ class TestTrajectoryReader:
         assert traj[1] == frame2[1]
 
         traj = reader.read(md_format="qmcfc")
+
+        filenames = ["tmp", "tmp"]
+        reader = TrajectoryReader(filenames)
+
+        ref_traj = traj + traj
+        traj = reader.read(md_format="qmcfc")
+
+        assert traj == ref_traj

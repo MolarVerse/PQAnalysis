@@ -3,9 +3,8 @@ import numpy as np
 
 from collections import defaultdict
 
-from PQAnalysis.io.energyFileReader import EnergyFileReader
-from PQAnalysis.io.infoFileReader import InfoFileReader
-from PQAnalysis.traj.formats import MDEngineFormat
+from PQAnalysis.io import EnergyFileReader, InfoFileReader
+from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.exceptions import MDEngineFormatError
 
 

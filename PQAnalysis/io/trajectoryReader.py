@@ -9,11 +9,12 @@ TrajectoryReader
     A class for reading a trajectory from a file.
 """
 
-from .base import BaseReader
+from beartype.typing import List
+
+from . import BaseReader
 from .frameReader import FrameReader
-from ..traj.trajectory import Trajectory
-from ..traj.formats import TrajectoryFormat, MDEngineFormat
-from ..core.cell import Cell
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from ..core import Cell
 
 
 class TrajectoryReader(BaseReader):
@@ -32,20 +33,52 @@ class TrajectoryReader(BaseReader):
         The list of frames read from the file.
     """
 
-    def __init__(self, filename: str, format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+    def __init__(self, filename: str | List[str], format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
         """
         Initializes the TrajectoryReader with the given filename.
 
         Parameters
         ----------
-        filename : str
-            The name of the file to read from.
+        filename : str or list of str
+            The name of the file to read from or a list of filenames to read from.
         """
         super().__init__(filename)
         self.frames = []
         self.format = format
 
     def read(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> Trajectory:
+        """
+        Reads the trajectory from the file.
+
+        It reads the trajectory from the file and concatenates the lines of the same frame.
+        The frame information is then read from the concatenated string with the FrameReader class and
+        a Frame object is created.
+
+        In order to read the cell information given in the file, the cell information of the last frame is used for
+        all following frames that do not have cell information.
+
+        If the trajectory is split into multiple files, the files are read one after another and the frames are
+        concatenated into a single trajectory.
+
+        Returns
+        -------
+        Trajectory
+            The trajectory read from the file.
+        """
+        if not self.multiple_files:
+            return self._read_single_file(md_format)
+
+        else:
+
+            traj = Trajectory()
+            for filename in self.filenames:
+                self.filename = filename
+                traj += self._read_single_file(md_format)
+
+            self.filename = None
+            return traj
+
+    def _read_single_file(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> Trajectory:
         """
         Reads the trajectory from the file.
 
@@ -80,7 +113,10 @@ class TrajectoryReader(BaseReader):
 
             self._read_single_frame(frame_string, frame_reader, md_format)
 
-        return Trajectory(self.frames)
+        traj = Trajectory(self.frames)
+        self.frames = []
+
+        return traj
 
     def _read_single_frame(self, frame_string: str, frame_reader: FrameReader,  md_format: MDEngineFormat | str) -> None:
         """
