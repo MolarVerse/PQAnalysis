@@ -89,3 +89,18 @@ class TestBaseReader:
 
         reader = BaseReader(filename)
         assert reader.filename == filename
+        assert reader.multiple_files is False
+
+        with pytest.raises(FileNotFoundError) as exception:
+            BaseReader([filename, "tmp2"])
+        assert str(
+            exception.value) == "At least one of the given files does not exist. File tmp2 not found."
+
+        filename2 = "tmp2"
+        file = open(filename2, "w")
+        print("test2", file=file)
+        file.close()
+
+        reader = BaseReader([filename, filename2])
+        assert reader.filenames == [filename, filename2]
+        assert reader.multiple_files is True
