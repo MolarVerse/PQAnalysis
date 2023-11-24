@@ -182,11 +182,13 @@ class Cell:
         if original_shape == (3,):
             pos = np.reshape(pos, (1, 3))
 
-        fractional_pos = pos @ np.linalg.inv(self.box_matrix)
+        fractional_pos = np.array(
+            [np.linalg.inv(self.box_matrix) @ pos_i for pos_i in pos])
 
         fractional_pos -= np.round(fractional_pos)
 
-        pos = fractional_pos @ self.box_matrix
+        pos = np.array(
+            [self.box_matrix @ fractional_pos_i for fractional_pos_i in fractional_pos])
 
         return np.reshape(pos, original_shape)
 

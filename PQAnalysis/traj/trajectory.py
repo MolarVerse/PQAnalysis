@@ -15,7 +15,7 @@ import numpy as np
 
 from beartype.typing import List, Iterator, Any
 
-from .frame import Frame
+from . import Frame
 
 
 class Trajectory:

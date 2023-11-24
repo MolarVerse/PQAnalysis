@@ -1,0 +1,19 @@
+# >>  moldescriptor.dat <<
+#
+#	 Data File containing atom information of all known molecules
+      
+WATER_TYPE 1
+AMMONIA_TYPE 2 
+ 
+# Molecule 1
+  H2O            3   0.0
+  O              0  -0.65966
+  H              1   0.32983
+  H              1   0.32983
+ 
+# Molecule 2
+  Ammonia        4   0.0
+  N              0  -0.8022  11
+  H              1   0.2674  22
+  H              1   0.2674  33
+  H              1   0.2674  44

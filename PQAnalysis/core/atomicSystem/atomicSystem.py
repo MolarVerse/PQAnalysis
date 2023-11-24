@@ -22,8 +22,7 @@ from ._standardProperties import _StandardPropertiesMixin
 from ._indexing import _IndexingMixin
 from ._positions import _PositionsMixin
 
-from ..atom import Atom
-from ..cell import Cell
+from .. import Atom, Cell
 from ...types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 
 

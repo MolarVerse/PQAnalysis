@@ -1,9 +1,7 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.core.atomicSystem.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.cell import Cell
+from PQAnalysis.core import AtomicSystem, Atom, Cell
 
 
 class TestAtomicSystem:
