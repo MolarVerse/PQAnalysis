@@ -80,3 +80,11 @@ class TestTrajectoryReader:
         assert traj[1] == frame2[1]
 
         traj = reader.read(md_format="qmcfc")
+
+        filenames = ["tmp", "tmp"]
+        reader = TrajectoryReader(filenames)
+
+        ref_traj = traj + traj
+        traj = reader.read(md_format="qmcfc")
+
+        assert traj == ref_traj
