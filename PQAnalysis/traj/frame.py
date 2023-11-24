@@ -114,20 +114,12 @@ class Frame:
 
         return self.system == other.system and self.topology == other.topology
 
-    @multimethod
-    def __getitem__(self, key: int | slice) -> 'Frame':
+    def __getitem__(self, key: int | slice | Atom) -> 'Frame':
         if self.topology is None:
             return Frame(system=self.system[key])
         else:
-            return Frame(system=self.system[key], topology=self.topology[key])
-
-    @multimethod
-    def __getitem__(self, atoms: Atom) -> 'Frame':
-
-        if self.topology is None:
-            return Frame(system=self.system[atoms])
-        else:
-            return Frame(system=self.system[atoms], topology=self.topology[atoms])
+            raise NotImplementedError(
+                "Indexing of a frame with a topology is not implemented yet.")
 
     #########################
     #                       #
