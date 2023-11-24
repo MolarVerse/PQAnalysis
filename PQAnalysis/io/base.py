@@ -120,9 +120,11 @@ class BaseReader:
             self.filename = filename
             self.multiple_files = False
         else:
-            if not all([os.path.isfile(f) for f in filename]):
-                raise FileNotFoundError(
-                    f"At least one of the given files does not exist.")
+            filenames = filename
+            for filename in filenames:
+                if not os.path.isfile(filename):
+                    raise FileNotFoundError(
+                        f"At least one of the given files does not exist. File {filename} not found.")
 
-            self.filenames = filename
+            self.filenames = filenames
             self.multiple_files = True
