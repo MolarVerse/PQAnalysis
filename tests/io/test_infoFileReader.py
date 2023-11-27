@@ -103,3 +103,14 @@ def test_read(test_with_data_dir):
     assert info["DENSITY"] == 21
     assert info["MOMENTUM"] == 22
     assert info["LOOPTIME"] == 23
+
+    reader = InfoFileReader("md-01.qmcfc.info")
+    with pytest.raises(MDEngineFormatError) as exception:
+        reader.read()
+    assert str(
+        exception.value) == "Info file md-01.qmcfc.info is not in pimd-qmcf format."
+
+    reader = InfoFileReader("md-01.info", format="qmcfc")
+    with pytest.raises(MDEngineFormatError) as exception:
+        reader.read()
+    assert str(exception.value) == "Info file md-01.info is not in qmcfc format."

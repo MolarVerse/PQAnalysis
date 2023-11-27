@@ -141,8 +141,4 @@ class EnergyFileReader(BaseReader):
                 raise FileNotFoundError(
                     f"Info File {self.info_filename} not found.")
 
-        if self.info_filename is not None:
-            print(f"A Info File \'{self.info_filename}\' was found.")
-            return True
-        else:
-            return False
+        return self.info_filename is not None
