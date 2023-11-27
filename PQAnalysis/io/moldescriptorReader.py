@@ -12,6 +12,7 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader
+from .exceptions import MoldescriptorReaderError
 from ..topology import MolType
 from ..core import Atom
 
@@ -50,7 +51,7 @@ class MoldescriptorReader(BaseReader):
 
         Raises
         ------
-        ValueError
+        MoldescriptorReaderError
             If the number of columns in the header of a mol type is not 3.
         """
         with open(self.filename, 'r') as f:
@@ -80,7 +81,7 @@ class MoldescriptorReader(BaseReader):
                     counter += 1
                 else:
                     if len(line) != 3:
-                        raise ValueError(
+                        raise MoldescriptorReaderError(
                             "The number of columns in the header of a mol type must be 3.")
 
                     n_atoms = int(line[1])
@@ -111,7 +112,7 @@ class MoldescriptorReader(BaseReader):
 
         Raises
         ------
-        ValueError
+        MoldescriptorReaderError
             If the number of columns in the body lines is not 3 or 4.
         """
         header_line = lines[0].strip().split()
@@ -126,7 +127,7 @@ class MoldescriptorReader(BaseReader):
             line = line.strip().split()
 
             if len(line) != 3 and len(line) != 4:
-                raise ValueError(
+                raise MoldescriptorReaderError(
                     "The number of columns in the body of a mol type must be 3 or 4.")
 
             elements.append(Atom(line[0]))

@@ -15,12 +15,10 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from ..core.atomicSystem import AtomicSystem
-from ..core.atom import Atom
-from ..core.cell import Cell
+from ..core import AtomicSystem, Atom, Cell, ElementNotFoundError
 from ..types import Np2DNumberArray, Np1DNumberArray
 from ..traj import Frame, TrajectoryFormat
-from ..core.exceptions import ElementNotFoundError
+from .exceptions import FrameReaderError
 
 
 class FrameReader:
@@ -200,7 +198,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the header line is not valid. Either it contains too many or too few values.
         """
 
@@ -218,7 +216,8 @@ class FrameReader:
             n_atoms = int(header_line[0])
             cell = Cell()
         else:
-            raise ValueError('Invalid file format in header line of Frame.')
+            raise FrameReaderError(
+                'Invalid file format in header line of Frame.')
 
         return n_atoms, cell
 
@@ -242,7 +241,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the given string does not contain the correct number of lines.
         """
 
@@ -252,7 +251,7 @@ class FrameReader:
             line = splitted_frame_string[2+i]
 
             if len(line.split()) != 4:
-                raise ValueError(
+                raise FrameReaderError(
                     'Invalid file format in xyz coordinates of Frame.')
 
             xyz[i] = np.array([float(x) for x in line.split()[1:4]])
@@ -280,7 +279,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the given string does not contain the correct number of lines.
         """
 
@@ -290,7 +289,7 @@ class FrameReader:
             line = splitted_frame_string[2+i]
 
             if len(line.split()) != 2:
-                raise ValueError(
+                raise FrameReaderError(
                     'Invalid file format in scalar values of Frame.')
 
             scalar[i] = float(line.split()[1])

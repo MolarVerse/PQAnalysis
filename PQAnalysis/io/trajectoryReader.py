@@ -12,6 +12,7 @@ TrajectoryReader
 from beartype.typing import List
 
 from . import BaseReader
+from .exceptions import TrajectoryReaderError
 from .frameReader import FrameReader
 from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from ..core import Cell
@@ -126,6 +127,11 @@ class TrajectoryReader(BaseReader):
         ----------
         frame_string : str
             The string containing the frame information.
+
+        Raises
+        ------
+        TrajectoryReaderError
+            If the first atom in the frame is not X for QMCFC.
         """
         frame = frame_reader.read(frame_string, format=self.format)
 
@@ -134,7 +140,7 @@ class TrajectoryReader(BaseReader):
             self.frames.append(frame)
         elif MDEngineFormat(md_format) == MDEngineFormat.QMCFC:
             if frame.atoms[0].name.upper() != 'X':
-                raise ValueError(
+                raise TrajectoryReaderError(
                     "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead")
             else:
                 self.frames.append(frame[1:])

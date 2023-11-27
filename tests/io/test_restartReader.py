@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.io import RestartFileReader
+from PQAnalysis.io.exceptions import RestartFileReaderError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Atom, Cell
 
@@ -34,18 +35,18 @@ class Test_RestartFileReader:
         assert RestartFileReader._parse_box(line) == Cell(
             1.0, 2.0, 3.0, 90.0, 90.0, 120.0)
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(RestartFileReaderError) as exception:
             line = ["box", "1.0", "2.0"]
             RestartFileReader._parse_box(line)
         assert str(exception.value) == "Invalid number of arguments for box: 3"
 
     def test__parse_atoms(self):
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(RestartFileReaderError) as exception:
             lines = []
             RestartFileReader._parse_atoms(lines, Cell())
         assert str(exception.value) == "No atoms found in restart file."
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(RestartFileReaderError) as exception:
             lines = ["C 0 1 1.0 1.0 1.0"]
             RestartFileReader._parse_atoms(lines, Cell())
         assert str(exception.value) == "Invalid number of arguments for atom: 6"
