@@ -1,3 +1,4 @@
+from .exceptions import ElementNotFoundError
 from .atom import Atom
 from .cell import Cell
 from .atomicSystem import AtomicSystem

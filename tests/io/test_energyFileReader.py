@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from PQAnalysis.io import EnergyFileReader, InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.exceptions import MDEngineFormatError
+from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
 class TestEnergyReader:

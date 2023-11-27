@@ -4,7 +4,7 @@ from beartype.roar import BeartypeException
 
 from PQAnalysis.io import InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.exceptions import MDEngineFormatError
+from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
