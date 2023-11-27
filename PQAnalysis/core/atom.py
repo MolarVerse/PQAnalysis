@@ -79,8 +79,6 @@ def guess_element(id: int | str) -> Tuple[str, int, Real]:
     ------
     ElementNotFoundError
         If the given identifier is not a valid element identifier.
-    TypeError
-        If the given identifier is not an integer or string.
     """
     if isinstance(id, int):
         try:

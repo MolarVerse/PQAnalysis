@@ -46,7 +46,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        MDEngineFormatError
             If the given format is not valid.
         """
 
@@ -74,11 +74,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -108,11 +103,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -142,11 +132,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -176,11 +161,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
