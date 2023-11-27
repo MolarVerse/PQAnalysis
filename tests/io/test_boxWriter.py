@@ -4,6 +4,7 @@ import numpy as np
 from _pytest.capture import CaptureFixture
 
 from PQAnalysis.io.boxWriter import BoxWriter, write_box
+from PQAnalysis.io.exceptions import BoxWriterError
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
 
@@ -56,7 +57,7 @@ class TestBoxWriter:
         except:
             assert False
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(BoxWriterError) as exception:
             writer.__check_PBC__(traj2)
         assert str(
             exception.value) == "At least on cell of the trajectory is None. Cannot write box file."
