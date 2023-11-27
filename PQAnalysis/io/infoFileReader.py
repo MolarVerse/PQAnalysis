@@ -80,6 +80,11 @@ class InfoFileReader(BaseReader):
         dict
             The units of the info file as a dictionary. The keys are the names of the
             information strings. The values are the corresponding units.
+
+        Raises
+        ------
+        MDEngineFormatError
+            If the info file is not in pimd-qmcf format.
         """
         info = {}
         units = {}
@@ -118,6 +123,11 @@ class InfoFileReader(BaseReader):
             corresponding data entry (columns in energy file).
         None
             For the qmcfc format, no units are given.
+
+        Raises
+        ------
+        MDEngineFormatError
+            If the info file is not in qmcfc format.
         """
         info = {}
 
