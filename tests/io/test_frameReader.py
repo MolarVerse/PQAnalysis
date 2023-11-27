@@ -5,7 +5,7 @@ from beartype.roar import BeartypeException
 
 from PQAnalysis.io import FrameReader
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.exceptions import TrajectoryFormatError
+from PQAnalysis.traj.exceptions import TrajectoryFormatError
 from PQAnalysis.traj import TrajectoryFormat
 
 

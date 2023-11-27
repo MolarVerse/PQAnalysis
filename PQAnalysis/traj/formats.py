@@ -16,7 +16,7 @@ MDEngineFormat
 from enum import Enum
 from beartype.typing import Any
 
-from ..exceptions import TrajectoryFormatError, MDEngineFormatError
+from . import TrajectoryFormatError, MDEngineFormatError
 
 
 class Format(Enum):

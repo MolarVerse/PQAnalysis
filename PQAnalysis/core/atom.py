@@ -34,7 +34,7 @@ from multimethod import multimethod
 from beartype.typing import Any, Tuple
 from numbers import Real
 
-from PQAnalysis.exceptions import ElementNotFoundError
+from . import ElementNotFoundError
 
 
 def is_same_element_type(atom1: Atom, atom2: Atom) -> bool:

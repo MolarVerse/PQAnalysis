@@ -20,7 +20,7 @@ from ..core.atom import Atom
 from ..core.cell import Cell
 from ..types import Np2DNumberArray, Np1DNumberArray
 from ..traj import Frame, TrajectoryFormat
-from ..exceptions import ElementNotFoundError
+from ..core.exceptions import ElementNotFoundError
 
 
 class FrameReader:
