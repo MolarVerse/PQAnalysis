@@ -1,3 +1,4 @@
+from .common import distance
 from .exceptions import ElementNotFoundError, AtomicSystemPositionsError, AtomicSystemMassError
 from .atom import Atom
 from .cell import Cell

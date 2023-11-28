@@ -17,8 +17,8 @@ from beartype.door import is_bearable
 
 from ._decorators import check_atoms_pos
 
-from ..atom import Atom
-from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray
+from .. import Atom, distance
+from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, Np1DNumberArray
 
 
 class _PositionsMixin:
@@ -56,11 +56,7 @@ class _PositionsMixin:
         nearest_neighbours_distances = []
 
         for atom_position in self.pos[indices]:
-            delta_pos = self.pos - atom_position
-
-            delta_pos = self.cell.image(delta_pos)
-
-            distances = np.linalg.norm(delta_pos, axis=1)
+            distances = distance(atom_position, self.pos, self.cell)
 
             nearest_neighbours_atom = np.argsort(distances)[1:n+1]
 

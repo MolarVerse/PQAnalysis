@@ -16,6 +16,7 @@ import numpy as np
 from beartype.typing import List, Iterator, Any
 
 from . import Frame
+from ..types import Np2DNumberArray
 
 
 class Trajectory:
@@ -49,6 +50,18 @@ class Trajectory:
         else:
             self.frames = frames
 
+    @property
+    def box_lengths(self) -> Np2DNumberArray:
+        """
+        Returns the box lengths of the trajectory.
+
+        Returns
+        -------
+        Np2DNumberArray
+            The box lengths of the trajectory.
+        """
+        return np.array([frame.cell.box_lengths for frame in self.frames])
+
     def check_PBC(self) -> bool:
         """
         Checks if one cell of the trajectory is Cell().
@@ -59,10 +72,19 @@ class Trajectory:
             False if one cell of the trajectory is Cell(), True otherwise.
         """
 
-        if not all(frame.PBC for frame in self.frames):
-            return False
-        else:
-            return True
+        return all(frame.PBC for frame in self.frames)
+
+    def check_vacuum(self) -> bool:
+        """
+        Checks if all frames of the trajectory are in vacuum i.e. cell = Cell().
+
+        Returns
+        -------
+        bool
+            True if all frames of the trajectory are in vacuum, False otherwise.
+        """
+
+        return not any(frame.cell is None for frame in self.frames)
 
     def append(self, frame: Frame) -> None:
         """
