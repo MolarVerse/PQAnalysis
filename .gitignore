@@ -9,3 +9,4 @@ _version.py
 .coverage
 coverage.xml
 htmlcov/
+.vscode
