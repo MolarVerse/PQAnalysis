@@ -9,7 +9,7 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from . import BaseWriter
+from . import BaseWriter, BoxWriterError
 from ..utils import instance_function_count_decorator
 from ..traj import Trajectory
 
@@ -72,7 +72,7 @@ class BoxWriter(BaseWriter):
         Raises
         ------
         ValueError
-            If the given mode is not 'w' or 'a'.
+            If the given format is not in BoxWriter.formats. TODO: make an enum for these formats!!!
         """
 
         super().__init__(filename, mode)
@@ -135,11 +135,6 @@ class BoxWriter(BaseWriter):
         ----------
         traj : Trajectory
             The trajectory to write.
-
-        Raises
-        ------
-        ValueError
-            If the cell of a frame of the trajectory is Cell().
         """
         self.__check_PBC__(traj)
 
@@ -182,7 +177,7 @@ class BoxWriter(BaseWriter):
 
         Raises
         ------
-        ValueError
+        BoxWriterError
             If the cell of a frame of the trajectory is None.
         """
         self.__check_PBC__(traj)
@@ -211,5 +206,5 @@ class BoxWriter(BaseWriter):
         """
 
         if not traj.check_PBC():
-            raise ValueError(
+            raise BoxWriterError(
                 "At least on cell of the trajectory is None. Cannot write box file.")

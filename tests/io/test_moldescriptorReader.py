@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.io import MoldescriptorReader
+from PQAnalysis.io.exceptions import MoldescriptorReaderError
 from PQAnalysis.core import Atom
 
 
@@ -39,7 +40,7 @@ H 1
 O 2 -4.6
 """
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(MoldescriptorReaderError) as exception:
             MoldescriptorReader._read_mol_type(mol_type.splitlines(), 1)
         assert str(
             exception.value) == "The number of columns in the body of a mol type must be 3 or 4."
@@ -74,7 +75,7 @@ O 2 -4.6
         assert ammonia_type.id == 2
 
         reader = MoldescriptorReader("moldescriptor_withError.dat")
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(MoldescriptorReaderError) as exception:
             reader.read()
         assert str(
             exception.value) == "The number of columns in the header of a mol type must be 3."

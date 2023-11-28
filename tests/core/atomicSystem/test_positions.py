@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.core import AtomicSystem, Atom
+from PQAnalysis.core import AtomicSystem, Atom, AtomicSystemPositionsError
 
 
 class TestPositionsMixin:
@@ -53,7 +53,7 @@ class TestPositionsMixin:
             exception.value) == "use_full_atom_info can only be used with List[Atom]"
 
         system = AtomicSystem(atoms=atoms)
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(AtomicSystemPositionsError) as exception:
             system.nearest_neighbours(n=1)
         assert str(
-            exception.value) == "AtomicSystem contains a different number of atoms to positions."
+            exception.value) == AtomicSystemPositionsError.message

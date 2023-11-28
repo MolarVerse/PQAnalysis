@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.io import RestartFileWriter
+from PQAnalysis.io.exceptions import RestartFileWriterError
 from PQAnalysis.traj import MDEngineFormat, Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
 from PQAnalysis.topology import Topology
@@ -44,7 +45,7 @@ H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
 
         frame = Frame(AtomicSystem(atoms, positions), topology)
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(RestartFileWriterError) as exception:
             writer._write_atoms(frame)
         assert str(
             exception.value) == "The number of mol_types does not match the number of atoms."

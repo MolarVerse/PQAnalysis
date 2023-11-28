@@ -34,7 +34,7 @@ from multimethod import multimethod
 from beartype.typing import Any, Tuple
 from numbers import Real
 
-from PQAnalysis.exceptions import ElementNotFoundError
+from . import ElementNotFoundError
 
 
 def is_same_element_type(atom1: Atom, atom2: Atom) -> bool:
@@ -79,8 +79,6 @@ def guess_element(id: int | str) -> Tuple[str, int, Real]:
     ------
     ElementNotFoundError
         If the given identifier is not a valid element identifier.
-    TypeError
-        If the given identifier is not an integer or string.
     """
     if isinstance(id, int):
         try:

@@ -11,6 +11,8 @@ check_atoms_has_mass
     Decorator which checks that all atoms have mass information.
 """
 
+from .. import AtomicSystemPositionsError, AtomicSystemMassError
+
 
 def check_atoms_pos(func):
     """
@@ -23,14 +25,16 @@ def check_atoms_pos(func):
 
     Raises
     ------
-    ValueError
-        If the number of atoms is not equal to the number of positions.
+    AtomicSystemPositionsError
+        If the number of atoms is not equal the number of positions.
     """
     def wrapper(*args, **kwargs):
+
         if args[0].pos.shape[0] != args[0].n_atoms:
-            raise ValueError(
-                "AtomicSystem contains a different number of atoms to positions.")
+            raise AtomicSystemPositionsError()
+
         return func(*args, **kwargs)
+
     return wrapper
 
 
@@ -49,8 +53,10 @@ def check_atoms_has_mass(func):
         If any atom does not have mass information.
     """
     def wrapper(*args, **kwargs):
+
         if not all([atom.mass is not None for atom in args[0].atoms]):
-            raise ValueError(
-                "AtomicSystem contains atoms without mass information.")
+            raise AtomicSystemMassError()
+
         return func(*args, **kwargs)
+
     return wrapper

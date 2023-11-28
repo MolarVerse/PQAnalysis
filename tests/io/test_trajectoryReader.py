@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io.exceptions import TrajectoryReaderError
 from PQAnalysis.traj import Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
 
@@ -51,7 +52,7 @@ class TestTrajectoryReader:
 
         reader = TrajectoryReader("tmp")
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(TrajectoryReaderError) as exception:
             reader.read(md_format="qmcfc")
         assert str(
             exception.value) == "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead"

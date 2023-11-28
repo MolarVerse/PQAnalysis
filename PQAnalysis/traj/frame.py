@@ -16,6 +16,7 @@ import numpy as np
 from beartype.typing import Any, List
 from multimethod import multimethod
 
+from . import FrameError
 from ..topology import Topology
 from ..core import AtomicSystem, Atom, Cell
 from ..types import Np2DNumberArray, Np1DNumberArray
@@ -65,14 +66,14 @@ class Frame:
 
         Raises
         ------
-        ValueError
+        FrameError
             If the number of atoms in the selection is not a multiple of group.
         """
         if group is None:
             group = self.n_atoms
 
         elif self.n_atoms % group != 0:
-            raise ValueError(
+            raise FrameError(
                 'Number of atoms in selection is not a multiple of group.')
 
         pos = []
@@ -108,6 +109,11 @@ class Frame:
         -------
         bool
             Whether the Frame is equal to the other Frame.
+
+        Raises
+        ------
+        NotImplementedError
+            If the other object is not a Frame.
         """
         if not isinstance(other, Frame):
             return False

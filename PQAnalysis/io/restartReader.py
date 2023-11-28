@@ -11,7 +11,7 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseReader
+from . import BaseReader, RestartFileReaderError
 from ..core import AtomicSystem, Atom, Cell
 from ..traj import MDEngineFormat, Frame
 from ..topology import Topology
@@ -109,7 +109,7 @@ class RestartFileReader(BaseReader):
 
         Raises
         ------
-        ValueError
+        RestartFileReaderError
             If the number of arguments is not 1, 4 or 7.
         """
         if len(line) == 1:
@@ -122,7 +122,7 @@ class RestartFileReader(BaseReader):
             box_angles = [float(a) for a in line[4:]]
             return Cell(*box_lengths, *box_angles)
         else:
-            raise ValueError(
+            raise RestartFileReaderError(
                 f"Invalid number of arguments for box: {len(line)}")
 
     @classmethod
@@ -187,9 +187,9 @@ class RestartFileReader(BaseReader):
 
         Raises
         ------
-        ValueError
+        RestartFileReaderError
             If the number of arguments is not 12 or 21.
-        ValueError
+        RestartFileReaderError
             If no atoms are found in the restart file.
         """
         atoms = []
@@ -202,7 +202,7 @@ class RestartFileReader(BaseReader):
             line = line.strip().split()
 
             if len(line) != 12 and len(line) != 21:
-                raise ValueError(
+                raise RestartFileReaderError(
                     f"Invalid number of arguments for atom: {len(line)}")
 
             atoms.append(Atom(line[0], use_guess_element=False))
@@ -212,7 +212,7 @@ class RestartFileReader(BaseReader):
             forces.append(np.array([float(l) for l in line[9:12]]))
 
         if atoms == []:
-            raise ValueError("No atoms found in restart file.")
+            raise RestartFileReaderError("No atoms found in restart file.")
 
         system = AtomicSystem(atoms=atoms, pos=np.array(positions), vel=np.array(
             velocities), forces=np.array(forces), cell=cell)
