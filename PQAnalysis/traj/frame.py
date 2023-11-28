@@ -14,12 +14,12 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import Any, List
+from multimethod import multimethod
 
-from ..core.topology import Topology
-from ..core.atomicSystem import AtomicSystem
-from ..core.atom import Atom
-from ..core.cell import Cell
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from . import FrameError
+from ..topology import Topology
+from ..core import AtomicSystem, Atom, Cell
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 class Frame:
@@ -66,14 +66,14 @@ class Frame:
 
         Raises
         ------
-        ValueError
+        FrameError
             If the number of atoms in the selection is not a multiple of group.
         """
         if group is None:
             group = self.n_atoms
 
         elif self.n_atoms % group != 0:
-            raise ValueError(
+            raise FrameError(
                 'Number of atoms in selection is not a multiple of group.')
 
         pos = []
@@ -109,17 +109,23 @@ class Frame:
         -------
         bool
             Whether the Frame is equal to the other Frame.
+
+        Raises
+        ------
+        NotImplementedError
+            If the other object is not a Frame.
         """
         if not isinstance(other, Frame):
             return False
 
         return self.system == other.system and self.topology == other.topology
 
-    def __getitem__(self, key: int | slice) -> 'Frame':
+    def __getitem__(self, key: int | slice | Atom) -> 'Frame':
         if self.topology is None:
             return Frame(system=self.system[key])
         else:
-            return Frame(system=self.system[key], topology=self.topology[key])
+            raise NotImplementedError(
+                "Indexing of a frame with a topology is not implemented yet.")
 
     #########################
     #                       #
@@ -140,25 +146,25 @@ class Frame:
         return self.system.PBC
 
     @property
-    def cell(self) -> Cell | None:
+    def cell(self) -> Cell:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         return self.system.cell
 
     @cell.setter
-    def cell(self, cell: Cell | None) -> Cell | None:
+    def cell(self, cell: Cell) -> None:
         """
         The unit cell of the system.
 
         Returns
         -------
-        Cell | None
+        Cell
             The unit cell of the system.
         """
         self.system.cell = cell
@@ -176,49 +182,49 @@ class Frame:
         return self.system.n_atoms
 
     @property
-    def pos(self) -> Numpy2DFloatArray:
+    def pos(self) -> Np2DNumberArray:
         """
         The positions of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The positions of the atoms in the system.
         """
         return self.system.pos
 
     @property
-    def vel(self) -> Numpy2DFloatArray:
+    def vel(self) -> Np2DNumberArray:
         """
         The positions of the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The positions of the atoms in the system.
         """
         return self.system.vel
 
     @property
-    def forces(self) -> Numpy2DFloatArray:
+    def forces(self) -> Np2DNumberArray:
         """
         The forces on the atoms in the system.
 
         Returns
         -------
-        Numpy2DFloatArray
+        Np2DNumberArray
             The forces on the atoms in the system.
         """
         return self.system.forces
 
     @property
-    def charges(self) -> Numpy1DFloatArray:
+    def charges(self) -> Np1DNumberArray:
         """
         The charges of the atoms in the system.
 
         Returns
         -------
-        Numpy1DFloatArray
+        Np1DNumberArray
             The charges of the atoms in the system.
         """
         return self.system.charges

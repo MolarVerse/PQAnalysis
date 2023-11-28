@@ -15,13 +15,10 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from ..core.atomicSystem import AtomicSystem
-from ..core.atom import Atom
-from ..core.cell import Cell
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
-from ..traj.frame import Frame
-from ..traj.formats import TrajectoryFormat
-from ..exceptions import ElementNotFoundError
+from . import FrameReaderError
+from ..core import AtomicSystem, Atom, Cell, ElementNotFoundError
+from ..types import Np2DNumberArray, Np1DNumberArray
+from ..traj import Frame, TrajectoryFormat
 
 
 class FrameReader:
@@ -47,7 +44,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        MDEngineFormatError
             If the given format is not valid.
         """
 
@@ -75,11 +72,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -109,11 +101,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -143,11 +130,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -177,11 +159,6 @@ class FrameReader:
         -------
         Frame
             The frame read from the string.
-
-        Raises
-        ------
-        TypeError
-            If the given frame_string is not a string.
         """
 
         splitted_frame_string = frame_string.split('\n')
@@ -198,12 +175,12 @@ class FrameReader:
 
         return Frame(AtomicSystem(atoms=atoms, charges=charges, cell=cell))
 
-    def _read_header_line(self, header_line: str) -> Tuple[int, Cell | None]:
+    def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:
         """
         Reads the header line of a frame.
 
         It reads the number of atoms and the cell information from the header line.
-        If the header line contains only the number of atoms, the cell is set to None.
+        If the header line contains only the number of atoms, the cell is set Cell().
         If the header line contains only the number of atoms and the box dimensions,
          the cell is set to a Cell object with the given box dimensions and box angles set to 90°.
 
@@ -221,7 +198,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the header line is not valid. Either it contains too many or too few values.
         """
 
@@ -237,13 +214,14 @@ class FrameReader:
             cell = Cell(a, b, c, alpha, beta, gamma)
         elif len(header_line) == 1:
             n_atoms = int(header_line[0])
-            cell = None
+            cell = Cell()
         else:
-            raise ValueError('Invalid file format in header line of Frame.')
+            raise FrameReaderError(
+                'Invalid file format in header line of Frame.')
 
         return n_atoms, cell
 
-    def _read_xyz(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy2DFloatArray, List[str]]:
+    def _read_xyz(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np2DNumberArray, List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
@@ -263,7 +241,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the given string does not contain the correct number of lines.
         """
 
@@ -273,7 +251,7 @@ class FrameReader:
             line = splitted_frame_string[2+i]
 
             if len(line.split()) != 4:
-                raise ValueError(
+                raise FrameReaderError(
                     'Invalid file format in xyz coordinates of Frame.')
 
             xyz[i] = np.array([float(x) for x in line.split()[1:4]])
@@ -281,7 +259,7 @@ class FrameReader:
 
         return xyz, atoms
 
-    def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Numpy1DFloatArray, List[str]]:
+    def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np1DNumberArray, List[str]]:
         """
         Reads the scalar values and the atom names from the given string.
 
@@ -301,7 +279,7 @@ class FrameReader:
 
         Raises
         ------
-        ValueError
+        FrameReaderError
             If the given string does not contain the correct number of lines.
         """
 
@@ -311,7 +289,7 @@ class FrameReader:
             line = splitted_frame_string[2+i]
 
             if len(line.split()) != 2:
-                raise ValueError(
+                raise FrameReaderError(
                     'Invalid file format in scalar values of Frame.')
 
             scalar[i] = float(line.split()[1])

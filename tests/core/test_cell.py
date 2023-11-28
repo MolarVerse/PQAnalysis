@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.core.cell import Cell
+from PQAnalysis.core import Cell
 
 
 class TestCell:
@@ -69,8 +69,8 @@ class TestCell:
         assert np.allclose(cell.image(
             np.array([0, 0, 0])), np.array([0, 0, 0]))
         assert np.allclose(cell.image(
-            np.array([0.5, 0.5, 0.5])), np.array([0.5, -1.23205081, -1.23205081]))
+            np.array([0.75, 0.5, 0.5])), np.array([-0.25, 0.5, 0.5]))
         assert np.allclose(cell.image(
-            np.array([1, 2, 3])), np.array([0., -0.46410162, -0.46410162]))
+            np.array([1, 2, 3])), np.array([0., 0.267949192, 0.550510257]))
         assert np.allclose(cell.image(
-            np.array([-1, -2, -3])), np.array([0., 0.46410162, 0.46410162]))
+            np.array([-1, -2, -3])), np.array([0., -0.267949192, -0.550510257]))
