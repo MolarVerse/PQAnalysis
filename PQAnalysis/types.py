@@ -1,9 +1,13 @@
 import numpy as np
 import _io
 
+from numbers import Real
 from beartype.vale import Is
 from typing import Annotated
 
+PositiveInt = Annotated[int, Is[lambda int: int > 0]]
+
+PositiveReal = Annotated[Real, Is[lambda real: real >= 0.0]]
 
 Np2DNumberArray = Annotated[np.ndarray, Is[lambda array:
                                            array.ndim == 2 and
