@@ -14,7 +14,8 @@ import numpy as np
 from beartype.typing import Dict
 from collections import defaultdict
 
-from ..types import Numpy2DFloatArray, Numpy1DFloatArray
+from . import EnergyError
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 class Energy():
@@ -45,7 +46,7 @@ class Energy():
     """
 
     def __init__(self,
-                 data: Numpy1DFloatArray | Numpy2DFloatArray,
+                 data: Np1DNumberArray | Np2DNumberArray,
                  info: Dict | None = None,
                  units: Dict | None = None
                  ) -> None:
@@ -62,13 +63,6 @@ class Energy():
             the info dictionary, by default None
         units : dict, optional
             the units dictionary, by default None
-
-        Raises
-        ------
-        TypeError
-            If data is not iterable.
-        ValueError
-            If data is not a 1D or 2D array.
         """
         if len(np.shape(data)) == 1:
             data = np.array([data])
@@ -103,15 +97,11 @@ class Energy():
 
         Raises
         ------
-        TypeError
-            If info is not a dictionary or None.
-        TypeError
-            if units is not a dictionary or None.
-        ValueError
+        EnergyError
             If the length of info is not equal to the length of data.
-        ValueError
+        EnergyError
             If the length of units is not equal to the length of data.
-        ValueError
+        EnergyError
             If the keys of the info and units dictionary do not match.
         """
 
@@ -121,7 +111,7 @@ class Energy():
         else:
             self.info_given = True
             if len(info) != len(self.data):
-                raise ValueError(
+                raise EnergyError(
                     "The length of info dictionary has to be equal to the length of data.")
 
         if units is None:
@@ -130,14 +120,14 @@ class Energy():
         else:
             self.units_given = True
             if len(units) != len(self.data):
-                raise ValueError(
+                raise EnergyError(
                     "The length of units dictionary has to be equal to the length of data.")
 
         self.info = info
         self.units = units
 
         if self.info_given and self.units_given and units.keys() != info.keys():
-            raise ValueError(
+            raise EnergyError(
                 "The keys of the info and units dictionary do not match.")
 
     def __make_attributes__(self) -> None:

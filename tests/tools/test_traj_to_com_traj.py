@@ -1,11 +1,9 @@
 import numpy as np
 
-from PQAnalysis.tools.traj_to_com_traj import traj_to_com_traj
+from PQAnalysis.tools import traj_to_com_traj
 
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.atomicSystem import AtomicSystem
+from PQAnalysis.traj import Trajectory, Frame
+from PQAnalysis.core import Atom, AtomicSystem
 
 
 def test_traj_to_com_traj():

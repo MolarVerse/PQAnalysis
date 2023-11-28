@@ -3,13 +3,9 @@ import sys
 import numpy as np
 
 from PQAnalysis.io.trajectoryWriter import TrajectoryWriter, write_trajectory
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.traj.formats import TrajectoryFormat, MDEngineFormat
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.exceptions import MDEngineFormatError
+from PQAnalysis.traj import Frame, Trajectory, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 # TODO: here only one option is tested - think of a better way to test all options
 

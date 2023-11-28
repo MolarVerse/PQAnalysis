@@ -3,11 +3,11 @@ import numpy as np
 
 from beartype.roar import BeartypeException
 
-from PQAnalysis.io.frameReader import FrameReader
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.exceptions import TrajectoryFormatError
-from PQAnalysis.traj.formats import TrajectoryFormat
+from PQAnalysis.io import FrameReader
+from PQAnalysis.io.exceptions import FrameReaderError
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.traj.exceptions import TrajectoryFormatError
+from PQAnalysis.traj import TrajectoryFormat
 
 
 class TestFrameReader:
@@ -15,7 +15,7 @@ class TestFrameReader:
     def test__read_header_line(self):
         reader = FrameReader()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FrameReaderError) as exception:
             reader._read_header_line("1 2.0 3.0")
         assert str(
             exception.value) == "Invalid file format in header line of Frame."
@@ -33,12 +33,12 @@ class TestFrameReader:
 
         n_atoms, cell = reader._read_header_line("3")
         assert n_atoms == 3
-        assert cell is None
+        assert cell == Cell()
 
     def test__read_xyz(self):
         reader = FrameReader()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FrameReaderError) as exception:
             reader._read_xyz(
                 ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0"], n_atoms=2)
         assert str(
@@ -52,7 +52,7 @@ class TestFrameReader:
     def test__read_scalar(self):
         reader = FrameReader()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FrameReaderError) as exception:
             reader._read_scalar(["", "", "h 1.0 2.0 3.0"], n_atoms=1)
         assert str(
             exception.value) == "Invalid file format in scalar values of Frame."

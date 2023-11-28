@@ -1,11 +1,8 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.traj.trajectory import Trajectory
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
+from PQAnalysis.traj import Frame, Trajectory
+from PQAnalysis.core import Cell, Atom, AtomicSystem
 
 
 class TestTrajectory:

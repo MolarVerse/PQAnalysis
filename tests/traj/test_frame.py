@@ -1,11 +1,9 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.traj.frame import Frame
-from PQAnalysis.core.cell import Cell
-from PQAnalysis.core.atomicSystem import AtomicSystem
-from PQAnalysis.core.atom import Atom
-from PQAnalysis.core.topology import Topology
+from PQAnalysis.traj import Frame, FrameError
+from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.topology import Topology
 
 
 class TestFrame:
@@ -36,7 +34,7 @@ class TestFrame:
         assert np.allclose(com_frame.pos, [[0.21557785, 0, 0]])
         assert com_frame.system.combined_name == 'CHH'
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FrameError) as exception:
             frame.compute_com_frame(group=2)
         assert str(
             exception.value) == 'Number of atoms in selection is not a multiple of group.'
@@ -69,3 +67,16 @@ class TestFrame:
 
         with pytest.raises(IndexError) as exception:
             frame[2]
+        assert str(
+            exception.value) == 'index 2 is out of bounds for axis 0 with size 2'
+
+        atoms = [Atom(atom) for atom in ['C', 'H']]
+
+        assert np.allclose(frame[Atom('C')].pos, [[0, 0, 0]])
+        assert np.allclose(frame[Atom('H')].pos, [[1, 1, 1]])
+
+        with pytest.raises(NotImplementedError) as exception:
+            frame.topology = Topology()
+            frame[Atom('C'):Atom('H')]
+        assert str(
+            exception.value) == 'Indexing of a frame with a topology is not implemented yet.'
