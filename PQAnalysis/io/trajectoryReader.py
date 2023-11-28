@@ -11,9 +11,7 @@ TrajectoryReader
 
 from beartype.typing import List
 
-from . import BaseReader
-from .exceptions import TrajectoryReaderError
-from .frameReader import FrameReader
+from . import BaseReader, TrajectoryReaderError, FrameReader
 from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from ..core import Cell
 

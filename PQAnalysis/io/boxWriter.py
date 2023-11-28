@@ -9,8 +9,7 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from . import BaseWriter
-from .exceptions import BoxWriterError
+from . import BaseWriter, BoxWriterError
 from ..utils import instance_function_count_decorator
 from ..traj import Trajectory
 

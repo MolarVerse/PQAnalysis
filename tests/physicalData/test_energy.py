@@ -4,7 +4,7 @@ import numpy as np
 from collections import defaultdict
 from beartype.roar import BeartypeException
 
-from PQAnalysis.physicalData import Energy
+from PQAnalysis.physicalData import Energy, EnergyError
 
 
 class TestEnergy:
@@ -45,17 +45,17 @@ class TestEnergy:
         assert energy.info_given == False
         assert energy.units_given == False
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0})
         assert str(
             exception.value) == "The length of info dictionary has to be equal to the length of data."
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(EnergyError) as exception:
             Energy(data, units={1: 0})
         assert str(
             exception.value) == "The length of units dictionary has to be equal to the length of data."
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0, 2: 0}, units={1: 0, 3: 0})
         assert str(
             exception.value) == "The keys of the info and units dictionary do not match."
