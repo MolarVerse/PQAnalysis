@@ -10,6 +10,7 @@ MolType
 from numbers import Real
 from beartype.typing import List
 
+from . import MolTypeError
 from ..types import Np1DIntArray, Np1DNumberArray
 from ..core import Atom
 
@@ -66,12 +67,12 @@ class MolType:
 
         Raises
         ------
-        ValueError
+        MolTypeError
             If the number of elements, atom_types and partial_charges are not the same.
         """
 
         if not (len(elements) == len(atom_types) == len(partial_charges)):
-            raise ValueError(
+            raise MolTypeError(
                 "The number of elements, atom_types and partial_charges must be the same.")
 
         self.name = name
@@ -192,11 +193,11 @@ class MolType:
 
         Raises
         ------
-        ValueError
+        MolTypeError
             If the number of elements is not the same as the number of atoms.
         """
         if len(elements) != self.n_atoms:
-            raise ValueError(
+            raise MolTypeError(
                 "The number of elements must be the same as the number of atoms.")
 
         self._elements = elements
@@ -225,11 +226,11 @@ class MolType:
 
         Raises
         ------
-        ValueError
+        MolTypeError
             If the number of atom_types is not the same as the number of atoms.
         """
         if len(atom_types) != self.n_atoms:
-            raise ValueError(
+            raise MolTypeError(
                 "The number of atom_types must be the same as the number of atoms.")
 
         self._atom_types = atom_types
@@ -258,11 +259,11 @@ class MolType:
 
         Raises
         ------
-        ValueError
+        MolTypeError
             If the number of partial_charges is not the same as the number of atoms.
         """
         if len(partial_charges) != self.n_atoms:
-            raise ValueError(
+            raise MolTypeError(
                 "The number of partial_charges must be the same as the number of atoms.")
 
         self._partial_charges = partial_charges

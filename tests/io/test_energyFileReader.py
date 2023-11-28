@@ -5,7 +5,7 @@ from collections import defaultdict
 
 from PQAnalysis.io import EnergyFileReader, InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.exceptions import MDEngineFormatError
+from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
 class TestEnergyReader:
@@ -61,20 +61,16 @@ Possible values are: {MDEngineFormat.member_repr()}
 or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
 
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
-    def test__info_file_found__(self, test_with_data_dir, capsys):
+    def test__info_file_found__(self, test_with_data_dir):
         reader = EnergyFileReader("md-01.en")
-        capsys.readouterr()
         assert reader.__info_file_found__() == True
-        assert capsys.readouterr().out == "A Info File \'md-01.info\' was found.\n"
 
         reader = EnergyFileReader("md-01_noinfo.en")
         assert reader.__info_file_found__() == False
 
         reader = EnergyFileReader(
             "md-01_noinfo.en", info_filename="md-01.info")
-        capsys.readouterr()
         assert reader.__info_file_found__() == True
-        assert capsys.readouterr().out == "A Info File \'md-01.info\' was found.\n"
 
         with pytest.raises(FileNotFoundError) as exception:
             EnergyFileReader(

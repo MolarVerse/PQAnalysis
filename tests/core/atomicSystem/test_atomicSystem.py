@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.core import AtomicSystem, Atom, Cell
+from PQAnalysis.core import AtomicSystem, Atom, Cell, AtomicSystemPositionsError, AtomicSystemMassError
 
 
 class TestAtomicSystem:
@@ -34,10 +34,10 @@ class TestAtomicSystem:
         assert system.atomic_masses.shape == (0,)
         assert system.mass == 0
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(AtomicSystemPositionsError) as exception:
             system.center_of_mass
         assert str(
-            exception.value) == "AtomicSystem contains a different number of atoms to positions."
+            exception.value) == AtomicSystemPositionsError.message
 
         assert system.combined_name == ''
 
@@ -69,18 +69,18 @@ class TestAtomicSystem:
             atoms=[Atom('C', use_guess_element=False)], pos=np.array([[0, 0, 0]]))
 
         assert system.atoms == [Atom('C', use_guess_element=False)]
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(AtomicSystemMassError) as exception:
             system.atomic_masses
         assert str(
-            exception.value) == "AtomicSystem contains atoms without mass information."
-        with pytest.raises(ValueError) as exception:
+            exception.value) == AtomicSystemMassError.message
+        with pytest.raises(AtomicSystemMassError) as exception:
             system.mass
         assert str(
-            exception.value) == "AtomicSystem contains atoms without mass information."
-        with pytest.raises(ValueError) as exception:
+            exception.value) == AtomicSystemMassError.message
+        with pytest.raises(AtomicSystemMassError) as exception:
             system.center_of_mass
         assert str(
-            exception.value) == "AtomicSystem contains atoms without mass information."
+            exception.value) == AtomicSystemMassError.message
 
     def test__eq__(self):
         system1 = AtomicSystem()
