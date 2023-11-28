@@ -1,6 +1,14 @@
 PQAnalysis.core package
 =======================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   PQAnalysis.core.atomicSystem
+
 Submodules
 ----------
 
@@ -8,14 +16,6 @@ PQAnalysis.core.atom module
 ---------------------------
 
 .. automodule:: PQAnalysis.core.atom
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.core.atomicSystem module
------------------------------------
-
-.. automodule:: PQAnalysis.core.atomicSystem
    :members:
    :undoc-members:
    :show-inheritance:
@@ -28,10 +28,10 @@ PQAnalysis.core.cell module
    :undoc-members:
    :show-inheritance:
 
-PQAnalysis.core.topology module
--------------------------------
+PQAnalysis.core.exceptions module
+---------------------------------
 
-.. automodule:: PQAnalysis.core.topology
+.. automodule:: PQAnalysis.core.exceptions
    :members:
    :undoc-members:
    :show-inheritance:

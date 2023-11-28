@@ -12,6 +12,7 @@ Subpackages
    PQAnalysis.io
    PQAnalysis.physicalData
    PQAnalysis.tools
+   PQAnalysis.topology
    PQAnalysis.traj
    PQAnalysis.utils
 
