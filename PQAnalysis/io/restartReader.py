@@ -11,8 +11,7 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseReader
-from .exceptions import RestartFileReaderError
+from . import BaseReader, RestartFileReaderError
 from ..core import AtomicSystem, Atom, Cell
 from ..traj import MDEngineFormat, Frame
 from ..topology import Topology

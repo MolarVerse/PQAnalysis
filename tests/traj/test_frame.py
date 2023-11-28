@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.traj import Frame
+from PQAnalysis.traj import Frame, FrameError
 from PQAnalysis.core import Cell, Atom, AtomicSystem
 from PQAnalysis.topology import Topology
 
@@ -34,7 +34,7 @@ class TestFrame:
         assert np.allclose(com_frame.pos, [[0.21557785, 0, 0]])
         assert com_frame.system.combined_name == 'CHH'
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FrameError) as exception:
             frame.compute_com_frame(group=2)
         assert str(
             exception.value) == 'Number of atoms in selection is not a multiple of group.'

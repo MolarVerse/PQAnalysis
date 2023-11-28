@@ -15,10 +15,10 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
+from . import FrameReaderError
 from ..core import AtomicSystem, Atom, Cell, ElementNotFoundError
 from ..types import Np2DNumberArray, Np1DNumberArray
 from ..traj import Frame, TrajectoryFormat
-from .exceptions import FrameReaderError
 
 
 class FrameReader:

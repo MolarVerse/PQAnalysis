@@ -11,8 +11,7 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseReader
-from .exceptions import MoldescriptorReaderError
+from . import BaseReader, MoldescriptorReaderError
 from ..topology import MolType
 from ..core import Atom
 
