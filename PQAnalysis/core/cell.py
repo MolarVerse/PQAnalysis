@@ -177,18 +177,22 @@ class Cell:
             The image of the position(s) in the unit cell.
         """
 
+        if self.alpha == 90 and self.beta == 90 and self.gamma == 90:
+            pos = pos - self.box_lengths * np.rint(pos / self.box_lengths)
+            return pos
+
         original_shape = np.shape(pos)
 
         if original_shape == (3,):
             pos = np.reshape(pos, (1, 3))
 
-        fractional_pos = np.array(
-            [np.linalg.inv(self.box_matrix) @ pos_i for pos_i in pos])
+        inverse_box_matrix = np.linalg.inv(self.box_matrix)
+
+        fractional_pos = pos @ inverse_box_matrix.T
 
         fractional_pos -= np.round(fractional_pos)
 
-        pos = np.array(
-            [self.box_matrix @ fractional_pos_i for fractional_pos_i in fractional_pos])
+        pos = fractional_pos @ self.box_matrix.T
 
         return np.reshape(pos, original_shape)
 
