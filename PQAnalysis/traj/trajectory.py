@@ -16,7 +16,7 @@ import numpy as np
 from beartype.typing import List, Iterator, Any
 
 from . import Frame
-from ..types import Np2DNumberArray
+from ..types import Np2DNumberArray, Np1DNumberArray
 
 
 class Trajectory:
@@ -61,6 +61,18 @@ class Trajectory:
             The box lengths of the trajectory.
         """
         return np.array([frame.cell.box_lengths for frame in self.frames])
+
+    @property
+    def box_volumes(self) -> Np1DNumberArray:
+        """
+        Returns the box volumes of the trajectory.
+
+        Returns
+        -------
+        Np1DNumberArray
+            The box volumes of the trajectory.
+        """
+        return np.array([frame.cell.volume for frame in self.frames])
 
     def check_PBC(self) -> bool:
         """

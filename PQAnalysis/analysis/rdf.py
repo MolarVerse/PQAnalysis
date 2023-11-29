@@ -1,9 +1,10 @@
 import numpy as np
 
 from beartype.typing import List
+from tqdm.auto import tqdm
 
 from . import RDFError
-from ..types import Np1DIntArray, PositiveInt, PositiveReal
+from ..types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
 from ..core import Atom, distance
 from ..traj import Trajectory
 
@@ -29,7 +30,8 @@ class RadialDistributionFunction:
         self.target_indices = self.traj[0].system.indices_from_atoms(
             atoms=self.target_species, use_full_atom_info=use_full_atom_info)
 
-        ####### LOGGER FOR BIN INFO #######
+        self.setup_bins(n_bins=n_bins, delta_r=delta_r,
+                        r_max=r_max, r_min=r_min)
 
     def setup_bins(self,
                    n_bins: PositiveInt | None = None,
@@ -65,7 +67,8 @@ class RadialDistributionFunction:
 
             if n_bins is None:
                 self.delta_r = delta_r
-                self.n_bins = (self.r_max - self.r_min) // self.delta_r
+                self.n_bins = int((self.r_max - self.r_min) / self.delta_r)
+                self.r_max = self.delta_r * self.n_bins + self.r_min
 
             else:
                 self.n_bins = n_bins
@@ -79,7 +82,7 @@ class RadialDistributionFunction:
             raise RDFError(
                 "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
 
-        self.r_max = np.min(self.traj.box_lengths)
+        self.r_max = np.min(self.traj.box_lengths) / 2.0
 
     def _setup_bin_middle_points(self):
 
@@ -89,7 +92,12 @@ class RadialDistributionFunction:
         assert len(self.bin_middle_points) == self.n_bins
 
     def run(self):
-        for frame in self.traj:
+        self._average_volume = np.mean(self.traj.box_volumes)
+        self._reference_density = len(
+            self.reference_indices) / self._average_volume
+        self._target_density = len(self.target_indices) / self._average_volume
+
+        for frame in tqdm(self.traj):
             reference_positions = frame.pos[self.reference_indices]
             target_positions = frame.pos[self.target_indices]
 
@@ -97,15 +105,19 @@ class RadialDistributionFunction:
                 distances = distance(reference_position,
                                      target_positions, frame.cell)
 
-                distances -= self.r_min
-                distances //= self.delta_r
+                self._add_to_bins(distances)
 
-                for distance in distances:
-                    if distance < self.n_bins and distance >= 0:
-                        self.bins[distance] += 1
+        return self.bin_middle_points, self.bins / self._norm(), self._integration(), self.bins / self._target_density / len(self.reference_indices) / len(self.traj), self.bins - self._norm()
 
-    def normalise(self):
-        self.bins /= self.traj.n_frames * \
-            self.reference_indices.shape[0] * self.delta_r * \
-            self.target_indices.shape[0] * 4 * np.pi * \
-            self.bin_middle_points**2
+    def _add_to_bins(self, distances: Np1DNumberArray):
+        distances = np.floor_divide(
+            distances - self.r_min, self.delta_r).astype(int)
+        distances = distances[(distances < self.n_bins) & (distances >= 0)]
+
+        self.bins += np.bincount(distances, minlength=self.n_bins)
+
+    def _norm(self) -> Np1DNumberArray:
+        return 4.0 / 3.0 * np.pi * self._target_density * (np.arange(1, self.n_bins + 1)**3 - np.arange(0, self.n_bins) ** 3) * self.delta_r ** 3 * len(self.reference_indices) * len(self.traj)
+
+    def _integration(self) -> Np1DNumberArray:
+        return np.cumsum(self.bins / len(self.reference_indices) / len(self.traj))
