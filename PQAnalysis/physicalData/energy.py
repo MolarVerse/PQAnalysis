@@ -155,11 +155,11 @@ class Energy():
         for attribute in self.__data_attributes__:
             info_string = attribute
             if info_string in self.info or info_string in self.units:
-                setattr(self.__class__, self.__data_attributes__[attribute],
+                setattr(self, self.__data_attributes__[attribute],
                         self.data[self.info[attribute]])
-                setattr(self.__class__, self.__data_attributes__[attribute] + "_unit",
+                setattr(self, self.__data_attributes__[attribute] + "_unit",
                         self.units[attribute])
-                setattr(self.__class__, self.__data_attributes__[attribute] + "_with_unit", (self.data[self.info[
+                setattr(self, self.__data_attributes__[attribute] + "_with_unit", (self.data[self.info[
                         attribute]], self.units[attribute]))
 
     ################################################
