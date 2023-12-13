@@ -1,16 +1,23 @@
 from __future__ import annotations
 
-from .. import BaseReader
 from lark import Visitor, Transformer, Lark
 from glob import glob
 
+from .. import BaseReader
+from .formats import InputFileFormat
+
 
 class InputFileParser(BaseReader):
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, format: InputFileFormat = InputFileFormat.PQANALYSIS):
         super().__init__(filename)
+        self.format = InputFileFormat(format)
 
     def parse(self) -> InputDictionary:
-        grammar_file = open("inputGrammar.lark", "r")
+        if self.format == InputFileFormat.PQANALYSIS:
+            grammar_file = open("inputGrammar.lark", "r")
+        elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
+            grammar_file = open("PIMD_QMCF_inputGrammar.lark", "r")
+
         grammar = grammar_file.read()
         parser = Lark(grammar, propagate_positions=True)
 
