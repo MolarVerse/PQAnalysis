@@ -39,14 +39,28 @@ class InputDictionary:
     def __init__(self):
         self.dict = {}
 
-    def __getitem__(self, key):
-        return self.dict[key]
+    def __getitem__(self, key: str):
+
+        key = key.lower()
+
+        try:
+            self.dict[key]
+        except KeyError:
+            raise KeyError(
+                f"Input file key \"{key}\" not defined in input file.")
 
     def __setitem__(self, key, value):
+
+        key = key.lower()
+
+        if key in self.dict.keys():
+            raise KeyError(
+                f"Input file key \"{key}\" defined multiple times in input file.")
+
         self.dict[key] = value
 
-    def add(self, key, value):
-        self.dict[key] = value
+    def add(self, key: str, value):
+        self.__setitem__(key, value)
 
     def get_value(self, key):
         return self.dict[str(key)][0]
