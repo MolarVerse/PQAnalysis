@@ -25,6 +25,7 @@ dependencies = [
     "numpy",
     "beartype",
     "multimethod",
+    "lark",
 ]
 
 [project.optional-dependencies]
