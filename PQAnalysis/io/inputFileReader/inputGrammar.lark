@@ -2,48 +2,26 @@ start:  expression
             
 expression: (assign | multiline_statement)+
             
-?assign:   _assign ("," _assign)*
-_assign:  key "=" value
+?assign:  key "=" value
+        | key "=" value "," assign
             
 ?multiline_statement: key (primitive | range | array)+ "END"
-            
-?key: CNAME -> key             
-?value:    array
-        |  range
-        |  glob
-        |  primitive
-            
-?array: "[" (primitive ",")* primitive "]"
-?range:    int "-" int "-" int
-        |  int ".." int ".." int
 
-?glob: /.*[*].*/ -> glob
+%import .rules.key
+%import .rules.value
+%import .rules.primitive
+%import .rules.range
+%import .rules.array
 
-?primitive: float
-        |   int
-        |   string
-        |   bool
-            
-?string: CNAME -> string
-?int: SIGNED_INT -> int
-?float: FLOAT -> float
-?bool.2: BOOL -> bool
+// just for namespace reasons
+%import .rules.glob
+%import .rules.word
+%import .rules.int
+%import .rules.float
+%import .rules.bool
 
-DIGIT: "0".."9"
-INT: DIGIT+
-SIGNED_INT: ["+"|"-"] INT
-            
-_EXP: ("e"|"E") SIGNED_INT
-DECIMAL: SIGNED_INT? "." INT
-FLOAT: SIGNED_INT _EXP | DECIMAL _EXP?
-            
-BOOL: "true"i | "false"i
+%import .terminals.WS
+%import .terminals.COMMENT -> COMMENT
 
-COMMENT: /#.*/ NEWLINE
-
-%import common.CNAME
-%import common.WS
-%import common.NEWLINE 
-
-%ignore WS
 %ignore COMMENT
+%ignore WS

@@ -80,7 +80,7 @@ class ComposedDatatypesTransformer(Transformer):
         return range(int(items[0][0]), int(items[2][0]), int(items[1][0])), "range"
 
     def glob(self, items):
-        return (glob(items[0]), "glob")
+        return (glob(items[0].strip()), "glob")
 
     def key(self, items):
         return items[0]
