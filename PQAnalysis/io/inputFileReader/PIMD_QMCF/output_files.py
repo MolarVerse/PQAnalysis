@@ -1,7 +1,7 @@
 class _OutputFileMixin:
     start_file_keys = ["start_file", "rpmd_start_file"]
-    output_file_keys = ["rst_file", "traj_file", "vel_file", "force_file", "charge_file", "energy_file", "info_file",
-                        "output_file", "file_prefix", "rpmd_rst_file", "rpmd_traj_file", "rpmd_vel_file", "rpmd_force_file",
+    output_file_keys = ["restart_file", "traj_file", "vel_file", "force_file", "charge_file", "energy_file", "info_file",
+                        "output_file", "file_prefix", "rpmd_restart_file", "rpmd_traj_file", "rpmd_vel_file", "rpmd_force_file",
                         "rpmd_energy_file", "rpmd_charge_file"]
 
     @property
@@ -22,7 +22,7 @@ class _OutputFileMixin:
 
     @property
     def restart_file(self):
-        return self.dictionary["rst_file"][0]
+        return self.dictionary["restart_file"][0]
 
     @property
     def trajectory_file(self):
@@ -58,7 +58,7 @@ class _OutputFileMixin:
 
     @property
     def rpmd_restart_file(self):
-        return self.dictionary["rpmd_rst_file"][0]
+        return self.dictionary["rpmd_restart_file"][0]
 
     @property
     def rpmd_trajectory_file(self):
