@@ -1,4 +1,3 @@
-DIGIT: "0".."9"
 INT: DIGIT+
 SIGNED_INT: ["+"|"-"] INT
             
@@ -10,7 +9,10 @@ BOOL: "true"i | "false"i
 
 COMMENT: /#.*/ NEWLINE
 
+WORD: ("_"|"-"|"."|LETTER|DIGIT)+
+
 %import common.NEWLINE
 %import common.WS
 %import common.WS_INLINE
-%import common.CNAME -> WORD
+%import common.LETTER
+%import common.DIGIT

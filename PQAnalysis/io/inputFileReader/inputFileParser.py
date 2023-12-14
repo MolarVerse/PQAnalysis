@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import os
+
 from lark import Visitor, Transformer, Lark
 from glob import glob
+from pathlib import Path
 
 from .. import BaseReader
 from .formats import InputFileFormat
+
+__dir__ = os.path.dirname(os.path.abspath(__file__))
 
 
 class InputFileParser(BaseReader):
@@ -13,13 +18,20 @@ class InputFileParser(BaseReader):
         self.format = InputFileFormat(format)
 
     def parse(self) -> InputDictionary:
-        if self.format == InputFileFormat.PQANALYSIS:
-            grammar_file = open("inputGrammar.lark", "r")
-        elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
-            grammar_file = open("PIMD_QMCF_inputGrammar.lark", "r")
+        # if self.format == InputFileFormat.PQANALYSIS:
+        #     grammar_file = open(__dir__ + "/" + "inputGrammar.lark", "r")
+        # elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
+        #     grammar_file = open(
+        #         __dir__ + "/" + "PIMD_QMCF_inputGrammar.lark", "r")
 
-        grammar = grammar_file.read()
-        parser = Lark(grammar, propagate_positions=True)
+        if self.format == InputFileFormat.PQANALYSIS:
+            grammar_file = Path(__file__).parent / "inputGrammar.lark"
+        elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
+            grammar_file = Path(__file__).parent / \
+                "PIMD_QMCF_inputGrammar.lark"
+
+        parser = Lark.open(grammar_file, rel_to=__file__,
+                           propagate_positions=True)
 
         file = open(self.filename, "r")
         self.raw_input_file = file.read()
@@ -44,11 +56,11 @@ class InputDictionary:
 
         key = key.lower()
 
-        try:
-            self.dict[key]
-        except KeyError:
+        if key not in self.dict.keys():
             raise KeyError(
                 f"Input file key \"{key}\" not defined in input file.")
+
+        return self.dict[key]
 
     def __setitem__(self, key, value):
 
@@ -64,13 +76,16 @@ class InputDictionary:
         self.__setitem__(key, value)
 
     def get_value(self, key):
-        return self.dict[str(key)][0]
+        return self.dict[key.lower()][0]
 
     def get_line(self, key):
-        return self.dict[key][2]
+        return self.dict[key.lower()][2]
 
     def get_type(self, key):
-        return self.dict[key][1]
+        return self.dict[key.lower()][1]
+
+    def keys(self):
+        return self.dict.keys()
 
 
 class PrimitiveTransformer(Transformer):
@@ -83,7 +98,7 @@ class PrimitiveTransformer(Transformer):
     def int(self, items):
         return int(items[0]), "int", items[0].end_line
 
-    def string(self, items):
+    def word(self, items):
         return str(items[0]), "str", items[0].end_line
 
     def bool(self, items):
@@ -102,7 +117,7 @@ class ComposedDatatypesTransformer(Transformer):
         return range(int(items[0][0]), int(items[2][0]), int(items[1][0])), "range"
 
     def glob(self, items):
-        return (glob(items[0].strip()), "glob")
+        return glob(items[0].strip()), "glob", items[0].end_line
 
     def key(self, items):
         return items[0]

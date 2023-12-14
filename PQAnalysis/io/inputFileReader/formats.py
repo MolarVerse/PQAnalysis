@@ -1,3 +1,5 @@
+from beartype.typing import Any
+
 from ...formats import Format
 from .exceptions import InputFileFormatError
 
