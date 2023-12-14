@@ -67,10 +67,14 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
             raise ValueError(
                 f"Input file n ({self.input_file_n}) has to be less than n ({n}).")
 
-        for _ in range(int(self.actual_n), n + 1):
-            new_input_file_n = _continue_digit_string(self.input_file_n)
-            new_old_n = _continue_digit_string(self.old_n)
-            new_actual_n = _continue_digit_string(self.actual_n)
+        old_input_file_n = self.input_file_n
+        old_old_n = self.old_n
+        old_actual_n = self.actual_n
+
+        for _ in range(int(self.actual_n), n):
+            new_input_file_n = _continue_digit_string(old_input_file_n)
+            new_old_n = _continue_digit_string(old_old_n)
+            new_actual_n = _continue_digit_string(old_actual_n)
 
             new_raw_input_file = self.raw_input_file
 
@@ -95,9 +99,9 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
             file.write(new_raw_input_file)
             file.close()
 
-            self.input_file_n = new_input_file_n
-            self.old_n = new_old_n
-            self.actual_n = new_actual_n
+            old_input_file_n = new_input_file_n
+            old_old_n = new_old_n
+            old_actual_n = new_actual_n
 
     def _parse_old_n(self) -> str:
         old_n = _get_n_from_filename(self.start_file)
