@@ -1,4 +1,9 @@
 class _OutputFileMixin:
+    start_file_keys = ["start_file", "rpmd_start_file"]
+    output_file_keys = ["rst_file", "traj_file", "vel_file", "force_file", "charge_file", "energy_file", "info_file",
+                        "output_file", "file_prefix", "rpmd_rst_file", "rpmd_traj_file", "rpmd_vel_file", "rpmd_force_file",
+                        "rpmd_energy_file", "rpmd_charge_file"]
+
     @property
     def start_file(self):
         return self.dictionary["start_file"][0]
@@ -6,6 +11,14 @@ class _OutputFileMixin:
     @property
     def rpmd_start_file(self):
         return self.dictionary["rpmd_start_file"][0]
+
+    @property
+    def is_rpmd_start_file_defined(self):
+        try:
+            self.rpmd_start_file
+            return True
+        except Exception:
+            return False
 
     @property
     def restart_file(self):
