@@ -22,7 +22,8 @@ class InputFileParser(BaseReader):
         parser = Lark(grammar, propagate_positions=True)
 
         file = open(self.filename, "r")
-        self.tree = parser.parse(file.read())
+        self.raw_input_file = file.read()
+        self.tree = parser.parse(self.raw_input_file)
 
         self.transformed_tree = PrimitiveTransformer(
             visit_tokens=True).transform(self.tree)
