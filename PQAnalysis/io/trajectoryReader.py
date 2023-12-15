@@ -97,20 +97,20 @@ class TrajectoryReader(BaseReader):
         with open(self.filename, 'r') as f:
 
             # Concatenate lines of the same frame
-            frame_string = ''
+            frame_lines = []
             for line in f:
-                if line.strip() == '':
-                    frame_string += line
-                elif line.split()[0].isdigit():
-                    if frame_string != '':
-                        self._read_single_frame(
-                            frame_string, frame_reader, md_format)
-
-                    frame_string = line
+                stripped_line = line.strip()
+                if stripped_line == '' or not stripped_line[0].isdigit():
+                    frame_lines.append(line)
                 else:
-                    frame_string += line
+                    if frame_lines:
+                        self._read_single_frame(
+                            ''.join(frame_lines), frame_reader, md_format)
 
-            self._read_single_frame(frame_string, frame_reader, md_format)
+                    frame_lines = [line]
+
+            if frame_lines:
+                self._read_single_frame(''.join(frame_lines), frame_reader, md_format)
 
         traj = Trajectory(self.frames)
         self.frames = []
