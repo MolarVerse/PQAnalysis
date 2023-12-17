@@ -12,7 +12,7 @@ _StandardPropertiesMixin
 from beartype.typing import List
 
 from ..atom import Atom
-from ..cell import Cell
+from ..cell.cell import Cell
 from ...types import Np1DNumberArray, Np2DNumberArray
 
 
