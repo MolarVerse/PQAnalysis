@@ -1,3 +1,7 @@
+"""
+A module containing the RDF class. The RDF class is used to calculate the radial distribution function of a system.
+"""
+
 import numpy as np
 
 from beartype.typing import List
@@ -61,7 +65,7 @@ class RadialDistributionFunction:
 
         else:
             if r_max is None:
-                self._infer_r_max()
+                self.r_max = self._infer_r_max()
             else:
                 self.r_max = r_max
 
@@ -78,14 +82,31 @@ class RadialDistributionFunction:
         self.bins = np.zeros(self.n_bins)
 
     def _infer_r_max(self):
+        """
+        Infers the maximum radius of the RDF analysis from the box vectors of the trajectory.
+
+        If the trajectory is in vacuum, an RDFError is raised as the maximum radius cannot be inferred from the box vectors.
+
+        Returns
+        -------
+        r_max: Real
+            The maximum radius of the RDF analysis.
+
+        Raises
+        ------
+        RDFError
+            If the trajectory is in vacuum.
+        """
         if self.traj.check_vacuum():
             raise RDFError(
                 "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
 
-        self.r_max = np.min(self.traj.box_lengths) / 2.0
+        return np.min(self.traj.box_lengths) / 2.0
 
     def _setup_bin_middle_points(self):
-
+        """
+        Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
+        """
         self.bin_middle_points = np.arange(
             self.r_min + self.delta_r / 2, self.r_max, self.delta_r)
 
@@ -107,7 +128,13 @@ class RadialDistributionFunction:
 
                 self._add_to_bins(distances)
 
-        return self.bin_middle_points, self.bins / self._norm(), self._integration(), self.bins / self._target_density / len(self.reference_indices) / len(self.traj), self.bins - self._norm()
+        normalized_bins = self.bins / self._norm()
+        integrated_bins = self._integration()
+        normalized_bins2 = self.bins / self._target_density / \
+            len(self.reference_indices) / len(self.traj)
+        differential_bins = self.bins - self._norm()
+
+        return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
 
     def _add_to_bins(self, distances: Np1DNumberArray):
         distances = np.floor_divide(
