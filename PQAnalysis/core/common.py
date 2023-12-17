@@ -1,6 +1,6 @@
 import numpy as np
 
-from . import cell
+from .cell import cell
 from ..types import Np1DNumberArray, Np2DNumberArray, PositiveReal
 
 

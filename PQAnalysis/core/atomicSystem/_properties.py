@@ -13,7 +13,7 @@ import numpy as np
 
 from numbers import Real
 
-from ..cell import Cell
+from ..cell.cell import Cell
 from ...types import Np1DNumberArray
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 
