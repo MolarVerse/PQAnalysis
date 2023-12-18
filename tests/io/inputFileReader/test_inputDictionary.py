@@ -10,18 +10,18 @@ class TestInputFileDictionary:
 
     def test__setitem__(self):
         dictionary = InputDictionary()
-        dictionary["KeY"] = "value"
-        assert dictionary.dict == {"key": "value"}
+        dictionary["KeY"] = ("value", "type", "line")
+        assert dictionary.dict == {"key": ("value", "type", "line")}
 
         with pytest.raises(KeyError) as exception:
-            dictionary["KeY"] = "value"
+            dictionary["KeY"] = ("value", "type", "line")
         assert str(
             exception.value) == "\'Input file key \"key\" defined multiple times in input file.\'"
 
     def test__getitem__(self):
         dictionary = InputDictionary()
-        dictionary["key"] = "value"
-        assert dictionary["KeY"] == "value"
+        dictionary["key"] = ("value", "type", "line")
+        assert dictionary["KeY"] == ("value", "type", "line")
 
         with pytest.raises(KeyError) as exception:
             dictionary["non-existent-key"]

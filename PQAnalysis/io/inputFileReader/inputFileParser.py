@@ -171,37 +171,162 @@ class InputDictionary:
 
 class PrimitiveTransformer(Transformer):
     """
-    _summary_
+    Transformer for primitive datatypes.
 
     Parameters
     ----------
-    Transformer : _type_
-        _description_
+    Transformer : Transformer
+        Transformer class from lark.
     """
 
     def __init__(self, visit_tokens=False):
-        super().__init__(visit_tokens)
+        """
+        initialize the transformer
+
+        Parameters
+        ----------
+        visit_tokens : bool, optional
+            boolean to visit tokens, by default False
+        """
+        self.__visit_tokens__ = visit_tokens
+        super().__init__(self.__visit_tokens__)
 
     def float(self, items) -> Tuple[Real, str, str]:
+        """
+        Method to transform float values
+
+        A "float" token is transformed into a float value, the string "float", and the line where the token was defined.
+
+        Parameters
+        ----------
+        items: List[Token]
+            items containing the float value
+
+        Returns
+        -------
+        Tuple[Real, str, str]
+            tuple containing the float value, the string "float", and the line where the token was defined.
+        """
         return float(items[0]), "float", str(items[0].end_line)
 
     def int(self, items) -> Tuple[Integral, str, str]:
+        """
+        Method to transform int values
+
+        Parameters
+        ----------
+        items: List[Token]
+            items containing the int value  
+
+        Returns
+        -------
+        Tuple[Integral, str, str]
+            tuple containing the int value, the string "int", and the line where the token was defined.
+        """
         return int(items[0]), "int", str(items[0].end_line)
 
     def word(self, items) -> Tuple[str, str, str]:
+        """
+        Method to transform word values
+
+        Parameters
+        ----------
+        items : List[Token]
+            items containing the word value
+
+        Returns
+        -------
+        Tuple[str, str, str]
+            tuple containing the word value, the string "str", and the line where the token was defined.
+        """
         return str(items[0]), "str", str(items[0].end_line)
 
     def bool(self, items) -> Tuple[Bool, str, str]:
+        """
+        Method to transform bool values
+
+        Parameters
+        ----------
+        items : List[Token]
+            items containing the bool value
+
+        Returns
+        -------
+        Tuple[Bool, str, str]
+            tuple containing the bool value, the string "bool", and the line where the token was defined.
+        """
         return bool(items[0]), "bool", str(items[0].end_line)
 
 
 class ComposedDatatypesTransformer(Transformer):
+    """
+    Transformer for composed datatypes.
+
+    Parameters
+    ----------
+    Transformer : Transformer
+        Transformer class from lark.
+    """
+
+    primitive_types = ["float", "int", "str", "bool"]
+
     def __init__(self, visit_tokens=False):
-        super().__init__(visit_tokens)
+        """
+        initialize the transformer
+
+        Parameters
+        ----------
+        visit_tokens : bool, optional
+            boolean to visit tokens, by default False
+        """
+        self.__visit_tokens__ = visit_tokens
+        super().__init__(self.__visit_tokens__)
+
+    def _infer_most_general_type(self, types: List[str]) -> str:
+        """
+        Method to infer the most general type of a list of items
+
+        Parameters
+        ----------
+        items : List[Any]
+            list of items
+
+        Returns
+        -------
+        str
+            most general type of the list of items
+
+        Raises
+        ------
+        TypeError
+            if the list of items contains a bool and another type
+        """
+        if "str" in types:
+            return "str"
+
+        if "bool" in types and not all([item == "bool" for item in types]):
+            raise TypeError(
+                f"Bool cannot be used with other types. Found {types}")
+        elif "bool" in types:
+            return "bool"
+        elif "float" in types:
+            return "float"
+        elif "int" in types:
+            return "int"
 
     def array(self, items) -> Tuple[List[Any], str, str]:
+        not_primitive_types = [
+            item[1] for item in items if item[1] not in self.primitive_types]
+
+        if len(not_primitive_types) > 0:
+            raise TypeError(
+                f"Array elements must be primitive types. Found {not_primitive_types}")
+
+        most_general_type = self._infer_most_general_type(
+            [item[1] for item in items])
+
         _list = [item[0] for item in items]
-        return list(_list), f"list({items[0][1]})", str(items[0][2])
+        return list(_list), f"list({most_general_type})", str(items[0][2])
 
     def range(self, items) -> Tuple[Range, str, str]:
         return range(int(items[0][0]), int(items[2][0]), int(items[1][0])), "range", str(items[0].end_line)
