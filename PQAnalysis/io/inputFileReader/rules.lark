@@ -8,6 +8,8 @@
 
 ?range:     int "-" int "-" int
          |  int ".." int ".." int
+         |  int "-" int
+         |  int ".." int
 
 ?glob: /.*[*].*/ -> glob
             

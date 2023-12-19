@@ -80,3 +80,103 @@ class TestComposedTransformer:
             transformer._infer_most_general_type(["bool", "float"])
         assert str(
             exception.value) == "Bool cannot be used with other types. Found [\'bool\', \'float\']"
+
+    def test_array(self):
+        transformer = ComposedDatatypesTransformer()
+        token1 = (1, "int", "1")
+        token2 = (2, "int", "1")
+
+        assert transformer.array([token1, token2]) == (
+            [1, 2], "list(int)", "1")
+
+        token1 = (1.0, "float", "1")
+        token2 = (2.0, "float", "1")
+
+        assert transformer.array([token1, token2]) == (
+            [1.0, 2.0], "list(float)", "1")
+
+        token1 = (True, "bool", "1")
+        token2 = (False, "bool", "1")
+
+        assert transformer.array([token1, token2]) == (
+            [True, False], "list(bool)", "1")
+
+        token1 = ("word1", "str", "1")
+        token2 = ("word2", "str", "1")
+
+        assert transformer.array([token1, token2]) == (
+            ["word1", "word2"], "list(str)", "1")
+
+        token1 = (1, "int", "1")
+        token2 = (1.0, "float", "1")
+
+        assert transformer.array([token1, token2]) == (
+            [1.0, 1.0], "list(float)", "1")
+
+        token1 = (1, "int", "1")
+        token2 = (True, "bool", "1")
+
+        with pytest.raises(TypeError) as exception:
+            transformer.array([token1, token2])
+        assert str(
+            exception.value) == "Bool cannot be used with other types. Found [\'int\', \'bool\']"
+
+        token1 = (1, "int", "1")
+        token2 = ("word", "str", "1")
+
+        assert transformer.array([token1, token2]) == (
+            ["1", "word"], "list(str)", "1")
+
+        token1 = (1.0, "float", "1")
+        token2 = ("word", "str", "1")
+
+        assert transformer.array([token1, token2]) == (
+            ["1.0", "word"], "list(str)", "1")
+
+        token1 = (True, "bool", "1")
+        token2 = ("word", "str", "1")
+
+        assert transformer.array([token1, token2]) == (
+            ["True", "word"], "list(str)", "1")
+
+        token1 = (1, "int", "1")
+        token2 = (2, "range", "1")
+
+        with pytest.raises(TypeError) as exception:
+            transformer.array([token1, token2])
+        assert str(
+            exception.value) == "Array elements must be primitive types. Found [\'range\']"
+
+    def test_range(self):
+        transformer = ComposedDatatypesTransformer()
+        token1 = (1, "int", "1")
+        token2 = (2, "int", "1")
+
+        assert transformer.range([token1, token2]) == (
+            range(1, 2), "range", "1")
+
+        token1 = (1, "int", "1")
+        token2 = (4, "int", "1")
+        token3 = (20, "int", "1")
+
+        assert transformer.range([token1, token2, token3]) == (
+            range(1, 20, 4), "range", "1")
+
+    def test_glob(self):
+        transformer = ComposedDatatypesTransformer()
+        token = Token("GLOB", "*")
+        token.end_line = 1
+
+        assert len(transformer.glob([token])[0]) > 0
+        assert transformer.glob([token])[1] == "glob"
+        assert transformer.glob([token])[2] == "1"
+
+    def test_key(self):
+        transformer = ComposedDatatypesTransformer()
+        token = "key"
+        assert transformer.key([token]) == "key"
+
+    def test_value(self):
+        transformer = ComposedDatatypesTransformer()
+        token = ("value", "type", "1")
+        assert transformer.value([token]) == ("value", "type", "1")

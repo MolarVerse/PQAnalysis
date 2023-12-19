@@ -315,6 +315,28 @@ class ComposedDatatypesTransformer(Transformer):
             return "int"
 
     def array(self, items) -> Tuple[List[Any], str, str]:
+        """
+        Method to transform array values
+
+        It transforms a list of items into a list of values, the string "{most_general_type}", and the line where the token was defined.
+        The most general type is inferred from the list of items. If the list contains a bool and another type, a TypeError is raised.
+        The list of items must contain only primitive types.
+
+        Parameters
+        ----------
+        items : List[Any]
+            items containing the array value
+
+        Returns
+        -------
+        Tuple[List[Any], str, str]
+            tuple containing the array value, the string "{most_general_type}", and the line where the token was defined.
+
+        Raises
+        ------
+        TypeError
+            if the list of items contains a non-primitive type
+        """
         not_primitive_types = [
             item[1] for item in items if item[1] not in self.primitive_types]
 
@@ -325,19 +347,85 @@ class ComposedDatatypesTransformer(Transformer):
         most_general_type = self._infer_most_general_type(
             [item[1] for item in items])
 
+        if most_general_type == "str":
+            items = [(str(item[0]), item[1], item[2]) for item in items]
+        elif most_general_type == "bool":
+            items = [(bool(item[0]), item[1], item[2]) for item in items]
+        elif most_general_type == "float":
+            items = [(float(item[0]), item[1], item[2]) for item in items]
+        elif most_general_type == "int":
+            items = [(int(item[0]), item[1], item[2]) for item in items]
+
         _list = [item[0] for item in items]
         return list(_list), f"list({most_general_type})", str(items[0][2])
 
     def range(self, items) -> Tuple[Range, str, str]:
-        return range(int(items[0][0]), int(items[2][0]), int(items[1][0])), "range", str(items[0].end_line)
+        """
+        Method to transform range values
+
+        Parameters
+        ----------
+        items : List[Any]
+            items containing the range value
+
+        Returns
+        -------
+        Tuple[Range, str, str]
+            tuple containing the range value, the string "range", and the line where the token was defined.
+        """
+        if len(items) == 2:
+            return_range = range(items[0][0], items[1][0])
+        else:
+            return_range = range(items[0][0], items[2][0], items[1][0])
+
+        return return_range, "range", str(items[0][2])
 
     def glob(self, items) -> Tuple[List[str], str, str]:
+        """
+        Method to transform glob values
+
+        Parameters
+        ----------
+        items : List[Any]
+            items containing the glob value
+
+        Returns
+        -------
+        Tuple[List[str], str, str]
+            tuple containing the glob value, the string "glob", and the line where the token was defined.
+        """
         return glob(items[0].strip()), "glob", str(items[0].end_line)
 
     def key(self, items) -> str:
+        """
+        Method to transform key values
+
+        Parameters
+        ----------
+        items : List[Token]
+            items containing the key value
+
+        Returns
+        -------
+        str
+            key value
+        """
         return items[0]
 
     def value(self, items) -> Tuple[Any, str, str]:
+        """
+        Method to transform value values
+
+        Parameters
+        ----------
+        items
+            items containing the value value
+
+        Returns
+        -------
+        Tuple[Any, str, str]
+            tuple containing the value value, the string "value", and the line where the token was defined.
+        """
         return items[0]
 
 
