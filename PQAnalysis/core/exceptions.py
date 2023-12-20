@@ -11,9 +11,11 @@ AtomicSystemPositionsError
     Exception raised if atoms is not of the same length as positions
 AtomicSystemMassError
     Exception raised if atoms do not contain mass information
+AtomicSystemEmptySelectionWarning
+    Warning raised if the selection is empty
 """
 
-from PQAnalysis.exceptions import PQException
+from PQAnalysis.exceptions import PQException, PQWarning
 
 
 from beartype.typing import Any
@@ -49,4 +51,14 @@ class AtomicSystemMassError(PQException):
     message = """AtomicSystem contains atoms without mass information. Which is required for this operation."""
 
     def __init__(self) -> None:
+        super().__init__(self.message)
+
+
+class AtomicSystemEmptySelectionWarning(PQWarning):
+    """
+    Warning raised if the selection is empty
+    """
+
+    def __init__(self, message) -> None:
+        self.message = message
         super().__init__(self.message)

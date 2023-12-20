@@ -10,12 +10,14 @@ _IndexingMixin
 """
 
 import numpy as np
+import warnings
 
 from beartype.typing import List
 from beartype.door import is_bearable
 
 from ..atom import Atom, is_same_element_type
 from ...types import Np1DIntArray
+from ..exceptions import AtomicSystemEmptySelectionWarning as EmptySelectionWarning
 
 
 class _IndexingMixin:
@@ -54,19 +56,24 @@ class _IndexingMixin:
                 "use_full_atom_info can only be used with List[Atom]")
 
         elif isinstance(atoms[0], str):
-            return self._indices_by_atom_type_names(atoms)
+            atoms = self._indices_by_atom_type_names(atoms)
 
         elif isinstance(atoms[0], Atom) and use_full_atom_info:
-            return self._indices_by_atom(atoms)
+            atoms = self._indices_by_atom(atoms)
 
         elif isinstance(atoms[0], Atom) and not use_full_atom_info:
-            return self._indices_by_element_types(atoms)
+            atoms = self._indices_by_element_types(atoms)
 
         # Note: here is is_bearable used instead of isinstance because
         #       isinstance(atoms, Np1DIntArray) returns False as
         #       Np1DIntArray is defined as a type alias and not a class.
-        elif is_bearable(atoms, Np1DIntArray):
-            return atoms
+        # elif is_bearable(atoms, Np1DIntArray):
+        #     atoms = atoms
+
+        if len(atoms) == 0:
+            warnings.warn("Empty selection.", EmptySelectionWarning)
+
+        return atoms
 
     def _indices_by_atom_type_names(self, names: List[str]) -> Np1DIntArray:
         """
@@ -83,10 +90,14 @@ class _IndexingMixin:
             The indices of the atoms with the given atom type names.
         """
         indices = []
+
         for name in names:
+
             bool_array = np.array(
                 [atom.name == name for atom in self.atoms])
+
             indices.append(np.argwhere(bool_array).flatten())
+
         return np.sort(np.concatenate(indices))
 
     def _indices_by_atom(self, atoms: List[Atom]) -> Np1DIntArray:
@@ -104,8 +115,11 @@ class _IndexingMixin:
             The indices of the given atoms.
         """
         indices = []
+
         for atom in atoms:
+
             indices.append(np.argwhere(np.array(self.atoms) == atom).flatten())
+
         return np.sort(np.concatenate(indices))
 
     def _indices_by_element_types(self, elements: List[Atom]) -> Np1DIntArray:
@@ -123,8 +137,12 @@ class _IndexingMixin:
             The indices of the atoms with the given element types.
         """
         indices = []
+
         for element in elements:
+
             bool_indices = np.array(
                 [is_same_element_type(atom, element) for atom in self.atoms])
+
             indices.append(np.argwhere(bool_indices).flatten())
+
         return np.sort(np.concatenate(indices))
