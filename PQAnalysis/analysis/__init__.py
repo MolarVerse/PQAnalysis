@@ -1,1 +1,1 @@
-from .exceptions import RDFError
+from .exceptions import RDFError, RDFWarning

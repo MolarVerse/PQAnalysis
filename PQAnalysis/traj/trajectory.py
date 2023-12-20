@@ -96,7 +96,7 @@ class Trajectory:
             True if all frames of the trajectory are in vacuum, False otherwise.
         """
 
-        return not any(frame.cell is None for frame in self.frames)
+        return not any(frame.PBC for frame in self.frames)
 
     def append(self, frame: Frame) -> None:
         """
