@@ -48,6 +48,30 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_PBC() == False
 
+    def test_check_vacuum(self):
+        traj = Trajectory(self.frames)
+        assert traj.check_vacuum() == True
+
+        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
+            [[0, 1, 2]]), cell=Cell(10, 10, 10))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
+            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        frame1 = Frame(system1)
+        frame2 = Frame(system2)
+        frames = [frame1, frame2]
+
+        traj = Trajectory(frames)
+        assert traj.check_vacuum() == False
+
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
+            [[1, 1, 2]]))
+        frame1 = Frame(system1)
+        frame2 = Frame(system2)
+        frames = [frame1, frame2]
+
+        traj = Trajectory(frames)
+        assert traj.check_vacuum() == False
+
     def test__len__(self):
         traj = Trajectory(self.frames)
         assert len(traj) == 3
