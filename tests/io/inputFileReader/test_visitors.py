@@ -1,4 +1,4 @@
-from lark import Tree
+from lark import Tree, Token
 
 from PQAnalysis.io.inputFileReader.inputFileParser import InputFileVisitor, InputDictionary
 
@@ -19,8 +19,12 @@ class TestInputFileVisitor:
 
     def test_multiline_statement(self):
         visitor = InputFileVisitor()
+        token = Token("END", "END")
+        token.end_line = 4
+        key_token = Token("WORD", "key")
+        key_token.end_line = 1
         tree = Tree("multiline_statement", [
-                    "key", ("1", "float", "1"), ("4", "int", "4")])
+                    key_token, ("1", "float", "1"), ("4", "int", "4"), token])
 
         return_tree = visitor.multiline_statement(tree)
 
