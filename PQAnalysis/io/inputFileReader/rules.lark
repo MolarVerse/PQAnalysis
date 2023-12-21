@@ -11,7 +11,7 @@
          |  int "-" int
          |  int ".." int
 
-?glob: /.*[*].*/ -> glob
+?glob: WORD? /[*]/ WORD?
             
 ?primitive:  float
          |   int

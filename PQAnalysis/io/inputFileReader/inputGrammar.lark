@@ -5,7 +5,7 @@ expression: (assign | multiline_statement)+
 ?assign:  key "=" value
         | key "=" value "," assign
             
-?multiline_statement: key (primitive | range | array)+ "END"
+!multiline_statement: key (primitive | range | array)+ "END"
 
 %import .rules.key
 %import .rules.value

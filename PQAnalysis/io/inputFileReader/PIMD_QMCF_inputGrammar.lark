@@ -2,7 +2,7 @@ start:  expression
             
 expression: assign+
             
-?assign:   key "=" value ";"
+?assign.5:   key "=" value ";"
         |  key "=" value ";" assign
             
 %import .rules.key

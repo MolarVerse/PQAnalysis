@@ -50,3 +50,14 @@ class TestInputFileDictionary:
 
         dictionary["key2"] = ("value", "type", "1")
         assert dictionary.keys() == ["key", "key2"]
+
+    def test__eq__(self):
+        dictionary = InputDictionary()
+        dictionary["key"] = ("value", "type", "1")
+
+        dictionary2 = InputDictionary()
+        dictionary2["key"] = ("value", "type", "1")
+
+        assert dictionary == dictionary
+        assert dictionary == dictionary2
+        assert dictionary != "not a dictionary"

@@ -1,3 +1,22 @@
+"""
+A module containing the input file parser.
+
+...
+
+Classes
+-------
+InputFileParser
+    Class to parse input files.
+InputDictionary
+    Class to store the input file keys and values.
+PrimitiveTransformer
+    Transformer for primitive datatypes.
+ComposedDatatypesTransformer
+    Transformer for composed datatypes.
+InputFileVisitor
+    Visitor for input files.
+"""
+
 from __future__ import annotations
 
 from lark import Visitor, Transformer, Lark, Tree
@@ -12,7 +31,7 @@ from .formats import InputFileFormat
 
 
 class InputFileParser(BaseReader):
-    def __init__(self, filename: str, format: InputFileFormat = InputFileFormat.PQANALYSIS) -> None:
+    def __init__(self, filename: str, format: InputFileFormat | str = InputFileFormat.PQANALYSIS) -> None:
         super().__init__(filename)
         self.format = InputFileFormat(format)
 
@@ -413,7 +432,7 @@ class ComposedDatatypesTransformer(Transformer):
         Tuple[List[str], str, str]
             tuple containing the glob value, the string "glob", and the line where the token was defined.
         """
-        return glob(items[0].strip()), "glob", str(items[0].end_line)
+        return glob("".join(items).strip()), "glob", str(items[0].end_line)
 
     def key(self, items) -> str:
         """
@@ -449,28 +468,90 @@ class ComposedDatatypesTransformer(Transformer):
 
 
 class InputFileVisitor(Visitor):
+    """
+    Visitor for input files.
+
+    Parameters
+    ----------
+    Visitor : 
+        Visitor class from lark.
+    """
+
     def __init__(self):
+        """
+        Initialize the visitor.
+
+        It initializes the dictionary and the composed datatypes transformer.
+        """
         self.dict = InputDictionary()
         self.composedDatatypeTransformer = ComposedDatatypesTransformer()
 
     def assign(self, items: Tree) -> Tree:
+        """
+        Parse an assign statement. The assign statement is of the form:
 
+        key = value; 
+
+        where key is a string, and the value is a tuple containing the value, the type of the value and the line where the key was defined.
+
+        Parameters
+        ----------
+        items : Tree
+            The assign statement.
+
+        Returns
+        -------
+        Tree
+            The assign statement.
+        """
         self.dict[str(items.children[0])] = items.children[1]
 
         return items
 
-    def multiline_statement(self, items):
+    def multiline_statement(self, items: Tree) -> Tree:
+        """
+        Parse a multiline statement. The multiline statement is of the form:
 
+        key
+        value1
+        value2
+        ...
+        END
+
+        where key is a string, and the values are a tuple containing the value, the type of the value and the line where the key was defined.
+
+        Parameters
+        ----------
+        items : Tree
+            The multiline statement.
+
+        Returns
+        -------
+        Tree
+            The multiline statement.
+        """
         array = self.composedDatatypeTransformer.array(
-            [item for item in items.children[1:]])
+            [item for item in items.children[1:-1]])
 
         self.dict[str(items.children[0])
-                  ] = array[0], array[1], f"{items.children[1][2]}-{items.children[-1][2]}"
+                  ] = array[0], array[1], f"{items.children[0].end_line}-{items.children[-1].end_line}"
 
         return items
 
     def visit(self, tree: Tree) -> InputDictionary:
+        """
+        Visit the tree and return the dictionary.
 
+        Parameters
+        ----------
+        tree : Tree
+            The tree to visit.
+
+        Returns
+        -------
+        InputDictionary
+            The parsed input file dictionary.
+        """
         super().visit(tree)
 
         return self.dict
