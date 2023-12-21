@@ -244,20 +244,19 @@ class FrameReader:
         FrameReaderError
             If the given string does not contain the correct number of lines.
         """
+        try:
+            # Convert the lines to a numpy array
+            lines = np.array([line.split() for line in splitted_frame_string[2:2+n_atoms]])
 
-        xyz = np.zeros((n_atoms, 3))
-        atoms = []
-        for i in range(n_atoms):
-            line = splitted_frame_string[2+i]
+            # Extract the xyz coordinates and atom names
+            xyz = lines[:, 1:4].astype(float)
+            atoms = lines[:, 0].tolist()
 
-            if len(line.split()) != 4:
-                raise FrameReaderError(
+            return xyz, atoms
+        except ValueError:
+            raise FrameReaderError(
                     'Invalid file format in xyz coordinates of Frame.')
-
-            xyz[i] = np.array([float(x) for x in line.split()[1:4]])
-            atoms.append(line.split()[0])
-
-        return xyz, atoms
+            
 
     def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np1DNumberArray, List[str]]:
         """
