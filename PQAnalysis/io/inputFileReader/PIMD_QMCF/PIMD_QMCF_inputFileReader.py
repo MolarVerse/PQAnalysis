@@ -228,7 +228,8 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
         n = _get_digit_string_from_filename(self.start_file)
 
         if self.is_rpmd_start_file_defined:
-            _n = _get_digit_string_from_filename(self.rpmd_start_file)
+            # add "." to match also files without extension
+            _n = _get_digit_string_from_filename(self.rpmd_start_file + ".")
 
             if _n != n:
                 raise ValueError(
@@ -256,10 +257,12 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
 
         for key in self.output_file_keys:
             if key in self.dictionary.keys():
+                # add "." to match also files without extension
                 _n = _get_digit_string_from_filename(
-                    self.dictionary[key][0])
+                    self.dictionary[key][0] + ".")
 
                 if _n != n and n is not None:
+                    print(_n, n, key)
                     raise ValueError(
                         f"Actual n in output files is not consistent.")
 

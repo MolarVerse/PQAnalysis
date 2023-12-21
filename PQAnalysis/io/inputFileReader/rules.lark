@@ -19,8 +19,8 @@
          |   bool
 
 word: WORD
-float: FLOAT
-int: INT
+float.3: FLOAT
+int.2: INT
 bool.2: BOOL
 
 %import .terminals.WORD
