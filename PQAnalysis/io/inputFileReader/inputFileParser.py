@@ -31,11 +31,43 @@ from .formats import InputFileFormat
 
 
 class InputFileParser(BaseReader):
+    """
+    Class to parse input files.
+
+    Parameters
+    ----------
+    BaseReader : BaseReader
+        BaseReader class from PQAnalysis.io
+    """
+
     def __init__(self, filename: str, format: InputFileFormat | str = InputFileFormat.PQANALYSIS) -> None:
+        """
+        Initialize the parser.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the input file.
+        format : InputFileFormat | str, optional
+            The format of the input file, by default InputFileFormat.PQANALYSIS
+        """
         super().__init__(filename)
         self.format = InputFileFormat(format)
 
     def parse(self) -> InputDictionary:
+        """
+        Parse the input file.
+
+        It uses the lark parser to parse the input file. It then uses the
+        PrimitiveTransformer and ComposedDatatypesTransformer to transform the
+        tree. Finally, it uses the InputFileVisitor to visit the tree and
+        return the dictionary.
+
+        Returns
+        -------
+        InputDictionary: InputDictionary
+            The parsed input file dictionary.
+        """
         if self.format == InputFileFormat.PQANALYSIS:
             grammar_file = Path(__file__).parent / "inputGrammar.lark"
         elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:

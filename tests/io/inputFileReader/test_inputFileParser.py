@@ -1,7 +1,7 @@
 import pytest
 
 from PQAnalysis.io import InputFileParser
-from PQAnalysis.io.inputFileReader.formats import InputFileFormat
+from PQAnalysis.io.inputFileReader.formats import InputFileFormat, InputFileFormatError
 
 
 class TestInputFileParser:
@@ -30,6 +30,13 @@ class TestInputFileParser:
         assert input_file_parser.filename == input_file
         assert input_file_parser.format == InputFileFormat.QMCFC
 
+        with pytest.raises(InputFileFormatError) as exception:
+            InputFileParser(input_file, "non-existent-format")
+        assert str(exception.value) == """
+'non-existent-format' is not a valid InputFileFormat.
+Possible values are: InputFileFormat.PQANALYSIS, InputFileFormat.PIMD_QMCF, InputFileFormat.QMCFC
+or their case insensitive string representation: PQANALYSIS, PIMD-QMCF, QMCFC"""
+
     @pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
     def test_parse(self, test_with_data_dir):
         input_file_parser = InputFileParser("input.in")
@@ -39,7 +46,7 @@ class TestInputFileParser:
         dict["a"] = (2.0, "float", "1")
         dict["b"] = ("test", "str", "1")
         dict["aaa"] = (["adf", "3.0", "4.5", "True"], "list(str)", "5")
-        dict["key"] = ([2.0, 3.0, 4.1233], "list(float)", "7-13")
+        dict["key"] = ([2.0, 355.0, 4.1233], "list(float)", "7-13")
         dict["bool"] = (True, "bool", "15")
         dict["myglob"] = (["input.in"], "glob", "17")
 
