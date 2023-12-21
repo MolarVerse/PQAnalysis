@@ -168,6 +168,25 @@ class InputDictionary:
         """
         return list(self.dict.keys())
 
+    def __eq__(self, __value: object) -> bool:
+        """
+        Compare two InputDictionary objects.
+
+        Parameters
+        ----------
+        __value : object
+            The object to compare to.
+
+        Returns
+        -------
+        bool
+            True if the objects are equal, False otherwise.
+        """
+        if not isinstance(__value, InputDictionary):
+            return False
+
+        return self.dict == __value.dict
+
 
 class PrimitiveTransformer(Transformer):
     """
@@ -432,17 +451,26 @@ class ComposedDatatypesTransformer(Transformer):
 class InputFileVisitor(Visitor):
     def __init__(self):
         self.dict = InputDictionary()
+        self.composedDatatypeTransformer = ComposedDatatypesTransformer()
 
-    def assign(self, items):
+    def assign(self, items: Tree) -> Tree:
+
         self.dict[str(items.children[0])] = items.children[1]
+
         return items
 
     def multiline_statement(self, items):
-        _list = [item[0] for item in items.children[1:]]
-        self.dict[str(items.children[0])] = (list(
-            _list), f"list({items.children[1][1]})", f"{items.children[0].line}-{items.children[-1][2]}")
+
+        array = self.composedDatatypeTransformer.array(
+            [item for item in items.children[1:]])
+
+        self.dict[str(items.children[0])
+                  ] = array[0], array[1], f"{items.children[1][2]}-{items.children[-1][2]}"
+
         return items
 
     def visit(self, tree: Tree) -> InputDictionary:
+
         super().visit(tree)
+
         return self.dict
