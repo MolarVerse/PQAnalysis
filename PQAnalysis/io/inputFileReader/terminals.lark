@@ -2,7 +2,7 @@ INT: DIGIT+
 SIGNED_INT: ["+"|"-"] INT
             
 _EXP: ("e"|"E") SIGNED_INT
-DECIMAL: SIGNED_INT? "." INT
+DECIMAL: SIGNED_INT "." INT
 FLOAT: SIGNED_INT _EXP | DECIMAL _EXP?
             
 BOOL: "true"i | "false"i
