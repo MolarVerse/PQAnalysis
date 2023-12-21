@@ -1,0 +1,140 @@
+import pytest
+
+from PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
+from PQAnalysis.io.inputFileReader import PIMD_QMCF_InputFileReader as InputFileReader
+from PQAnalysis.io.inputFileReader.formats import InputFileFormat
+
+
+class TestPIMD_QMCF_inputFileReader:
+    def test__increase_digit_string(self):
+        digit_string = "1"
+        assert _increase_digit_string(digit_string) == "2"
+
+        digit_string = "2"
+        assert _increase_digit_string(digit_string) == "3"
+
+        digit_string = "9"
+        assert _increase_digit_string(digit_string) == "10"
+
+        digit_string = "01"
+        assert _increase_digit_string(digit_string) == "02"
+
+        digit_string = "0004"
+        assert _increase_digit_string(digit_string) == "0005"
+
+        digit_string = "0009"
+        assert _increase_digit_string(digit_string) == "0010"
+
+        digit_string = "00.09"
+        with pytest.raises(ValueError) as exception:
+            _increase_digit_string(digit_string)
+        assert str(
+            exception.value) == "digit_string 00.09 contains non-digit characters."
+
+        digit_string = ""
+        assert _increase_digit_string(digit_string) == "1"
+
+    def test__get_digit_string_from_filename(self):
+        filename = "input.in"
+        with pytest.raises(ValueError) as exception:
+            _get_digit_string_from_filename(filename)
+        assert str(exception.value) == "Filename input.in does not contain a number to be continued from. It has to be of the form \"...<number>.<extension>\"."
+
+        filename = "input_0001.in"
+        assert _get_digit_string_from_filename(filename) == "0001"
+
+        filename = "input_001.in"
+        assert _get_digit_string_from_filename(filename) == "001"
+
+        filename = "input_099.in.asdf"
+        assert _get_digit_string_from_filename(filename) == "099"
+
+        filename = "input_00.in"
+        assert _get_digit_string_from_filename(filename) == "00"
+
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    def test__init__(self, test_with_data_dir):
+        input_file_reader = InputFileReader("run-08.in")
+
+        assert input_file_reader.filename == "run-08.in"
+        assert input_file_reader.format == InputFileFormat("pimd-qmcf")
+        assert input_file_reader.parser.filename == "run-08.in"
+        assert input_file_reader.parser.format == InputFileFormat("pimd-qmcf")
+
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    def test_read(self, test_with_data_dir):
+        input_file_reader = InputFileReader("run-08.in")
+
+        input_dictionary = input_file_reader.read()
+
+        assert input_file_reader.raw_input_file == open(
+            "run-08.in", "r").read()
+        assert input_file_reader.start_file == "md-07.rst"
+        assert input_file_reader.is_rpmd_start_file_defined == False
+        assert input_file_reader.restart_file == "md-08.rst"
+        assert input_file_reader.trajectory_file == "md-08.xyz"
+        assert input_file_reader.velocity_file == "md-08.vel"
+        assert input_file_reader.force_file == "md-08.frc"
+        assert input_file_reader.charge_file == "md-08.chrg"
+        assert input_file_reader.energy_file == "md-08.en"
+        assert input_file_reader.output_file == "md-08.out"
+        assert input_file_reader.info_file == "md-08.info"
+        assert input_file_reader.file_prefix == "md-08"
+
+        input_file_reader = InputFileReader("run-08.rpmd.in")
+
+        input_dictionary = input_file_reader.read()
+
+        assert input_file_reader.raw_input_file == open(
+            "run-08.rpmd.in", "r").read()
+        assert input_file_reader.start_file == "md-07.rst"
+        assert input_file_reader.is_rpmd_start_file_defined == True
+        assert input_file_reader.rpmd_start_file == "md-07.rpmd.rst"
+        assert input_file_reader.rpmd_restart_file == "md-08.rst"
+        assert input_file_reader.rpmd_trajectory_file == "md-08.xyz"
+        assert input_file_reader.rpmd_velocity_file == "md-08.vel"
+        assert input_file_reader.rpmd_force_file == "md-08.frc"
+        assert input_file_reader.rpmd_charge_file == "md-08.chrg"
+        assert input_file_reader.rpmd_energy_file == "md-08.en"
+        assert input_file_reader.output_file == "md-08.out"
+        assert input_file_reader.info_file == "md-08.info"
+
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    def test__parse_start_n(self, test_with_data_dir):
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+
+        assert input_file_reader._parse_start_n() == "07"
+
+        input_file_reader = InputFileReader("run-08.rpmd.in")
+        input_file_reader.read()
+
+        assert input_file_reader._parse_start_n() == "07"
+
+        input_file_reader = InputFileReader("n_not_matching.in")
+        input_file_reader.read()
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader._parse_start_n()
+        assert str(
+            exception.value) == "N from start_file (07) and rpmd_start_file (08) do not match."
+
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    def test__parse_actual_n(self, test_with_data_dir):
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+
+        assert input_file_reader._parse_actual_n() == "08"
+
+        input_file_reader = InputFileReader("run-08.rpmd.in")
+        input_file_reader.read()
+
+        assert input_file_reader._parse_actual_n() == "08"
+
+        input_file_reader = InputFileReader("n_not_matching.in")
+        input_file_reader.read()
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader._parse_actual_n()
+        assert str(
+            exception.value) == "Actual n in output files is not consistent."
