@@ -1,5 +1,7 @@
 import pytest
 
+from filecmp import cmp as filecmp
+
 from PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.inputFileReader import PIMD_QMCF_InputFileReader as InputFileReader
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat
@@ -99,6 +101,14 @@ class TestPIMD_QMCF_inputFileReader:
         assert input_file_reader.output_file == "md-08.out"
         assert input_file_reader.info_file == "md-08.info"
 
+        # testing if ValueError is raised if no start file is defined
+        input_file_reader = InputFileReader("no_start_file.in")
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader.read()
+        assert str(
+            exception.value) == "No start file defined in input file no_start_file.in."
+
     @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
     def test__parse_start_n(self, test_with_data_dir):
         input_file_reader = InputFileReader("run-08.in")
@@ -131,6 +141,8 @@ class TestPIMD_QMCF_inputFileReader:
 
         assert input_file_reader._parse_actual_n() == "08"
 
+        # testing if ValueError is raised if n not consistent in output files
+
         input_file_reader = InputFileReader("n_not_matching.in")
         input_file_reader.read()
 
@@ -138,3 +150,49 @@ class TestPIMD_QMCF_inputFileReader:
             input_file_reader._parse_actual_n()
         assert str(
             exception.value) == "Actual n in output files is not consistent."
+
+        # testing if ValueError is raised if no output file is defined
+
+        input_file_reader = InputFileReader("no_output_files.in")
+        input_file_reader.read()
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader._parse_actual_n()
+        assert str(
+            exception.value) == "No output file found to determine actual n."
+
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    def test_continue_input_file(self, test_with_data_dir):
+        # testing if ValueError is raised if actual n and input file n do not match
+        input_file_reader = InputFileReader(
+            "n_not_matching_input_file_n-08.in")
+        input_file_reader.read()
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader.continue_input_file(2)
+        assert str(
+            exception.value) == "Actual n (09) and input file n (08) do not match."
+
+        # testing if ValueError is raised if old n is not exactly one less than actual n
+        input_file_reader = InputFileReader(
+            "old_n_not_less_one_than_actual_n-09.in")
+        input_file_reader.read()
+
+        with pytest.raises(ValueError) as exception:
+            input_file_reader.continue_input_file(2)
+        assert str(
+            exception.value) == "Old n (07) has to be one less than actual n (09)."
+
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(2)
+
+        assert filecmp("run-09.in", "run-09.in.ref")
+        assert filecmp("run-10.in", "run-10.in.ref")
+
+        input_file_reader = InputFileReader("run-08.rpmd.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(2)
+
+        assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")
+        assert filecmp("run-10.rpmd.in", "run-10.rpmd.in.ref")

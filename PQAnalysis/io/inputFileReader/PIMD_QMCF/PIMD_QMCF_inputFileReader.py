@@ -16,6 +16,7 @@ _get_digit_string_from_filename
 
 import re
 
+from ....types import PositiveInt
 from ..formats import InputFileFormat
 from ..inputFileParser import InputFileParser
 from .output_files import _OutputFileMixin
@@ -141,7 +142,11 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
         self.dictionary = self.parser.parse()
         self.raw_input_file = self.parser.raw_input_file
 
-    def continue_input_file(self, n: int):
+        if not self.is_start_file_defined:
+            raise ValueError(
+                f"No start file defined in input file {self.filename}.")
+
+    def continue_input_file(self, n: PositiveInt):
         """
         Creates n new input files by increasing the number in the filename by one.
         All other numbers in the start- and output-files within the input file are increased by one as well.
@@ -181,19 +186,25 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
             new_start_n = _increase_digit_string(old_start_n)
             new_actual_n = _increase_digit_string(old_actual_n)
 
+            new_raw_input_file = self.raw_input_file
+
             # replace digit strings in start files
-            for key in self.start_file_keys:
+            for key in self.output_file_keys:
                 if key in self.dictionary.keys():
+
                     new_filename = self.dictionary[key][0].replace(
-                        self.start_n, new_start_n)
-                    new_raw_input_file = self.raw_input_file.replace(
+                        self.actual_n, new_actual_n)
+
+                    new_raw_input_file = new_raw_input_file.replace(
                         self.dictionary[key][0], new_filename)
 
             # replace digit strings in output files
-            for key in self.output_file_keys:
+            for key in self.start_file_keys:
                 if key in self.dictionary.keys():
+
                     new_filename = self.dictionary[key][0].replace(
-                        self.actual_n, new_actual_n)
+                        self.start_n, new_start_n)
+
                     new_raw_input_file = new_raw_input_file.replace(
                         self.dictionary[key][0], new_filename)
 

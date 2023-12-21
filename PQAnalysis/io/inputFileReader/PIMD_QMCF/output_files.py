@@ -13,6 +13,14 @@ class _OutputFileMixin:
         return self.dictionary["start_file"][0]
 
     @property
+    def is_start_file_defined(self) -> bool:
+        try:
+            self.start_file
+            return True
+        except Exception:
+            return False
+
+    @property
     def rpmd_start_file(self) -> str:
         return self.dictionary["rpmd_start_file"][0]
 

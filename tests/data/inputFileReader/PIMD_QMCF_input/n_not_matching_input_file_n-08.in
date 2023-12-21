@@ -57,14 +57,15 @@
 
 # Output Files
 
-     output_file      = md-08.out; 
-     info_file        = md-08.info;
-     rpmd_energy_file      = md-08.en; 
-     rpmd_traj_file        = md-08.xyz;
-     rpmd_vel_file         = md-08.vel;
-     rpmd_charge_file      = md-08.chrg; 
-     rpmd_restart_file     = md-08.rst;
-     rpmd_force_file       = md-08.frc;
+     output_file           = md-09.out; 
+     info_file             = md-09.info;
+     rpmd_energy_file      = md-09.en; 
+     rpmd_traj_file        = md-09.xyz;
+     rpmd_vel_file         = md-09.vel;
+     rpmd_charge_file      = md-09.chrg; 
+     rpmd_restart_file     = md-09.rst;
+     rpmd_force_file       = md-09.frc;
+     rpmd_file_prefix      = md-09;
 
 
 # end of infile
