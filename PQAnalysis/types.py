@@ -29,3 +29,7 @@ Np1DIntArray = Annotated[np.ndarray, Is[lambda array:
                                         len(array) == 0]]
 
 FILE = _io.TextIOWrapper
+
+Range = Annotated[range, Is[lambda r: isinstance(r, range)]]
+Bool = Annotated[bool, Is[lambda b: isinstance(b, bool)]]
+PositiveInt = Annotated[int, Is[lambda i: isinstance(i, int) and i > 0]]

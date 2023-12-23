@@ -1,0 +1,31 @@
+import pytest
+import argparse
+import os
+
+from filecmp import cmp as filecmp
+from unittest.mock import patch
+
+from PQAnalysis.cli.continue_input import main
+
+
+@pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input"], indirect=False)
+def test_continue_input(test_with_data_dir, capsys):
+
+    with pytest.raises(NotImplementedError) as exception:
+        with patch('argparse._sys.argv', ['continue_input.py', 'input.in', '-n', '1', '-f', 'qmcfc']):
+            main()
+    assert str(
+        exception.value) == "Format qmcfc not implemented yet for continuing input file."
+
+    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.in', '-n', '2']):
+        main()
+
+    assert filecmp("run-09.in", "run-09.in.ref")
+    assert filecmp("run-10.in", "run-10.in.ref")
+
+    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.rpmd.in', '-n', '3', '-f', 'pimd-qmcf']):
+        main()
+
+    assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")
+    assert filecmp("run-10.rpmd.in", "run-10.rpmd.in.ref")
+    assert os.path.exists("run-11.rpmd.in")
