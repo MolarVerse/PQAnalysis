@@ -246,7 +246,8 @@ class RadialDistributionFunction:
                 self._add_to_bins(distances)
 
         normalized_bins = self.bins / self._norm()
-        integrated_bins = self._integration()
+        integrated_bins = _integration(self.bins, len(
+            self.reference_indices), len(self.traj))
         normalized_bins2 = self.bins / self._target_density / \
             len(self.reference_indices) / len(self.traj)
         differential_bins = self.bins - self._norm()
@@ -284,18 +285,6 @@ class RadialDistributionFunction:
              np.arange(0, self.n_bins) ** 3) * self.delta_r ** 3
 
         return volume * self._target_density * len(self.reference_indices) * len(self.traj)
-
-    def _integration(self) -> Np1DNumberArray:
-        """
-        Calculates the integrated RDF analysis. The integral is calculated using a cumulative sum.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The integrated RDF analysis.
-        """
-
-        return np.cumsum(self.bins / len(self.reference_indices) / len(self.traj))
 
 
 def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal) -> Tuple[PositiveInt, PositiveReal]:
@@ -348,3 +337,25 @@ def _infer_r_max(traj: Trajectory):
             "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
 
     return np.min(traj.box_lengths) / 2.0
+
+
+def _integration(bins: Np1DNumberArray, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
+    """
+    Calculates the integrated RDF analysis. The integral is calculated using a cumulative sum.
+
+    Parameters
+    ----------
+    bins : Np1DNumberArray
+        The bins of the RDF analysis.
+    n_reference_indices : int
+        The number of reference indices of the RDF analysis.
+    n_frames : int
+        The number of frames of the RDF analysis.
+
+    Returns
+    -------
+    Np1DNumberArray
+        The integrated RDF analysis.
+    """
+
+    return np.cumsum(bins) / (n_reference_indices * n_frames)

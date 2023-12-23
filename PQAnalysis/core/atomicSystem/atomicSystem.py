@@ -111,18 +111,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
         elif self.atoms != other.atoms:
             return False
 
-        elif np.shape(self.pos) != np.shape(other.pos):
-            return False
-
-        elif np.shape(self.vel) != np.shape(other.vel):
-            return False
-
-        elif np.shape(self.forces) != np.shape(other.forces):
-            return False
-
-        elif np.shape(self.charges) != np.shape(other.charges):
-            return False
-
         is_equal = True
         is_equal &= np.allclose(self.pos, other.pos)
         is_equal &= np.allclose(self.vel, other.vel)
