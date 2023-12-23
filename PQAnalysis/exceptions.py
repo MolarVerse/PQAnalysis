@@ -7,13 +7,10 @@ Classes
 -------
 PQException
     Base class for exceptions in this module.
-<<<<<<< HEAD
 PQWarning
     Base class for warnings in this module.
-=======
 FormatEnumError
     Exception raised if the given enum is not valid
->>>>>>> feature/grammar
 """
 
 from multimethod import multimethod
@@ -29,7 +26,6 @@ class PQException(Exception):
         super().__init__(self.message)
 
 
-<<<<<<< HEAD
 class PQWarning(Warning):
     """
     Base class for warnings in this package.
@@ -38,7 +34,8 @@ class PQWarning(Warning):
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(self.message)
-=======
+
+
 class FormatEnumError(PQException):
     """
     Exception raised if the given enum is not valid
@@ -57,4 +54,3 @@ or their case insensitive string representation: {enum.value_repr()}"""
     @multimethod
     def __init__(self, message: str) -> None:
         super().__init__(message)
->>>>>>> feature/grammar
