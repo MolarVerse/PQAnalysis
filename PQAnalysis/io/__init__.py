@@ -18,3 +18,5 @@ from .energyFileReader import EnergyFileReader
 from .boxWriter import BoxWriter
 
 from .inputFileReader import InputFileParser
+from .inputFileReader import PIMD_QMCF_InputFileReader
+from .inputFileReader import InputFileFormat

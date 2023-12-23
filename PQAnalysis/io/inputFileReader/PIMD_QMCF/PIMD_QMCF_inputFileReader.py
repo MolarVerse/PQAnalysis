@@ -14,94 +14,14 @@ _get_digit_string_from_filename
     extracts a string containing only digits from a filename
 """
 
+from __future__ import annotations
+
 import re
 
 from ....types import PositiveInt
 from ..formats import InputFileFormat
 from ..inputFileParser import InputFileParser
 from .output_files import _OutputFileMixin
-
-
-def _increase_digit_string(digit_string: str) -> str:
-    """
-    increases a string containing only digits by one
-
-    If the string contains leading zeros, they are preserved.
-    The total length of the string is preserved, if there are leading zeros.
-
-    For example:
-    "0001" -> "0002"
-    "001" -> "002"
-    "099" -> "100"
-    "999" -> "1000"
-
-    Parameters
-    ----------
-    digit_string : str
-        string containing only digits to be increased
-
-    Returns
-    -------
-    str
-        increased string by one
-
-    Raises
-    ------
-    ValueError
-        if digit_string contains non-digit characters
-    """
-
-    if not all([char.isdigit() for char in digit_string]):
-        raise ValueError(
-            f"digit_string {digit_string} contains non-digit characters.")
-
-    string_without_leading_zeros = digit_string.lstrip("0")
-
-    if string_without_leading_zeros == "":
-        string_without_leading_zeros = "0"
-
-    string_without_leading_zeros = str(int(string_without_leading_zeros) + 1)
-
-    return "0" * (len(digit_string) - len(string_without_leading_zeros)) + string_without_leading_zeros
-
-
-def _get_digit_string_from_filename(filename: str) -> str:
-    """
-    extracts a string containing only digits from a filename
-
-    The string has to be of the form "...<number>.<extension>".
-    The string is extracted from the number part of the filename.
-
-    For example:
-    "filename_0001.extension" -> "0001"
-    "filename_001.extension" -> "001"
-    "filename_099.extension" -> "099"
-    "filename_100.extension" -> "100"
-    "filename.extension" -> ValueError
-
-    Parameters
-    ----------
-    filename : str
-        filename to be parsed
-
-    Returns
-    -------
-    str
-        string containing only digits
-
-    Raises
-    ------
-    ValueError
-        if filename does not contain a number to be parsed
-    """
-
-    regex = re.search(r"\d+.", filename)
-
-    if regex is None:
-        raise ValueError(
-            f"Filename {filename} does not contain a number to be continued from. It has to be of the form \"...<number>.<extension>\".")
-
-    return regex.group(0)[:-1]
 
 
 class PIMD_QMCF_InputFileReader(_OutputFileMixin):
@@ -137,6 +57,11 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
 
         The dictionary is set to the dictionary returned by the parser.
         The raw_input_file is set to the raw_input_file returned by the parser.
+
+        Raises
+        ------
+        ValueError
+            if no start file is defined in the input file
         """
 
         self.dictionary = self.parser.parse()
@@ -284,3 +209,85 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
                 f"No output file found to determine actual n.")
 
         return n
+
+
+def _increase_digit_string(digit_string: str) -> str:
+    """
+    increases a string containing only digits by one
+
+    If the string contains leading zeros, they are preserved.
+    The total length of the string is preserved, if there are leading zeros.
+
+    For example:
+    "0001" -> "0002"
+    "001" -> "002"
+    "099" -> "100"
+    "999" -> "1000"
+
+    Parameters
+    ----------
+    digit_string : str
+        string containing only digits to be increased
+
+    Returns
+    -------
+    str
+        increased string by one
+
+    Raises
+    ------
+    ValueError
+        if digit_string contains non-digit characters
+    """
+
+    if not all([char.isdigit() for char in digit_string]):
+        raise ValueError(
+            f"digit_string {digit_string} contains non-digit characters.")
+
+    string_without_leading_zeros = digit_string.lstrip("0")
+
+    if string_without_leading_zeros == "":
+        string_without_leading_zeros = "0"
+
+    string_without_leading_zeros = str(int(string_without_leading_zeros) + 1)
+
+    return "0" * (len(digit_string) - len(string_without_leading_zeros)) + string_without_leading_zeros
+
+
+def _get_digit_string_from_filename(filename: str) -> str:
+    """
+    extracts a string containing only digits from a filename
+
+    The string has to be of the form "...<number>.<extension>".
+    The string is extracted from the number part of the filename.
+
+    For example:
+    "filename_0001.extension" -> "0001"
+    "filename_001.extension" -> "001"
+    "filename_099.extension" -> "099"
+    "filename_100.extension" -> "100"
+    "filename.extension" -> ValueError
+
+    Parameters
+    ----------
+    filename : str
+        filename to be parsed
+
+    Returns
+    -------
+    str
+        string containing only digits
+
+    Raises
+    ------
+    ValueError
+        if filename does not contain a number to be parsed
+    """
+
+    regex = re.search(r"\d+.", filename)
+
+    if regex is None:
+        raise ValueError(
+            f"Filename {filename} does not contain a number to be continued from. It has to be of the form \"...<number>.<extension>\".")
+
+    return regex.group(0)[:-1]
