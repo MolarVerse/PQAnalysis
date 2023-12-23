@@ -31,28 +31,8 @@ def main():
 
     if format != InputFileFormat.PIMD_QMCF:
         raise NotImplementedError(
-            f"Format {format} not implemented yet for continuing input file.")
+            f"Format {args.format} not implemented yet for continuing input file.")
 
-    continue_input_file(args.input_file, args.number, format)
-
-
-def continue_input_file(filename: str, n: PositiveInt, format: InputFileFormat):
-    """
-    Creates n new input files by increasing the number in the filename by one.
-
-    The input file must contain a number before the file extension from which the
-    new filenames are created. The number is increased by one for each new file.
-    All other numbers in the start- and output-files within the input file are increased by one as well.
-
-    Parameters
-    ----------
-    filename : str
-        the input file
-    n : PositiveInt
-        number of new input files to be created
-    format : InputFileFormat
-        the format of the input file
-    """
-    reader = Reader(filename)
+    reader = Reader(args.input_file)
     reader.read()
-    reader.continue_input_file(n)
+    reader.continue_input_file(args.number)
