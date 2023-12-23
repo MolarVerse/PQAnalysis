@@ -48,6 +48,7 @@ version_file = "PQAnalysis/_version.py"
 traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
+continue_input = "PQAnalysis.cli.continue_input:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
