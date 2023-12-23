@@ -1,0 +1,70 @@
+# lines starting with '#' are comments
+# The entire input is case insensitive (except filenames)
+
+
+# MD Keywords
+
+    # Type of this run
+      jobtype = qm-md; 
+
+    # Number of steps to be performed and timestep in fs
+      nstep= 10000; timestep = 0.5; 
+      
+    # Enable hard temperature scaling for the first 100 steps
+    #  nscale = 5;
+
+    # Output of coordinates, velocities and solute charges enabled
+    # write_traj = on;
+
+    # Output frequency of ALL data files
+      output_freq = 1;
+
+    # Coulombic cutoff settings - dummy numbers when using ANI-2 NNP
+      rcoulomb = 6.0; long_range = none;
+
+    # Density of the system - affects boxsize
+    # Overridden if BOX-info is present in restart
+    # density = 0.997;      
+
+    # Temperature algorithm (v-rescaling), relaxation time in ps
+    # and target temperature in K
+      thermostat= velocity_rescaling; t_relaxation = 0.1; temp = 298.15;      
+#  manostat = stochastic_rescaling; pressure = 1.0;
+  manostat = berendsen; pressure = 1.0;
+      isotropy = full_anisotropic;
+
+    # Set v-Verlet time integration
+      integrator = v-verlet;  
+      
+# QMCF Keywords
+
+   # QMCF radii
+   # rcore = 9999.0; rlayer = 10000.0; rsmoothing = 10000.0;
+
+   # NOSA
+   # nosa = 216;
+
+    # QM programm
+      qm_prog = dftbplus;  qm_script = dftbplus_periodic_stress;
+
+      virial = atomic;
+
+
+# Input Files
+
+     start_file       = md-09.rst;
+     rpmd_start_file       = md-09.rpmd.rst;
+
+# Output Files
+
+     output_file      = md-10.out; 
+     info_file        = md-10.info;
+     rpmd_energy_file      = md-10.en; 
+     rpmd_traj_file        = md-10.xyz;
+     rpmd_vel_file         = md-10.vel;
+     rpmd_charge_file      = md-10.chrg; 
+     rpmd_restart_file     = md-10.rst;
+     rpmd_force_file       = md-10.frc;
+
+
+# end of infile

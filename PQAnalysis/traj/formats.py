@@ -5,50 +5,16 @@ A module containing different format types of the trajectory.
 
 Classes
 -------
-Format
-    An enumeration super class of the various supported trajectory formats.
 TrajectoryFormat
     An enumeration of the supported trajectory formats.
 MDEngineFormat
     An enumeration of the supported MD engine formats.
 """
 
-from enum import Enum
 from beartype.typing import Any
 
 from . import TrajectoryFormatError, MDEngineFormatError
-
-
-class Format(Enum):
-    """
-    An enumeration super class of the various supported trajectory formats.
-    """
-
-    @classmethod
-    def member_repr(cls) -> str:
-        """
-        This method returns a string representation of the members of the enumeration.
-
-        Returns
-        -------
-        str
-            A string representation of the members of the enumeration.
-        """
-
-        return ', '.join([str(member) for member in cls])
-
-    @classmethod
-    def value_repr(cls) -> str:
-        """
-        This method returns a string representation of the values of the members of the enumeration.
-
-        Returns
-        -------
-        str
-            A string representation of the values of the members of the enumeration.
-        """
-
-        return ', '.join([str(member.value) for member in cls])
+from ..formats import Format
 
 
 class TrajectoryFormat(Format):
