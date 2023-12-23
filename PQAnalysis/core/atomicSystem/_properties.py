@@ -44,7 +44,23 @@ class _PropertiesMixin:
         int
             The number of atoms in the system.
         """
-        return len(self._atoms)
+        n_atoms = len(self._atoms)
+        n_pos = len(self._pos)
+        n_vel = len(self._vel)
+        n_forces = len(self._forces)
+        n_charges = len(self._charges)
+
+        n_atoms_list = np.array([n_atoms, n_pos, n_vel, n_forces, n_charges])
+        n_atoms_list = n_atoms_list[n_atoms_list != 0]
+
+        if n_atoms_list.size == 0:
+            return 0
+
+        if not np.all(n_atoms_list == n_atoms_list[0]):
+            raise ValueError(
+                "The number of atoms, positions, velocities, forces and charges must be equal.")
+
+        return int(n_atoms_list[0])
 
     @property
     @check_atoms_has_mass

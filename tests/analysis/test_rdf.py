@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.analysis.rdf import _calculate_n_bins, _infer_r_max
+from PQAnalysis.analysis.rdf import _calculate_n_bins, _infer_r_max, _integration
 from PQAnalysis.analysis import RDFError
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import AtomicSystem, Cell
@@ -37,6 +37,18 @@ def test__infer_r_max():
     with pytest.raises(RDFError) as exception:
         r_max = _infer_r_max(traj)
     assert str(exception.value) == "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r."
+
+
+def test__integration():
+    bins = np.array([1, 2, 3, 4, 5])
+    len_reference_indices = 3
+    len_frames = 10
+
+    integration = _integration(bins, len_reference_indices, len_frames)
+
+    n_total = len_reference_indices * len_frames
+    assert np.allclose(integration, np.array(
+        [1 / n_total, 3 / n_total, 6 / n_total, 10 / n_total, 15 / n_total]))
 
 
 class TestRDF:
