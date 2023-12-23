@@ -233,7 +233,6 @@ class RadialDistributionFunction:
         self._average_volume = np.mean(self.traj.box_volumes)
         self._reference_density = len(
             self.reference_indices) / self._average_volume
-        self._target_density = len(self.target_indices) / self._average_volume
 
         for frame in tqdm(self.traj):
             reference_positions = frame.pos[self.reference_indices]
@@ -245,12 +244,16 @@ class RadialDistributionFunction:
 
                 self._add_to_bins(distances)
 
-        normalized_bins = self.bins / self._norm()
+        target_density = len(self.target_indices) / self._average_volume
+        norm = _norm(self.n_bins, self.delta_r, target_density,
+                     len(self.reference_indices), len(self.traj))
+
+        normalized_bins = self.bins / norm
         integrated_bins = _integration(self.bins, len(
             self.reference_indices), len(self.traj))
         normalized_bins2 = self.bins / self._target_density / \
             len(self.reference_indices) / len(self.traj)
-        differential_bins = self.bins - self._norm()
+        differential_bins = self.bins - norm
 
         return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
 
@@ -269,22 +272,6 @@ class RadialDistributionFunction:
         distances = distances[(distances < self.n_bins) & (distances >= 0)]
 
         self.bins += np.bincount(distances, minlength=self.n_bins)
-
-    def _norm(self) -> Np1DNumberArray:
-        """
-        Calculates the normalization of the RDF analysis based on a spherical shell model.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The normalization of the RDF analysis.
-        """
-
-        volume = 4.0 / 3.0 * np.pi * \
-            (np.arange(1, self.n_bins + 1)**3 -
-             np.arange(0, self.n_bins) ** 3) * self.delta_r ** 3
-
-        return volume * self._target_density * len(self.reference_indices) * len(self.traj)
 
 
 def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal) -> Tuple[PositiveInt, PositiveReal]:
@@ -337,6 +324,23 @@ def _infer_r_max(traj: Trajectory):
             "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
 
     return np.min(traj.box_lengths) / 2.0
+
+
+def _norm(n_bins: int, delta_r: Real, target_density: Real, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
+    """
+    Calculates the normalization of the RDF analysis based on a spherical shell model.
+
+    Returns
+    -------
+    Np1DNumberArray
+        The normalization of the RDF analysis.
+    """
+
+    volume = 4.0 / 3.0 * np.pi * \
+        (np.arange(1, n_bins + 1)**3 -
+            np.arange(0, n_bins) ** 3) * delta_r ** 3
+
+    return volume * target_density * n_reference_indices * n_frames
 
 
 def _integration(bins: Np1DNumberArray, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
