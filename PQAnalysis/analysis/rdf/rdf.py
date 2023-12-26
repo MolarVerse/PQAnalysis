@@ -10,10 +10,10 @@ import warnings
 from beartype.typing import List, Tuple
 from tqdm.auto import tqdm
 
-from . import RDFError, RDFWarning
-from ..types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
-from ..core import Atom, distance
-from ..traj import Trajectory
+from .. import RDFError, RDFWarning
+from ...types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
+from ...core import Atom, distance
+from ...traj import Trajectory
 
 
 class RadialDistributionFunction:

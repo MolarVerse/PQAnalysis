@@ -11,7 +11,7 @@ RDFWarning
     Warning raised if the given element id is not valid
 """
 
-from ..exceptions import PQException, PQWarning
+from ...exceptions import PQException, PQWarning
 
 
 class RDFError(PQException):
