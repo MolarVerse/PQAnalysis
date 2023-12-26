@@ -48,6 +48,9 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_PBC() == False
 
+        traj = Trajectory()
+        assert traj.check_PBC() == False
+
     def test_check_vacuum(self):
         traj = Trajectory(self.frames)
         assert traj.check_vacuum() == True

@@ -62,6 +62,9 @@ class RadialDistributionFunction:
         self.reference_species = reference_species
         self.target_species = target_species
 
+        if len(traj) == 0:
+            raise RDFError("Trajectory cannot be of length 0.")
+
         self.reference_indices = self.traj[0].system.indices_from_atoms(
             atoms=self.reference_species, use_full_atom_info=use_full_atom_info)
         self.target_indices = self.traj[0].system.indices_from_atoms(
@@ -112,7 +115,7 @@ class RadialDistributionFunction:
         self.r_min = r_min
 
         # check if the trajectory is fully periodic or fully in vacuum
-        if not self.traj.check_PBC and not self.traj.check_vacuum():
+        if not self.traj.check_PBC() and not self.traj.check_vacuum():
             raise RDFError(
                 "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.")
 
@@ -131,6 +134,8 @@ class RadialDistributionFunction:
             self.n_bins = n_bins
             self.delta_r = delta_r
             self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.traj)
+            self.n_bins, self.r_max = _calculate_n_bins(
+                delta_r, self.r_max, r_min)
 
         else:
             self.r_max = r_max
@@ -182,7 +187,8 @@ class RadialDistributionFunction:
                 distances = distance(reference_position,
                                      target_positions, frame.cell)
 
-                self._add_to_bins(distances)
+                self.bins += _add_to_bins(distances, self.r_min,
+                                          self.delta_r, self.n_bins)
 
         target_density = len(self.target_indices) / self._average_volume
         norm = _norm(self.n_bins, self.delta_r, target_density,
@@ -197,21 +203,33 @@ class RadialDistributionFunction:
 
         return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
 
-    def _add_to_bins(self, distances: Np1DNumberArray):
-        """
-        Adds the provided distances to the bins of the RDF analysis based on the provided parameters.
 
-        Parameters
-        ----------
-        distances : Np1DNumberArray
-            The distances to add to the bins of the RDF analysis.
-        """
-        distances = np.floor_divide(
-            distances - self.r_min, self.delta_r).astype(int)
+def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: PositiveReal, n_bins: PositiveInt) -> Np1DNumberArray:
+    """
+    Returns the bins of the RDF analysis based on the provided distances.
 
-        distances = distances[(distances < self.n_bins) & (distances >= 0)]
+    Parameters
+    ----------
+    distances : Np1DNumberArray
+        The distances to add to the bins of the RDF analysis.
+    r_min : PositiveReal
+        minimum (starting) radius of the RDF analysis
+    delta_r : PositiveReal
+        spacing between bins
+    n_bins : PositiveInt
+        number of bins
 
-        self.bins += np.bincount(distances, minlength=self.n_bins)
+    Returns
+    -------
+    Np1DNumberArray
+        The bins of the RDF analysis.
+    """
+    distances = np.floor_divide(
+        distances - r_min, delta_r).astype(int)
+
+    distances = distances[(distances < n_bins) & (distances >= 0)]
+
+    return np.bincount(distances, minlength=n_bins)
 
 
 def _setup_bin_middle_points(n_bins: PositiveInt, r_min: PositiveReal, r_max: PositiveReal, delta_r: PositiveReal) -> Np1DNumberArray:
@@ -282,7 +300,7 @@ def _check_r_max(r_max: PositiveReal, traj: Trajectory) -> PositiveReal:
     -------
     PositiveReal
         maximum radius of the RDF analysis if it is smaller than the maximum allowed radius
-        according to the box vectors of the trajectory, otherwise the maxassert r_max == 101.0
+        according to the box vectors of the trajectory, than the maximum allowed radius according to the box vectors of the trajectory.
     Raises
     ------
     RDFWarning
@@ -291,8 +309,8 @@ def _check_r_max(r_max: PositiveReal, traj: Trajectory) -> PositiveReal:
     if traj.check_PBC() and r_max > _infer_r_max(traj):
         warnings.warn(
             f"The calculated r_max {r_max} is larger than the maximum allowed radius \
-            according to the box vectors of the trajectory {_infer_r_max(traj)}. \
-            r_max will be set to the maximum allowed radius.", RDFWarning)
+according to the box vectors of the trajectory {_infer_r_max(traj)}. \
+r_max will be set to the maximum allowed radius.", RDFWarning)
 
         r_max = _infer_r_max(traj)
 
