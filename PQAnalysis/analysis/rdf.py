@@ -130,7 +130,7 @@ class RadialDistributionFunction:
         elif n_bins is not None and delta_r is not None:
             self.n_bins = n_bins
             self.delta_r = delta_r
-            self.r_max = self._calculate_r_max(n_bins, delta_r, r_min)
+            self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.traj)
 
         else:
             self.r_max = r_max
@@ -138,7 +138,7 @@ class RadialDistributionFunction:
             if r_max is None:
                 self.r_max = _infer_r_max(self.traj)
 
-            self.r_max = self._check_r_max(self.r_max)
+            self.r_max = _check_r_max(self.r_max, self.traj)
 
             if n_bins is None:
                 self.delta_r = delta_r
@@ -149,69 +149,9 @@ class RadialDistributionFunction:
                 self.n_bins = n_bins
                 self.delta_r = (self.r_max - self.r_min) / self.n_bins
 
-        self._setup_bin_middle_points()
+        self.bin_middle_points = _setup_bin_middle_points(
+            self.n_bins, self.r_min, self.r_max, self.delta_r)
         self.bins = np.zeros(self.n_bins)
-
-    def _calculate_r_max(self, n_bins: PositiveInt, delta_r: PositiveReal, r_min: PositiveReal) -> PositiveReal:
-        """
-        Calculates the maximum radius of the RDF analysis from the provided parameters.
-
-        Parameters
-        ----------
-        n_bins : PositiveInt
-            number of bins
-        delta_r : PositiveReal
-            spacing between bins
-        r_min : PositiveReal
-            minimum (starting) radius of the RDF analysis
-
-        Returns
-        -------
-        PositiveReal
-            maximum radius of the RDF analysis
-        """
-        r_max = delta_r * n_bins + r_min
-        r_max = self._check_r_max(r_max)
-
-        return r_max
-
-    def _check_r_max(self, r_max: PositiveReal) -> PositiveReal:
-        """
-        Checks if the provided maximum radius is larger than the maximum allowed radius according to the box vectors of the trajectory.
-
-        Parameters
-        ----------
-        r_max : PositiveReal
-            maximum radius of the RDF analysis
-
-        Returns
-        -------
-        PositiveReal
-            maximum radius of the RDF analysis if it is smaller than the maximum allowed radius
-            according to the box vectors of the trajectory, otherwise the maxassert r_max == 101.0
-        Raises
-        ------
-        RDFWarning
-            If the calculated r_max is larger than the maximum allowed radius according to the box vectors of the trajectory.
-        """
-        if self.traj.check_PBC() and r_max > _infer_r_max(self.traj):
-            warnings.warn(
-                f"The calculated r_max {r_max} is larger than the maximum allowed radius \
-                according to the box vectors of the trajectory {_infer_r_max(self.traj)}. \
-                r_max will be set to the maximum allowed radius.", RDFWarning)
-
-            r_max = _infer_r_max(self.traj)
-
-        return r_max
-
-    def _setup_bin_middle_points(self):
-        """
-        Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
-        """
-        self.bin_middle_points = np.arange(
-            self.r_min + self.delta_r / 2, self.r_max, self.delta_r)
-
-        assert len(self.bin_middle_points) == self.n_bins
 
     def run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
         """
@@ -274,6 +214,91 @@ class RadialDistributionFunction:
         self.bins += np.bincount(distances, minlength=self.n_bins)
 
 
+def _setup_bin_middle_points(n_bins: PositiveInt, r_min: PositiveReal, r_max: PositiveReal, delta_r: PositiveReal) -> Np1DNumberArray:
+    """
+    Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
+
+    Parameters
+    ----------
+    n_bins : PositiveInt
+        number of bins
+    r_min : PositiveReal
+        minimum (starting) radius of the RDF analysis
+    r_max : PositiveReal
+        maximum radius of the RDF analysis
+    delta_r : PositiveReal
+        spacing between bins
+
+    Returns
+    -------
+    Np1DNumberArray
+        The middle points of the bins of the RDF analysis.
+    """
+    bin_middle_points = np.arange(r_min + delta_r / 2, r_max, delta_r)
+
+    assert len(bin_middle_points) == n_bins
+
+    return bin_middle_points
+
+
+def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: PositiveReal, traj: Trajectory) -> PositiveReal:
+    """
+    Calculates the maximum radius of the RDF analysis from the provided parameters.
+
+    Parameters
+    ----------
+    n_bins : PositiveInt
+        number of bins
+    delta_r : PositiveReal
+        spacing between bins
+    r_min : PositiveReal
+        minimum (starting) radius of the RDF analysis
+    traj : Trajectory
+        The trajectory to check the maximum radius of the RDF analysis against.
+
+    Returns
+    -------
+    PositiveReal
+        maximum radius of the RDF analysis
+    """
+    r_max = delta_r * n_bins + r_min
+    r_max = _check_r_max(r_max, traj)
+
+    return r_max
+
+
+def _check_r_max(r_max: PositiveReal, traj: Trajectory) -> PositiveReal:
+    """
+    Checks if the provided maximum radius is larger than the maximum allowed radius according to the box vectors of the trajectory.
+
+    Parameters
+    ----------
+    r_max : PositiveReal
+        maximum radius of the RDF analysis
+    traj : Trajectory
+        The trajectory to check the maximum radius of the RDF analysis against.
+
+    Returns
+    -------
+    PositiveReal
+        maximum radius of the RDF analysis if it is smaller than the maximum allowed radius
+        according to the box vectors of the trajectory, otherwise the maxassert r_max == 101.0
+    Raises
+    ------
+    RDFWarning
+        If the calculated r_max is larger than the maximum allowed radius according to the box vectors of the trajectory.
+    """
+    if traj.check_PBC() and r_max > _infer_r_max(traj):
+        warnings.warn(
+            f"The calculated r_max {r_max} is larger than the maximum allowed radius \
+            according to the box vectors of the trajectory {_infer_r_max(traj)}. \
+            r_max will be set to the maximum allowed radius.", RDFWarning)
+
+        r_max = _infer_r_max(traj)
+
+    return r_max
+
+
 def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal) -> Tuple[PositiveInt, PositiveReal]:
     """
     Calculates the number of bins of the RDF analysis from the provided parameters.
@@ -309,9 +334,14 @@ def _infer_r_max(traj: Trajectory):
 
     If the trajectory is in vacuum, an RDFError is raised as the maximum radius cannot be inferred from the box vectors.
 
+    Parameters
+    ----------
+    traj : Trajectory
+        The trajectory to infer the maximum radius of the RDF analysis from.
+
     Returns
     -------
-    r_max: Real
+    r_max: PositiveReal
         The maximum radius of the RDF analysis.
 
     Raises
@@ -326,9 +356,22 @@ def _infer_r_max(traj: Trajectory):
     return np.min(traj.box_lengths) / 2.0
 
 
-def _norm(n_bins: int, delta_r: Real, target_density: Real, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
+def _norm(n_bins: int, delta_r: PositiveReal, target_density: PositiveReal, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
     """
     Calculates the normalization of the RDF analysis based on a spherical shell model.
+
+    Parameters
+    ----------
+    n_bins : int
+        The number of bins of the RDF analysis.
+    delta_r : PositiveReal
+        The spacing between bins of the RDF analysis.
+    target_density : PositiveReal
+        The target density of the RDF analysis.
+    n_reference_indices : int
+        The number of reference indices of the RDF analysis.
+    n_frames : int
+        The number of frames of the RDF analysis.
 
     Returns
     -------
