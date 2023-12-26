@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.analysis.rdf import _calculate_n_bins, _infer_r_max, _integration
+from PQAnalysis.analysis.rdf import _calculate_n_bins, _infer_r_max, _integration, _norm
 from PQAnalysis.analysis import RDFError
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import AtomicSystem, Cell
@@ -49,6 +49,24 @@ def test__integration():
     n_total = len_reference_indices * len_frames
     assert np.allclose(integration, np.array(
         [1 / n_total, 3 / n_total, 6 / n_total, 10 / n_total, 15 / n_total]))
+
+
+def test__norm():
+    n_bins = 5
+    n_frames = 10
+    n_reference_indices = 3
+    delta_r = 1.0
+    target_density = 2.0
+
+    norm = _norm(n_bins, delta_r, target_density,
+                 n_reference_indices, n_frames)
+
+    help_1 = np.arange(0, n_bins)
+    help_2 = np.arange(1, n_bins + 1)
+    norm_ref = (help_2**3 - help_1**3)*delta_r**3 * 4 / 3 * np.pi
+
+    assert np.allclose(norm, norm_ref * target_density *
+                       n_reference_indices * n_frames)
 
 
 class TestRDF:
