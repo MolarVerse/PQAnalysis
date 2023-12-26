@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.analysis.rdf import _calculate_n_bins, _infer_r_max, _check_r_max, _calculate_r_max, _integration, _norm, _setup_bin_middle_points, _add_to_bins
+from PQAnalysis.analysis.rdf.rdf import _calculate_n_bins, _infer_r_max, _check_r_max, _calculate_r_max, _integration, _norm, _setup_bin_middle_points, _add_to_bins
 from PQAnalysis.analysis import RDFError, RDFWarning, RadialDistributionFunction
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import AtomicSystem, Cell

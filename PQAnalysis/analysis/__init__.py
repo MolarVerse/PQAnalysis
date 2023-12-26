@@ -1,2 +1,2 @@
-from .exceptions import RDFError, RDFWarning
-from .rdf import RadialDistributionFunction
+from .rdf.exceptions import RDFError, RDFWarning
+from .rdf.rdf import RadialDistributionFunction
