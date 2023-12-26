@@ -17,10 +17,11 @@ import sys
 from beartype.typing import Any
 from numbers import Real
 
-from ..types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
+from ...types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
+from .standardProperties import _StandardPropertiesMixin
 
 
-class Cell:
+class Cell(_StandardPropertiesMixin):
     '''
     Class for storing unit cell parameters.
 
@@ -41,8 +42,14 @@ class Cell:
         The angle between the first and third box vector. Default is 90.
     gamma : Real, optional
         The angle between the first and second box vector. Default is 90.
+    box_lengths : np.array
+        The lengths of the box vectors.
+    box_angles : np.array
+        The angles between the box vectors.
     box_matrix : np.array
         The matrix containing the box vectors as columns.
+    inverse_box_matrix : np.array
+        The inverse of the box matrix.
     '''
 
     def __init__(self,
@@ -74,13 +81,9 @@ class Cell:
         gamma : Real, optional
             The angle between the first and second box vector.
         """
-        self.x = x
-        self.y = y
-        self.z = z
-        self.alpha = alpha
-        self.beta = beta
-        self.gamma = gamma
-        self.box_matrix = self.setup_box_matrix()
+        self._box_lengths = np.array([x, y, z])
+        self._box_angles = np.array([alpha, beta, gamma])
+        self._box_matrix = self.setup_box_matrix()
 
     def setup_box_matrix(self) -> Np3x3NumberArray:
         """
@@ -93,18 +96,18 @@ class Cell:
         """
         matrix = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
 
-        alpha = np.deg2rad(self.alpha)
-        beta = np.deg2rad(self.beta)
-        gamma = np.deg2rad(self.gamma)
+        alpha, beta, gamma = np.deg2rad(self.box_angles)
+        cos_alpha, cos_beta, cos_gamma = np.cos([alpha, beta, gamma])
+        sin_gamma = np.sin(gamma)
+        x, y, z = self.box_lengths
 
-        matrix[0][0] = self.x
-        matrix[0][1] = self.y * np.cos(gamma)
-        matrix[0][2] = self.z * np.cos(beta)
-        matrix[1][1] = self.y * np.sin(gamma)
-        matrix[1][2] = self.z * \
-            (np.cos(alpha) - np.cos(beta) * np.cos(gamma)) / np.sin(gamma)
-        matrix[2][2] = self.z * np.sqrt(1 - np.cos(beta)**2 - (
-            np.cos(alpha) - np.cos(beta) * np.cos(gamma))**2 / np.sin(gamma)**2)
+        matrix[0][0] = x
+        matrix[0][1] = y * cos_gamma
+        matrix[0][2] = z * cos_beta
+        matrix[1][1] = y * sin_gamma
+        matrix[1][2] = z * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
+        matrix[2][2] = z * np.sqrt(1 - cos_beta**2 -
+                                   (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2)
 
         return matrix
 
@@ -138,30 +141,6 @@ class Cell:
         """
         return np.linalg.det(self.box_matrix)
 
-    @property
-    def box_lengths(self) -> Np1DNumberArray:
-        """
-        Returns the lengths of the box vectors.
-
-        Returns
-        -------
-        box_lengths: Np1DNumberArray of shape (3,)
-            The lengths of the box vectors.
-        """
-        return np.array([self.x, self.y, self.z])
-
-    @property
-    def box_angles(self) -> Np1DNumberArray:
-        """
-        Returns the angles between the box vectors.
-
-        Returns
-        -------
-        box_angles: Np1DNumberArray of shape (3,)
-            The lengths of the box vectors.
-        """
-        return np.array([self.alpha, self.beta, self.gamma])
-
     def image(self, pos: Np2DNumberArray | Np1DNumberArray) -> Np2DNumberArray | Np1DNumberArray:
         """
         Returns the image of the given position in the unit cell.
@@ -177,18 +156,20 @@ class Cell:
             The image of the position(s) in the unit cell.
         """
 
+        if self.alpha == 90 and self.beta == 90 and self.gamma == 90:
+            pos = pos - self.box_lengths * np.rint(pos / self.box_lengths)
+            return pos
+
         original_shape = np.shape(pos)
 
         if original_shape == (3,):
             pos = np.reshape(pos, (1, 3))
 
-        fractional_pos = np.array(
-            [np.linalg.inv(self.box_matrix) @ pos_i for pos_i in pos])
+        fractional_pos = pos @ self.inverse_box_matrix.T
 
         fractional_pos -= np.round(fractional_pos)
 
-        pos = np.array(
-            [self.box_matrix @ fractional_pos_i for fractional_pos_i in fractional_pos])
+        pos = fractional_pos @ self.box_matrix.T
 
         return np.reshape(pos, original_shape)
 
@@ -211,10 +192,6 @@ class Cell:
             return False
 
         is_equal = True
-        is_equal &= np.allclose(self.x, other.x)
-        is_equal &= np.allclose(self.y, other.y)
-        is_equal &= np.allclose(self.z, other.z)
-        is_equal &= np.allclose(self.alpha, other.alpha)
-        is_equal &= np.allclose(self.beta, other.beta)
-        is_equal &= np.allclose(self.gamma, other.gamma)
+        is_equal &= np.allclose(self.box_lengths, other.box_lengths)
+        is_equal &= np.allclose(self.box_angles, other.box_angles)
         return is_equal

@@ -30,7 +30,7 @@ def check_atoms_pos(func):
     """
     def wrapper(*args, **kwargs):
 
-        if args[0].pos.shape[0] != args[0].n_atoms:
+        if args[0].pos.shape[0] != len(args[0].atoms):
             raise AtomicSystemPositionsError()
 
         return func(*args, **kwargs)

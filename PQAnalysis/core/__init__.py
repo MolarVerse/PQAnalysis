@@ -1,6 +1,7 @@
+from .common import distance
 from .exceptions import ElementNotFoundError, AtomicSystemPositionsError, AtomicSystemMassError
 from .atom import Atom
-from .cell import Cell
+from .cell.cell import Cell
 from .atomicSystem import AtomicSystem
 
 from beartype.vale import Is

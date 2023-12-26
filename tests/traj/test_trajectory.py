@@ -48,6 +48,50 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_PBC() == False
 
+        traj = Trajectory()
+        assert traj.check_PBC() == False
+
+    def test_check_vacuum(self):
+        traj = Trajectory(self.frames)
+        assert traj.check_vacuum() == True
+
+        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
+            [[0, 1, 2]]), cell=Cell(10, 10, 10))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
+            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        frame1 = Frame(system1)
+        frame2 = Frame(system2)
+        frames = [frame1, frame2]
+
+        traj = Trajectory(frames)
+        assert traj.check_vacuum() == False
+
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
+            [[1, 1, 2]]))
+        frame1 = Frame(system1)
+        frame2 = Frame(system2)
+        frames = [frame1, frame2]
+
+        traj = Trajectory(frames)
+        assert traj.check_vacuum() == False
+
+    def test_box_volumes(self):
+        traj = Trajectory(self.frames)
+        assert traj.box_volumes[0] > 10**10
+        assert traj.box_volumes[1] > 10**10
+        assert traj.box_volumes[2] > 10**10
+
+        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
+            [[0, 1, 2]]), cell=Cell(10, 10, 10))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
+            [[1, 1, 2]]), cell=Cell(11, 11, 11))
+        frame1 = Frame(system1)
+        frame2 = Frame(system2)
+        frames = [frame1, frame2]
+
+        traj = Trajectory(frames)
+        assert np.allclose(traj.box_volumes, np.array([1000, 11*11*11]))
+
     def test__len__(self):
         traj = Trajectory(self.frames)
         assert len(traj) == 3
