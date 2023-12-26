@@ -28,7 +28,7 @@ class TestAtomicSystem:
         assert system.charges.shape == (0,)
         assert system.cell == Cell()
         assert system.PBC is False
-        assert system.n_atoms == 0
+        assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
 
         assert system.atomic_masses.shape == (0,)
@@ -89,6 +89,8 @@ class TestAtomicSystem:
             [[0, 0, 0], [1, 1, 1]]), atoms=[Atom('C'), Atom('H')])
         system4 = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
                                atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        system5 = AtomicSystem(pos=np.array(
+            [[0, 0, 0], [1, 1, 1]]), atoms=[Atom('C'), Atom('D')])
 
         assert system1 == system2
         assert system1 != system3
@@ -118,6 +120,8 @@ class TestAtomicSystem:
 
         assert system1 != system2
 
+        assert system3 != system5
+
     def test__getitem__(self):
         system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
                               atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
@@ -141,3 +145,27 @@ class TestAtomicSystem:
 
         assert system[Atom(6)] == AtomicSystem(vel=np.array([[0, 0, 0]]), forces=np.array([[0, 0, 0]]), charges=np.array([0]),
                                                atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
+
+        system = AtomicSystem(vel=np.array([[0, 0, 0], [1, 1, 1]]), forces=np.array([[0, 0, 0], [1, 1, 1]]), charges=np.array([0, 0]),
+                              atoms=None, cell=Cell(0.75, 0.75, 0.75))
+
+        assert system[:] == system
+
+    def test_n_atoms(self):
+        system = AtomicSystem()
+        assert system.n_atoms == 0
+
+        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]))
+        assert system.n_atoms == 2
+
+        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
+                              atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        assert system.n_atoms == 2
+
+        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
+                              atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
+
+        with pytest.raises(ValueError) as exception:
+            system.n_atoms
+        assert str(
+            exception.value) == "The number of atoms, positions, velocities, forces and charges must be equal."

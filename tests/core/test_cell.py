@@ -30,9 +30,23 @@ class TestCell:
         cell = Cell(1, 2, 3)
         assert np.allclose(cell.box_lengths, np.array([1, 2, 3]))
 
+    def test_set_box_lengths(self):
+        cell = Cell(1, 2, 3)
+        cell.box_lengths = np.array([2, 3, 4])
+        assert np.allclose(cell.box_lengths, np.array([2, 3, 4]))
+        assert np.allclose(cell.box_matrix, np.array(
+            [[2, 0, 0], [0, 3, 0], [0, 0, 4]]))
+
     def test_box_angles(self):
         cell = Cell(1, 2, 3)
         assert np.allclose(cell.box_angles, np.array([90, 90, 90]))
+
+    def test_set_box_angles(self):
+        cell = Cell(1, 2, 3)
+        cell.box_angles = np.array([60, 90, 120])
+        assert np.allclose(cell.box_angles, np.array([60, 90, 120]))
+        assert np.allclose(cell.box_matrix, np.array(
+            [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]))
 
     def test_volume(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
