@@ -84,6 +84,9 @@ class Trajectory:
             False if one cell of the trajectory is Cell(), True otherwise.
         """
 
+        if len(self.frames) == 0:
+            return False
+
         return all(frame.PBC for frame in self.frames)
 
     def check_vacuum(self) -> bool:
