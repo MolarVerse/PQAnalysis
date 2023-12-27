@@ -28,6 +28,7 @@ from numbers import Integral, Real
 from ...types import Range, Bool
 from .. import BaseReader
 from .formats import InputFileFormat
+from ... import __base_path__
 
 
 class InputFileParser(BaseReader):
@@ -69,12 +70,13 @@ class InputFileParser(BaseReader):
             The parsed input file dictionary.
         """
         if self.format == InputFileFormat.PQANALYSIS:
-            grammar_file = Path(__file__).parent / "inputGrammar.lark"
+            grammar_file = "inputGrammar.lark"
         elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
-            grammar_file = Path(__file__).parent / \
-                "PIMD_QMCF_inputGrammar.lark"
+            grammar_file = "PIMD_QMCF_inputGrammar.lark"
 
-        parser = Lark.open(grammar_file, rel_to=__file__,
+        grammar_path = __base_path__ / "grammar"
+
+        parser = Lark.open(grammar_path / grammar_file,
                            propagate_positions=True)
 
         file = open(self.filename, "r")

@@ -16,3 +16,4 @@ WORD: ("_"|"-"|"."|LETTER|DIGIT)+
 %import common.WS_INLINE
 %import common.LETTER
 %import common.DIGIT
+%import common.LETTER
