@@ -1,9 +1,9 @@
 from ...io import InputFileParser
-from ...io.inputFileReader.inputFileParser import InputDictionary
 from ...io.inputFileReader.exceptions import InputFileError
-from ...io.inputFileReader.PQAnalysis.parse import parse_traj_files_key
+from ...io.inputFileReader.PQAnalysis.parse import parse_traj_files_key, parse_n_bins_key, parse_r_max_key, parse_r_min_key
 
 
+# TODO: implement this as an inherited class from PQAnalysisInputFileReader!
 class RDFInputFileReader:
 
     required_keys = ["traj_files", "reference_selection", "target_selection"]
@@ -20,3 +20,7 @@ class RDFInputFileReader:
                 f"Not all required keys were set in the input file! The required keys are: {self.required_keys}.")
 
         self.traj_files = parse_traj_files_key(self.dictionary)
+
+        self.n_bins = parse_n_bins_key(self.dictionary)
+        self.r_max = parse_r_max_key(self.dictionary)
+        self.r_min = parse_r_min_key(self.dictionary)

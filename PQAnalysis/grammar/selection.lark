@@ -1,0 +1,22 @@
+start: expression NEWLINE
+
+expression: statement ("," statement)*
+
+statement: atomtype
+         | atom
+         | index
+         | indices
+
+atomtype: LETTER+
+
+atom: "atom"i "(" (atomtype | unsigned_int) ")"
+
+index: int
+
+indices: index (":"|"-"|"..") index (":"|".." index)?
+
+
+%import .terminals.NEWLINE
+%import .terminals.LETTER
+%import .terminals.SIGNED_INT -> int
+%import .terminals.INT -> unsigned_int
