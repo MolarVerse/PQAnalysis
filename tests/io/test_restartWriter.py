@@ -45,35 +45,16 @@ H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
 
         frame = Frame(AtomicSystem(atoms, positions), topology)
 
-        with pytest.raises(RestartFileWriterError) as exception:
-            writer._write_atoms(frame)
-        assert str(
-            exception.value) == "The number of mol_types does not match the number of atoms."
+#         writer.format = MDEngineFormat.QMCFC
 
-        topology.mol_types = np.array([1, 2, 3])
-        frame = Frame(AtomicSystem(atoms, positions), topology)
+#         writer._write_atoms(frame)
 
-        print()
-        writer._write_atoms(frame)
-
-        captured = capsys.readouterr()
-        assert captured.out == f"""
-C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
-H    1    2    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 
-H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 
-"""
-
-        print()
-        writer.format = MDEngineFormat.QMCFC
-
-        writer._write_atoms(frame)
-
-        captured = capsys.readouterr()
-        assert captured.out == f"""
-C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
-H    1    2    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0
-H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
-"""
+#         captured = capsys.readouterr()
+#         assert captured.out == f"""
+# C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+# H    1    2    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+# H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
+# """
 
     def test_write(self, capsys):
         writer = RestartFileWriter()

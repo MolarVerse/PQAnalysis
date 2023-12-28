@@ -16,7 +16,6 @@ import numpy as np
 from beartype.typing import List, Any
 from multimethod import multimethod
 
-from ._decorators import check_atoms_pos, check_atoms_has_mass
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._indexing import _IndexingMixin
@@ -24,6 +23,7 @@ from ._positions import _PositionsMixin
 
 from .. import Atom, Cell
 from ...types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
+from ...topology import Topology
 
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin):
@@ -43,6 +43,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
                  vel: Np2DNumberArray | None = None,
                  forces: Np2DNumberArray | None = None,
                  charges: Np1DNumberArray | None = None,
+                 topology: Topology | None = None,
                  cell: Cell = Cell()
                  ) -> None:
         """
@@ -60,11 +61,23 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
             A 2d numpy.ndarray containing the forces on the atoms, by default np.zeros((0, 3)).
         charges : Np1DNumberArray, optional
             A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).
+        topology : Topology, optional
+            The topology of the system, by default Topology()
         cell : Cell, optional
             The unit cell of the system. Defaults to a Cell with no periodic boundary conditions, by default Cell()
         """
-        if atoms is None:
-            atoms = []
+        if atoms is None and topology is None:
+            topology = Topology()
+        elif topology is None:
+            topology = Topology(atoms=atoms)
+        elif topology is not None and atoms is not None:
+            if len(atoms) != topology.n_atoms:
+                raise ValueError(
+                    "The number of atoms and the number of atoms in the topology must be equal.")
+
+            if atoms != topology.atoms:
+                raise ValueError(
+                    "The atoms and the atoms in the topology must be equal.")
 
         if pos is None:
             pos = np.zeros((0, 3))
@@ -78,7 +91,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
         if charges is None:
             charges = np.zeros(0)
 
-        self._atoms = atoms
+        self._topology = topology
         self._pos = pos
         self._vel = vel
         self._forces = forces

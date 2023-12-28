@@ -44,7 +44,7 @@ class _PropertiesMixin:
         int
             The number of atoms in the system.
         """
-        n_atoms = len(self._atoms)
+        n_atoms = self._topology.n_atoms
         n_pos = len(self._pos)
         n_vel = len(self._vel)
         n_forces = len(self._forces)
@@ -58,7 +58,7 @@ class _PropertiesMixin:
 
         if not np.all(n_atoms_list == n_atoms_list[0]):
             raise ValueError(
-                "The number of atoms, positions, velocities, forces and charges must be equal.")
+                "The number of atoms (or atoms in the topology), positions, velocities, forces and charges must be equal.")
 
         return int(n_atoms_list[0])
 
@@ -73,7 +73,7 @@ class _PropertiesMixin:
         Np1DNumberArray
             The masses of the atoms in the system.
         """
-        return np.array([atom.mass for atom in self._atoms])
+        return np.array([atom.mass for atom in self.atoms])
 
     @property
     def mass(self) -> Real:

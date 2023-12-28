@@ -168,4 +168,4 @@ class TestAtomicSystem:
         with pytest.raises(ValueError) as exception:
             system.n_atoms
         assert str(
-            exception.value) == "The number of atoms, positions, velocities, forces and charges must be equal."
+            exception.value) == "The number of atoms (or atoms in the topology), positions, velocities, forces and charges must be equal."

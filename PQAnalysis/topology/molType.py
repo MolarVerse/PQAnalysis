@@ -7,12 +7,19 @@ MolType
     A class for representing a molecule type.
 """
 
+from __future__ import annotations
+
 from numbers import Real
 from beartype.typing import List
+from beartype.vale import Is
+from typing import Annotated
 
 from . import MolTypeError
 from ..types import Np1DIntArray, Np1DNumberArray
 from ..core import Atom
+
+Moltypes = Annotated[list, Is[lambda list: all(
+    isinstance(moltype, MolType) for moltype in list)]]
 
 
 class MolType:
