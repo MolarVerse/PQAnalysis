@@ -30,7 +30,7 @@ guess_element
 
 from __future__ import annotations
 
-from multimethod import multimethod
+from multimethod import multimeta
 from beartype.typing import Any, Tuple
 from beartype.vale import Is
 from typing import Annotated
@@ -42,12 +42,11 @@ Atoms = Annotated[list, Is[lambda list: all(
     isinstance(atom, Atom) for atom in list)]]
 
 
-class Atom:
+class Atom(metaclass=multimeta):
     """
     A class used to represent an atom in a molecule.
     """
 
-    @multimethod
     def __init__(self, name: str, use_guess_element: bool = True) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
@@ -74,7 +73,6 @@ class Atom:
             self._atomic_number = None
             self._mass = None
 
-    @multimethod
     def __init__(self, name: str, id: int | str) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
@@ -94,7 +92,6 @@ class Atom:
         self._name = name
         self._symbol, self._atomic_number, self._mass = guess_element(id)
 
-    @multimethod
     def __init__(self, id: int) -> None:
         """
         Constructs all the necessary attributes for the Atom object.

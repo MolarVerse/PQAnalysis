@@ -76,19 +76,8 @@ class RestartFileWriter(BaseWriter):
         ----------
         frame : Frame
             The frame to write.
-
-        Raises
-        ------
-        RestartFileWriterError
-            If the number of atoms does not match the number of mol_types.
         """
-        if frame.topology == None or frame.topology.mol_types is None:
-            mol_types = np.zeros(frame.system.n_atoms, dtype=int)
-        else:
-            if frame.n_atoms != len(frame.topology.mol_types):
-                raise RestartFileWriterError(
-                    "The number of mol_types does not match the number of atoms.")
-            mol_types = frame.topology.mol_types
+        mol_types = frame.topology.moltype_ids
 
         for i in range(frame.n_atoms):
             atom = frame.system.atoms[i]

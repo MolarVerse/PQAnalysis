@@ -13,7 +13,6 @@ import numpy as np
 import warnings
 
 from beartype.typing import List
-from beartype.door import is_bearable
 
 from ..atom import Atom, is_same_element_type
 from ...types import Np1DIntArray

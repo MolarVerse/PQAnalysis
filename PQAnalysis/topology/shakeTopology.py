@@ -14,8 +14,9 @@ from beartype.typing import List
 
 from ..core import Atom
 from ..traj import Trajectory
-from ..types import Np1DIntArray, Np2DIntArray, Np1DNumberArray
+from ..types import Np1DIntArray, Np2DIntArray
 from ..io import BaseWriter
+from .selection import SelectionCompatible, Selection
 
 
 class ShakeTopologyGenerator:
@@ -33,45 +34,23 @@ class ShakeTopologyGenerator:
     """
 
     def __init__(self,
-                 atoms: List[Atom] | List[str] | Np1DIntArray | None = None,
+                 selection: SelectionCompatible = None,
                  use_full_atom_info: bool = False
                  ) -> None:
         """
         Initializes the ShakeTopologyGenerator with the given parameters.
 
-        It can be initialized with a list of atoms, a list of atom names, or a numpy 1d array of atom indices or None.
-
-            - If atoms is None shake distances for all atoms in the system will be computed.
-
-            - If atoms is a list of atoms, shake distances for the given atoms will be computed.
-              For the list of atoms, and additional parameter use_full_atom_info can be given, which
-              determines if the full atom information (name, index, mass) is used for the selection or 
-              only the element type.
-
-            - If atoms is a list of atom names, shake distances for the given atom type names will be computed.
-
-            - If atoms is a numpy 1d array of atom indices, shake distances for the given atom indices will be computed.
-
         Parameters
         ----------
-        atoms : List[Atom] | List[str] | Np1DIntArray | None, optional
-            The atoms to use for the topology, by default None
+        selection : SelectionCompatible, optional
+            Selection is either a selection object or any object that can be initialized via 'Selection(selection)'. default None (all atoms)
         use_full_atom_info : bool, optional
             If True, the full atom information (name, index, mass) is used for the selection, by default False
             Is always ignored if atoms is not a list of atom objects.
         """
 
-        self._use_full_atom_info = False
-
-        if atoms is None:
-            self.atoms = None
-        elif isinstance(atoms[0], Atom):
-            self.atoms = atoms
-            self._use_full_atom_info = use_full_atom_info
-        elif isinstance(atoms[0], str):
-            self.atoms = [Atom(name) for name in atoms]
-        else:
-            self.atoms = atoms
+        self._use_full_atom_info = use_full_atom_info
+        self.selection = Selection(selection)
 
     def generate_topology(self, trajectory: Trajectory) -> None:
         """
@@ -90,14 +69,16 @@ class ShakeTopologyGenerator:
         """
 
         start_frame = trajectory[0]
+        self._topology = start_frame.topology
+
         target_indices, distances = start_frame.system.nearest_neighbours(
-            n=1, atoms=self.atoms, use_full_atom_info=self._use_full_atom_info)
+            n=1, selection=self.selection, use_full_atom_info=self._use_full_atom_info)
 
         target_indices = target_indices.flatten()
         distances = distances.flatten()
 
-        indices = start_frame.system.indices_from_atoms(
-            self.atoms, use_full_atom_info=self._use_full_atom_info)
+        indices = self.selection.select(
+            self._topology, self._use_full_atom_info)
 
         distances = [distances]
 
@@ -164,15 +145,5 @@ class ShakeTopologyGenerator:
         print("END", file=writer.file)
 
     @property
-    def atoms(self) -> List[Atom] | Np1DIntArray | None:
-        """
-        The atoms to use for the topology.
-        """
-        return self._atoms
-
-    @atoms.setter
-    def atoms(self, atoms: List[Atom] | Np1DIntArray | None) -> None:
-        """
-        Sets the atoms to use for the topology.
-        """
-        self._atoms = atoms
+    def selection_object(self) -> SelectionCompatible:
+        return self.selection.selection_object

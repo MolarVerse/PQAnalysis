@@ -45,6 +45,14 @@ class _StandardPropertiesMixin:
         """
         return self._topology
 
+    @topology.setter
+    def topology(self, topology: Topology) -> None:
+        if topology.n_atoms != self.n_atoms:
+            raise ValueError(
+                "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology")
+
+        self._topology = topology
+
     @property
     def pos(self) -> Np2DNumberArray:
         """

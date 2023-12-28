@@ -11,14 +11,13 @@ _PositionsMixin
 
 import numpy as np
 
-from multimethod import multimethod
-from beartype.typing import List, Tuple
-from beartype.door import is_bearable
+from beartype.typing import Tuple
 
 from ._decorators import check_atoms_pos
 
-from .. import Atom, distance
-from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, Np1DNumberArray
+from .. import distance
+from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray
+from ...topology.selection import SelectionCompatible, Selection
 
 
 class _PositionsMixin:
@@ -68,30 +67,20 @@ class _PositionsMixin:
 
     def nearest_neighbours(self,
                            n: int = 1,
-                           atoms: List[Atom] | List[str] | Np1DIntArray | None = None,
+                           selection: SelectionCompatible = None,
                            use_full_atom_info: bool = False
                            ) -> Tuple[Np2DIntArray, Np2DNumberArray]:
         """
         Returns the n nearest neighbours of the given atoms in the system.
 
-        It is possible to specify the atoms by their element type, by their name or by their index 
-        or by the full Atom object. The parameter n specifies the number of closest nearest neighbours to return.
-        With the parameter use_full_atom_info it is possible to specify if the atoms should be searched for as 
-        only their element types or as their full atom object. (default: element types)
-
-        for example:
-            The object Atom('H1', 1) is equal to atom Atom('H') and Atom(1) if use_full_atom_info is False.
-            The object Atom('H1', 1) is not equal to atom Atom('H') and Atom(1) if use_full_atom_info is True, 
-            because also the atom_type name is compared.
-
         Parameters
         ----------
         n : int, optional
             The number of nearest neighbours to return, by default 1
-        atoms : List[Atom] | List[str] | Np1DIntArray | None, optional
-            The atoms to get the nearest neighbours of, by default None (all atoms)
+        selection : SelectionCompatible, optional
+            Selection is either a selection object or any object that can be initialized via 'Selection(selection)'. default None (all atoms)
         use_full_atom_info : bool, optional
-            If the full atom object should be used to match the atoms, by default False
+            If the full atom object should be used to match the atoms or only the element type, by default False
 
         Returns
         -------
@@ -100,6 +89,8 @@ class _PositionsMixin:
             The first array contains the indices of the nearest neighbours and the second array contains the distances to the nearest neighbours.
         """
 
-        indices = self.indices_from_atoms(atoms, use_full_atom_info)
+        selection = Selection(selection)
+
+        indices = selection.select(self.topology, use_full_atom_info)
 
         return self._nearest_neighbours(n=n, indices=indices)
