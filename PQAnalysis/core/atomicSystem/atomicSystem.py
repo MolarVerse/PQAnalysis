@@ -14,7 +14,7 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import List, Any
-from multimethod import multimethod
+from multimethod import multimeta
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
@@ -115,16 +115,16 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
         if not isinstance(other, AtomicSystem):
             return False
 
-        elif self.n_atoms != other.n_atoms:
-            return False
-
-        elif self.cell != other.cell:
-            return False
-
-        elif self.atoms != other.atoms:
-            return False
-
         is_equal = True
+
+        if not isinstance(other, AtomicSystem):
+            return False
+
+        if self.n_atoms != other.n_atoms:
+            return False
+
+        is_equal &= self.topology == other.topology
+        is_equal &= self.cell == other.cell
         is_equal &= np.allclose(self.pos, other.pos)
         is_equal &= np.allclose(self.vel, other.vel)
         is_equal &= np.allclose(self.forces, other.forces)
@@ -132,34 +132,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
 
         return is_equal
 
-    # TODO: add possibility to index with atom list etc... similar to nearest neighbours
-    @multimethod
-    def __getitem__(self, key: Atom) -> AtomicSystem:
+    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> AtomicSystem:
         """
         Returns a new AtomicSystem with the given key.
 
         Parameters
         ----------
-        key : Atom
-            The key as an atom to get the new AtomicSystem with only the matching atoms.
-
-        Returns
-        -------
-        AtomicSystem
-            The new AtomicSystem with the given key.
-        """
-        indices = np.argwhere(np.array(self.atoms) == key).flatten()
-
-        return self.__getitem__(indices)
-
-    @multimethod
-    def __getitem__(self, key: int | slice | Np1DIntArray) -> AtomicSystem:
-        """
-        Returns a new AtomicSystem with the given key.
-
-        Parameters
-        ----------
-        key : int | slice | Np1DIntArray
+        key : Atom | int | slice | Np1DIntArray
             The key to get the new AtomicSystem with.
 
         Returns
@@ -167,6 +146,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
         AtomicSystem
             The new AtomicSystem with the given key.
         """
+
+        if isinstance(key, Atom):
+            key = np.argwhere(np.array(self.atoms) == key).flatten()
 
         if isinstance(key, int):
             keys = np.array([key])
@@ -200,4 +182,4 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _
         else:
             charges = None
 
-        return AtomicSystem(atoms=atoms, pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell)
+        return AtomicSystem(atoms=atoms, pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])

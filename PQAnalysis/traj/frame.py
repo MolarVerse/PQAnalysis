@@ -48,7 +48,8 @@ class Frame:
             The topology of the atomic system, by default None
         """
         self.system = system
-        self.topology = topology
+        if topology is not None and topology != Topology():
+            self.system.topology = topology
 
     def compute_com_frame(self, group=None) -> Frame:
         """
@@ -121,11 +122,7 @@ class Frame:
         return self.system == other.system and self.topology == other.topology
 
     def __getitem__(self, key: int | slice | Atom) -> 'Frame':
-        if self.topology is None:
-            return Frame(system=self.system[key])
-        else:
-            raise NotImplementedError(
-                "Indexing of a frame with a topology is not implemented yet.")
+        return Frame(system=self.system[key])
 
     #########################
     #                       #
@@ -240,3 +237,11 @@ class Frame:
             The atoms in the system.
         """
         return self.system.atoms
+
+    @property
+    def topology(self) -> Topology:
+        return self.system.topology
+
+    @topology.setter
+    def topology(self, topology: Topology) -> None:
+        self.system.topology = topology

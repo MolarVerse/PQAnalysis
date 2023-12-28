@@ -214,10 +214,9 @@ class RestartFileReader(BaseReader):
         if atoms == []:
             raise RestartFileReaderError("No atoms found in restart file.")
 
+        topology = Topology(atoms=atoms, moltype_ids=np.array(mol_types))
+
         system = AtomicSystem(atoms=atoms, pos=np.array(positions), vel=np.array(
-            velocities), forces=np.array(forces), cell=cell)
+            velocities), forces=np.array(forces), cell=cell, topology=topology)
 
-        topology = Topology()
-        topology.mol_types = np.array(mol_types)
-
-        return Frame(system=system, topology=topology)
+        return Frame(system=system)

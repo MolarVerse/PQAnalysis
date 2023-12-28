@@ -55,7 +55,7 @@ class Test_RestartFileReader:
                  "H 0 2 2.0 2.0 2.0 2.1 2.2 2.3 2.4 2.5 2.6"]
         frame = RestartFileReader._parse_atoms(lines, Cell())
         system = frame.system
-        mol_types = frame.topology.mol_types
+        moltype_ids = frame.topology.moltype_ids
         assert system.n_atoms == 2
         assert system.atoms == [Atom(name, use_guess_element=False)
                                 for name in ["C", "H"]]
@@ -68,16 +68,16 @@ class Test_RestartFileReader:
         assert system.forces.shape == (2, 3)
         assert np.allclose(system.forces, np.array(
             [[1.4, 1.5, 1.6], [2.4, 2.5, 2.6]]))
-        assert np.allclose(mol_types, np.array([1, 2]))
+        assert np.allclose(moltype_ids, np.array([1, 2]))
         assert system.cell == Cell()
 
     @pytest.mark.parametrize("example_dir", ["readRestartFile"], indirect=False)
     def test_read(self, test_with_data_dir):
         frame = RestartFileReader("md-01.rst").read()
         system = frame.system
-        mol_types = frame.topology.mol_types
+        moltype_ids = frame.topology.moltype_ids
 
-        assert np.allclose(mol_types, np.array([0, 0, 1, 1]))
+        assert np.allclose(moltype_ids, np.array([0, 0, 1, 1]))
         assert system.n_atoms == 4
         assert system.atoms == [Atom(name, use_guess_element=False)
                                 for name in ["C", "H", "N", "N"]]
