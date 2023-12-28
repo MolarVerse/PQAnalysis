@@ -32,68 +32,14 @@ from __future__ import annotations
 
 from multimethod import multimethod
 from beartype.typing import Any, Tuple
+from beartype.vale import Is
+from typing import Annotated
 from numbers import Real
 
 from . import ElementNotFoundError
 
-
-def is_same_element_type(atom1: Atom, atom2: Atom) -> bool:
-    """
-    Checks whether two atoms are of the same element type.
-
-    Parameters
-    ----------
-    atom1 : Atom
-    atom2 : Atom
-
-    Returns
-    -------
-    bool
-        True if the atoms are of the same element type, False otherwise.
-    """
-    return atom1.atomic_number == atom2.atomic_number
-
-def guess_element(id: int | str) -> Tuple[str, int, Real]:
-    """
-    Guesses the symbol, atomic number and mass of an atom from a string or
-    integer identifier.
-
-    Parameters
-    ----------
-    id : int  |  str
-        The identifier of the atom. If an integer is given, it is assumed to be
-        the atomic number of the atom. If a string is given, it is assumed to
-        be the name of the element.
-
-    Returns
-    -------
-    symbol : str
-        The symbol of the atom (e.g. 'c')
-    atomic_number : int
-        The atomic number of the atom (e.g. 6)
-    mass : Real
-        The mass of the atom (e.g. 12.0107)
-
-    Raises
-    ------
-    ElementNotFoundError
-        If the given identifier is not a valid element identifier.
-    """
-    if isinstance(id, int):
-        try:
-            symbol = atomicNumbersReverse[id]
-            mass = atomicMasses[symbol]
-            return symbol, id, mass
-        except KeyError:
-            raise ElementNotFoundError(id)
-    elif isinstance(id, str):
-        try:
-            symbol = id.lower()
-            atomic_number = atomicNumbers[symbol]
-            mass = atomicMasses[symbol]
-            return symbol, atomic_number, mass
-        except KeyError:
-            raise ElementNotFoundError(id)
+Atoms = Annotated[list, Is[lambda list: all(
+    isinstance(atom, Atom) for atom in list)]]
 
 
 class Atom:
@@ -266,6 +212,66 @@ class Atom:
         return self._mass
 
 
+def is_same_element_type(atom1: Atom, atom2: Atom) -> bool:
+    """
+    Checks whether two atoms are of the same element type.
+
+    Parameters
+    ----------
+    atom1 : Atom
+    atom2 : Atom
+
+    Returns
+    -------
+    bool
+        True if the atoms are of the same element type, False otherwise.
+    """
+    return atom1.atomic_number == atom2.atomic_number
+
+
+def guess_element(id: int | str) -> Tuple[str, int, Real]:
+    """
+    Guesses the symbol, atomic number and mass of an atom from a string or
+    integer identifier.
+
+    Parameters
+    ----------
+    id : int  |  str
+        The identifier of the atom. If an integer is given, it is assumed to be
+        the atomic number of the atom. If a string is given, it is assumed to
+        be the name of the element.
+
+    Returns
+    -------
+    symbol : str
+        The symbol of the atom (e.g. 'c')
+    atomic_number : int
+        The atomic number of the atom (e.g. 6)
+    mass : Real
+        The mass of the atom (e.g. 12.0107)
+
+    Raises
+    ------
+    ElementNotFoundError
+        If the given identifier is not a valid element identifier.
+    """
+    if isinstance(id, int):
+        try:
+            symbol = atomicNumbersReverse[id]
+            mass = atomicMasses[symbol]
+            return symbol, id, mass
+        except KeyError:
+            raise ElementNotFoundError(id)
+    elif isinstance(id, str):
+        try:
+            symbol = id.lower()
+            atomic_number = atomicNumbers[symbol]
+            mass = atomicMasses[symbol]
+            return symbol, atomic_number, mass
+        except KeyError:
+            raise ElementNotFoundError(id)
+
+
 atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "he":   4.002602,   "li":   6.941,         "be":   9.012182,
                 "b":   10.811,      "c":   12.0107,        "n":   14.0067,
@@ -288,21 +294,21 @@ atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "ba": 137.327,      "la": 138.9055,        "ce": 140.116,
                 "pr": 140.90765,    "nd": 144.24,          "pm": 146.9151,
                 "sm": 150.36,       "eu": 151.964,         "gd": 157.25,
-                "tb": 158.92534,    "dy": 162.5,           "ho": 164.93032,    
-                "er": 167.259,      "tm": 168.93421,       "yb": 173.04,       
-                "lu": 174.967,      "hf": 178.49,          "ta": 180.9479,     
-                "w":  183.84,       "re": 186.207,         "os": 190.23,       
-                "ir": 192.217,      "pt": 195.078,         "au": 196.96655,    
-                "hg": 200.59,       "tl": 204.3833,        "pb": 207.2,        
-                "bi": 208.98038,    "po": 208.9824,        "at": 209.9871,     
-                "rn": 222.0176,     "fr": 223.0197,        "ra": 226.0254,     
-                "ac": 227.0278,     "th": 232.0381,        "pa": 231.03588,    
-                "u":  238.0289,     "np": 237.0482,        "pu": 244.0642,     
-                "am": 243.0614,     "cm": 247.0703,        "bk": 247.0703,     
-                "cf": 251.0796,     "es": 252.0829,        "fm": 257.0951,     
+                "tb": 158.92534,    "dy": 162.5,           "ho": 164.93032,
+                "er": 167.259,      "tm": 168.93421,       "yb": 173.04,
+                "lu": 174.967,      "hf": 178.49,          "ta": 180.9479,
+                "w":  183.84,       "re": 186.207,         "os": 190.23,
+                "ir": 192.217,      "pt": 195.078,         "au": 196.96655,
+                "hg": 200.59,       "tl": 204.3833,        "pb": 207.2,
+                "bi": 208.98038,    "po": 208.9824,        "at": 209.9871,
+                "rn": 222.0176,     "fr": 223.0197,        "ra": 226.0254,
+                "ac": 227.0278,     "th": 232.0381,        "pa": 231.03588,
+                "u":  238.0289,     "np": 237.0482,        "pu": 244.0642,
+                "am": 243.0614,     "cm": 247.0703,        "bk": 247.0703,
+                "cf": 251.0796,     "es": 252.0829,        "fm": 257.0951,
                 "md": 258.0986,     "no": 259.1009,        "lr": 260.1053,
-                "q":  999.00000,    "x":  999.00000,       "cav": 1000.00000, 
-                "sup": 1000000.0, 
+                "q":  999.00000,    "x":  999.00000,       "cav": 1000.00000,
+                "sup": 1000000.0,
                 "dum": 1.0}
 
 atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
@@ -339,9 +345,9 @@ atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
                  "u":    92,  "np":   93,  "pu":  94,
                  "am":   95,  "cm":   96,  "bk":  97,
                  "cf":   98,  "es":   99,  "fm": 100,
-                 "md":  101,  "no":  102,  "lr": 103, 
-                 "q":   999,  "x":   999,  "cav": 1000, 
-                 "sup": 1000000, 
+                 "md":  101,  "no":  102,  "lr": 103,
+                 "q":   999,  "x":   999,  "cav": 1000,
+                 "sup": 1000000,
                  "dum": 1}
 
 atomicNumbersReverse = {v: k for k, v in atomicNumbers.items()}

@@ -14,6 +14,7 @@ from beartype.typing import List
 from ..atom import Atom
 from ..cell.cell import Cell
 from ...types import Np1DNumberArray, Np2DNumberArray
+from ...topology import Topology
 
 
 class _StandardPropertiesMixin:
@@ -30,7 +31,19 @@ class _StandardPropertiesMixin:
         List[Atom]
             The atoms in the system.
         """
-        return self._atoms
+        return self._topology.atoms
+
+    @property
+    def topology(self) -> Topology:
+        """
+        Returns the topology of the system.
+
+        Returns
+        -------
+        Topology
+            The topology of the system.
+        """
+        return self._topology
 
     @property
     def pos(self) -> Np2DNumberArray:
