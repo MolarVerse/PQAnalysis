@@ -14,6 +14,7 @@ from .. import RDFError, RDFWarning
 from ...types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
 from ...core import Atom, distance
 from ...traj import Trajectory
+from ...topology import Selection, SelectionCompatible
 
 
 class RadialDistributionFunction:
@@ -23,8 +24,8 @@ class RadialDistributionFunction:
 
     def __init__(self,
                  traj: Trajectory,
-                 reference_species: List[Atom] | List[str] | Np1DIntArray,
-                 target_species: List[Atom] | List[str] | Np1DIntArray,
+                 reference_species: SelectionCompatible,
+                 target_species: SelectionCompatible,
                  use_full_atom_info: bool = False,
                  n_bins: PositiveInt | None = None,
                  delta_r: PositiveReal | None = None,
@@ -42,9 +43,9 @@ class RadialDistributionFunction:
         ----------
         traj : Trajectory
             The trajectory to perform the RDF analysis on.
-        reference_species : List[Atom] | List[str] | Np1DIntArray
+        reference_species : SelectionCompatible
             The reference species of the RDF analysis.
-        target_species : List[Atom] | List[str] | Np1DIntArray
+        target_species : SelectionCompatible
             The target species of the RDF analysis.
         use_full_atom_info : bool, optional
             Whether to use the full atom information of the trajectory or not, by default False. For more information, see the documentation of the indices_from_atoms method of the System class.
@@ -65,10 +66,10 @@ class RadialDistributionFunction:
         if len(traj) == 0:
             raise RDFError("Trajectory cannot be of length 0.")
 
-        self.reference_indices = self.traj[0].system.indices_from_atoms(
-            atoms=self.reference_species, use_full_atom_info=use_full_atom_info)
-        self.target_indices = self.traj[0].system.indices_from_atoms(
-            atoms=self.target_species, use_full_atom_info=use_full_atom_info)
+        self.reference_indices = Selection(reference_species).select(
+            self.traj[0].topology, use_full_atom_info)
+        self.target_indices = Selection(target_species).select(
+            self.traj[0].topology, use_full_atom_info)
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
                         r_max=r_max, r_min=r_min)
