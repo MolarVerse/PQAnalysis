@@ -18,7 +18,6 @@ from multimethod import multimeta
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
-from ._indexing import _IndexingMixin
 from ._positions import _PositionsMixin
 
 from .. import Atom, Cell
@@ -26,7 +25,7 @@ from ...types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from ...topology import Topology
 
 
-class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin):
+class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
     A class for storing atomic systems.
 
