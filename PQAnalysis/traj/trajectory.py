@@ -46,9 +46,9 @@ class Trajectory:
             The list of frames in the trajectory.
         """
         if frames is None:
-            self.frames = []
+            self._frames = []
         else:
-            self.frames = frames
+            self._frames = frames
 
     @property
     def box_lengths(self) -> Np2DNumberArray:
@@ -205,3 +205,27 @@ class Trajectory:
             return False
 
         return self.frames == other.frames
+
+    @property
+    def frames(self) -> List[Frame]:
+        """
+        The frames in the trajectory.
+
+        Returns
+        -------
+        List[Frame]
+            The frames in the trajectory.
+        """
+        return self._frames
+
+    @frames.setter
+    def frames(self, frames: List[Frame]) -> None:
+        """
+        Sets the frames in the trajectory.
+
+        Parameters
+        ----------
+        frames : List[Frame]
+            The frames in the trajectory.
+        """
+        self._frames = frames

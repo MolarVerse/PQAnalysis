@@ -119,7 +119,7 @@ class Frame:
         if not isinstance(other, Frame):
             return False
 
-        return self.system == other.system and self.topology == other.topology
+        return self.system == other.system
 
     def __getitem__(self, key: int | slice | Atom) -> 'Frame':
         return Frame(system=self.system[key])

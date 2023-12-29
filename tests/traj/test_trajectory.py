@@ -156,6 +156,8 @@ class TestTrajectory:
 
     def test_append(self):
         traj = Trajectory()
+        print(len(traj))
         traj.append(self.frame1)
+        print(len(traj))
 
         assert traj.frames == [self.frame1]
