@@ -1,26 +1,60 @@
+"""
+A module containing the Element class.
+
+...
+
+Classes
+-------
+Element
+    A class representing an element.
+"""
+
 from beartype.vale import Is
 from typing import Annotated
+from numbers import Real
 
 from .. import ElementNotFoundError
 
+"""
+A type hint for a list of Element objects.
+"""
 Elements = Annotated[list, Is[lambda list: all(
     isinstance(element, Element) for element in list)]]
 
 
 class Element:
-    def __init__(self, id: int | str | None = None):
+    def __init__(self, id: int | str | None = None) -> None:
+        """
+        Initializes the Element with the given parameters.
+
+        Parameters
+        ----------
+        id : int | str | None, optional
+            The identifier of the element. If an integer is given, it is
+            interpreted as the atomic number. If a string is given, it is
+            interpreted as the symbol of the element. If None is given, the
+            symbol, atomic number and mass are set to None, by default None
+
+        Raises
+        ------
+        ElementNotFoundError
+            If the given id is not a valid element identifier.
+        """
 
         try:
+            # If id is an integer, it is interpreted as the atomic number.
             if isinstance(id, int):
 
                 self._atomic_number = id
                 self._symbol = atomicNumbersReverse[id]
 
+            # If id is a string, it is interpreted as the symbol of the element.
             elif isinstance(id, str):
 
                 self._symbol = id.lower()
                 self._atomic_number = atomicNumbers[self._symbol]
 
+            # If id is None, the symbol, atomic number and mass are set to None, meaning an empty element.
             if id is None:
 
                 self._symbol = None
@@ -35,27 +69,87 @@ class Element:
             raise ElementNotFoundError(id)
 
     def __str__(self):
+        """
+        Returns a string representation of the Element.
+
+        Returns
+        -------
+        str
+            A string representation of the Element.
+        """
         return f"Element({self._symbol}, {self._atomic_number}, {self._mass})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """
+        Returns a representation of the Element.
+
+        Returns
+        -------
+        str
+            A representation of the Element.
+        """
         return self.__str__()
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any) -> bool:
+        """
+        Checks whether the Element is equal to another Element.
+
+        Parameters
+        ----------
+        other : Any
+            The other Element to check for equality.
+
+        Returns
+        -------
+        bool
+            True if the Element is equal to the other Element, False otherwise.
+        """
+
+        if not isinstance(other, Element):
+            return False
+
         return self._symbol == other.symbol and self._atomic_number == other.atomic_number
 
     @property
-    def symbol(self):
+    def symbol(self) -> str:
+        """
+        Returns the symbol of the Element.
+
+        Returns
+        -------
+        str
+            The symbol of the Element.
+        """
         return self._symbol
 
     @property
-    def atomic_number(self):
+    def atomic_number(self) -> int:
+        """
+        Returns the atomic number of the Element.
+
+        Returns
+        -------
+        int         
+            The atomic number of the Element.
+        """
         return self._atomic_number
 
     @property
-    def mass(self):
+    def mass(self) -> Real:
+        """
+        Returns the mass of the Element.
+
+        Returns
+        -------
+        Real
+            The mass of the Element.
+        """
         return self._mass
 
 
+"""
+A dictionary containing the atomic masses of the elements with the symbol as key.
+"""
 atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "he":   4.002602,   "li":   6.941,         "be":   9.012182,
                 "b":   10.811,      "c":   12.0107,        "n":   14.0067,
@@ -95,6 +189,9 @@ atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "sup": 1000000.0,
                 "dum": 1.0}
 
+"""
+A dictionary containing the atomic numbers of the elements with the symbol as key.
+"""
 atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
                  "he":    2,  "li":    3,  "be":   4,
                  "b":     5,  "c":     6,  "n":    7,
@@ -134,4 +231,7 @@ atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
                  "sup": 1000000,
                  "dum": 1}
 
+"""
+A dictionary containing the atomic numbers of the elements with the atomic symbol as key.
+"""
 atomicNumbersReverse = {v: k for k, v in atomicNumbers.items()}
