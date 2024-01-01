@@ -115,9 +115,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         is_equal = True
 
-        if not isinstance(other, AtomicSystem):
-            return False
-
         if self.n_atoms != other.n_atoms:
             return False
 
