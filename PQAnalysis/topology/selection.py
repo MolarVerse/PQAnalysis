@@ -8,7 +8,7 @@ from multimethod import overload
 
 from .. import __base_path__
 from ..types import Np1DIntArray
-from ..core.atom import Atom, Atoms, is_same_element_type
+from ..core.atom.atom import Atom, Atoms
 from .topology import Topology
 
 SelectionCompatible = str | Atoms | Atom | Np1DIntArray | List[str] | 'Selection' | None
@@ -168,14 +168,14 @@ def _indices_by_atom(atom: Atom, topology: Topology) -> Np1DIntArray:
     return indices
 
 
-def _indices_by_element_types(element: Atom, topology: Topology) -> Np1DIntArray:
+def _indices_by_element_types(atom: Atom, topology: Topology) -> Np1DIntArray:
     """
     Returns the indices of the given element type.
 
     Parameters
     ----------
-    element: Atom
-        The element type to get the indices of.
+    atom: Atom
+        The atom type to get the indices of.
     topology : Topology
         The topology to get the indices from.
 
@@ -185,7 +185,7 @@ def _indices_by_element_types(element: Atom, topology: Topology) -> Np1DIntArray
         The indices of the given element type.
     """
     bool_indices = np.array(
-        [is_same_element_type(atom, element) for atom in topology.atoms])
+        [topology_atom.element == atom.element for topology_atom in topology.atoms])
 
     indices = np.argwhere(bool_indices).flatten()
 
