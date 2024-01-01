@@ -15,7 +15,6 @@ from numbers import Real
 
 from ..cell.cell import Cell
 from ...types import Np1DNumberArray
-from ...topology import Topology
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 
 

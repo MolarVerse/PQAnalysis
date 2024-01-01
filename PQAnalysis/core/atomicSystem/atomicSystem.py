@@ -13,8 +13,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype.typing import List, Any
-from multimethod import multimeta
+from beartype.typing import Any
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
