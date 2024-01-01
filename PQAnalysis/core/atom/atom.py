@@ -5,9 +5,7 @@ The Atom class is used to represent an atom in a molecule. It contains the
 following attributes:
     
         - name: the name of the atom (e.g. 'C')
-        - symbol: the symbol of the atom (e.g. 'c')
-        - atomic_number: the atomic number of the atom (e.g. 6)
-        - mass: the mass of the atom (e.g. 12.0107)
+        - element: the element of the atom (e.g. 'C')
 
 The atomic number and mass are automatically determined from the name or symbol
 of the atom. The name and symbol are automatically determined from the atomic
@@ -19,13 +17,6 @@ Classes
 -------
 Atom
     A class used to represent an atom in a molecule.
-
-Functions
----------
-guess_element
-    Guesses the symbol, atomic number and mass of an atom from its name or
-    atomic number.
-
 """
 
 from __future__ import annotations
@@ -38,6 +29,9 @@ from numbers import Real
 
 from .element import Element
 
+"""
+A type hint for a list of Atom objects.
+"""
 Atoms = Annotated[list, Is[lambda list: all(
     isinstance(atom, Atom) for atom in list)]]
 
@@ -60,10 +54,8 @@ class Atom(metaclass=multimeta):
         name : str
             The name of the atom_type (e.g. 'C1')
         use_guess_element : bool, optional
-            Whether to use the guess_element function to determine the symbol,
-            atomic number and mass of the atom_type. If True, the symbol,
-            atomic number and mass are determined from the name of the
-            atom_type. The default is True.
+            Whether to use the guess_element function to determine the element type of the atom_type 
+            by its name, by default True
         """
         self._name = name
         if use_guess_element:
@@ -74,9 +66,6 @@ class Atom(metaclass=multimeta):
     def __init__(self, name: str, id: int | str) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
-
-        Sets the symbol, atomic number and mass of the atom_type from the
-        atomic number.
 
         Parameters
         ----------
@@ -93,9 +82,6 @@ class Atom(metaclass=multimeta):
     def __init__(self, id: int) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
-
-        Determines the symbol, atomic number and mass of the atom_type from the
-        atomic number. The name of the atom_type is the symbol in lower case.
 
         Parameters
         ----------
