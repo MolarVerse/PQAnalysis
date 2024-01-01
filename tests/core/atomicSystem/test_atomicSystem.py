@@ -119,7 +119,6 @@ class TestAtomicSystem:
         system2 = AtomicSystem(charges=np.array([0]))
 
         assert system1 != system2
-
         assert system3 != system5
 
     def test__getitem__(self):
