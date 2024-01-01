@@ -9,6 +9,7 @@ Element
     A class representing an element.
 """
 
+from beartype.typing import Any
 from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
@@ -79,7 +80,7 @@ class Element:
         """
         return f"Element({self._symbol}, {self._atomic_number}, {self._mass})"
 
-    def __repr__(self) -> str:
+    def __repr__(self) -> str | None:
         """
         Returns a representation of the Element.
 
@@ -90,7 +91,7 @@ class Element:
         """
         return self.__str__()
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> bool | None:
         """
         Checks whether the Element is equal to another Element.
 
@@ -111,7 +112,7 @@ class Element:
         return self._symbol == other.symbol and self._atomic_number == other.atomic_number
 
     @property
-    def symbol(self) -> str:
+    def symbol(self) -> str | None:
         """
         Returns the symbol of the Element.
 
@@ -123,7 +124,7 @@ class Element:
         return self._symbol
 
     @property
-    def atomic_number(self) -> int:
+    def atomic_number(self) -> int | None:
         """
         Returns the atomic number of the Element.
 
@@ -135,7 +136,7 @@ class Element:
         return self._atomic_number
 
     @property
-    def mass(self) -> Real:
+    def mass(self) -> Real | None:
         """
         Returns the mass of the Element.
 
