@@ -77,7 +77,7 @@ class RestartFileWriter(BaseWriter):
         frame : Frame
             The frame to write.
         """
-        mol_types = frame.topology.moltype_ids
+        residues = frame.topology.residue_ids
 
         for i in range(frame.n_atoms):
             atom = frame.system.atoms[i]
@@ -93,8 +93,8 @@ class RestartFileWriter(BaseWriter):
             except:
                 force = np.zeros(3)
 
-            mol_type = mol_types[i]
-            print(f"{atom.name}    {i}    {mol_type}",
+            residue = residues[i]
+            print(f"{atom.name}    {i}    {residue}",
                   file=self.file, end="    ")
             print(
                 f"{pos[0]} {pos[1]} {pos[2]}", file=self.file, end=" ")

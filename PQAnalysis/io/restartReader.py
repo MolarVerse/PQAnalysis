@@ -137,7 +137,7 @@ class RestartFileReader(BaseReader):
         For the PIMD_QMCF restart file, the arguments are:
             - atom name
             - atom id
-            - molecule id
+            - residue id
             - x position
             - y position
             - z position
@@ -151,7 +151,7 @@ class RestartFileReader(BaseReader):
         For the QMCFC restart file, the arguments are:
             - atom name
             - atom id
-            - molecule id
+            - residue id
             - x position
             - y position
             - z position
@@ -196,7 +196,7 @@ class RestartFileReader(BaseReader):
         positions = []
         velocities = []
         forces = []
-        mol_types = []
+        residues = []
 
         for line in lines:
             line = line.strip().split()
@@ -206,7 +206,7 @@ class RestartFileReader(BaseReader):
                     f"Invalid number of arguments for atom: {len(line)}")
 
             atoms.append(Atom(line[0], use_guess_element=False))
-            mol_types.append(int(line[2]))
+            residues.append(int(line[2]))
             positions.append(np.array([float(l) for l in line[3:6]]))
             velocities.append(np.array([float(l) for l in line[6:9]]))
             forces.append(np.array([float(l) for l in line[9:12]]))
@@ -214,7 +214,7 @@ class RestartFileReader(BaseReader):
         if atoms == []:
             raise RestartFileReaderError("No atoms found in restart file.")
 
-        topology = Topology(atoms=atoms, moltype_ids=np.array(mol_types))
+        topology = Topology(atoms=atoms, residue_ids=np.array(residues))
 
         system = AtomicSystem(atoms=atoms, pos=np.array(positions), vel=np.array(
             velocities), forces=np.array(forces), cell=cell, topology=topology)

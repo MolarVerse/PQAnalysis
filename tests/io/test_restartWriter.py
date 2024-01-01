@@ -41,7 +41,7 @@ H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
 """
 
         topology = Topology()
-        topology.mol_types = np.array([1, 2])
+        topology._residue_ids = np.array([1, 2])
 
         frame = Frame(AtomicSystem(atoms, positions), topology)
 
