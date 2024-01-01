@@ -3,28 +3,8 @@ import numpy as np
 
 from multimethod import DispatchError
 
-from PQAnalysis.core.atom import Atom, guess_element
+from PQAnalysis.core.atom.atom import Atom
 from PQAnalysis.core.exceptions import ElementNotFoundError
-
-
-def test_guess_element():
-    with pytest.raises(ElementNotFoundError) as exception:
-        guess_element("CH")
-    assert str(exception.value) == "Id CH is not a valid element identifier."
-
-    with pytest.raises(ElementNotFoundError) as exception:
-        guess_element(-1)
-    assert str(exception.value) == "Id -1 is not a valid element identifier."
-
-    symbol, atomic_number, mass = guess_element('C')
-    assert symbol == 'c'
-    assert atomic_number == 6
-    assert np.isclose(mass, 12.0107)
-
-    symbol, atomic_number, mass = guess_element(6)
-    assert symbol == 'c'
-    assert atomic_number == 6
-    assert np.isclose(mass, 12.0107)
 
 
 class TestAtom:

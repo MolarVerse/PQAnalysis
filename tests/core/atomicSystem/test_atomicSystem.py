@@ -143,6 +143,7 @@ class TestAtomicSystem:
         assert system[0] == AtomicSystem(vel=np.array([[0, 0, 0]]), forces=np.array([[0, 0, 0]]), charges=np.array([0]),
                                          atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
 
+        print(system[Atom(6)])
         assert system[Atom(6)] == AtomicSystem(vel=np.array([[0, 0, 0]]), forces=np.array([[0, 0, 0]]), charges=np.array([0]),
                                                atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
 
