@@ -14,8 +14,8 @@ class Topology:
 
     def __init__(self,
                  atoms: Atoms | None = None,
-                 moltype_ids: Np1DIntArray | None = None,
-                 moltypes: Residues | None = None,
+                 residue_ids: Np1DIntArray | None = None,
+                 residues: Residues | None = None,
                  ) -> None:
 
         if atoms is None:
@@ -25,20 +25,20 @@ class Topology:
             self._atoms = atoms
             self._atomtype_names = [atom.name for atom in atoms]
 
-        if moltypes is None:
-            self._moltypes = []
+        if residues is None:
+            self._residues = []
         else:
-            self._moltypes = moltypes
+            self._residues = residues
 
-        if moltype_ids is None:
-            moltype_ids = np.zeros(len(self.atoms), dtype=int)
-        if len(self.atoms) != len(moltype_ids):
+        if residue_ids is None:
+            residue_ids = np.zeros(len(self.atoms), dtype=int)
+        if len(self.atoms) != len(residue_ids):
             raise ValueError(
-                "The number of atoms does not match the number of mol_type_ids.")
+                "The number of atoms does not match the number of residue ids.")
 
-        self._moltype_ids = moltype_ids
+        self._residue_ids = residue_ids
 
-        # TODO: _check_moltype_ids
+        # TODO: _check_residue_ids
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -67,65 +67,64 @@ class Topology:
             return is_equal
 
         is_equal &= self.atoms == other.atoms
-        is_equal &= self.moltypes == other.moltypes
-        is_equal &= np.all(self.moltype_ids == other.moltype_ids)
+        is_equal &= np.all(self.residue_ids == other.residue_ids)
 
         return bool(is_equal)
 
     def __getitem__(self, indices: Np1DIntArray) -> Topology:
 
-        moltypes = self.moltypes
+        residues = self.residues
 
-        if len(moltypes) == 0:
-            moltypes = None
+        if len(residues) == 0:
+            residues = None
 
         if self.n_atoms == 0:
-            return Topology(moltypes=moltypes)
+            return Topology(residues=residues)
 
         atoms = [self.atoms[index] for index in indices]
 
-        if len(self.moltype_ids) == 0:
-            return Topology(atoms=atoms, moltypes=moltypes)
+        if len(self.residue_ids) == 0:
+            return Topology(atoms=atoms, residues=residues)
 
         atom_counter = 0
-        moltype_ids = self.moltype_ids[indices]
+        residue_ids = self.residue_ids[indices]
         while atom_counter < len(indices):
-            moltype_id = moltype_ids[atom_counter]
+            residue_id = residue_ids[atom_counter]
 
-            if moltype_id == 0:
+            if residue_id == 0:
                 atom_counter += 1
                 continue
 
-            moltype = self._find_moltype_by_id(moltype_id)
-            for i in range(moltype.n_atoms-1) + atom_counter:
-                if moltype_ids[i] != moltype_id:
+            residue = self._find_residue_by_id(residue_id)
+            for i in range(residue.n_atoms-1) + atom_counter:
+                if residue_ids[i] != residue_id:
                     raise ValueError(
-                        f"The moltype ids are not contiguous. Problems with residue {moltype.name} with indices {indices[atom_counter]}-{indices[atom_counter + moltype.n_atoms-1]}")
+                        f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {indices[atom_counter]}-{indices[atom_counter + residue.n_atoms-1]}")
 
-            atom_counter += moltype.n_atoms
+            atom_counter += residue.n_atoms
 
-        return Topology(atoms=atoms, moltypes=self.moltypes, moltype_ids=moltype_ids)
+        return Topology(atoms=atoms, residues=self.residues, residue_ids=residue_ids)
 
-    def _find_moltype_by_id(self, id: Integral) -> Residue:
-        bool_array = np.array([moltype.id == id for moltype in self.moltypes])
+    def _find_residue_by_id(self, id: Integral) -> Residue:
+        bool_array = np.array([residue.id == id for residue in self.residues])
 
-        moltype = np.argwhere(bool_array)
+        residue = np.argwhere(bool_array)
 
-        if len(moltype) > 1:
-            raise ValueError(f"The moltype id {moltype.id} is not unique.")
+        if len(residue) > 1:
+            raise ValueError(f"The residue id {residue.id} is not unique.")
 
-        if len(moltype) == 0:
-            raise ValueError(f"The moltype id {moltype.id} was not found.")
+        if len(residue) == 0:
+            raise ValueError(f"The residue id {residue.id} was not found.")
 
-        return moltype[0]
+        return residue[0]
 
     @property
-    def moltypes(self) -> Residues:
-        return self._moltypes
+    def residues(self) -> Residues:
+        return self._residues
 
-    @moltypes.setter
-    def moltypes(self, value: Residues):
-        self._moltypes = value
+    @residues.setter
+    def residues(self, value: Residues):
+        self._residues = value
 
     @property
     def atoms(self) -> Atoms:
@@ -152,5 +151,5 @@ class Topology:
         return len(self.atoms)
 
     @property
-    def moltype_ids(self) -> Np1DIntArray:
-        return self._moltype_ids
+    def residue_ids(self) -> Np1DIntArray:
+        return self._residue_ids
