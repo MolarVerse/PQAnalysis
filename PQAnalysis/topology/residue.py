@@ -1,10 +1,10 @@
 """
-A module containing the MolType class
+A module containing the Residue class
 
 Classes
 -------
-MolType
-    A class for representing a molecule type.
+Residue
+    A class for representing a residue.
 """
 
 from __future__ import annotations
@@ -14,36 +14,36 @@ from beartype.typing import List
 from beartype.vale import Is
 from typing import Annotated
 
-from . import MolTypeError
+from . import ResidueError
 from ..types import Np1DIntArray, Np1DNumberArray
 from ..core import Atom
 
-Moltypes = Annotated[list, Is[lambda list: all(
-    isinstance(moltype, MolType) for moltype in list)]]
+Residues = Annotated[list, Is[lambda list: all(
+    isinstance(residue, Residue) for residue in list)]]
 
 
-class MolType:
+class Residue:
     """
-    A class for representing a molecule type.
+    A class for representing a residue type (mol type).
 
-    In general mol types are used to represent the different molecules in a system.
-    In case a QMCF based simulation is performed, the mol types are defined via 
+    In general residues are used to represent the different molecules in a system.
+    In case a QMCF based simulation is performed, the residues are defined via 
     the moldescriptor file.
 
     Attributes
     ----------
     name : str
-        The name of the molecule type.
+        The name of the residue.
     id : int
-        The id of the molecule type.
+        The id of the residue.
     total_charge : Real
-        The total charge of the molecule type.
+        The total charge of the residue.
     elements : List[Atom]
-        The elements of the molecule type.
+        The elements of the residue.
     atom_types : Np1DIntArray
-        The atom types of the molecule type.
+        The atom types of the residue.
     partial_charges : Np1DNumberArray
-        The partial charges of the molecule type.
+        The partial charges of the residue.
     """
 
     def __init__(self,
@@ -55,22 +55,22 @@ class MolType:
                  partial_charges: Np1DNumberArray,
                  ) -> None:
         """
-        Initializes the MolType with the given parameters.
+        Initializes the Residue with the given parameters.
 
         Parameters
         ----------
         name : str
-            The name of the molecule type.
+            The name of the residue.
         id : int
-            The id of the molecule type.
+            The id of the residue.
         total_charge : Real
-            The total charge of the molecule type.
+            The total charge of the residue.
         elements : List[Atom]
-            The elements of the molecule type.
+            The elements of the residue.
         atom_types : Np1DIntArray
-            The atom types of the molecule type.
+            The atom types of the residue.
         partial_charges : Np1DNumberArray
-            The partial charges of the molecule type.
+            The partial charges of the residue.
 
         Raises
         ------
@@ -79,7 +79,7 @@ class MolType:
         """
 
         if not (len(elements) == len(atom_types) == len(partial_charges)):
-            raise MolTypeError(
+            raise ResidueError(
                 "The number of elements, atom_types and partial_charges must be the same.")
 
         self.name = name
@@ -95,108 +95,108 @@ class MolType:
     @property
     def n_atoms(self) -> int:
         """
-        Returns the number of atoms in the molecule type.
+        Returns the number of atoms in the residue.
 
         Returns
         -------
         int
-            The number of atoms in the molecule type.
+            The number of atoms in the residue.
         """
         return len(self._elements)
 
     @property
     def name(self) -> str:
         """
-        Returns the name of the molecule type.
+        Returns the name of the residue.
 
         Returns
         -------
         str
-            The name of the molecule type.
+            The name of the residue.
         """
         return self._name
 
     @name.setter
     def name(self, name: str) -> None:
         """
-        Sets the name of the molecule type.
+        Sets the name of the residue.
 
         Parameters
         ----------
         name : str
-            The name of the molecule type.
+            The name of the residue.
         """
         self._name = name
 
     @property
     def id(self) -> int:
         """
-        Returns the id of the molecule type.
+        Returns the id of the residue.
 
         Returns
         -------
         int
-            The id of the molecule type.
+            The id of the residue.
         """
         return self._id
 
     @id.setter
     def id(self, id: int) -> None:
         """
-        Sets the id of the molecule type.
+        Sets the id of the residue.
 
         Parameters
         ----------
         id : int
-            The id of the molecule type.
+            The id of the residue.
         """
         self._id = id
 
     @property
     def total_charge(self) -> Real:
         """
-        Returns the total charge of the molecule type.
+        Returns the total charge of the residue.
 
         Returns
         -------
         Real
-            The total charge of the molecule type.
+            The total charge of the residue.
         """
         return self._total_charge
 
     @total_charge.setter
     def total_charge(self, total_charge: Real) -> None:
         """
-        Sets the total charge of the molecule type.
+        Sets the total charge of the residue.
 
         Parameters
         ----------
         total_charge : Real
-            The total charge of the molecule type.
+            The total charge of the residue.
         """
         self._total_charge = total_charge
 
     @property
     def elements(self) -> List[Atom]:
         """
-        Returns the elements of the molecule type.
+        Returns the elements of the residue.
 
         Returns
         -------
         List[Atom]
-            The elements of the molecule type.
+            The elements of the residue.
         """
         return self._elements
 
     @elements.setter
     def elements(self, elements: List[Atom]) -> None:
         """
-        Sets the elements of the molecule type.
+        Sets the elements of the residue.
 
         Parameters
         ----------
         elements : List[Atom]
-            The elements of the molecule type.
+            The elements of the residue.
 
         Raises
         ------
@@ -204,7 +204,7 @@ class MolType:
             If the number of elements is not the same as the number of atoms.
         """
         if len(elements) != self.n_atoms:
-            raise MolTypeError(
+            raise ResidueError(
                 "The number of elements must be the same as the number of atoms.")
 
         self._elements = elements
@@ -212,24 +212,24 @@ class MolType:
     @property
     def atom_types(self) -> Np1DIntArray:
         """
-        Returns the atom types of the molecule type.
+        Returns the atom types of the residue.
 
         Returns
         -------
         Np1DIntArray
-            The atom types of the molecule type.
+            The atom types of the residue.
         """
         return self._atom_types
 
     @atom_types.setter
     def atom_types(self, atom_types: Np1DIntArray) -> None:
         """
-        Sets the atom types of the molecule type.
+        Sets the atom types of the residue.
 
         Parameters
         ----------
         atom_types : Np1DIntArray
-            The atom types of the molecule type.
+            The atom types of the residue.
 
         Raises
         ------
@@ -237,7 +237,7 @@ class MolType:
             If the number of atom_types is not the same as the number of atoms.
         """
         if len(atom_types) != self.n_atoms:
-            raise MolTypeError(
+            raise ResidueError(
                 "The number of atom_types must be the same as the number of atoms.")
 
         self._atom_types = atom_types
@@ -245,24 +245,24 @@ class MolType:
     @property
     def partial_charges(self) -> Np1DNumberArray:
         """
-        Returns the partial charges of the molecule type.
+        Returns the partial charges of the residue.
 
         Returns
         -------
         Np1DNumberArray
-            The partial charges of the molecule type.
+            The partial charges of the residue.
         """
         return self._partial_charges
 
     @partial_charges.setter
     def partial_charges(self, partial_charges: Np1DNumberArray) -> None:
         """
-        Sets the partial charges of the molecule type.
+        Sets the partial charges of the residue.
 
         Parameters
         ----------
         partial_charges : Np1DNumberArray
-            The partial charges of the molecule type.
+            The partial charges of the residue.
 
         Raises
         ------
@@ -270,7 +270,7 @@ class MolType:
             If the number of partial_charges is not the same as the number of atoms.
         """
         if len(partial_charges) != self.n_atoms:
-            raise MolTypeError(
+            raise ResidueError(
                 "The number of partial_charges must be the same as the number of atoms.")
 
         self._partial_charges = partial_charges
