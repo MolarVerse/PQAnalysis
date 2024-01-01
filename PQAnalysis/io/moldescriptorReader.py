@@ -13,7 +13,7 @@ from beartype.typing import List
 
 from . import BaseReader, MoldescriptorReaderError
 from ..topology import Residue
-from ..core import Atom
+from ..core import Element
 
 
 class MoldescriptorReader(BaseReader):
@@ -129,7 +129,7 @@ class MoldescriptorReader(BaseReader):
                 raise MoldescriptorReaderError(
                     "The number of columns in the body of a mol type must be 3 or 4.")
 
-            elements.append(Atom(line[0]))
+            elements.append(Element(line[0]))
             atom_types.append(int(line[1]))
             partial_charges.append(float(line[2]))
 

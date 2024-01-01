@@ -16,7 +16,7 @@ from typing import Annotated
 
 from . import ResidueError
 from ..types import Np1DIntArray, Np1DNumberArray
-from ..core import Atom
+from ..core import Elements
 
 Residues = Annotated[list, Is[lambda list: all(
     isinstance(residue, Residue) for residue in list)]]
@@ -38,7 +38,7 @@ class Residue:
         The id of the residue.
     total_charge : Real
         The total charge of the residue.
-    elements : List[Atom]
+    elements : Elements
         The elements of the residue.
     atom_types : Np1DIntArray
         The atom types of the residue.
@@ -50,7 +50,7 @@ class Residue:
                  name: str,
                  id: int,
                  total_charge: Real,
-                 elements: List[Atom],
+                 elements: Elements,
                  atom_types: Np1DIntArray,
                  partial_charges: Np1DNumberArray,
                  ) -> None:
@@ -65,7 +65,7 @@ class Residue:
             The id of the residue.
         total_charge : Real
             The total charge of the residue.
-        elements : List[Atom]
+        elements : Elements
             The elements of the residue.
         atom_types : Np1DIntArray
             The atom types of the residue.
@@ -177,25 +177,25 @@ class Residue:
         self._total_charge = total_charge
 
     @property
-    def elements(self) -> List[Atom]:
+    def elements(self) -> Elements:
         """
         Returns the elements of the residue.
 
         Returns
         -------
-        List[Atom]
+        Elements
             The elements of the residue.
         """
         return self._elements
 
     @elements.setter
-    def elements(self, elements: List[Atom]) -> None:
+    def elements(self, elements: Elements) -> None:
         """
         Sets the elements of the residue.
 
         Parameters
         ----------
-        elements : List[Atom]
+        elements : Elements
             The elements of the residue.
 
         Raises

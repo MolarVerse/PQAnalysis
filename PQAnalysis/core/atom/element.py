@@ -1,4 +1,10 @@
+from beartype.vale import Is
+from typing import Annotated
+
 from .. import ElementNotFoundError
+
+Elements = Annotated[list, Is[lambda list: all(
+    isinstance(element, Element) for element in list)]]
 
 
 class Element:
