@@ -12,7 +12,7 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, MoldescriptorReaderError
-from ..topology import MolType
+from ..topology import Residue
 from ..core import Atom
 
 
@@ -39,7 +39,7 @@ class MoldescriptorReader(BaseReader):
         """
         super().__init__(filename)
 
-    def read(self) -> List[MolType]:
+    def read(self) -> List[Residue]:
         """
         Reads the moldescriptor file and returns the mol types.
 
@@ -93,7 +93,7 @@ class MoldescriptorReader(BaseReader):
         return mol_types
 
     @classmethod
-    def _read_mol_type(cls, lines: List[str], mol_type_id: int) -> MolType:
+    def _read_mol_type(cls, lines: List[str], mol_type_id: int) -> Residue:
         """
         Parses a mol type from the given lines.
 
@@ -133,4 +133,4 @@ class MoldescriptorReader(BaseReader):
             atom_types.append(int(line[1]))
             partial_charges.append(float(line[2]))
 
-        return MolType(name, mol_type_id, total_charge, elements, np.array(atom_types), np.array(partial_charges))
+        return Residue(name, mol_type_id, total_charge, elements, np.array(atom_types), np.array(partial_charges))

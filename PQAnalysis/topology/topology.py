@@ -7,7 +7,7 @@ from numbers import Integral
 
 from ..core import Atoms
 from ..types import Np1DIntArray
-from . import Moltypes, MolType
+from . import Residues, Residue
 
 
 class Topology:
@@ -15,7 +15,7 @@ class Topology:
     def __init__(self,
                  atoms: Atoms | None = None,
                  moltype_ids: Np1DIntArray | None = None,
-                 moltypes: Moltypes | None = None,
+                 moltypes: Residues | None = None,
                  ) -> None:
 
         if atoms is None:
@@ -106,7 +106,7 @@ class Topology:
 
         return Topology(atoms=atoms, moltypes=self.moltypes, moltype_ids=moltype_ids)
 
-    def _find_moltype_by_id(self, id: Integral) -> MolType:
+    def _find_moltype_by_id(self, id: Integral) -> Residue:
         bool_array = np.array([moltype.id == id for moltype in self.moltypes])
 
         moltype = np.argwhere(bool_array)
@@ -120,11 +120,11 @@ class Topology:
         return moltype[0]
 
     @property
-    def moltypes(self) -> Moltypes:
+    def moltypes(self) -> Residues:
         return self._moltypes
 
     @moltypes.setter
-    def moltypes(self, value: Moltypes):
+    def moltypes(self, value: Residues):
         self._moltypes = value
 
     @property
