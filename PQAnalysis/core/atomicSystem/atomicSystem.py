@@ -20,7 +20,7 @@ from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
 
-from .. import Atom, Cell
+from .. import Atom, Atoms, Cell
 from ...types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from ...topology import Topology
 
@@ -37,7 +37,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
 
     def __init__(self,
-                 atoms: List[Atom] | None = None,
+                 atoms: Atoms | None = None,
                  pos: Np2DNumberArray | None = None,
                  vel: Np2DNumberArray | None = None,
                  forces: Np2DNumberArray | None = None,
@@ -50,7 +50,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         Parameters
         ----------
-        atoms : List[Atom], optional
+        atoms : Atoms, optional
             A list of Atom objects, by default []
         pos : Np2DNumberArray, optional
             A 2d numpy.ndarray containing the positions of the atoms, by default np.zeros((0, 3)).
