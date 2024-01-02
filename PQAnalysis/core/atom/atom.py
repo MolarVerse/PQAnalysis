@@ -27,7 +27,7 @@ from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
 
-from .element import Element
+from . import Element
 
 """
 A type hint for a list of Atom objects.
@@ -39,6 +39,45 @@ Atoms = Annotated[list, Is[lambda list: all(
 class Atom(metaclass=multimeta):
     """
     A class used to represent an atom in a molecule.
+
+    There are three ways to initialize an Atom object:
+
+    1) By giving the name of the atom_type (e.g. 'C1')
+       If use_guess_element is True (default), the atom_type name has to be
+       a valid element symbol (e.g. 'C'). If use_guess_element is False, the
+       atom_type name can be anything and an empty element is created.
+
+    2) By giving the name of the atom_type (e.g. 'C1') and the id of the atom_type
+       (e.g. 6). The id can be either an integer (atomic number) or a string (element symbol).
+
+    3) By giving the id of the atom_type (e.g. 6). The id can be either an integer (atomic number) 
+       or a string (element symbol).
+
+    Examples
+    --------
+    >>> atom = Atom('C1') # use_guess_element is True by default - raises ElementNotFoundError if the element is not found
+
+    >>> atom = Atom('C1', use_guess_element=False)
+    >>> (atom.name, atom.element)
+    ('C1', Element())
+
+    >>> atom = Atom('C1', 'C')
+    >>> (atom.name, atom.element)
+    ('C1', Element('C'))
+
+    >>> atom = Atom('C1', 6)
+    >>> (atom.name, atom.element)
+    ('C1', Element(6))
+
+    >>> atom = Atom(6)
+    >>> (atom.name, atom.element)
+    ('c', Element(6))
+
+    >>> atom = Atom('C')
+    >>> (atom.name, atom.element)
+    ('C', Element('C'))
+
+
     """
 
     def __init__(self, name: str, use_guess_element: bool = True) -> None:
@@ -47,7 +86,8 @@ class Atom(metaclass=multimeta):
 
         If use_guess_element is True, the symbol, atomic number and mass are
         determined from the name of the atom_type. If use_guess_element is
-        False, the symbol, atomic number and mass are set to None.
+        False, the symbol, atomic number and mass are set to None, meaning that
+        an empty element is created (Element()).
 
         Parameters
         ----------
@@ -157,47 +197,47 @@ class Atom(metaclass=multimeta):
     @property
     def symbol(self) -> str | None:
         """
-        The symbol of the atom_type (e.g. 'c')
+        The symbol of the element (e.g. 'c')
 
         Returns
         -------
         str
-            The symbol of the atom_type (e.g. 'c')
+            The symbol of the element (e.g. 'c')
         """
         return self._element.symbol
 
     @property
     def atomic_number(self) -> int | None:
         """
-        The atomic number of the atom_type (e.g. 6)
+        The atomic number of the element (e.g. 6)
 
         Returns
         -------
         int
-            The atomic number of the atom_type (e.g. 6)
+            The atomic number of the element (e.g. 6)
         """
         return self._element.atomic_number
 
     @property
     def mass(self) -> Real | None:
         """
-        The mass of the atom_type (e.g. 12.0107)
+        The mass of the element (e.g. 12.0107)
 
         Returns
         -------
         Real
-            The mass of the atom_type (e.g. 12.0107)
+            The mass of the element (e.g. 12.0107)
         """
         return self._element.mass
 
     @property
     def element(self) -> Element:
         """
-        The element of the atom_type (e.g. 12.0107)
+        The element of the atom
 
         Returns
         -------
         Element
-            The element of the atom_type (e.g. 12.0107)
+            The element of the atom
         """
         return self._element

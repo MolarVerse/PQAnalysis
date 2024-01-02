@@ -24,6 +24,32 @@ Elements = Annotated[list, Is[lambda list: all(
 
 
 class Element:
+    """
+    A class representing an element.
+
+    An Element can be initialized in three ways:
+
+    1) By giving the atomic number of the element (e.g. 6).
+    2) By giving the symbol of the element (e.g. 'C').
+    3) By giving None.
+
+    Examples
+    --------
+
+    >>> element = Element(6)
+    >>> (element.symbol, element.atomic_number, element.mass)
+    ('C', 6, 12.0107)
+
+    >>> element = Element('C')
+    >>> (element.symbol, element.atomic_number, element.mass)
+    ('C', 6, 12.0107)
+
+    >>> element = Element()
+    >>> (element.symbol, element.atomic_number, element.mass)
+    (None, None, None)
+
+    """
+
     def __init__(self, id: int | str | None = None) -> None:
         """
         Initializes the Element with the given parameters.
@@ -69,7 +95,7 @@ class Element:
         except KeyError:
             raise ElementNotFoundError(id)
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Returns a string representation of the Element.
 
@@ -78,9 +104,9 @@ class Element:
         str
             A string representation of the Element.
         """
-        return f"Element({self._symbol}, {self._atomic_number}, {self._mass})"
+        return f"Element({self.symbol}, {self.atomic_number}, {self.mass})"
 
-    def __repr__(self) -> str | None:
+    def __repr__(self) -> str:
         """
         Returns a representation of the Element.
 
@@ -91,7 +117,7 @@ class Element:
         """
         return self.__str__()
 
-    def __eq__(self, other: Any) -> bool | None:
+    def __eq__(self, other: Any) -> bool:
         """
         Checks whether the Element is equal to another Element.
 
@@ -109,7 +135,7 @@ class Element:
         if not isinstance(other, Element):
             return False
 
-        return self._symbol == other.symbol and self._atomic_number == other.atomic_number
+        return self.symbol == other.symbol and self.atomic_number == other.atomic_number
 
     @property
     def symbol(self) -> str | None:
