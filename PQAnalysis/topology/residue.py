@@ -5,6 +5,8 @@ Classes
 -------
 Residue
     A class for representing a residue.
+QMResidue
+    A class for representing a QM residue.
 """
 
 from __future__ import annotations
@@ -18,6 +20,9 @@ from . import ResidueError
 from ..types import Np1DIntArray, Np1DNumberArray
 from ..core import Elements, Element
 
+"""
+A type hint for a list of residues (mol types).
+"""
 Residues = Annotated[list, Is[lambda list: all(
     isinstance(residue, Residue) for residue in list)]]
 
@@ -275,8 +280,54 @@ class Residue:
 
         self._partial_charges = partial_charges
 
+    def __str__(self) -> str:
+        """
+        Returns the string representation of the Residue.
+
+        Returns
+        -------
+        str
+            The string representation of the Residue.
+        """
+        return f"Residue(name={self.name}, id={self.id}, total_charge={self.total_charge}, n_atoms={self.n_atoms})"
+
+    def __repr__(self) -> str:
+        """
+        Returns the string representation of the Residue.
+
+        Returns
+        -------
+        str
+            The string representation of the Residue.
+        """
+        return self.__str__()
+
 
 class QMResidue(Residue):
+    """
+    A class for representing a QM residue type (mol type).
+
+    It is a subclass of Residue and is used to represent any atoms that are
+    represented solely by via QM methods during a simulation, meaning that
+    they cannot leave the QM zone and do not have any MM-like properties.
+
+    Examples
+    --------
+    >>> QMResidue(Element('C'))
+
+    """
+
     def __init__(self, element: Element) -> None:
+        """
+        Initializes the QMResidue with the given parameters.
+
+        For the initialization only the element of the QM residue is required.
+        One QMResidue can only contain one element.
+
+        Parameters
+        ----------
+        element : Element
+            The element of the QM residue.
+        """
         super().__init__(name="QM", id=0, total_charge=0.0, elements=[
-            atom], atom_types=[0], partial_charges=[atom.atomic_number])
+            element], atom_types=[0], partial_charges=[element.atomic_number])

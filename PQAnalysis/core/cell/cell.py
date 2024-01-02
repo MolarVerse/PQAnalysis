@@ -195,3 +195,25 @@ class Cell(_StandardPropertiesMixin):
         is_equal &= np.allclose(self.box_lengths, other.box_lengths)
         is_equal &= np.allclose(self.box_angles, other.box_angles)
         return is_equal
+
+    def __str__(self) -> str:
+        """
+        Returns a string representation of the Cell.
+
+        Returns
+        -------
+        str
+            A string representation of the Cell.
+        """
+        return f"Cell(x={self.x}, y={self.y}, z={self.z}, alpha={self.alpha}, beta={self.beta}, gamma={self.gamma})"
+
+    def __repr__(self) -> str:
+        """
+        Returns a string representation of the Cell.
+
+        Returns
+        -------
+        str
+            A string representation of the Cell.
+        """
+        return self.__str__()

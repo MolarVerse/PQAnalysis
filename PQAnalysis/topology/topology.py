@@ -1,3 +1,14 @@
+"""
+A module containing the Topology class.
+
+...
+
+Classes
+-------
+Topology
+    A class for representing a topology.
+"""
+
 from __future__ import annotations
 
 import numpy as np
@@ -5,7 +16,7 @@ import numpy as np
 from beartype.typing import Any
 from numbers import Integral
 
-from . import Residues, Residue, QMResidue
+from . import Residues, Residue, QMResidue, ResidueError
 from ..core import Atoms, Element
 from ..types import Np1DIntArray
 
@@ -82,7 +93,7 @@ class Topology:
                 "The number of atoms does not match the number of residue ids.")
 
         self._residue_ids = residue_ids
-        self._setup_residues(self.residue_ids, self.atoms)
+        self._residues = self._setup_residues(self.residue_ids, self.atoms)
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -129,13 +140,13 @@ class Topology:
         Topology
             The new Topology with the given indices.
         """
-        residues = self.reference_residues
+        reference_residues = self.reference_residues
 
-        if len(residues) == 0:
-            residues = None
+        if len(reference_residues) == 0:
+            reference_residues = None
 
         if self.n_atoms == 0:
-            return Topology(reference_residues=residues)
+            return Topology(reference_residues=reference_residues)
 
         atoms = [self.atoms[index] for index in indices]
         residue_ids = self.residue_ids[indices]
@@ -158,9 +169,9 @@ class Topology:
 
         Raises
         ------
-        ValueError
+        ResidueError
             If the residue id is not unique.
-        ValueError
+        ResidueError
             If the residue id is not found.
         """
         bool_array = np.array(
@@ -169,10 +180,10 @@ class Topology:
         residue = np.argwhere(bool_array)
 
         if len(residue) > 1:
-            raise ValueError(f"The residue id {id} is not unique.")
+            raise ResidueError(f"The residue id {id} is not unique.")
 
         if len(residue) == 0:
-            raise ValueError(f"The residue id {id} was not found.")
+            raise ResidueError(f"The residue id {id} was not found.")
 
         return residue[0]
 
@@ -181,6 +192,27 @@ class Topology:
         Sets up the residues of the topology.
 
         It checks if the residue ids are contiguous and compatible with the reference residues.
+        If check_residues is False, it does not check the residues and just returns an empty list.
+
+        Parameters
+        ----------
+        residue_ids : Np1DIntArray
+            The residue ids of the topology.
+        atoms : Atoms
+            The atoms of the topology.
+
+        Returns
+        -------
+        Residues
+            The residues of the topology.
+
+        Raises
+        ------
+        ResidueError
+            If the residue ids are not contiguous.
+        ResidueError
+            If the reference residues are not empty and residue_ids with 0 don't have any element information.
+            This problem can be avoided by setting 'check_residues' to False.
         """
         residues = []
 
@@ -197,7 +229,7 @@ the program tries to automatically deduce the residues from the residue ids and 
 This means that any atom with an unknown element raises an error. To avoid deducing residue information
 please set 'check_residues' to False"""
 
-                    raise ValueError(message)
+                    raise ResidueError(message)
                 else:
                     residues.append(QMResidue(atoms[atom_counter].element))
                 continue
@@ -206,7 +238,7 @@ please set 'check_residues' to False"""
 
             for i in range(residue.n_atoms-1) + atom_counter:
                 if residue_ids[i] != residue_ids[atom_counter]:
-                    raise ValueError(
+                    raise ResidueError(
                         f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {atom_counter}-{atom_counter + residue.n_atoms-1}")
 
             residues.append(residue)
