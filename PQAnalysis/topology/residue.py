@@ -16,7 +16,7 @@ from typing import Annotated
 
 from . import ResidueError
 from ..types import Np1DIntArray, Np1DNumberArray
-from ..core import Elements
+from ..core import Elements, Element
 
 Residues = Annotated[list, Is[lambda list: all(
     isinstance(residue, Residue) for residue in list)]]
@@ -274,3 +274,9 @@ class Residue:
                 "The number of partial_charges must be the same as the number of atoms.")
 
         self._partial_charges = partial_charges
+
+
+class QMResidue(Residue):
+    def __init__(self, element: Element) -> None:
+        super().__init__(name="QM", id=0, total_charge=0.0, elements=[
+            atom], atom_types=[0], partial_charges=[atom.atomic_number])
