@@ -256,7 +256,7 @@ class SelectionVisitor(Visitor):
 
         Parameters
         ----------
-        items : List[Atom]
+        items : 
             The atom to get the indices of.
 
         Returns
@@ -264,6 +264,7 @@ class SelectionVisitor(Visitor):
         Np1DIntArray
             The indices of the given atom.
         """
+
         if self.use_full_atom_info:
             for index in _indices_by_atom(items[0], self.topology):
                 self.selection.append(index)

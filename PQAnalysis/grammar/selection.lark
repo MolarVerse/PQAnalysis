@@ -1,22 +1,33 @@
-start: expression NEWLINE
+start: expression
 
 expression: statement ("," statement)*
 
 statement: atomtype
          | atom
+         | element
          | index
          | indices
 
-atomtype: LETTER+
+atomtype: word
 
-atom: "atom"i "(" (atomtype | unsigned_int) ")"
+atom: "atom("i word "," (letters | UNSIGNED_INT+) ")"
 
-index: int
+element: "elem("i (letters | UNSIGNED_INT+) ")"
 
-indices: index (":"|"-"|"..") index (":"|".." index)?
+residue: "res("i (letters | UNSIGNED_INT+) ")"
 
+index.2: INT
 
+indices.2: INT ("-"|"..") INT (".." INT)?
+
+word: (LETTER|DIGIT)+
+letters: LETTER+
+
+%import .terminals.DIGIT
 %import .terminals.NEWLINE
 %import .terminals.LETTER
-%import .terminals.SIGNED_INT -> int
-%import .terminals.INT -> unsigned_int
+%import .terminals.SIGNED_INT -> INT
+%import .terminals.INT -> UNSIGNED_INT
+%import .terminals.WS
+
+%ignore WS
