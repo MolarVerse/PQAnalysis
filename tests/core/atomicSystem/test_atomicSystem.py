@@ -96,7 +96,6 @@ class TestAtomicSystem:
         assert system1 != system3
         assert system1 != system4
         assert system3 != system4
-        assert system4 == system4
 
         assert system1 != 1
 

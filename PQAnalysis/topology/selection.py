@@ -30,7 +30,7 @@ from lark import Visitor, Tree, Lark
 from beartype.typing import List
 from multimethod import overload
 
-from . import Topology
+from .topology import Topology
 from .. import __base_path__
 from ..types import Np1DIntArray
 from ..core import Atom, Atoms
