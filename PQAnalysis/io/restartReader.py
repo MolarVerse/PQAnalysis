@@ -216,7 +216,7 @@ class RestartFileReader(BaseReader):
 
         topology = Topology(atoms=atoms, residue_ids=np.array(residues))
 
-        system = AtomicSystem(atoms=atoms, pos=np.array(positions), vel=np.array(
+        system = AtomicSystem(pos=np.array(positions), vel=np.array(
             velocities), forces=np.array(forces), cell=cell, topology=topology)
 
         return Frame(system=system)

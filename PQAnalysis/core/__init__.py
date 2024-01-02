@@ -1,7 +1,7 @@
 """
-This module contains the core classes and functions of the package.
+This package contains the core classes and functions of the package.
 
-The core module contains the following submodules:
+The core package contains the following submodules and packages:
     
         - atom
         - cell
@@ -9,24 +9,24 @@ The core module contains the following submodules:
         - common
         - exceptions
         
-The core module contains the following classes:
+The core package contains the following classes:
         
             - Atom
             - Element
             - Cell
             - AtomicSystem
             
-The core module contains the following functions:
+The core package contains the following functions:
         
             - distance
 
-The core module contains the following exceptions:
+The core package contains the following exceptions:
 
             - ElementNotFoundError
             - AtomicSystemPositionsError
             - AtomicSystemMassError
             
-The core module contains the following type hints:
+The core package contains the following type hints:
         
                   - Atoms
                   - Elements
