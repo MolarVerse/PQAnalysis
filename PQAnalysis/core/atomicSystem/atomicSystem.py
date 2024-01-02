@@ -205,3 +205,25 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             charges = None
 
         return AtomicSystem(pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])
+
+    def __str__(self) -> str:
+        """
+        Returns the string representation of the AtomicSystem.
+
+        Returns
+        -------
+        str
+            The string representation of the AtomicSystem.
+        """
+        return f"AtomicSystem(atoms={self.atoms}, pos={self.pos}, vel={self.vel}, forces={self.forces}, charges={self.charges}, cell={self.cell}, topology={self.topology})"
+
+    def __repr__(self) -> str:
+        """
+        Returns the string representation of the AtomicSystem.
+
+        Returns
+        -------
+        str
+            The string representation of the AtomicSystem.
+        """
+        return self.__str__()
