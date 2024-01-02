@@ -1,3 +1,15 @@
+"""
+A module containing a Mixin class for output files of a PIMD_QMCF input file.
+
+...
+
+Classes
+-------
+_OutputFileMixin
+    A mixin class for output files of a PIMD_QMCF input file.
+"""
+
+
 class _OutputFileMixin:
     """
     Mixin class for output files of a PIMD_QMCF input file.
