@@ -26,6 +26,7 @@ dependencies = [
     "beartype",
     "multimethod",
     "lark",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
