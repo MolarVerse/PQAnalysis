@@ -33,6 +33,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         - The _PropertiesMixin contains special properties derived from the standard properties
         - The _IndexingMixin contains methods for indexing the atomic system
         - The _PositionsMixin contains methods for computing properties based on the positions of the atoms
+
+        Examples
+        --------
+        >>> AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+
+        >>> AtomicSystem()
+
+        >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
     """
 
     def __init__(self,
@@ -46,6 +54,20 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  ) -> None:
         """
         Initializes the AtomicSystem with the given parameters.
+
+        For the initialization of an AtomicSystem all parameters are optional. 
+        If no value is given for a parameter, the default value is used which 
+        is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces
+        and charges, a Topology() object for topology and a Cell() object for cell.
+
+        If the shapes or lengths of the given parameters are not consistent, this will 
+        only raise an error when a property or method is called that requires the
+        given parameter. This is done to allow for the creation of an AtomicSystem
+        with only a subset of the properties.
+
+        One important restriction is that atoms and topology are mutually exclusive, 
+        i.e. if atoms is given, topology cannot be given and vice versa (this is
+        because the topology is derived from the atoms - if given).
 
         Parameters
         ----------
@@ -63,19 +85,19 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             The topology of the system, by default Topology()
         cell : Cell, optional
             The unit cell of the system. Defaults to a Cell with no periodic boundary conditions, by default Cell()
+
+        Raises
+        ------
+        ValueError
+            If both atoms and topology are given.
         """
         if atoms is None and topology is None:
             topology = Topology()
         elif topology is None:
             topology = Topology(atoms=atoms)
         elif topology is not None and atoms is not None:
-            if len(atoms) != topology.n_atoms:
-                raise ValueError(
-                    "The number of atoms and the number of atoms in the topology must be equal.")
-
-            if atoms != topology.atoms:
-                raise ValueError(
-                    "The atoms and the atoms in the topology must be equal.")
+            raise ValueError(
+                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive.")
 
         if pos is None:
             pos = np.zeros((0, 3))
@@ -131,6 +153,16 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         """
         Returns a new AtomicSystem with the given key.
 
+        Examples
+        --------
+        >>> system1 = AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> system1[0]
+        AtomicSystem(atoms=[Atom('C1')], pos=np.array([[0, 0, 0]]))
+        >>> system1[0:2]
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> system1[np.array([0, 1])]
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+
         Parameters
         ----------
         key : Atom | int | slice | Np1DIntArray
@@ -152,11 +184,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         else:
             keys = np.array(key)
 
-        if self.atoms != []:
-            atoms = [self.atoms[key] for key in keys]
-        else:
-            atoms = None
-
         if np.shape(self.pos)[0] > 0:
             pos = self.pos[keys]
         else:
@@ -177,4 +204,4 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         else:
             charges = None
 
-        return AtomicSystem(atoms=atoms, pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])
+        return AtomicSystem(pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])

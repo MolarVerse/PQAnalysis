@@ -9,10 +9,8 @@ _StandardPropertiesMixin
     A mixin class containing the standard properties of an atomic system (i.e. standard getter and setter methods).
 """
 
-from beartype.typing import List
-
-from ..atom import Atom
-from ..cell.cell import Cell
+from .. import Atoms
+from .. import Cell
 from ...types import Np1DNumberArray, Np2DNumberArray
 from ...topology import Topology
 
@@ -22,16 +20,16 @@ class _StandardPropertiesMixin:
     A mixin class containing the standard properties of an atomic system (i.e. standard getter and setter methods).
     """
     @property
-    def atoms(self) -> List[Atom]:
+    def atoms(self) -> Atoms:
         """
         Returns the atoms in the system.
 
         Returns
         -------
-        List[Atom]
+        Atoms
             The atoms in the system.
         """
-        return self._topology.atoms
+        return self.topology.atoms
 
     @property
     def topology(self) -> Topology:
