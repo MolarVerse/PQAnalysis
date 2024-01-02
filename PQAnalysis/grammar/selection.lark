@@ -10,18 +10,20 @@ statement: atomtype
 
 atomtype: word
 
-atom: "atom("i word "," (letters | UNSIGNED_INT+) ")"
+atom: "atom("i word "," (letters | unsigned_int+) ")"
 
-element: "elem("i (letters | UNSIGNED_INT+) ")"
+element: "elem("i (letters | unsigned_int+) ")"
 
-residue: "res("i (letters | UNSIGNED_INT+) ")"
+residue: "res("i (letters | unsigned_int+) ")"
 
-index.2: INT
+index.2: int
 
-indices.2: INT ("-"|"..") INT (".." INT)?
+indices.2: int ("-"|"..") int (".." int)?
 
 word: (LETTER|DIGIT)+
 letters: LETTER+
+unsigned_int: UNSIGNED_INT
+int: INT
 
 %import .terminals.DIGIT
 %import .terminals.NEWLINE
