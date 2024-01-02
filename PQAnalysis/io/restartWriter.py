@@ -9,7 +9,7 @@ RestartFileWriter
 
 import numpy as np
 
-from . import BaseWriter, RestartFileWriterError
+from . import BaseWriter
 from ..traj import MDEngineFormat, Frame
 from ..core import Cell
 

@@ -7,6 +7,11 @@ Classes
 -------
 TrajectoryWriter
     A class for writing a trajectory to a file.
+    
+Functions
+---------
+write_trajectory
+    Wrapper for TrajectoryWriter to write a trajectory to a file.
 """
 
 from beartype.typing import List
@@ -276,8 +281,24 @@ class TrajectoryWriter(BaseWriter):
 
     @property
     def format(self) -> MDEngineFormat:
+        """
+        Returns the format of the trajectory file.
+
+        Returns
+        -------
+        MDEngineFormat
+            The format of the trajectory file.
+        """
         return self._format
 
     @format.setter
     def format(self, format: MDEngineFormat | str) -> None:
+        """
+        Sets the format of the trajectory file.
+
+        Parameters
+        ----------
+        format : MDEngineFormat | str
+            The format of the trajectory file.
+        """
         self._format = MDEngineFormat(format)

@@ -15,7 +15,6 @@ from . import BaseReader, RestartFileReaderError
 from ..core import AtomicSystem, Atom, Cell
 from ..traj import MDEngineFormat, Frame
 from ..topology import Topology
-from ..types import Np1DIntArray, Np2DNumberArray
 
 
 class RestartFileReader(BaseReader):
