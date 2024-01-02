@@ -12,9 +12,7 @@ The core module contains the following submodules:
 The core module contains the following classes:
         
             - Atom
-            - Atoms
             - Element
-            - Elements
             - Cell
             - AtomicSystem
             
@@ -27,6 +25,11 @@ The core module contains the following exceptions:
             - ElementNotFoundError
             - AtomicSystemPositionsError
             - AtomicSystemMassError
+            
+The core module contains the following type hints:
+        
+                  - Atoms
+                  - Elements
 """
 
 from .common import distance
