@@ -1,5 +1,12 @@
 """
 A module containing the RDF class. The RDF class is used to calculate the radial distribution function of a system.
+
+...
+
+Classes
+-------
+RadialDistributionFunction
+    A class for calculating the radial distribution function of a system.
 """
 
 from __future__ import annotations
@@ -7,10 +14,10 @@ from __future__ import annotations
 import numpy as np
 import warnings
 
-from beartype.typing import List, Tuple
+from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
-from .. import RDFError, RDFWarning
+from . import RDFError, RDFWarning
 from ...types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
 from ...core import Atom, distance
 from ...traj import Trajectory
