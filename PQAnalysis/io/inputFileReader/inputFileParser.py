@@ -21,11 +21,10 @@ from __future__ import annotations
 
 from lark import Visitor, Transformer, Lark, Tree
 from glob import glob
-from pathlib import Path
 from beartype.typing import Any, List, Tuple
 from numbers import Integral, Real
 
-from ...types import Range, Bool
+from ...types import Range
 from .. import BaseReader
 from .formats import InputFileFormat
 from ... import __base_path__
@@ -313,7 +312,7 @@ class PrimitiveTransformer(Transformer):
         """
         return str(items[0]), "str", str(items[0].end_line)
 
-    def bool(self, items) -> Tuple[Bool, str, str]:
+    def bool(self, items) -> Tuple[bool, str, str]:
         """
         Method to transform bool values
 
@@ -324,7 +323,7 @@ class PrimitiveTransformer(Transformer):
 
         Returns
         -------
-        Tuple[Bool, str, str]
+        Tuple[bool, str, str]
             tuple containing the bool value, the string "bool", and the line where the token was defined.
         """
         return bool(items[0]), "bool", str(items[0].end_line)
