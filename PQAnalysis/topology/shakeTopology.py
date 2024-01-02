@@ -12,11 +12,11 @@ import numpy as np
 
 from beartype.typing import List
 
+from . import SelectionCompatible, Selection
 from ..core import Atom
 from ..traj import Trajectory
 from ..types import Np1DIntArray, Np2DIntArray
 from ..io import BaseWriter
-from .selection import SelectionCompatible, Selection
 
 
 class ShakeTopologyGenerator:
@@ -68,19 +68,17 @@ class ShakeTopologyGenerator:
             The trajectory to generate the shake topology for.
         """
 
-        start_frame = trajectory[0]
-        self._topology = start_frame.topology
-
-        target_indices, distances = start_frame.system.nearest_neighbours(
-            n=1, selection=self.selection, use_full_atom_info=self._use_full_atom_info)
-
-        target_indices = target_indices.flatten()
-        distances = distances.flatten()
+        atomic_system = trajectory[0].system
+        self._topology = trajectory.topology
 
         indices = self.selection.select(
             self._topology, self._use_full_atom_info)
 
-        distances = [distances]
+        target_indices, distances = atomic_system.nearest_neighbours(
+            n=1, selection=indices, use_full_atom_info=self._use_full_atom_info)
+
+        target_indices = target_indices.flatten()
+        distances = [distances.flatten()]
 
         for frame in trajectory[1:]:
             pos = frame.pos[indices]
@@ -146,4 +144,12 @@ class ShakeTopologyGenerator:
 
     @property
     def selection_object(self) -> SelectionCompatible:
+        """
+        Returns the selection object of the ShakeTopologyGenerator.
+
+        Returns
+        -------
+        SelectionCompatible
+            The selection object of the ShakeTopologyGenerator.
+        """
         return self.selection.selection_object

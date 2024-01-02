@@ -240,8 +240,24 @@ class Frame:
 
     @property
     def topology(self) -> Topology:
+        """
+        The topology of the system.
+
+        Returns
+        -------
+        Topology
+            The topology of the system.
+        """
         return self.system.topology
 
     @topology.setter
     def topology(self, topology: Topology) -> None:
+        """
+        The topology of the system.
+
+        Parameters
+        ----------
+        topology : Topology
+            The topology of the system.
+        """
         self.system.topology = topology

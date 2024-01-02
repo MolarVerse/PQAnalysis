@@ -15,7 +15,8 @@ import numpy as np
 
 from beartype.typing import List, Iterator, Any
 
-from . import Frame
+from . import Frame, TrajectoryError
+from ..topology import Topology
 from ..types import Np2DNumberArray, Np1DNumberArray
 
 
@@ -229,3 +230,30 @@ class Trajectory:
             The frames in the trajectory.
         """
         self._frames = frames
+
+    @property
+    def topology(self) -> Topology:
+        """
+        The topology of the trajectory.
+
+        Returns
+        -------
+        Topology
+            The topology of the trajectory.
+
+        Raises
+        ------
+        TrajectoryError
+            If the frames in the trajectory do not have the same topology.
+        """
+
+        if len(self.frames) == 0:
+            return Topology()
+
+        topology = self.frames[0].topology
+
+        if not all(frame.topology == topology for frame in self.frames):
+            raise TrajectoryError(
+                "All frames in the trajectory must have the same topology.")
+
+        return topology
