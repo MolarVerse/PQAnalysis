@@ -17,7 +17,7 @@ from beartype.typing import Any
 from numbers import Integral
 
 from .residue import Residues, Residue, QMResidue
-from .exceptions import ResidueError
+from .exceptions import ResidueError, TopologyError
 from ..core import Atoms, Element
 from ..types import Np1DIntArray
 
@@ -69,7 +69,7 @@ class Topology:
 
         Raises
         ------
-        ValueError
+        TopologyError
             If the number of atoms does not match the number of residue ids.
         """
 
@@ -90,7 +90,7 @@ class Topology:
         if residue_ids is None:
             residue_ids = np.zeros(len(self.atoms), dtype=int)
         if len(self.atoms) != len(residue_ids):
-            raise ValueError(
+            raise TopologyError(
                 "The number of atoms does not match the number of residue ids.")
 
         self._residue_ids = residue_ids
@@ -154,40 +154,6 @@ class Topology:
 
         return Topology(atoms=atoms, reference_residues=self.reference_residues, residue_ids=residue_ids, check_residues=self.check_residues)
 
-    def _find_residue_by_id(self, id: Integral) -> Residue:
-        """
-        Finds a residue by its id.
-
-        Parameters
-        ----------
-        id : Integral
-            The id of the residue to find.
-
-        Returns
-        -------
-        Residue
-            The residue with the given id.
-
-        Raises
-        ------
-        ResidueError
-            If the residue id is not unique.
-        ResidueError
-            If the residue id is not found.
-        """
-        bool_array = np.array(
-            [residue.id == id for residue in self.reference_residues])
-
-        residue = np.argwhere(bool_array)
-
-        if len(residue) > 1:
-            raise ResidueError(f"The residue id {id} is not unique.")
-
-        if len(residue) == 0:
-            raise ResidueError(f"The residue id {id} was not found.")
-
-        return residue[0]
-
     def _setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Residues:
         """
         Sets up the residues of the topology.
@@ -235,8 +201,10 @@ please set 'check_residues' to False"""
                     residues.append(QMResidue(atoms[atom_counter].element))
                 continue
 
-            residue = self._find_residue_by_id(residue_ids[atom_counter])
+            residue = _find_residue_by_id(
+                residue_ids[atom_counter], self.reference_residues)
 
+            # TODO: check this statement and implement check/warning if atoms have different element than reference residue
             for i in range(residue.n_atoms-1) + atom_counter:
                 if residue_ids[i] != residue_ids[atom_counter]:
                     raise ResidueError(
@@ -344,18 +312,6 @@ please set 'check_residues' to False"""
         """
         return self._atoms
 
-    @atoms.setter
-    def atoms(self, value: Atoms):
-        """
-        Sets the atoms of the topology.
-
-        Parameters
-        ----------
-        value : Atoms
-            The atoms of the topology.
-        """
-        self._atoms = value
-
     @property
     def atomtype_names(self) -> list[str]:
         """
@@ -416,6 +372,7 @@ please set 'check_residues' to False"""
         """
         return len(self.residues)
 
+    @property
     def n_QM_residues(self) -> int:
         """
         Returns the number of QM residues in the topology.
@@ -427,6 +384,7 @@ please set 'check_residues' to False"""
         """
         return len([residue for residue in self.residues if isinstance(residue, QMResidue)])
 
+    @property
     def n_MM_residues(self) -> int:
         """
         Returns the number of MM residues in the topology.
@@ -438,6 +396,7 @@ please set 'check_residues' to False"""
         """
         return self.n_residues - self.n_QM_residues
 
+    @property
     def n_unique_residues(self) -> int:
         """
         Returns the number of unique residues in the topology.
@@ -448,3 +407,41 @@ please set 'check_residues' to False"""
             The number of unique residues in the topology.
         """
         return len(set(self.residue_ids))
+
+
+def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
+    """
+    Finds a residue by its id.
+
+    Parameters
+    ----------
+    id : Integral
+        The id of the residue to find.
+    residues : Residues
+        The residues to search in - a list of residues.
+
+    Returns
+    -------
+    Residue
+        The residue with the given id.
+
+    Raises
+    ------
+    ResidueError
+        If the residue id is not unique.
+    ResidueError
+        If the residue id is not found.
+    """
+    bool_array = np.array(
+        [residue.id == id for residue in residues])
+
+    residues = np.array(residues)
+    residue = residues[np.argwhere(bool_array)].flatten()
+
+    if len(residue) > 1:
+        raise ResidueError(f"The residue id {id} is not unique.")
+
+    if len(residue) == 0:
+        raise ResidueError(f"The residue id {id} was not found.")
+
+    return residue[0]

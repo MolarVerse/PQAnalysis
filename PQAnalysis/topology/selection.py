@@ -79,14 +79,15 @@ class Selection:
                 This string will be parsed based on a Lark grammar. Which is defined as follows:
 
                     - simple word containing only letters and numbers: the atom type with the given name is selected
-                    - integer: the atom with the given index is selected
-                    - integer1..integer2: the indices from integer1 to integer2 are selected
-                    - integer1-integer2: the indices from integer1 to integer2 are selected
-                    - integer1..integer2..integer3: the indices from integer1 to integer3 with a step size of integer3 are selected
-                    - atom(atomtype, atomic_number): the atom with the given atom type and atomic number is selected
-                    - atom(atomtype, element_symbol): the atom with the given atom type and element symbol is selected
-                    - element(atomic_number): all atoms with the given element type are selected
-                    - element(element_symbol): all atoms with the given element type are selected
+                    - <integer>: the atom with the given index is selected
+                    - <integer1>..<integer2>: the indices from integer1 to integer2 are selected
+                    - <integer1>-<integer2>: the indices from integer1 to integer2 are selected
+                    - <integer1>..<integer2>..<integer3>: the indices from integer1 to integer3 with a step size of integer3 are selected
+                    - atom(<atomtype>, <atomic_number>): the atom with the given atom type and atomic number is selected
+                    - atom(<atomtype>, <element_symbol>): the atom with the given atom type and element symbol is selected
+                    - elem(<atomic_number>): all atoms with the given element type are selected
+                    - elem(<element_symbol>): all atoms with the given element type are selected
+                    - *: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
 
                 All of the above statements can be combined with the following operators:
 
@@ -492,6 +493,23 @@ class SelectionTransformer(Transformer):
             return np.arange(items[0], items[1] + 1)
         elif len(items) == 3:
             return np.arange(items[0], items[2] + 1, items[1])
+
+    def all(self, items) -> Np1DIntArray:
+        """
+        Returns all indices.
+
+        Parameters
+        ----------
+        items : List[Np1DIntArray]
+            The indices to get the indices of.
+
+        Returns
+        -------
+        Np1DIntArray
+            The indices of the all Token.
+        """
+
+        return np.arange(self.topology.n_atoms)
 
     def statement(self, items) -> Np1DIntArray:
         """
