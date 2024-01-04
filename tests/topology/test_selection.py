@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+from . import pytestmark
+
 from PQAnalysis.topology import Selection, Topology
 from PQAnalysis.core import Atom, Element
 
