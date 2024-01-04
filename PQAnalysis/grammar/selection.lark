@@ -13,6 +13,7 @@ or_statement: statement ((",") statement)*
           | element 
           | index 
           | indices
+          | all
           | and_statement
           | without_statement
           | or_statement
@@ -30,10 +31,12 @@ index.2: integer
 
 indices.2: integer ("-"|"..") integer (".." integer)?
 
-?word.3: (LETTER|DIGIT)+
+all.3: "all" | "*"
+
+?word.2: (LETTER|DIGIT)+
 ?letters.2: LETTER+
-?unsigned_integer: UNSIGNED_INT
 ?integer.2: INT
+?unsigned_integer: UNSIGNED_INT
 
 %import .terminals.DIGIT
 %import .terminals.NEWLINE

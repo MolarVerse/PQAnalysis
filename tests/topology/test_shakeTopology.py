@@ -87,7 +87,7 @@ class TestShakeTopologyGenerator:
         generator.write_topology()
 
         captured = capsys.readouterr()
-        assert captured.out == f"""
+        assert captured.out == """
 SHAKE 3  2  0
 2 1 0.8035533905932738
 3 4 0.8035533905932737

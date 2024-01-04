@@ -24,7 +24,7 @@ The topology package contains the following exceptions:
         - ResidueError
 """
 
-from .exceptions import ResidueError
+from .exceptions import ResidueError, TopologyError
 
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
