@@ -2,6 +2,8 @@ from lark import Token
 
 from PQAnalysis.topology.selection import SelectionTransformer
 
+from . import pytestmark
+
 
 class TestSelectionTransformer:
     def test__init__(self):

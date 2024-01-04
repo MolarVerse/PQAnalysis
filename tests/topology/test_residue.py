@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.topology import Residue, ResidueError
 from PQAnalysis.core import Element
 

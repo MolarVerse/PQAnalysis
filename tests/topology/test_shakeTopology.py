@@ -4,6 +4,8 @@ from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
 from PQAnalysis.core import Atom, AtomicSystem
 from PQAnalysis.traj import Frame, Trajectory
 
+from . import pytestmark
+
 
 class TestShakeTopologyGenerator:
     def test__init__(self):
