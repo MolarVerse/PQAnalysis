@@ -28,7 +28,7 @@ class TestPrimitiveTransformer:
         token = Token("INT", "1")
         token.end_line = 1
 
-        assert transformer.int([token]) == (1, "int", "1")
+        assert transformer.integer([token]) == (1, "int", "1")
 
     def test_word(self):
         transformer = PrimitiveTransformer()
@@ -42,7 +42,7 @@ class TestPrimitiveTransformer:
         token = Token("BOOL", "True")
         token.end_line = 1
 
-        assert transformer.bool([token]) == (True, "bool", "1")
+        assert transformer.boolean([token]) == (True, "bool", "1")
 
 
 class TestComposedTransformer:

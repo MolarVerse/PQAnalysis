@@ -12,8 +12,7 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import SelectionCompatible, Selection
-from ..core import Atom
+from .selection import SelectionCompatible, Selection
 from ..traj import Trajectory
 from ..types import Np1DIntArray, Np2DIntArray
 from ..io import BaseWriter

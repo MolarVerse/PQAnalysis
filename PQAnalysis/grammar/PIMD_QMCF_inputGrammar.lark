@@ -14,9 +14,9 @@ expression: assign+
 // just for namespace reasons
 %import .rules.glob
 %import .rules.word
-%import .rules.int
+%import .rules.integer
 %import .rules.float
-%import .rules.bool
+%import .rules.boolean
 
 %import .terminals.WS
 %import .terminals.COMMENT -> COMMENT

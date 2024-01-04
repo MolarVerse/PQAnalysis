@@ -16,7 +16,8 @@ import numpy as np
 from beartype.typing import Any
 from numbers import Integral
 
-from . import Residues, Residue, QMResidue, ResidueError
+from .residue import Residues, Residue, QMResidue
+from .exceptions import ResidueError
 from ..core import Atoms, Element
 from ..types import Np1DIntArray
 

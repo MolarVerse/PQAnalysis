@@ -26,6 +26,6 @@ The topology package contains the following exceptions:
 
 from .exceptions import ResidueError
 
-from .residue import Residue, Residues, QMResidue
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
+from .residue import Residue, Residues, QMResidue

@@ -14,7 +14,7 @@ import numpy as np
 from numbers import Real
 
 from ._decorators import check_atoms_has_mass, check_atoms_pos
-from .. import Cell
+from ..cell import Cell
 from ...types import Np1DNumberArray
 
 

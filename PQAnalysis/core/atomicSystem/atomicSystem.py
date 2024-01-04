@@ -19,7 +19,8 @@ from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
 
-from .. import Atom, Atoms, Cell
+from ..atom import Atom, Atoms
+from ..cell import Cell
 from ...types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from ...topology import Topology
 

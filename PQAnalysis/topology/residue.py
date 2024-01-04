@@ -11,12 +11,17 @@ QMResidue
 
 from __future__ import annotations
 
+# library imports
+import numpy as np
+
+# 3rd party object imports
 from numbers import Real
 from beartype.typing import List
 from beartype.vale import Is
 from typing import Annotated
 
-from . import ResidueError
+# local imports
+from .exceptions import ResidueError
 from ..types import Np1DIntArray, Np1DNumberArray
 from ..core import Elements, Element
 
@@ -330,4 +335,4 @@ class QMResidue(Residue):
             The element of the QM residue.
         """
         super().__init__(name="QM", id=0, total_charge=0.0, elements=[
-            element], atom_types=[0], partial_charges=[element.atomic_number])
+            element], atom_types=np.array([0]), partial_charges=np.array([element.atomic_number]))

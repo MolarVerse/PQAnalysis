@@ -14,7 +14,6 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import Any, List
-from multimethod import multimethod
 
 from . import FrameError
 from ..topology import Topology
