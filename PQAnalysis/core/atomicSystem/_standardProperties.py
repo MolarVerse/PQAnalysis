@@ -9,10 +9,10 @@ _StandardPropertiesMixin
     A mixin class containing the standard properties of an atomic system (i.e. standard getter and setter methods).
 """
 
-from .. import Atoms
-from .. import Cell
+from ..atom import Atoms
+from ..cell import Cell
 from ...types import Np1DNumberArray, Np2DNumberArray
-from ...topology import Topology
+from ...topology.topology import Topology
 
 
 class _StandardPropertiesMixin:

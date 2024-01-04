@@ -56,8 +56,16 @@ class TestResidue:
             exception.value) == "The number of partial_charges must be the same as the number of atoms."
 
         with pytest.raises(ResidueError) as exception:
-            residue = Residue(name="name", id=0, total_charge=0.0,
-                              elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1]),
-                              partial_charges=np.array([0.0, 0.1, 0.1]))
+            Residue(name="name", id=0, total_charge=0.0,
+                    elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1]),
+                    partial_charges=np.array([0.0, 0.1, 0.1]))
         assert str(
             exception.value) == "The number of elements, atom_types and partial_charges must be the same."
+
+    def test__str__(self):
+        residue = Residue(name="name", id=0, total_charge=0.0,
+                          elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1, 1]),
+                          partial_charges=np.array([0.0, 0.1, 0.1]))
+
+        assert str(
+            residue) == "Residue(name=name, id=0, total_charge=0.0, n_atoms=3)"

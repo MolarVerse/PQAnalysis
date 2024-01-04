@@ -280,7 +280,7 @@ class PrimitiveTransformer(Transformer):
         """
         return float(items[0]), "float", str(items[0].end_line)
 
-    def int(self, items) -> Tuple[Integral, str, str]:
+    def integer(self, items) -> Tuple[int, str, str]:
         """
         Method to transform int values
 
@@ -312,7 +312,7 @@ class PrimitiveTransformer(Transformer):
         """
         return str(items[0]), "str", str(items[0].end_line)
 
-    def bool(self, items) -> Tuple[bool, str, str]:
+    def boolean(self, items) -> Tuple[bool, str, str]:
         """
         Method to transform bool values
 

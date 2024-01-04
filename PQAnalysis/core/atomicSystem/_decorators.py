@@ -11,7 +11,7 @@ check_atoms_has_mass
     Decorator which checks that all atoms have mass information.
 """
 
-from .. import AtomicSystemPositionsError, AtomicSystemMassError
+from ..exceptions import AtomicSystemPositionsError, AtomicSystemMassError
 
 
 def check_atoms_pos(func):

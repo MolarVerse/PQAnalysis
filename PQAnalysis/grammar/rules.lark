@@ -6,22 +6,22 @@
             
 ?array: "[" (primitive ",")* primitive "]"
 
-?range:     int "-" int "-" int
-         |  int ".." int ".." int
-         |  int "-" int
-         |  int ".." int
+?range:     integer "-" integer "-" integer
+         |  integer ".." integer ".." integer
+         |  integer "-" integer
+         |  integer ".." integer
 
 ?glob: WORD? /[*]/ WORD?
             
 ?primitive:  float
-         |   int
+         |   integer
          |   word
-         |   bool
+         |   boolean
 
 word: WORD
 float.3: FLOAT
-int.2: INT
-bool.2: BOOL
+integer.2: INT
+boolean.2: BOOL
 
 %import .terminals.WORD
 %import .terminals.FLOAT

@@ -1,29 +1,39 @@
 start: expression
 
-expression: statement ("," statement)*
+expression: statement NEWLINE*
 
-statement: atomtype
-         | atom
-         | element
-         | index
-         | indices
+or_statement: statement ((",") statement)*
+
+?and_statement.2: statement (("&") statement)*
+
+?without_statement.3: statement (("|") statement)*
+
+?statement: atomtype 
+          | atom
+          | element 
+          | index 
+          | indices
+          | and_statement
+          | without_statement
+          | or_statement
+          | ("(") statement (")")
 
 atomtype: word
 
-atom: "atom("i word "," (letters | unsigned_int+) ")"
+atom: "atom("i word "," (letters | unsigned_integer+) ")"
 
-element: "elem("i (letters | unsigned_int+) ")"
+element: "elem("i (letters | unsigned_integer+) ")"
 
-residue: "res("i (letters | unsigned_int+) ")"
+residue: "res("i (letters | unsigned_integer+) ")"
 
-index.2: int
+index.2: integer
 
-indices.2: int ("-"|"..") int (".." int)?
+indices.2: integer ("-"|"..") integer (".." integer)?
 
-word: (LETTER|DIGIT)+
-letters: LETTER+
-unsigned_int: UNSIGNED_INT
-int: INT
+?word.3: (LETTER|DIGIT)+
+?letters.2: LETTER+
+?unsigned_integer: UNSIGNED_INT
+?integer.2: INT
 
 %import .terminals.DIGIT
 %import .terminals.NEWLINE

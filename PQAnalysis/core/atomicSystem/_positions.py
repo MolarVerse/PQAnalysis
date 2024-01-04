@@ -14,7 +14,6 @@ import numpy as np
 from beartype.typing import Tuple
 
 from ._decorators import check_atoms_pos
-
 from .. import distance
 from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt
 from ...topology.selection import SelectionCompatible, Selection
