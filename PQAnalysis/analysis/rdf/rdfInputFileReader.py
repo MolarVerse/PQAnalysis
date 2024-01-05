@@ -1,26 +1,32 @@
-from ...io import InputFileParser
-from ...io.inputFileReader.exceptions import InputFileError
-from ...io.inputFileReader.PQAnalysis.parse import parse_traj_files_key, parse_n_bins_key, parse_r_max_key, parse_r_min_key
+from ...io import PQAnalysisInputFileReader as Reader
 
 
-# TODO: implement this as an inherited class from PQAnalysisInputFileReader!
-class RDFInputFileReader:
+class RDFInputFileReader(Reader):
 
-    required_keys = ["traj_files", "reference_selection", "target_selection"]
+    required_keys = [
+        Reader.traj_files_key,
+        Reader.reference_selection_key,
+        Reader.target_selection_key,
+        Reader.out_file_key
+    ]
+
+    known_keys = required_keys + [
+        Reader.r_max_key,
+        Reader.r_min_key,
+        Reader.delta_r_key,
+        Reader.n_bins_key,
+        Reader.use_full_atom_info_key,
+        Reader.log_file_key
+    ]
 
     def __init__(self, filename: str) -> None:
         self.filename = filename
-        self.parser = InputFileParser(filename)
+        super().__init__(filename)
 
     def read(self):
-        self.dictionary = self.parser.parse()
+        super().read()
+        super().check_required_keys(self.required_keys)
+        super().check_known_keys(self.known_keys)
 
-        if not all([key in self.dictionary.keys() for key in self.required_keys]):
-            raise InputFileError(
-                f"Not all required keys were set in the input file! The required keys are: {self.required_keys}.")
-
-        self.traj_files = parse_traj_files_key(self.dictionary)
-
-        self.n_bins = parse_n_bins_key(self.dictionary)
-        self.r_max = parse_r_max_key(self.dictionary)
-        self.r_min = parse_r_min_key(self.dictionary)
+        if self.use_full_atom_info is None:
+            self.use_full_atom_info = False

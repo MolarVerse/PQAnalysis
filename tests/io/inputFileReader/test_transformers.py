@@ -104,8 +104,10 @@ class TestComposedTransformer:
         token1 = ("word1", "str", "1")
         token2 = ("word2", "str", "1")
 
+        string_list_type = "list(str)"
+
         assert transformer.array([token1, token2]) == (
-            ["word1", "word2"], "list(str)", "1")
+            ["word1", "word2"], string_list_type, "1")
 
         token1 = (1, "int", "1")
         token2 = (1.0, "float", "1")
@@ -125,19 +127,19 @@ class TestComposedTransformer:
         token2 = ("word", "str", "1")
 
         assert transformer.array([token1, token2]) == (
-            ["1", "word"], "list(str)", "1")
+            ["1", "word"], string_list_type, "1")
 
         token1 = (1.0, "float", "1")
         token2 = ("word", "str", "1")
 
         assert transformer.array([token1, token2]) == (
-            ["1.0", "word"], "list(str)", "1")
+            ["1.0", "word"], string_list_type, "1")
 
         token1 = (True, "bool", "1")
         token2 = ("word", "str", "1")
 
         assert transformer.array([token1, token2]) == (
-            ["True", "word"], "list(str)", "1")
+            ["True", "word"], string_list_type, "1")
 
         token1 = (1, "int", "1")
         token2 = (2, "range", "1")
