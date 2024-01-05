@@ -144,6 +144,28 @@ class Selection:
 
         return np.unique(_selection(self.selection_object, topology, use_full_atom_info))
 
+    def __str__(self) -> str:
+        """
+        Returns the string representation of the selection object.
+
+        Returns
+        -------
+        str
+            The string representation of the selection object.
+        """
+        return str(self.selection_object)
+
+    def __repr__(self) -> str:
+        """
+        Returns the string representation of the selection object.
+
+        Returns
+        -------
+        str
+            The string representation of the selection object.
+        """
+        return str(self.selection_object)
+
 
 @overload
 def _selection(atoms: Atoms | Atom | Element | Elements, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:

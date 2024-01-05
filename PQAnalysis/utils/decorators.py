@@ -2,6 +2,8 @@
 A module containing different decorators which could be useful.
 """
 
+import time
+
 from collections import defaultdict
 
 
@@ -59,3 +61,27 @@ def instance_function_count_decorator(func):
         func(self, *args, **kwargs)
     new_func.__name__ = func.__name__
     return new_func
+
+
+def timeit_in_class(func):
+    """
+    Decorator which measures the time a function of a class takes to execute
+    and sets elapsed time as an attribute of the class.
+
+    Parameters
+    ----------
+    func : function
+        Function to be decorated.
+
+    Returns
+    -------
+    wrapper : function
+        Decorated function.
+    """
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        end = time.time()
+        setattr(args[0], 'elapsed_time', end - start)
+        return result
+    return wrapper
