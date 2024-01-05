@@ -1,8 +1,9 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.traj import Frame, Trajectory
+from PQAnalysis.traj import Frame, Trajectory, TrajectoryError
 from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.topology import Topology
 
 
 class TestTrajectory:
@@ -21,6 +22,9 @@ class TestTrajectory:
 
         traj = Trajectory(self.frames)
         assert traj.frames == self.frames
+
+        traj.frames = []
+        assert traj.frames == []
 
         assert Trajectory().frames == []
 
@@ -161,3 +165,23 @@ class TestTrajectory:
         print(len(traj))
 
         assert traj.frames == [self.frame1]
+
+    def test_property_topology(self):
+        frame1 = Frame()
+        frame2 = Frame()
+
+        traj = Trajectory([frame1, frame2])
+        assert traj.topology == Topology()
+
+        frame2 = Frame(system=AtomicSystem(atoms=[Atom("C")]))
+        traj = Trajectory([frame1, frame2])
+        with pytest.raises(TrajectoryError) as exception:
+            traj.topology
+        assert str(
+            exception.value) == "All frames in the trajectory must have the same topology."
+
+        traj = Trajectory([frame2, frame2])
+        assert traj.topology == Topology(atoms=[Atom("C")])
+
+        traj = Trajectory()
+        assert traj.topology == Topology()

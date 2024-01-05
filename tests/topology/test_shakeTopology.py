@@ -1,10 +1,10 @@
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
 from PQAnalysis.core import Atom, AtomicSystem
 from PQAnalysis.traj import Frame, Trajectory
-
-from . import pytestmark
 
 
 class TestShakeTopologyGenerator:

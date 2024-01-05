@@ -35,7 +35,7 @@ class Frame:
         The topology of the atomic system.
     """
 
-    def __init__(self, system: AtomicSystem = AtomicSystem(), topology: Topology | None = None) -> None:
+    def __init__(self, system: AtomicSystem = AtomicSystem()) -> None:
         """
         Initializes the Frame with the given parameters.
 
@@ -43,12 +43,8 @@ class Frame:
         ----------
         system : AtomicSystem, optional
             The atomic system, by default AtomicSystem()    
-        topology : Topology, optional
-            The topology of the atomic system, by default None
         """
         self.system = system
-        if topology is not None and topology != Topology():
-            self.system.topology = topology
 
     def compute_com_frame(self, group=None) -> Frame:
         """

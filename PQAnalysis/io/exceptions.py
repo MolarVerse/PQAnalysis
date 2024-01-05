@@ -13,8 +13,6 @@ MoldescriptorReaderError
     Exception raised for errors related to the MoldescriptorReader class
 RestartFileReaderError
     Exception raised for errors related to the RestartFileReader class
-RestartFileWriterError
-    Exception raised for errors related to the RestartFileWriter class
 TrajectoryReaderError
     Exception raised for errors related to the TrajectoryReader class
 """
@@ -55,16 +53,6 @@ class MoldescriptorReaderError(PQException):
 class RestartFileReaderError(PQException):
     """
     Exception raised for errors related to the RestartFileReader class
-    """
-
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
-
-
-class RestartFileWriterError(PQException):
-    """
-    Exception raised for errors related to the RestartFileWriter class
     """
 
     def __init__(self, message: str) -> None:

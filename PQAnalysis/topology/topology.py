@@ -1,5 +1,5 @@
 """
-A module containing the Topology class.
+A module containing the Topology class and related functions.
 
 ...
 
@@ -7,6 +7,13 @@ Classes
 -------
 Topology
     A class for representing a topology.
+    
+Functions
+---------
+_find_residue_by_id
+    Finds a residue by its id.
+_unique_residues_
+    Returns a list of unique residues.
 """
 
 from __future__ import annotations

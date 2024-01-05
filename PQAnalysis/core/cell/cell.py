@@ -205,7 +205,10 @@ class Cell(_StandardPropertiesMixin):
         str
             A string representation of the Cell.
         """
-        return f"Cell(x={self.x}, y={self.y}, z={self.z}, alpha={self.alpha}, beta={self.beta}, gamma={self.gamma})"
+        if self != Cell():
+            return f"Cell(x={self.x}, y={self.y}, z={self.z}, alpha={self.alpha}, beta={self.beta}, gamma={self.gamma})"
+        else:
+            return "Cell()"
 
     def __repr__(self) -> str:
         """

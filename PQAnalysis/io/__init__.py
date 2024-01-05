@@ -37,7 +37,6 @@ The io package contains the following exceptions:
         - FrameReaderError
         - MoldescriptorReaderError
         - RestartFileReaderError
-        - RestartFileWriterError
         - TrajectoryReaderError
 """
 
@@ -45,7 +44,6 @@ from .exceptions import BoxWriterError
 from .exceptions import FrameReaderError
 from .exceptions import MoldescriptorReaderError
 from .exceptions import RestartFileReaderError
-from .exceptions import RestartFileWriterError
 from .exceptions import TrajectoryReaderError
 
 
