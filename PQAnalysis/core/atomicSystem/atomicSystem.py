@@ -216,7 +216,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         str
             The string representation of the AtomicSystem.
         """
-        return f"AtomicSystem(atoms={self.atoms}, pos={self.pos}, vel={self.vel}, forces={self.forces}, charges={self.charges}, cell={self.cell}, topology={self.topology})"
+        return f"AtomicSystem(topology=({self.topology}), cell=({self.cell}))"
 
     def __repr__(self) -> str:
         """

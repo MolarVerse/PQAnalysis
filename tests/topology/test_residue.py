@@ -71,3 +71,4 @@ class TestResidue:
 
         assert str(
             residue) == "Residue(name=name, id=0, total_charge=0.0, n_atoms=3)"
+        assert str(residue) == repr(residue)

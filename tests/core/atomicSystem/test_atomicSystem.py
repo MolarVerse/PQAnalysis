@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.core import AtomicSystem, Atom, Cell, AtomicSystemPositionsError, AtomicSystemMassError
+from PQAnalysis.topology import Topology
 
 
 class TestAtomicSystem:
@@ -81,6 +82,26 @@ class TestAtomicSystem:
             system.center_of_mass
         assert str(
             exception.value) == AtomicSystemMassError.message
+
+        atoms = [Atom('C1', use_guess_element=False), Atom('H')]
+        topology = Topology(atoms=atoms)
+        with pytest.raises(ValueError) as exception:
+            AtomicSystem(atoms=atoms, topology=topology)
+        assert str(
+            exception.value) == "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
+
+        system = AtomicSystem(atoms=atoms)
+        topology = Topology(atoms=atoms, residue_ids=np.array([0, 1]))
+        assert system.topology != topology
+
+        system.topology = topology
+        assert system.topology == topology
+
+        topology = Topology(atoms=[Atom('C1', use_guess_element=False)])
+        with pytest.raises(ValueError) as exception:
+            system.topology = topology
+        assert str(
+            exception.value) == "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology"
 
     def test__eq__(self):
         system1 = AtomicSystem()
@@ -167,3 +188,22 @@ class TestAtomicSystem:
             system.n_atoms
         assert str(
             exception.value) == "The number of atoms (or atoms in the topology), positions, velocities, forces and charges must be equal."
+
+    def test__str__(self):
+        pos = np.array([[0, 0, 0], [1, 1, 1]])
+        vel = np.array([[0, 0, 0], [2, 2, 2]])
+        charges = np.array([0, 1])
+        forces = np.array([[0, 0, 0], [3, 3, 3]])
+        cell = Cell(0.75, 0.75, 0.75)
+        atoms = [Atom('C'), Atom('H')]
+
+        system = AtomicSystem()
+        assert str(
+            system) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
+        assert str(system) == repr(system)
+
+        system = AtomicSystem(atoms=atoms, pos=pos, cell=cell,
+                              vel=vel, charges=charges, forces=forces)
+        assert str(
+            system) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
+        assert str(system) == repr(system)
