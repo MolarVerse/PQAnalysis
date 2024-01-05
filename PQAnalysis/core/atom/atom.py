@@ -241,3 +241,15 @@ class Atom(metaclass=multimeta):
             The element of the atom
         """
         return self._element
+
+    @element.setter
+    def element(self, element: Element) -> None:
+        """
+        Sets the element of the atom
+
+        Parameters
+        ----------
+        element : Element
+            The element of the atom
+        """
+        self._element = element

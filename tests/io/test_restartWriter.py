@@ -40,10 +40,10 @@ H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0
 H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 
 """
 
-        topology = Topology()
-        topology._residue_ids = np.array([1, 2])
+        # topology = Topology()
+        # topology._residue_ids = np.array([1, 2])
 
-        frame = Frame(AtomicSystem(atoms, positions), topology)
+        # frame = Frame(AtomicSystem(atoms, positions), topology)
 
 #         writer.format = MDEngineFormat.QMCFC
 
