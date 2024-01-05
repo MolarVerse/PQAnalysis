@@ -146,9 +146,7 @@ class TestTrajectory:
         traj1 = Trajectory(frames1)
         traj2 = Trajectory(frames2)
         traj3 = Trajectory(frames3)
-        assert traj1 == traj1
         assert traj1 == traj3
-        assert traj2 == traj2
         assert traj1 != traj2
         assert traj2 != traj3
 

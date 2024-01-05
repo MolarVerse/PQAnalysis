@@ -33,7 +33,7 @@ class TestRestartWriter:
         writer._write_atoms(frame)
 
         captured = capsys.readouterr()
-        assert captured.out == f"""
+        assert captured.out == """
 C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
 H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 
 H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 
@@ -48,7 +48,7 @@ H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
         writer._write_atoms(frame)
 
         captured = capsys.readouterr()
-        assert captured.out == f"""
+        assert captured.out == """
 C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 H    1    2    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0
 H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
@@ -74,7 +74,7 @@ H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0 0
         writer.write(frame)
 
         captured = capsys.readouterr()
-        assert captured.out == f"""
+        assert captured.out == """
 Box  10.0 10.0 10.0  90 90 90
 C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 
 H    1    0    1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 
