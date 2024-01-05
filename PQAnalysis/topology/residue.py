@@ -16,7 +16,7 @@ import numpy as np
 
 # 3rd party object imports
 from numbers import Real
-from beartype.typing import List
+from beartype.typing import Any
 from beartype.vale import Is
 from typing import Annotated
 
@@ -306,6 +306,30 @@ class Residue:
             The string representation of the Residue.
         """
         return self.__str__()
+
+    def __eq__(self, other: Any) -> bool:
+        """
+        Checks whether the Residue is equal to another Residue.
+
+        Parameters
+        ----------
+        other : Any
+            The other Residue to compare to.
+
+        Returns
+        -------
+        bool
+            True if the Residue is equal to the other Residue, False otherwise.
+        """
+
+        is_equal = True
+        is_equal &= self.name.lower() == other.name.lower()
+        is_equal &= self.id == other.id
+        is_equal &= np.allclose(self.total_charge, other.total_charge)
+        is_equal &= self.elements == other.elements
+        is_equal &= np.allclose(self.atom_types, other.atom_types)
+        is_equal &= np.allclose(self.partial_charges, other.partial_charges)
+        return is_equal
 
 
 class QMResidue(Residue):

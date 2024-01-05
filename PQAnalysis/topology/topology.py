@@ -12,12 +12,13 @@ Topology
 from __future__ import annotations
 
 import numpy as np
+import warnings
 
-from beartype.typing import Any
+from beartype.typing import Any, Tuple
 from numbers import Integral
 
 from .residue import Residues, Residue, QMResidue
-from .exceptions import ResidueError, TopologyError
+from .exceptions import ResidueError, TopologyError, ResidueWarning
 from ..core import Atoms, Element
 from ..types import Np1DIntArray
 
@@ -94,7 +95,8 @@ class Topology:
                 "The number of atoms does not match the number of residue ids.")
 
         self._residue_ids = residue_ids
-        self._residues = self._setup_residues(self.residue_ids, self.atoms)
+        self._residues, self._atoms = self._setup_residues(
+            self.residue_ids, self.atoms)
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -119,21 +121,18 @@ class Topology:
         if self.n_atoms != other.n_atoms:
             return False
 
-        if self.n_atoms == 0:
-            return is_equal
-
         is_equal &= self.atoms == other.atoms
         is_equal &= np.all(self.residue_ids == other.residue_ids)
 
         return bool(is_equal)
 
-    def __getitem__(self, indices: Np1DIntArray) -> Topology:
+    def __getitem__(self, indices: Np1DIntArray | int) -> Topology:
         """
         Returns a new Topology with the given indices.
 
         Parameters
         ----------
-        indices : Np1DIntArray
+        indices : Np1DIntArray | int
             The indices of the atoms to return.
 
         Returns
@@ -142,6 +141,9 @@ class Topology:
             The new Topology with the given indices.
         """
         reference_residues = self.reference_residues
+
+        if isinstance(indices, int):
+            indices = np.array([indices])
 
         if len(reference_residues) == 0:
             reference_residues = None
@@ -154,7 +156,7 @@ class Topology:
 
         return Topology(atoms=atoms, reference_residues=self.reference_residues, residue_ids=residue_ids, check_residues=self.check_residues)
 
-    def _setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Residues:
+    def _setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Tuple[Residues, Atoms]:
         """
         Sets up the residues of the topology.
 
@@ -175,6 +177,7 @@ class Topology:
 
         Raises
         ------
+        #TODO:
         ResidueError
             If the residue ids are not contiguous.
         ResidueError
@@ -184,7 +187,16 @@ class Topology:
         residues = []
 
         if len(self.reference_residues) == 0 or not self.check_residues:
-            return residues
+            return residues, atoms
+
+        bool_array = [id in self.reference_residue_ids or id ==
+                      0 for id in residue_ids]
+
+        if not np.all(bool_array):
+            not_found_residue_ids = np.unique(
+                residue_ids[np.argwhere(~np.array(bool_array))])
+            raise ResidueError(
+                f"Residue ids {not_found_residue_ids} have no corresponding reference residue.")
 
         atom_counter = 0
         while atom_counter < len(residue_ids):
@@ -199,22 +211,29 @@ please set 'check_residues' to False"""
                     raise ResidueError(message)
                 else:
                     residues.append(QMResidue(atoms[atom_counter].element))
-                continue
+                    atom_counter += 1
+                    continue
 
             residue = _find_residue_by_id(
                 residue_ids[atom_counter], self.reference_residues)
 
-            # TODO: check this statement and implement check/warning if atoms have different element than reference residue
-            for i in range(residue.n_atoms-1) + atom_counter:
+            residue_element_counter = 0
+            for i in np.arange(residue.n_atoms) + atom_counter:
+                if atoms[i].element != Element() and atoms[i].element != residue.elements[residue_element_counter]:
+                    warnings.warn(
+                        f"The element of atom {i} ({atoms[i].element}) does not match the element of the reference residue {residue.name} ({residue.elements[residue_element_counter]}). Therefore the element type of the residue description will be used within the topology format!", ResidueWarning)
+
+                    atoms[i].element = residue.elements[residue_element_counter]
+
                 if residue_ids[i] != residue_ids[atom_counter]:
                     raise ResidueError(
-                        f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {atom_counter}-{atom_counter + residue.n_atoms-1}")
+                        f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {atom_counter}-{atom_counter + residue.n_atoms-1}.")
 
             residues.append(residue)
 
             atom_counter += residue.n_atoms
 
-        return residues
+        return residues, atoms
 
     def __str__(self) -> str:
         """
@@ -262,7 +281,8 @@ please set 'check_residues' to False"""
             Whether the residues should be checked.
         """
         self._check_residues = value
-        self._setup_residues(self.residue_ids, self.atoms)
+        self._residues, self._atoms = self._setup_residues(
+            self.residue_ids, self.atoms)
 
     @property
     def reference_residue_ids(self) -> Np1DIntArray:
@@ -406,7 +426,7 @@ please set 'check_residues' to False"""
         int
             The number of unique residues in the topology.
         """
-        return len(set(self.residue_ids))
+        return len(_unique_residues_(self.residues))
 
 
 def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
@@ -445,3 +465,26 @@ def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
         raise ResidueError(f"The residue id {id} was not found.")
 
     return residue[0]
+
+
+def _unique_residues_(residues: Residues) -> Residues:
+    """
+    Returns a list of unique residues.
+
+    Parameters
+    ----------
+    residues : Residues
+        The residues to make unique.
+
+    Returns
+    -------
+    Residues
+        A list of unique residues.
+    """
+    unique_residues = []
+
+    for residue in residues:
+        if residue not in unique_residues:
+            unique_residues.append(residue)
+
+    return unique_residues
