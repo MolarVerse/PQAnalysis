@@ -73,10 +73,13 @@ class RadialDistributionFunction:
         if len(traj) == 0:
             raise RDFError("Trajectory cannot be of length 0.")
 
-        self.reference_indices = Selection(reference_species).select(
-            self.traj[0].topology, use_full_atom_info)
-        self.target_indices = Selection(target_species).select(
-            self.traj[0].topology, use_full_atom_info)
+        self.reference_selection = Selection(reference_species)
+        self.target_selection = Selection(target_species)
+
+        self.reference_indices = self.reference_selection.select(
+            self.traj.topology, use_full_atom_info)
+        self.target_indices = self.target_selection.select(
+            self.traj.topology, use_full_atom_info)
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
                         r_max=r_max, r_min=r_min)
@@ -210,6 +213,30 @@ class RadialDistributionFunction:
         differential_bins = self.bins - norm
 
         return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
+
+    @property
+    def n_frames(self) -> int:
+        """
+        Returns the number of frames of the RDF analysis.
+
+        Returns
+        -------
+        int
+            The number of frames of the RDF analysis.
+        """
+        return len(self.traj)
+
+    @property
+    def n_atoms(self) -> int:
+        """
+        Returns the number of atoms of the RDF analysis.
+
+        Returns
+        -------
+        int
+            The number of atoms of the RDF analysis.
+        """
+        return len(self.traj.topology.n_atoms)
 
 
 def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: PositiveReal, n_bins: PositiveInt) -> Np1DNumberArray:

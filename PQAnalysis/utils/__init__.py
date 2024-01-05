@@ -16,5 +16,5 @@ The utils package contains the following decorators:
             - instance_function_count_decorator
 """
 
-from .common import print_header
+from .common import print_header, header
 from .decorators import count_decorator, instance_function_count_decorator
