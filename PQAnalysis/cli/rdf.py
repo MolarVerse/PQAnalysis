@@ -10,14 +10,16 @@ def main():
     parser.add_argument('input_file', type=str, help='The input file.')
     parser.add_argument('-f', '--format', type=str, default="pimd-qmcf",
                         help='The format of the input trajectory. Default is "pimd-qmcf".')
+    parser.add_argument('--progress', action='store_true',
+                        default=False, help='Show progress bar.')
     args = parser.parse_args()
 
     format = MDEngineFormat(args.format)
 
-    _rdf(args.input_file, format)
+    _rdf(args.input_file, format, args.progress)
 
 
-def _rdf(input_file: str, format: MDEngineFormat):
+def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
     reader = RDFInputFileReader(input_file)
     reader.read()
 
@@ -35,7 +37,7 @@ def _rdf(input_file: str, format: MDEngineFormat):
         r_min=reader.r_min,
     )
 
-    rdf_data = rdf.run()
+    rdf_data = rdf.run(with_progress_bar=with_progress_bar)
 
     writer = RDFOutputFileWriter(
         reader.out_file, reader.log_file, rdf_data, rdf)

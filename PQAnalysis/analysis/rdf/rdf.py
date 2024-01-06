@@ -169,9 +169,14 @@ class RadialDistributionFunction:
             self.n_bins, self.r_min, self.r_max, self.delta_r)
         self.bins = np.zeros(self.n_bins)
 
-    def run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
+    def run(self, with_progress_bar: bool = True) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
         """
         Runs the RDF analysis.
+
+        Parameters
+        ----------
+        with_progress_bar : bool, optional
+            Whether to show a progress bar or not, by default True.
 
         Returns
         -------assert r_max == 101.0
@@ -190,7 +195,9 @@ class RadialDistributionFunction:
         self._reference_density = len(
             self.reference_indices) / self._average_volume
 
-        for frame in tqdm(self.traj):
+        disable_progress_bar = not with_progress_bar
+
+        for frame in tqdm(self.traj, disable=disable_progress_bar):
             reference_positions = frame.pos[self.reference_indices]
             target_positions = frame.pos[self.target_indices]
 
