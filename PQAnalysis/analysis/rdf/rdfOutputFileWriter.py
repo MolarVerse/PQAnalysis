@@ -1,3 +1,14 @@
+"""
+A module containing the classes for writing related to an RDF analysis to a file.
+
+Classes
+-------
+RDFDataWriter
+    A class for writing the data of an RDF analysis to a file.
+RDFLogWriter
+    A class for writing the log (setup parameters) of an RDF analysis to a file.
+"""
+
 from beartype.typing import Tuple
 
 from . import RadialDistributionFunction
@@ -7,15 +18,36 @@ from ...utils import header
 
 
 class RDFDataWriter(BaseWriter):
-    def __inti__(self, filename: str,
+    """
+    Class for writing the data of an RDF analysis to a file.
+
+    Examples
+    --------
+    >>> RDFDataWriter("rdf.dat", rdf_data).write()
+    """
+
+    def __init__(self, filename: str,
                  data: Tuple[Np1DNumberArray, Np1DNumberArray,
                              Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
                  ) -> None:
+        """
+        It sets the filename and the data to write.
+
+        Parameters
+        ----------
+        filename : str
+            the filename to write to
+        data : Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
+            the data output from the RadialDistributionFunction.run() method
+        """
         self.filename = filename
         self.data = data
         super().__init__(filename)
 
     def write(self):
+        """
+        Writes the data to the file.
+        """
         super().open()
 
         for i in range(len(self.data[0])):
@@ -26,11 +58,39 @@ class RDFDataWriter(BaseWriter):
 
 
 class RDFLogWriter(BaseWriter):
+    """
+    Class for writing the log (setup parameters) of an RDF analysis to a file.
+
+    Examples
+    --------
+    >>> # to write the log before the RDF run() function is called
+    >>> RDFLogWriter("rdf.log", rdf).write_before_run()
+    >>>
+    >>> # to write the log after the RDF run() function is called
+    >>> RDFLogWriter("rdf.log", rdf).write_after_run()
+    """
+
     def __inti__(self, filename: str | None, rdf: RadialDistributionFunction) -> None:
+        """
+        It sets the filename and the RDF analysis object.
+
+        Parameters
+        ----------
+        filename : str | None
+            the filename to write to if None, the output is printed to stdout
+        rdf : RadialDistributionFunction
+            the RDF analysis object
+        """
         self.filename = filename
         super().__init__(filename)
 
     def write_before_run(self):
+        """
+        Writes the log before the RDF run() function is called.
+
+        This includes the general header of PQAnalysis
+        and the most important setup parameters of the RDF analysis.
+        """
         super().open()
 
         print(header, file=self.file)
@@ -63,6 +123,11 @@ class RDFLogWriter(BaseWriter):
         super().close()
 
     def write_after_run(self):
+        """
+        Writes the log after the RDF run() function is called.
+
+        This includes the elapsed time of the RDF run() function.
+        """
         super().open()
 
         print(f"    Elapsed time: {self.rdf.elapsed_time} ms", file=self.file)
