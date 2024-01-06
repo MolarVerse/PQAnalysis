@@ -4,6 +4,22 @@ PQAnalysis.traj package
 Submodules
 ----------
 
+PQAnalysis.traj.exceptions module
+---------------------------------
+
+.. automodule:: PQAnalysis.traj.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.traj.formats module
+------------------------------
+
+.. automodule:: PQAnalysis.traj.formats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 PQAnalysis.traj.frame module
 ----------------------------
 

@@ -7,13 +7,42 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   PQAnalysis.analysis
    PQAnalysis.cli
    PQAnalysis.core
    PQAnalysis.io
    PQAnalysis.physicalData
    PQAnalysis.tools
+   PQAnalysis.topology
    PQAnalysis.traj
    PQAnalysis.utils
+
+Submodules
+----------
+
+PQAnalysis.exceptions module
+----------------------------
+
+.. automodule:: PQAnalysis.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.formats module
+-------------------------
+
+.. automodule:: PQAnalysis.formats
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.types module
+-----------------------
+
+.. automodule:: PQAnalysis.types
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Module contents
 ---------------

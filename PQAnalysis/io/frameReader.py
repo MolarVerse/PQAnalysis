@@ -182,7 +182,7 @@ class FrameReader:
         It reads the number of atoms and the cell information from the header line.
         If the header line contains only the number of atoms, the cell is set Cell().
         If the header line contains only the number of atoms and the box dimensions,
-         the cell is set to a Cell object with the given box dimensions and box angles set to 90°.
+        the cell is set to a Cell object with the given box dimensions and box angles set to 90°.
 
         Parameters
         ----------
@@ -246,7 +246,8 @@ class FrameReader:
         """
         try:
             # Convert the lines to a numpy array
-            lines = np.array([line.split() for line in splitted_frame_string[2:2+n_atoms]])
+            lines = np.array([line.split()
+                             for line in splitted_frame_string[2:2+n_atoms]])
 
             # Extract the xyz coordinates and atom names
             xyz = lines[:, 1:4].astype(float)
@@ -255,8 +256,7 @@ class FrameReader:
             return xyz, atoms
         except ValueError:
             raise FrameReaderError(
-                    'Invalid file format in xyz coordinates of Frame.')
-            
+                'Invalid file format in xyz coordinates of Frame.')
 
     def _read_scalar(self, splitted_frame_string: List[str], n_atoms: int) -> Tuple[Np1DNumberArray, List[str]]:
         """

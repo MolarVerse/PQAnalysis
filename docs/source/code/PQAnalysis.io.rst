@@ -1,6 +1,14 @@
 PQAnalysis.io package
 =====================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   PQAnalysis.io.inputFileReader
+
 Submodules
 ----------
 
@@ -28,10 +36,50 @@ PQAnalysis.io.energyFileReader module
    :undoc-members:
    :show-inheritance:
 
+PQAnalysis.io.exceptions module
+-------------------------------
+
+.. automodule:: PQAnalysis.io.exceptions
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.io.frameReader module
+--------------------------------
+
+.. automodule:: PQAnalysis.io.frameReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 PQAnalysis.io.infoFileReader module
 -----------------------------------
 
 .. automodule:: PQAnalysis.io.infoFileReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.io.moldescriptorReader module
+----------------------------------------
+
+.. automodule:: PQAnalysis.io.moldescriptorReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.io.restartReader module
+----------------------------------
+
+.. automodule:: PQAnalysis.io.restartReader
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+PQAnalysis.io.restartWriter module
+----------------------------------
+
+.. automodule:: PQAnalysis.io.restartWriter
    :members:
    :undoc-members:
    :show-inheritance:

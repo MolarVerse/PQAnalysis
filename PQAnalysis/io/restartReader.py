@@ -23,8 +23,8 @@ class RestartFileReader(BaseReader):
 
     Inherits from the BaseReader class.
     It reads restart files from the following molecular dynamics engines:
-        - PIMD_QMCF
-        - QMCFC
+    - PIMD_QMCF
+    - QMCFC
 
 
     Attributes

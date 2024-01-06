@@ -18,17 +18,6 @@ from .exceptions import InputFileFormatError
 class InputFileFormat(Format):
     """
     An enumeration of the supported input formats.
-
-    ...
-
-    Attributes
-    ----------
-    PQANALYSIS : str
-        The PQANALYSIS format.
-    PIMD-QMCF : str
-        The PIMD-QMCF format.
-    QMCFC : str
-        The QMCFC format.
     """
 
     PQANALYSIS = "PQANALYSIS"

@@ -39,21 +39,6 @@ class Residue:
     In general residues are used to represent the different molecules in a system.
     In case a QMCF based simulation is performed, the residues are defined via 
     the moldescriptor file.
-
-    Attributes
-    ----------
-    name : str
-        The name of the residue.
-    id : int
-        The id of the residue.
-    total_charge : Real
-        The total charge of the residue.
-    elements : Elements
-        The elements of the residue.
-    atom_types : Np1DIntArray
-        The atom types of the residue.
-    partial_charges : Np1DNumberArray
-        The partial charges of the residue.
     """
 
     def __init__(self,

@@ -20,19 +20,6 @@ from ..formats import Format
 class TrajectoryFormat(Format):
     """
     An enumeration of the supported trajectory formats.
-
-    ...
-
-    Attributes
-    ----------
-    XYZ : str
-        The XYZ format.
-    VEL : str
-        The VEL format.
-    FORCE : str
-        The FORCE format.
-    CHARGE : str
-        The CHARGE format.
     """
 
     XYZ = "XYZ"
@@ -56,15 +43,6 @@ class TrajectoryFormat(Format):
 class MDEngineFormat(Format):
     """
     An enumeration of the supported MD engine formats.
-
-    ...
-
-    Attributes
-    ----------
-    PIMD-QMCF: str
-        The PIMD-QMCF format.
-    QMCFC: str
-        The QMCFC format.
     """
 
     PIMD_QMCF = "PIMD-QMCF"

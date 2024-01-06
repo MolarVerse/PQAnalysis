@@ -27,8 +27,7 @@ def write_trajectory(traj,
                      format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                      type: TrajectoryFormat | str = TrajectoryFormat.XYZ
                      ) -> None:
-    """
-    Wrapper for TrajectoryWriter to write a trajectory to a file.
+    """Wrapper for TrajectoryWriter to write a trajectory to a file.
 
     if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
     if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
@@ -56,33 +55,6 @@ class TrajectoryWriter(BaseWriter):
     Inherits from BaseWriter. See BaseWriter for more information.
 
     It can write a trajectory to a file in either a PIMD-QMCF format or a QMCFC format.
-
-    ...
-
-    Class Attributes
-    ----------------
-    formats : list of str
-        The available formats for the trajectory file.
-
-            #TODO: put this description into formats!!!
-            PIMD-QMCF format for one frame:
-                header line containing the number of atoms and the cell information (if available)
-                arbitrary comment line
-                coordinates of the atoms in the format 'element x y z'
-
-            QMCFC format for one frame:
-                header line containing the number of atoms and the cell information (if available)
-                arbitrary comment line
-                X 0.0 0.0 0.0
-                coordinates of the atoms in the format 'element x y z'
-
-    _type : TrajectoryFormat
-        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
-
-    Attributes
-    ----------
-    format : MDEngineFormat
-        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     """
 
     _format: MDEngineFormat
