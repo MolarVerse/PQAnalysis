@@ -27,14 +27,6 @@ class Trajectory:
     It can be indexed, iterated over, and added to another trajectory.
     The length of a trajectory is the number of frames in the trajectory.
     A frame can be checked for membership in a trajectory.
-
-    ...
-
-    Attributes
-    ----------
-    frames : list of Frame
-        The list of frames in the trajectory.
-
     """
 
     def __init__(self, frames: List[Frame] = None) -> None:

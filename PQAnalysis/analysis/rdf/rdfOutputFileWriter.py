@@ -11,7 +11,7 @@ RDFLogWriter
 
 from beartype.typing import Tuple
 
-from . import RadialDistributionFunction
+from .rdf import RadialDistributionFunction
 from ...types import Np1DNumberArray
 from ...io import BaseWriter
 from ...utils import header

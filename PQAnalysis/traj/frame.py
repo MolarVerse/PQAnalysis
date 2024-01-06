@@ -24,15 +24,6 @@ from ..types import Np2DNumberArray, Np1DNumberArray
 class Frame:
     """
     A class for storing atomic systems with topology information.
-
-    ...
-
-    Attributes
-    ----------
-    system : AtomicSystem
-        The atomic system.
-    topology : Topology
-        The topology of the atomic system.
     """
 
     def __init__(self, system: AtomicSystem = AtomicSystem()) -> None:
@@ -235,24 +226,9 @@ class Frame:
 
     @property
     def topology(self) -> Topology:
-        """
-        The topology of the system.
-
-        Returns
-        -------
-        Topology
-            The topology of the system.
-        """
+        """Topology: The topology of the system."""
         return self.system.topology
 
     @topology.setter
     def topology(self, topology: Topology) -> None:
-        """
-        The topology of the system.
-
-        Parameters
-        ----------
-        topology : Topology
-            The topology of the system.
-        """
         self.system.topology = topology

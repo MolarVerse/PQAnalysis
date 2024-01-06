@@ -35,13 +35,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         - The _IndexingMixin contains methods for indexing the atomic system
         - The _PositionsMixin contains methods for computing properties based on the positions of the atoms
 
-        Examples
-        --------
-        >>> AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
 
-        >>> AtomicSystem()
+    Examples
+    --------
+    >>> AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
 
-        >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
+    >>> AtomicSystem()
+
+    >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
     """
 
     def __init__(self,
