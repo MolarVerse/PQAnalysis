@@ -1,6 +1,6 @@
 import argparse
 
-from ..analysis import RadialDistributionFunction, RDFInputFileReader, RDFOutputFileWriter
+from ..analysis import RadialDistributionFunction, RDFInputFileReader, RDFDataWriter, RDFLogWriter
 from ..io import TrajectoryReader
 from ..traj import MDEngineFormat
 
@@ -14,9 +14,9 @@ def main():
                         default=False, help='Show progress bar.')
     args = parser.parse_args()
 
-    format = MDEngineFormat(args.format)
+    engine_format = MDEngineFormat(args.format)
 
-    _rdf(args.input_file, format, args.progress)
+    _rdf(args.input_file, engine_format, args.progress)
 
 
 def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
@@ -37,8 +37,9 @@ def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
         r_min=reader.r_min,
     )
 
+    RDFLogWriter(reader.log_file, rdf).write_before_run()
+
     rdf_data = rdf.run(with_progress_bar=with_progress_bar)
 
-    writer = RDFOutputFileWriter(
-        reader.out_file, reader.log_file, rdf_data, rdf)
-    writer.write()
+    RDFLogWriter(reader.log_file, rdf).write_after_run()
+    RDFDataWriter(reader.out_file, rdf_data).write()

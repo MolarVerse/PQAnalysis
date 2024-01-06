@@ -6,21 +6,6 @@ from ...io import BaseWriter
 from ...utils import header
 
 
-class RDFOutputFileWriter():
-    def __init__(self,
-                 data_filename: str,
-                 log_filename: str | None,
-                 data: Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray],
-                 rdf: RadialDistributionFunction) -> None:
-
-        self.data_writer = RDFDataWriter(data_filename, data)
-        self.log_writer = RDFLogWriter(log_filename, rdf)
-
-    def write(self):
-        self.data_writer.write()
-        self.log_writer.write()
-
-
 class RDFDataWriter(BaseWriter):
     def __inti__(self, filename: str,
                  data: Tuple[Np1DNumberArray, Np1DNumberArray,
