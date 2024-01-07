@@ -50,6 +50,9 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 autoclass_content = 'both'
+autodoc_class_signature = 'mixed'
+maximum_signature_line_length = 50
+add_module_names = False
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -75,6 +78,7 @@ highlight_language = 'python'
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+html_style = 'css/custom.css'
 html_theme_options = {
     'canonical_url': '',
     'analytics_id': '',  # Provided by Google in your dashboard
