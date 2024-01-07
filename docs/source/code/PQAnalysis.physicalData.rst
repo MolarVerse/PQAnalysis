@@ -1,24 +1,14 @@
-PQAnalysis.physicalData package
-===============================
+PQAnalysis.physicalData
+=======================
 
 Submodules
 ----------
 
-PQAnalysis.physicalData.energy module
--------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.physicalData.energy
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.physicalData.exceptions module
------------------------------------------
-
-.. automodule:: PQAnalysis.physicalData.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.physicalData.energy
+   PQAnalysis.physicalData.exceptions
 
 Module contents
 ---------------

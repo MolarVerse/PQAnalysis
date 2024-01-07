@@ -1,24 +1,14 @@
-PQAnalysis.core.cell package
-============================
+PQAnalysis.core.cell
+====================
 
 Submodules
 ----------
 
-PQAnalysis.core.cell.cell module
---------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.core.cell.cell
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.core.cell.standardProperties module
-----------------------------------------------
-
-.. automodule:: PQAnalysis.core.cell.standardProperties
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.core.cell.cell
+   PQAnalysis.core.cell.standardProperties
 
 Module contents
 ---------------

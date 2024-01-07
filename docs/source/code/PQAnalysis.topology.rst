@@ -1,48 +1,17 @@
-PQAnalysis.topology package
-===========================
+PQAnalysis.topology
+===================
 
 Submodules
 ----------
 
-PQAnalysis.topology.exceptions module
--------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.topology.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.topology.residue module
-----------------------------------
-
-.. automodule:: PQAnalysis.topology.residue
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.topology.selection module
-------------------------------------
-
-.. automodule:: PQAnalysis.topology.selection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.topology.shakeTopology module
-----------------------------------------
-
-.. automodule:: PQAnalysis.topology.shakeTopology
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.topology.topology module
------------------------------------
-
-.. automodule:: PQAnalysis.topology.topology
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.topology.exceptions
+   PQAnalysis.topology.residue
+   PQAnalysis.topology.selection
+   PQAnalysis.topology.shakeTopology
+   PQAnalysis.topology.topology
 
 Module contents
 ---------------

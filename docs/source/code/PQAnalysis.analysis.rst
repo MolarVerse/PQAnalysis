@@ -1,5 +1,5 @@
-PQAnalysis.analysis package
-===========================
+PQAnalysis.analysis
+===================
 
 Subpackages
 -----------

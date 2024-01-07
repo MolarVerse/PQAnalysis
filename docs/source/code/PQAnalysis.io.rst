@@ -1,5 +1,5 @@
-PQAnalysis.io package
-=====================
+PQAnalysis.io
+=============
 
 Subpackages
 -----------
@@ -12,93 +12,20 @@ Subpackages
 Submodules
 ----------
 
-PQAnalysis.io.base module
--------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.io.base
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.boxWriter module
-------------------------------
-
-.. automodule:: PQAnalysis.io.boxWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.energyFileReader module
--------------------------------------
-
-.. automodule:: PQAnalysis.io.energyFileReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.exceptions module
--------------------------------
-
-.. automodule:: PQAnalysis.io.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.frameReader module
---------------------------------
-
-.. automodule:: PQAnalysis.io.frameReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.infoFileReader module
------------------------------------
-
-.. automodule:: PQAnalysis.io.infoFileReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.moldescriptorReader module
-----------------------------------------
-
-.. automodule:: PQAnalysis.io.moldescriptorReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.restartReader module
-----------------------------------
-
-.. automodule:: PQAnalysis.io.restartReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.restartWriter module
-----------------------------------
-
-.. automodule:: PQAnalysis.io.restartWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.trajectoryReader module
--------------------------------------
-
-.. automodule:: PQAnalysis.io.trajectoryReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.trajectoryWriter module
--------------------------------------
-
-.. automodule:: PQAnalysis.io.trajectoryWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.io.base
+   PQAnalysis.io.boxWriter
+   PQAnalysis.io.energyFileReader
+   PQAnalysis.io.exceptions
+   PQAnalysis.io.frameReader
+   PQAnalysis.io.infoFileReader
+   PQAnalysis.io.moldescriptorReader
+   PQAnalysis.io.restartReader
+   PQAnalysis.io.restartWriter
+   PQAnalysis.io.trajectoryReader
+   PQAnalysis.io.trajectoryWriter
 
 Module contents
 ---------------

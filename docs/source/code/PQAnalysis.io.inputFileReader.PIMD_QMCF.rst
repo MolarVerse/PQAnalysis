@@ -1,24 +1,14 @@
-PQAnalysis.io.inputFileReader.PIMD\_QMCF package
-================================================
+PQAnalysis.io.inputFileReader.PIMD\_QMCF
+========================================
 
 Submodules
 ----------
 
-PQAnalysis.io.inputFileReader.PIMD\_QMCF.PIMD\_QMCF\_inputFileReader module
----------------------------------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.inputFileReader.PIMD\_QMCF.output\_files module
--------------------------------------------------------------
-
-.. automodule:: PQAnalysis.io.inputFileReader.PIMD_QMCF.output_files
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader
+   PQAnalysis.io.inputFileReader.PIMD_QMCF.output_files
 
 Module contents
 ---------------

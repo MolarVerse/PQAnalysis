@@ -1,5 +1,5 @@
-PQAnalysis.core package
-=======================
+PQAnalysis.core
+===============
 
 Subpackages
 -----------
@@ -14,21 +14,11 @@ Subpackages
 Submodules
 ----------
 
-PQAnalysis.core.common module
------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.core.common
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.core.exceptions module
----------------------------------
-
-.. automodule:: PQAnalysis.core.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.core.common
+   PQAnalysis.core.exceptions
 
 Module contents
 ---------------

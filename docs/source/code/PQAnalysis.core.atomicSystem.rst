@@ -1,16 +1,13 @@
-PQAnalysis.core.atomicSystem package
-====================================
+PQAnalysis.core.atomicSystem
+============================
 
 Submodules
 ----------
 
-PQAnalysis.core.atomicSystem.atomicSystem module
-------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.core.atomicSystem.atomicSystem
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.core.atomicSystem.atomicSystem
 
 Module contents
 ---------------

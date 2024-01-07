@@ -11,7 +11,7 @@ RDFLogWriter
 
 from beartype.typing import Tuple
 
-from .rdf import RadialDistributionFunction
+from .rdf import RDF
 from ...types import Np1DNumberArray
 from ...io import BaseWriter
 from ...utils import header
@@ -70,7 +70,7 @@ class RDFLogWriter(BaseWriter):
     >>> RDFLogWriter("rdf.log", rdf).write_after_run()
     """
 
-    def __inti__(self, filename: str | None, rdf: RadialDistributionFunction) -> None:
+    def __inti__(self, filename: str | None, rdf: RDF) -> None:
         """
         It sets the filename and the RDF analysis object.
 

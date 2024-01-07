@@ -1,24 +1,14 @@
-PQAnalysis.core.atom package
-============================
+PQAnalysis.core.atom
+====================
 
 Submodules
 ----------
 
-PQAnalysis.core.atom.atom module
---------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.core.atom.atom
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.core.atom.element module
------------------------------------
-
-.. automodule:: PQAnalysis.core.atom.element
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.core.atom.atom
+   PQAnalysis.core.atom.element
 
 Module contents
 ---------------

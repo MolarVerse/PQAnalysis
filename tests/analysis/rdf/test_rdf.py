@@ -3,7 +3,7 @@ import pytest
 
 from PQAnalysis.analysis.rdf.rdf import _calculate_n_bins, _infer_r_max, _check_r_max, _calculate_r_max, _integration, _norm, _setup_bin_middle_points, _add_to_bins
 from PQAnalysis.analysis.rdf import RDFError, RDFWarning
-from PQAnalysis.analysis import RadialDistributionFunction
+from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import AtomicSystem, Cell
 
@@ -150,8 +150,8 @@ def test__add_to_bins():
 class TestRDF:
     def test__init__(self):
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(Trajectory(), ["h"], [
-                                       "h"], r_max=8.0, r_min=3.0)
+            RDF(Trajectory(), ["h"], [
+                "h"], r_max=8.0, r_min=3.0)
         assert str(
             exception.value) == "Trajectory cannot be of length 0."
 
@@ -160,7 +160,7 @@ class TestRDF:
         traj = Trajectory([Frame(system1), Frame(system2)])
 
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(
+            RDF(
                 traj, ["h"], ["h"], r_max=8.0, r_min=3.0)
         assert str(exception.value) == "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis."
 
@@ -170,13 +170,13 @@ class TestRDF:
         traj = Trajectory([Frame(system1), Frame(system2)])
 
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(
+            RDF(
                 traj, ["h"], ["h"], r_max=8.0, r_min=3.0)
         assert str(
             exception.value) == "Either n_bins or delta_r must be specified."
 
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(
+            RDF(
                 traj, ["h"], ["h"], r_max=8.0, r_min=3.0, delta_r=0.1, n_bins=5)
         assert str(exception.value) == "It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results."
 
@@ -185,7 +185,7 @@ class TestRDF:
         n_bins = 5
         delta_r = 1.0
 
-        rdf = RadialDistributionFunction(
+        rdf = RDF(
             traj, ["h"], ["h"], delta_r=delta_r, n_bins=n_bins)
 
         assert np.isclose(rdf.r_max, 5.0)
@@ -201,7 +201,7 @@ class TestRDF:
         n_bins = 10
 
         with pytest.warns(RDFWarning):
-            rdf = RadialDistributionFunction(
+            rdf = RDF(
                 traj, ["h"], ["h"], delta_r=delta_r, n_bins=n_bins)
 
         assert np.isclose(rdf.r_max, 5.0)
@@ -212,18 +212,18 @@ class TestRDF:
         traj = Trajectory([Frame(system1), Frame(system2)])
 
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(
+            RDF(
                 traj, ["h"], ["h"], delta_r=delta_r)
         assert str(exception.value) == "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r."
 
         with pytest.raises(RDFError) as exception:
-            RadialDistributionFunction(
+            RDF(
                 traj, ["h"], ["h"], n_bins=n_bins)
         assert str(exception.value) == "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r."
 
         r_max = 5.0
 
-        rdf = RadialDistributionFunction(
+        rdf = RDF(
             traj, ["h"], ["h"], delta_r=delta_r, r_max=r_max)
 
         assert np.isclose(rdf.r_max, 5.0)
@@ -236,7 +236,7 @@ class TestRDF:
 
         n_bins = 5
 
-        rdf = RadialDistributionFunction(
+        rdf = RDF(
             traj, ["h"], ["h"], n_bins=n_bins, r_max=r_max)
 
         assert np.isclose(rdf.r_max, 5.0)
