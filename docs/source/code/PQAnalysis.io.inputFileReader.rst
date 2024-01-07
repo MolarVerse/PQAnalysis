@@ -1,5 +1,5 @@
-PQAnalysis.io.inputFileReader package
-=====================================
+PQAnalysis.io.inputFileReader
+=============================
 
 Subpackages
 -----------
@@ -13,29 +13,12 @@ Subpackages
 Submodules
 ----------
 
-PQAnalysis.io.inputFileReader.exceptions module
------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.io.inputFileReader.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.inputFileReader.formats module
---------------------------------------------
-
-.. automodule:: PQAnalysis.io.inputFileReader.formats
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.io.inputFileReader.inputFileParser module
-----------------------------------------------------
-
-.. automodule:: PQAnalysis.io.inputFileReader.inputFileParser
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.io.inputFileReader.exceptions
+   PQAnalysis.io.inputFileReader.formats
+   PQAnalysis.io.inputFileReader.inputFileParser
 
 Module contents
 ---------------

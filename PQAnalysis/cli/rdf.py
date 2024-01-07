@@ -1,6 +1,6 @@
 import argparse
 
-from ..analysis import RadialDistributionFunction, RDFInputFileReader, RDFDataWriter, RDFLogWriter
+from ..analysis import RDF, RDFInputFileReader, RDFDataWriter, RDFLogWriter
 from ..io import TrajectoryReader
 from ..traj import MDEngineFormat
 
@@ -26,7 +26,7 @@ def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
     reader = TrajectoryReader(reader.traj_files)
     traj = reader.read(format=format)
 
-    rdf = RadialDistributionFunction(
+    rdf = RDF(
         traj=traj,
         reference_species=reader.reference_selection,
         reference_indices=reader.reference_selection,

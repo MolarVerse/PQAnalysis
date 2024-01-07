@@ -1,1 +1,1 @@
-from .rdf import RadialDistributionFunction, RDFInputFileReader, RDFDataWriter, RDFLogWriter
+from .rdf import RDF, RDFInputFileReader, RDFDataWriter, RDFLogWriter

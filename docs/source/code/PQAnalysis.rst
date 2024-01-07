@@ -1,5 +1,5 @@
-PQAnalysis package
-==================
+PQAnalysis
+==========
 
 Subpackages
 -----------
@@ -20,29 +20,12 @@ Subpackages
 Submodules
 ----------
 
-PQAnalysis.exceptions module
-----------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.formats module
--------------------------
-
-.. automodule:: PQAnalysis.formats
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.types module
------------------------
-
-.. automodule:: PQAnalysis.types
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.exceptions
+   PQAnalysis.formats
+   PQAnalysis.types
 
 Module contents
 ---------------

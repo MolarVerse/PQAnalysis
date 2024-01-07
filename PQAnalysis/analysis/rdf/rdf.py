@@ -1,12 +1,5 @@
 """
 A module containing the RDF class. The RDF class is used to calculate the radial distribution function of a system.
-
-...
-
-Classes
--------
-RadialDistributionFunction
-    A class for calculating the radial distribution function of a system.
 """
 
 from __future__ import annotations
@@ -18,13 +11,13 @@ from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
 from . import RDFError, RDFWarning
-from ...types import Np1DIntArray, Np1DNumberArray, PositiveInt, PositiveReal
-from ...core import Atom, distance
+from ...types import Np1DNumberArray, PositiveInt, PositiveReal
+from ...core import distance
 from ...traj import Trajectory
 from ...topology import Selection, SelectionCompatible
 
 
-class RadialDistributionFunction:
+class RDF:
     """
     A class for calculating the radial distribution function of a system.
     """
@@ -40,12 +33,6 @@ class RadialDistributionFunction:
                  r_min: PositiveReal = 0.0,
                  ):
         """
-        Initializes the RDF analysis.
-
-        It sets up the bins of the RDF analysis based on the provided parameters.
-
-        Furthermore, it sets up the reference and target indices based on the provided reference and target species.
-
         Parameters
         ----------
         traj : Trajectory
@@ -55,7 +42,8 @@ class RadialDistributionFunction:
         target_species : SelectionCompatible
             The target species of the RDF analysis.
         use_full_atom_info : bool, optional
-            Whether to use the full atom information of the trajectory or not, by default False. For more information, see the documentation of the indices_from_atoms method of the System class.
+            Whether to use the full atom information of the trajectory or not, by default False.
+            For more information see #TODO: add link to documentation.
         n_bins : PositiveInt | None, optional
             number of bins, by default None
         delta_r : PositiveReal | None, optional
@@ -94,13 +82,10 @@ class RadialDistributionFunction:
         Sets up the bins of the RDF analysis.
 
         This method is called by the __init__ method of the RadialDistributionFunction class.
-        It sets up the bins of the RDF analysis based on the provided parameters.
-
-        if n_bins and delta_r are both specified, r_max is calculated from these parameters.
-
-        if n_bins and r_max are both specified, delta_r is calculated from these parameters.
-
-        if delta_r and r_max are both specified, n_bins is calculated from these parameters.
+        It sets up the bins of the RDF analysis based on the provided parameters. If n_bins
+        and delta_r are both specified, r_max is calculated from these parameters. If n_bins
+        and r_max are both specified, delta_r is calculated from these parameters. If delta_r
+        and r_max are both specified, n_bins is calculated from these parameters.
 
         Parameters
         ----------
@@ -179,7 +164,7 @@ class RadialDistributionFunction:
             Whether to show a progress bar or not, by default True.
 
         Returns
-        -------assert r_max == 101.0
+        -------
         bin_middle_points : Np1DNumberArray
             The middle points of the bins of the RDF analysis.
         normalized_bins : Np1DNumberArray
@@ -223,26 +208,12 @@ class RadialDistributionFunction:
 
     @property
     def n_frames(self) -> int:
-        """
-        Returns the number of frames of the RDF analysis.
-
-        Returns
-        -------
-        int
-            The number of frames of the RDF analysis.
-        """
+        """int: The number of frames of the RDF analysis."""
         return len(self.traj)
 
     @property
     def n_atoms(self) -> int:
-        """
-        Returns the number of atoms of the RDF analysis.
-
-        Returns
-        -------
-        int
-            The number of atoms of the RDF analysis.
-        """
+        """int: The number of atoms of the RDF analysis."""
         return len(self.traj.topology.n_atoms)
 
 

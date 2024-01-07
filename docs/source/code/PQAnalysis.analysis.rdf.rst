@@ -1,40 +1,16 @@
-PQAnalysis.analysis.rdf package
-===============================
+PQAnalysis.analysis.rdf
+=======================
 
 Submodules
 ----------
 
-PQAnalysis.analysis.rdf.exceptions module
------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.analysis.rdf.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.analysis.rdf.rdf module
-----------------------------------
-
-.. automodule:: PQAnalysis.analysis.rdf.rdf
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.analysis.rdf.rdfInputFileReader module
--------------------------------------------------
-
-.. automodule:: PQAnalysis.analysis.rdf.rdfInputFileReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.analysis.rdf.rdfOutputFileWriter module
---------------------------------------------------
-
-.. automodule:: PQAnalysis.analysis.rdf.rdfOutputFileWriter
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.analysis.rdf.exceptions
+   PQAnalysis.analysis.rdf.rdf
+   PQAnalysis.analysis.rdf.rdfInputFileReader
+   PQAnalysis.analysis.rdf.rdfOutputFileWriter
 
 Module contents
 ---------------

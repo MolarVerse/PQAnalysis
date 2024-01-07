@@ -1,40 +1,16 @@
-PQAnalysis.traj package
-=======================
+PQAnalysis.traj
+===============
 
 Submodules
 ----------
 
-PQAnalysis.traj.exceptions module
----------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.traj.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.traj.formats module
-------------------------------
-
-.. automodule:: PQAnalysis.traj.formats
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.traj.frame module
-----------------------------
-
-.. automodule:: PQAnalysis.traj.frame
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.traj.trajectory module
----------------------------------
-
-.. automodule:: PQAnalysis.traj.trajectory
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.traj.exceptions
+   PQAnalysis.traj.formats
+   PQAnalysis.traj.frame
+   PQAnalysis.traj.trajectory
 
 Module contents
 ---------------

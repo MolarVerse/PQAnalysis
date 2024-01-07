@@ -1,24 +1,14 @@
-PQAnalysis.utils package
-========================
+PQAnalysis.utils
+================
 
 Submodules
 ----------
 
-PQAnalysis.utils.common module
-------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.utils.common
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-PQAnalysis.utils.decorators module
-----------------------------------
-
-.. automodule:: PQAnalysis.utils.decorators
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.utils.common
+   PQAnalysis.utils.decorators
 
 Module contents
 ---------------

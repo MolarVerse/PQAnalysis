@@ -1,10 +1,5 @@
 """
 A module to read the input file for the radial distribution function.
-
-Classes
--------
-RDFInputFileReader
-    A class to read the input file for the radial distribution function.    
 """
 
 from ...io import PQAnalysisInputFileReader as Reader

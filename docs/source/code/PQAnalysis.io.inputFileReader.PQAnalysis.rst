@@ -1,16 +1,13 @@
-PQAnalysis.io.inputFileReader.PQAnalysis package
-================================================
+PQAnalysis.io.inputFileReader.PQAnalysis
+========================================
 
 Submodules
 ----------
 
-PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis\_inputFileReader module
----------------------------------------------------------------------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
 
 Module contents
 ---------------

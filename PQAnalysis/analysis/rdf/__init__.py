@@ -16,6 +16,6 @@ The rdf package contains the following exceptions:
 """
 
 from .exceptions import RDFError, RDFWarning
-from .rdf import RadialDistributionFunction
+from .rdf import RDF
 from .rdfInputFileReader import RDFInputFileReader
 from .rdfOutputFileWriter import RDFDataWriter, RDFLogWriter
