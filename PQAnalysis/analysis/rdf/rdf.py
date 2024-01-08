@@ -1,5 +1,5 @@
 """
-A module containing the RDF class. The RDF class is used to calculate the radial distribution function of a system.
+A module containing the RDF class. The RDF class is used to calculate the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
 """
 
 from __future__ import annotations
@@ -10,7 +10,7 @@ import warnings
 from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
-from . import RDFError, RDFWarning
+from .exceptions import RDFError, RDFWarning
 from ...types import Np1DNumberArray, PositiveInt, PositiveReal
 from ...core import distance
 from ...traj import Trajectory
@@ -19,7 +19,7 @@ from ...topology import Selection, SelectionCompatible
 
 class RDF:
     """
-    A class for calculating the radial distribution function of a system.
+    A class for calculating the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
     """
 
     def __init__(self,
@@ -43,15 +43,38 @@ class RDF:
             The target species of the RDF analysis.
         use_full_atom_info : bool, optional
             Whether to use the full atom information of the trajectory or not, by default False.
-            For more information see #TODO: add link to documentation.
         n_bins : PositiveInt | None, optional
             number of bins, by default None
         delta_r : PositiveReal | None, optional
             delta r between bins, by default None
         r_max : PositiveReal | None, optional
-            maximum radius of the RDF analysis, by default None
+            maximum radius from reference species of the RDF analysis, by default None
         r_min : PositiveReal, optional
-            minimum (starting) radius of the RDF analysis, by default 0.0
+            minimum (starting) radius from reference species of the RDF analysis, by default 0.0 
+
+        Raises
+        ------
+        RDFError
+            If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
+        RDFError
+            If the trajectory is empty.
+        RDFError
+            If n_bins and delta_r are both not specified.
+        RDFError
+            If n_bins, delta_r and r_max are all specified. This would lead to ambiguous results.
+
+        Notes
+        -----
+        To initialize the RDF analysis object at least one of the parameters n_bins or delta_r must be specified. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
+
+        It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.
+
+        It is also possible to initialize a non-vacuum trajectory by only using n_bins or delta_r. In this case, r_max is calculated from the provided parameters and the box vectors of the trajectory. If the trajectory is in vacuum, an RDFError is raised as the maximum radius cannot be inferred from the box vectors.
+
+        See Also
+        --------
+        :py:class:`~PQAnalysis.traj.trajectory.Trajectory`
+        :py:class:`~PQAnalysis.topology.selection.Selection`
         """
 
         self.traj = traj
@@ -81,11 +104,7 @@ class RDF:
         """
         Sets up the bins of the RDF analysis.
 
-        This method is called by the __init__ method of the RadialDistributionFunction class.
-        It sets up the bins of the RDF analysis based on the provided parameters. If n_bins
-        and delta_r are both specified, r_max is calculated from these parameters. If n_bins
-        and r_max are both specified, delta_r is calculated from these parameters. If delta_r
-        and r_max are both specified, n_bins is calculated from these parameters.
+        This method is called by the __init__ method of the RDF class, but can also be called manually to re-initialize the bins of the RDF analysis. It sets up the bins of the RDF analysis based on the provided parameters. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
 
         Parameters
         ----------
@@ -157,6 +176,10 @@ class RDF:
     def run(self, with_progress_bar: bool = True) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
         """
         Runs the RDF analysis.
+
+        This method runs the RDF analysis and returns the middle points of the bins of the RDF analysis, the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+
+        This method will display a progress bar by default. This can be disabled by setting with_progress_bar to False.
 
         Parameters
         ----------

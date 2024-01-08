@@ -39,7 +39,8 @@ docs = [
     "sphinx",
     "sphinx-sitemap",
     "myst-parser",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
+    "better-apidoc",
 ]
 
 [tool.setuptools_scm]
