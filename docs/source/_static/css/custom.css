@@ -14,12 +14,10 @@ dl.py.class {
     display: block !important;
 }
 
-.sig.sig-object.py {
-    & dl {
-        margin-block-end: 0.0em;
+.sig.sig-object.py dl {
+    margin-block-end: 0.0em;
 
-        & dd {
-            margin-bottom: 0.0em;
-        }
+    & dd {
+        margin-bottom: 0.0em;
     }
 }
