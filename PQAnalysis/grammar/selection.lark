@@ -27,6 +27,8 @@ element: "elem("i (letters | unsigned_integer+) ")"
 
 residue: "res("i (letters | unsigned_integer+) ")"
 
+reisude_number: "res~"i (index | indices)
+
 index.2: integer
 
 indices.2: integer ("-"|"..") integer (".." integer)?

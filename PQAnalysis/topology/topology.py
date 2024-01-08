@@ -184,7 +184,6 @@ class Topology:
 
         Raises
         ------
-        #TODO:
         ResidueError
             If the residue ids are not contiguous.
         ResidueError
@@ -236,9 +235,9 @@ please set 'check_residues' to False"""
                     raise ResidueError(
                         f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {atom_counter}-{atom_counter + residue.n_atoms-1}.")
 
-            residues.append(residue)
+        residues.append(residue)
 
-            atom_counter += residue.n_atoms
+        atom_counter += residue.n_atoms
 
         return residues, atoms
 
