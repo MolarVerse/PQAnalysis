@@ -10,7 +10,7 @@ PQAnalysis.core.atom.atom
     :members: Atom
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

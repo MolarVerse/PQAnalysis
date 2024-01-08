@@ -10,7 +10,7 @@ PQAnalysis.analysis.rdf.exceptions
     :members: RDFError, RDFWarning
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

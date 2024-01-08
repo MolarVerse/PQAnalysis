@@ -10,7 +10,7 @@ PQAnalysis.cli.continue_input
     :members: main
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

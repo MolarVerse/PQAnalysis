@@ -10,7 +10,7 @@ PQAnalysis.io.energyFileReader
     :members: EnergyFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

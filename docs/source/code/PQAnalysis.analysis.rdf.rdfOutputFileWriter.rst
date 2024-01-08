@@ -10,7 +10,7 @@ PQAnalysis.analysis.rdf.rdfOutputFileWriter
     :members: RDFDataWriter, RDFLogWriter, header
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

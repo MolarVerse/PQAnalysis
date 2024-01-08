@@ -10,7 +10,7 @@ PQAnalysis.exceptions
     :members: FormatEnumError, PQException, PQWarning
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

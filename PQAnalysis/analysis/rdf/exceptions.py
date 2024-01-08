@@ -1,5 +1,5 @@
 """
-A module containing different exceptions and warnings for the RDF class.
+A module containing different exceptions and warnings for the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class
 
 """
 
@@ -8,7 +8,7 @@ from ...exceptions import PQException, PQWarning
 
 class RDFError(PQException):
     """
-    Exception raised if something goes wrong during the RDF calculation.
+    Exception raised if something goes wrong during the RDF setup or calculation.
     """
 
     def __init__(self, message: str) -> None:
@@ -18,7 +18,7 @@ class RDFError(PQException):
 
 class RDFWarning(PQWarning):
     """
-    Warning raised if something goes wrong during the RDF calculation.
+    Warning raised if something goes wrong during the RDF setup or calculation.
     """
 
     def __init__(self, message: str) -> None:

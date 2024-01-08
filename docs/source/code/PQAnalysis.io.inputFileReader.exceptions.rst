@@ -10,7 +10,7 @@ PQAnalysis.io.inputFileReader.exceptions
     :members: InputFileError, InputFileFormatError, InputFileWarning
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

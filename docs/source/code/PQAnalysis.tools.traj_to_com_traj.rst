@@ -10,7 +10,7 @@ PQAnalysis.tools.traj_to_com_traj
     :members: traj_to_com_traj
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

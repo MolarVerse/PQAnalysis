@@ -10,7 +10,7 @@ PQAnalysis.topology.residue
     :members: QMResidue, Residue
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

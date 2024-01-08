@@ -10,7 +10,7 @@ PQAnalysis.io.inputFileReader.formats
     :members: InputFileFormat
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

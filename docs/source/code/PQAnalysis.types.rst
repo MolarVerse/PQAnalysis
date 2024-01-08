@@ -10,7 +10,7 @@ PQAnalysis.types
     :members: Np1DNumberArray
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

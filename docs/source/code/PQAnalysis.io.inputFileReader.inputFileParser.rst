@@ -10,7 +10,7 @@ PQAnalysis.io.inputFileReader.inputFileParser
     :members: ComposedDatatypesTransformer, InputDictionary, InputFileParser, InputFileVisitor, PrimitiveTransformer
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

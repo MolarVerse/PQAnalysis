@@ -10,7 +10,7 @@ PQAnalysis.io.restartReader
     :members: RestartFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

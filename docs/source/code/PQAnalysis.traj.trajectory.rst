@@ -10,7 +10,7 @@ PQAnalysis.traj.trajectory
     :members: Trajectory
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------
