@@ -1,29 +1,5 @@
 """
 A module containing the Selection class and related functions/classes.
-
-...
-
-Classes
--------
-Selection
-    A class for representing a selection.
-SelectionTransformer
-    A class for transforming a Lark parse tree.
-CrudeSelectionVisitor
-    A super class for visiting a Lark parse tree.
-SelectionVisitor
-    A class for visiting a Lark parse tree and returning the indices of parsed selection.
-    
-Functions
----------
-_selection
-    An overloaded function for selecting atoms based on a selection compatible object.
-_indices_by_atom_type_name
-    Returns the indices of the atoms with the given atom type name.
-_indices_by_atom
-    Returns the indices of the given atom.
-_indices_by_element_types
-    Returns the indices of the given element type.
 """
 
 from __future__ import annotations
@@ -33,7 +9,7 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
-from beartype.typing import List
+from beartype.typing import List, TypeVar
 from multimethod import overload
 
 # local imports
@@ -42,21 +18,20 @@ from ..types import Np1DIntArray
 from ..core import Atom, Atoms, Element, Elements
 from .. import __base_path__
 
-
-"""
-A type hint for a selection compatible object.
-
-A selection compatible object can be:
-    - a string
-    - an Atoms object (i.e. a list of Atom objects)
-    - an Atom object
-    - a numpy.ndarray with dtype=int
-    - a list of strings
-    - a Selection object
-    - None
-"""
-SelectionCompatible = str | Atoms | Atom | Element | Elements | Np1DIntArray | List[
-    str] | 'Selection' | None
+#: A type variable for the Selection class.
+#: It can be used to specify the type of the selection object.
+#: The following types are supported:
+#:     - str: the given string is parsed and the atoms selected by the selection are selected
+#:     - Atom: the given atom is selected
+#:     - Element: all atoms with the given element type are selected
+#:     - Atoms: all atoms in the given list are selected
+#:     - Elements: all atoms with the given element types are selected
+#:     - Np1DIntArray: the atoms with the given indices are selected
+#:     - List[str]: all atoms with the given atom type names are selected
+#:     - Selection: the given selection is copied
+#:     - None: all atoms are selected
+SelectionCompatible = TypeVar("SelectionCompatible", str, Atoms, Atom, Element, Elements, Np1DIntArray, List[
+    str], 'Selection', None)
 
 
 class Selection:
@@ -87,7 +62,7 @@ class Selection:
                     - atom(<atomtype>, <element_symbol>): the atom with the given atom type and element symbol is selected
                     - elem(<atomic_number>): all atoms with the given element type are selected
                     - elem(<element_symbol>): all atoms with the given element type are selected
-                    - *: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
+                    - \*: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
 
                 All of the above statements can be combined with the following operators:
 
