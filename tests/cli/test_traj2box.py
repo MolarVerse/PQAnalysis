@@ -11,12 +11,12 @@ from PQAnalysis.cli.traj2box import traj2box, main
 @pytest.mark.parametrize("example_dir", ["traj2box"], indirect=False)
 def test_traj2box(test_with_data_dir):
     traj2box(trajectory_files=[
-             "acof_triclinic.xyz", "acof_triclinic_2.xyz"], vmd=False, output="test_box.dat")
+             "test.xyz"], vmd=False, output="test_box.dat")
 
     assert filecmp("box.dat", "test_box.dat")
 
     traj2box(trajectory_files=[
-             "acof_triclinic.xyz", "acof_triclinic_2.xyz"], vmd=True, output="test_box.vmd.xyz")
+             "test.xyz"], vmd=True, output="test_box.vmd.xyz")
 
     assert filecmp("box.vmd.xyz", "test_box.vmd.xyz")
 
@@ -28,16 +28,14 @@ def test_main(test_with_data_dir):
 
 
 @mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=argparse.Namespace(trajectory_file=["acof_triclinic.xyz",
-                                                             "acof_triclinic_2.xyz"], vmd=False, output="test_box.dat"))
+            return_value=argparse.Namespace(trajectory_file=["test.xyz"], vmd=False, output="test_box.dat"))
 def main_box_file(mock_args):
     main()
     assert filecmp("box.dat", "test_box.dat")
 
 
 @mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=argparse.Namespace(trajectory_file=["acof_triclinic.xyz",
-                                                             "acof_triclinic_2.xyz"], vmd=True, output="test_box.vmd.xyz"))
+            return_value=argparse.Namespace(trajectory_file=["test.xyz"], vmd=True, output="test_box.vmd.xyz"))
 def main_vmd(mock_args):
     main()
     assert filecmp("box.vmd.xyz", "test_box.vmd.xyz")
