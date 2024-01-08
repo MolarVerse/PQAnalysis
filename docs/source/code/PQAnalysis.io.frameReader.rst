@@ -10,7 +10,7 @@ PQAnalysis.io.frameReader
     :members: FrameReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

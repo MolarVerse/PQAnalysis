@@ -10,7 +10,7 @@ PQAnalysis.analysis.rdf.rdfInputFileReader
     :members: RDFInputFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

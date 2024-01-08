@@ -10,7 +10,7 @@ PQAnalysis.core.atomicSystem.atomicSystem
     :members: AtomicSystem
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

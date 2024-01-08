@@ -10,7 +10,7 @@ PQAnalysis.cli.rst2xyz
     :members: main, rst2xyz
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

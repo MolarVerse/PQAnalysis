@@ -10,7 +10,7 @@ PQAnalysis.traj.formats
     :members: MDEngineFormat, TrajectoryFormat
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

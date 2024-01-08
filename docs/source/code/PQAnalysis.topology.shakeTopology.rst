@@ -10,7 +10,7 @@ PQAnalysis.topology.shakeTopology
     :members: ShakeTopologyGenerator
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

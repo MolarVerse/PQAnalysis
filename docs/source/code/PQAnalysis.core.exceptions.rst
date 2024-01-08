@@ -10,7 +10,7 @@ PQAnalysis.core.exceptions
     :members: AtomicSystemMassError, AtomicSystemPositionsError, ElementNotFoundError
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

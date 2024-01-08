@@ -10,7 +10,7 @@ PQAnalysis.utils.decorators
     :members: count_decorator, instance_function_count_decorator, timeit_in_class
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

@@ -10,7 +10,7 @@ PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
     :members: PQAnalysisInputFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

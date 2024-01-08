@@ -10,7 +10,7 @@ PQAnalysis.topology.exceptions
     :members: ResidueError, ResidueWarning, TopologyError
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

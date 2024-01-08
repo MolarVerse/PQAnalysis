@@ -10,7 +10,7 @@ PQAnalysis.cli.traj2qmcfc
     :members: main, traj2qmcfc
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

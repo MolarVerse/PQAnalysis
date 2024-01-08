@@ -10,7 +10,7 @@ PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader
     :members: PIMD_QMCF_InputFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

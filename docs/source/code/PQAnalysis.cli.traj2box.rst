@@ -10,7 +10,7 @@ PQAnalysis.cli.traj2box
     :members: main, traj2box
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

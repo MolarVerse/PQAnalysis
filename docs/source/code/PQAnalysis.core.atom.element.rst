@@ -10,7 +10,7 @@ PQAnalysis.core.atom.element
     :members: Element, atomicMasses, atomicNumbers, atomicNumbersReverse
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

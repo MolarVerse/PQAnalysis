@@ -10,7 +10,7 @@ PQAnalysis.analysis.rdf.rdf
     :members: RDF
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

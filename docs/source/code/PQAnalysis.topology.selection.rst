@@ -10,7 +10,7 @@ PQAnalysis.topology.selection
     :members: Selection, SelectionCompatible, SelectionTransformer, SelectionVisitor
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

@@ -10,7 +10,7 @@ PQAnalysis.physicalData.exceptions
     :members: EnergyError
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

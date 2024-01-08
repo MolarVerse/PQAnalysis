@@ -10,7 +10,7 @@ PQAnalysis.io.infoFileReader
     :members: InfoFileReader
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

@@ -10,7 +10,7 @@ PQAnalysis.io.trajectoryWriter
     :members: TrajectoryWriter, write_trajectory
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

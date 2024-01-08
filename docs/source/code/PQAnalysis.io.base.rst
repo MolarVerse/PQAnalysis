@@ -10,7 +10,7 @@ PQAnalysis.io.base
     :members: BaseReader, BaseWriter
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------

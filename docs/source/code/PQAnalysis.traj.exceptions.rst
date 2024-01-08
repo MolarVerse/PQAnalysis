@@ -10,7 +10,7 @@ PQAnalysis.traj.exceptions
     :members: FrameError, MDEngineFormatError, TrajectoryError, TrajectoryFormatError
     :undoc-members:
     :show-inheritance:
-    :member-order: alphabetical
+    :member-order: groupwise
 
     Summary
     -------
