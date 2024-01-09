@@ -40,6 +40,9 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
     use_full_atom_info_key = "use_full_atom_info"; known_keys.append(use_full_atom_info_key)
     out_file_key = "out_file"; known_keys.append(out_file_key)
     log_file_key = "log_file"; known_keys.append(log_file_key)
+    no_intra_molecular_key = "no_intra_molecular"; known_keys.append(no_intra_molecular_key)
+    moldescriptor_file_key = "moldescriptor_file"; known_keys.append(moldescriptor_file_key)
+    restart_file_key = "restart_file"; known_keys.append(restart_file_key)
     #fmt: on
 
     def __init__(self, filename: str) -> None:

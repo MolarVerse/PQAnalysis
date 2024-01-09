@@ -70,7 +70,7 @@ class RDFLogWriter(BaseWriter):
     >>> RDFLogWriter("rdf.log", rdf).write_after_run()
     """
 
-    def __inti__(self, filename: str | None, rdf: RDF) -> None:
+    def __init__(self, filename: str | None, rdf: RDF) -> None:
         """
         It sets the filename and the RDF analysis object.
 
@@ -82,6 +82,7 @@ class RDFLogWriter(BaseWriter):
             the RDF analysis object
         """
         self.filename = filename
+        self.rdf = rdf
         super().__init__(filename)
 
     def write_before_run(self):
@@ -118,7 +119,18 @@ class RDFLogWriter(BaseWriter):
         print(f"    total number of atoms in reference selection: {len(self.rdf.reference_indices)}", file=self.file)
         print(f"    Target selection:    {self.rdf.target_selection}", file=self.file)
         print(f"    total number of atoms in target selection:    {len(self.rdf.target_indices)}", file=self.file)
+        print(file=self.file)
         # fmt: on
+
+        #fmt: off
+        print(f"    Eliminate intra molecular contributions: {self.rdf.no_intra_molecular}", file=self.file)
+        print(file=self.file)
+        #fmt: on
+
+        print(file=self.file)
+        print(file=self.file)
+        print(file=self.file)
+        print(file=self.file)
 
         super().close()
 

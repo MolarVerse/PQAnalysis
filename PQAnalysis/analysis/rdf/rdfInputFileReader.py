@@ -14,7 +14,9 @@ class RDFInputFileReader(Reader):
         Reader.traj_files_key,
         Reader.reference_selection_key,
         Reader.target_selection_key,
-        Reader.out_file_key
+        Reader.out_file_key,
+        Reader.restart_file_key,
+        Reader.moldescriptor_file_key,
     ]
     """List[str]: The required keys of the input file
     
@@ -30,6 +32,7 @@ class RDFInputFileReader(Reader):
         Reader.delta_r_key,
         Reader.n_bins_key,
         Reader.use_full_atom_info_key,
+        Reader.no_intra_molecular_key,
         Reader.log_file_key
     ]
     """List[str]: The optional keys of the input file
@@ -39,6 +42,7 @@ class RDFInputFileReader(Reader):
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.delta_r_key`: The width of the bins of the RDF analysis in Angstrom
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.n_bins_key`: The number of bins of the RDF analysis
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.use_full_atom_info_key`: If True, the full atom information is used for the selection of the reference and target atoms. If False only the element types without the atom names are used. This setting is only relevant if the selection is given with Atom objects. See also: :py:class:`~PQAnalysis.topology.selection.Selection`
+    | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.no_intra_molecular`: If True, the intra molecular pairs are not considered in the RDF analysis. If False, the intra molecular pairs are considered. This setting is only relevant if the topology of the system contains residue information. See also: :py:class:`~PQAnalysis.topology.selection.Selection`, :py:class:`~PQAnalysis.topology.topology.Topology`
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.log_file_key`: The filename of the log file
     """
 
@@ -68,6 +72,3 @@ class RDFInputFileReader(Reader):
         super().read()
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
-
-        if self.use_full_atom_info is None:
-            self.use_full_atom_info = False

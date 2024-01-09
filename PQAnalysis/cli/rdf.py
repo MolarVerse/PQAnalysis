@@ -1,8 +1,9 @@
 import argparse
 
 from ..analysis import RDF, RDFInputFileReader, RDFDataWriter, RDFLogWriter
-from ..io import TrajectoryReader
+from ..io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from ..traj import MDEngineFormat
+from ..topology import Topology
 
 
 def main():
@@ -20,26 +21,43 @@ def main():
 
 
 def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
-    reader = RDFInputFileReader(input_file)
-    reader.read()
+    input_reader = RDFInputFileReader(input_file)
+    input_reader.read()
 
-    reader = TrajectoryReader(reader.traj_files)
-    traj = reader.read(format=format)
+    traj_reader = TrajectoryReader(input_reader.traj_files)
+    traj = traj_reader.read(md_format=format)
+
+    restart_reader = RestartFileReader(input_reader.restart_file)
+    restart_frame = restart_reader.read()
+
+    moldescriptor_reader = MoldescriptorReader(input_reader.moldescriptor_file)
+    reference_residues = moldescriptor_reader.read()
+
+    topology = restart_frame.topology
+    topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
+                        reference_residues=reference_residues)
+
+    print(topology.n_atoms)
+    print(traj[0].n_atoms)
+    print(traj.topology.n_atoms)
+
+    traj.topology = topology
 
     rdf = RDF(
         traj=traj,
-        reference_species=reader.reference_selection,
-        reference_indices=reader.reference_selection,
-        use_full_atom_info=reader.use_full_atom_info_for_selection,
-        n_bins=reader.n_bins,
-        delta_r=reader.delta_r,
-        r_max=reader.r_max,
-        r_min=reader.r_min,
+        reference_species=input_reader.reference_selection,
+        target_species=input_reader.target_selection,
+        use_full_atom_info=input_reader.use_full_atom_info,
+        no_intra_molecular=input_reader.no_intra_molecular,
+        n_bins=input_reader.n_bins,
+        delta_r=input_reader.delta_r,
+        r_max=input_reader.r_max,
+        r_min=input_reader.r_min,
     )
 
-    RDFLogWriter(reader.log_file, rdf).write_before_run()
+    RDFLogWriter(input_reader.log_file, rdf).write_before_run()
 
     rdf_data = rdf.run(with_progress_bar=with_progress_bar)
 
-    RDFLogWriter(reader.log_file, rdf).write_after_run()
-    RDFDataWriter(reader.out_file, rdf_data).write()
+    RDFLogWriter(input_reader.log_file, rdf).write_after_run()
+    RDFDataWriter(input_reader.out_file, rdf_data).write()

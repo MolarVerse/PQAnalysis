@@ -249,3 +249,16 @@ class Trajectory:
                 "All frames in the trajectory must have the same topology.")
 
         return topology
+
+    @topology.setter
+    def topology(self, topology: Topology) -> None:
+        """
+        Sets the topology of the trajectory.
+
+        Parameters
+        ----------
+        topology : Topology
+            The topology of the trajectory.
+        """
+        for frame in self.frames:
+            frame.topology = topology

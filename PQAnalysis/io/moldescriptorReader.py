@@ -12,7 +12,7 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, MoldescriptorReaderError
-from ..topology import Residue
+from ..topology import Residue, Residues
 from ..core import Element
 
 
@@ -39,14 +39,14 @@ class MoldescriptorReader(BaseReader):
         """
         super().__init__(filename)
 
-    def read(self) -> List[Residue]:
+    def read(self) -> Residues:
         """
         Reads the moldescriptor file and returns the mol types.
 
         Returns
         -------
-        List[MolType]
-            The mol types.
+        Residues
+            The residues (mol types) read from the moldescriptor file.
 
         Raises
         ------
