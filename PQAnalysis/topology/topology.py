@@ -102,8 +102,16 @@ class Topology:
                 "The number of atoms does not match the number of residue ids.")
 
         self._residue_ids = residue_ids
-        self._residues, self._atoms = self._setup_residues(
+        self._residues, self._atoms = self.setup_residues(
             self.residue_ids, self.atoms)
+
+        if self.residues == []:
+            self._residue_numbers = np.arange(self.n_atoms)
+        else:
+            self._residue_numbers = []
+            for i in range(self.n_residues):
+                self._residue_numbers += [i] * self.residues[i].n_atoms
+            self._residue_numbers = np.array(self._residue_numbers)
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -163,7 +171,23 @@ class Topology:
 
         return Topology(atoms=atoms, reference_residues=self.reference_residues, residue_ids=residue_ids, check_residues=self.check_residues)
 
-    def _setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Tuple[Residues, Atoms]:
+    def get_atom_indices_from_residue_numbers(self, residue_numbers: Np1DIntArray) -> Np1DIntArray:
+        """
+        Returns the atom indices for the given residue numbers.
+
+        Parameters
+        ----------
+        residue_numbers : Np1DIntArray
+            The residue numbers to get the atom indices for.
+
+        Returns
+        -------
+        Np1DIntArray
+            The atom indices for the given residue numbers.
+        """
+        return np.argwhere(np.isin(self.residue_numbers, residue_numbers)).flatten()
+
+    def setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Tuple[Residues, Atoms]:
         """
         Sets up the residues of the topology.
 
@@ -235,9 +259,9 @@ please set 'check_residues' to False"""
                     raise ResidueError(
                         f"The residue ids are not contiguous. Problems with residue {residue.name} with indices {atom_counter}-{atom_counter + residue.n_atoms-1}.")
 
-        residues.append(residue)
+            residues.append(residue)
 
-        atom_counter += residue.n_atoms
+            atom_counter += residue.n_atoms
 
         return residues, atoms
 
@@ -287,7 +311,7 @@ please set 'check_residues' to False"""
             Whether the residues should be checked.
         """
         self._check_residues = value
-        self._residues, self._atoms = self._setup_residues(
+        self._residues, self._atoms = self.setup_residues(
             self.residue_ids, self.atoms)
 
     @property
@@ -433,6 +457,18 @@ please set 'check_residues' to False"""
             The number of unique residues in the topology.
         """
         return len(_unique_residues_(self.residues))
+
+    @property
+    def residue_numbers(self) -> Np1DIntArray:
+        """
+        Returns the residue numbers for each atom of the topology.
+
+        Returns
+        -------
+        Np1DIntArray
+            The residue numbers of each atom of the topology.
+        """
+        return self._residue_numbers
 
 
 def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:

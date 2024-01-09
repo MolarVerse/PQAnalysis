@@ -1,6 +1,7 @@
 from beartype.typing import List
 
 import PQAnalysis.io.inputFileReader.inputFileParser as inputFileParser
+from PQAnalysis.io.inputFileReader.exceptions import InputFileError
 from ....types import PositiveReal, PositiveInt
 
 
@@ -28,8 +29,11 @@ def _parse_positive_real(dict: inputFileParser.InputDictionary, key: str) -> Pos
     """
     value = _parse_real(dict, key)
 
+    if value is None:
+        return None
+
     if value < 0:
-        raise inputFileParser.inputFileParser.InputFileError(
+        raise InputFileError(
             "The \"{key}\" value has to be a positive real number - It actually is {value}!")
 
     return value
@@ -64,8 +68,8 @@ def _parse_real(dict: inputFileParser.InputDictionary, key: str) -> PositiveReal
 
     data_type = data[1]
 
-    if data_type != "float" or data_type != "int":
-        raise inputFileParser.inputFileParser.InputFileError(
+    if data_type != "float" and data_type != "int":
+        raise InputFileError(
             f"The \"{key}\" value has to be of float type - actual it is parsed as a {data_type}")
 
     return data[0]
@@ -166,6 +170,9 @@ def _parse_positive_int(dict: inputFileParser.InputDictionary, key: str) -> Posi
         if the value is not a positive integer
     """
     value = _parse_int(dict, key)
+
+    if value is None:
+        return None
 
     if value < 1:
         raise inputFileParser.InputFileError(

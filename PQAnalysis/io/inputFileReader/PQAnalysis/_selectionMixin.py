@@ -48,7 +48,7 @@ class _SelectionMixin:
         return _parse_string(self.dictionary, self.target_selection_key)
 
     @property
-    def use_full_atom_info_for_selection(self) -> bool | None:
+    def use_full_atom_info(self) -> bool | None:
         """
         Returns the use_full_atom_info from the input dictionary as a bool.
 
@@ -60,3 +60,17 @@ class _SelectionMixin:
             the use_full_atom_info or None if the key is not in the dictionary
         """
         return _parse_bool(self.dictionary, self.use_full_atom_info_key)
+
+    @property
+    def no_intra_molecular(self) -> bool | None:
+        """
+        Returns the no_intra_molecular from the input dictionary as a bool.
+
+        This information is used to determine if intra molecular interactions should be ignored.
+
+        Returns
+        -------
+        bool | None
+            the no_intra_molecular or None if the key is not in the dictionary
+        """
+        return _parse_bool(self.dictionary, self.no_intra_molecular_key)

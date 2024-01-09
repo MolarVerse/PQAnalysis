@@ -22,15 +22,20 @@ class RDF:
     A class for calculating the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
     """
 
+    _use_full_atom_default = False
+    _no_intra_molecular_default = False
+    _r_min_default = 0.0
+
     def __init__(self,
                  traj: Trajectory,
                  reference_species: SelectionCompatible,
                  target_species: SelectionCompatible,
                  use_full_atom_info: bool = False,
+                 no_intra_molecular: bool = False,
                  n_bins: PositiveInt | None = None,
                  delta_r: PositiveReal | None = None,
                  r_max: PositiveReal | None = None,
-                 r_min: PositiveReal = 0.0,
+                 r_min: PositiveReal | None = 0.0,
                  ):
         """
         Parameters
@@ -42,7 +47,9 @@ class RDF:
         target_species : SelectionCompatible
             The target species of the RDF analysis.
         use_full_atom_info : bool, optional
-            Whether to use the full atom information of the trajectory or not, by default False.
+            Whether to use the full atom information of the trajectory or not, by default None (False).
+        no_intra_molecular : bool, optional
+            Whether to exclude intra-molecular distances or not, by default None (False).
         n_bins : PositiveInt | None, optional
             number of bins, by default None
         delta_r : PositiveReal | None, optional
@@ -50,7 +57,7 @@ class RDF:
         r_max : PositiveReal | None, optional
             maximum radius from reference species of the RDF analysis, by default None
         r_min : PositiveReal, optional
-            minimum (starting) radius from reference species of the RDF analysis, by default 0.0 
+            minimum (starting) radius from reference species of the RDF analysis, by default 0.0 (equals to None)
 
         Raises
         ------
@@ -77,6 +84,21 @@ class RDF:
         :py:class:`~PQAnalysis.topology.selection.Selection`
         """
 
+        if use_full_atom_info is None:
+            self.use_full_atom_info = self._use_full_atom_default
+        else:
+            self.use_full_atom_info = use_full_atom_info
+
+        if no_intra_molecular is None:
+            self.no_intra_molecular = self._no_intra_molecular_default
+        else:
+            self.no_intra_molecular = no_intra_molecular
+
+        if r_min is None:
+            self.r_min = self._r_min_default
+        else:
+            self.r_min = r_min
+
         self.traj = traj
         self.reference_species = reference_species
         self.target_species = target_species
@@ -93,7 +115,7 @@ class RDF:
             self.traj.topology, use_full_atom_info)
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
-                        r_max=r_max, r_min=r_min)
+                        r_max=r_max, r_min=self.r_min)
 
     def setup_bins(self,
                    n_bins: PositiveInt | None = None,
@@ -206,24 +228,38 @@ class RDF:
         disable_progress_bar = not with_progress_bar
 
         for frame in tqdm(self.traj, disable=disable_progress_bar):
-            reference_positions = frame.pos[self.reference_indices]
-            target_positions = frame.pos[self.target_indices]
 
-            for reference_position in reference_positions:
+            for reference_index in self.reference_indices:
+
+                if self.no_intra_molecular:
+                    residue_number = frame.topology.residue_numbers[reference_index]
+                    self.target_selection = Selection((",").join(
+                        [str(i) for i in self.target_indices]) + " | res~" + str(residue_number))
+
+                reference_position = frame.pos[reference_index]
+                target_indices = self.target_selection.select(
+                    frame.topology, self.use_full_atom_info)
+                target_positions = frame.pos[target_indices]
+
                 distances = distance(reference_position,
                                      target_positions, frame.cell)
 
                 self.bins += _add_to_bins(distances, self.r_min,
                                           self.delta_r, self.n_bins)
 
-        target_density = len(self.target_indices) / self._average_volume
+        if self.no_intra_molecular:
+            target_density = (len(self.target_indices) - 1) / \
+                self._average_volume
+        else:
+            target_density = len(self.target_indices) / self._average_volume
+
         norm = _norm(self.n_bins, self.delta_r, target_density,
                      len(self.reference_indices), len(self.traj))
 
         normalized_bins = self.bins / norm
         integrated_bins = _integration(self.bins, len(
             self.reference_indices), len(self.traj))
-        normalized_bins2 = self.bins / self._target_density / \
+        normalized_bins2 = self.bins / target_density / \
             len(self.reference_indices) / len(self.traj)
         differential_bins = self.bins - norm
 
@@ -237,7 +273,7 @@ class RDF:
     @property
     def n_atoms(self) -> int:
         """int: The number of atoms of the RDF analysis."""
-        return len(self.traj.topology.n_atoms)
+        return self.traj.topology.n_atoms
 
 
 def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: PositiveReal, n_bins: PositiveInt) -> Np1DNumberArray:

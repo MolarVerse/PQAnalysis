@@ -22,7 +22,7 @@ from __future__ import annotations
 from lark import Visitor, Transformer, Lark, Tree
 from glob import glob
 from beartype.typing import Any, List, Tuple
-from numbers import Integral, Real
+from numbers import Real
 
 from ...types import Range
 from .. import BaseReader

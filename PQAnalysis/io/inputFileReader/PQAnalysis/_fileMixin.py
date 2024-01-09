@@ -47,3 +47,27 @@ class _FileMixin:
             the log file or None if the key is not in the dictionary
         """
         return _parse_string(self.dictionary, self.log_file_key)
+
+    @property
+    def moldescriptor_file(self) -> str | None:
+        """
+        Returns the moldescriptor file from the input dictionary.
+
+        Returns
+        -------
+        str | None
+            the moldescriptor file or None if the key is not in the dictionary
+        """
+        return _parse_string(self.dictionary, self.moldescriptor_file_key)
+
+    @property
+    def restart_file(self) -> str | None:
+        """
+        Returns the restart file from the input dictionary.
+
+        Returns
+        -------
+        str | None
+            the restart file or None if the key is not in the dictionary
+        """
+        return _parse_string(self.dictionary, self.restart_file_key)
