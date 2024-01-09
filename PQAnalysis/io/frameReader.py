@@ -18,7 +18,8 @@ from beartype.typing import List, Tuple
 from . import FrameReaderError
 from ..core import AtomicSystem, Atom, Cell, ElementNotFoundError
 from ..types import Np2DNumberArray, Np1DNumberArray
-from ..traj import Frame, TrajectoryFormat
+from ..traj import Frame, TrajectoryFormat, MDEngineFormat
+from ..topology import Topology
 
 
 class FrameReader:
@@ -26,7 +27,19 @@ class FrameReader:
     FrameReader reads a frame from a string.
     """
 
-    def read(self, frame_string: str, format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> Frame:
+    def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
+        """
+        Parameters
+        ----------
+        md_format : MDEngineFormat | str, optional
+            The format of the MD engine. Default is "pimd-qmcf".
+        """
+        self.md_format = MDEngineFormat(md_format)
+
+    def read(self, frame_string: str,
+             topology: Topology | None = None,
+             format: TrajectoryFormat | str = TrajectoryFormat.XYZ
+             ) -> Frame:
         """
         Reads a frame from a string.
 
@@ -49,6 +62,8 @@ class FrameReader:
         """
 
         # Note: TrajectoryFormat(format) automatically gives an error if format is not a valid TrajectoryFormat
+
+        self.topology = topology
 
         if TrajectoryFormat(format) is TrajectoryFormat.XYZ:
             return self.read_positions(frame_string)
@@ -80,13 +95,11 @@ class FrameReader:
         n_atoms, cell = self._read_header_line(header_line)
 
         xyz, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+        xyz, atoms = self._check_QMCFC(atoms, xyz)
 
-        try:
-            atoms = [Atom(atom) for atom in atoms]
-        except ElementNotFoundError:
-            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+        topology = self._get_topology(atoms, self.topology)
 
-        return Frame(AtomicSystem(atoms=atoms, pos=xyz, cell=cell))
+        return Frame(AtomicSystem(topology=topology, pos=xyz, cell=cell))
 
     def read_velocities(self, frame_string: str) -> Frame:
         """
@@ -109,13 +122,11 @@ class FrameReader:
         n_atoms, cell = self._read_header_line(header_line)
 
         vel, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+        vel, atoms = self._check_QMCFC(atoms, vel)
 
-        try:
-            atoms = [Atom(atom) for atom in atoms]
-        except ElementNotFoundError:
-            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+        topology = self._get_topology(atoms, self.topology)
 
-        return Frame(AtomicSystem(atoms=atoms, vel=vel, cell=cell))
+        return Frame(AtomicSystem(topology=topology, vel=vel, cell=cell))
 
     def read_forces(self, frame_string: str) -> Frame:
         """
@@ -138,13 +149,11 @@ class FrameReader:
         n_atoms, cell = self._read_header_line(header_line)
 
         forces, atoms = self._read_xyz(splitted_frame_string, n_atoms)
+        forces, atoms = self._check_QMCFC(atoms, forces)
 
-        try:
-            atoms = [Atom(atom) for atom in atoms]
-        except ElementNotFoundError:
-            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+        topology = self._get_topology(atoms, self.topology)
 
-        return Frame(AtomicSystem(atoms=atoms, forces=forces, cell=cell))
+        return Frame(AtomicSystem(topology=topology, forces=forces, cell=cell))
 
     def read_charges(self, frame_string: str) -> Frame:
         """
@@ -167,13 +176,67 @@ class FrameReader:
         n_atoms, cell = self._read_header_line(header_line)
 
         charges, atoms = self._read_scalar(splitted_frame_string, n_atoms)
+        charges, atoms = self._check_QMCFC(atoms, charges)
 
-        try:
-            atoms = [Atom(atom) for atom in atoms]
-        except ElementNotFoundError:
-            atoms = [Atom(atom, use_guess_element=False) for atom in atoms]
+        topology = self._get_topology(atoms, self.topology)
 
-        return Frame(AtomicSystem(atoms=atoms, charges=charges, cell=cell))
+        return Frame(AtomicSystem(topology=topology, charges=charges, cell=cell))
+
+    def _check_QMCFC(self,
+                     atoms: List[str],
+                     value: Np1DNumberArray | Np2DNumberArray
+                     ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
+        """
+        Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
+
+        Parameters
+        ----------
+        atoms : List[str]
+            The list of atoms.
+        value : Np1DNumberArray | Np2DNumberArray
+            The array of values.
+
+        Returns
+        -------
+        Tuple[List[str], Np1DNumberArray | Np2DNumberArray]
+            The list of atoms and the array of values.
+
+        Raises
+        ------
+        FrameReaderError
+            If the first atom is not X for QMCFC.
+        """
+
+        if self.md_format == MDEngineFormat.QMCFC:
+            if atoms[0].upper() != 'X':
+                raise FrameReaderError(
+                    'The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead')
+            value = value[1:]
+            atoms = atoms[1:]
+
+        return value, atoms
+
+    def _get_topology(self, atoms: List[str], topology: Topology | None) -> Topology:
+        """
+        Returns the topology of the frame.
+
+        Returns
+        -------
+        Topology
+            The topology of the frame.
+        """
+
+        if topology is None:
+            try:
+                topology = Topology(atoms=[Atom(atom) for atom in atoms])
+            except ElementNotFoundError:
+                topology = Topology(
+                    atoms=[Atom(atom, use_guess_element=False) for atom in atoms])
+
+        else:
+            topology = Topology()
+
+        return topology
 
     def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:
         """
@@ -245,13 +308,15 @@ class FrameReader:
             If the given string does not contain the correct number of lines.
         """
         try:
-            # Convert the lines to a numpy array
-            lines = np.array([line.split()
-                             for line in splitted_frame_string[2:2+n_atoms]])
+            # Pre-allocate xyz and atoms
+            xyz = np.empty((n_atoms, 3), dtype=np.float32)
+            atoms = [None] * n_atoms
 
-            # Extract the xyz coordinates and atom names
-            xyz = lines[:, 1:4].astype(float)
-            atoms = lines[:, 0].tolist()
+            # Fill xyz and atoms in a single loop
+            for i, line in enumerate(splitted_frame_string[2:2+n_atoms]):
+                split_line = line.split()
+                atoms[i] = split_line[0]
+                xyz[i] = split_line[1:4]
 
             return xyz, atoms
         except ValueError:

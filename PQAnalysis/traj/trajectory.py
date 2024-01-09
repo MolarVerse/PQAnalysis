@@ -137,9 +137,14 @@ class Trajectory:
             The frame or trajectory retrieved from the trajectory.
         """
         frames = self.frames[key]
+
         if np.shape(frames) != ():
-            return Trajectory(frames)
+            traj = Trajectory(frames)
+            if traj[0].topology == Topology():
+                traj.topology = self.topology
+            return traj
         else:
+            frames.topology = self.topology
             return frames
 
     def __iter__(self) -> Iterator:
@@ -244,9 +249,9 @@ class Trajectory:
 
         topology = self.frames[0].topology
 
-        if not all(frame.topology == topology for frame in self.frames):
+        if not all(frame.topology == topology or frame.topology == Topology() for frame in self.frames):
             raise TrajectoryError(
-                "All frames in the trajectory must have the same topology.")
+                "All frames in the trajectory must have the same topology or a default Topology() object.")
 
         return topology
 
@@ -260,5 +265,8 @@ class Trajectory:
         topology : Topology
             The topology of the trajectory.
         """
-        for frame in self.frames:
-            frame.topology = topology
+
+        if len(self.frames) == 0:
+            return
+        else:
+            self.frames[0].topology = topology

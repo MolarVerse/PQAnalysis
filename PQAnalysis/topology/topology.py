@@ -21,13 +21,13 @@ from __future__ import annotations
 import numpy as np
 import warnings
 
-from beartype.typing import Any, Tuple
+from beartype.typing import Any, Tuple, List
 from numbers import Integral
 
 from .residue import Residues, Residue, QMResidue
 from .exceptions import ResidueError, TopologyError, ResidueWarning
 from ..core import Atoms, Element
-from ..types import Np1DIntArray
+from ..types import Np1DIntArray, Np2DIntArray
 
 
 class Topology:
@@ -53,7 +53,7 @@ class Topology:
                  atoms: Atoms | None = None,
                  residue_ids: Np1DIntArray | None = None,
                  reference_residues: Residues | None = None,
-                 check_residues: bool = True
+                 check_residues: bool = True,
                  ) -> None:
         """
         Initializes a Topology object.
@@ -109,9 +109,17 @@ class Topology:
             self._residue_numbers = np.arange(self.n_atoms)
         else:
             self._residue_numbers = []
+            self._residue_atom_indices = []
+            atom_counter = 0
             for i in range(self.n_residues):
                 self._residue_numbers += [i] * self.residues[i].n_atoms
+                for j in range(self.residues[i].n_atoms):
+                    self._residue_atom_indices.append(
+                        np.arange(atom_counter, atom_counter + self.residues[i].n_atoms))
+
+                atom_counter += self.residues[i].n_atoms
             self._residue_numbers = np.array(self._residue_numbers)
+            self._residue_atom_indices = self._residue_atom_indices
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -469,6 +477,18 @@ please set 'check_residues' to False"""
             The residue numbers of each atom of the topology.
         """
         return self._residue_numbers
+
+    @property
+    def residue_atom_indices(self) -> List[Np1DIntArray]:
+        """
+        Returns the atom indices for each residue of the topology.
+
+        Returns
+        -------
+        Np2DIntArray
+            The atom indices of each residue of the topology.
+        """
+        return self._residue_atom_indices
 
 
 def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
