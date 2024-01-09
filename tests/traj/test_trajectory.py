@@ -176,7 +176,7 @@ class TestTrajectory:
         with pytest.raises(TrajectoryError) as exception:
             traj.topology
         assert str(
-            exception.value) == "All frames in the trajectory must have the same topology."
+            exception.value) == "All frames in the trajectory must have the same topology or a default Topology() object."
 
         traj = Trajectory([frame2, frame2])
         assert traj.topology == Topology(atoms=[Atom("C")])

@@ -9,11 +9,17 @@ TrajectoryReader
     A class for reading a trajectory from a file.
 """
 
-from beartype.typing import List
+import sys
 
-from . import BaseReader, TrajectoryReaderError, FrameReader
-from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from beartype.typing import List
+from tqdm.auto import tqdm
+
+import PQAnalysis.config as config
+
+from . import BaseReader, FrameReader
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from ..core import Cell
+from ..topology import Topology
 
 
 class TrajectoryReader(BaseReader):
@@ -45,7 +51,7 @@ class TrajectoryReader(BaseReader):
         self.frames = []
         self.format = format
 
-    def read(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> Trajectory:
+    def read(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF, constant_topology: bool = True) -> Trajectory:
         """
         Reads the trajectory from the file.
 
@@ -59,25 +65,36 @@ class TrajectoryReader(BaseReader):
         If the trajectory is split into multiple files, the files are read one after another and the frames are
         concatenated into a single trajectory.
 
+        Parameters
+        ----------
+        md_format : MDEngineFormat | str, optional
+            The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
+        constant_topology : bool, optional
+            Whether the topology is constant over the trajectory or does change. Default is True.
+
         Returns
         -------
         Trajectory
             The trajectory read from the file.
         """
+        self.constant_topology = constant_topology
+        self.topology = None
+        self.frame_reader = FrameReader(md_format=md_format)
+        self.md_format = md_format
+
         if not self.multiple_files:
-            return self._read_single_file(md_format)
+            return self._read_single_file()
 
         else:
 
             traj = Trajectory()
             for filename in self.filenames:
-                self.filename = filename
-                traj += self._read_single_file(md_format)
+                traj += TrajectoryReader(filename,
+                                         self.format).read(self.md_format)
 
-            self.filename = None
             return traj
 
-    def _read_single_file(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> Trajectory:
+    def _read_single_file(self) -> Trajectory:
         """
         Reads the trajectory from the file.
 
@@ -93,31 +110,64 @@ class TrajectoryReader(BaseReader):
         Trajectory
             The trajectory read from the file.
         """
-        frame_reader = FrameReader()
+
+        with open(self.filename, 'r') as f:
+            sum_lines = sum(1 for _ in f)
+
         with open(self.filename, 'r') as f:
 
             # Concatenate lines of the same frame
             frame_lines = []
-            for line in f:
+            for line in tqdm(f, total=sum_lines, disable=not config.with_progress_bar):
                 stripped_line = line.strip()
                 if stripped_line == '' or not stripped_line[0].isdigit():
                     frame_lines.append(line)
                 else:
                     if frame_lines:
-                        self._read_single_frame(
-                            ''.join(frame_lines), frame_reader, md_format)
+                        self.frames.append(self._read_single_frame(
+                            ''.join(frame_lines), self.topology))
+
+                        if self.constant_topology:
+                            self.topology = self.frames[-1].topology
 
                     frame_lines = [line]
 
             if frame_lines:
-                self._read_single_frame(''.join(frame_lines), frame_reader, md_format)
+                self.frames.append(self._read_single_frame(
+                    ''.join(frame_lines), self.topology))
+
+        if self.constant_topology:
+            self.topology = self.frames[0].topology
+
+        def get_size(obj):
+            size = sys.getsizeof(obj)
+            if isinstance(obj, dict):
+                size += sum([get_size(v) for v in obj.values()])
+                size += sum([get_size(k) for k in obj.keys()])
+            elif hasattr(obj, '__dict__'):
+                size += get_size(obj.__dict__)
+            elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
+                size += sum([get_size(i) for i in obj])
+            return size
 
         traj = Trajectory(self.frames)
+        print(get_size(self.frames[0]) / 10**6)
+        print(get_size(self.frames[1]) / 10**6)
+        print(get_size(self.frames[0].system.pos) / 10**6)
+        print(
+            get_size(self.frames[0].system.topology) / 10**6)
+        print(
+            get_size(self.frames[1].system.topology) / 10**6)
+        print(
+            get_size(Topology()) / 10**6)
         self.frames = []
 
         return traj
 
-    def _read_single_frame(self, frame_string: str, frame_reader: FrameReader,  md_format: MDEngineFormat | str) -> None:
+    def _read_single_frame(self,
+                           frame_string: str,
+                           topology: Topology | None = None
+                           ) -> Frame:
         """
         Reads a single frame from the given string.
 
@@ -125,24 +175,19 @@ class TrajectoryReader(BaseReader):
         ----------
         frame_string : str
             The string containing the frame information.
+        topology : Topology, optional
+            The topology of the frame. Default is None.
 
         Raises
         ------
         TrajectoryReaderError
             If the first atom in the frame is not X for QMCFC.
         """
-        frame = frame_reader.read(frame_string, format=self.format)
-
-        # to make sure X particle is not included in the trajectory for QMCFC
-        if MDEngineFormat(md_format) == MDEngineFormat.PIMD_QMCF:
-            self.frames.append(frame)
-        elif MDEngineFormat(md_format) == MDEngineFormat.QMCFC:
-            if frame.atoms[0].name.upper() != 'X':
-                raise TrajectoryReaderError(
-                    "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead")
-            else:
-                self.frames.append(frame[1:])
+        frame = self.frame_reader.read(
+            frame_string, format=self.format, topology=topology)
 
         # If the read frame does not have cell information, use the cell information of the previous frame
-        if len(self.frames) > 1 and self.frames[-1].cell == Cell():
-            self.frames[-1].cell = self.frames[-2].cell
+        if len(self.frames) > 0 and frame.cell.is_vacuum:
+            frame.cell = self.frames[-1].cell
+
+        return frame

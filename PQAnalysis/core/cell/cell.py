@@ -141,6 +141,18 @@ class Cell(_StandardPropertiesMixin):
         """
         return np.linalg.det(self.box_matrix)
 
+    @property
+    def is_vacuum(self) -> bool:
+        """
+        Returns whether the unit cell is a vacuum cell.
+
+        Returns
+        -------
+        bool
+            Whether the unit cell is a vacuum cell.
+        """
+        return bool(self.volume > 1e100)
+
     def image(self, pos: Np2DNumberArray | Np1DNumberArray) -> Np2DNumberArray | Np1DNumberArray:
         """
         Returns the image of the given position in the unit cell.

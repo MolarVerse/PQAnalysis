@@ -10,11 +10,15 @@ import warnings
 from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
+import PQAnalysis.config as config
+
 from .exceptions import RDFError, RDFWarning
 from ...types import Np1DNumberArray, PositiveInt, PositiveReal
 from ...core import distance
 from ...traj import Trajectory
 from ...topology import Selection, SelectionCompatible
+from ...utils import timeit_in_class
+from ...utils.math import to_numpy_array
 
 
 class RDF:
@@ -195,18 +199,14 @@ class RDF:
             self.n_bins, self.r_min, self.r_max, self.delta_r)
         self.bins = np.zeros(self.n_bins)
 
-    def run(self, with_progress_bar: bool = True) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
+    @timeit_in_class
+    def run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
         """
         Runs the RDF analysis.
 
         This method runs the RDF analysis and returns the middle points of the bins of the RDF analysis, the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
 
         This method will display a progress bar by default. This can be disabled by setting with_progress_bar to False.
-
-        Parameters
-        ----------
-        with_progress_bar : bool, optional
-            Whether to show a progress bar or not, by default True.
 
         Returns
         -------
@@ -225,20 +225,19 @@ class RDF:
         self._reference_density = len(
             self.reference_indices) / self._average_volume
 
-        disable_progress_bar = not with_progress_bar
-
-        for frame in tqdm(self.traj, disable=disable_progress_bar):
+        for frame in tqdm(self.traj, disable=not config.with_progress_bar):
 
             for reference_index in self.reference_indices:
 
                 if self.no_intra_molecular:
-                    residue_number = frame.topology.residue_numbers[reference_index]
-                    self.target_selection = Selection((",").join(
-                        [str(i) for i in self.target_indices]) + " | res~" + str(residue_number))
+                    residue_indices = frame.topology.residue_atom_indices[reference_index]
+                    target_indices = np.setdiff1d(
+                        self.target_indices, residue_indices)
+
+                else:
+                    target_indices = self.target_indices
 
                 reference_position = frame.pos[reference_index]
-                target_indices = self.target_selection.select(
-                    frame.topology, self.use_full_atom_info)
                 target_positions = frame.pos[target_indices]
 
                 distances = distance(reference_position,

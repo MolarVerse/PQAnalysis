@@ -1,5 +1,7 @@
 import argparse
 
+import PQAnalysis.config as config
+
 from ..analysis import RDF, RDFInputFileReader, RDFDataWriter, RDFLogWriter
 from ..io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from ..traj import MDEngineFormat
@@ -17,10 +19,11 @@ def main():
 
     engine_format = MDEngineFormat(args.format)
 
-    _rdf(args.input_file, engine_format, args.progress)
+    config.with_progress_bar = args.progress
+    _rdf(args.input_file, engine_format)
 
 
-def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
+def _rdf(input_file: str, format: MDEngineFormat):
     input_reader = RDFInputFileReader(input_file)
     input_reader.read()
 
@@ -30,16 +33,13 @@ def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
     restart_reader = RestartFileReader(input_reader.restart_file)
     restart_frame = restart_reader.read()
 
-    moldescriptor_reader = MoldescriptorReader(input_reader.moldescriptor_file)
+    moldescriptor_reader = MoldescriptorReader(
+        input_reader.moldescriptor_file)
     reference_residues = moldescriptor_reader.read()
 
     topology = restart_frame.topology
     topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
                         reference_residues=reference_residues)
-
-    print(topology.n_atoms)
-    print(traj[0].n_atoms)
-    print(traj.topology.n_atoms)
 
     traj.topology = topology
 
@@ -55,9 +55,11 @@ def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
         r_min=input_reader.r_min,
     )
 
-    RDFLogWriter(input_reader.log_file, rdf).write_before_run()
+    data_writer = RDFDataWriter(input_reader.out_file)
+    log_writer = RDFLogWriter(input_reader.log_file)
+    log_writer.write_before_run(rdf)
 
-    rdf_data = rdf.run(with_progress_bar=with_progress_bar)
+    rdf_data = rdf.run()
 
-    RDFLogWriter(input_reader.log_file, rdf).write_after_run()
-    RDFDataWriter(input_reader.out_file, rdf_data).write()
+    data_writer.write(rdf_data)
+    log_writer.write_after_run(rdf)

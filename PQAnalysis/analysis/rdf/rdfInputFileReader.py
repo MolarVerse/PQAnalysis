@@ -37,8 +37,8 @@ class RDFInputFileReader(Reader):
     ]
     """List[str]: The optional keys of the input file
     
-    | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.r_max_key`: The maximum radius of the RDF analysis in Angstrom
-    | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.r_min_key`: The minimum radius of the RDF analysis in Angstrom
+    | - :py:const:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.r_max_key`: The maximum radius of the RDF analysis in Angstrom
+    | - :py:const:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.r_min_key`: The minimum radius of the RDF analysis in Angstrom
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.delta_r_key`: The width of the bins of the RDF analysis in Angstrom
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.n_bins_key`: The number of bins of the RDF analysis
     | - :py:attr:`~PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader.PQAnalysisInputFileReader.use_full_atom_info_key`: If True, the full atom information is used for the selection of the reference and target atoms. If False only the element types without the atom names are used. This setting is only relevant if the selection is given with Atom objects. See also: :py:class:`~PQAnalysis.topology.selection.Selection`
