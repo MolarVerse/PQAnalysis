@@ -6,12 +6,13 @@ import time
 
 from decorator import decorator
 from collections import defaultdict
+from inspect import getfullargspec
 
 
-@decorator
-def count_decorator(func):
+def count_decorator(func, *args, **kwargs):
     """
     Decorator which counts the number of times a function is called.
+    TODO:
 
     Parameters
     ----------
@@ -36,9 +37,10 @@ def count_decorator(func):
 
 
 @decorator
-def instance_function_count_decorator(func):
+def instance_function_count_decorator(func, *args, **kwargs):
     """
     Decorator which counts the number of times a function is called for an instance of a class.
+    TODO:
 
     Parameters
     ----------
@@ -50,27 +52,26 @@ def instance_function_count_decorator(func):
     new_func : function
         Decorated function.
     """
+    instance = args[0]
 
-    def new_func(self, *args, **kwargs):
-        if not hasattr(self, 'counter'):
-            setattr(self, 'counter', defaultdict(int))
-        self.counter[func.__name__] += 1
+    if not hasattr(instance, 'counter'):
+        setattr(instance, 'counter', defaultdict(int))
+    instance.counter[func.__name__] += 1
 
-        reset_counter = kwargs.get('reset_counter')
+    reset_counter = get_argvar_by_name(func, args, 'reset_counter')
 
-        if reset_counter:
-            self.counter[func.__name__] = 1
+    if reset_counter:
+        instance.counter[func.__name__] = 1
 
-        func(self, *args, **kwargs)
-    new_func.__name__ = func.__name__
-    return new_func
+    return func(*args, **kwargs)
 
 
 @decorator
-def timeit_in_class(func):
+def timeit_in_class(func, *args, **kwargs):
     """
     Decorator which measures the time a function of a class takes to execute
     and sets elapsed time as an attribute of the class.
+    TODO:
 
     Parameters
     ----------
@@ -88,4 +89,25 @@ def timeit_in_class(func):
         end = time.time()
         setattr(args[0], 'elapsed_time', end - start)
         return result
-    return wrapper
+
+    return wrapper(*args, **kwargs)
+
+
+def get_argvar_by_name(func, args, arg_name):
+    """
+    Returns the value of the argument with the given name.
+
+    Parameters
+    ----------
+    func : function
+        Function to be decorated.
+    arg_name : str
+        Name of the argument.
+
+    Returns
+    -------
+    arg_value : any
+        Value of the argument.
+    """
+    arg_index = getfullargspec(func).args.index(arg_name)
+    return args[arg_index]
