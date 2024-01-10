@@ -14,6 +14,7 @@ PQAnalysis.traj
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.traj.api
        PQAnalysis.traj.exceptions
        PQAnalysis.traj.formats
        PQAnalysis.traj.frame

@@ -1,1 +1,1 @@
-from .cell import Cell
+from .cell import Cell, Cells

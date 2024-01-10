@@ -4,9 +4,11 @@ A module containing different decorators which could be useful.
 
 import time
 
+from decorator import decorator
 from collections import defaultdict
 
 
+@decorator
 def count_decorator(func):
     """
     Decorator which counts the number of times a function is called.
@@ -33,6 +35,7 @@ def count_decorator(func):
     return wrapper
 
 
+@decorator
 def instance_function_count_decorator(func):
     """
     Decorator which counts the number of times a function is called for an instance of a class.
@@ -63,6 +66,7 @@ def instance_function_count_decorator(func):
     return new_func
 
 
+@decorator
 def timeit_in_class(func):
     """
     Decorator which measures the time a function of a class takes to execute

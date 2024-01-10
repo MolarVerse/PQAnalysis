@@ -27,6 +27,7 @@ dependencies = [
     "multimethod",
     "lark",
     "tqdm",
+    "decorator",
 ]
 
 [project.optional-dependencies]

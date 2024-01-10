@@ -18,6 +18,7 @@ PQAnalysis.utils
 
        PQAnalysis.utils.common
        PQAnalysis.utils.decorators
+       PQAnalysis.utils.math
 
 
 

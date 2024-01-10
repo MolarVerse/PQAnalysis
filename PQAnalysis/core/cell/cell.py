@@ -14,11 +14,15 @@ from __future__ import annotations
 import numpy as np
 import sys
 
-from beartype.typing import Any
+from beartype.typing import Any, NewType, Annotated
+from beartype.vale import Is
 from numbers import Real
 
 from ...types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
 from .standardProperties import _StandardPropertiesMixin
+
+Cells = NewType("Cells", Annotated[list, Is[lambda list: all(
+    isinstance(atom, Cell) for atom in list)]])
 
 
 class Cell(_StandardPropertiesMixin):

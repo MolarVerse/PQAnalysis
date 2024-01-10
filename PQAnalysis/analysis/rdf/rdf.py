@@ -4,19 +4,23 @@ A module containing the RDF class. The RDF class is used to calculate the radial
 
 from __future__ import annotations
 
+# 3rd party imports
 import numpy as np
 import warnings
 
+# 3rd party imports
 from beartype.typing import Tuple, List
 from tqdm.auto import tqdm
 
+# local imports
 import PQAnalysis.config as config
 
+# local imports
 from .exceptions import RDFError, RDFWarning
 from ...types import Np1DNumberArray, PositiveInt, PositiveReal
-from ...core import distance, Cell
+from ...core import distance, Cell, Cells
 from ...traj import Trajectory
-from ...traj.trajectory import check_trajectory_PBC, check_trajectory_vacuum
+from ...traj import check_trajectory_PBC, check_trajectory_vacuum
 from ...topology import Selection, SelectionCompatible
 from ...utils import timeit_in_class
 from ...io import TrajectoryReader
@@ -25,6 +29,10 @@ from ...io import TrajectoryReader
 class RDF:
     """
     A class for calculating the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
+
+    The RDF analysis is initialized with the provided parameters. The RDF analysis can be run by calling the run method. The run method returns the middle points of the bins of the RDF analysis, the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+
+    The RDF class can be initialized with either a trajectory object or via a TrajectoryReader object. If a trajectory object is given, it is assumed to have a constant topology over all frames! The main difference between the two is that the TrajectoryReader object allows for lazy loading of the trajectory, meaning that the trajectory is only loaded frame by frame when needed. This can be useful for large trajectories that do not fit into memory.
     """
 
     _use_full_atom_default = False
@@ -76,8 +84,8 @@ class RDF:
             If n_bins, delta_r and r_max are all specified. This would lead to ambiguous results.
 
         Notes
-        -----
-        To initialize the RDF analysis object at least one of the parameters n_bins or delta_r must be specified. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
+        -----        
+        Furthermore, to initialize the RDF analysis object at least one of the parameters n_bins or delta_r must be specified. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
 
         It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.
 
@@ -87,7 +95,12 @@ class RDF:
         --------
         :py:class:`~PQAnalysis.traj.trajectory.Trajectory`
         :py:class:`~PQAnalysis.topology.selection.Selection`
+        :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`
+        :py:class:`~PQAnalysis.traj.trajectory.Trajectory`
         """
+        #####################################################
+        # Initialize parameters with default values if None #
+        #####################################################
 
         if use_full_atom_info is None:
             self.use_full_atom_info = self._use_full_atom_default
@@ -104,23 +117,32 @@ class RDF:
         else:
             self.r_min = r_min
 
+        ################################
+        # Initialize Selection objects #
+        ################################
+
         self.reference_species = reference_species
         self.target_species = target_species
 
         self.reference_selection = Selection(reference_species)
         self.target_selection = Selection(target_species)
 
-        self.cells = [cell for cell in traj._cell_generator()]
+        ############################################
+        # Initialize Trajectory iterator/generator #
+        ############################################
+
+        self.cells = traj.cells
 
         if isinstance(traj, TrajectoryReader):
+            # lazy loading of trajectory from file(s)
             self.frame_generator = traj.frame_generator()
-            self.first_frame = next(self.frame_generator)
         elif len(traj) == 0:
             raise RDFError("Trajectory cannot be of length 0.")
         else:
+            # use trajectory object as iterator
             self.frame_generator = iter(traj)
-            self.first_frame = next(self.frame_generator)
 
+        self.first_frame = next(self.frame_generator)
         self.topology = traj.topology
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
@@ -268,11 +290,8 @@ class RDF:
                 self.bins += _add_to_bins(distances, self.r_min,
                                           self.delta_r, self.n_bins)
 
-        if self.no_intra_molecular:
-            target_density = (len(self.target_indices) - 1) / \
-                self._average_volume
-        else:
-            target_density = len(self.target_indices) / self._average_volume
+        target_density = len(
+            target_index_combinations[0]) / self._average_volume
 
         norm = _norm(self.n_bins, self.delta_r, target_density,
                      len(self.reference_indices), self.n_frames)
@@ -352,7 +371,7 @@ def _setup_bin_middle_points(n_bins: PositiveInt, r_min: PositiveReal, r_max: Po
     return bin_middle_points
 
 
-def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: PositiveReal, traj: Trajectory) -> PositiveReal:
+def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: PositiveReal, cells: Cells) -> PositiveReal:
     """
     Calculates the maximum radius of the RDF analysis from the provided parameters.
 
@@ -364,8 +383,8 @@ def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: Positive
         spacing between bins
     r_min : PositiveReal
         minimum (starting) radius of the RDF analysis
-    traj : Trajectory
-        The trajectory to check the maximum radius of the RDF analysis against.
+    cells : Cells
+        The cells of the trajectory to calculate the maximum radius of the RDF analysis from.
 
     Returns
     -------
@@ -373,12 +392,12 @@ def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: Positive
         maximum radius of the RDF analysis
     """
     r_max = delta_r * n_bins + r_min
-    r_max = _check_r_max(r_max, traj)
+    r_max = _check_r_max(r_max, cells)
 
     return r_max
 
 
-def _check_r_max(r_max: PositiveReal, cells: List[Cell]) -> PositiveReal:
+def _check_r_max(r_max: PositiveReal, cells: Cells) -> PositiveReal:
     """
     Checks if the provided maximum radius is larger than the maximum allowed radius according to the box vectors of the trajectory.
 
@@ -386,14 +405,15 @@ def _check_r_max(r_max: PositiveReal, cells: List[Cell]) -> PositiveReal:
     ----------
     r_max : PositiveReal
         maximum radius of the RDF analysis
-    traj : Trajectory
-        The trajectory to check the maximum radius of the RDF analysis against.
+    cells : Cells
+        The cells of the trajectory to check the maximum radius of the RDF analysis against.
 
     Returns
     -------
     PositiveReal
         maximum radius of the RDF analysis if it is smaller than the maximum allowed radius
         according to the box vectors of the trajectory, than the maximum allowed radius according to the box vectors of the trajectory.
+
     Raises
     ------
     RDFWarning
@@ -439,7 +459,7 @@ def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: Positiv
     return n_bins, r_max
 
 
-def _infer_r_max(cells: List[Cell]) -> PositiveReal:
+def _infer_r_max(cells: Cells) -> PositiveReal:
     """
     Infers the maximum radius of the RDF analysis from the box vectors of the trajectory.
 
@@ -447,8 +467,8 @@ def _infer_r_max(cells: List[Cell]) -> PositiveReal:
 
     Parameters
     ----------
-    traj : Trajectory
-        The trajectory to infer the maximum radius of the RDF analysis from.
+    cells : Cells
+        The cells of the trajectory to infer the maximum radius of the RDF analysis from.
 
     Returns
     -------

@@ -14,6 +14,7 @@ PQAnalysis
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.config
        PQAnalysis.exceptions
        PQAnalysis.formats
        PQAnalysis.types
