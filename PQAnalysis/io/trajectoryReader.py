@@ -70,6 +70,12 @@ class TrajectoryReader(BaseReader):
         self.md_format = MDEngineFormat(md_format)
         self.frame_reader = FrameReader(md_format=self.md_format)
 
+        # NOTE: Progress bar is disabled by default
+        #       This way the frame_generator can be used in other functions
+        #       without the need to disable the progress bar
+        #       The global config.with_progress_bar is only set in the read function
+        self.with_progress_bar = False
+
     def read(self, topology: Topology | None = None) -> Trajectory:
         """
         Reads the trajectory from the file.
@@ -97,6 +103,7 @@ class TrajectoryReader(BaseReader):
             The trajectory read from the file.
         """
 
+        self.with_progress_bar = config.with_progress_bar
         self.topology = topology
 
         traj = Trajectory()
@@ -106,6 +113,7 @@ class TrajectoryReader(BaseReader):
         return traj
 
     def frame_generator(self) -> Generator[Frame]:
+
         last_cell = None
         for filename in self.filenames:
             with open(filename, 'r') as self.file:
@@ -113,7 +121,7 @@ class TrajectoryReader(BaseReader):
 
             with open(filename, 'r') as self.file:
                 frame_lines = []
-                for line in tqdm(self.file, total=sum_lines, disable=not config.with_progress_bar):
+                for line in tqdm(self.file, total=sum_lines, disable=not self.with_progress_bar):
                     stripped_line = line.strip()
                     if stripped_line == '' or not stripped_line[0].isdigit():
                         frame_lines.append(line)
@@ -167,7 +175,7 @@ class TrajectoryReader(BaseReader):
 
         for filename in self.filenames:
             with open(filename, 'r') as f:
-                for i, line in enumerate(f):
+                for line in f:
                     stripped_line = line.strip()
                     splitted_line = stripped_line.split()
                     if len(splitted_line) == 1 and cell is None:
