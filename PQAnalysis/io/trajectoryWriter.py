@@ -57,9 +57,6 @@ class TrajectoryWriter(BaseWriter):
     It can write a trajectory to a file in either a PIMD-QMCF format or a QMCFC format.
     """
 
-    _format: MDEngineFormat
-    _type: TrajectoryFormat = TrajectoryFormat.XYZ
-
     def __init__(self,
                  filename: str | None = None,
                  format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
@@ -92,17 +89,18 @@ class TrajectoryWriter(BaseWriter):
             The trajectory to write.
         """
 
+        self.type = TrajectoryFormat(type)
+
         if isinstance(trajectory, Frame):
             trajectory = Trajectory([trajectory])
 
-        self._type = TrajectoryFormat(type)
-        if self._type == TrajectoryFormat.XYZ:
+        if self.type == TrajectoryFormat.XYZ:
             self.write_positions(trajectory)
-        elif self._type == TrajectoryFormat.VEL:
+        elif self.type == TrajectoryFormat.VEL:
             self.write_velocities(trajectory)
-        elif self._type == TrajectoryFormat.FORCE:
+        elif self.type == TrajectoryFormat.FORCE:
             self.write_forces(trajectory)
-        elif self._type == TrajectoryFormat.CHARGE:
+        elif self.type == TrajectoryFormat.CHARGE:
             self.write_charges(trajectory)
 
         self.close()
@@ -116,7 +114,6 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self._type = TrajectoryFormat.XYZ
         self.open()
         for frame in trajectory:
             self._write_header(frame.n_atoms, frame.cell)
@@ -134,7 +131,6 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self._type = TrajectoryFormat.VEL
         self.open()
         for frame in trajectory:
             self._write_header(frame.n_atoms, frame.cell)
@@ -152,7 +148,6 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self._type = TrajectoryFormat.FORCE
         self.open()
         for frame in trajectory:
             self._write_header(frame.n_atoms, frame.cell)
@@ -170,7 +165,6 @@ class TrajectoryWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self._type = TrajectoryFormat.CHARGE
         self.open()
         for frame in trajectory:
             self._write_header(frame.n_atoms, frame.cell)
@@ -207,10 +201,10 @@ class TrajectoryWriter(BaseWriter):
             The frame to write the comment line of.
         """
 
-        if self._type == TrajectoryFormat.FORCE:
+        if self.type == TrajectoryFormat.FORCE:
             sum_forces = sum(frame.forces)
             print(
-                f"sum of forces: {sum_forces[0]} {sum_forces[1]} {sum_forces[2]}", file=self.file)
+                f"sum of forces: {sum_forces[0]:e} {sum_forces[1]:e} {sum_forces[2]:e}", file=self.file)
         else:
             print("", file=self.file)
 
@@ -232,8 +226,12 @@ class TrajectoryWriter(BaseWriter):
             print("X   0.0 0.0 0.0", file=self.file)
 
         for i in range(len(atoms)):
-            print(
-                f"{atoms[i].name} {xyz[i][0]} {xyz[i][1]} {xyz[i][2]}", file=self.file)
+            if self.type == TrajectoryFormat.VEL:
+                print(
+                    f"{atoms[i].name} {xyz[i][0]:16.12e} {xyz[i][1]:16.12e} {xyz[i][2]:16.12e}", file=self.file)
+            else:
+                print(
+                    f"{atoms[i].name} {xyz[i][0]:16.10f} {xyz[i][1]:16.10f} {xyz[i][2]:16.10f}", file=self.file)
 
     def _write_scalar(self, scalar: Np1DNumberArray, atoms: List[Atom]) -> None:
         """
@@ -274,3 +272,27 @@ class TrajectoryWriter(BaseWriter):
             The format of the trajectory file.
         """
         self._format = MDEngineFormat(format)
+
+    @property
+    def type(self) -> TrajectoryFormat:
+        """
+        Returns the type of the trajectory file.
+
+        Returns
+        -------
+        TrajectoryFormat
+            The type of the trajectory file.
+        """
+        return self._type
+
+    @type.setter
+    def type(self, type: TrajectoryFormat | str) -> None:
+        """
+        Sets the type of the trajectory file.
+
+        Parameters
+        ----------
+        type : TrajectoryFormat | str
+            The type of the trajectory file.
+        """
+        self._type = TrajectoryFormat(type)

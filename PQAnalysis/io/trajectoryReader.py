@@ -11,11 +11,17 @@ TrajectoryReader
 
 from __future__ import annotations
 
+# 3rd party modules
+import numpy as np
+
+# 3rd party modules
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
+# Local modules
 import PQAnalysis.config as config
 
+# Local modules
 from . import BaseReader, FrameReader, TrajectoryReaderError
 from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from ..core import Cell
@@ -157,12 +163,11 @@ class TrajectoryReader(BaseReader):
         last_cell = None
         with open(self.filenames[0], 'r') as f:
             line = f.readline()
-            n_atoms = int(line.strip()[0])
+            n_atoms = int(line.split()[0])
 
         for filename in self.filenames:
             with open(filename, 'r') as f:
-                lines = f.readlines()
-                for line in lines:
+                for i, line in enumerate(f):
                     stripped_line = line.strip()
                     splitted_line = stripped_line.split()
                     if len(splitted_line) == 1 and cell is None:
@@ -184,7 +189,7 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = cell
 
-                    for _ in range(n_atoms+1):
+                    for i in range(n_atoms+1):
                         next(f)
 
     def _read_single_frame(self,
