@@ -7,7 +7,7 @@ PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
 .. currentmodule:: PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
 
 .. automodule:: PQAnalysis.io.inputFileReader.PQAnalysis.PQAnalysis_inputFileReader
-    :members: PQAnalysisInputFileReader
+    :members: PQAnalysisInputFileReader, traj_files_keys
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

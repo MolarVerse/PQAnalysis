@@ -7,22 +7,7 @@ PQAnalysis.utils.decorators
 .. currentmodule:: PQAnalysis.utils.decorators
 
 .. automodule:: PQAnalysis.utils.decorators
-    :members: count_decorator, instance_function_count_decorator, timeit_in_class
-    :undoc-members:
-    :show-inheritance:
-    :member-order: groupwise
-
-    Summary
-    -------
-
-    Functions:
-
-    .. autosummary::
-        :nosignatures:
-
-        count_decorator
-        instance_function_count_decorator
-        timeit_in_class
+    
 
 
 
@@ -30,6 +15,3 @@ PQAnalysis.utils.decorators
 
 
 
-
-    Reference
-    ---------
