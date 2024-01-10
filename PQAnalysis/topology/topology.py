@@ -107,19 +107,20 @@ class Topology:
 
         if self.residues == []:
             self._residue_numbers = np.arange(self.n_atoms)
+            self._residue_atom_indices = [
+                np.arange(i, i+1) for i in range(self.n_atoms)]
         else:
             self._residue_numbers = []
             self._residue_atom_indices = []
             atom_counter = 0
             for i in range(self.n_residues):
                 self._residue_numbers += [i] * self.residues[i].n_atoms
-                for j in range(self.residues[i].n_atoms):
+                for _ in range(self.residues[i].n_atoms):
                     self._residue_atom_indices.append(
                         np.arange(atom_counter, atom_counter + self.residues[i].n_atoms))
 
                 atom_counter += self.residues[i].n_atoms
             self._residue_numbers = np.array(self._residue_numbers)
-            self._residue_atom_indices = self._residue_atom_indices
 
     def __eq__(self, other: Any) -> bool:
         """

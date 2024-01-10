@@ -7,18 +7,19 @@ from __future__ import annotations
 import numpy as np
 import warnings
 
-from beartype.typing import Tuple
+from beartype.typing import Tuple, List
 from tqdm.auto import tqdm
 
 import PQAnalysis.config as config
 
 from .exceptions import RDFError, RDFWarning
 from ...types import Np1DNumberArray, PositiveInt, PositiveReal
-from ...core import distance
+from ...core import distance, Cell
 from ...traj import Trajectory
+from ...traj.trajectory import check_trajectory_PBC, check_trajectory_vacuum
 from ...topology import Selection, SelectionCompatible
 from ...utils import timeit_in_class
-from ...utils.math import to_numpy_array
+from ...io import TrajectoryReader
 
 
 class RDF:
@@ -31,7 +32,7 @@ class RDF:
     _r_min_default = 0.0
 
     def __init__(self,
-                 traj: Trajectory,
+                 traj: Trajectory | TrajectoryReader,
                  reference_species: SelectionCompatible,
                  target_species: SelectionCompatible,
                  use_full_atom_info: bool = False,
@@ -44,8 +45,8 @@ class RDF:
         """
         Parameters
         ----------
-        traj : Trajectory
-            The trajectory to perform the RDF analysis on.
+        traj : Trajectory | TrajectoryReader
+            The trajectory to analyze. If a TrajectoryReader is provided, the trajectory frame by frame via a frame_generator
         reference_species : SelectionCompatible
             The reference species of the RDF analysis.
         target_species : SelectionCompatible
@@ -103,23 +104,32 @@ class RDF:
         else:
             self.r_min = r_min
 
-        self.traj = traj
         self.reference_species = reference_species
         self.target_species = target_species
-
-        if len(traj) == 0:
-            raise RDFError("Trajectory cannot be of length 0.")
 
         self.reference_selection = Selection(reference_species)
         self.target_selection = Selection(target_species)
 
-        self.reference_indices = self.reference_selection.select(
-            self.traj.topology, use_full_atom_info)
-        self.target_indices = self.target_selection.select(
-            self.traj.topology, use_full_atom_info)
+        self.cells = traj.cells
+
+        if isinstance(traj, TrajectoryReader):
+            self.frame_generator = traj.frame_generator()
+            self.first_frame = next(self.frame_generator)
+        elif len(traj) == 0:
+            raise RDFError("Trajectory cannot be of length 0.")
+        else:
+            self.frame_generator = iter(traj)
+            self.first_frame = next(self.frame_generator)
+
+        self.topology = self.first_frame.topology
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
                         r_max=r_max, r_min=self.r_min)
+
+        self.reference_indices = self.reference_selection.select(
+            self.topology, self.use_full_atom_info)
+        self.target_indices = self.target_selection.select(
+            self.topology, self.use_full_atom_info)
 
     def setup_bins(self,
                    n_bins: PositiveInt | None = None,
@@ -156,7 +166,7 @@ class RDF:
         self.r_min = r_min
 
         # check if the trajectory is fully periodic or fully in vacuum
-        if not self.traj.check_PBC() and not self.traj.check_vacuum():
+        if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
             raise RDFError(
                 "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.")
 
@@ -174,7 +184,7 @@ class RDF:
         elif n_bins is not None and delta_r is not None:
             self.n_bins = n_bins
             self.delta_r = delta_r
-            self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.traj)
+            self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.cells)
             self.n_bins, self.r_max = _calculate_n_bins(
                 delta_r, self.r_max, r_min)
 
@@ -182,9 +192,9 @@ class RDF:
             self.r_max = r_max
 
             if r_max is None:
-                self.r_max = _infer_r_max(self.traj)
+                self.r_max = _infer_r_max(self.cells)
 
-            self.r_max = _check_r_max(self.r_max, self.traj)
+            self.r_max = _check_r_max(self.r_max, self.cells)
 
             if n_bins is None:
                 self.delta_r = delta_r
@@ -198,6 +208,11 @@ class RDF:
         self.bin_middle_points = _setup_bin_middle_points(
             self.n_bins, self.r_min, self.r_max, self.delta_r)
         self.bins = np.zeros(self.n_bins)
+
+    @property
+    def average_volume(self) -> PositiveReal:
+        """PositiveReal: The average volume of the trajectory."""
+        return np.mean([cell.volume for cell in self.cells])
 
     @timeit_in_class
     def run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
@@ -221,18 +236,25 @@ class RDF:
         differential_bins : Np1DNumberArray
             The differential bins of the RDF analysis based on the spherical shell model.
         """
-        self._average_volume = np.mean(self.traj.box_volumes)
+        self._average_volume = self.average_volume
         self._reference_density = len(
             self.reference_indices) / self._average_volume
 
-        for frame in tqdm(self.traj, disable=not config.with_progress_bar):
+        # ATTENTION works only with constant topology!!!
+        target_index_combinations = []
+        for reference_index in self.reference_indices:
 
-            for reference_index in self.reference_indices:
+            if self.no_intra_molecular:
+                residue_indices = self.topology.residue_atom_indices[reference_index]
+                target_index_combinations.append(
+                    np.setdiff1d(self.target_indices, residue_indices))
+
+        for frame in tqdm(self.frame_generator, total=self.n_frames, disable=not config.with_progress_bar):
+
+            for i, reference_index in enumerate(self.reference_indices):
 
                 if self.no_intra_molecular:
-                    residue_indices = frame.topology.residue_atom_indices[reference_index]
-                    target_indices = np.setdiff1d(
-                        self.target_indices, residue_indices)
+                    target_indices = target_index_combinations[i]
 
                 else:
                     target_indices = self.target_indices
@@ -253,13 +275,13 @@ class RDF:
             target_density = len(self.target_indices) / self._average_volume
 
         norm = _norm(self.n_bins, self.delta_r, target_density,
-                     len(self.reference_indices), len(self.traj))
+                     len(self.reference_indices), self.n_frames)
 
         normalized_bins = self.bins / norm
         integrated_bins = _integration(self.bins, len(
-            self.reference_indices), len(self.traj))
+            self.reference_indices), self.n_frames)
         normalized_bins2 = self.bins / target_density / \
-            len(self.reference_indices) / len(self.traj)
+            len(self.reference_indices) / self.n_frames
         differential_bins = self.bins - norm
 
         return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
@@ -267,12 +289,12 @@ class RDF:
     @property
     def n_frames(self) -> int:
         """int: The number of frames of the RDF analysis."""
-        return len(self.traj)
+        return len(self.cells)
 
     @property
     def n_atoms(self) -> int:
         """int: The number of atoms of the RDF analysis."""
-        return self.traj.topology.n_atoms
+        return self.topology.n_atoms
 
 
 def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: PositiveReal, n_bins: PositiveInt) -> Np1DNumberArray:
@@ -356,7 +378,7 @@ def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: Positive
     return r_max
 
 
-def _check_r_max(r_max: PositiveReal, traj: Trajectory) -> PositiveReal:
+def _check_r_max(r_max: PositiveReal, cells: List[Cell]) -> PositiveReal:
     """
     Checks if the provided maximum radius is larger than the maximum allowed radius according to the box vectors of the trajectory.
 
@@ -377,13 +399,13 @@ def _check_r_max(r_max: PositiveReal, traj: Trajectory) -> PositiveReal:
     RDFWarning
         If the calculated r_max is larger than the maximum allowed radius according to the box vectors of the trajectory.
     """
-    if traj.check_PBC() and r_max > _infer_r_max(traj):
+    if check_trajectory_PBC(cells) and r_max > _infer_r_max(cells):
         warnings.warn(
             f"The calculated r_max {r_max} is larger than the maximum allowed radius \
-according to the box vectors of the trajectory {_infer_r_max(traj)}. \
+according to the box vectors of the trajectory {_infer_r_max(cells)}. \
 r_max will be set to the maximum allowed radius.", RDFWarning)
 
-        r_max = _infer_r_max(traj)
+        r_max = _infer_r_max(cells)
 
     return r_max
 
@@ -417,7 +439,7 @@ def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: Positiv
     return n_bins, r_max
 
 
-def _infer_r_max(traj: Trajectory):
+def _infer_r_max(cells: List[Cell]) -> PositiveReal:
     """
     Infers the maximum radius of the RDF analysis from the box vectors of the trajectory.
 
@@ -438,11 +460,11 @@ def _infer_r_max(traj: Trajectory):
     RDFError
         If the trajectory is in vacuum.
     """
-    if not traj.check_PBC():
+    if not check_trajectory_PBC(cells):
         raise RDFError(
             "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
 
-    return np.min(traj.box_lengths) / 2.0
+    return np.min([cell.box_lengths for cell in cells]) / 2.0
 
 
 def _norm(n_bins: int, delta_r: PositiveReal, target_density: PositiveReal, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:

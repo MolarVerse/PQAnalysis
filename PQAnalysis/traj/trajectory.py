@@ -15,9 +15,10 @@ import numpy as np
 
 from beartype.typing import List, Iterator, Any
 
-from . import Frame, TrajectoryError
+from . import Frame
 from ..topology import Topology
 from ..types import Np2DNumberArray, Np1DNumberArray
+from ..core import Cell
 
 
 class Trajectory:
@@ -27,6 +28,8 @@ class Trajectory:
     It can be indexed, iterated over, and added to another trajectory.
     The length of a trajectory is the number of frames in the trajectory.
     A frame can be checked for membership in a trajectory.
+
+    This trajectory class can only handle constant topologies i.e. all frames in the trajectory must have the same topology.
     """
 
     def __init__(self, frames: List[Frame] = None) -> None:
@@ -140,8 +143,7 @@ class Trajectory:
 
         if np.shape(frames) != ():
             traj = Trajectory(frames)
-            if traj[0].topology == Topology():
-                traj.topology = self.topology
+            traj.topology = self.topology
             return traj
         else:
             frames.topology = self.topology
@@ -156,7 +158,9 @@ class Trajectory:
         Iter
             The iterator over the frames in the trajectory.
         """
-        return iter(self.frames)
+        for frame in self.frames:
+            frame.topology = self.topology
+            yield frame
 
     def __contains__(self, item: Frame) -> bool:
         """
@@ -249,10 +253,6 @@ class Trajectory:
 
         topology = self.frames[0].topology
 
-        if not all(frame.topology == topology or frame.topology == Topology() for frame in self.frames):
-            raise TrajectoryError(
-                "All frames in the trajectory must have the same topology or a default Topology() object.")
-
         return topology
 
     @topology.setter
@@ -266,7 +266,56 @@ class Trajectory:
             The topology of the trajectory.
         """
 
-        if len(self.frames) == 0:
-            return
-        else:
+        if len(self.frames) != 0:
             self.frames[0].topology = topology
+
+    @property
+    def cells(self) -> List[Cell]:
+        """
+        Returns the cells of the trajectory.
+
+        Returns
+        -------
+        list of Cell
+            The list of cells of the trajectory.
+        """
+        return [frame.cell for frame in self.frames]
+
+
+def check_trajectory_PBC(cells: List[Cell]) -> bool:
+    """
+    Checks if one cell of the trajectory is Cell().
+
+    Parameters
+    ----------
+    cells : list of Cell
+        The list of cells of the trajectory.
+
+    Returns
+    -------
+    bool
+        False if one cell of the trajectory is Cell(), True otherwise.
+    """
+
+    if len(cells) == 0:
+        return False
+
+    return all(not cell.is_vacuum for cell in cells)
+
+
+def check_trajectory_vacuum(cells: List[Cell]) -> bool:
+    """
+    Checks if all cells of the trajectory are in vacuum i.e. cell = Cell().
+
+    Parameters
+    ----------
+    cells : list of Cell
+        The list of cells of the trajectory.
+
+    Returns
+    -------
+    bool
+        True if all cells of the trajectory are in vacuum, False otherwise.
+    """
+
+    return not any(not cell.is_vacuum for cell in cells)
