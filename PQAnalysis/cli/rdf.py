@@ -7,6 +7,8 @@ from ..io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from ..traj import MDEngineFormat
 from ..topology import Topology
 
+import cProfile
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -27,9 +29,6 @@ def _rdf(input_file: str, format: MDEngineFormat):
     input_reader = RDFInputFileReader(input_file)
     input_reader.read()
 
-    traj_reader = TrajectoryReader(input_reader.traj_files)
-    traj = traj_reader.read(md_format=format)
-
     restart_reader = RestartFileReader(input_reader.restart_file)
     restart_frame = restart_reader.read()
 
@@ -41,10 +40,11 @@ def _rdf(input_file: str, format: MDEngineFormat):
     topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
                         reference_residues=reference_residues)
 
-    traj.topology = topology
+    traj_reader = TrajectoryReader(
+        input_reader.traj_files, md_format=format, topology=topology)
 
     rdf = RDF(
-        traj=traj,
+        traj=traj_reader,
         reference_species=input_reader.reference_selection,
         target_species=input_reader.target_selection,
         use_full_atom_info=input_reader.use_full_atom_info,
@@ -63,3 +63,4 @@ def _rdf(input_file: str, format: MDEngineFormat):
 
     data_writer.write(rdf_data)
     log_writer.write_after_run(rdf)
+

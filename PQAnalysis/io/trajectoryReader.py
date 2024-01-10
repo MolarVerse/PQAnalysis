@@ -9,14 +9,14 @@ TrajectoryReader
     A class for reading a trajectory from a file.
 """
 
-import sys
+from __future__ import annotations
 
-from beartype.typing import List
+from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
 import PQAnalysis.config as config
 
-from . import BaseReader, FrameReader
+from . import BaseReader, FrameReader, TrajectoryReaderError
 from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from ..core import Cell
 from ..topology import Topology
@@ -38,7 +38,13 @@ class TrajectoryReader(BaseReader):
         The list of frames read from the file.
     """
 
-    def __init__(self, filename: str | List[str], format: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+    def __init__(self,
+                 filename: str | List[str],
+                 format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                 md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 topology: Topology | None = None,
+                 constant_topology: bool = True
+                 ) -> None:
         """
         Initializes the TrajectoryReader with the given filename.
 
@@ -48,10 +54,17 @@ class TrajectoryReader(BaseReader):
             The name of the file to read from or a list of filenames to read from.
         """
         super().__init__(filename)
-        self.frames = []
-        self.format = format
+        if not self.multiple_files:
+            self.filenames = [self.filename]
 
-    def read(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF, constant_topology: bool = True) -> Trajectory:
+        self.frames = []
+        self.format = TrajectoryFormat(format)
+        self.topology = topology
+        self.constant_topology = constant_topology
+        self.md_format = MDEngineFormat(md_format)
+        self.frame_reader = FrameReader(md_format=self.md_format)
+
+    def read(self, topology: Topology | None = None) -> Trajectory:
         """
         Reads the trajectory from the file.
 
@@ -77,92 +90,102 @@ class TrajectoryReader(BaseReader):
         Trajectory
             The trajectory read from the file.
         """
-        self.constant_topology = constant_topology
-        self.topology = None
-        self.frame_reader = FrameReader(md_format=md_format)
-        self.md_format = md_format
 
-        if not self.multiple_files:
-            return self._read_single_file()
+        self.topology = topology
 
-        else:
+        traj = Trajectory()
+        for frame in self.frame_generator():
+            traj.append(frame)
 
-            traj = Trajectory()
-            for filename in self.filenames:
-                traj += TrajectoryReader(filename,
-                                         self.format).read(self.md_format)
+        return traj
 
-            return traj
+    def frame_generator(self) -> Generator[Frame]:
+        last_cell = None
+        for filename in self.filenames:
+            with open(filename, 'r') as self.file:
+                sum_lines = sum(1 for _ in self.file)
 
-    def _read_single_file(self) -> Trajectory:
+            with open(filename, 'r') as self.file:
+                frame_lines = []
+                for line in tqdm(self.file, total=sum_lines, disable=not config.with_progress_bar):
+                    stripped_line = line.strip()
+                    if stripped_line == '' or not stripped_line[0].isdigit():
+                        frame_lines.append(line)
+                    else:
+                        if frame_lines:
+                            frame = self._read_single_frame(
+                                ''.join(frame_lines), self.topology)
+                            if frame.cell.is_vacuum and last_cell is not None:
+                                frame.cell = last_cell
+                            last_cell = frame.cell
+                            yield frame
+                            if self.constant_topology and self.topology is not None:
+                                self.topology = frame.topology
+                        frame_lines = [line]
+
+                if frame_lines:
+                    frame = self._read_single_frame(
+                        ''.join(frame_lines), self.topology)
+                    if frame.cell.is_vacuum and last_cell is not None:
+                        frame.cell = last_cell
+                    last_cell = frame.cell
+                    yield frame
+                if self.constant_topology and self.topology is not None:
+                    self.topology = frame.topology
+
+    @property
+    def cells(self) -> list[Cell]:
         """
-        Reads the trajectory from the file.
-
-        It reads the trajectory from the file and concatenates the lines of the same frame.
-        The frame information is then read from the concatenated string with the FrameReader class and
-        a Frame object is created.
-
-        In order to read the cell information given in the file, the cell information of the last frame is used for
-        all following frames that do not have cell information.
+        Returns the cells of the trajectory.
 
         Returns
         -------
-        Trajectory
-            The trajectory read from the file.
+        list of Cell
+            The list of cells of the trajectory.
         """
+        return list(self._cell_generator())
 
-        with open(self.filename, 'r') as f:
-            sum_lines = sum(1 for _ in f)
+    def _cell_generator(self) -> Generator[List[Cell]]:
+        """
+        Reads the cells from the trajectory.
 
-        with open(self.filename, 'r') as f:
+        Returns
+        -------
+        list of Cell
+            The list of cells read from the trajectory.
+        """
+        last_cell = None
+        with open(self.filenames[0], 'r') as f:
+            line = f.readline()
+            n_atoms = int(line.strip()[0])
 
-            # Concatenate lines of the same frame
-            frame_lines = []
-            for line in tqdm(f, total=sum_lines, disable=not config.with_progress_bar):
-                stripped_line = line.strip()
-                if stripped_line == '' or not stripped_line[0].isdigit():
-                    frame_lines.append(line)
-                else:
-                    if frame_lines:
-                        self.frames.append(self._read_single_frame(
-                            ''.join(frame_lines), self.topology))
+        for filename in self.filenames:
+            with open(filename, 'r') as f:
+                lines = f.readlines()
+                for line in lines:
+                    stripped_line = line.strip()
+                    splitted_line = stripped_line.split()
+                    if len(splitted_line) == 1 and cell is None:
+                        cell = Cell()
+                        if last_cell is not None:
+                            cell = last_cell
+                        yield cell
+                    elif len(splitted_line) == 4:
+                        cell = Cell(float(splitted_line[1]), float(
+                            splitted_line[2]), float(splitted_line[3]))
+                        yield cell
+                    elif len(splitted_line) == 7:
+                        cell = Cell(float(splitted_line[1]), float(splitted_line[2]), float(splitted_line[3]),
+                                    float(splitted_line[4]), float(splitted_line[5]), float(splitted_line[6]))
+                        yield cell
+                    else:
+                        raise TrajectoryReaderError(
+                            f"Invalid number of arguments for box: {len(splitted_line)} encountered in file {filename} {stripped_line}.")
 
-                        if self.constant_topology:
-                            self.topology = self.frames[-1].topology
+                    last_cell = cell
 
-                    frame_lines = [line]
-
-            if frame_lines:
-                self.frames.append(self._read_single_frame(
-                    ''.join(frame_lines), self.topology))
-
-        if self.constant_topology:
-            self.topology = self.frames[0].topology
-
-        def get_size(obj):
-            size = sys.getsizeof(obj)
-            if isinstance(obj, dict):
-                size += sum([get_size(v) for v in obj.values()])
-                size += sum([get_size(k) for k in obj.keys()])
-            elif hasattr(obj, '__dict__'):
-                size += get_size(obj.__dict__)
-            elif hasattr(obj, '__iter__') and not isinstance(obj, (str, bytes, bytearray)):
-                size += sum([get_size(i) for i in obj])
-            return size
-
-        traj = Trajectory(self.frames)
-        print(get_size(self.frames[0]) / 10**6)
-        print(get_size(self.frames[1]) / 10**6)
-        print(get_size(self.frames[0].system.pos) / 10**6)
-        print(
-            get_size(self.frames[0].system.topology) / 10**6)
-        print(
-            get_size(self.frames[1].system.topology) / 10**6)
-        print(
-            get_size(Topology()) / 10**6)
-        self.frames = []
-
-        return traj
+                    for _ in range(n_atoms+1):
+                        next(f)
 
     def _read_single_frame(self,
                            frame_string: str,
@@ -183,11 +206,5 @@ class TrajectoryReader(BaseReader):
         TrajectoryReaderError
             If the first atom in the frame is not X for QMCFC.
         """
-        frame = self.frame_reader.read(
+        return self.frame_reader.read(
             frame_string, format=self.format, topology=topology)
-
-        # If the read frame does not have cell information, use the cell information of the previous frame
-        if len(self.frames) > 0 and frame.cell.is_vacuum:
-            frame.cell = self.frames[-1].cell
-
-        return frame
