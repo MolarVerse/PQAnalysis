@@ -25,6 +25,11 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
 
     The main idea of this class is work as a super class for all command line tools of PQAnalysis, but it can also be used as a standalone class.
     But if for example an analysis tool needs only few input file keywords, it is recommended to inherit from this class.
+
+    Attention:
+        As this class is not intended to be used as a standalone class, it does not check if all required keys are set in the input file,
+        thus also no information/documentation of the values of the keywords is given, so that they can be used accordingly in the implementing
+        subclasses.
     """
     known_keys = []
 

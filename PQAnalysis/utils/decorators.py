@@ -52,16 +52,16 @@ def instance_function_count_decorator(func, *args, **kwargs):
     new_func : function
         Decorated function.
     """
-    instance = args[0]
+    self = args[0]
 
-    if not hasattr(instance, 'counter'):
-        setattr(instance, 'counter', defaultdict(int))
-    instance.counter[func.__name__] += 1
+    if not hasattr(self, 'counter'):
+        setattr(self, 'counter', defaultdict(int))
+    self.counter[func.__name__] += 1
 
     reset_counter = get_argvar_by_name(func, args, 'reset_counter')
 
     if reset_counter:
-        instance.counter[func.__name__] = 1
+        self.counter[func.__name__] = 1
 
     return func(*args, **kwargs)
 

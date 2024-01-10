@@ -1,17 +1,25 @@
+"""
+
+"""
+
 import argparse
 
 import PQAnalysis.config as config
 
 from ..analysis import RDF, RDFInputFileReader, RDFDataWriter, RDFLogWriter
+from ..analysis.rdf.rdfInputFileReader import input_keys_documentation
 from ..io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from ..traj import MDEngineFormat
 from ..topology import Topology
 
 import cProfile
 
+__outputdoc__ = """"""  # TODO: include here url of the documentation of the output file dynamically
+__doc__ += input_keys_documentation
+
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__outputdoc__)
     parser.add_argument('input_file', type=str, help='The input file.')
     parser.add_argument('-f', '--format', type=str, default="pimd-qmcf",
                         help='The format of the input trajectory. Default is "pimd-qmcf".')
@@ -63,4 +71,3 @@ def _rdf(input_file: str, format: MDEngineFormat):
 
     data_writer.write(rdf_data)
     log_writer.write_after_run(rdf)
-
