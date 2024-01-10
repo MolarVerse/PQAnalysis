@@ -110,7 +110,7 @@ class RDF:
         self.reference_selection = Selection(reference_species)
         self.target_selection = Selection(target_species)
 
-        self.cells = traj.cells
+        self.cells = [cell for cell in traj._cell_generator()]
 
         if isinstance(traj, TrajectoryReader):
             self.frame_generator = traj.frame_generator()
@@ -121,7 +121,7 @@ class RDF:
             self.frame_generator = iter(traj)
             self.first_frame = next(self.frame_generator)
 
-        self.topology = self.first_frame.topology
+        self.topology = traj.topology
 
         self.setup_bins(n_bins=n_bins, delta_r=delta_r,
                         r_max=r_max, r_min=self.r_min)

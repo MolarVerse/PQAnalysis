@@ -55,10 +55,10 @@ class TestTrajectoryReader:
         # Cell will be taken from the previous frame
         assert traj[1] == frame2
 
-        reader = TrajectoryReader("tmp")
+        reader = TrajectoryReader("tmp", md_format="qmcfc")
 
         with pytest.raises(FrameReaderError) as exception:
-            reader.read(md_format="qmcfc")
+            reader.read()
         assert str(
             exception.value) == "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead"
 
@@ -73,9 +73,9 @@ class TestTrajectoryReader:
         print("o 0.0 1.0 1.0", file=file)
         file.close()
 
-        reader = TrajectoryReader("tmp")
+        reader = TrajectoryReader("tmp", md_format="qmcfc")
 
-        traj = reader.read(md_format="qmcfc")
+        traj = reader.read()
 
         print(traj[0].atoms[0].name.lower())
         print(traj[1].atoms[0].name)
@@ -85,12 +85,12 @@ class TestTrajectoryReader:
         assert traj[0] == frame1[1]
         assert traj[1] == frame2[1]
 
-        traj = reader.read(md_format="qmcfc")
+        traj = reader.read()
 
         filenames = ["tmp", "tmp"]
-        reader = TrajectoryReader(filenames)
+        reader = TrajectoryReader(filenames, md_format="qmcfc")
 
         ref_traj = traj + traj
-        traj = reader.read(md_format="qmcfc")
+        traj = reader.read()
 
         assert traj == ref_traj

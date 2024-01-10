@@ -29,7 +29,7 @@ def main():
     traj2qmcfc(args.trajectory_file, args.output)
 
 
-def traj2qmcfc(trajectory_files: List[str], output: str):
+def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
     """
     Converts multiple trajectory files to a qmcfc trajectory.
 
@@ -46,6 +46,3 @@ def traj2qmcfc(trajectory_files: List[str], output: str):
         trajectory = reader.read()
 
         writer.write(trajectory)
-
-    import os
-    os.system("cat test_traj.qmcfc.xyz")
