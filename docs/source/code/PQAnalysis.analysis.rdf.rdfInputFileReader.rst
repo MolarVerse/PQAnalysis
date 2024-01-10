@@ -7,7 +7,7 @@ PQAnalysis.analysis.rdf.rdfInputFileReader
 .. currentmodule:: PQAnalysis.analysis.rdf.rdfInputFileReader
 
 .. automodule:: PQAnalysis.analysis.rdf.rdfInputFileReader
-    :members: RDFInputFileReader
+    :members: RDFInputFileReader, input_keys_documentation
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
