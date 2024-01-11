@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype.typing import List, Iterator, Any
+from beartype.typing import List, Iterator, Any, Iterable
 
 from . import Frame
 from ..topology import Topology
@@ -149,14 +149,14 @@ class Trajectory:
             frames.topology = self.topology
             return frames
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterable[Frame]:
         """
         This method allows a trajectory to be iterated over.
 
         Returns
         -------
-        Iter
-            The iterator over the frames in the trajectory.
+        Iterable[Frame]
+            An Iterable over the frames in the trajectory.
         """
         for frame in self.frames:
             frame.topology = self.topology

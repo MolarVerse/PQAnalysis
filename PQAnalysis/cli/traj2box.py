@@ -1,4 +1,6 @@
 """
+.. _cli.traj2box:
+
 Converts multiple trajectory files to a box file.
 
 Without the --vmd option the output is printed in a data file format.

@@ -1,4 +1,8 @@
 """
+.. _cli.rdf:
+
+Command Line Tool for RDF Analysis
+==================================
 
 """
 
@@ -14,8 +18,19 @@ from ..topology import Topology
 
 import cProfile
 
-__outputdoc__ = """"""  # TODO: include here url of the documentation of the output file dynamically
+__outputdoc__ = """
+
+This command line tool can be used to calculate the radial distribution function (RDF) of given trajectory file(s). This is an input file based tool, so that the input file can be used to specify the parameters of the RDF calculation.
+"""
+
+__reference__ = f"""
+For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.rdf.html.
+"""
+
+__doc__ += __outputdoc__
 __doc__ += input_keys_documentation
+
+__outputdoc__ += __reference__
 
 
 def main():
@@ -37,16 +52,23 @@ def _rdf(input_file: str, format: MDEngineFormat):
     input_reader = RDFInputFileReader(input_file)
     input_reader.read()
 
-    restart_reader = RestartFileReader(input_reader.restart_file)
-    restart_frame = restart_reader.read()
+    if input_reader.restart_file is not None:
+        restart_reader = RestartFileReader(input_reader.restart_file)
+        restart_frame = restart_reader.read()
+        topology = restart_frame.topology
+    else:
+        topology = None
 
-    moldescriptor_reader = MoldescriptorReader(
-        input_reader.moldescriptor_file)
-    reference_residues = moldescriptor_reader.read()
+    if input_reader.moldescriptor_file is not None:
+        moldescriptor_reader = MoldescriptorReader(
+            input_reader.moldescriptor_file)
+        reference_residues = moldescriptor_reader.read()
+    else:
+        reference_residues = None
 
-    topology = restart_frame.topology
-    topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
-                        reference_residues=reference_residues)
+    if topology is not None:
+        topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
+                            reference_residues=reference_residues)
 
     traj_reader = TrajectoryReader(
         input_reader.traj_files, md_format=format, topology=topology)

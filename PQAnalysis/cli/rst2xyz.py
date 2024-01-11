@@ -1,4 +1,6 @@
 """
+.. _cli.rst2xyz:
+
 Converts a restart file to a xyz file.
 
 If the box information from the restart file should not be included in the xyz file, 
