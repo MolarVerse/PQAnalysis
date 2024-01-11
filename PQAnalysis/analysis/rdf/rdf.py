@@ -136,11 +136,11 @@ class RDF:
         if isinstance(traj, TrajectoryReader):
             # lazy loading of trajectory from file(s)
             self.frame_generator = traj.frame_generator()
-        elif len(traj) == 0:
-            raise RDFError("Trajectory cannot be of length 0.")
-        else:
+        elif len(traj) > 0:
             # use trajectory object as iterator
             self.frame_generator = iter(traj)
+        else:
+            raise RDFError("Trajectory cannot be of length 0.")
 
         self.first_frame = next(self.frame_generator)
         self.topology = traj.topology
@@ -187,10 +187,7 @@ class RDF:
 
         self.r_min = r_min
 
-        # check if the trajectory is fully periodic or fully in vacuum
-        if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
-            raise RDFError(
-                "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.")
+        self._check_trajectory_conditions()
 
         # check if n_bins and delta_r are both not specified
         if n_bins is None and delta_r is None:
@@ -198,12 +195,12 @@ class RDF:
                 "Either n_bins or delta_r must be specified.")
 
         # check if n_bins, delta_r and r_max are all specified
-        elif n_bins is not None and delta_r is not None and r_max is not None:
+        elif all([n_bins, delta_r, r_max]):
             raise RDFError(
                 "It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.")
 
         # set r_max based on the provided parameters n_bins and delta_r
-        elif n_bins is not None and delta_r is not None:
+        if n_bins is not None and delta_r is not None:
             self.n_bins = n_bins
             self.delta_r = delta_r
             self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.cells)
@@ -211,11 +208,8 @@ class RDF:
                 delta_r, self.r_max, r_min)
 
         else:
-            self.r_max = r_max
-
-            if r_max is None:
-                self.r_max = _infer_r_max(self.cells)
-
+            self.r_max = r_max if r_max is not None else _infer_r_max(
+                self.cells)
             self.r_max = _check_r_max(self.r_max, self.cells)
 
             if n_bins is None:
@@ -230,6 +224,19 @@ class RDF:
         self.bin_middle_points = _setup_bin_middle_points(
             self.n_bins, self.r_min, self.r_max, self.delta_r)
         self.bins = np.zeros(self.n_bins)
+
+    def _check_trajectory_conditions(self):
+        """
+        Checks if the trajectory is fully periodic or fully in vacuum.
+
+        Raises
+        ------
+        RDFError
+            If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
+        """
+        if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
+            raise RDFError(
+                "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.")
 
     @property
     def average_volume(self) -> PositiveReal:
