@@ -1,4 +1,6 @@
 """
+.. _cli.continue_input:
+
 Creates n new input files.
 
 This command line tool generates n new input files by increasing the number in the filename by one.
@@ -9,7 +11,6 @@ With this feature it is possible to continue a simulation with a new input file 
 
 import argparse
 
-from ..types import PositiveInt
 from ..io import InputFileFormat
 from ..io import PIMD_QMCF_InputFileReader as Reader
 

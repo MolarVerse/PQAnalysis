@@ -1,4 +1,6 @@
 """
+.. _cli.traj2qmcfc:
+
 Converts a PIMD-QMCF trajectory to a QMCFC trajectory format output.
 
 Both formats are adapted xyz file formats with the box dimensions and box angles

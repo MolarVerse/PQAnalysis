@@ -11,8 +11,10 @@ PQAnalysis
    :hidden:
    :maxdepth: -1
    
+   userGuide/userGuide
    developerGuide/developerGuide
    code/PQAnalysis.rst
 
 
+:ref:`userGuide`
 :ref:`developerGuide`

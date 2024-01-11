@@ -7,7 +7,7 @@ PQAnalysis.cli.rdf
 .. currentmodule:: PQAnalysis.cli.rdf
 
 .. automodule:: PQAnalysis.cli.rdf
-    :members: main
+    :members: input_keys_documentation, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

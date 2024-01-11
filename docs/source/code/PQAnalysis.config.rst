@@ -7,7 +7,7 @@ PQAnalysis.config
 .. currentmodule:: PQAnalysis.config
 
 .. automodule:: PQAnalysis.config
-    :members: with_progress_bar
+    :members: base_url, code_base_url, with_progress_bar
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
