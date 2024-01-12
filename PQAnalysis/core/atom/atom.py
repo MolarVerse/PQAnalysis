@@ -10,29 +10,20 @@ following attributes:
 The atomic number and mass are automatically determined from the name or symbol
 of the atom. The name and symbol are automatically determined from the atomic
 number. The name is the symbol in lower case.
-
-...
-
-Classes
--------
-Atom
-    A class used to represent an atom in a molecule.
 """
 
 from __future__ import annotations
 
-from beartype.typing import Any
+from beartype.typing import Any, NewType
 from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
 
 from . import Element
 
-"""
-A type hint for a list of Atom objects.
-"""
-Atoms = Annotated[list, Is[lambda list: all(
-    isinstance(atom, Atom) for atom in list)]]
+#: A type hint for a list of atoms
+Atoms = NewType("Atoms", Annotated[list, Is[lambda list: all(
+    isinstance(atom, Atom) for atom in list)]])
 
 
 class Atom():
@@ -75,8 +66,6 @@ class Atom():
     >>> atom = Atom('C')
     >>> (atom.name, atom.element)
     ('C', Element('C'))
-
-
     """
 
     def __init__(self, name: str | int, id: int | str | None = None, use_guess_element: bool = True) -> None:
@@ -177,72 +166,29 @@ class Atom():
 
     @property
     def name(self) -> str:
-        """
-        The name of the atom_type (e.g. 'C1')
-
-        Returns
-        -------
-        str
-            The name of the atom_type (e.g. 'C1')
-        """
+        """str: The name of the atom_type (e.g. 'C1')"""
         return self._name
 
     @property
     def symbol(self) -> str | None:
-        """
-        The symbol of the element (e.g. 'c')
-
-        Returns
-        -------
-        str
-            The symbol of the element (e.g. 'c')
-        """
+        """str: The symbol of the element (e.g. 'c')"""
         return self._element.symbol
 
     @property
     def atomic_number(self) -> int | None:
-        """
-        The atomic number of the element (e.g. 6)
-
-        Returns
-        -------
-        int
-            The atomic number of the element (e.g. 6)
-        """
+        """int | None: The atomic number of the element (e.g. 6)"""
         return self._element.atomic_number
 
     @property
     def mass(self) -> Real | None:
-        """
-        The mass of the element (e.g. 12.0107)
-
-        Returns
-        -------
-        Real
-            The mass of the element (e.g. 12.0107)
-        """
+        """Real | None: The mass of the element (e.g. 12.011)"""
         return self._element.mass
 
     @property
     def element(self) -> Element:
-        """
-        The element of the atom
-
-        Returns
-        -------
-        Element
-            The element of the atom
-        """
+        """Element: The element type of the atom"""
         return self._element
 
     @element.setter
     def element(self, element: Element) -> None:
-        """
-        Sets the element of the atom
-
-        Parameters
-        ----------
-        element : Element
-            The element of the atom
-        """
         self._element = element

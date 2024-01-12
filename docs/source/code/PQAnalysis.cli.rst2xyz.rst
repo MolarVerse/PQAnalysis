@@ -7,7 +7,7 @@ PQAnalysis.cli.rst2xyz
 .. currentmodule:: PQAnalysis.cli.rst2xyz
 
 .. automodule:: PQAnalysis.cli.rst2xyz
-    :members: main, rst2xyz
+    :members: main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,7 +21,6 @@ PQAnalysis.cli.rst2xyz
         :nosignatures:
 
         main
-        rst2xyz
 
 
 

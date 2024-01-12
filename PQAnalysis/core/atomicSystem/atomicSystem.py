@@ -1,12 +1,5 @@
 """
 A module containing the AtomicSystem class
-
-...
-
-Classes
--------
-AtomicSystem
-    A class for storing atomic systems.
 """
 
 from __future__ import annotations
@@ -32,7 +25,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin
         - The _StandardPropertiesMixin contains the standard properties of an atomic system (i.e. standard getter and setter methods).
         - The _PropertiesMixin contains special properties derived from the standard properties
-        - The _IndexingMixin contains methods for indexing the atomic system
         - The _PositionsMixin contains methods for computing properties based on the positions of the atoms
 
 

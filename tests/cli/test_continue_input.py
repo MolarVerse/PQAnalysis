@@ -15,7 +15,7 @@ def test_continue_input(test_with_data_dir, capsys):
         with patch('argparse._sys.argv', ['continue_input.py', 'input.in', '-n', '1', '-f', 'qmcfc']):
             main()
     assert str(
-        exception.value) == "Format qmcfc not implemented yet for continuing input file."
+        exception.value) == "Format InputFileFormat.QMCFC not implemented yet for continuing input file."
 
     with patch('argparse._sys.argv', ['continue_input.py', 'run-08.in', '-n', '2']):
         main()
