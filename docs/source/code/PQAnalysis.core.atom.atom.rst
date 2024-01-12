@@ -7,7 +7,7 @@ PQAnalysis.core.atom.atom
 .. currentmodule:: PQAnalysis.core.atom.atom
 
 .. automodule:: PQAnalysis.core.atom.atom
-    :members: Atom
+    :members: Atom, Atoms
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

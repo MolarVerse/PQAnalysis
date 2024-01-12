@@ -1,7 +1,15 @@
 """
 .. _cli.continue_input:
 
-Creates n new input files.
+Command Line Tool for Extending MD Simulation Input Files
+---------------------------------------------------------
+
+"""
+import argparse
+
+from ..io import InputFileFormat, continue_input_file
+
+__outputdoc__ = """
 
 This command line tool generates n new input files by increasing the number in the filename by one.
 Furthermore, all other numbers in the start- and output-files within the input file are increased by one as well.
@@ -9,17 +17,14 @@ Furthermore, all other numbers in the start- and output-files within the input f
 With this feature it is possible to continue a simulation with a new input file without having to change the input file manually. 
 """
 
-import argparse
-
-from ..io import InputFileFormat
-from ..io import PIMD_QMCF_InputFileReader as Reader
+__doc__ += __outputdoc__
 
 
 def main():
     """
-    Wrapper for the command line interface of continue_input.
+    The main function of the continue input command line tool.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__outputdoc__)
     parser.add_argument('input_file', type=str, help='The input file.')
     parser.add_argument('-n', '--number', type=int, default=1,
                         help='The number of times the input file should be continued.')
@@ -28,12 +33,6 @@ def main():
 
     args = parser.parse_args()
 
-    format = InputFileFormat(args.format)
+    input_format = InputFileFormat(args.format)
 
-    if format != InputFileFormat.PIMD_QMCF:
-        raise NotImplementedError(
-            f"Format {args.format} not implemented yet for continuing input file.")
-
-    reader = Reader(args.input_file)
-    reader.read()
-    reader.continue_input_file(args.number)
+    continue_input_file(args.input_file, args.number, input_format)

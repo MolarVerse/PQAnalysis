@@ -7,7 +7,7 @@ PQAnalysis.core.atom.element
 .. currentmodule:: PQAnalysis.core.atom.element
 
 .. automodule:: PQAnalysis.core.atom.element
-    :members: Element, atomicMasses, atomicNumbers, atomicNumbersReverse
+    :members: Element, Elements, atomicMasses, atomicNumbers, atomicNumbersReverse
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

@@ -7,7 +7,7 @@ PQAnalysis.cli.traj2box
 .. currentmodule:: PQAnalysis.cli.traj2box
 
 .. automodule:: PQAnalysis.cli.traj2box
-    :members: main, traj2box
+    :members: main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,7 +21,6 @@ PQAnalysis.cli.traj2box
         :nosignatures:
 
         main
-        traj2box
 
 
 

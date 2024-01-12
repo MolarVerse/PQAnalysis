@@ -14,6 +14,7 @@ PQAnalysis.io
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.io.api
        PQAnalysis.io.base
        PQAnalysis.io.boxWriter
        PQAnalysis.io.energyFileReader

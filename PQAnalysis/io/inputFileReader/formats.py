@@ -35,3 +35,10 @@ class InputFileFormat(Format):
                 return member
 
         raise InputFileFormatError(value, cls)
+
+    @classmethod
+    def is_qmcf_type(cls, value: object) -> bool:
+        """
+        Returns True if the given value is a QMCF input file format.
+        """
+        return value in [cls.PIMD_QMCF, cls.QMCFC]

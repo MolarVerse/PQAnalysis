@@ -1,6 +1,9 @@
 """
 .. _cli.traj2qmcfc:
 
+Command Line Tool for Converting PIMD-QMCF to QMCFC Trajectory Files
+---------------------------------------------------------------------------
+
 Converts a PIMD-QMCF trajectory to a QMCFC trajectory format output.
 
 Both formats are adapted xyz file formats with the box dimensions and box angles
@@ -11,9 +14,7 @@ visibility and debugging reasons in conjunction with vmd.
 
 import argparse
 
-from beartype.typing import List
-
-from ..io import TrajectoryWriter, TrajectoryReader
+from ..io import traj2qmcfc
 
 
 def main():
@@ -29,22 +30,3 @@ def main():
     args = parser.parse_args()
 
     traj2qmcfc(args.trajectory_file, args.output)
-
-
-def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
-    """
-    Converts multiple trajectory files to a qmcfc trajectory.
-
-    Parameters
-    ----------
-    trajectory_file : list of str
-        The trajectory file(s) to be converted.
-    output : str, optional
-        The output file. If not specified, the output is printed to stdout.
-    """
-    writer = TrajectoryWriter(filename=output, format="qmcfc")
-    for filename in trajectory_files:
-        reader = TrajectoryReader(filename)
-        trajectory = reader.read()
-
-        writer.write(trajectory)

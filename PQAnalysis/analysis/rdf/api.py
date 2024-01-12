@@ -1,5 +1,5 @@
 """
-This module provides the API for the radial distribution function (RDF) analysis.
+This module provides API functions for the radial distribution function (RDF) analysis.
 """
 
 from .rdf import RDF
