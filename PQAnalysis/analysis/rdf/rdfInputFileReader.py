@@ -80,7 +80,7 @@ class RDFInputFileReader(Reader):
 
 input_keys_documentation = f"""
 
-For the RDF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:'inputFile'.
+For the RDF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
 .. list-table:: Required keys
     :header-rows: 1

@@ -14,6 +14,7 @@ PQAnalysis.analysis.rdf
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.analysis.rdf.api
        PQAnalysis.analysis.rdf.exceptions
        PQAnalysis.analysis.rdf.rdf
        PQAnalysis.analysis.rdf.rdfInputFileReader

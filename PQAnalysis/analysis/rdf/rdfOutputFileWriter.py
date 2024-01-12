@@ -1,16 +1,11 @@
 """
-A module containing the classes for writing related to an RDF analysis to a file.
-
-Classes
--------
-RDFDataWriter
-    A class for writing the data of an RDF analysis to a file.
-RDFLogWriter
-    A class for writing the log (setup parameters) of an RDF analysis to a file.
+A module containing the classes for writing related to an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
 """
 
+# 3rd party imports
 from beartype.typing import Tuple
 
+# local imports
 from .rdf import RDF
 from ...types import Np1DNumberArray
 from ...io import BaseWriter
@@ -19,17 +14,11 @@ from ...utils import header
 
 class RDFDataWriter(BaseWriter):
     """
-    Class for writing the data of an RDF analysis to a file.
-
-    Examples
-    --------
-    >>> RDFDataWriter("rdf.dat", rdf_data).write()
+    Class for writing the data of an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
     """
 
     def __init__(self, filename: str) -> None:
         """
-        It sets the filename and the data to write.
-
         Parameters
         ----------
         filename : str
@@ -61,29 +50,25 @@ class RDFDataWriter(BaseWriter):
 
 class RDFLogWriter(BaseWriter):
     """
-    Class for writing the log (setup parameters) of an RDF analysis to a file.
+    Class for writing the log (setup parameters) of an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
     """
 
     def __init__(self, filename: str | None) -> None:
         """
-        It sets the filename and the RDF analysis object.
-
         Parameters
         ----------
         filename : str | None
             the filename to write to if None, the output is printed to stdout
-        rdf : RadialDistributionFunction
-            the RDF analysis object
         """
         self.filename = filename
         super().__init__(filename)
 
     def write_before_run(self, rdf: RDF):
         """
-        Writes the log before the RDF run() function is called.
+        Writes the log before the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method is called.
 
         This includes the general header of PQAnalysis
-        and the most important setup parameters of the RDF analysis.
+        and the most important setup parameters of the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis.
 
         Parameters
         ----------
@@ -135,9 +120,9 @@ class RDFLogWriter(BaseWriter):
 
     def write_after_run(self, rdf: RDF):
         """
-        Writes the log after the RDF run() function is called.
+        Writes the log after the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method is called.
 
-        This includes the elapsed time of the RDF run() function.
+        This includes the elapsed time of the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method.
 
         Parameters
         ----------

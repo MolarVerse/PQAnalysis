@@ -265,52 +265,84 @@ class RDF:
         differential_bins : Np1DNumberArray
             The differential bins of the RDF analysis based on the spherical shell model.
         """
+        self._initialize_run()
+        self._calculate_bins()
+        return self._finalize_run()
+
+    def _initialize_run(self):
+        """
+        Initializes the RDF analysis for running.
+
+        This method is called by the run method of the RDF class. It initializes the RDF analysis for running by calculating the average volume of the trajectory, the reference density of the RDF analysis and the target index combinations of the RDF analysis.
+        """
         self._average_volume = self.average_volume
         self._reference_density = len(
             self.reference_indices) / self._average_volume
+        self._initialize_target_index_combinations()
 
-        # ATTENTION works only with constant topology!!!
-        target_index_combinations = []
-        for reference_index in self.reference_indices:
+    def _initialize_target_index_combinations(self):
+        """
+        Initializes the target index combinations of the RDF analysis.
 
-            if self.no_intra_molecular:
+        This method is called by the _initialize_run method of the RDF class. It initializes the target index combinations of the RDF analysis by calculating the target index combinations of the RDF analysis based on the no_intra_molecular parameter.
+        """
+        self.target_index_combinations = []
+        if self.no_intra_molecular:
+            for reference_index in self.reference_indices:
                 residue_indices = self.topology.residue_atom_indices[reference_index]
-                target_index_combinations.append(
+                self.target_index_combinations.append(
                     np.setdiff1d(self.target_indices, residue_indices))
 
+    def _calculate_bins(self):
+        """
+        Calculates the bins of the RDF analysis.
+
+        This method is called by the run method of the RDF class. It calculates the bins of the RDF analysis by iterating over the frames of the trajectory and calculating the distances between the reference and target indices of the RDF analysis. The bins of the RDF analysis are then calculated from these distances.
+        """
         for frame in tqdm(self.frame_generator, total=self.n_frames, disable=not config.with_progress_bar):
-
             for i, reference_index in enumerate(self.reference_indices):
-
-                if self.no_intra_molecular:
-                    target_indices = target_index_combinations[i]
-
-                else:
-                    target_indices = self.target_indices
-
+                target_indices = self.target_index_combinations[
+                    i] if self.no_intra_molecular else self.target_indices
                 reference_position = frame.pos[reference_index]
                 target_positions = frame.pos[target_indices]
-
                 distances = distance(reference_position,
                                      target_positions, frame.cell)
+                self.bins += _add_to_bins(distances,
+                                          self.r_min, self.delta_r, self.n_bins)
 
-                self.bins += _add_to_bins(distances, self.r_min,
-                                          self.delta_r, self.n_bins)
+    def _finalize_run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
+        """
+        Finalizes the RDF analysis after running.
 
+        This method is called by the run method of the RDF class. It finalizes the RDF analysis after running by calculating the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+
+        Returns
+        -------
+        bin_middle_points : Np1DNumberArray
+            The middle points of the bins of the RDF analysis.
+        normalized_bins : Np1DNumberArray
+            The normalized bins of the RDF analysis based on the spherical shell model.
+        integrated_bins : Np1DNumberArray
+            The integrated bins of the RDF analysis.
+        normalized_bins2 : Np1DNumberArray
+            The normalized bins of the RDF analysis based on the number of atoms in the system.
+        differential_bins : Np1DNumberArray
+            The differential bins of the RDF analysis based on the spherical shell model.
+        """
         target_density = len(
-            target_index_combinations[0]) / self._average_volume
+            self.target_index_combinations[0]) / self._average_volume
 
         norm = _norm(self.n_bins, self.delta_r, target_density,
                      len(self.reference_indices), self.n_frames)
 
-        normalized_bins = self.bins / norm
-        integrated_bins = _integration(self.bins, len(
-            self.reference_indices), self.n_frames)
-        normalized_bins2 = self.bins / target_density / \
+        self.normalized_bins = self.bins / norm
+        self.integrated_bins = _integration(
+            self.bins, len(self.reference_indices), self.n_frames)
+        self.normalized_bins2 = self.bins / target_density / \
             len(self.reference_indices) / self.n_frames
-        differential_bins = self.bins - norm
+        self.differential_bins = self.bins - norm
 
-        return self.bin_middle_points, normalized_bins, integrated_bins, normalized_bins2, differential_bins
+        return self.bin_middle_points, self.normalized_bins, self.integrated_bins, self.normalized_bins2, self.differential_bins
 
     @property
     def n_frames(self) -> int:
