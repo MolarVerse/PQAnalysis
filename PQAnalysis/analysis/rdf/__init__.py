@@ -13,6 +13,7 @@ Classes
     A class to write log files.
 """
 
+from .api import rdf
 from .rdf import RDF
 from .rdfInputFileReader import RDFInputFileReader
 from .rdfOutputFileWriter import RDFDataWriter, RDFLogWriter
