@@ -111,25 +111,13 @@ html_static_path = ['_static']
 
 def show_inherited_mixins(app, what, name, obj, options, lines):
     """Show inherited mixins in the base classes of a class"""
-    # check if class has base classes
-    if not hasattr(obj, '__bases__') or len(obj.__bases__) == 0:
+
+    if what != 'class' or not hasattr(obj, '__bases__'):
         return
 
-    # add settings all members of the base classes that end with Mixin to the current class documentation/lines
     for base in obj.__bases__:
-        print(base.__name__)
-        print(base.__name__.endswith('Mixin'))
-        if str(base.__name__).endswith('Mixin'):
-            # now add all public members of the base class to the current class documentation
-            for member in base.__dict__.keys():
-                if not member.startswith('_'):
-                    lines.append(f'.. attribute:: {member}')
-                    lines.append('')
-                    lines.append(f'    {base.__dict__[member].__doc__}')
-                    lines.append('')
-                    lines.append(f'    .. automethod:: {member}')
-                    lines.append('')
-                    lines.append('')
+        if base.__name__.endswith('Mixin'):
+            options['inherited-members'] = True
 
 
 def run_apidoc(app):
@@ -150,5 +138,5 @@ def run_apidoc(app):
 
 
 def setup(app):
-    app.connect('builder-inited', run_apidoc)
     app.connect('autodoc-process-docstring', show_inherited_mixins)
+    app.connect('builder-inited', run_apidoc)

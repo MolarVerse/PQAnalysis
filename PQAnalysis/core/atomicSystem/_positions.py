@@ -1,12 +1,5 @@
 """
 A module containing a Mixin class for related information to the positions of an atomic system.
-
-...
-
-Classes
--------
-_PositionsMixin
-    A mixin class containing methods for related information to the positions of an atomic system.
 """
 
 import numpy as np
@@ -30,9 +23,10 @@ class _PositionsMixin:
                             indices: Np1DIntArray | None = None
                             ) -> Tuple[Np2DIntArray, Np2DNumberArray]:
         """
-        Returns the n nearest neighbours of each atom in the system.
+        Returns the 'n' nearest neighbours of selected atoms in the system.
 
-        If no indices are given, the nearest neighbours of all atoms are returned.
+        If no indices are given, the 'n' nearest neighbours of all atoms are returned.
+        With the parameter 'n' the number of nearest neighbours can be specified.
 
         Parameters
         ----------
@@ -44,27 +38,21 @@ class _PositionsMixin:
         Returns
         -------
         nearest_neighbours : Np2DIntArray
-            The n nearest neighbours of each atom in the system.
+            The n nearest neighbour indices of each atom in the system.
         nearest_neighbours_distances : Np2DNumberArray
             The distances to the n nearest neighbours of each atom in the system.
         """
 
-        if indices is None:
-            indices = np.arange(self.n_atoms)
-
+        indices = np.arange(self.n_atoms) if indices is None else indices
         nearest_neighbours = []
         nearest_neighbours_distances = []
 
-        for atom_position in self.pos[indices]:
-            distances = distance(atom_position, self.pos, self.cell)
+        distances = distance(self.pos[indices], self.pos, self.cell)
+        nearest_neighbours = np.argsort(distances, axis=-1)[:, 1:n+1]
+        nearest_neighbours_distances = np.take_along_axis(
+            distances, nearest_neighbours, axis=-1)
 
-            nearest_neighbours_atom = np.argsort(distances)[1:n+1]
-
-            nearest_neighbours.append(nearest_neighbours_atom)
-            nearest_neighbours_distances.append(
-                distances[nearest_neighbours_atom])
-
-        return np.array(nearest_neighbours), np.array(nearest_neighbours_distances)
+        return nearest_neighbours, nearest_neighbours_distances
 
     def nearest_neighbours(self,
                            n: PositiveInt = 1,
@@ -73,6 +61,8 @@ class _PositionsMixin:
                            ) -> Tuple[Np2DIntArray, Np2DNumberArray]:
         """
         Returns the n nearest neighbours of the given atoms in the system.
+
+        If no selection of target atoms is given, the n nearest neighbours of all atoms are returned. With the parameter 'n' the number of nearest neighbours can be specified.
 
         Examples
         --------

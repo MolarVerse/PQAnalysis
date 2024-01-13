@@ -18,7 +18,7 @@ from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
 from numbers import Real
 
-from ...types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
+from ...types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray, NpnDNumberArray
 from .standardProperties import _StandardPropertiesMixin
 
 Cells = NewType("Cells", Annotated[list, Is[lambda list: all(
@@ -157,7 +157,7 @@ class Cell(_StandardPropertiesMixin):
         """
         return bool(self.volume > 1e100)
 
-    def image(self, pos: Np2DNumberArray | Np1DNumberArray) -> Np2DNumberArray | Np1DNumberArray:
+    def image(self, pos: NpnDNumberArray) -> NpnDNumberArray:
         """
         Returns the image of the given position in the unit cell.
 
@@ -172,20 +172,18 @@ class Cell(_StandardPropertiesMixin):
             The image of the position(s) in the unit cell.
         """
 
+        original_shape = np.shape(pos)
+        pos = np.reshape(pos, (-1, 3))
+
         if self.alpha == 90 and self.beta == 90 and self.gamma == 90:
             pos = pos - self.box_lengths * np.rint(pos / self.box_lengths)
-            return pos
+        else:
 
-        original_shape = np.shape(pos)
+            fractional_pos = pos @ self.inverse_box_matrix.T
 
-        if original_shape == (3,):
-            pos = np.reshape(pos, (1, 3))
+            fractional_pos -= np.round(fractional_pos)
 
-        fractional_pos = pos @ self.inverse_box_matrix.T
-
-        fractional_pos -= np.round(fractional_pos)
-
-        pos = fractional_pos @ self.box_matrix.T
+            pos = fractional_pos @ self.box_matrix.T
 
         return np.reshape(pos, original_shape)
 

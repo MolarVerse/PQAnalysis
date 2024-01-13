@@ -17,7 +17,7 @@ from . import cell
 from ..types import Np1DNumberArray, Np2DNumberArray, PositiveReal
 
 
-def distance(pos1: Np1DNumberArray, pos2: Np1DNumberArray | Np2DNumberArray, cell: cell.Cell = cell.Cell()) -> PositiveReal | Np1DNumberArray:
+def distance(pos1: Np1DNumberArray | Np2DNumberArray, pos2: Np1DNumberArray | Np2DNumberArray, cell: cell.Cell = cell.Cell()) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:
     """
     Returns the distance between one position and one or more positions including periodic boundary conditions.
 
@@ -43,7 +43,7 @@ def distance(pos1: Np1DNumberArray, pos2: Np1DNumberArray | Np2DNumberArray, cel
 
     Parameters
     ----------
-    pos1 : Np1DNumberArray
+    pos1 : Np1DNumberArray | Np2DNumberArray
         The first position.
     pos2 : Np1DNumberArray | Np2DNumberArray
         The second position.
@@ -52,11 +52,13 @@ def distance(pos1: Np1DNumberArray, pos2: Np1DNumberArray | Np2DNumberArray, cel
 
     Returns
     -------
-    PositiveReal | Np1DNumberArray
-        The distance(s) between the two positions.
+    PositiveReal | Np1DNumberArray | Np2DNumberArray
+        The distance(s) between the two position(s) (arrays).
     """
 
-    delta_pos = pos2-pos1
+    pos1 = np.atleast_2d(pos1)
+
+    delta_pos = pos2 - pos1[:, None]
 
     delta_pos = cell.image(delta_pos)
 
