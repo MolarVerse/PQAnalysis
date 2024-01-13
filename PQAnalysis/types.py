@@ -11,16 +11,21 @@ PositiveInt = Annotated[int, Is[lambda int: int > 0]]
 # :A type hint for positive real numbers
 PositiveReal = Annotated[Real, Is[lambda real: real >= 0.0]]
 
-#: A type hint for a 2D np.ndarray with dtype np.number
-Np2DNumberArray = Annotated[np.ndarray, Is[lambda array:
-                                           array.ndim == 2 and
-                                           (np.issubdtype(array.dtype, np.number))]]
-
 #: A type variable for a 1D np.ndarray with dtype np.number
 Np1DNumberArray = NewType("Np1DNumberArray", Annotated[np.ndarray, Is[lambda array:
                                                                       array.ndim == 1 and
                                                                       (np.issubdtype(array.dtype, np.number)) or
                                                                       len(array) == 0]])
+
+#: A type hint for a 2D np.ndarray with dtype np.number
+Np2DNumberArray = Annotated[np.ndarray, Is[lambda array:
+                                           array.ndim == 2 and
+                                           (np.issubdtype(array.dtype, np.number))]]
+
+#: A type hint for a nD np.ndarray with dtype np.number
+NpnDNumberArray = Annotated[np.ndarray, Is[lambda array:
+                                           array.ndim > 0 and
+                                           (np.issubdtype(array.dtype, np.number))]]
 
 #: A type hint for a 3x3 np.ndarray matrix with dtype np.number
 Np3x3NumberArray = Annotated[np.ndarray, Is[lambda array:
