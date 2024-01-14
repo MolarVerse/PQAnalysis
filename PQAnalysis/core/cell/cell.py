@@ -113,12 +113,12 @@ class Cell(_StandardPropertiesMixin):
 
         Parameters
         ----------
-        pos : Np2DNumberArray, Np1DNumberArray
+        pos : NpnDNumberArray
             The position to get the image of.
 
         Returns
         -------
-        imaged_positions: Np2DNumberArray, Np1DNumberArray
+        imaged_positions: NpnDNumberArray
             The image of the position(s) in the unit cell.
         """
 
