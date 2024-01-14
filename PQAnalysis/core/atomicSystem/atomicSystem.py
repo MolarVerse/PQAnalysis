@@ -22,6 +22,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
     A class for storing atomic systems.
 
+    It contains the standard properties of an atomic system (i.e. positions, velocities, forces, charges, topology and cell). The AtomicSystem class can be used as a container for the standard properties of any molecular/atomic system.
+
+    Notes
+    -----
+    An atomic system does not have to containing any positions, velocities, forces and so forth. The only requirement is that the number of atoms in the topology is equal to the number of entries in the positions, velocities, forces and charges arrays. If e.g. only a system containing information of the velocities is needed, the positions, forces and charges arrays can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)). The same goes for the other properties. An empty cell can be created with Cell() and represents a system without periodic boundary conditions. (For more information see the documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`). As the topology is can be really and complex and most of the cases really specific to the system, here no further information is given. (For more information see the documentation of :py:class:`~PQAnalysis.topology.topology.Topology`). Furthermore for this reason if no specialization of the topology is needed, the atomic system can be initialized with only a list of atoms (see examples, and the documentation of :py:class:`~PQAnalysis.core.atom.atom.Atom`).
+
+
     Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin
         - The _StandardPropertiesMixin contains the standard properties of an atomic system (i.e. standard getter and setter methods).
         - The _PropertiesMixin contains special properties derived from the standard properties
@@ -47,8 +54,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  cell: Cell = Cell()
                  ) -> None:
         """
-        Initializes the AtomicSystem with the given parameters.
-
         For the initialization of an AtomicSystem all parameters are optional. 
         If no value is given for a parameter, the default value is used which 
         is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces

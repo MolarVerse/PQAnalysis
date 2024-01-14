@@ -11,6 +11,11 @@ Classes
     A class to write RDFs to output files.
 :py:class:`~PQAnalysis.analysis.rdf.rdfOutputFileWriter.RDFLogWriter`
     A class to write log files.
+   
+Functions
+---------
+:py:func:`~PQAnalysis.analysis.rdf.rdf.rdf`
+    A function to create RDFs from an input file. 
 """
 
 from .api import rdf
