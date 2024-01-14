@@ -1,20 +1,8 @@
 """
 A module containing different exceptions related to the core subpackage.
-
-...
-
-Classes
--------
-ElementNotFoundError
-    Exception raised if the given element id is not valid
-AtomicSystemPositionsError
-    Exception raised if atoms is not of the same length as positions
-AtomicSystemMassError
-    Exception raised if atoms do not contain mass information
 """
 
 from PQAnalysis.exceptions import PQException, PQWarning
-
 
 from beartype.typing import Any
 

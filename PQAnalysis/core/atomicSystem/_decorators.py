@@ -11,10 +11,13 @@ check_atoms_has_mass
     Decorator which checks that all atoms have mass information.
 """
 
+from decorator import decorator
+
 from ..exceptions import AtomicSystemPositionsError, AtomicSystemMassError
 
 
-def check_atoms_pos(func):
+@decorator
+def check_atoms_pos(func, *args, **kwargs):
     """
     Decorator which checks that the number of atoms is equal to the number of positions.
 
@@ -28,17 +31,16 @@ def check_atoms_pos(func):
     AtomicSystemPositionsError
         If the number of atoms is not equal the number of positions.
     """
-    def wrapper(*args, **kwargs):
+    self = args[0]
 
-        if args[0].pos.shape[0] != len(args[0].atoms):
-            raise AtomicSystemPositionsError()
+    if self.pos.shape[0] != len(self.atoms):
+        raise AtomicSystemPositionsError()
 
-        return func(*args, **kwargs)
-
-    return wrapper
+    return func(*args, **kwargs)
 
 
-def check_atoms_has_mass(func):
+@decorator
+def check_atoms_has_mass(func, *args, **kwargs):
     """
     Decorator which checks that all atoms have mass information.
 
@@ -52,11 +54,10 @@ def check_atoms_has_mass(func):
     ValueError
         If any atom does not have mass information.
     """
-    def wrapper(*args, **kwargs):
 
-        if not all([atom.mass is not None for atom in args[0].atoms]):
-            raise AtomicSystemMassError()
+    self = args[0]
 
-        return func(*args, **kwargs)
+    if not all([atom.mass is not None for atom in self.atoms]):
+        raise AtomicSystemMassError()
 
-    return wrapper
+    return func(*args, **kwargs)
