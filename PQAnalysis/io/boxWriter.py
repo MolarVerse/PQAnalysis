@@ -14,60 +14,26 @@ from ..utils import instance_function_count_decorator
 from ..traj import Trajectory
 
 
-def write_box(traj, filename: str | None = None, format: str | None = None) -> None:
-    '''
-    Wrapper for BoxWriter to write a trajectory to a file.
-
-    Parameters
-    ----------
-    traj : Trajectory
-        The trajectory to write.
-    filename : str, optional
-        The name of the file to write to. If None, the output is printed to stdout.
-    format : str, optional
-        The format of the file. If None, the format is inferred as a data file format.
-        (see BoxWriter.formats for available formats)
-    '''
-
-    writer = BoxWriter(filename, format)
-    writer.write(traj)
-
-
 class BoxWriter(BaseWriter):
     """
     A class for writing a trajectory to a box file.
     Inherits from BaseWriter. See BaseWriter for more information.
 
     It can write a trajectory to a box file in either a data file format or a VMD file format.
-
-    ...
-
-    Class Attributes
-    ----------------
-    formats : list of str
-        The available formats for the box file.
-
-    Attributes
-    ----------
-    format : str
-        The format of the file. If None, the format is inferred as a data file format.
-        (see BoxWriter.formats for available formats)
     """
     formats = [None, 'data', 'vmd']
 
-    def __init__(self, filename: str | None = None, format: str | None = None, mode='w') -> None:
+    def __init__(self, filename: str | None = None, output_format: str | None = 'data', mode='w') -> None:
         """
-        Initializes the BoxWriter with the given filename, format and mode.
-
         Parameters
         ----------
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        format : str, optional
+        output_format : str, optional
             The format of the file. If None, the format is inferred as a data file format.
             (see BoxWriter.formats for available formats)
         mode : str, optional
-            The mode of the file. Either 'w' for write or 'a' for append.
+            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite.
 
         Raises
         ------
@@ -76,14 +42,14 @@ class BoxWriter(BaseWriter):
         """
 
         super().__init__(filename, mode)
-        if format not in self.formats:
+        if output_format not in self.formats:
             raise ValueError(
                 'Invalid format. Has to be either \'vmd\', \'data\' or \'None\'.')
 
-        if format is None:
-            format = 'data'
+        if output_format is None:
+            output_format = 'data'
 
-        self.format = format
+        self.output_format = output_format
 
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
@@ -100,7 +66,7 @@ class BoxWriter(BaseWriter):
         """
 
         self.open()
-        if self.format == "vmd":
+        if self.output_format == "vmd":
             self.write_vmd(traj)
         else:
             self.write_box_file(traj, reset_counter=reset_counter)

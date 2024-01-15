@@ -9,6 +9,7 @@ from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 from ..types import PositiveReal
 from ..core import Cell
+from ..traj import Trajectory
 
 
 def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF):
@@ -94,7 +95,7 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
     else:
         output_format = None
 
-    writer = BoxWriter(filename=output, format=output_format)
+    writer = BoxWriter(filename=output, output_format=output_format)
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)
         trajectory = reader.read()
@@ -119,3 +120,25 @@ def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
         trajectory = reader.read()
 
         writer.write(trajectory)
+
+
+def write_box(traj: Trajectory,
+              filename: str | None = None,
+              output_format: str | None = None
+              ) -> None:
+    '''
+    Writes the given trajectory to the file in a selected box file format.
+
+    Parameters
+    ----------
+    traj : Trajectory
+        The trajectory to write.
+    filename : str, optional
+        The name of the file to write to. If None, the output is printed to stdout.
+    output_format : str, optional
+        The format of the file. If None, the format is inferred as a data file format.
+        (see BoxWriter.formats for available formats)
+    '''
+
+    writer = BoxWriter(filename, output_format)
+    writer.write(traj)
