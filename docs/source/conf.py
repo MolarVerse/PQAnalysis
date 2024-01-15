@@ -109,6 +109,17 @@ html_logo = 'logo/PQAnalysis.png'
 html_static_path = ['_static']
 
 
+def show_inherited_mixins(app, what, name, obj, options, lines):
+    """Show inherited mixins in the base classes of a class"""
+
+    if what != 'class' or not hasattr(obj, '__bases__'):
+        return
+
+    for base in obj.__bases__:
+        if base.__name__.endswith('Mixin'):
+            options['inherited-members'] = True
+
+
 def run_apidoc(app):
     """Generage API documentation"""
     import better_apidoc
@@ -127,4 +138,5 @@ def run_apidoc(app):
 
 
 def setup(app):
+    app.connect('autodoc-process-docstring', show_inherited_mixins)
     app.connect('builder-inited', run_apidoc)

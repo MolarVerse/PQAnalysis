@@ -142,8 +142,9 @@ class Selection:
         return str(self.selection_object)
 
 
+# NOTE: do not use Atoms or Elements as a type for the atoms parameter, because it will cause a cryptic error message from the multimethod library, apparently it cannot handle NewType objects from the typing library
 @overload
-def _selection(atoms: Atoms | Atom | Element | Elements, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
+def _selection(atoms: List[Atom] | Atom | List[Element] | Element, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a list of atoms/elements or a single atom/element.
 
