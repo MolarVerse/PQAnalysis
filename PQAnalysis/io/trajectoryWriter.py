@@ -103,8 +103,6 @@ class TrajectoryWriter(BaseWriter):
         elif self.type == TrajectoryFormat.CHARGE:
             self.write_charges(trajectory)
 
-        self.close()
-
     def write_positions(self, trajectory: Trajectory) -> None:
         """
         Writes the positions of the trajectory to the file.

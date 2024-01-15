@@ -48,20 +48,6 @@ class MDEngineFormatError(FormatEnumError):
         super().__init__(message)
 
 
-class BoxFileFormatError(FormatEnumError):
-    """
-    Exception raised if the given enum is not valid
-    """
-
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
-
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
-
-
 class FrameError(PQException):
     """
     Exception raised for errors related to the Frame class

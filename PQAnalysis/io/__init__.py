@@ -1,43 +1,5 @@
 """
 A package containing classes and functions to handle input and output of molecular dynamics simulations.
-
-The io package contains the following submodules:
-    
-        - base
-        - boxWriter
-        - energyFileReader
-        - frameReader
-        - infoFileReader
-        - inputFileReader
-        - moldescriptorReader
-        - restartFileReader
-        - restartFileWriter
-        - trajectoryReader
-        - trajectoryWriter
-            
-The io package contains the following classes:
-        
-        - BaseReader
-        - BaseWriter
-        - BoxWriter
-        - EnergyFileReader
-        - FrameReader
-        - InfoFileReader
-        - InputFileParser
-        - InputFileFormat
-        - MoldescriptorReader
-        - RestartFileReader
-        - RestartFileWriter
-        - TrajectoryReader
-        - TrajectoryWriter
-        
-The io package contains the following exceptions:
-
-        - BoxWriterError
-        - FrameReaderError
-        - MoldescriptorReaderError
-        - RestartFileReaderError
-        - TrajectoryReaderError
 """
 
 from .exceptions import BoxWriterError
@@ -46,6 +8,7 @@ from .exceptions import MoldescriptorReaderError
 from .exceptions import RestartFileReaderError
 from .exceptions import TrajectoryReaderError
 
+from .formats import BoxFileFormat
 
 from .base import BaseReader, BaseWriter
 from .frameReader import FrameReader

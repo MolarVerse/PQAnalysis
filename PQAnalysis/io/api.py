@@ -4,7 +4,7 @@ This module provides API functions for input/output handling of molecular dynami
 
 from beartype.typing import List
 
-from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader
+from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat
 from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 from ..types import PositiveReal
@@ -91,9 +91,9 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
     """
 
     if vmd:
-        output_format = "vmd"
+        output_format = BoxFileFormat.VMD
     else:
-        output_format = None
+        output_format = BoxFileFormat.DATA
 
     writer = BoxWriter(filename=output, output_format=output_format)
     for filename in trajectory_files:
@@ -124,7 +124,7 @@ def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
 
 def write_box(traj: Trajectory,
               filename: str | None = None,
-              output_format: str | None = None
+              output_format: str | BoxFileFormat = 'data',
               ) -> None:
     '''
     Writes the given trajectory to the file in a selected box file format.
