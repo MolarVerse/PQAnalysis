@@ -15,14 +15,19 @@ class TestBaseWriter:
         with pytest.raises(ValueError) as exception:
             BaseWriter(filename, "r")
         assert str(
-            exception.value) == "Invalid mode - has to be either \'w\' or \'a\'."
+            exception.value) == "Invalid mode - has to be one of [\'w\', \'a\', \'o\']"
 
         open(filename, "w")
 
         with pytest.raises(ValueError) as exception:
             BaseWriter(filename, "w")
         assert str(
-            exception.value) == "File tmp already exists. Use mode \'a\' to append to file."
+            exception.value) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file."
+
+        writer = BaseWriter(filename, "o")
+        assert writer.file is None
+        assert writer.mode == "w"
+        assert writer.filename == filename
 
         writer = BaseWriter(filename, "a")
         assert writer.file is None
@@ -33,12 +38,17 @@ class TestBaseWriter:
 
         writer = BaseWriter(filename, "w")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == "w"
+        assert writer.filename == filename
+
+        writer = BaseWriter(filename, "o")
+        assert writer.file is None
+        assert writer.mode == "w"
         assert writer.filename == filename
 
         writer = BaseWriter()
         assert writer.file == sys.stdout
-        assert writer.mode == "a"
+        assert writer.mode == "w"
         assert writer.filename is None
 
     @pytest.mark.usefixtures("tmpdir")

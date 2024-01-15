@@ -9,9 +9,9 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from . import BaseWriter, BoxWriterError
+from . import BaseWriter, BoxWriterError, BoxFileFormat
+from ..traj import Trajectory
 from ..utils import instance_function_count_decorator
-from ..traj import Trajectory, BoxFileFormat
 
 
 class BoxWriter(BaseWriter):
@@ -57,7 +57,7 @@ class BoxWriter(BaseWriter):
         """
 
         self.open()
-        if self.output_format == "vmd":
+        if self.output_format == BoxFileFormat.VMD:
             self.write_vmd(traj)
         else:
             self.write_box_file(traj, reset_counter=reset_counter)
@@ -135,3 +135,12 @@ class BoxWriter(BaseWriter):
         if not traj.check_PBC():
             raise BoxWriterError(
                 "At least on cell of the trajectory is None. Cannot write box file.")
+
+    @property
+    def output_format(self) -> BoxFileFormat:
+        """BoxFileFormat: The format of the file."""
+        return self._output_format
+
+    @output_format.setter
+    def output_format(self, output_format: str | BoxFileFormat) -> None:
+        self._output_format = BoxFileFormat(output_format)

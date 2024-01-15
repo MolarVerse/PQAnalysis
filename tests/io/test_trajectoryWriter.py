@@ -48,7 +48,7 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
         writer = TrajectoryWriter()
         assert writer.file == sys.stdout
         assert writer.filename is None
-        assert writer.mode == "a"
+        assert writer.mode == "w"
         assert writer.format == MDEngineFormat.PIMD_QMCF
 
         writer = TrajectoryWriter(format="qmcfc")
@@ -60,6 +60,7 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
     def test__write_header(self, capsys):
 
         writer = TrajectoryWriter()
+        assert writer.mode == "w"
         writer._write_header(1, Cell(10, 10, 10))
 
         captured = capsys.readouterr()
@@ -137,9 +138,11 @@ o     0.0000000000     0.0000000000     1.0000000000
 
         traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()
+        assert writer.mode == "w"
 
         print()
         writer.write(traj)
+        assert writer.mode == "a"
 
         captured = capsys.readouterr()
         assert captured.out == """

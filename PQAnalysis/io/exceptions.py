@@ -1,23 +1,10 @@
 """
 A module containing different exceptions related to the io subpackage.
-
-...
-
-Classes
--------
-BoxWriterError
-    Exception raised for errors related to the BoxWriter class
-FrameReaderError
-    Exception raised for errors related to the FrameReader class
-MoldescriptorReaderError
-    Exception raised for errors related to the MoldescriptorReader class
-RestartFileReaderError
-    Exception raised for errors related to the RestartFileReader class
-TrajectoryReaderError
-    Exception raised for errors related to the TrajectoryReader class
 """
 
-from ..exceptions import PQException
+from multimethod import multimethod
+
+from ..exceptions import PQException, FormatEnumError
 
 
 class BoxWriterError(PQException):
@@ -68,3 +55,17 @@ class TrajectoryReaderError(PQException):
     def __init__(self, message: str) -> None:
         self.message = message
         super().__init__(self.message)
+
+
+class BoxFileFormatError(FormatEnumError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    @multimethod
+    def __init__(self, value: object, enum: object) -> None:
+        super().__init__(value, enum)
+
+    @multimethod
+    def __init__(self, message: str) -> None:
+        super().__init__(message)

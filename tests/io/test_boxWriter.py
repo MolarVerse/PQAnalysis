@@ -3,8 +3,8 @@ import numpy as np
 
 from _pytest.capture import CaptureFixture
 
-from PQAnalysis.io.boxWriter import BoxWriter, write_box
-from PQAnalysis.io.exceptions import BoxWriterError
+from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat
+from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
 
@@ -12,28 +12,31 @@ from PQAnalysis.core import Cell, Atom, AtomicSystem
 class TestBoxWriter:
 
     def test__init__(self):
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(BoxFileFormatError) as exception:
             BoxWriter(filename="tmp", output_format="r")
         assert str(
-            exception.value) == "Invalid format. Has to be either \'vmd\', \'data\' or \'None\'."
+            exception.value) == """
+'r' is not a valid BoxFileFormat.
+Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA
+or their case insensitive string representation: vmd, data"""
 
         writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == "w"
         assert writer.filename == "tmp"
-        assert writer.output_format == "vmd"
+        assert writer.output_format == BoxFileFormat.VMD
 
         writer = BoxWriter(filename="tmp", output_format="data")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == "w"
         assert writer.filename == "tmp"
-        assert writer.output_format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
         writer = BoxWriter(filename="tmp")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == "w"
         assert writer.filename == "tmp"
-        assert writer.output_format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
     atoms1 = [Atom("H")]
     pos1 = np.array([[0, 1, 2]])

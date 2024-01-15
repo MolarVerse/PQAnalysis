@@ -57,7 +57,8 @@ class BaseWriter:
         """
         if self.filename is not None:
             self.file = open(self.filename, self.mode)
-            self.mode = 'a'
+
+        self.mode = 'a'
 
     def close(self) -> None:
         """
@@ -83,13 +84,12 @@ class BaseWriter:
             raise ValueError(
                 'Invalid mode - has to be one of ' + str(self.modes))
 
-        if mode not in self.modes:
-            raise ValueError(
-                'Invalid mode - has to be one of ' + str(self.modes))
-
         if mode == 'w' and self.filename is not None and os.path.isfile(self.filename):
             raise ValueError(
                 f"File {self.filename} already exists. Use mode \'a\' to append to the file or mode \'o\' to overwrite the file.")
+
+        if mode == 'o':
+            mode = 'w'
 
         self._mode = mode
 
