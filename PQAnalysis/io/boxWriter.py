@@ -11,7 +11,7 @@ BoxWriter
 
 from . import BaseWriter, BoxWriterError
 from ..utils import instance_function_count_decorator
-from ..traj import Trajectory
+from ..traj import Trajectory, BoxFileFormat
 
 
 class BoxWriter(BaseWriter):
@@ -21,35 +21,26 @@ class BoxWriter(BaseWriter):
 
     It can write a trajectory to a box file in either a data file format or a VMD file format.
     """
-    formats = [None, 'data', 'vmd']
 
-    def __init__(self, filename: str | None = None, output_format: str | None = 'data', mode='w') -> None:
+    def __init__(self, filename: str | None = None, output_format: str | BoxFileFormat = 'data', mode='w') -> None:
         """
         Parameters
         ----------
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        output_format : str, optional
-            The format of the file. If None, the format is inferred as a data file format.
-            (see BoxWriter.formats for available formats)
+        output_format : str | BoxFileFormat, optional
+            The format of the file. The default is 'data' i.e. BoxFileFormat.DATA.
         mode : str, optional
             The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite.
 
         Raises
         ------
         ValueError
-            If the given format is not in BoxWriter.formats. TODO: make an enum for these formats!!!
+            If the given format is not in :py:class:`~PQAnalysis.traj.formats.BoxFileFormat`.
         """
 
         super().__init__(filename, mode)
-        if output_format not in self.formats:
-            raise ValueError(
-                'Invalid format. Has to be either \'vmd\', \'data\' or \'None\'.')
-
-        if output_format is None:
-            output_format = 'data'
-
-        self.output_format = output_format
+        self.output_format = BoxFileFormat(output_format)
 
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
@@ -77,26 +68,6 @@ class BoxWriter(BaseWriter):
         """
         Writes the given trajectory to the file in VMD format.
 
-        The format looks in general like this:
-
-                8
-                Box  1.0 1.0 1.0    90.0 90.0 90.0
-                X   0.0 0.0 0.0
-                X   1.0 0.0 0.0
-                X   0.0 1.0 0.0
-                X   1.0 1.0 0.0
-                X   0.0 0.0 1.0
-                X   1.0 0.0 1.0
-                X   0.0 1.0 1.0
-                X   1.0 1.0 1.0
-                8
-                Box  1.0 1.0 1.0    90.0 90.0 90.0
-                X   0.0 0.0 0.0
-                ...
-
-        where all X represent the vertices of the box. The first line contains the number of vertices.
-        The second line contains the box dimensions and box angles as the comment line for a xyz file.
-
         Parameters
         ----------
         traj : Trajectory
@@ -118,16 +89,6 @@ class BoxWriter(BaseWriter):
     def write_box_file(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
         Writes the given trajectory to the file in data file format.
-
-        The format looks in general like this:
-
-                1 1.0 1.0 1.0 90.0 90.0 90.0
-                2 1.0 1.0 1.0 90.0 90.0 90.0
-                ...
-                n 1.1 1.1 1.1 90.0 90.0 90.0
-
-        where the first column represents the step starting from 1, the second to fourth column
-        represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
 
         The @count_decorator is used to count the number of frames written to the file. The default
         way is that the counter is reset to 0 after each call of the function. This can be changed
