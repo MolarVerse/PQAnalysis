@@ -1,12 +1,5 @@
 """
 A module containing the Cell class.
-
-...
-
-Classes
--------
-Cell
-    A class for storing unit cell parameters.
 """
 
 from __future__ import annotations
@@ -18,9 +11,10 @@ from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
 from numbers import Real
 
-from ...types import Np3x3NumberArray, Np2DNumberArray, Np1DNumberArray
-from .standardProperties import _StandardPropertiesMixin
+from ...types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
+from ._standardProperties import _StandardPropertiesMixin
 
+#: A type hint for a list of cells
 Cells = NewType("Cells", Annotated[list, Is[lambda list: all(
     isinstance(atom, Cell) for atom in list)]])
 
@@ -28,32 +22,6 @@ Cells = NewType("Cells", Annotated[list, Is[lambda list: all(
 class Cell(_StandardPropertiesMixin):
     '''
     Class for storing unit cell parameters.
-
-    ...
-
-    Attributes
-    ----------
-
-    x : Real, optional
-        The length of the first box vector. Default is sys.float_info.max.
-    y : Real, optional
-        The length of the second box vector. Default is sys.float_info.max.
-    z : Real, optional
-        The length of the third box vector. Default is sys.float_info.max.
-    alpha : Real, optional
-        The angle between the second and third box vector. Default is 90.
-    beta : Real, optional
-        The angle between the first and third box vector. Default is 90.
-    gamma : Real, optional
-        The angle between the first and second box vector. Default is 90.
-    box_lengths : np.array
-        The lengths of the box vectors.
-    box_angles : np.array
-        The angles between the box vectors.
-    box_matrix : np.array
-        The matrix containing the box vectors as columns.
-    inverse_box_matrix : np.array
-        The inverse of the box matrix.
     '''
 
     def __init__(self,
@@ -65,10 +33,7 @@ class Cell(_StandardPropertiesMixin):
                  gamma: Real = 90
                  ) -> None:
         """
-        Initializes the Cell with the given parameters.
-
-        If no angles are given, the cell is assumed to be orthorhombic.
-        The box matrix is calculated from the given parameters.
+        A cell object can be initialized with the following parameters:
 
         Parameters
         ----------
@@ -84,6 +49,10 @@ class Cell(_StandardPropertiesMixin):
             The angle between the first and third box vector.
         gamma : Real, optional
             The angle between the first and second box vector.
+
+        Notes
+        -----
+        A vacuum cell can be created by calling Cell(), which is equivalent to Cell(x=sys.float_info.max, y=sys.float_info.max, z=sys.float_info.max, alpha=90, beta=90, gamma=90).
         """
         self._box_lengths = np.array([x, y, z])
         self._box_angles = np.array([alpha, beta, gamma])
@@ -117,14 +86,7 @@ class Cell(_StandardPropertiesMixin):
 
     @property
     def bounding_edges(self) -> Np2DNumberArray:
-        """
-        calculates the coordinates of the eight corners of the unit cell.
-
-        Returns
-        -------
-        edges: Np2DNumberArray of shape (8, 3)
-            The coordinates of the eight corners of the unit cell.
-        """
+        """Np2DNumberArray: The 8 corners of the bounding box of the unit cell."""
         edges = np.zeros((8, 3))
         for i, x in enumerate([-0.5, 0.5]):
             for j, y in enumerate([-0.5, 0.5]):
@@ -135,57 +97,43 @@ class Cell(_StandardPropertiesMixin):
 
     @property
     def volume(self) -> Real:
-        """
-        Returns the volume of the unit cell.
-
-        Returns
-        -------
-        Real
-            The volume of the unit cell.
-        """
+        """volume: The volume of the unit cell."""
         return np.linalg.det(self.box_matrix)
 
     @property
     def is_vacuum(self) -> bool:
-        """
-        Returns whether the unit cell is a vacuum cell.
-
-        Returns
-        -------
-        bool
-            Whether the unit cell is a vacuum cell.
-        """
+        """bool: Returns whether the unit cell is a vacuum."""
         return bool(self.volume > 1e100)
 
-    def image(self, pos: Np2DNumberArray | Np1DNumberArray) -> Np2DNumberArray | Np1DNumberArray:
+    def image(self, pos: NpnDNumberArray) -> NpnDNumberArray:
         """
-        Returns the image of the given position in the unit cell.
+        Images the given position(s) into the unit cell.
+
+        This class can be used to image positions of arbitrary shape into the unit cell. The shape of the input is preserved. The only requirement is that the last dimension of the input is 3, representing the x, y and z coordinates of the position(s).
 
         Parameters
         ----------
-        pos : Np2DNumberArray, Np1DNumberArray
+        pos : NpnDNumberArray
             The position to get the image of.
 
         Returns
         -------
-        imaged_positions: Np2DNumberArray, Np1DNumberArray
+        imaged_positions: NpnDNumberArray
             The image of the position(s) in the unit cell.
         """
 
+        original_shape = np.shape(pos)
+        pos = np.reshape(pos, (-1, 3))
+
         if self.alpha == 90 and self.beta == 90 and self.gamma == 90:
             pos = pos - self.box_lengths * np.rint(pos / self.box_lengths)
-            return pos
+        else:
 
-        original_shape = np.shape(pos)
+            fractional_pos = pos @ self.inverse_box_matrix.T
 
-        if original_shape == (3,):
-            pos = np.reshape(pos, (1, 3))
+            fractional_pos -= np.round(fractional_pos)
 
-        fractional_pos = pos @ self.inverse_box_matrix.T
-
-        fractional_pos -= np.round(fractional_pos)
-
-        pos = fractional_pos @ self.box_matrix.T
+            pos = fractional_pos @ self.box_matrix.T
 
         return np.reshape(pos, original_shape)
 

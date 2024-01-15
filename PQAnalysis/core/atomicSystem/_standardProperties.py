@@ -1,12 +1,5 @@
 """
 A module containing a Mixin Class with the standard properties of an atomic system (i.e. standard getter and setter methods).
-
-...
-
-Classes
--------
-_StandardPropertiesMixin
-    A mixin class containing the standard properties of an atomic system (i.e. standard getter and setter methods).
 """
 
 from ..atom import Atoms
@@ -21,25 +14,15 @@ class _StandardPropertiesMixin:
     """
     @property
     def atoms(self) -> Atoms:
-        """
-        Returns the atoms in the system.
-
-        Returns
-        -------
-        Atoms
-            The atoms in the system.
-        """
+        """Atoms: The atoms in the system."""
         return self.topology.atoms
 
     @property
     def topology(self) -> Topology:
         """
-        Returns the topology of the system.
+        Topology: The topology of the system.
 
-        Returns
-        -------
-        Topology
-            The topology of the system.
+        In order to set the topology of the system, the number of atoms in the topology has to be equal to the number of atoms in the system.
         """
         return self._topology
 
@@ -53,72 +36,29 @@ class _StandardPropertiesMixin:
 
     @property
     def pos(self) -> Np2DNumberArray:
-        """
-        Returns the positions of the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The positions of the atoms in the system.
-        """
+        """Np2DNumberArray: The positions of the atoms in the system."""
         return self._pos
 
     @property
     def vel(self) -> Np2DNumberArray:
-        """
-        Returns the velocities of the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The velocities of the atoms in the system.
-        """
+        """Np2DNumberArray: The velocities of the atoms in the system."""
         return self._vel
 
     @property
     def forces(self) -> Np2DNumberArray:
-        """
-        Returns the forces on the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The forces on the atoms in the system.
-        """
+        """Np2DNumberArray: The forces acting on the atoms in the system."""
         return self._forces
 
     @property
     def charges(self) -> Np1DNumberArray:
-        """
-        Returns the charges of the atoms in the system.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The charges of the atoms in the system.
-        """
+        """Np1DNumberArray: The charges of the atoms in the system."""
         return self._charges
 
     @property
     def cell(self) -> Cell:
-        """
-        Returns the unit cell of the system.
-
-        Returns
-        -------
-        Cell
-            The unit cell of the system.
-        """
+        """Cell: The unit cell of the system."""
         return self._cell
 
     @cell.setter
     def cell(self, cell: Cell) -> None:
-        """
-        Sets the unit cell of the system.
-
-        Parameters
-        ----------
-        cell : Cell
-            The unit cell of the system.
-        """
         self._cell = cell

@@ -22,6 +22,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
     A class for storing atomic systems.
 
+    It contains the standard properties of an atomic system (i.e. positions, velocities, forces, charges, topology and cell). The AtomicSystem class can be used as a container for the standard properties of any molecular/atomic system.
+
+    Notes
+    -----
+    An atomic system does not have to containing any positions, velocities, forces and so forth. The only requirement is that the number of atoms in the topology is equal to the number of entries in the positions, velocities, forces and charges arrays. If e.g. only a system containing information of the velocities is needed, the positions, forces and charges arrays can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)). The same goes for the other properties. An empty cell can be created with Cell() and represents a system without periodic boundary conditions. (For more information see the documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`). As the topology is can be really and complex and most of the cases really specific to the system, here no further information is given. (For more information see the documentation of :py:class:`~PQAnalysis.topology.topology.Topology`). Furthermore for this reason if no specialization of the topology is needed, the atomic system can be initialized with only a list of atoms (see examples, and the documentation of :py:class:`~PQAnalysis.core.atom.atom.Atom`).
+
+
     Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin
         - The _StandardPropertiesMixin contains the standard properties of an atomic system (i.e. standard getter and setter methods).
         - The _PropertiesMixin contains special properties derived from the standard properties
@@ -47,8 +54,6 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  cell: Cell = Cell()
                  ) -> None:
         """
-        Initializes the AtomicSystem with the given parameters.
-
         For the initialization of an AtomicSystem all parameters are optional. 
         If no value is given for a parameter, the default value is used which 
         is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces
@@ -85,31 +90,20 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If both atoms and topology are given.
         """
+        if topology is not None and atoms is not None:
+            raise ValueError(
+                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive.")
+
         if atoms is None and topology is None:
             topology = Topology()
         elif topology is None:
             topology = Topology(atoms=atoms)
-        elif topology is not None and atoms is not None:
-            raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive.")
-
-        if pos is None:
-            pos = np.zeros((0, 3))
-
-        if vel is None:
-            vel = np.zeros((0, 3))
-
-        if forces is None:
-            forces = np.zeros((0, 3))
-
-        if charges is None:
-            charges = np.zeros(0)
 
         self._topology = topology
-        self._pos = pos
-        self._vel = vel
-        self._forces = forces
-        self._charges = charges
+        self._pos = np.zeros((0, 3)) if pos is None else pos
+        self._vel = np.zeros((0, 3)) if vel is None else vel
+        self._forces = np.zeros((0, 3)) if forces is None else forces
+        self._charges = np.zeros(0) if charges is None else charges
         self._cell = cell
 
     def __eq__(self, other: Any) -> bool:
@@ -129,19 +123,28 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         if not isinstance(other, AtomicSystem):
             return False
 
-        is_equal = True
-
         if self.n_atoms != other.n_atoms:
             return False
 
-        is_equal &= self.topology == other.topology
-        is_equal &= self.cell == other.cell
-        is_equal &= np.allclose(self.pos, other.pos)
-        is_equal &= np.allclose(self.vel, other.vel)
-        is_equal &= np.allclose(self.forces, other.forces)
-        is_equal &= np.allclose(self.charges, other.charges)
+        if self.topology != other.topology:
+            return False
 
-        return is_equal
+        if self.cell != other.cell:
+            return False
+
+        if not np.allclose(self.pos, other.pos):
+            return False
+
+        if not np.allclose(self.vel, other.vel):
+            return False
+
+        if not np.allclose(self.forces, other.forces):
+            return False
+
+        if not np.allclose(self.charges, other.charges):
+            return False
+
+        return True
 
     def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> AtomicSystem:
         """
@@ -172,31 +175,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             key = np.argwhere(np.array(self.atoms) == key).flatten()
 
         if isinstance(key, int):
-            keys = np.array([key])
-        elif isinstance(key, slice):
-            keys = np.array(range(self.n_atoms)[key])
-        else:
-            keys = np.array(key)
+            key = np.array([key])
 
-        if np.shape(self.pos)[0] > 0:
-            pos = self.pos[keys]
-        else:
-            pos = None
+        keys = np.array(range(self.n_atoms))[key] if isinstance(
+            key, slice) else np.array(key)
 
-        if np.shape(self.vel)[0] > 0:
-            vel = self.vel[keys]
-        else:
-            vel = None
-
-        if np.shape(self.forces)[0] > 0:
-            forces = self.forces[keys]
-        else:
-            forces = None
-
-        if np.shape(self.charges)[0] > 0:
-            charges = self.charges[keys]
-        else:
-            charges = None
+        pos = self.pos[keys] if np.shape(self.pos)[0] > 0 else None
+        vel = self.vel[keys] if np.shape(self.vel)[0] > 0 else None
+        forces = self.forces[keys] if np.shape(self.forces)[0] > 0 else None
+        charges = self.charges[keys] if np.shape(self.charges)[0] > 0 else None
 
         return AtomicSystem(pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])
 
