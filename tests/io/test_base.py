@@ -2,7 +2,8 @@ import pytest
 import os
 import sys
 
-from PQAnalysis.io import BaseWriter, BaseReader
+from PQAnalysis.io import BaseWriter, BaseReader, FileWritingMode
+from PQAnalysis.io.exceptions import FileWritingModeError
 
 
 class TestBaseWriter:
@@ -12,10 +13,13 @@ class TestBaseWriter:
 
         filename = "tmp"
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FileWritingModeError) as exception:
             BaseWriter(filename, "r")
-        assert str(
-            exception.value) == "Invalid mode - has to be one of [\'w\', \'a\', \'o\']"
+            assert str(
+                exception.value) == """"
+'r' is not a valid FileWritingMode.
+Possible values are: FileWritingMode.OVERWRITE, FileWritingMode.APPEND, FileWritingMode.WRITE
+or their case insensitive string representation: o, a, w"""
 
         open(filename, "w")
 
@@ -26,29 +30,29 @@ class TestBaseWriter:
 
         writer = BaseWriter(filename, "o")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == filename
 
         writer = BaseWriter(filename, "a")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.APPEND
         assert writer.filename == filename
 
         os.remove(filename)
 
         writer = BaseWriter(filename, "w")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == filename
 
         writer = BaseWriter(filename, "o")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == filename
 
         writer = BaseWriter()
         assert writer.file == sys.stdout
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename is None
 
     @pytest.mark.usefixtures("tmpdir")

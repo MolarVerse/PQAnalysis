@@ -25,7 +25,7 @@ class PQWarning(Warning):
         super().__init__(self.message)
 
 
-class FormatEnumError(PQException):
+class BaseEnumFormatError(PQException):
     """
     Base class for enum exceptions if the given enum is not valid
     """

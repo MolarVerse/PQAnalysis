@@ -13,10 +13,10 @@ InputFileWarning
 
 from multimethod import multimethod
 
-from ...exceptions import FormatEnumError, PQException, PQWarning
+from ...exceptions import BaseEnumFormatError, PQException, PQWarning
 
 
-class InputFileFormatError(FormatEnumError):
+class InputFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """

@@ -7,6 +7,8 @@ import os
 
 from beartype.typing import List
 
+from . import FileWritingMode
+
 
 class BaseWriter:
     """
@@ -21,18 +23,14 @@ class BaseWriter:
 
     """
 
-    #: The modes of the file.
-    #: 'w' for write, 'a' for append and 'o' for overwrite.
-    modes = ['w', 'a', 'o']
-
-    def __init__(self, filename: str | None = None, mode: str | None = 'w') -> None:
+    def __init__(self, filename: str | None = None, mode: str | FileWritingMode = 'w') -> None:
         """
         Parameters
         ----------
-        filename : str
+        filename : str or None, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        mode : str
-            The mode of the file. Either 'w' for write or 'a' for append.
+        mode : FileWritingMode or str, optional
+            The mode of the file. Use one of the modes in FileWritingMode or 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
 
         Raises
         ------
@@ -49,16 +47,16 @@ class BaseWriter:
 
         self.filename = filename
 
-        self.mode = mode
+        self.mode = FileWritingMode(mode)
 
     def open(self) -> None:
         """
         Opens the file to write to.
         """
         if self.filename is not None:
-            self.file = open(self.filename, self.mode)
+            self.file = open(self.filename, self.mode.value)
 
-        self.mode = 'a'
+        self.mode = FileWritingMode.APPEND
 
     def close(self) -> None:
         """
@@ -70,26 +68,24 @@ class BaseWriter:
         self.file = None
 
     @property
-    def mode(self) -> str:
+    def mode(self) -> FileWritingMode:
         """
-        str: The mode of the file.
+        FileWritingMode: The mode of the file.
 
         The setter checks if the given mode is in BaseWriter.modes. Furthermore, if the mode is 'w' and the file already exists, a ValueError is raised. If the mode is 'a' and the file does not exist, it is created. If the mode is 'o' and the file already exists, it is overwritten.
         """
         return self._mode
 
     @mode.setter
-    def mode(self, mode: str) -> None:
-        if mode not in self.modes:
-            raise ValueError(
-                'Invalid mode - has to be one of ' + str(self.modes))
+    def mode(self, mode: str | FileWritingMode) -> None:
+        mode = FileWritingMode(mode)
 
-        if mode == 'w' and self.filename is not None and os.path.isfile(self.filename):
+        if mode == FileWritingMode.WRITE and self.filename is not None and os.path.isfile(self.filename):
             raise ValueError(
                 f"File {self.filename} already exists. Use mode \'a\' to append to the file or mode \'o\' to overwrite the file.")
 
         if mode == 'o':
-            mode = 'w'
+            mode = FileWritingMode('w')
 
         self._mode = mode
 

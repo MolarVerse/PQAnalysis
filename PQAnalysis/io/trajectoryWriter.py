@@ -16,37 +16,10 @@ write_trajectory
 
 from beartype.typing import List
 
-from . import BaseWriter
+from . import BaseWriter, FileWritingMode
 from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from ..core import Cell, Atom
 from ..types import Np2DNumberArray, Np1DNumberArray
-
-
-def write_trajectory(traj,
-                     filename: str | None = None,
-                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ
-                     ) -> None:
-    """Wrapper for TrajectoryWriter to write a trajectory to a file.
-
-    if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
-    if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
-
-    Parameters
-    ----------
-    traj : Trajectory
-        The trajectory to write.
-    filename : str, optional
-        The name of the file to write to. If None, the output is printed to stdout.
-    format : MDEngineFormat | str, optional
-        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
-    type : TrajectoryFormat | str, optional
-        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
-
-    """
-
-    writer = TrajectoryWriter(filename, format=format)
-    writer.write(traj, type=type)
 
 
 class TrajectoryWriter(BaseWriter):
@@ -60,7 +33,7 @@ class TrajectoryWriter(BaseWriter):
     def __init__(self,
                  filename: str | None = None,
                  format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                 mode: str = 'w'
+                 mode: str | FileWritingMode = 'w'
                  ) -> None:
         """
         It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
@@ -72,10 +45,10 @@ class TrajectoryWriter(BaseWriter):
         format : MDEngineFormat | str, optional
             The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
         mode : str, optional
-            The mode of the file. Either 'w' for write or 'a' for append.
+            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
         """
 
-        super().__init__(filename, mode)
+        super().__init__(filename, FileWritingMode(mode))
 
         self.format = MDEngineFormat(format)
 

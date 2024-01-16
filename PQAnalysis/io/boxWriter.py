@@ -9,7 +9,7 @@ BoxWriter
     A class for writing a trajectory to a box file.
 """
 
-from . import BaseWriter, BoxWriterError, BoxFileFormat
+from . import BaseWriter, BoxWriterError, BoxFileFormat, FileWritingMode
 from ..traj import Trajectory
 from ..utils import instance_function_count_decorator
 
@@ -22,7 +22,10 @@ class BoxWriter(BaseWriter):
     It can write a trajectory to a box file in either a data file format or a VMD file format.
     """
 
-    def __init__(self, filename: str | None = None, output_format: str | BoxFileFormat = 'data', mode='w') -> None:
+    def __init__(self,
+                 filename: str | None = None,
+                 output_format: str | BoxFileFormat = 'data',
+                 mode: str | FileWritingMode = 'w') -> None:
         """
         Parameters
         ----------
@@ -31,7 +34,7 @@ class BoxWriter(BaseWriter):
         output_format : str | BoxFileFormat, optional
             The format of the file. The default is 'data' i.e. BoxFileFormat.DATA.
         mode : str, optional
-            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite.
+            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
 
         Raises
         ------
@@ -39,7 +42,7 @@ class BoxWriter(BaseWriter):
             If the given format is not in :py:class:`~PQAnalysis.traj.formats.BoxFileFormat`.
         """
 
-        super().__init__(filename, mode)
+        super().__init__(filename, FileWritingMode(mode))
         self.output_format = BoxFileFormat(output_format)
 
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
