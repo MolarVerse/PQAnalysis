@@ -9,7 +9,7 @@ from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 from ..types import PositiveReal
 from ..core import Cell
-from ..traj import Trajectory
+from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
 
 
 def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF):
@@ -86,8 +86,8 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
         The trajectory file(s) to be converted.
     vmd : bool
         Output in VMD format.
-    output : str, optional
-        The output file. If not specified, the output is printed to stdout.
+    output : str | None, optional
+        The output file. If not specified, the output is printed to stdout. Default is None.
     """
 
     if vmd:
@@ -101,6 +101,33 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
         trajectory = reader.read()
 
         writer.write(trajectory, reset_counter=False)
+
+
+def write_trajectory(traj,
+                     filename: str | None = None,
+                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+                     ) -> None:
+    """Wrapper for TrajectoryWriter to write a trajectory to a file.
+
+    if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
+    if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
+
+    Parameters
+    ----------
+    traj : Trajectory
+        The trajectory to write.
+    filename : str, optional
+        The name of the file to write to. If None, the output is printed to stdout.
+    format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
+    type : TrajectoryFormat | str, optional
+        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+
+    """
+
+    writer = TrajectoryWriter(filename, format=format)
+    writer.write(traj, type=type)
 
 
 def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
@@ -124,10 +151,12 @@ def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
 
 def write_box(traj: Trajectory,
               filename: str | None = None,
-              output_format: str | BoxFileFormat = 'data',
+              output_format: str | None = None
               ) -> None:
     '''
     Writes the given trajectory to the file in a selected box file format.
+
+
 
     Parameters
     ----------

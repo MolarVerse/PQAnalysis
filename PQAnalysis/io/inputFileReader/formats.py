@@ -11,11 +11,11 @@ InputFileFormat
 
 from beartype.typing import Any
 
-from ...formats import Format
+from ...formats import BaseEnumFormat
 from .exceptions import InputFileFormatError
 
 
-class InputFileFormat(Format):
+class InputFileFormat(BaseEnumFormat):
     """
     An enumeration of the supported input formats.
     """

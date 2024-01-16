@@ -8,7 +8,7 @@ from .exceptions import MoldescriptorReaderError
 from .exceptions import RestartFileReaderError
 from .exceptions import TrajectoryReaderError
 
-from .formats import BoxFileFormat
+from .formats import BoxFileFormat, FileWritingMode
 
 from .base import BaseReader, BaseWriter
 from .frameReader import FrameReader

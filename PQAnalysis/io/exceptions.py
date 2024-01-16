@@ -4,7 +4,7 @@ A module containing different exceptions related to the io subpackage.
 
 from multimethod import multimethod
 
-from ..exceptions import PQException, FormatEnumError
+from ..exceptions import PQException, BaseEnumFormatError
 
 
 class BoxWriterError(PQException):
@@ -57,15 +57,17 @@ class TrajectoryReaderError(PQException):
         super().__init__(self.message)
 
 
-class BoxFileFormatError(FormatEnumError):
+class BoxFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
 
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
+    pass
 
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+
+class FileWritingModeError(BaseEnumFormatError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    pass

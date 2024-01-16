@@ -4,11 +4,45 @@ A module containing different formats related to the io subpackage.
 
 from beartype.typing import Any
 
-from ..formats import Format
-from .exceptions import BoxFileFormatError
+from ..formats import BaseEnumFormat
+from .exceptions import BoxFileFormatError, FileWritingModeError
 
 
-class BoxFileFormat(Format):
+class FileWritingMode(BaseEnumFormat):
+    """
+    An enumeration of the supported file write modes.
+
+    """
+
+    #: The write mode for overwriting a file.
+    OVERWRITE = "o"
+
+    #: The write mode for appending to a file.
+    APPEND = "a"
+
+    #: The write mode for writing to a file
+    WRITE = "w"
+
+    @classmethod
+    def _missing_(cls, value: Any) -> Any:
+        """
+        This method returns the missing value of the enumeration.
+
+        Parameters
+        ----------
+        value : Any
+            The value to return.
+
+        Returns
+        -------
+        Any
+            The value to return.
+        """
+
+        return super()._missing_(value, FileWritingModeError)
+
+
+class BoxFileFormat(BaseEnumFormat):
     """
     An enumeration of the supported box file formats.
 
@@ -45,13 +79,19 @@ class BoxFileFormat(Format):
     DATA = "data"
 
     @classmethod
-    def _missing_(cls, value: object) -> Any:
+    def _missing_(cls, value: Any) -> Any:
         """
-        This method allows a BoxFileFormat to be retrieved from a string.
-        """
-        value = value.lower()
-        for member in cls:
-            if member.value.lower() == value:
-                return member
+        This method returns the missing value of the enumeration.
 
-        raise BoxFileFormatError(value, cls)
+        Parameters
+        ----------
+        value : Any
+            The value to return.
+
+        Returns
+        -------
+        Any
+            The value to return.
+        """
+
+        return super()._missing_(value, BoxFileFormatError)

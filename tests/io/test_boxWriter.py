@@ -3,7 +3,7 @@ import numpy as np
 
 from _pytest.capture import CaptureFixture
 
-from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat
+from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
 from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory, Frame
 from PQAnalysis.core import Cell, Atom, AtomicSystem
@@ -22,19 +22,19 @@ or their case insensitive string representation: vmd, data"""
 
         writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
         assert writer.output_format == BoxFileFormat.VMD
 
         writer = BoxWriter(filename="tmp", output_format="data")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
         assert writer.output_format == BoxFileFormat.DATA
 
         writer = BoxWriter(filename="tmp")
         assert writer.file is None
-        assert writer.mode == "w"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
         assert writer.output_format == BoxFileFormat.DATA
 

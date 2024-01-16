@@ -17,35 +17,23 @@ TrajectoryError
 
 from multimethod import multimethod
 
-from ..exceptions import PQException, FormatEnumError
+from ..exceptions import PQException, BaseEnumFormatError
 
 
-class TrajectoryFormatError(FormatEnumError):
+class TrajectoryFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
 
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
-
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
-class MDEngineFormatError(FormatEnumError):
+class MDEngineFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
 
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
-
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
 class FrameError(PQException):
