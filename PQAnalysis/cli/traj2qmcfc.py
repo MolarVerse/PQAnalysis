@@ -12,8 +12,7 @@ additional dummy 'X' particle as first entry of the coordinates section for
 visibility and debugging reasons in conjunction with vmd.
 """
 
-import argparse
-
+from ._argumentParser import ArgumentParser
 from PQAnalysis.io import traj2qmcfc
 
 
@@ -21,12 +20,12 @@ def main():
     """
     Wrapper for the command line interface of traj2qmcfc.
     """
-    parser = argparse.ArgumentParser(
+    parser = ArgumentParser(
         description='Converts multiple trajectory files to a qmcfc trajectory.')
-    parser.add_argument('trajectory_file', type=str, nargs='+',
-                        help='The trajectory file(s) to be converted.')
-    parser.add_argument('-o', '--output', type=str, default=None,
-                        help='The output file. If not specified, the output is printed to stdout.')
+
+    parser.parse_trajectory_file()
+    parser.parse_output_file()
+
     args = parser.parse_args()
 
     traj2qmcfc(args.trajectory_file, args.output)

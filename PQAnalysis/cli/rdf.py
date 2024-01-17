@@ -8,7 +8,7 @@ Command Line Tool for RDF Analysis
 
 import PQAnalysis.config as config
 
-from ._argumentParser import ArgumentParser
+from ._argumentParser import Argumentparser
 from PQAnalysis.analysis.rdf import rdf
 from PQAnalysis.analysis.rdf.rdfInputFileReader import input_keys_documentation
 from PQAnalysis.traj import MDEngineFormat
@@ -32,15 +32,11 @@ def main():
     """
     The main function of the RDF analysis command line tool.
     """
-    parser = ArgumentParser(description=__outputdoc__)
+    parser = Argumentparser(description=__outputdoc__)
     parser.parse_md_format()
+    parser.parse_input_file()
+    parser._parse_progress()
 
-    parser.add_argument('input_file', type=str, help='The input file.')
-    parser.add_argument('--progress', action='store_true',
-                        default=False, help='Show progress bar.')
     args = parser.parse_args()
 
-    engine_format = MDEngineFormat(args.format)
-
-    config.with_progress_bar = args.progress
-    rdf(args.input_file, engine_format)
+    rdf(args.input_file, args.engine_format)

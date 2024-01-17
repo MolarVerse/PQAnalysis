@@ -15,8 +15,7 @@ in xyz format with 8 particle entries representing the vertices of the box. The 
 line contains the information about the box dimensions a, b and c and the box angles.
 """
 
-import argparse
-
+from ._argumentParser import ArgumentParser
 from PQAnalysis.io import traj2box
 
 
@@ -24,13 +23,15 @@ def main():
     """
     Wrapper for the command line interface of traj2box.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = ArgumentParser(description=__doc__)
+
+    parser.parse_output_file()
+
     parser.add_argument('trajectory_file', type=str, nargs='+',
                         help='The trajectory file(s) to be converted.')
-    parser.add_argument('-v', '--vmd', action='store_true',
+    parser.add_argument('--vmd', action='store_true',
                         help='Output in VMD format.')
-    parser.add_argument('-o', '--output', type=str, default=None,
-                        help='The output file. If not specified, the output is printed to stdout.')
+
     args = parser.parse_args()
 
     traj2box(args.trajectory_file, args.vmd, args.output)
