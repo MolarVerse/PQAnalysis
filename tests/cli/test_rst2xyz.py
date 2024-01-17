@@ -1,9 +1,10 @@
 import pytest
-import argparse
 
 from unittest import mock
 
 from PQAnalysis.cli.rst2xyz import rst2xyz, main
+
+from . import ArgparseNamespace
 
 
 @pytest.mark.parametrize("example_dir", ["rst2xyz"], indirect=False)
@@ -51,7 +52,7 @@ N     4.0000000000     4.1000000000     4.2000000000
 
 
 @mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=argparse.Namespace(restart_file="md-01.rst", output=None, nobox=False))
+            return_value=ArgparseNamespace(restart_file="md-01.rst", output=None, nobox=False))
 def main_rst2xyz(mock_args):
     print()
     main()
