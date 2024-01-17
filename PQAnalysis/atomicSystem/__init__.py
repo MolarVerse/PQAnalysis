@@ -1,5 +1,5 @@
 """
-This package contains the classes and functions to handle atomic systems.
+This package contains the AtomicSystem class and its methods.
 """
 
 from .atomicSystem import AtomicSystem

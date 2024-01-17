@@ -10,9 +10,7 @@ Format
 """
 
 from enum import Enum
-from beartype.typing import Any, Tuple
-
-from .exceptions import BaseEnumFormatError
+from beartype.typing import Any, List
 
 
 class BaseEnumFormat(Enum):
@@ -46,18 +44,6 @@ class BaseEnumFormat(Enum):
 
         return ', '.join([str(member.value) for member in cls])
 
-    def __eq__(self, other: object) -> bool:
-        """
-        Checks if the given EnumFormat is equal to this Format or not.
-        """
-
-        if not isinstance(other, type(self)) and not isinstance(other, str):
-            return False
-
-        other = type(self)(other)
-
-        return self.value == other.value
-
     @classmethod
     def _missing_(cls, value: object, exception: type(Exception)) -> Any:
         """
@@ -86,3 +72,28 @@ class BaseEnumFormat(Enum):
                 return member
 
         raise exception(value, cls)
+
+    @classmethod
+    def values(cls) -> List[str]:
+        """
+        This method returns a list of all values of the enumeration.
+
+        Returns
+        -------
+        List[str]
+            A list of all values of the enumeration.
+        """
+
+        return [member.value for member in cls]
+
+    def __eq__(self, other: object) -> bool:
+        """
+        Checks if the given EnumFormat is equal to this Format or not.
+        """
+
+        if not isinstance(other, type(self)) and not isinstance(other, str):
+            return False
+
+        other = type(self)(other)
+
+        return self.value == other.value
