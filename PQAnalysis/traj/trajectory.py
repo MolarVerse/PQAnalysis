@@ -16,9 +16,9 @@ import numpy as np
 from beartype.typing import List, Iterator, Any, Iterable
 
 from . import Frame
-from ..topology import Topology
-from ..types import Np2DNumberArray, Np1DNumberArray
-from ..core import Cell
+from PQAnalysis.topology import Topology
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.core import Cell
 
 
 class Trajectory:

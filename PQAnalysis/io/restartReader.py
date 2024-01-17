@@ -12,9 +12,10 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, RestartFileReaderError
-from ..core import AtomicSystem, Atom, Cell
-from ..traj import MDEngineFormat, Frame
-from ..topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, Cell
+from PQAnalysis.traj import MDEngineFormat, Frame
+from PQAnalysis.topology import Topology
 
 
 class RestartFileReader(BaseReader):

@@ -13,9 +13,9 @@ import numpy as np
 from beartype.typing import List
 
 from .selection import SelectionCompatible, Selection
-from ..traj import Trajectory
-from ..types import Np1DIntArray, Np2DIntArray
-from ..io import BaseWriter
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.types import Np1DIntArray, Np2DIntArray
+from PQAnalysis.io import BaseWriter
 
 
 class ShakeTopologyGenerator:

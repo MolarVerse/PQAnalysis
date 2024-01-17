@@ -10,7 +10,7 @@ please use the --nobox option.
 
 import argparse
 
-from ..io import rst2xyz
+from PQAnalysis.io import rst2xyz
 
 
 def main():

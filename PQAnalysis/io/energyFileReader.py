@@ -13,8 +13,8 @@ import os
 import numpy as np
 
 from . import BaseReader, InfoFileReader
-from ..physicalData import Energy
-from ..traj import MDEngineFormat
+from PQAnalysis.physicalData import Energy
+from PQAnalysis.traj import MDEngineFormat
 
 
 class EnergyFileReader(BaseReader):

@@ -7,8 +7,9 @@ import numpy as np
 from numbers import Real
 
 from ._decorators import check_atoms_has_mass, check_atoms_pos
-from ..cell import Cell
-from ...types import Np1DNumberArray
+
+from PQAnalysis.core import Cell
+from PQAnalysis.types import Np1DNumberArray
 
 
 class _PropertiesMixin:

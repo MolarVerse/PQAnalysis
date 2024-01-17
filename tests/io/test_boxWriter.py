@@ -6,7 +6,8 @@ from _pytest.capture import CaptureFixture
 from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
 from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory, Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class TestBoxWriter:

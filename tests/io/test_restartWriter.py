@@ -1,9 +1,9 @@
-import pytest
 import numpy as np
 
 from PQAnalysis.io import RestartFileWriter
 from PQAnalysis.traj import MDEngineFormat, Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
 
 

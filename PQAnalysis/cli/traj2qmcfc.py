@@ -14,7 +14,7 @@ visibility and debugging reasons in conjunction with vmd.
 
 import argparse
 
-from ..io import traj2qmcfc
+from PQAnalysis.io import traj2qmcfc
 
 
 def main():

@@ -4,8 +4,8 @@ A module containing different formats related to the io subpackage.
 
 from beartype.typing import Any
 
-from ..formats import BaseEnumFormat
 from .exceptions import BoxFileFormatError, FileWritingModeError
+from PQAnalysis.formats import BaseEnumFormat
 
 
 class FileWritingMode(BaseEnumFormat):

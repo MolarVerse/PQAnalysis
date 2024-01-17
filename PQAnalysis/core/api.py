@@ -6,8 +6,8 @@ All of this functions are provided within the namespace of the PQAnalysis.core p
 
 import numpy as np
 
-from . import cell
-from ..types import Np1DNumberArray, Np2DNumberArray, PositiveReal
+from PQAnalysis.core import cell
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray, PositiveReal
 
 
 def distance(pos1: Np1DNumberArray | Np2DNumberArray, pos2: Np1DNumberArray | Np2DNumberArray, cell: cell.Cell = cell.Cell()) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:

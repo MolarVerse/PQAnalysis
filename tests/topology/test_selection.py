@@ -3,8 +3,8 @@ import pytest
 
 from . import pytestmark
 
-from PQAnalysis.topology import Selection, Topology, Residue
-from PQAnalysis.core import Atom, Element
+from PQAnalysis.topology import Selection, Topology
+from PQAnalysis.core import Atom, Element, Residue
 
 
 class TestSelection:

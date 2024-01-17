@@ -2,9 +2,10 @@ import pytest
 import numpy as np
 
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.io.exceptions import TrajectoryReaderError, FrameReaderError
+from PQAnalysis.io.exceptions import FrameReaderError
 from PQAnalysis.traj import Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class TestTrajectoryReader:

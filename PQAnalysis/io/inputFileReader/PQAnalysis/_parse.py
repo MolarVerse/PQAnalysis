@@ -1,11 +1,11 @@
 from beartype.typing import List
 
-import PQAnalysis.io.inputFileReader.inputFileParser as inputFileParser
-from PQAnalysis.io.inputFileReader.exceptions import InputFileError
-from ....types import PositiveReal, PositiveInt
+from ..inputFileParser import InputDictionary
+from ..exceptions import InputFileError
+from PQAnalysis.types import PositiveReal, PositiveInt
 
 
-def _parse_positive_real(dict: inputFileParser.InputDictionary, key: str) -> PositiveReal | None:
+def _parse_positive_real(dict: InputDictionary, key: str) -> PositiveReal | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive real number.
     If the key is not in the dictionary, None is returned.
@@ -39,7 +39,7 @@ def _parse_positive_real(dict: inputFileParser.InputDictionary, key: str) -> Pos
     return value
 
 
-def _parse_real(dict: inputFileParser.InputDictionary, key: str) -> PositiveReal | None:
+def _parse_real(dict: InputDictionary, key: str) -> PositiveReal | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a real number.
     None is returned if the key is not in the dictionary.
@@ -75,7 +75,7 @@ def _parse_real(dict: inputFileParser.InputDictionary, key: str) -> PositiveReal
     return data[0]
 
 
-def _parse_files(dict: inputFileParser.InputDictionary, key: str) -> List[str] | None:
+def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a list of strings, a glob or a string.
     If the key is not in the dictionary, None is returned.
@@ -113,7 +113,7 @@ def _parse_files(dict: inputFileParser.InputDictionary, key: str) -> List[str] |
             f"The \"{key}\" value has to be either a string, glob or a list of strings - actual it is parsed as a {data_type}")
 
 
-def _parse_int(dict: inputFileParser.InputDictionary, key: str) -> PositiveInt | None:
+def _parse_int(dict: InputDictionary, key: str) -> PositiveInt | None:
     """
     Gets the value of a key from the input dictionary and checks if it is an integer.
 
@@ -148,7 +148,7 @@ def _parse_int(dict: inputFileParser.InputDictionary, key: str) -> PositiveInt |
     return data[0]
 
 
-def _parse_positive_int(dict: inputFileParser.InputDictionary, key: str) -> PositiveInt | None:
+def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive integer.
 
@@ -181,7 +181,7 @@ def _parse_positive_int(dict: inputFileParser.InputDictionary, key: str) -> Posi
     return value
 
 
-def _parse_string(dict: inputFileParser.InputDictionary, key: str) -> str | None:
+def _parse_string(dict: InputDictionary, key: str) -> str | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a string.
 
@@ -216,7 +216,7 @@ def _parse_string(dict: inputFileParser.InputDictionary, key: str) -> str | None
     return data[0]
 
 
-def _parse_bool(dict: inputFileParser.InputDictionary, key: str) -> bool | None:
+def _parse_bool(dict: InputDictionary, key: str) -> bool | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a bool.
 

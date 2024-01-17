@@ -7,9 +7,9 @@ import numpy as np
 from beartype.typing import Tuple
 
 from ._decorators import check_atoms_pos
-from .. import distance
-from ...types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt
-from ...topology.selection import SelectionCompatible, Selection
+from PQAnalysis.core import distance
+from PQAnalysis.types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt
+from PQAnalysis.topology import SelectionCompatible, Selection
 
 
 class _PositionsMixin:

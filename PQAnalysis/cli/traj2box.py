@@ -17,7 +17,7 @@ line contains the information about the box dimensions a, b and c and the box an
 
 import argparse
 
-from ..io import traj2box
+from PQAnalysis.io import traj2box
 
 
 def main():

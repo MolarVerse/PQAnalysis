@@ -14,9 +14,9 @@ from multimethod import overload
 
 # local imports
 from .topology import Topology
-from ..types import Np1DIntArray
-from ..core import Atom, Atoms, Element, Elements
-from .. import __base_path__
+from PQAnalysis import __base_path__
+from PQAnalysis.types import Np1DIntArray
+from PQAnalysis.core import Atom, Atoms, Element, Elements
 
 #: A type variable for the Selection class.
 #: It can be used to specify the type of the selection object.

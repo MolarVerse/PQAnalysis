@@ -12,8 +12,7 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, MoldescriptorReaderError
-from ..topology import Residue, Residues
-from ..core import Element
+from PQAnalysis.core import Residue, Residues, Element
 
 
 class MoldescriptorReader(BaseReader):

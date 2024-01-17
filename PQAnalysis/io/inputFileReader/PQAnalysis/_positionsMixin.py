@@ -1,5 +1,5 @@
 from ._parse import _parse_positive_int, _parse_positive_real
-from ....types import PositiveInt, PositiveReal
+from PQAnalysis.types import PositiveInt, PositiveReal
 
 
 class _PositionsMixin:

@@ -2,10 +2,9 @@
 A module containing a Mixin Class with the standard properties of an atomic system (i.e. standard getter and setter methods).
 """
 
-from ..atom import Atoms
-from ..cell import Cell
-from ...types import Np1DNumberArray, Np2DNumberArray
-from ...topology.topology import Topology
+from PQAnalysis.core import Atoms, Cell
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
+from PQAnalysis.topology import Topology
 
 
 class _StandardPropertiesMixin:

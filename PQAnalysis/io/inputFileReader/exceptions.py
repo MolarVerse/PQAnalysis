@@ -13,7 +13,7 @@ InputFileWarning
 
 from multimethod import multimethod
 
-from ...exceptions import BaseEnumFormatError, PQException, PQWarning
+from PQAnalysis.exceptions import BaseEnumFormatError, PQException, PQWarning
 
 
 class InputFileFormatError(BaseEnumFormatError):

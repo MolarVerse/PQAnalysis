@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 from PQAnalysis.traj import Frame, FrameError
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
 
 

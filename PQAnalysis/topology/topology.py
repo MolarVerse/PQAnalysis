@@ -24,10 +24,10 @@ import warnings
 from beartype.typing import Any, Tuple, List
 from numbers import Integral
 
-from .residue import Residues, Residue, QMResidue
-from .exceptions import ResidueError, TopologyError, ResidueWarning
-from ..core import Atoms, Element
-from ..types import Np1DIntArray, Np2DIntArray
+from .exceptions import TopologyError
+from PQAnalysis.core.exceptions import ResidueError, ResidueWarning
+from PQAnalysis.core import Residues, Residue, QMResidue, Atoms, Element
+from PQAnalysis.types import Np1DIntArray, Np2DIntArray
 
 
 class Topology:

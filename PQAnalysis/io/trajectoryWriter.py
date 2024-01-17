@@ -17,9 +17,9 @@ write_trajectory
 from beartype.typing import List
 
 from . import BaseWriter, FileWritingMode
-from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
-from ..core import Cell, Atom
-from ..types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 
 
 class TrajectoryWriter(BaseWriter):

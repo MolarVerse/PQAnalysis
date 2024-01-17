@@ -23,9 +23,9 @@ import PQAnalysis.config as config
 
 # Local modules
 from . import BaseReader, FrameReader, TrajectoryReaderError
-from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
-from ..core import Cell
-from ..topology import Topology
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from PQAnalysis.core import Cell
+from PQAnalysis.topology import Topology
 
 
 class TrajectoryReader(BaseReader):

@@ -12,7 +12,7 @@ InfoFileReader
 from beartype.typing import Tuple, Dict
 
 from .base import BaseReader
-from ..traj import MDEngineFormat, MDEngineFormatError
+from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
 
 
 class InfoFileReader(BaseReader):

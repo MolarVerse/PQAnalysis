@@ -17,13 +17,12 @@ import PQAnalysis.config as config
 
 # local imports
 from .exceptions import RDFError, RDFWarning
-from ...types import Np1DNumberArray, PositiveInt, PositiveReal
-from ...core import distance, Cell, Cells
-from ...traj import Trajectory
-from ...traj import check_trajectory_PBC, check_trajectory_vacuum
-from ...topology import Selection, SelectionCompatible
-from ...utils import timeit_in_class
-from ...io import TrajectoryReader
+from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
+from PQAnalysis.core import distance, Cells
+from PQAnalysis.traj import Trajectory, check_trajectory_PBC, check_trajectory_vacuum
+from PQAnalysis.topology import Selection, SelectionCompatible
+from PQAnalysis.utils import timeit_in_class
+from PQAnalysis.io import TrajectoryReader
 
 
 class RDF:

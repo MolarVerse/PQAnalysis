@@ -4,7 +4,8 @@ import numpy as np
 
 from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
 from PQAnalysis.traj import Frame, Trajectory, TrajectoryFormat, MDEngineFormat
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
