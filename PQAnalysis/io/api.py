@@ -7,9 +7,10 @@ from beartype.typing import List
 from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat
 from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
-from ..types import PositiveReal
-from ..core import Cell
-from ..traj import Trajectory, TrajectoryFormat, MDEngineFormat
+
+from PQAnalysis.types import PositiveReal
+from PQAnalysis.core import Cell
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 
 
 def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF):

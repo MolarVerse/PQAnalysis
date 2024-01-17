@@ -7,9 +7,9 @@ from beartype.typing import Tuple
 
 # local imports
 from .rdf import RDF
-from ...types import Np1DNumberArray
-from ...io import BaseWriter
-from ...utils import header
+from PQAnalysis.types import Np1DNumberArray
+from PQAnalysis.io import BaseWriter
+from PQAnalysis.utils import header
 
 
 class RDFDataWriter(BaseWriter):

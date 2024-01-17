@@ -1,7 +1,9 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.core import AtomicSystem, Atom, Cell, AtomicSystemPositionsError, AtomicSystemMassError
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError, AtomicSystemMassError
+from PQAnalysis.core import Atom, Cell
 from PQAnalysis.topology import Topology
 
 

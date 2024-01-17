@@ -17,7 +17,7 @@ TrajectoryError
 
 from multimethod import multimethod
 
-from ..exceptions import PQException, BaseEnumFormatError
+from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
 class TrajectoryFormatError(BaseEnumFormatError):

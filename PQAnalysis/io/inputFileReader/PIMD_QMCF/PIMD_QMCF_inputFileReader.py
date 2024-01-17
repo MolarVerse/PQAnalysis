@@ -18,10 +18,10 @@ from __future__ import annotations
 
 import re
 
-from ....types import PositiveInt
+from .output_files import _OutputFileMixin
 from ..formats import InputFileFormat
 from ..inputFileParser import InputFileParser
-from .output_files import _OutputFileMixin
+from PQAnalysis.types import PositiveInt
 
 
 class PIMD_QMCF_InputFileReader(_OutputFileMixin):

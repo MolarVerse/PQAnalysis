@@ -16,10 +16,11 @@ import numpy as np
 from beartype.typing import List, Tuple
 
 from . import FrameReaderError
-from ..core import AtomicSystem, Atom, Cell, ElementNotFoundError
-from ..types import Np2DNumberArray, Np1DNumberArray
-from ..traj import Frame, TrajectoryFormat, MDEngineFormat
-from ..topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, Cell, ElementNotFoundError
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.traj import Frame, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.topology import Topology
 
 
 class FrameReader:

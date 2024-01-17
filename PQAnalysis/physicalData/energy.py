@@ -15,7 +15,7 @@ from beartype.typing import Dict
 from collections import defaultdict
 
 from . import EnergyError
-from ..types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 
 
 class Energy():

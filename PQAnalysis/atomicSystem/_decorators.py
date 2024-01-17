@@ -13,7 +13,7 @@ check_atoms_has_mass
 
 from decorator import decorator
 
-from ..exceptions import AtomicSystemPositionsError, AtomicSystemMassError
+from .exceptions import AtomicSystemPositionsError, AtomicSystemMassError
 
 
 @decorator

@@ -10,8 +10,8 @@ BoxWriter
 """
 
 from . import BaseWriter, BoxWriterError, BoxFileFormat, FileWritingMode
-from ..traj import Trajectory
-from ..utils import instance_function_count_decorator
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.utils import instance_function_count_decorator
 
 
 class BoxWriter(BaseWriter):

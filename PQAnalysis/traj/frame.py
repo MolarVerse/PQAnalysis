@@ -16,9 +16,10 @@ import numpy as np
 from beartype.typing import Any, List
 
 from . import FrameError
-from ..topology import Topology
-from ..core import AtomicSystem, Atom, Cell
-from ..types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, Cell
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 
 
 class Frame:

@@ -5,9 +5,9 @@ This module provides API functions for the radial distribution function (RDF) an
 from .rdf import RDF
 from .rdfInputFileReader import RDFInputFileReader
 from .rdfOutputFileWriter import RDFDataWriter, RDFLogWriter
-from ...io import TrajectoryReader, RestartFileReader, MoldescriptorReader
-from ...traj import MDEngineFormat
-from ...topology import Topology
+from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
+from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.topology import Topology
 
 
 def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF):

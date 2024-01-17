@@ -1,7 +1,9 @@
 import numpy as np
 import pytest
 
-from PQAnalysis.core import AtomicSystem, Atom, AtomicSystemPositionsError
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError
+from PQAnalysis.core import Atom
 
 
 class TestPositionsMixin:

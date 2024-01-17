@@ -7,8 +7,8 @@ from . import pytestmark
 
 # Local Imports
 from PQAnalysis.topology.topology import _find_residue_by_id, _unique_residues_
-from PQAnalysis.topology import Topology, TopologyError, Residue, ResidueError, QMResidue, ResidueWarning
-from PQAnalysis.core import Atom, Element
+from PQAnalysis.topology import Topology, TopologyError
+from PQAnalysis.core import Atom, Element, Residue, ResidueError, QMResidue, ResidueWarning
 
 
 def test_find_residue_by_id():

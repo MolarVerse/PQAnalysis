@@ -11,8 +11,8 @@ InputFileFormat
 
 from beartype.typing import Any
 
-from ...formats import BaseEnumFormat
 from .exceptions import InputFileFormatError
+from PQAnalysis.formats import BaseEnumFormat
 
 
 class InputFileFormat(BaseEnumFormat):

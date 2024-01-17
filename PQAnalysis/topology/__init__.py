@@ -24,8 +24,8 @@ The topology package contains the following exceptions:
         - ResidueError
 """
 
-from .exceptions import ResidueError, ResidueWarning, TopologyError
+from .exceptions import TopologyError
 
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
-from .residue import Residue, Residues, QMResidue
+# TODO: partially circular --- from .shakeTopology import ShakeTopologyGenerator

@@ -4,7 +4,7 @@ A module containing different exceptions related to the io subpackage.
 
 from multimethod import multimethod
 
-from ..exceptions import PQException, BaseEnumFormatError
+from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
 class BoxWriterError(PQException):

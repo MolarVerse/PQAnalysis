@@ -10,8 +10,8 @@ RestartFileWriter
 import numpy as np
 
 from . import BaseWriter
-from ..traj import MDEngineFormat, Frame
-from ..core import Cell
+from PQAnalysis.traj import MDEngineFormat, Frame
+from PQAnalysis.core import Cell
 
 
 class RestartFileWriter(BaseWriter):

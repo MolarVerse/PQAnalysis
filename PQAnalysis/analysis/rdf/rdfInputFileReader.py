@@ -5,7 +5,7 @@ A module containing a class to read input files to setup the :py:class:`~PQAnaly
 from __future__ import annotations
 
 # local imports
-from ...io import PQAnalysisInputFileReader as Reader
+from PQAnalysis.io import PQAnalysisInputFileReader as Reader
 
 
 class RDFInputFileReader(Reader):

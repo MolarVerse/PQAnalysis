@@ -21,9 +21,9 @@ from beartype.vale import Is
 from typing import Annotated
 
 # local imports
+from .atom import Elements, Element
 from .exceptions import ResidueError
-from ..types import Np1DIntArray, Np1DNumberArray
-from ..core import Elements, Element
+from PQAnalysis.types import Np1DIntArray, Np1DNumberArray
 
 """
 A type hint for a list of residues (mol types).

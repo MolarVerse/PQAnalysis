@@ -24,10 +24,10 @@ from glob import glob
 from beartype.typing import Any, List, Tuple
 from numbers import Real
 
-from ...types import Range
-from .. import BaseReader
 from .formats import InputFileFormat
-from ... import __base_path__
+from .. import BaseReader
+from PQAnalysis import __base_path__
+from PQAnalysis.types import Range
 
 
 class InputFileParser(BaseReader):

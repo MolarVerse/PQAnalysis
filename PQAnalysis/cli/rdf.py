@@ -6,13 +6,12 @@ Command Line Tool for RDF Analysis
 
 """
 
-import argparse
-
 import PQAnalysis.config as config
 
-from ..analysis.rdf import rdf
-from ..analysis.rdf.rdfInputFileReader import input_keys_documentation
-from ..traj import MDEngineFormat
+from ._argumentParser import ArgumentParser
+from PQAnalysis.analysis.rdf import rdf
+from PQAnalysis.analysis.rdf.rdfInputFileReader import input_keys_documentation
+from PQAnalysis.traj import MDEngineFormat
 
 __outputdoc__ = """
 
@@ -33,10 +32,10 @@ def main():
     """
     The main function of the RDF analysis command line tool.
     """
-    parser = argparse.ArgumentParser(description=__outputdoc__)
+    parser = ArgumentParser(description=__outputdoc__)
+    parser.parse_md_format()
+
     parser.add_argument('input_file', type=str, help='The input file.')
-    parser.add_argument('-f', '--format', type=str, default="pimd-qmcf",
-                        help='The format of the input trajectory. Default is "pimd-qmcf".')
     parser.add_argument('--progress', action='store_true',
                         default=False, help='Show progress bar.')
     args = parser.parse_args()
