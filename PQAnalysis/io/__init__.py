@@ -2,11 +2,7 @@
 A package containing classes and functions to handle input and output of molecular dynamics simulations.
 """
 
-from .exceptions import BoxWriterError
-from .exceptions import FrameReaderError
-from .exceptions import MoldescriptorReaderError
-from .exceptions import RestartFileReaderError
-from .exceptions import TrajectoryReaderError
+from .exceptions import *
 
 from .formats import BoxFileFormat, FileWritingMode
 

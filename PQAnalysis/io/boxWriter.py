@@ -1,12 +1,5 @@
 """
 A module containing the BoxWriter class and its associated methods.
-
-...
-
-Classes
--------
-BoxWriter
-    A class for writing a trajectory to a box file.
 """
 
 from . import BaseWriter, BoxWriterError, BoxFileFormat, FileWritingMode
@@ -17,9 +10,9 @@ from PQAnalysis.utils import instance_function_count_decorator
 class BoxWriter(BaseWriter):
     """
     A class for writing a trajectory to a box file.
-    Inherits from BaseWriter. See BaseWriter for more information.
+    Inherits from BaseWriter
 
-    It can write a trajectory to a box file in either a data file format or a VMD file format.
+    It can write a trajectory to a box file in either a data file format or a VMD file format. For more information see :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
     """
 
     def __init__(self,
@@ -33,13 +26,13 @@ class BoxWriter(BaseWriter):
             The name of the file to write to. If None, the output is printed to stdout.
         output_format : str | BoxFileFormat, optional
             The format of the file. The default is 'data' i.e. BoxFileFormat.DATA.
-        mode : str, optional
+        mode : str | FileWritingMode, optional
             The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
 
         Raises
         ------
         ValueError
-            If the given format is not in :py:class:`~PQAnalysis.traj.formats.BoxFileFormat`.
+            If the given format is not in :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
         """
 
         super().__init__(filename, FileWritingMode(mode))
