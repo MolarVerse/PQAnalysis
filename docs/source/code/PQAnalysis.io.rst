@@ -8,6 +8,7 @@ io
     
 
 
+
     Submodules
     ----------
 
@@ -19,6 +20,7 @@ io
        PQAnalysis.io.boxWriter
        PQAnalysis.io.energyFileReader
        PQAnalysis.io.exceptions
+       PQAnalysis.io.formats
        PQAnalysis.io.frameReader
        PQAnalysis.io.infoFileReader
        PQAnalysis.io.moldescriptorReader
@@ -26,6 +28,7 @@ io
        PQAnalysis.io.restartWriter
        PQAnalysis.io.trajectoryReader
        PQAnalysis.io.trajectoryWriter
+
     Subpackages
     -----------
 

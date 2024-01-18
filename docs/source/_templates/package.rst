@@ -12,6 +12,7 @@
     {%- endif %}
 
 {% if submodules %}
+
     Submodules
     ----------
 
@@ -23,6 +24,7 @@
     {%- endif -%}
 
 {% if subpackages %}
+
     Subpackages
     -----------
 
@@ -35,6 +37,7 @@
 
 {% set all = get_members(in_list='__all__', include_imported=True) %}
 {% if members or all %}
+
     Summary
     -------
 

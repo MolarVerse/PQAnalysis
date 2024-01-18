@@ -42,6 +42,7 @@ docs = [
     "myst-parser",
     "sphinx-rtd-theme",
     "better-apidoc",
+    "six",
 ]
 
 [tool.setuptools_scm]

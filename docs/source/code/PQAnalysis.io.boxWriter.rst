@@ -7,7 +7,7 @@ boxWriter
 .. currentmodule:: PQAnalysis.io.boxWriter
 
 .. automodule:: PQAnalysis.io.boxWriter
-    :members: BoxWriter, write_box
+    :members: BoxWriter
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,13 +21,6 @@ boxWriter
         :nosignatures:
 
         BoxWriter
-
-    Functions:
-
-    .. autosummary::
-        :nosignatures:
-
-        write_box
 
 
 

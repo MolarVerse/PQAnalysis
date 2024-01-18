@@ -8,6 +8,7 @@ topology
     
 
 
+
     Submodules
     ----------
 
@@ -15,7 +16,6 @@ topology
        :maxdepth: 1
 
        PQAnalysis.topology.exceptions
-       PQAnalysis.topology.residue
        PQAnalysis.topology.selection
        PQAnalysis.topology.shakeTopology
        PQAnalysis.topology.topology

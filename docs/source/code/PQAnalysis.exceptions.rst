@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.exceptions
 
 .. automodule:: PQAnalysis.exceptions
-    :members: FormatEnumError, PQException, PQWarning
+    :members: BaseEnumFormatError, PQException, PQWarning
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,7 +20,7 @@ exceptions
     .. autosummary::
         :nosignatures:
 
-        FormatEnumError
+        BaseEnumFormatError
         PQException
         PQWarning
 

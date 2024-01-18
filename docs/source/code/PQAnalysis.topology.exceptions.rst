@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.topology.exceptions
 
 .. automodule:: PQAnalysis.topology.exceptions
-    :members: ResidueError, ResidueWarning, TopologyError
+    :members: TopologyError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,8 +20,6 @@ exceptions
     .. autosummary::
         :nosignatures:
 
-        ResidueError
-        ResidueWarning
         TopologyError
 
 
