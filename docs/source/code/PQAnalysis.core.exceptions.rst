@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.core.exceptions
 
 .. automodule:: PQAnalysis.core.exceptions
-    :members: AtomicSystemMassError, AtomicSystemPositionsError, ElementNotFoundError
+    :members: ElementNotFoundError, ResidueError, ResidueWarning
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,9 +20,9 @@ exceptions
     .. autosummary::
         :nosignatures:
 
-        AtomicSystemMassError
-        AtomicSystemPositionsError
         ElementNotFoundError
+        ResidueError
+        ResidueWarning
 
 
 

@@ -5,7 +5,9 @@ Command Line Tool for Extending MD Simulation Input Files
 ---------------------------------------------------------
 
 """
-from ._argumentParser import ArgumentParser
+import PQAnalysis.config as config
+
+from ._argumentParser import _ArgumentParser
 from PQAnalysis.io import InputFileFormat, continue_input_file
 
 __outputdoc__ = """
@@ -18,12 +20,16 @@ With this feature it is possible to continue a simulation with a new input file 
 
 __doc__ += __outputdoc__
 
+__epilog__ = f"""
+For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.continue_input.html.
+"""
+
 
 def main():
     """
-    The main function of the continue input command line tool.
+    The main function of the continue input command line tool which is basically just a wrapper for the continue_input_file function. For more information on the continue_input_file function please visit :py:func:`PQAnalysis.io.api.continue_input_file`.
     """
-    parser = ArgumentParser(description=__outputdoc__)
+    parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
     parser.parse_input_file()
     parser.add_argument('-n', '--number', type=int, default=1,
                         help='The number of times the input file should be continued.')

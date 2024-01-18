@@ -4,6 +4,16 @@
 Command Line Tool for Converting Trajectory Files to Box Files
 --------------------------------------------------------------
 
+"""
+
+import PQAnalysis.config as config
+
+from ._argumentParser import _ArgumentParser
+from PQAnalysis.io import traj2box
+
+
+__outputdoc__ = """
+
 Converts multiple trajectory files to a box file.
 
 Without the --vmd option the output is printed in a data file format.
@@ -15,15 +25,18 @@ in xyz format with 8 particle entries representing the vertices of the box. The 
 line contains the information about the box dimensions a, b and c and the box angles.
 """
 
-from ._argumentParser import ArgumentParser
-from PQAnalysis.io import traj2box
+__epilog__ = f"""
+For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.traj2box.html.
+"""
+
+__doc__ += __outputdoc__
 
 
 def main():
     """
-    Wrapper for the command line interface of traj2box.
+    Main function of the traj2box command line tool, which is basically just a wrapper for the traj2box function. For more information on the traj2box function please visit :py:func:`PQAnalysis.io.api.traj2box`.
     """
-    parser = ArgumentParser(description=__doc__)
+    parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
     parser.parse_output_file()
 

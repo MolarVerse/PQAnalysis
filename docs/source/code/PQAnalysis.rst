@@ -8,6 +8,7 @@
     
 
 
+
     Submodules
     ----------
 
@@ -18,6 +19,7 @@
        PQAnalysis.exceptions
        PQAnalysis.formats
        PQAnalysis.types
+
     Subpackages
     -----------
 
@@ -25,6 +27,7 @@
        :maxdepth: 1
 
        PQAnalysis.analysis
+       PQAnalysis.atomicSystem
        PQAnalysis.cli
        PQAnalysis.core
        PQAnalysis.io

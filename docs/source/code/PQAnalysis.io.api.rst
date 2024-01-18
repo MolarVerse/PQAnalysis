@@ -7,7 +7,7 @@ api
 .. currentmodule:: PQAnalysis.io.api
 
 .. automodule:: PQAnalysis.io.api
-    :members: continue_input_file, rst2xyz, traj2box, traj2qmcfc
+    :members: continue_input_file, rst2xyz, traj2box, traj2qmcfc, write_box, write_trajectory
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -24,6 +24,8 @@ api
         rst2xyz
         traj2box
         traj2qmcfc
+        write_box
+        write_trajectory
 
 
 

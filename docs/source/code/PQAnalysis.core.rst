@@ -8,6 +8,7 @@ core
     
 
 
+
     Submodules
     ----------
 
@@ -16,6 +17,8 @@ core
 
        PQAnalysis.core.api
        PQAnalysis.core.exceptions
+       PQAnalysis.core.residue
+
     Subpackages
     -----------
 
@@ -23,7 +26,6 @@ core
        :maxdepth: 1
 
        PQAnalysis.core.atom
-       PQAnalysis.core.atomicSystem
        PQAnalysis.core.cell
 
 

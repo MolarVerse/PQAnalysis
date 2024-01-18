@@ -7,7 +7,7 @@ trajectoryWriter
 .. currentmodule:: PQAnalysis.io.trajectoryWriter
 
 .. automodule:: PQAnalysis.io.trajectoryWriter
-    :members: TrajectoryWriter, write_trajectory
+    :members: TrajectoryWriter
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,13 +21,6 @@ trajectoryWriter
         :nosignatures:
 
         TrajectoryWriter
-
-    Functions:
-
-    .. autosummary::
-        :nosignatures:
-
-        write_trajectory
 
 
 
