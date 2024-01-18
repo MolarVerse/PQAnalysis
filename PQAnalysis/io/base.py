@@ -78,6 +78,21 @@ class BaseWriter:
 
     @mode.setter
     def mode(self, mode: str | FileWritingMode) -> None:
+        """
+        Sets the mode of the file.
+
+        It can be either a string or a FileWritingMode. If it is a string, it has to be one of the modes defined in the Enum class :py:class:`~PQAnalysis.io.formats.FileWritingMode`. Furthermore, if the mode is 'w' and the file already exists, a ValueError is raised. If the mode is 'a' and the file does not exist, it is created. If the mode is 'o' and the file already exists, it is overwritten.
+
+        Parameters
+        ----------
+        mode : str | FileWritingMode
+            The mode of the file. It can be either a string or a FileWritingMode. If it is a string, it has to be one of the modes defined in the Enum class :py:class:`~PQAnalysis.io.formats.FileWritingMode`.
+
+        Raises
+        ------
+        ValueError
+            If the given mode is 'w' and the file already exists. This is to prevent overwriting the file by accident.
+        """
         mode = FileWritingMode(mode)
 
         if mode == FileWritingMode.WRITE and self.filename is not None and os.path.isfile(self.filename):

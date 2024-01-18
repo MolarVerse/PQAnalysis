@@ -1,12 +1,5 @@
 """
 A module containing classes for reading a frame from a string.
-
-...
-
-Classes
--------
-FrameReader
-    A class for reading a frame from a string.
 """
 
 from __future__ import annotations
@@ -25,7 +18,9 @@ from PQAnalysis.topology import Topology
 
 class FrameReader:
     """
-    FrameReader reads a frame from a string.
+    This class provides methods for reading a frame from a string. The string can be a single frame or a whole trajectory. The format of the string can be specified with the format parameter. Generally, this class should not be used directly. Instead, the :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader` class can be used to read a whole trajectory as well as a single frame from a file. 
+
+    For more information about the format of the string, see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
     """
 
     def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:

@@ -1,12 +1,5 @@
 """
 A module containing the EnergyFileReader class.
-
-...
-
-Classes
--------
-EnergyFileReader
-    A class to read energy files.
 """
 
 import os
@@ -19,23 +12,7 @@ from PQAnalysis.traj import MDEngineFormat
 
 class EnergyFileReader(BaseReader):
     """
-    A class to read energy files.
-
-    Parameters
-    ----------
-    BaseReader : BaseReader
-        A base class for all readers.
-
-    Attributes
-    ----------
-    filename : str
-        The name of the file to read from.
-    info_filename : str
-        The name of the info file to read from.
-    withInfoFile : bool
-        If True, the info file was found.
-    format : MDEngineFormat
-        The format of the file. Default is MDEngineFormat.PIMD_QMCF.
+    A class to read energy files from molecular dynamics simulations.
     """
 
     def __init__(self,
@@ -45,13 +22,13 @@ class EnergyFileReader(BaseReader):
                  format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
                  ) -> None:
         """
-        Initializes the EnergyFileReader with the given filename.
+        For the initialization of the EnergyFileReader, the filename of the energy
+        file has to be given. The info_filename can be given as well. If no
+        info_filename is given, the energy filename is used to find the info file with the proper extension and the base name of the energy file. If a info_filename is given, this filename is used to find the info file. If the info_filename was explicitly set to a non-existing file, a FileNotFoundError is raised. If use_info_file is set to False, no info file is searched for.
 
-        If no info_filename is given, the energy filename is used to find the
-        info file. If a info_filename is given, this filename is used to find the
-        info file. If the info_filename was explicitly set to a non-existing file,
-        a FileNotFoundError is raised. If use_info_file is set to False, no info
-        file is searched for.
+        Providing info files is optional, but where possible, it is recommended to provide an info file. The info file contains information about the physical quantities stored in the energy file. If an info file is provided, the physical quantities are assumed to be in the order of the info file. The info file can also contain units for the physical quantities. If units are provided, the units are stored in the Energy object, which is returned by the read method.
+
+        For more information about the energy object, see :py:class:`~PQAnalysis.physicalData.energy.Energy`.
 
         Parameters
         ----------
