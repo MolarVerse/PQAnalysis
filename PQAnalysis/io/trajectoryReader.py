@@ -1,12 +1,5 @@
 """
 A module containing classes for reading a trajectory from a file.
-
-...
-
-Classes
--------
-TrajectoryReader
-    A class for reading a trajectory from a file.
 """
 
 from __future__ import annotations
@@ -33,38 +26,35 @@ class TrajectoryReader(BaseReader):
     A class for reading a trajectory from a file.
 
     Inherited from BaseReader.
-
-    ...
-
-    Attributes
-    ----------
-    filename : str
-        The name of the file to read from.
-    frames : list of Frame
-        The list of frames read from the file.
     """
 
     def __init__(self,
                  filename: str | List[str],
-                 format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                 traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
                  md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                  topology: Topology | None = None,
                  constant_topology: bool = True
                  ) -> None:
         """
-        Initializes the TrajectoryReader with the given filename.
-
         Parameters
         ----------
         filename : str or list of str
             The name of the file to read from or a list of filenames to read from.
+        traj_format : TrajectoryFormat | str, optional
+            The format of the trajectory. Default is TrajectoryFormat.XYZ.
+        md_format : MDEngineFormat | str, optional
+            The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
+        topology : Topology, optional
+            The topology of the trajectory. Default is None.
+        constant_topology : bool, optional
+            Whether the topology is constant over the trajectory or does change. Default is True.
         """
         super().__init__(filename)
         if not self.multiple_files:
             self.filenames = [self.filename]
 
         self.frames = []
-        self.format = TrajectoryFormat(format)
+        self.traj_format = TrajectoryFormat(traj_format)
         self.topology = topology
         self.constant_topology = constant_topology
         self.md_format = MDEngineFormat(md_format)
@@ -80,22 +70,16 @@ class TrajectoryReader(BaseReader):
         """
         Reads the trajectory from the file.
 
-        It reads the trajectory from the file and concatenates the lines of the same frame.
-        The frame information is then read from the concatenated string with the FrameReader class and
-        a Frame object is created.
+        It reads the trajectory from the file and concatenates the lines of the same frame. The frame information is then read from the concatenated string with the FrameReader class and a Frame object is created.
 
-        In order to read the cell information given in the file, the cell information of the last frame is used for
-        all following frames that do not have cell information.
+        In order to read the cell information given in the file, the cell information of the last frame is used for all following frames that do not have cell information.
 
-        If the trajectory is split into multiple files, the files are read one after another and the frames are
-        concatenated into a single trajectory.
+        If the trajectory is split into multiple files, the files are read one after another and the frames are concatenated into a single trajectory.
 
         Parameters
         ----------
         md_format : MDEngineFormat | str, optional
             The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
-        constant_topology : bool, optional
-            Whether the topology is constant over the trajectory or does change. Default is True.
 
         Returns
         -------
@@ -113,7 +97,18 @@ class TrajectoryReader(BaseReader):
         return traj
 
     def frame_generator(self) -> Generator[Frame]:
+        """
+        A generator that yields the frames of the trajectory.
 
+        The difference to the read method is that the read method returns the whole trajectory at once, while the frame_generator yields the frames one after another. This is useful if the trajectory is very large and cannot be stored in memory.
+
+        This method is used to read the trajectory from the file. It reads the trajectory from the file and concatenates the lines of the same frame. The frame information is then read from the concatenated string with the FrameReader class and a Frame object is created.
+
+        Yields
+        ------
+        Generator[Frame]
+            The frames of the trajectory.
+        """
         last_cell = None
         for filename in self.filenames:
             with open(filename, 'r') as self.file:
@@ -161,10 +156,12 @@ class TrajectoryReader(BaseReader):
 
     def _cell_generator(self) -> Generator[List[Cell]]:
         """
-        Reads the cells from the trajectory.
+        A generator that yields the cells of the trajectory.
 
-        Returns
-        -------
+        This method is used to read the cells from the file. It reads the cells from the file and yields them one after another. If the cell information is not given in the file, the cell information of the last frame is used for all following frames that do not have cell information.
+
+        Yields
+        ------
         list of Cell
             The list of cells read from the trajectory.
         """
@@ -197,7 +194,7 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = cell
 
-                    for i in range(n_atoms+1):
+                    for _ in range(n_atoms+1):
                         next(f)
 
     def _read_single_frame(self,
@@ -220,4 +217,4 @@ class TrajectoryReader(BaseReader):
             If the first atom in the frame is not X for QMCFC.
         """
         return self.frame_reader.read(
-            frame_string, format=self.format, topology=topology)
+            frame_string, format=self.traj_format, topology=topology)

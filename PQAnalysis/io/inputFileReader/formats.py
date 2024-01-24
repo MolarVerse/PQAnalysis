@@ -1,12 +1,5 @@
 """
 A module containing the InputFileFormat enumeration.
-
-...
-
-Classes
--------
-InputFileFormat
-    An enumeration of the supported input formats.
 """
 
 from beartype.typing import Any

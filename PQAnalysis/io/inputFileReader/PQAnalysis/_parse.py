@@ -1,3 +1,6 @@
+"""
+A module containing functions to parse the input file.
+"""
 from beartype.typing import List
 
 from ..inputFileParser import InputDictionary
@@ -109,7 +112,7 @@ def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
     elif data_type == "glob" or data_type == "list(str)":
         return data[0]
     else:
-        raise inputFileParser.InputFileError(
+        raise InputFileError(
             f"The \"{key}\" value has to be either a string, glob or a list of strings - actual it is parsed as a {data_type}")
 
 
@@ -142,7 +145,7 @@ def _parse_int(dict: InputDictionary, key: str) -> PositiveInt | None:
     data_type = data[1]
 
     if data_type != "int":
-        raise inputFileParser.InputFileError(
+        raise InputFileError(
             f"The \"{key}\" value has to be of int type - actual it is parsed as a {data_type}")
 
     return data[0]
@@ -175,7 +178,7 @@ def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
         return None
 
     if value < 1:
-        raise inputFileParser.InputFileError(
+        raise InputFileError(
             "The \"{key}\" value has to be a positive integer - It actually is {value}!")
 
     return value
@@ -210,7 +213,7 @@ def _parse_string(dict: InputDictionary, key: str) -> str | None:
     data_type = data[1]
 
     if data_type != "str":
-        raise inputFileParser.InputFileError(
+        raise InputFileError(
             f"The \"{key}\" value has to be of string type - actual it is parsed as a {data_type}")
 
     return data[0]
@@ -245,7 +248,7 @@ def _parse_bool(dict: InputDictionary, key: str) -> bool | None:
     data_type = data[1]
 
     if data_type != "bool":
-        raise inputFileParser.InputFileError(
+        raise InputFileError(
             f"The \"{key}\" value has to be of bool type - actual it is parsed as a {data_type}")
 
     return data[0]

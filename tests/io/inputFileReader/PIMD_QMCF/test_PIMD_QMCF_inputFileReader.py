@@ -61,7 +61,8 @@ class TestPIMD_QMCF_inputFileReader:
         assert input_file_reader.filename == "run-08.in"
         assert input_file_reader.format == InputFileFormat("pimd-qmcf")
         assert input_file_reader.parser.filename == "run-08.in"
-        assert input_file_reader.parser.format == InputFileFormat("pimd-qmcf")
+        assert input_file_reader.parser.input_format == InputFileFormat(
+            "pimd-qmcf")
 
     @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
     def test_read(self, test_with_data_dir):
