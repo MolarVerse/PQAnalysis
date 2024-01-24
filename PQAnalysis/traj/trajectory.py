@@ -1,19 +1,12 @@
 """
 A module containing the Trajectory class.
-
-...
-
-Classes
--------
-Trajectory
-    A trajectory is a sequence of frames.
 """
 
 from __future__ import annotations
 
 import numpy as np
 
-from beartype.typing import List, Iterator, Any, Iterable
+from beartype.typing import List, Any, Iterable
 
 from . import Frame
 from PQAnalysis.topology import Topology
@@ -34,8 +27,6 @@ class Trajectory:
 
     def __init__(self, frames: List[Frame] = None) -> None:
         """
-        Initializes the Trajectory with the given frames.
-
         Parameters
         ----------
         frames : list of Frame, optional
@@ -48,26 +39,12 @@ class Trajectory:
 
     @property
     def box_lengths(self) -> Np2DNumberArray:
-        """
-        Returns the box lengths of the trajectory.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The box lengths of the trajectory.
-        """
+        """Np2DNumberArray: The box lengths of the trajectory."""
         return np.array([frame.cell.box_lengths for frame in self.frames])
 
     @property
     def box_volumes(self) -> Np1DNumberArray:
-        """
-        Returns the box volumes of the trajectory.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The box volumes of the trajectory.
-        """
+        """Np1DNumberArray: The box volumes of the trajectory."""
         return np.array([frame.cell.volume for frame in self.frames])
 
     def check_PBC(self) -> bool:
@@ -210,43 +187,16 @@ class Trajectory:
 
     @property
     def frames(self) -> List[Frame]:
-        """
-        The frames in the trajectory.
-
-        Returns
-        -------
-        List[Frame]
-            The frames in the trajectory.
-        """
+        """List[Frame]: The frames in the trajectory."""
         return self._frames
 
     @frames.setter
     def frames(self, frames: List[Frame]) -> None:
-        """
-        Sets the frames in the trajectory.
-
-        Parameters
-        ----------
-        frames : List[Frame]
-            The frames in the trajectory.
-        """
         self._frames = frames
 
     @property
     def topology(self) -> Topology:
-        """
-        The topology of the trajectory.
-
-        Returns
-        -------
-        Topology
-            The topology of the trajectory.
-
-        Raises
-        ------
-        TrajectoryError
-            If the frames in the trajectory do not have the same topology.
-        """
+        """Topology: The topology of the trajectory."""
 
         if len(self.frames) == 0:
             return Topology()
@@ -257,26 +207,10 @@ class Trajectory:
 
     @topology.setter
     def topology(self, topology: Topology) -> None:
-        """
-        Sets the topology of the trajectory.
-
-        Parameters
-        ----------
-        topology : Topology
-            The topology of the trajectory.
-        """
-
         if len(self.frames) != 0:
             self.frames[0].topology = topology
 
     @property
     def cells(self) -> List[Cell]:
-        """
-        Returns the cells of the trajectory.
-
-        Returns
-        -------
-        list of Cell
-            The list of cells of the trajectory.
-        """
+        """List[Cell]: The cells of the trajectory."""
         return [frame.cell for frame in self.frames]

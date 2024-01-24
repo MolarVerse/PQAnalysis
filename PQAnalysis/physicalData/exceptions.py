@@ -1,12 +1,5 @@
 """
 A module containing different exceptions related to the physicalData subpackage.
-
-...
-
-Classes
--------
-EnergyError
-    Exception raised for errors related to the Energy class
 """
 
 from PQAnalysis.exceptions import PQException

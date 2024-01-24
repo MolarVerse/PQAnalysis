@@ -1,18 +1,5 @@
 """
 A module containing different exceptions related to the traj subpackage.
-
-...
-
-Classes
--------
-TrajectoryFormatError
-    Exception raised if the given enum is not valid
-MDEngineFormatError
-    Exception raised if the given enum is not valid
-FrameError
-    Exception raised for errors related to the Frame class
-TrajectoryError
-    Exception raised for errors related to the Trajectory class
 """
 
 from multimethod import multimethod

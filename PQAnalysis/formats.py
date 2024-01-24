@@ -1,12 +1,5 @@
 """
 A module containing the base class for all Format enumerations.
-
-...
-
-Classes
--------
-Format
-    An enumeration super class of the various supported trajectory formats.
 """
 
 from enum import Enum
