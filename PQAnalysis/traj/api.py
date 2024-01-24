@@ -1,3 +1,7 @@
+"""
+A module containing api functions to handle trajectories and frame objects.
+"""
+
 from PQAnalysis.core import Cells
 
 

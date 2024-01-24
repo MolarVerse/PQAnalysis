@@ -32,9 +32,8 @@ def main():
     The main function of the RDF analysis command line tool, which is basically just a wrapper for the rdf function. For more information on the rdf function please visit :py:func:`PQAnalysis.analysis.rdf.api.rdf`.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
-    parser.parse_md_format()
+    parser.parse_engine_format()
     parser.parse_input_file()
-    parser._parse_progress()
 
     args = parser.parse_args()
 

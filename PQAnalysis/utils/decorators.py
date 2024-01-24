@@ -12,12 +12,15 @@ from inspect import getfullargspec
 def count_decorator(func, *args, **kwargs):
     """
     Decorator which counts the number of times a function is called.
-    TODO:
 
     Parameters
     ----------
     func : function
         Function to be decorated.
+    *args : list
+        Arguments of the function.
+    **kwargs : dict
+        Keyword arguments of the function.
 
     Returns
     -------
@@ -40,17 +43,6 @@ def count_decorator(func, *args, **kwargs):
 def instance_function_count_decorator(func, *args, **kwargs):
     """
     Decorator which counts the number of times a function is called for an instance of a class.
-    TODO:
-
-    Parameters
-    ----------
-    func : function
-        Function to be decorated.
-
-    Returns
-    -------
-    new_func : function
-        Decorated function.
     """
     self = args[0]
 
@@ -71,17 +63,6 @@ def timeit_in_class(func, *args, **kwargs):
     """
     Decorator which measures the time a function of a class takes to execute
     and sets elapsed time as an attribute of the class.
-    TODO:
-
-    Parameters
-    ----------
-    func : function
-        Function to be decorated.
-
-    Returns
-    -------
-    wrapper : function
-        Decorated function.
     """
     def wrapper(*args, **kwargs):
         start = time.time()
@@ -96,18 +77,6 @@ def timeit_in_class(func, *args, **kwargs):
 def get_argvar_by_name(func, args, arg_name):
     """
     Returns the value of the argument with the given name.
-
-    Parameters
-    ----------
-    func : function
-        Function to be decorated.
-    arg_name : str
-        Name of the argument.
-
-    Returns
-    -------
-    arg_value : any
-        Value of the argument.
     """
     arg_index = getfullargspec(func).args.index(arg_name)
     return args[arg_index]
