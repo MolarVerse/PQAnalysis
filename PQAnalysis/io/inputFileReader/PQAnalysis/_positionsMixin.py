@@ -1,3 +1,7 @@
+"""
+A module containing a Mixin class for position related keywords of a PQAnalysis input file.
+"""
+
 from ._parse import _parse_positive_int, _parse_positive_real
 from PQAnalysis.types import PositiveInt, PositiveReal
 
@@ -14,48 +18,20 @@ class _PositionsMixin:
     """
     @property
     def r_max(self) -> PositiveReal | None:
-        """
-        Returns the r_max from the input dictionary as a positive real number.
-
-        Returns
-        -------
-        PositiveReal | None
-            the r_max or None if the key is not in the dictionary
-        """
+        """PositiveReal | None: The maximum radius of the PQAnalysis."""
         return _parse_positive_real(self.dictionary, self.r_max_key)
 
     @property
     def r_min(self) -> PositiveReal | None:
-        """
-        Returns the r_min from the input dictionary as a positive real number.
-
-        Returns
-        -------
-        PositiveReal | None
-            the r_min or None if the key is not in the dictionary
-        """
+        """PositiveReal | None: The minimum radius of the PQAnalysis."""
         return _parse_positive_real(self.dictionary, self.r_min_key)
 
     @property
     def delta_r(self) -> PositiveReal | None:
-        """
-        Returns the delta_r from the input dictionary as a positive real number.
-
-        Returns
-        -------
-        PositiveReal | None
-            the delta_r or None if the key is not in the dictionary
-        """
+        """PositiveReal | None: The radius step size of the PQAnalysis."""
         return _parse_positive_real(self.dictionary, self.delta_r_key)
 
     @property
     def n_bins(self) -> PositiveInt | None:
-        """
-        Returns the number of bins from the input dictionary as a positive integer.
-
-        Returns
-        -------
-        PositiveInt | None
-            the number of bins or None if the key is not in the dictionary
-        """
+        """PositiveInt | None: The number of bins of the PQAnalysis."""
         return _parse_positive_int(self.dictionary, self.n_bins_key)

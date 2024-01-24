@@ -1,17 +1,5 @@
 """
 A module containing the PIMD_QMCF_InputFileReader class.
-
-Classes
--------
-PIMD_QMCF_InputFileReader
-    Reads a PIMD_QMCF input file and parses it.
-    
-Functions
----------
-_increase_digit_string
-    increases a string containing only digits by one
-_get_digit_string_from_filename
-    extracts a string containing only digits from a filename
 """
 
 from __future__ import annotations

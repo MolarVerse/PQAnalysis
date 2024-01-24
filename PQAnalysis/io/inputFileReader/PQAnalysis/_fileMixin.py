@@ -1,3 +1,7 @@
+"""
+A module containing a Mixin class for file related keywords of a PQAnalysis input file.
+"""
+
 from beartype.typing import List
 
 from ._parse import _parse_files, _parse_string
@@ -14,60 +18,25 @@ class _FileMixin:
     """
     @property
     def traj_files(self) -> List[str] | None:
-        """
-        Returns the trajectory files from the input dictionary.
-
-        Returns
-        -------
-        List[str] | None
-            the trajectory files or None if the key is not in the dictionary
-        """
+        """List[str] | None: The trajectory files of the simulation."""
         return _parse_files(self.dictionary, self.traj_files_key)
 
     @property
     def out_file(self) -> str | None:
-        """
-        Returns the output file from the input dictionary.
-
-        Returns
-        -------
-        str | None
-            the output file or None if the key is not in the dictionary
-        """
+        """str | None: The out file of the simulation."""
         return _parse_string(self.dictionary, self.out_file_key)
 
     @property
     def log_file(self) -> str | None:
-        """
-        Returns the log file from the input dictionary.
-
-        Returns
-        -------
-        str | None
-            the log file or None if the key is not in the dictionary
-        """
+        """str | None: The log file of the simulation."""
         return _parse_string(self.dictionary, self.log_file_key)
 
     @property
     def moldescriptor_file(self) -> str | None:
-        """
-        Returns the moldescriptor file from the input dictionary.
-
-        Returns
-        -------
-        str | None
-            the moldescriptor file or None if the key is not in the dictionary
-        """
+        """str | None: The moldescriptor file of the simulation."""
         return _parse_string(self.dictionary, self.moldescriptor_file_key)
 
     @property
     def restart_file(self) -> str | None:
-        """
-        Returns the restart file from the input dictionary.
-
-        Returns
-        -------
-        str | None
-            the restart file or None if the key is not in the dictionary
-        """
+        """str | None: The restart file of the simulation."""
         return _parse_string(self.dictionary, self.restart_file_key)

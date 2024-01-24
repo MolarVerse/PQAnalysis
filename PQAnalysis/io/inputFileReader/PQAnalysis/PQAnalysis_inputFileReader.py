@@ -1,11 +1,5 @@
 """
 A module for reading the input file for the PQAnalysis.
-
-Classes
--------
-
-PQAnalysisInputFileReader
-    A class to read the input file for the PQAnalysis. It inherits from _FileMixin, _SelectionMixin and _PositionsMixin.
 """
 import warnings
 
@@ -52,10 +46,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
 
     def __init__(self, filename: str) -> None:
         """
-        Initialize the PQAnalysisInputFileReader.
-
-        It sets the format to InputFileFormat.PQANALYSIS and the filename to the given filename.
-        It also creates a InputFileParser with the given filename.
+        It sets the format to InputFileFormat.PQANALYSIS and the filename to the given filename. It also creates a InputFileParser with the given filename.
 
         Parameters
         ----------

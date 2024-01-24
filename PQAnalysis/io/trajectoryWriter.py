@@ -1,17 +1,5 @@
 """
 A module containing the TrajectoryWriter class and its associated methods.
-
-...
-
-Classes
--------
-TrajectoryWriter
-    A class for writing a trajectory to a file.
-    
-Functions
----------
-write_trajectory
-    Wrapper for TrajectoryWriter to write a trajectory to a file.
 """
 
 from beartype.typing import List
@@ -36,8 +24,6 @@ class TrajectoryWriter(BaseWriter):
                  mode: str | FileWritingMode = 'w'
                  ) -> None:
         """
-        It sets the file to write to - either a file or stdout (if filename is None) - and the mode of the file.
-
         Parameters
         ----------
         filename : str, optional
