@@ -1,9 +1,9 @@
-import pytest
 import numpy as np
 
 from PQAnalysis.io import RestartFileWriter
 from PQAnalysis.traj import MDEngineFormat, Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
 
 
@@ -11,7 +11,7 @@ class TestRestartWriter:
     def test__init__(self):
         writer = RestartFileWriter("restart.dat")
         assert writer.filename == "restart.dat"
-        assert writer.format == MDEngineFormat.PIMD_QMCF
+        assert writer.md_engine_format == MDEngineFormat.PIMD_QMCF
 
     def test__write_box(self, capsys):
         writer = RestartFileWriter()
@@ -42,7 +42,7 @@ H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
         frame = Frame(AtomicSystem(topology=Topology(
             atoms=atoms, residue_ids=np.array([1, 2, 3])), pos=positions))
 
-        writer.format = MDEngineFormat.QMCFC
+        writer.md_engine_format = MDEngineFormat.QMCFC
 
         print()
         writer._write_atoms(frame)

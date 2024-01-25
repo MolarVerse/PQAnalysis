@@ -1,10 +1,5 @@
 """
 A module for reading moldescriptor files.
-
-Classes
--------
-MoldescriptorReader
-    A class for reading moldescriptor files.
 """
 
 import numpy as np
@@ -12,26 +7,19 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, MoldescriptorReaderError
-from ..topology import Residue
-from ..core import Element
+from PQAnalysis.core import Residue, Residues, Element
 
 
 class MoldescriptorReader(BaseReader):
     """
-    A class for reading moldescriptor files.
+    This is a class to read moldescriptor files. Moldescriptor files are used by the PIMD-QMCF and QMCFC MD engines to store the mol types of a system. The moldescriptor file is a text file that contains the mol types of a system. The mol types are defined by the elements, atom types and partial charges of the atoms of the mol type. 
+    For more information of how a moldescriptor file should look like please see the documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
 
-    Inherits from the BaseReader class.
-
-    Attributes
-    ----------
-    filename : str
-        The filename of the moldescriptor file.
+    Calling the read method returns a list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
     """
 
     def __init__(self, filename: str) -> None:
         """
-        Initializes the MoldescriptorReader with the given parameters.
-
         Parameters
         ----------
         filename : str
@@ -39,14 +27,14 @@ class MoldescriptorReader(BaseReader):
         """
         super().__init__(filename)
 
-    def read(self) -> List[Residue]:
+    def read(self) -> Residues:
         """
-        Reads the moldescriptor file and returns the mol types.
+        The read method reads a moldescriptor file and returns a list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
 
         Returns
         -------
-        List[MolType]
-            The mol types.
+        Residues
+            The residues (mol types) read from the moldescriptor file.
 
         Raises
         ------

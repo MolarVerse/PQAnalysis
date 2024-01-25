@@ -1,22 +1,13 @@
 """
 A module containing exceptions related to input file errors
-
-Classes
--------
-InputFileFormatError
-    Exception raised if the given enum is not valid
-InputFileError
-    Exception raised if something is wrong with the input file
-InputFileWarning
-    Warning raised if something is wrong with the input file
 """
 
 from multimethod import multimethod
 
-from ...exceptions import FormatEnumError, PQException, PQWarning
+from PQAnalysis.exceptions import BaseEnumFormatError, PQException, PQWarning
 
 
-class InputFileFormatError(FormatEnumError):
+class InputFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """

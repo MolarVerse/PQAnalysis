@@ -1,35 +1,20 @@
 """
 A module containing the ShakeTopologyGenerator class.
-
-...
-
-Classes
--------
-ShakeTopologyGenerator
-    A class for generating the shake topology for a given trajectory.
 """
+
 import numpy as np
 
 from beartype.typing import List
 
 from .selection import SelectionCompatible, Selection
-from ..traj import Trajectory
-from ..types import Np1DIntArray, Np2DIntArray
-from ..io import BaseWriter
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.types import Np1DIntArray, Np2DIntArray
+from PQAnalysis.io import BaseWriter
 
 
 class ShakeTopologyGenerator:
     """
-    A class for generating the shake topology for a given trajectory.
-
-    Attributes
-    ----------
-    indices : Np1DIntArray
-        The indices of the atoms to use for the topology.
-    target_indices : Np1DIntArray
-        The indices of the target atoms for the shaked atoms.
-    distances : Np1DNumberArray
-        The average distances between the shaked atoms and the target atoms.
+    A class for generating the shake topology for a given trajectory
     """
 
     def __init__(self,
@@ -37,8 +22,6 @@ class ShakeTopologyGenerator:
                  use_full_atom_info: bool = False
                  ) -> None:
         """
-        Initializes the ShakeTopologyGenerator with the given parameters.
-
         Parameters
         ----------
         selection : SelectionCompatible, optional
@@ -143,12 +126,5 @@ class ShakeTopologyGenerator:
 
     @property
     def selection_object(self) -> SelectionCompatible:
-        """
-        Returns the selection object of the ShakeTopologyGenerator.
-
-        Returns
-        -------
-        SelectionCompatible
-            The selection object of the ShakeTopologyGenerator.
-        """
+        """SelectionCompatible: The selection object."""
         return self.selection.selection_object

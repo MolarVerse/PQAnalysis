@@ -27,6 +27,7 @@ dependencies = [
     "multimethod",
     "lark",
     "tqdm",
+    "decorator",
 ]
 
 [project.optional-dependencies]
@@ -39,7 +40,9 @@ docs = [
     "sphinx",
     "sphinx-sitemap",
     "myst-parser",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
+    "better-apidoc",
+    "six",
 ]
 
 [tool.setuptools_scm]
@@ -50,6 +53,7 @@ traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
 continue_input = "PQAnalysis.cli.continue_input:main"
+rdf = "PQAnalysis.cli.rdf:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"

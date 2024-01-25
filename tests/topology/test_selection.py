@@ -4,7 +4,7 @@ import pytest
 from . import pytestmark
 
 from PQAnalysis.topology import Selection, Topology
-from PQAnalysis.core import Atom, Element
+from PQAnalysis.core import Atom, Element, Residue
 
 
 class TestSelection:
@@ -139,4 +139,20 @@ class TestSelection:
 
         selection = Selection("all & (1,2)")
         indices = selection.select(self.topology)
+        assert np.all(indices == np.array([1, 2]))
+
+    def test_grammar_residue(self):
+
+        selection = Selection("res~2")
+        indices = selection.select(self.topology)
+        assert np.all(indices == np.array([2]))
+
+        residue_ids = np.array([0, 1, 1, 0])
+        atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('H')]
+        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+            "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
+        topology = Topology(atoms=atoms, residue_ids=residue_ids,
+                            reference_residues=reference_residues)
+        selection = Selection("res~1")
+        indices = selection.select(topology)
         assert np.all(indices == np.array([1, 2]))

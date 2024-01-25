@@ -18,11 +18,11 @@ class Test_RestartFileReader:
 
         reader = RestartFileReader(filename)
         assert reader.filename == filename
-        assert reader.format == MDEngineFormat.PIMD_QMCF
+        assert reader.md_engine_format == MDEngineFormat.PIMD_QMCF
 
-        reader = RestartFileReader(filename, format="qmcfc")
+        reader = RestartFileReader(filename, md_engine_format="qmcfc")
         assert reader.filename == filename
-        assert reader.format == MDEngineFormat.QMCFC
+        assert reader.md_engine_format == MDEngineFormat.QMCFC
 
     def test__parse_box(self):
         line = ["box"]

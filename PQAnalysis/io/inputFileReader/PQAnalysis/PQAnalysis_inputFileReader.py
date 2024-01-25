@@ -1,11 +1,5 @@
 """
 A module for reading the input file for the PQAnalysis.
-
-Classes
--------
-
-PQAnalysisInputFileReader
-    A class to read the input file for the PQAnalysis. It inherits from _FileMixin, _SelectionMixin and _PositionsMixin.
 """
 import warnings
 
@@ -25,6 +19,11 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
 
     The main idea of this class is work as a super class for all command line tools of PQAnalysis, but it can also be used as a standalone class.
     But if for example an analysis tool needs only few input file keywords, it is recommended to inherit from this class.
+
+    Attention:
+        As this class is not intended to be used as a standalone class, it does not check if all required keys are set in the input file,
+        thus also no information/documentation of the values of the keywords is given, so that they can be used accordingly in the implementing
+        subclasses.
     """
     known_keys = []
 
@@ -40,14 +39,14 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
     use_full_atom_info_key = "use_full_atom_info"; known_keys.append(use_full_atom_info_key)
     out_file_key = "out_file"; known_keys.append(out_file_key)
     log_file_key = "log_file"; known_keys.append(log_file_key)
+    no_intra_molecular_key = "no_intra_molecular"; known_keys.append(no_intra_molecular_key)
+    moldescriptor_file_key = "moldescriptor_file"; known_keys.append(moldescriptor_file_key)
+    restart_file_key = "restart_file"; known_keys.append(restart_file_key)
     #fmt: on
 
     def __init__(self, filename: str) -> None:
         """
-        Initialize the PQAnalysisInputFileReader.
-
-        It sets the format to InputFileFormat.PQANALYSIS and the filename to the given filename.
-        It also creates a InputFileParser with the given filename.
+        It sets the format to InputFileFormat.PQANALYSIS and the filename to the given filename. It also creates a InputFileParser with the given filename.
 
         Parameters
         ----------

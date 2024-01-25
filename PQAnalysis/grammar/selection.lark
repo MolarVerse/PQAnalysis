@@ -8,16 +8,19 @@ or_statement: statement ((",") statement)*
 
 ?without_statement.3: statement (("|") statement)*
 
-?statement: atomtype 
-          | atom
-          | element 
-          | index 
-          | indices
-          | all
+?statement: atomic_expression
           | and_statement
           | without_statement
           | or_statement
           | ("(") statement (")")
+
+?atomic_expression: atomtype 
+                 | atom
+                 | element 
+                 | residue_number
+                 | index 
+                 | indices
+                 | all
 
 atomtype: word
 
@@ -26,6 +29,8 @@ atom: "atom("i word "," (letters | unsigned_integer+) ")"
 element: "elem("i (letters | unsigned_integer+) ")"
 
 residue: "res("i (letters | unsigned_integer+) ")"
+
+residue_number: "res~"i (index | indices)
 
 index.2: integer
 

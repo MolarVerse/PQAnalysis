@@ -1,23 +1,14 @@
 """
 A module containing different format types of the trajectory.
-
-...
-
-Classes
--------
-TrajectoryFormat
-    An enumeration of the supported trajectory formats.
-MDEngineFormat
-    An enumeration of the supported MD engine formats.
 """
 
 from beartype.typing import Any
 
 from . import TrajectoryFormatError, MDEngineFormatError
-from ..formats import Format
+from PQAnalysis.formats import BaseEnumFormat
 
 
-class TrajectoryFormat(Format):
+class TrajectoryFormat(BaseEnumFormat):
     """
     An enumeration of the supported trajectory formats.
     """
@@ -28,19 +19,25 @@ class TrajectoryFormat(Format):
     CHARGE = "CHARGE"
 
     @classmethod
-    def _missing_(cls, value: object) -> Any:
+    def _missing_(cls, value: Any) -> Any:
         """
-        This method allows a TrajectoryFormat to be retrieved from a string.
+        This method returns the missing value of the enumeration.
+
+        Parameters
+        ----------
+        value : Any
+            The value to return.
+
+        Returns
+        -------
+        Any
+            The value to return.
         """
-        value = value.lower()
-        for member in cls:
-            if member.value.lower() == value:
-                return member
 
-        raise TrajectoryFormatError(value, cls)
+        return super()._missing_(value, TrajectoryFormatError)
 
 
-class MDEngineFormat(Format):
+class MDEngineFormat(BaseEnumFormat):
     """
     An enumeration of the supported MD engine formats.
     """
@@ -49,16 +46,22 @@ class MDEngineFormat(Format):
     QMCFC = "QMCFC"
 
     @classmethod
-    def _missing_(cls, value: object) -> Any:
+    def _missing_(cls, value: Any) -> Any:
         """
-        This method allows an MDEngineFormat format to be retrieved from a string.
-        """
-        value = value.lower()
-        for member in cls:
-            if member.value.lower() == value:
-                return member
+        This method returns the missing value of the enumeration.
 
-        raise MDEngineFormatError(value, cls)
+        Parameters
+        ----------
+        value : Any
+            The value to return.
+
+        Returns
+        -------
+        Any
+            The value to return.
+        """
+
+        return super()._missing_(value, MDEngineFormatError)
 
     @classmethod
     def isQMCFType(cls, format: Any) -> bool:

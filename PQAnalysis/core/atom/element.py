@@ -1,26 +1,17 @@
 """
 A module containing the Element class.
-
-...
-
-Classes
--------
-Element
-    A class representing an element.
 """
 
-from beartype.typing import Any
+from beartype.typing import Any, NewType
 from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
 
 from .. import ElementNotFoundError
 
-"""
-A type hint for a list of Element objects.
-"""
-Elements = Annotated[list, Is[lambda list: all(
-    isinstance(element, Element) for element in list)]]
+#: A type hint for a list of elements
+Elements = NewType("Elements", Annotated[list, Is[lambda list: all(
+    isinstance(element, Element) for element in list)]])
 
 
 class Element:
@@ -139,44 +130,20 @@ class Element:
 
     @property
     def symbol(self) -> str | None:
-        """
-        Returns the symbol of the Element.
-
-        Returns
-        -------
-        str
-            The symbol of the Element.
-        """
+        """str | None: The symbol of the Element."""
         return self._symbol
 
     @property
     def atomic_number(self) -> int | None:
-        """
-        Returns the atomic number of the Element.
-
-        Returns
-        -------
-        int         
-            The atomic number of the Element.
-        """
+        """int | None: The atomic number of the Element."""
         return self._atomic_number
 
     @property
     def mass(self) -> Real | None:
-        """
-        Returns the mass of the Element.
-
-        Returns
-        -------
-        Real
-            The mass of the Element.
-        """
+        """Real | None: The mass of the Element."""
         return self._mass
 
 
-"""
-A dictionary containing the atomic masses of the elements with the symbol as key.
-"""
 atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "he":   4.002602,   "li":   6.941,         "be":   9.012182,
                 "b":   10.811,      "c":   12.0107,        "n":   14.0067,
@@ -216,9 +183,6 @@ atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
                 "sup": 1000000.0,
                 "dum": 1.0}
 
-"""
-A dictionary containing the atomic numbers of the elements with the symbol as key.
-"""
 atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
                  "he":    2,  "li":    3,  "be":   4,
                  "b":     5,  "c":     6,  "n":    7,
@@ -258,7 +222,4 @@ atomicNumbers = {"h":     1,  "d":     1,  "t":    1,
                  "sup": 1000000,
                  "dum": 1}
 
-"""
-A dictionary containing the atomic numbers of the elements with the atomic symbol as key.
-"""
 atomicNumbersReverse = {v: k for k, v in atomicNumbers.items()}
