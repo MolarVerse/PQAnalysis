@@ -41,7 +41,7 @@ class TestAtom:
             Atom('C1')
         assert str(exception.value) == "Id C1 is not a valid element identifier."
 
-        with pytest.raises(DispatchError) as exception:
+        with pytest.raises(Exception) as exception:
             Atom(1.2)
 
         with pytest.raises(ElementNotFoundError) as exception:

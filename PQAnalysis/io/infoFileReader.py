@@ -1,41 +1,26 @@
 """
 A module containing the InfoFileReader class.
-
-...
-
-Classes
--------
-InfoFileReader
-    A class to read info files.
 """
 
 from beartype.typing import Tuple, Dict
 
 from .base import BaseReader
-from ..traj import MDEngineFormat, MDEngineFormatError
+from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
 
 
 class InfoFileReader(BaseReader):
     """
-    A class to read info files.
+    This is a class to read info files from molecular dynamics simulations. The info file
+    is a specific output file related to the energy file of PIMD-QMCF and QMCFC simulations.
 
-    Parameters
-    ----------
-    BaseReader : BaseReader
-        A base class for all readers.
+    For more information on how the info file of PIMD-QMCF simulations is structured, see
+    the corresponding documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
 
-    Attributes
-    ----------
-    filename : str
-        The name of the file to read from.
-    format : MDEngineFormat
-        The format of the info file. Default is MDEngineFormat.PIMD_QMCF.
+    Calling the read method returns a tuple of dictionaries. For both dictionaries the keys are the names of the information strings (i.e. physical properties). The values of the first dictionary are the corresponding indices of the data entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy` object. The values of the second dictionary are the corresponding units of the information strings (None if no units are given).
     """
 
     def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
         """
-        Initializes the InfoFileReader with the given filename.
-
         Parameters
         ----------
         filename : str
@@ -49,7 +34,7 @@ class InfoFileReader(BaseReader):
 
     def read(self) -> Tuple[Dict, Dict | None]:
         """
-        Reads the info file.
+        Calling the read method returns a tuple of dictionaries. For both dictionaries the keys are the names of the information strings (i.e. physical properties). The values of the first dictionary are the corresponding indices of the data entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy` object. The values of the second dictionary are the corresponding units of the information strings (None if no units are given).
 
         Returns
         -------

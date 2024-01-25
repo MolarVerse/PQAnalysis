@@ -1,29 +1,5 @@
 """
 A module containing the Selection class and related functions/classes.
-
-...
-
-Classes
--------
-Selection
-    A class for representing a selection.
-SelectionTransformer
-    A class for transforming a Lark parse tree.
-CrudeSelectionVisitor
-    A super class for visiting a Lark parse tree.
-SelectionVisitor
-    A class for visiting a Lark parse tree and returning the indices of parsed selection.
-    
-Functions
----------
-_selection
-    An overloaded function for selecting atoms based on a selection compatible object.
-_indices_by_atom_type_name
-    Returns the indices of the atoms with the given atom type name.
-_indices_by_atom
-    Returns the indices of the given atom.
-_indices_by_element_types
-    Returns the indices of the given element type.
 """
 
 from __future__ import annotations
@@ -33,81 +9,83 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
-from beartype.typing import List
+from beartype.typing import List, TypeVar
 from multimethod import overload
 
 # local imports
 from .topology import Topology
-from ..types import Np1DIntArray
-from ..core import Atom, Atoms, Element, Elements
-from .. import __base_path__
+from PQAnalysis import __base_path__
+from PQAnalysis.types import Np1DIntArray
+from PQAnalysis.core import Atom, Atoms, Element, Elements
 
-
-"""
-A type hint for a selection compatible object.
-
-A selection compatible object can be:
-    - a string
-    - an Atoms object (i.e. a list of Atom objects)
-    - an Atom object
-    - a numpy.ndarray with dtype=int
-    - a list of strings
-    - a Selection object
-    - None
-"""
-SelectionCompatible = str | Atoms | Atom | Element | Elements | Np1DIntArray | List[
-    str] | 'Selection' | None
+#: | A type variable for the Selection class.
+#: | It can be used to specify the type of the selection object.
+#: | The following types are supported:
+#: |     - str: the given string is parsed and the atoms selected by the selection are selected
+#: |     - Atom: the given atom is selected
+#: |     - Element: all atoms with the given element type are selected
+#: |     - Atoms: all atoms in the given list are selected
+#: |     - Elements: all atoms with the given element types are selected
+#: |     - Np1DIntArray: the atoms with the given indices are selected
+#: |     - List[str]: all atoms with the given atom type names are selected
+#: |     - Selection: the given selection is copied
+#: |     - None: all atoms are selected
+SelectionCompatible = TypeVar("SelectionCompatible", str, Atoms, Atom, Element, Elements, Np1DIntArray, List[
+    str], 'Selection', None)
 
 
 class Selection:
+    """
+    A class for representing a selection.
+
+    If the selection object is a Selection object, the selection is copied.
+
+    There are several ways to create a selection:
+        - None: all atoms are selected
+        - Atom: the given atom is selected
+        - Element: all atoms with the given element type are selected
+        - Atoms: all atoms in the given list are selected
+        - Elements: all atoms with the given element types are selected
+        - Np1DIntArray: the atoms with the given indices are selected
+        - List[str]: all atoms with the given atom type names are selected
+        - str: the given string is parsed and the atoms selected by the selection are selected
+
+            This string will be parsed based on a Lark grammar. Which is defined as follows:
+
+                - simple word containing only letters and numbers: the atom type with the given name is selected
+                - <integer>: the atom with the given index is selected
+                - <integer1>..<integer2>: the indices from integer1 to integer2 are selected
+                - <integer1>-<integer2>: the indices from integer1 to integer2 are selected
+                - <integer1>..<integer2>..<integer3>: the indices from integer1 to integer3 with a step size of integer3 are selected
+                - atom(<atomtype>, <atomic_number>): the atom with the given atom type and atomic number is selected
+                - atom(<atomtype>, <element_symbol>): the atom with the given atom type and element symbol is selected
+                - elem(<atomic_number>): all atoms with the given element type are selected
+                - elem(<element_symbol>): all atoms with the given element type are selected
+                - `*`: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
+
+            All of the above statements can be combined with the following operators:
+
+                - ',': the union of the two statements is selected, meaning that the atoms selected by the first statement
+                    and the atoms selected by the second statement are selected 
+                - '&': the intersection of the two statements is selected, meaning that only the atoms selected by both
+                    statements are selected
+                - '|': the set difference of the two statements is selected, meaning that only the atoms selected by the
+                    first statement are selected, which are not selected by the second statement
+
+            The operators are evaluated in the following order: '|' -> '&' -> ','
+            This means that the ',' operator has the lowest precedence and the '|' operator has the highest precedence
+            and therefore binds the strongest.
+
+            Additionally, parentheses can be used to group statements and change the order of evaluation.
+
+
+    Notes
+    -----
+    The atom counting always starts with 0!
+    """
+
     def __init__(self, selection_object: SelectionCompatible = None):
         """
-        A class for representing a selection.
-
-        If the selection object is a Selection object, the selection is copied.
-
-        There are several ways to create a selection:
-            - None: all atoms are selected
-            - Atom: the given atom is selected
-            - Element: all atoms with the given element type are selected
-            - Atoms: all atoms in the given list are selected
-            - Elements: all atoms with the given element types are selected
-            - Np1DIntArray: the atoms with the given indices are selected
-            - List[str]: all atoms with the given atom type names are selected
-            - str: the given string is parsed and the atoms selected by the selection are selected
-
-                This string will be parsed based on a Lark grammar. Which is defined as follows:
-
-                    - simple word containing only letters and numbers: the atom type with the given name is selected
-                    - <integer>: the atom with the given index is selected
-                    - <integer1>..<integer2>: the indices from integer1 to integer2 are selected
-                    - <integer1>-<integer2>: the indices from integer1 to integer2 are selected
-                    - <integer1>..<integer2>..<integer3>: the indices from integer1 to integer3 with a step size of integer3 are selected
-                    - atom(<atomtype>, <atomic_number>): the atom with the given atom type and atomic number is selected
-                    - atom(<atomtype>, <element_symbol>): the atom with the given atom type and element symbol is selected
-                    - elem(<atomic_number>): all atoms with the given element type are selected
-                    - elem(<element_symbol>): all atoms with the given element type are selected
-                    - *: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
-
-                All of the above statements can be combined with the following operators:
-
-                    - ',': the union of the two statements is selected, meaning that the atoms selected by the first statement
-                        and the atoms selected by the second statement are selected 
-                    - '&': the intersection of the two statements is selected, meaning that only the atoms selected by both
-                        statements are selected
-                    - '|': the set difference of the two statements is selected, meaning that only the atoms selected by the
-                        first statement are selected, which are not selected by the second statement
-
-                The operators are evaluated in the following order: '|' -> '&' -> ','
-                This means that the ',' operator has the lowest precedence and the '|' operator has the highest precedence
-                and therefore binds the strongest.
-
-                Additionally, parentheses can be used to group statements and change the order of evaluation.
-
-        Note
-        ----
-        The atom counting always starts with 0!
-
         Parameters
         ----------
         selection_object : SelectionCompatible, optional
@@ -167,15 +145,17 @@ class Selection:
         return str(self.selection_object)
 
 
-@overload
-def _selection(atoms: Atoms | Atom | Element | Elements, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
+def _selection(atoms: SelectionCompatible,
+               topology: Topology,
+               use_full_atom_info: bool
+               ) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a list of atoms/elements or a single atom/element.
 
     Parameters
     ----------
-    atoms : Atoms | Atom | Element | Elements
-        The atoms or elements to get the indices of.
+    atoms : SelectionCompatible
+        The selection compatible object to get the indices of.
     topology : Topology
         The topology to get the indices from.
     use_full_atom_info : bool
@@ -187,6 +167,44 @@ def _selection(atoms: Atoms | Atom | Element | Elements, topology: Topology, use
         The indices of the atoms selected by the selection object.
     """
 
+    if isinstance(atoms, Atom) or isinstance(atoms, Element):
+        return _selection_of_atoms(atoms, topology, use_full_atom_info)
+    elif isinstance(atoms, List) and len(atoms) > 0 and (isinstance(atoms[0], Atom) or isinstance(atoms[0], Element)):
+        return _selection_of_atoms(atoms[0], topology, use_full_atom_info)
+    elif isinstance(atoms, List):
+        return _selection_of_atomtypes(atoms, topology)
+    elif isinstance(atoms, str):
+        return _selection_of_string(atoms, topology, use_full_atom_info)
+    else:
+        return atoms
+
+
+def _selection_of_atoms(atoms: Atoms | Atom | Element | Elements,
+                        topology: Topology,
+                        use_full_atom_info: bool
+                        ) -> Np1DIntArray:
+    """
+    Returns the indices of the atoms selected by the selection object.
+
+    Parameters
+    ----------
+    atoms : Atoms | Atom | Element | Elements
+        The atoms/elements to get the indices of.
+    topology : Topology
+        The topology to get the indices from.
+    use_full_atom_info : bool
+        Whether to use the full atom information, by default False
+
+    Returns
+    -------
+    Np1DIntArray
+        The indices of the atoms selected by the selection object.
+
+    Raises
+    ------
+    ValueError
+        If the use_full_atom_info parameter is True and the atoms parameter is an Element object.
+    """
     if isinstance(atoms, Atom) or isinstance(atoms, Element):
         atoms = [atoms]
 
@@ -208,8 +226,7 @@ def _selection(atoms: Atoms | Atom | Element | Elements, topology: Topology, use
     return np.sort(np.concatenate(indices))
 
 
-@_selection.register
-def _selection(atomtype_names: List[str], topology: Topology, *_) -> Np1DIntArray:
+def _selection_of_atomtypes(atomtype_names: List[str], topology: Topology) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a list of atom type names.
 
@@ -233,26 +250,7 @@ def _selection(atomtype_names: List[str], topology: Topology, *_) -> Np1DIntArra
     return np.sort(np.concatenate(indices))
 
 
-@_selection.register
-def _selection(indices: Np1DIntArray, *_) -> Np1DIntArray:
-    """
-    Overloaded function for selecting atoms based on a list of indices.
-
-    Parameters
-    ----------
-    indices : Np1DIntArray
-        The indices to get the indices of.
-
-    Returns
-    -------
-    Np1DIntArray
-        The indices of the atoms selected by the selection object.
-    """
-    return indices
-
-
-@_selection.register
-def _selection(string: str, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
+def _selection_of_string(string: str, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a string.
 
@@ -298,8 +296,6 @@ class SelectionTransformer(Transformer):
 
     def __init__(self, topology=Topology(), visit_tokens=False, use_full_atom_info=False):
         """
-        Initializes the SelectionTransformer with the given parameters.
-
         Parameters
         ----------
         visit_tokens : bool, optional
@@ -473,6 +469,23 @@ class SelectionTransformer(Transformer):
     def residue(self, items) -> Np1DIntArray:
         raise NotImplementedError("Residue selection is not implemented yet.")
 
+    def residue_number(self, items) -> Np1DIntArray:
+        """
+        Returns the indices of the given residue number.
+
+        Parameters
+        ----------
+        items :
+            The residue number to get the indices of.
+
+        Returns
+        -------
+        Np1DIntArray
+            The indices of the given residue number.
+        """
+
+        return np.array(self.topology.get_atom_indices_from_residue_numbers(items[0]))
+
     def index(self, items) -> Np1DIntArray:
         """
         Returns the given index as an array.
@@ -630,8 +643,6 @@ class SelectionVisitor(Visitor):
 
     def __init__(self):
         """
-        Initializes the SelectionVisitor with the given parameters.
-
         Parameters
         ----------
         topology : Topology

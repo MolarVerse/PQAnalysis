@@ -3,7 +3,8 @@ import numpy as np
 from PQAnalysis.tools import traj_to_com_traj
 
 from PQAnalysis.traj import Trajectory, Frame
-from PQAnalysis.core import Atom, AtomicSystem
+from PQAnalysis.core import Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 def test_traj_to_com_traj():

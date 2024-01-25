@@ -1,45 +1,40 @@
-import argparse
+"""
+.. _cli.rdf:
 
-from ..analysis import RadialDistributionFunction, RDFInputFileReader, RDFDataWriter, RDFLogWriter
-from ..io import TrajectoryReader
-from ..traj import MDEngineFormat
+Command Line Tool for RDF Analysis
+==================================
+
+"""
+
+import PQAnalysis.config as config
+
+from ._argumentParser import _ArgumentParser
+from PQAnalysis.analysis.rdf import rdf
+from PQAnalysis.analysis.rdf.rdfInputFileReader import input_keys_documentation
+from PQAnalysis.traj import MDEngineFormat
+
+__outputdoc__ = """
+
+This command line tool can be used to calculate the radial distribution function (RDF) of given trajectory file(s). This is an input file based tool, so that the input file can be used to specify the parameters of the RDF calculation.
+"""
+
+__epilog__ = f"""
+For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.rdf.html.
+"""
+
+__doc__ += __outputdoc__
+__doc__ += "For more information on the general the RDF analysis and its input file options please visit :py:class:`PQAnalysis.analysis.rdf.rdf.RDF` and :py:mod:`PQAnalysis.analysis.rdf.rdfInputFileReader`\n"
+__doc__ += input_keys_documentation
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('input_file', type=str, help='The input file.')
-    parser.add_argument('-f', '--format', type=str, default="pimd-qmcf",
-                        help='The format of the input trajectory. Default is "pimd-qmcf".')
-    parser.add_argument('--progress', action='store_true',
-                        default=False, help='Show progress bar.')
+    """
+    The main function of the RDF analysis command line tool, which is basically just a wrapper for the rdf function. For more information on the rdf function please visit :py:func:`PQAnalysis.analysis.rdf.api.rdf`.
+    """
+    parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
+    parser.parse_engine_format()
+    parser.parse_input_file()
+
     args = parser.parse_args()
 
-    engine_format = MDEngineFormat(args.format)
-
-    _rdf(args.input_file, engine_format, args.progress)
-
-
-def _rdf(input_file: str, format: MDEngineFormat, with_progress_bar: bool):
-    reader = RDFInputFileReader(input_file)
-    reader.read()
-
-    reader = TrajectoryReader(reader.traj_files)
-    traj = reader.read(format=format)
-
-    rdf = RadialDistributionFunction(
-        traj=traj,
-        reference_species=reader.reference_selection,
-        reference_indices=reader.reference_selection,
-        use_full_atom_info=reader.use_full_atom_info_for_selection,
-        n_bins=reader.n_bins,
-        delta_r=reader.delta_r,
-        r_max=reader.r_max,
-        r_min=reader.r_min,
-    )
-
-    RDFLogWriter(reader.log_file, rdf).write_before_run()
-
-    rdf_data = rdf.run(with_progress_bar=with_progress_bar)
-
-    RDFLogWriter(reader.log_file, rdf).write_after_run()
-    RDFDataWriter(reader.out_file, rdf_data).write()
+    rdf(args.input_file, args.engine_format)

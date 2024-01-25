@@ -19,3 +19,5 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+
+.examples

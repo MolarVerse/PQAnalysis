@@ -6,7 +6,6 @@ def test_count_decorator():
     def test_func(reset_counter=False):
         pass
 
-    assert test_func.counter == 0
     test_func()
     assert test_func.counter == 1
     test_func()

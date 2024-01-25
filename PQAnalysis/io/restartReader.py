@@ -1,10 +1,5 @@
 """
 A module containing the RestartFileReader class
-
-Classes
--------
-RestartFileReader
-    A class for reading restart files.
 """
 
 import numpy as np
@@ -12,9 +7,10 @@ import numpy as np
 from beartype.typing import List
 
 from . import BaseReader, RestartFileReaderError
-from ..core import AtomicSystem, Atom, Cell
-from ..traj import MDEngineFormat, Frame
-from ..topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, Cell
+from PQAnalysis.traj import MDEngineFormat, Frame
+from PQAnalysis.topology import Topology
 
 
 class RestartFileReader(BaseReader):
@@ -26,35 +22,30 @@ class RestartFileReader(BaseReader):
     - PIMD_QMCF
     - QMCFC
 
+    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PIMD_QMCF restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
 
-    Attributes
-    ----------
-    filename : str
-        The filename of the restart file.
-    format : MDEngineFormat
-        The format of the restart file.
+    For more information on how the restart file of PIMD_QMCF simulations is structured, see the corresponding documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
     """
 
-    def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
+    def __init__(self,
+                 filename: str,
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+                 ) -> None:
         """
-        Initializes the RestartFileReader with the given parameters.
-
-        It automatically checks if the file exists.
-
         Parameters
         ----------
         filename : str
             The filename of the restart file.
-        format : MDEngineFormat | str, optional
+        md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PIMD_QMCF
         """
         super().__init__(filename)
 
-        self.format = MDEngineFormat(format)
+        self.md_engine_format = MDEngineFormat(md_engine_format)
 
     def read(self) -> Frame:
         """
-        Reads the restart file and returns an AtomicSystem and a Np1DIntArray containing the molecular types.
+        Reads the restart file and returns an AtomicSystem and an Np1DIntArray containing the molecular types.
 
         Returns
         -------

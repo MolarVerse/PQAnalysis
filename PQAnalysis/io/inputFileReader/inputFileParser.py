@@ -1,20 +1,5 @@
 """
 A module containing the input file parser.
-
-...
-
-Classes
--------
-InputFileParser
-    Class to parse input files.
-InputDictionary
-    Class to store the input file keys and values.
-PrimitiveTransformer
-    Transformer for primitive datatypes.
-ComposedDatatypesTransformer
-    Transformer for composed datatypes.
-InputFileVisitor
-    Visitor for input files.
 """
 
 from __future__ import annotations
@@ -22,17 +7,19 @@ from __future__ import annotations
 from lark import Visitor, Transformer, Lark, Tree
 from glob import glob
 from beartype.typing import Any, List, Tuple
-from numbers import Integral, Real
+from numbers import Real
 
-from ...types import Range
-from .. import BaseReader
 from .formats import InputFileFormat
-from ... import __base_path__
+from .. import BaseReader
+from PQAnalysis import __base_path__
+from PQAnalysis.types import Range
 
 
 class InputFileParser(BaseReader):
     """
     Class to parse input files.
+
+    This parser is based on a lark grammar. It uses the lark parser to parse the input file. For more information have a look at the `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. This input file parser is used for parsing all kind of input files. By selecting the input_format the automatically invokes the corresponding grammar. The input_format can be either PQANALYSIS, PIMD_QMCF or QMCFC. The PQANALYSIS format is used for parsing the input files of the PQAnalysis code. The PIMD_QMCF and QMCFC formats are used for parsing the input files of the PIMD-QMCF and QMCFC codes, respectively.
 
     Parameters
     ----------
@@ -40,19 +27,17 @@ class InputFileParser(BaseReader):
         BaseReader class from PQAnalysis.io
     """
 
-    def __init__(self, filename: str, format: InputFileFormat | str = InputFileFormat.PQANALYSIS) -> None:
+    def __init__(self, filename: str, input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS) -> None:
         """
-        Initialize the parser.
-
         Parameters
         ----------
         filename : str
             The name of the input file.
-        format : InputFileFormat | str, optional
+        input_format : InputFileFormat | str, optional
             The format of the input file, by default InputFileFormat.PQANALYSIS
         """
         super().__init__(filename)
-        self.format = InputFileFormat(format)
+        self.input_format = InputFileFormat(input_format)
 
     def parse(self) -> InputDictionary:
         """
@@ -68,9 +53,9 @@ class InputFileParser(BaseReader):
         InputDictionary: InputDictionary
             The parsed input file dictionary.
         """
-        if self.format == InputFileFormat.PQANALYSIS:
+        if self.input_format == InputFileFormat.PQANALYSIS:
             grammar_file = "inputGrammar.lark"
-        elif self.format == InputFileFormat.PIMD_QMCF or self.format == InputFileFormat.QMCFC:
+        elif self.input_format == InputFileFormat.PIMD_QMCF or self.input_format == InputFileFormat.QMCFC:
             grammar_file = "PIMD_QMCF_inputGrammar.lark"
 
         grammar_path = __base_path__ / "grammar"
@@ -105,7 +90,7 @@ class InputDictionary:
 
     def __init__(self) -> None:
         """
-        Initialize the dictionary.
+        THe InputDictionary is initialized as an empty dictionary.
         """
         self.dict = {}
 
