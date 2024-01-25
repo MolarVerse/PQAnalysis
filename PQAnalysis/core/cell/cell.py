@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 import sys
+import warnings
 
 from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
@@ -98,7 +99,12 @@ class Cell(_StandardPropertiesMixin):
     @property
     def volume(self) -> Real:
         """volume: The volume of the unit cell."""
-        return np.linalg.det(self.box_matrix)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore", message="overflow encountered in det")
+            volume = np.linalg.det(self.box_matrix)
+
+        return volume
 
     @property
     def is_vacuum(self) -> bool:
