@@ -156,3 +156,16 @@ class TestSelection:
         selection = Selection("res~1")
         indices = selection.select(topology)
         assert np.all(indices == np.array([1, 2]))
+
+    def test__string__(self):
+        selection = Selection("C1")
+        assert str(selection) == "C1"
+
+        selection = Selection("C1 | C2")
+        assert str(selection) == "C1 | C2"
+
+        selection = Selection("C1 & C2")
+        assert str(selection) == "C1 & C2"
+
+        selection = Selection([Atom("C1", 6)])
+        assert str(selection) == str([Atom("C1", 6)])

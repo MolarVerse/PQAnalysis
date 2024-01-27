@@ -1,5 +1,7 @@
 from lark import Tree, Token
 
+from .. import pytestmark
+
 from PQAnalysis.io.inputFileReader.inputFileParser import InputFileVisitor, InputDictionary
 
 

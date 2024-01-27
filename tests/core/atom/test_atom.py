@@ -3,7 +3,9 @@ import numpy as np
 
 from multimethod import DispatchError
 
-from PQAnalysis.core.atom.atom import Atom
+from .. import pytestmark
+
+from PQAnalysis.core.atom import Atom, Element
 from PQAnalysis.core.exceptions import ElementNotFoundError
 
 
@@ -49,6 +51,11 @@ class TestAtom:
         assert str(
             exception.value) == "Id -1 is not a valid element identifier."
 
+        with pytest.raises(ValueError) as exception:
+            Atom(1, 2)
+        assert str(
+            exception.value) == "The name of the atom_type cannot be an integer if the id is given."
+
     def test__eq__(self):
         element1 = Atom('C')
         element2 = Atom('C', 6)
@@ -65,3 +72,7 @@ class TestAtom:
     def test__repr__(self):
         element = Atom('C')
         assert repr(element) == str(element)
+
+    def test_property_element(self):
+        element = Atom('C')
+        assert element.element == Element('C')

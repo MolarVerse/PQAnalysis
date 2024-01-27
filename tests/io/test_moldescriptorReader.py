@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import MoldescriptorReader
 from PQAnalysis.io.exceptions import MoldescriptorReaderError
 from PQAnalysis.core import Element

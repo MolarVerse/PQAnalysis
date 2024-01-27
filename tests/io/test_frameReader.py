@@ -3,11 +3,14 @@ import numpy as np
 
 from beartype.roar import BeartypeException
 
+from . import pytestmark
+
 from PQAnalysis.io import FrameReader
 from PQAnalysis.io.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.traj.exceptions import TrajectoryFormatError
 from PQAnalysis.traj import TrajectoryFormat
+from PQAnalysis.topology import Topology
 
 
 class TestFrameReader:
@@ -120,3 +123,13 @@ class TestFrameReader:
 'invalid' is not a valid TrajectoryFormat.
 Possible values are: {TrajectoryFormat.member_repr()}
 or their case insensitive string representation: {TrajectoryFormat.value_repr()}"""
+
+    def test__get_topology(self):
+        reader = FrameReader()
+
+        topology = reader._get_topology(["h", "o"], None)
+        assert topology.atoms == [Atom(atom) for atom in ["h", "o"]]
+
+        topology = Topology()
+        topology = reader._get_topology(["h", "o"], topology)
+        assert topology == Topology()

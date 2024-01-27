@@ -1,5 +1,7 @@
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import RestartFileWriter
 from PQAnalysis.traj import MDEngineFormat, Frame
 from PQAnalysis.core import Cell, Atom

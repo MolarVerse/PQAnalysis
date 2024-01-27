@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError, AtomicSystemMassError
 from PQAnalysis.core import Atom, Cell
@@ -122,22 +124,22 @@ class TestAtomicSystem:
 
         assert system1 != 1
 
-        system1 = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]))
+        system1 = AtomicSystem(pos=np.array([[1, 1, 1]]))
         system2 = AtomicSystem(pos=np.array([[0, 0, 0]]))
 
         assert system1 != system2
 
-        system1 = AtomicSystem(vel=np.array([[0, 0, 0], [1, 1, 1]]))
+        system1 = AtomicSystem(vel=np.array([[1, 1, 1]]))
         system2 = AtomicSystem(vel=np.array([[0, 0, 0]]))
 
         assert system1 != system2
 
-        system1 = AtomicSystem(forces=np.array([[0, 0, 0], [1, 1, 1]]))
+        system1 = AtomicSystem(forces=np.array([[1, 1, 1]]))
         system2 = AtomicSystem(forces=np.array([[0, 0, 0]]))
 
         assert system1 != system2
 
-        system1 = AtomicSystem(charges=np.array([0, 1]))
+        system1 = AtomicSystem(charges=np.array([1]))
         system2 = AtomicSystem(charges=np.array([0]))
 
         assert system1 != system2

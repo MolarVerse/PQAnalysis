@@ -1,5 +1,7 @@
 import pytest
 
+from .. import pytestmark
+
 from PQAnalysis.io.inputFileReader.inputFileParser import InputDictionary
 
 

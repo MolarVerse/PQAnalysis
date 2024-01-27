@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import RestartFileReader
 from PQAnalysis.io.exceptions import RestartFileReaderError
 from PQAnalysis.traj import MDEngineFormat

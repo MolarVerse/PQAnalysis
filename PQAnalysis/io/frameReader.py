@@ -229,9 +229,6 @@ class FrameReader:
                 topology = Topology(
                     atoms=[Atom(atom, use_guess_element=False) for atom in atoms])
 
-        else:
-            topology = Topology()
-
         return topology
 
     def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:

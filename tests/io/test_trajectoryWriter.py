@@ -2,6 +2,8 @@ import pytest
 import sys
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
 from PQAnalysis.traj import Frame, Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
@@ -152,6 +154,18 @@ o     0.0000000000     0.0000000000     1.0000000000
 h     0.0000000000     0.0000000000     0.0000000000
 o     0.0000000000     0.0000000000     1.0000000000
 2 11 10 10 90 90 90
+
+h     0.0000000000     0.0000000000     0.0000000000
+o     0.0000000000     0.0000000000     1.0000000000
+"""
+
+        writer = TrajectoryWriter()
+        print()
+        writer.write(frame1)
+
+        captured = capsys.readouterr()
+        assert captured.out == """
+2 10 10 10 90 90 90
 
 h     0.0000000000     0.0000000000     0.0000000000
 o     0.0000000000     0.0000000000     1.0000000000
