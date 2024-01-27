@@ -1,5 +1,7 @@
 import pytest
 
+from .. import pytestmark
+
 from PQAnalysis.io import InputFileParser
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat, InputFileFormatError
 

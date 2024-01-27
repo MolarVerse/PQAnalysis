@@ -1,5 +1,7 @@
 import pytest
 
+from .. import pytestmark
+
 from lark import Token
 
 from PQAnalysis.io.inputFileReader.inputFileParser import PrimitiveTransformer, ComposedDatatypesTransformer

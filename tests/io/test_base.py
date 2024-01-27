@@ -2,6 +2,8 @@ import pytest
 import os
 import sys
 
+from . import pytestmark
+
 from PQAnalysis.io import BaseWriter, BaseReader, FileWritingMode
 from PQAnalysis.io.exceptions import FileWritingModeError
 

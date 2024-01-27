@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from _pytest.capture import CaptureFixture
 
 from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode

@@ -1,5 +1,8 @@
 import pytest
 import numpy as np
+import sys
+
+from . import pytestmark
 
 from PQAnalysis.traj import Frame, Trajectory, TrajectoryError
 from PQAnalysis.core import Cell, Atom
@@ -178,3 +181,20 @@ class TestTrajectory:
 
         traj = Trajectory()
         assert traj.topology == Topology()
+
+    def test_property_box_lengths(self):
+        frame1 = Frame()
+        frame2 = Frame()
+
+        max_float = sys.float_info.max
+
+        traj = Trajectory([frame1, frame2])
+        assert np.allclose(traj.box_lengths, np.array(
+            [[max_float, max_float, max_float], [max_float, max_float, max_float]]))
+
+        frame1 = Frame(system=AtomicSystem(cell=Cell(10, 10, 10)))
+        frame2 = Frame(system=AtomicSystem(cell=Cell(11, 11, 11)))
+
+        traj = Trajectory([frame1, frame2])
+        assert np.allclose(traj.box_lengths, np.array(
+            [[10, 10, 10], [11, 11, 11]]))

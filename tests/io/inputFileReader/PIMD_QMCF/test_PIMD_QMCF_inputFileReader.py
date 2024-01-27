@@ -2,6 +2,8 @@ import pytest
 
 from filecmp import cmp as filecmp
 
+from ... import pytestmark
+
 from PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.inputFileReader import PIMD_QMCF_InputFileReader as InputFileReader
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat

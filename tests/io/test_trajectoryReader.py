@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.exceptions import FrameReaderError
 from PQAnalysis.traj import Frame

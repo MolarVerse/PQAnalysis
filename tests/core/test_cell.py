@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+from . import pytestmark
+
 from PQAnalysis.core import Cell
 
 

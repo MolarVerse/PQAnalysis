@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+from . import pytestmark
+
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError
 from PQAnalysis.core import Atom

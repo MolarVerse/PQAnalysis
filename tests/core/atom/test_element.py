@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from .. import pytestmark
+
 from PQAnalysis.core import Element
 from PQAnalysis.core import ElementNotFoundError
 
