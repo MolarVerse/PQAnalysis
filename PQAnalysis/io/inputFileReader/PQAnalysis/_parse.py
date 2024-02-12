@@ -2,6 +2,7 @@
 A module containing functions to parse the input file.
 """
 from beartype.typing import List
+from numbers import Real
 
 from ..inputFileParser import InputDictionary
 from ..exceptions import InputFileError
@@ -37,12 +38,12 @@ def _parse_positive_real(dict: InputDictionary, key: str) -> PositiveReal | None
 
     if value < 0:
         raise InputFileError(
-            "The \"{key}\" value has to be a positive real number - It actually is {value}!")
+            f"The \"{key}\" value has to be a positive real number - It actually is {value}!")
 
     return value
 
 
-def _parse_real(dict: InputDictionary, key: str) -> PositiveReal | None:
+def _parse_real(dict: InputDictionary, key: str) -> Real | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a real number.
     None is returned if the key is not in the dictionary.
@@ -73,7 +74,7 @@ def _parse_real(dict: InputDictionary, key: str) -> PositiveReal | None:
 
     if data_type != "float" and data_type != "int":
         raise InputFileError(
-            f"The \"{key}\" value has to be of float type - actual it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data_type}")
 
     return data[0]
 
@@ -113,10 +114,10 @@ def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
         return data[0]
     else:
         raise InputFileError(
-            f"The \"{key}\" value has to be either a string, glob or a list of strings - actual it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be either a string, glob or a list of strings - actually it is parsed as a {data_type}")
 
 
-def _parse_int(dict: InputDictionary, key: str) -> PositiveInt | None:
+def _parse_int(dict: InputDictionary, key: str) -> int | None:
     """
     Gets the value of a key from the input dictionary and checks if it is an integer.
 
@@ -146,7 +147,7 @@ def _parse_int(dict: InputDictionary, key: str) -> PositiveInt | None:
 
     if data_type != "int":
         raise InputFileError(
-            f"The \"{key}\" value has to be of int type - actual it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data_type}")
 
     return data[0]
 
@@ -179,7 +180,7 @@ def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
 
     if value < 1:
         raise InputFileError(
-            "The \"{key}\" value has to be a positive integer - It actually is {value}!")
+            f"The \"{key}\" value has to be a positive integer - It actually is {value}!")
 
     return value
 
@@ -214,7 +215,7 @@ def _parse_string(dict: InputDictionary, key: str) -> str | None:
 
     if data_type != "str":
         raise InputFileError(
-            f"The \"{key}\" value has to be of string type - actual it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of string type - actually it is parsed as a {data_type}")
 
     return data[0]
 
@@ -249,6 +250,6 @@ def _parse_bool(dict: InputDictionary, key: str) -> bool | None:
 
     if data_type != "bool":
         raise InputFileError(
-            f"The \"{key}\" value has to be of bool type - actual it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data_type}")
 
     return data[0]
