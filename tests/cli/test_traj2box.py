@@ -11,12 +11,12 @@ from . import ArgparseNamespace
 @pytest.mark.parametrize("example_dir", ["traj2box"], indirect=False)
 def test_traj2box(test_with_data_dir):
     traj2box(trajectory_files=[
-             "acof_triclinic.xyz", "acof_triclinic_2.xyz"], vmd=False, output="test_box.dat")
+             "test.xyz"], vmd=False, output="test_box.dat")
 
     assert filecmp("box.dat", "test_box.dat")
 
     traj2box(trajectory_files=[
-             "acof_triclinic.xyz", "acof_triclinic_2.xyz"], vmd=True, output="test_box.vmd.xyz")
+             "test.xyz"], vmd=True, output="test_box.vmd.xyz")
 
     assert filecmp("box.vmd.xyz", "test_box.vmd.xyz")
 
