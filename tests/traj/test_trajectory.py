@@ -1,8 +1,13 @@
 import pytest
 import numpy as np
+import sys
 
-from PQAnalysis.traj import Frame, Trajectory
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from . import pytestmark
+
+from PQAnalysis.traj import Frame, Trajectory, TrajectoryError
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.topology import Topology
 
 
 class TestTrajectory:
@@ -21,6 +26,9 @@ class TestTrajectory:
 
         traj = Trajectory(self.frames)
         assert traj.frames == self.frames
+
+        traj.frames = []
+        assert traj.frames == []
 
         assert Trajectory().frames == []
 
@@ -142,9 +150,7 @@ class TestTrajectory:
         traj1 = Trajectory(frames1)
         traj2 = Trajectory(frames2)
         traj3 = Trajectory(frames3)
-        assert traj1 == traj1
         assert traj1 == traj3
-        assert traj2 == traj2
         assert traj1 != traj2
         assert traj2 != traj3
 
@@ -156,6 +162,39 @@ class TestTrajectory:
 
     def test_append(self):
         traj = Trajectory()
+        print(len(traj))
         traj.append(self.frame1)
+        print(len(traj))
 
         assert traj.frames == [self.frame1]
+
+    def test_property_topology(self):
+        frame1 = Frame()
+        frame2 = Frame()
+
+        traj = Trajectory([frame1, frame2])
+        assert traj.topology == Topology()
+
+        frame2 = Frame(system=AtomicSystem(atoms=[Atom("C")]))
+        traj = Trajectory([frame2, frame2])
+        assert traj.topology == Topology(atoms=[Atom("C")])
+
+        traj = Trajectory()
+        assert traj.topology == Topology()
+
+    def test_property_box_lengths(self):
+        frame1 = Frame()
+        frame2 = Frame()
+
+        max_float = sys.float_info.max
+
+        traj = Trajectory([frame1, frame2])
+        assert np.allclose(traj.box_lengths, np.array(
+            [[max_float, max_float, max_float], [max_float, max_float, max_float]]))
+
+        frame1 = Frame(system=AtomicSystem(cell=Cell(10, 10, 10)))
+        frame2 = Frame(system=AtomicSystem(cell=Cell(11, 11, 11)))
+
+        traj = Trajectory([frame1, frame2])
+        assert np.allclose(traj.box_lengths, np.array(
+            [[10, 10, 10], [11, 11, 11]]))

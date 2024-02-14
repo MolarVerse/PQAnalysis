@@ -1,6 +1,8 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from collections import defaultdict
 
 from PQAnalysis.io import EnergyFileReader, InfoFileReader

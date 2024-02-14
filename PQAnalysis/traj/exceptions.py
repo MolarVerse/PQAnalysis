@@ -1,54 +1,41 @@
 """
 A module containing different exceptions related to the traj subpackage.
-
-...
-
-Classes
--------
-TrajectoryFormatError
-    Exception raised if the given enum is not valid
-MDEngineFormatError
-    Exception raised if the given enum is not valid
-FrameError
-    Exception raised for errors related to the Frame class
 """
 
 from multimethod import multimethod
 
-from ..exceptions import PQException, FormatEnumError
+from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
-class TrajectoryFormatError(FormatEnumError):
+class TrajectoryFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
 
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
-
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
-class MDEngineFormatError(FormatEnumError):
+class MDEngineFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
 
-    @multimethod
-    def __init__(self, value: object, enum: object) -> None:
-        super().__init__(value, enum)
-
-    @multimethod
-    def __init__(self, message: str) -> None:
-        super().__init__(message)
+    pass
 
 
 class FrameError(PQException):
     """
     Exception raised for errors related to the Frame class
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
+class TrajectoryError(PQException):
+    """
+    Exception raised for errors related to the Trajectory class
     """
 
     def __init__(self, message: str) -> None:

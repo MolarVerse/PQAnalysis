@@ -1,9 +1,11 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.io import MoldescriptorReader
 from PQAnalysis.io.exceptions import MoldescriptorReaderError
-from PQAnalysis.core import Atom
+from PQAnalysis.core import Element
 
 
 class TestMoldescriptorReader:
@@ -28,7 +30,7 @@ O 2 -4.6
         assert mol_type.name == "H2o"
         assert mol_type.n_atoms == 3
         assert mol_type.total_charge == 1.0
-        assert mol_type.elements == [Atom("H"), Atom("H"), Atom("O")]
+        assert mol_type.elements == [Element("H"), Element("H"), Element("O")]
         assert np.allclose(mol_type.atom_types, np.array([1, 1, 2]))
         assert np.allclose(mol_type.partial_charges,
                            np.array([2.3, 2.3, -4.6]))
@@ -56,7 +58,8 @@ O 2 -4.6
         assert water_type.name == "H2O"
         assert water_type.n_atoms == 3
         assert np.allclose(water_type.total_charge, 0.0)
-        assert water_type.elements == [Atom("O"), Atom("H"), Atom("H")]
+        assert water_type.elements == [
+            Element("O"), Element("H"), Element("H")]
         assert np.allclose(water_type.atom_types, np.array([0, 1, 1]))
         assert np.allclose(water_type.partial_charges,
                            np.array([-0.65966, 0.32983, 0.32983]))
@@ -68,7 +71,7 @@ O 2 -4.6
         assert ammonia_type.n_atoms == 4
         assert np.allclose(ammonia_type.total_charge, 0.0)
         assert ammonia_type.elements == [
-            Atom("N"), Atom("H"), Atom("H"), Atom("H")]
+            Element("N"), Element("H"), Element("H"), Element("H")]
         assert np.allclose(ammonia_type.atom_types, np.array([0, 1, 1, 1]))
         assert np.allclose(ammonia_type.partial_charges,
                            np.array([-0.8022, 0.2674, 0.2674, 0.2674]))

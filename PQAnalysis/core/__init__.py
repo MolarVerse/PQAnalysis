@@ -1,11 +1,13 @@
-from .common import distance
-from .exceptions import ElementNotFoundError, AtomicSystemPositionsError, AtomicSystemMassError
-from .atom import Atom
-from .cell.cell import Cell
-from .atomicSystem import AtomicSystem
+"""
+This is the core package of PQAnalysis.
 
-from beartype.vale import Is
-from typing import Annotated
+It consists of all classes and functions that are used to handle atomic systems, atoms, elements and cells. Additionally it contains some functions that are used to compute properties of atomic systems within the api module, but can be used directly from the core package.
+"""
 
-Atoms = Annotated[list, Is[lambda list: all(
-    isinstance(atom, Atom) for atom in list)]]
+from .exceptions import *
+
+from .cell import Cell, Cells
+from .atom import Atom, Atoms, Element, Elements
+from .residue import Residue, Residues, QMResidue
+
+from .api import distance

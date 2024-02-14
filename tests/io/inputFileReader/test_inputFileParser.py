@@ -1,5 +1,7 @@
 import pytest
 
+from .. import pytestmark
+
 from PQAnalysis.io import InputFileParser
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat, InputFileFormatError
 
@@ -16,19 +18,19 @@ class TestInputFileParser:
 
         input_file_parser = InputFileParser(input_file)
         assert input_file_parser.filename == input_file
-        assert input_file_parser.format == InputFileFormat.PQANALYSIS
+        assert input_file_parser.input_format == InputFileFormat.PQANALYSIS
 
         input_file_parser = InputFileParser(input_file, "pqanalysis")
         assert input_file_parser.filename == input_file
-        assert input_file_parser.format == InputFileFormat.PQANALYSIS
+        assert input_file_parser.input_format == InputFileFormat.PQANALYSIS
 
         input_file_parser = InputFileParser(input_file, "pimd-qmcf")
         assert input_file_parser.filename == input_file
-        assert input_file_parser.format == InputFileFormat.PIMD_QMCF
+        assert input_file_parser.input_format == InputFileFormat.PIMD_QMCF
 
         input_file_parser = InputFileParser(input_file, "qmcfc")
         assert input_file_parser.filename == input_file
-        assert input_file_parser.format == InputFileFormat.QMCFC
+        assert input_file_parser.input_format == InputFileFormat.QMCFC
 
         with pytest.raises(InputFileFormatError) as exception:
             InputFileParser(input_file, "non-existent-format")

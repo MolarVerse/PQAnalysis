@@ -1,89 +1,42 @@
 """
 A module containing the BoxWriter class and its associated methods.
-
-...
-
-Classes
--------
-BoxWriter
-    A class for writing a trajectory to a box file.
 """
 
-from . import BaseWriter, BoxWriterError
-from ..utils import instance_function_count_decorator
-from ..traj import Trajectory
-
-
-def write_box(traj, filename: str | None = None, format: str | None = None) -> None:
-    '''
-    Wrapper for BoxWriter to write a trajectory to a file.
-
-    Parameters
-    ----------
-    traj : Trajectory
-        The trajectory to write.
-    filename : str, optional
-        The name of the file to write to. If None, the output is printed to stdout.
-    format : str, optional
-        The format of the file. If None, the format is inferred as a data file format.
-        (see BoxWriter.formats for available formats)
-    '''
-
-    writer = BoxWriter(filename, format)
-    writer.write(traj)
+from . import BaseWriter, BoxWriterError, BoxFileFormat, FileWritingMode
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.utils import instance_function_count_decorator
 
 
 class BoxWriter(BaseWriter):
     """
     A class for writing a trajectory to a box file.
-    Inherits from BaseWriter. See BaseWriter for more information.
+    Inherits from BaseWriter
 
-    It can write a trajectory to a box file in either a data file format or a VMD file format.
-
-    ...
-
-    Class Attributes
-    ----------------
-    formats : list of str
-        The available formats for the box file.
-
-    Attributes
-    ----------
-    format : str
-        The format of the file. If None, the format is inferred as a data file format.
-        (see BoxWriter.formats for available formats)
+    It can write a trajectory to a box file in either a data file format or a VMD file format. For more information see :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
     """
-    formats = [None, 'data', 'vmd']
 
-    def __init__(self, filename: str | None = None, format: str | None = None, mode='w') -> None:
+    def __init__(self,
+                 filename: str | None = None,
+                 output_format: str | BoxFileFormat = 'data',
+                 mode: str | FileWritingMode = 'w') -> None:
         """
-        Initializes the BoxWriter with the given filename, format and mode.
-
         Parameters
         ----------
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        format : str, optional
-            The format of the file. If None, the format is inferred as a data file format.
-            (see BoxWriter.formats for available formats)
-        mode : str, optional
-            The mode of the file. Either 'w' for write or 'a' for append.
+        output_format : str | BoxFileFormat, optional
+            The format of the file. The default is 'data' i.e. BoxFileFormat.DATA.
+        mode : str | FileWritingMode, optional
+            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
 
         Raises
         ------
         ValueError
-            If the given format is not in BoxWriter.formats. TODO: make an enum for these formats!!!
+            If the given format is not in :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
         """
 
-        super().__init__(filename, mode)
-        if format not in self.formats:
-            raise ValueError(
-                'Invalid format. Has to be either \'vmd\', \'data\' or \'None\'.')
-
-        if format is None:
-            format = 'data'
-
-        self.format = format
+        super().__init__(filename, FileWritingMode(mode))
+        self.output_format = BoxFileFormat(output_format)
 
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
@@ -100,7 +53,7 @@ class BoxWriter(BaseWriter):
         """
 
         self.open()
-        if self.format == "vmd":
+        if self.output_format == BoxFileFormat.VMD:
             self.write_vmd(traj)
         else:
             self.write_box_file(traj, reset_counter=reset_counter)
@@ -110,26 +63,6 @@ class BoxWriter(BaseWriter):
     def write_vmd(self, traj: Trajectory) -> None:
         """
         Writes the given trajectory to the file in VMD format.
-
-        The format looks in general like this:
-
-                8
-                Box  1.0 1.0 1.0    90.0 90.0 90.0
-                X   0.0 0.0 0.0
-                X   1.0 0.0 0.0
-                X   0.0 1.0 0.0
-                X   1.0 1.0 0.0
-                X   0.0 0.0 1.0
-                X   1.0 0.0 1.0
-                X   0.0 1.0 1.0
-                X   1.0 1.0 1.0
-                8
-                Box  1.0 1.0 1.0    90.0 90.0 90.0
-                X   0.0 0.0 0.0
-                ...
-
-        where all X represent the vertices of the box. The first line contains the number of vertices.
-        The second line contains the box dimensions and box angles as the comment line for a xyz file.
 
         Parameters
         ----------
@@ -152,16 +85,6 @@ class BoxWriter(BaseWriter):
     def write_box_file(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
         Writes the given trajectory to the file in data file format.
-
-        The format looks in general like this:
-
-                1 1.0 1.0 1.0 90.0 90.0 90.0
-                2 1.0 1.0 1.0 90.0 90.0 90.0
-                ...
-                n 1.1 1.1 1.1 90.0 90.0 90.0
-
-        where the first column represents the step starting from 1, the second to fourth column
-        represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
 
         The @count_decorator is used to count the number of frames written to the file. The default
         way is that the counter is reset to 0 after each call of the function. This can be changed
@@ -208,3 +131,12 @@ class BoxWriter(BaseWriter):
         if not traj.check_PBC():
             raise BoxWriterError(
                 "At least on cell of the trajectory is None. Cannot write box file.")
+
+    @property
+    def output_format(self) -> BoxFileFormat:
+        """BoxFileFormat: The format of the file."""
+        return self._output_format
+
+    @output_format.setter
+    def output_format(self, output_format: str | BoxFileFormat) -> None:
+        self._output_format = BoxFileFormat(output_format)

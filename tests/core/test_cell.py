@@ -1,6 +1,8 @@
 import numpy as np
 import pytest
 
+from . import pytestmark
+
 from PQAnalysis.core import Cell
 
 
@@ -88,3 +90,12 @@ class TestCell:
             np.array([1, 2, 3])), np.array([0., 0.267949192, 0.550510257]))
         assert np.allclose(cell.image(
             np.array([-1, -2, -3])), np.array([0., -0.267949192, -0.550510257]))
+
+    def test__str__(self):
+        cell = Cell(1, 2, 3, 60, 90, 120)
+        assert str(cell) == "Cell(x=1, y=2, z=3, alpha=60, beta=90, gamma=120)"
+        assert str(cell) == repr(cell)
+
+        cell = Cell()
+        assert str(cell) == "Cell()"
+        assert str(cell) == repr(cell)

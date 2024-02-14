@@ -1,39 +1,45 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from _pytest.capture import CaptureFixture
 
-from PQAnalysis.io.boxWriter import BoxWriter, write_box
-from PQAnalysis.io.exceptions import BoxWriterError
+from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
+from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory, Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class TestBoxWriter:
 
     def test__init__(self):
-        with pytest.raises(ValueError) as exception:
-            BoxWriter(filename="tmp", format="r")
+        with pytest.raises(BoxFileFormatError) as exception:
+            BoxWriter(filename="tmp", output_format="r")
         assert str(
-            exception.value) == "Invalid format. Has to be either \'vmd\', \'data\' or \'None\'."
+            exception.value) == """
+'r' is not a valid BoxFileFormat.
+Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA
+or their case insensitive string representation: vmd, data"""
 
-        writer = BoxWriter(filename="tmp", format="vmd")
+        writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "vmd"
+        assert writer.output_format == BoxFileFormat.VMD
 
-        writer = BoxWriter(filename="tmp", format="data")
+        writer = BoxWriter(filename="tmp", output_format="data")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
         writer = BoxWriter(filename="tmp")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
     atoms1 = [Atom("H")]
     pos1 = np.array([[0, 1, 2]])
@@ -134,10 +140,10 @@ X   5.0 5.0 5.5
         traj = Trajectory([frame1, frame2])
 
         print("")
-        writer.format = "data"
+        writer.output_format = "data"
         writer.write(traj)
         print("")
-        writer.format = "vmd"
+        writer.output_format = "vmd"
         writer.write(traj)
 
         captured = capsys.readouterr()
@@ -180,9 +186,9 @@ X   5.0 5.0 5.5
         traj = Trajectory([frame1, frame2])
 
         print("")
-        write_box(traj, format="data")
+        write_box(traj, output_format="data")
         print("")
-        write_box(traj, format="vmd")
+        write_box(traj, output_format="vmd")
 
         captured = capsys.readouterr()
 

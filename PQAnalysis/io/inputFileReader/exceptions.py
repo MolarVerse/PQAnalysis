@@ -1,9 +1,13 @@
+"""
+A module containing exceptions related to input file errors
+"""
+
 from multimethod import multimethod
 
-from ...exceptions import FormatEnumError
+from PQAnalysis.exceptions import BaseEnumFormatError, PQException, PQWarning
 
 
-class InputFileFormatError(FormatEnumError):
+class InputFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
@@ -14,4 +18,24 @@ class InputFileFormatError(FormatEnumError):
 
     @multimethod
     def __init__(self, message: str) -> None:
+        super().__init__(message)
+
+
+class InputFileError(PQException):
+    """
+    Exception raised if something is wrong with the input file
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(message)
+
+
+class InputFileWarning(PQWarning):
+    """
+    Warning raised if something is wrong with the input file
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
         super().__init__(message)

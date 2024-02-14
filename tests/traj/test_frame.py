@@ -1,8 +1,11 @@
 import numpy as np
 import pytest
 
+from . import pytestmark
+
 from PQAnalysis.traj import Frame, FrameError
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
 
 
@@ -70,13 +73,23 @@ class TestFrame:
         assert str(
             exception.value) == 'index 2 is out of bounds for axis 0 with size 2'
 
-        atoms = [Atom(atom) for atom in ['C', 'H']]
-
         assert np.allclose(frame[Atom('C')].pos, [[0, 0, 0]])
         assert np.allclose(frame[Atom('H')].pos, [[1, 1, 1]])
 
-        with pytest.raises(NotImplementedError) as exception:
-            frame.topology = Topology()
-            frame[Atom('C'):Atom('H')]
-        assert str(
-            exception.value) == 'Indexing of a frame with a topology is not implemented yet.'
+    def test_property_cell(self):
+        frame = Frame(AtomicSystem(pos=np.array([[0, 0, 0]])))
+        assert frame.cell == Cell()
+        frame.cell = Cell(10, 10, 10)
+        assert frame.cell == Cell(10, 10, 10)
+
+    def test_property_vel(self):
+        frame = Frame(AtomicSystem(vel=np.array([[0, 0, 0]])))
+        assert np.allclose(frame.vel, np.zeros((1, 3)))
+
+    def test_property_forces(self):
+        frame = Frame(AtomicSystem(forces=np.array([[0, 0, 0]])))
+        assert np.allclose(frame.forces, np.zeros((1, 3)))
+
+    def test_property_charges(self):
+        frame = Frame(AtomicSystem(charges=np.array([0, 1])))
+        assert np.allclose(frame.charges, np.array([0, 1]))

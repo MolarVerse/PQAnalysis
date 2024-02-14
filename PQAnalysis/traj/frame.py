@@ -1,12 +1,5 @@
 """
 A module containing the Frame class.
-
-...
-
-Classes
--------
-Frame
-    A class for storing atomic systems with topology information.
 """
 
 from __future__ import annotations
@@ -14,41 +7,30 @@ from __future__ import annotations
 import numpy as np
 
 from beartype.typing import Any, List
-from multimethod import multimethod
 
 from . import FrameError
-from ..topology import Topology
-from ..core import AtomicSystem, Atom, Cell
-from ..types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.core import Atom, Cell
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 
 
 class Frame:
     """
     A class for storing atomic systems with topology information.
 
-    ...
-
-    Attributes
-    ----------
-    system : AtomicSystem
-        The atomic system.
-    topology : Topology
-        The topology of the atomic system.
+    For more information about the topology, see the :py:class:`~PQAnalysis.topology.topology.Topology` class.
+    For more information about the atomic system, see the :py:class:`~PQAnalysis.atomicSystem.atomicSystem.AtomicSystem` class.
     """
 
-    def __init__(self, system: AtomicSystem = AtomicSystem(), topology: Topology | None = None) -> None:
+    def __init__(self, system: AtomicSystem = AtomicSystem()) -> None:
         """
-        Initializes the Frame with the given parameters.
-
         Parameters
         ----------
         system : AtomicSystem, optional
             The atomic system, by default AtomicSystem()    
-        topology : Topology, optional
-            The topology of the atomic system, by default None
         """
         self.system = system
-        self.topology = topology
 
     def compute_com_frame(self, group=None) -> Frame:
         """
@@ -118,14 +100,23 @@ class Frame:
         if not isinstance(other, Frame):
             return False
 
-        return self.system == other.system and self.topology == other.topology
+        return self.system == other.system
 
     def __getitem__(self, key: int | slice | Atom) -> 'Frame':
-        if self.topology is None:
-            return Frame(system=self.system[key])
-        else:
-            raise NotImplementedError(
-                "Indexing of a frame with a topology is not implemented yet.")
+        """
+        Returns a new Frame with the selected atoms.
+
+        Parameters
+        ----------
+        key : int | slice | Atom
+            _description_
+
+        Returns
+        -------
+        Frame
+            _description_
+        """
+        return Frame(system=self.system[key])
 
     #########################
     #                       #
@@ -135,108 +126,53 @@ class Frame:
 
     @property
     def PBC(self) -> bool:
-        """
-        Whether the system has periodic boundary conditions.
-
-        Returns
-        -------
-        bool
-            Whether the system has periodic boundary conditions.
-        """
+        """bool: Whether the system is periodic."""
         return self.system.PBC
 
     @property
     def cell(self) -> Cell:
-        """
-        The unit cell of the system.
-
-        Returns
-        -------
-        Cell
-            The unit cell of the system.
-        """
+        """Cell: The unit cell of the system."""
         return self.system.cell
 
     @cell.setter
     def cell(self, cell: Cell) -> None:
-        """
-        The unit cell of the system.
-
-        Returns
-        -------
-        Cell
-            The unit cell of the system.
-        """
         self.system.cell = cell
 
     @property
     def n_atoms(self) -> int:
-        """
-        The number of atoms in the system.
-
-        Returns
-        -------
-        int
-            The number of atoms in the system.
-        """
+        """int: The number of atoms in the system."""
         return self.system.n_atoms
 
     @property
     def pos(self) -> Np2DNumberArray:
-        """
-        The positions of the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The positions of the atoms in the system.
-        """
+        """Np2DNumberArray: The positions of the atoms in the system."""
         return self.system.pos
 
     @property
     def vel(self) -> Np2DNumberArray:
-        """
-        The positions of the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The positions of the atoms in the system.
-        """
+        """Np2DNumberArray: The velocities of the atoms in the system."""
         return self.system.vel
 
     @property
     def forces(self) -> Np2DNumberArray:
-        """
-        The forces on the atoms in the system.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The forces on the atoms in the system.
-        """
+        """Np2DNumberArray: The forces of the atoms in the system."""
         return self.system.forces
 
     @property
     def charges(self) -> Np1DNumberArray:
-        """
-        The charges of the atoms in the system.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The charges of the atoms in the system.
-        """
+        """Np1DNumberArray: The charges of the atoms in the system."""
         return self.system.charges
 
     @property
     def atoms(self) -> List[Atom]:
-        """
-        The atoms in the system.
-
-        Returns
-        -------
-        list[Atom]
-            The atoms in the system.
-        """
+        """List[Atom]: The atoms in the system."""
         return self.system.atoms
+
+    @property
+    def topology(self) -> Topology:
+        """Topology: The topology of the system."""
+        return self.system.topology
+
+    @topology.setter
+    def topology(self, topology: Topology) -> None:
+        self.system.topology = topology

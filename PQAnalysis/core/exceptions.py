@@ -1,24 +1,10 @@
 """
 A module containing different exceptions related to the core subpackage.
-
-...
-
-Classes
--------
-ElementNotFoundError
-    Exception raised if the given element id is not valid
-AtomicSystemPositionsError
-    Exception raised if atoms is not of the same length as positions
-AtomicSystemMassError
-    Exception raised if atoms do not contain mass information
-AtomicSystemEmptySelectionWarning
-    Warning raised if the selection is empty
 """
 
-from PQAnalysis.exceptions import PQException, PQWarning
-
-
 from beartype.typing import Any
+
+from PQAnalysis.exceptions import PQException, PQWarning
 
 
 class ElementNotFoundError(PQException):
@@ -32,33 +18,21 @@ class ElementNotFoundError(PQException):
         super().__init__(self.message)
 
 
-class AtomicSystemPositionsError(PQException):
+class ResidueError(PQException):
     """
-    Exception raised if atoms is not of the same length as positions
+    Exception raised for errors related to the Residue class
     """
 
-    message = """Atoms and positions must be of the same length."""
-
-    def __init__(self) -> None:
+    def __init__(self, message):
+        self.message = message
         super().__init__(self.message)
 
 
-class AtomicSystemMassError(PQException):
+class ResidueWarning(PQWarning):
     """
-    Exception raised if atoms do not contain mass information
-    """
-
-    message = """AtomicSystem contains atoms without mass information. Which is required for this operation."""
-
-    def __init__(self) -> None:
-        super().__init__(self.message)
-
-
-class AtomicSystemEmptySelectionWarning(PQWarning):
-    """
-    Warning raised if the selection is empty
+    Warning raised for problems related to the Residue class
     """
 
-    def __init__(self, message) -> None:
+    def __init__(self, message):
         self.message = message
         super().__init__(self.message)

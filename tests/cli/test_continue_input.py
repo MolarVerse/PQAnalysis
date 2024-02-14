@@ -12,10 +12,10 @@ from PQAnalysis.cli.continue_input import main
 def test_continue_input(test_with_data_dir, capsys):
 
     with pytest.raises(NotImplementedError) as exception:
-        with patch('argparse._sys.argv', ['continue_input.py', 'input.in', '-n', '1', '-f', 'qmcfc']):
+        with patch('argparse._sys.argv', ['continue_input.py', 'input.in', '-n', '1', '--input-format', 'qmcfc']):
             main()
     assert str(
-        exception.value) == "Format qmcfc not implemented yet for continuing input file."
+        exception.value) == "Format InputFileFormat.QMCFC not implemented yet for continuing input file."
 
     with patch('argparse._sys.argv', ['continue_input.py', 'run-08.in', '-n', '2']):
         main()
@@ -23,7 +23,7 @@ def test_continue_input(test_with_data_dir, capsys):
     assert filecmp("run-09.in", "run-09.in.ref")
     assert filecmp("run-10.in", "run-10.in.ref")
 
-    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.rpmd.in', '-n', '3', '-f', 'pimd-qmcf']):
+    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.rpmd.in', '-n', '3', '--input-format', 'pimd-qmcf']):
         main()
 
     assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")

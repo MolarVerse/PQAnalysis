@@ -1,16 +1,5 @@
 """
 A module containing different exceptions which could be useful.
-
-...
-
-Classes
--------
-PQException
-    Base class for exceptions in this module.
-PQWarning
-    Base class for warnings in this module.
-FormatEnumError
-    Exception raised if the given enum is not valid
 """
 
 from multimethod import multimethod
@@ -36,9 +25,9 @@ class PQWarning(Warning):
         super().__init__(self.message)
 
 
-class FormatEnumError(PQException):
+class BaseEnumFormatError(PQException):
     """
-    Exception raised if the given enum is not valid
+    Base class for enum exceptions if the given enum is not valid
     """
 
     @multimethod
