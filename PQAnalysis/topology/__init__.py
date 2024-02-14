@@ -1,4 +1,9 @@
-from .exceptions import MolTypeError
+"""
+A package containing classes and functions to handle molecular/atomic topologies.
+"""
 
+from .exceptions import TopologyError
+
+from .selection import Selection, SelectionCompatible
 from .topology import Topology
-from .molType import MolType
+# TODO: partially circular --- from .shakeTopology import ShakeTopologyGenerator

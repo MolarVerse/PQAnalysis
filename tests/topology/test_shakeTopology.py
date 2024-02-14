@@ -1,26 +1,29 @@
 import numpy as np
 
+from . import pytestmark
+
 from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
-from PQAnalysis.core import Atom, AtomicSystem
+from PQAnalysis.core import Atom
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Frame, Trajectory
 
 
 class TestShakeTopologyGenerator:
     def test__init__(self):
         generator = ShakeTopologyGenerator()
-        assert generator._atoms is None
+        assert generator.selection_object is None
         assert generator._use_full_atom_info is False
 
         generator = ShakeTopologyGenerator([Atom('C'), Atom('H')], True)
-        assert generator._atoms == [Atom('C'), Atom('H')]
+        assert generator.selection_object == [Atom('C'), Atom('H')]
         assert generator._use_full_atom_info is True
 
         generator = ShakeTopologyGenerator(['C', 'H'])
-        assert generator._atoms == [Atom('C'), Atom('H')]
+        assert generator.selection_object == ['C', 'H']
         assert generator._use_full_atom_info is False
 
         generator = ShakeTopologyGenerator(np.array([0, 1]))
-        assert np.allclose(generator._atoms, [0, 1])
+        assert np.allclose(generator.selection_object, [0, 1])
         assert generator._use_full_atom_info is False
 
     def test_generate_topology(self):
@@ -34,7 +37,7 @@ class TestShakeTopologyGenerator:
 
         traj = Trajectory([Frame(system), Frame(system2)])
 
-        generator = ShakeTopologyGenerator(atoms=[Atom('H')])
+        generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)
         indices, target_indices, distances = generator.indices, generator.target_indices, generator.distances
 
@@ -55,7 +58,7 @@ class TestShakeTopologyGenerator:
 
         traj = Trajectory([Frame(system), Frame(system2)])
 
-        generator = ShakeTopologyGenerator(atoms=[Atom('H')])
+        generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)
         generator.average_equivalents([np.array([1]), np.array([2, 4])])
 
@@ -78,14 +81,14 @@ class TestShakeTopologyGenerator:
 
         traj = Trajectory([Frame(system), Frame(system2)])
 
-        generator = ShakeTopologyGenerator(atoms=[Atom('H')])
+        generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)
 
         print()
         generator.write_topology()
 
         captured = capsys.readouterr()
-        assert captured.out == f"""
+        assert captured.out == """
 SHAKE 3  2  0
 2 1 0.8035533905932738
 3 4 0.8035533905932737

@@ -1,0 +1,29 @@
+?key: WORD -> key
+?value:     array
+         |  range
+         |  glob
+         |  primitive
+            
+?array: "[" (primitive ",")* primitive "]"
+
+?range:     integer "-" integer "-" integer
+         |  integer ".." integer ".." integer
+         |  integer "-" integer
+         |  integer ".." integer
+
+?glob: WORD? /[*]/ WORD?
+            
+?primitive:  float
+         |   integer
+         |   word
+         |   boolean
+
+word: WORD
+float.3: FLOAT
+integer.2: INT
+boolean.2: BOOL
+
+%import .terminals.WORD
+%import .terminals.FLOAT
+%import .terminals.INT
+%import .terminals.BOOL

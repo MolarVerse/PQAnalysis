@@ -2,6 +2,8 @@ import pytest
 
 from beartype.roar import BeartypeException
 
+from . import pytestmark
+
 from PQAnalysis.io import InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError

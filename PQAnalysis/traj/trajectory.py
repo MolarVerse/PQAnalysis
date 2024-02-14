@@ -1,22 +1,17 @@
 """
 A module containing the Trajectory class.
-
-...
-
-Classes
--------
-Trajectory
-    A trajectory is a sequence of frames.
 """
 
 from __future__ import annotations
 
 import numpy as np
 
-from beartype.typing import List, Iterator, Any
+from beartype.typing import List, Any, Iterable
 
 from . import Frame
-from ..types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.topology import Topology
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.core import Cell
 
 
 class Trajectory:
@@ -27,51 +22,29 @@ class Trajectory:
     The length of a trajectory is the number of frames in the trajectory.
     A frame can be checked for membership in a trajectory.
 
-    ...
-
-    Attributes
-    ----------
-    frames : list of Frame
-        The list of frames in the trajectory.
-
+    This trajectory class can only handle constant topologies i.e. all frames in the trajectory must have the same topology.
     """
 
     def __init__(self, frames: List[Frame] = None) -> None:
         """
-        Initializes the Trajectory with the given frames.
-
         Parameters
         ----------
         frames : list of Frame, optional
             The list of frames in the trajectory.
         """
         if frames is None:
-            self.frames = []
+            self._frames = []
         else:
-            self.frames = frames
+            self._frames = frames
 
     @property
     def box_lengths(self) -> Np2DNumberArray:
-        """
-        Returns the box lengths of the trajectory.
-
-        Returns
-        -------
-        Np2DNumberArray
-            The box lengths of the trajectory.
-        """
+        """Np2DNumberArray: The box lengths of the trajectory."""
         return np.array([frame.cell.box_lengths for frame in self.frames])
 
     @property
     def box_volumes(self) -> Np1DNumberArray:
-        """
-        Returns the box volumes of the trajectory.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The box volumes of the trajectory.
-        """
+        """Np1DNumberArray: The box volumes of the trajectory."""
         return np.array([frame.cell.volume for frame in self.frames])
 
     def check_PBC(self) -> bool:
@@ -144,21 +117,27 @@ class Trajectory:
             The frame or trajectory retrieved from the trajectory.
         """
         frames = self.frames[key]
+
         if np.shape(frames) != ():
-            return Trajectory(frames)
+            traj = Trajectory(frames)
+            traj.topology = self.topology
+            return traj
         else:
+            frames.topology = self.topology
             return frames
 
-    def __iter__(self) -> Iterator:
+    def __iter__(self) -> Iterable[Frame]:
         """
         This method allows a trajectory to be iterated over.
 
         Returns
         -------
-        Iter
-            The iterator over the frames in the trajectory.
+        Iterable[Frame]
+            An Iterable over the frames in the trajectory.
         """
-        return iter(self.frames)
+        for frame in self.frames:
+            frame.topology = self.topology
+            yield frame
 
     def __contains__(self, item: Frame) -> bool:
         """
@@ -205,3 +184,33 @@ class Trajectory:
             return False
 
         return self.frames == other.frames
+
+    @property
+    def frames(self) -> List[Frame]:
+        """List[Frame]: The frames in the trajectory."""
+        return self._frames
+
+    @frames.setter
+    def frames(self, frames: List[Frame]) -> None:
+        self._frames = frames
+
+    @property
+    def topology(self) -> Topology:
+        """Topology: The topology of the trajectory."""
+
+        if len(self.frames) == 0:
+            return Topology()
+
+        topology = self.frames[0].topology
+
+        return topology
+
+    @topology.setter
+    def topology(self, topology: Topology) -> None:
+        if len(self.frames) != 0:
+            self.frames[0].topology = topology
+
+    @property
+    def cells(self) -> List[Cell]:
+        """List[Cell]: The cells of the trajectory."""
+        return [frame.cell for frame in self.frames]

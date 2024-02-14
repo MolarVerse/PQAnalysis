@@ -1,25 +1,8 @@
 """
 A module containing different exceptions related to the io subpackage.
-
-...
-
-Classes
--------
-BoxWriterError
-    Exception raised for errors related to the BoxWriter class
-FrameReaderError
-    Exception raised for errors related to the FrameReader class
-MoldescriptorReaderError
-    Exception raised for errors related to the MoldescriptorReader class
-RestartFileReaderError
-    Exception raised for errors related to the RestartFileReader class
-RestartFileWriterError
-    Exception raised for errors related to the RestartFileWriter class
-TrajectoryReaderError
-    Exception raised for errors related to the TrajectoryReader class
 """
 
-from ..exceptions import PQException
+from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
 class BoxWriterError(PQException):
@@ -27,9 +10,7 @@ class BoxWriterError(PQException):
     Exception raised for errors related to the BoxWriter class
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 
 class FrameReaderError(PQException):
@@ -37,9 +18,7 @@ class FrameReaderError(PQException):
     Exception raised for errors related to the FrameReader class
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 
 class MoldescriptorReaderError(PQException):
@@ -47,9 +26,7 @@ class MoldescriptorReaderError(PQException):
     Exception raised for errors related to the MoldescriptorReader class
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 
 class RestartFileReaderError(PQException):
@@ -57,19 +34,7 @@ class RestartFileReaderError(PQException):
     Exception raised for errors related to the RestartFileReader class
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
-
-
-class RestartFileWriterError(PQException):
-    """
-    Exception raised for errors related to the RestartFileWriter class
-    """
-
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
+    pass
 
 
 class TrajectoryReaderError(PQException):
@@ -77,6 +42,20 @@ class TrajectoryReaderError(PQException):
     Exception raised for errors related to the TrajectoryReader class
     """
 
-    def __init__(self, message: str) -> None:
-        self.message = message
-        super().__init__(self.message)
+    pass
+
+
+class BoxFileFormatError(BaseEnumFormatError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    pass
+
+
+class FileWritingModeError(BaseEnumFormatError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    pass

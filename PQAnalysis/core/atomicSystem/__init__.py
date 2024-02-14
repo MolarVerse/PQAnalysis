@@ -1,1 +1,0 @@
-from .atomicSystem import AtomicSystem

@@ -2,6 +2,8 @@ import pytest
 
 from filecmp import cmp as filecmp
 
+from ... import pytestmark
+
 from PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.inputFileReader import PIMD_QMCF_InputFileReader as InputFileReader
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat
@@ -61,7 +63,8 @@ class TestPIMD_QMCF_inputFileReader:
         assert input_file_reader.filename == "run-08.in"
         assert input_file_reader.format == InputFileFormat("pimd-qmcf")
         assert input_file_reader.parser.filename == "run-08.in"
-        assert input_file_reader.parser.format == InputFileFormat("pimd-qmcf")
+        assert input_file_reader.parser.input_format == InputFileFormat(
+            "pimd-qmcf")
 
     @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
     def test_read(self, test_with_data_dir):
