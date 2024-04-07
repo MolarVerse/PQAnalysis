@@ -6,16 +6,15 @@ from __future__ import annotations
 
 import numpy as np
 
-from beartype.typing import Any, List
+from beartype.typing import Any
 
-from . import FrameError
-from PQAnalysis.topology import Topology
+from .exceptions import FrameError
+from ._atomicSystemMixin import AtomicSystemMixin
 from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.core import Atom, Cell
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.core import Atom
 
 
-class Frame:
+class Frame(AtomicSystemMixin):
     """
     A class for storing atomic systems with topology information.
 
@@ -61,20 +60,14 @@ class Frame:
         pos = []
         names = []
 
-        print(self.n_atoms)
-
         for i in range(0, self.n_atoms, group):
             atomic_system = AtomicSystem(
                 atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
 
-            print(atomic_system.center_of_mass)
             pos.append(atomic_system.center_of_mass)
-            print(pos)
             names.append(atomic_system.combined_name)
 
         names = [Atom(name, use_guess_element=False) for name in names]
-
-        print(pos)
 
         return Frame(AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell))
 
@@ -117,62 +110,3 @@ class Frame:
             _description_
         """
         return Frame(system=self.system[key])
-
-    #########################
-    #                       #
-    #  Forwarded properties #
-    #                       #
-    #########################
-
-    @property
-    def PBC(self) -> bool:
-        """bool: Whether the system is periodic."""
-        return self.system.PBC
-
-    @property
-    def cell(self) -> Cell:
-        """Cell: The unit cell of the system."""
-        return self.system.cell
-
-    @cell.setter
-    def cell(self, cell: Cell) -> None:
-        self.system.cell = cell
-
-    @property
-    def n_atoms(self) -> int:
-        """int: The number of atoms in the system."""
-        return self.system.n_atoms
-
-    @property
-    def pos(self) -> Np2DNumberArray:
-        """Np2DNumberArray: The positions of the atoms in the system."""
-        return self.system.pos
-
-    @property
-    def vel(self) -> Np2DNumberArray:
-        """Np2DNumberArray: The velocities of the atoms in the system."""
-        return self.system.vel
-
-    @property
-    def forces(self) -> Np2DNumberArray:
-        """Np2DNumberArray: The forces of the atoms in the system."""
-        return self.system.forces
-
-    @property
-    def charges(self) -> Np1DNumberArray:
-        """Np1DNumberArray: The charges of the atoms in the system."""
-        return self.system.charges
-
-    @property
-    def atoms(self) -> List[Atom]:
-        """List[Atom]: The atoms in the system."""
-        return self.system.atoms
-
-    @property
-    def topology(self) -> Topology:
-        """Topology: The topology of the system."""
-        return self.system.topology
-
-    @topology.setter
-    def topology(self, topology: Topology) -> None:
-        self.system.topology = topology

@@ -9,11 +9,24 @@ check_atoms_pos
     Decorator which checks that the number of atoms is equal to the number of positions.
 check_atoms_has_mass
     Decorator which checks that all atoms have mass information.
+check_atom_number_setters
+    Decorator which checks that the number of atoms is equal to the number of positions.
 """
+
+import numpy as np
 
 from decorator import decorator
 
 from .exceptions import AtomicSystemPositionsError, AtomicSystemMassError
+
+
+@decorator
+def check_atom_number_setters(func, self, arg_to_set):
+    if self.n_atoms != np.shape(arg_to_set)[0]:
+        raise ValueError(
+            "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property.")
+
+    return func(self, arg_to_set)
 
 
 @decorator
