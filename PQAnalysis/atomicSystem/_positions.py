@@ -99,3 +99,9 @@ class _PositionsMixin:
             self.topology, use_full_atom_info)
 
         return self._nearest_neighbours(n=n, indices=indices)
+
+    def image(self) -> None:
+        """
+        Images the positions of the system back into the cell.
+        """
+        self.pos = self.cell.image(self.pos)

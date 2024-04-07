@@ -2,18 +2,60 @@
 This module provides API functions for input/output handling of molecular dynamics simulations.
 """
 
-from beartype.typing import List
+from beartype.typing import List, Any
 
-from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat
+from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat, FileWritingMode
 from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 
 from PQAnalysis.types import PositiveReal
 from PQAnalysis.core import Cell
-from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.traj import Trajectory, Frame, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
-def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF):
+def write(object_to_write: Any,
+          filename: str | None = None,
+          mode: FileWritingMode | str = FileWritingMode.WRITE,
+          **kwargs,
+          ) -> None:
+    """
+    API write wrapper function for writing different objects to a file.
+
+    It can call the following specialized write functions (depending on the object_to_write):
+
+    write_trajectory: Writes a trajectory to a file.
+        - Trajectory
+        - Frame
+        - AtomicSystem
+
+
+    Parameters
+    ----------
+    object_to_write : Any
+        _description_
+    filename : str | None, optional
+        _description_, by default None
+    mode : FileWritingMode | str, optional
+        _description_, by default FileWritingMode.WRITE
+    kwargs : dict
+        kwargs dictionary which is passed to the specialized write function for the object.
+    """
+
+    if isinstance(object_to_write, Trajectory):
+        write_trajectory(object_to_write, filename, format, type, mode)
+    elif isinstance(object_to_write, Frame) or isinstance(object_to_write, AtomicSystem):
+        write_trajectory(Trajectory(object_to_write),
+                         filename, format, type, mode)
+    else:
+        raise NotImplementedError(
+            f"Writing object of type {type(object_to_write)} is not implemented yet.")
+
+
+def continue_input_file(input_file: str,
+                        n: PositiveReal = 1,
+                        input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF
+                        ) -> None:
     """
     API function for continuing an input file.
 
@@ -104,10 +146,12 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
         writer.write(trajectory, reset_counter=False)
 
 
+# TODO: insert mode parameter
 def write_trajectory(traj,
                      filename: str | None = None,
                      format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                     mode: FileWritingMode | str = FileWritingMode.WRITE,
                      ) -> None:
     """Wrapper for TrajectoryWriter to write a trajectory to a file.
 
@@ -124,10 +168,12 @@ def write_trajectory(traj,
         The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     type : TrajectoryFormat | str, optional
         The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+    mode  : FileWritingMode | str, optional
+        The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
 
     """
 
-    writer = TrajectoryWriter(filename, format=format)
+    writer = TrajectoryWriter(filename, format=format, mode=mode)
     writer.write(traj, type=type)
 
 
