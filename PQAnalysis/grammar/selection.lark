@@ -16,7 +16,8 @@ or_statement: statement ((",") statement)*
 
 ?atomic_expression: atomtype 
                  | atom
-                 | element 
+                 | element
+                 | residue
                  | residue_number
                  | index 
                  | indices
