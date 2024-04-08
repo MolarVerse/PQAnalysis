@@ -559,23 +559,6 @@ class SelectionTransformer(Transformer):
 
         return np.arange(self.topology.n_atoms)
 
-    def statement(self, items) -> Np1DIntArray:
-        """
-        Returns the given indices.
-
-        Parameters
-        ----------
-        items : List[Np1DIntArray]
-            The indices to get the indices of.
-
-        Returns
-        -------
-        Np1DIntArray
-            The indices of the statement Token.
-        """
-
-        return items[0]
-
     def without_statement(self, items) -> Np1DIntArray:
         """
         Returns the indices of the the first item
