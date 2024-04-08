@@ -89,3 +89,16 @@ class AtomicSystemMixin:
         Images the positions of the atoms in the system to the unit cell
         """
         self.system.image()
+
+    def center(self, position: Np1DNumberArray, image: bool = True) -> None:
+        """
+        Centers the system around a given position.
+
+        Parameters
+        ----------
+        position : Np1DNumberArray, optional
+            The position around which the system should be centered, by default None
+        image : bool, optional
+            Whether the positions should be imaged back into the cell, by default True
+        """
+        self.system.center(position, image=image)

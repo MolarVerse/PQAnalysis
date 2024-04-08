@@ -84,8 +84,8 @@ def write_trajectory(traj,
 
 
 def read_trajectory(filename: str,
-                    format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                    type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                    md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                    traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
                     topology: Topology | None = None,
                     constant_topology: bool = True
                     ) -> Trajectory:
@@ -96,9 +96,9 @@ def read_trajectory(filename: str,
     ----------
     filename : str
         The name of the file to read from.
-    format : MDEngineFormat | str, optional
+    md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
-    type : TrajectoryFormat | str, optional
+    traj_format : TrajectoryFormat | str, optional
         The format of the trajectory, by default TrajectoryFormat.XYZ
     topology : Topology | None, optional
         The topology of the trajectory, by default None
@@ -113,8 +113,8 @@ def read_trajectory(filename: str,
 
     reader = TrajectoryReader(
         filename,
-        format=format,
-        type=type,
+        traj_format=traj_format,
+        md_format=md_format,
         topology=topology,
         constant_topology=constant_topology
     )
@@ -123,8 +123,8 @@ def read_trajectory(filename: str,
 
 
 def read_trajectory_generator(filename: str,
-                              format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                              type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                              md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                              traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
                               topology: Topology | None = None,
                               constant_topology: bool = True
                               ) -> Generator[Frame]:
@@ -135,9 +135,9 @@ def read_trajectory_generator(filename: str,
     ----------
     filename : str
         The name of the file to read from.
-    format : MDEngineFormat | str, optional
+    md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
-    type : TrajectoryFormat | str, optional
+    traj_format : TrajectoryFormat | str, optional
         The format of the trajectory, by default TrajectoryFormat.XYZ
     topology : Topology | None, optional
         The topology of the trajectory, by default None
@@ -152,8 +152,8 @@ def read_trajectory_generator(filename: str,
 
     reader = TrajectoryReader(
         filename,
-        format=format,
-        type=type,
+        traj_format=traj_format,
+        md_format=md_format,
         topology=topology,
         constant_topology=constant_topology
     )
