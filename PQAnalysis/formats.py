@@ -56,11 +56,7 @@ class BaseEnumFormat(Enum):
         """
         value = value.lower()
 
-        import sys
-        print("hello", file=sys.stderr)
-
         for member in cls:
-            print(member, member.value.lower(), value, file=sys.stderr)
             if member.value.lower() == value:
                 return member
 
