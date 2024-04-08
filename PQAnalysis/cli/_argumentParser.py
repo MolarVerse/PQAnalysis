@@ -81,12 +81,12 @@ class _ArgumentParser(argparse.ArgumentParser):
         super().add_argument('-o', '--output', type=str, default=None,
                              help='The output file. If not specified, the output is printed to stdout.')
 
-    def parse_engine_format(self):
+    def parse_engine(self):
         """
-        The parse_engine_format method adds the engine_format argument to the parser.
-        The engine_format argument is an optional argument and defaults to pimd-qmcf.
+        The parse_engine method adds the engine argument to the parser.
+        The engine argument is an optional argument and defaults to pimd-qmcf.
         """
-        super().add_argument('--engine-format', choices=MDEngineFormat.values(), type=MDEngineFormat, default="pimd-qmcf",
+        super().add_argument('--engine', choices=MDEngineFormat.values(), type=MDEngineFormat, default=MDEngineFormat("pimd-qmcf"),
                              help='The case-insensitive MDEngineFormat of the input trajectory.')
 
     def _parse_progress(self):
@@ -94,7 +94,6 @@ class _ArgumentParser(argparse.ArgumentParser):
         The _parse_progress method adds the progress argument to the parser.
         The progress argument is an optional argument and defaults to True.
         """
-        argparse.Namespace(progress=False)
         super().add_argument('--progress', action='store_false', help='Show progress bar.')
 
     def _parse_version(self):
@@ -102,5 +101,4 @@ class _ArgumentParser(argparse.ArgumentParser):
         The _parse_version method adds the version argument to the parser.
         The version argument is an optional argument and defaults to the current version.
         """
-        argparse.Namespace(version=__version__)
         super().add_argument('--version', action='version', version=__version__)

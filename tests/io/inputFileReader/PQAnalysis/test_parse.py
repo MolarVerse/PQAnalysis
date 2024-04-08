@@ -6,6 +6,7 @@ import PQAnalysis.io.inputFileReader.PQAnalysis._parse as parse
 
 from PQAnalysis.io.inputFileReader import InputDictionary
 from PQAnalysis.io.inputFileReader.exceptions import InputFileError
+from PQAnalysis.traj import MDEngineFormat
 
 
 def test_parse_real():

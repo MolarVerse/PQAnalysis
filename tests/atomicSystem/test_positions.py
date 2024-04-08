@@ -5,7 +5,7 @@ from . import pytestmark
 
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError
-from PQAnalysis.core import Atom
+from PQAnalysis.core import Atom, Cell
 
 
 class TestPositionsMixin:
@@ -55,3 +55,27 @@ class TestPositionsMixin:
             system.nearest_neighbours(n=1)
         assert str(
             exception.value) == AtomicSystemPositionsError.message
+
+    def test_image(self):
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H1', 1)],
+            pos=np.array([[0, 0, 0], [10, 0, 0]]),
+            cell=Cell(8, 8, 8)
+        )
+        system.image()
+
+        assert np.allclose(system.pos, np.array([[0, 0, 0], [2, 0, 0]]))
+
+    def test_center(self):
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H1', 1)],
+            pos=np.array([[0, 0, 0], [10, 0, 0]]),
+            cell=Cell(8, 8, 8)
+        )
+        system.center(np.array([1, 0, 0]), image=False)
+
+        assert np.allclose(system.pos, np.array([[-1, 0, 0], [9, 0, 0]]))
+
+        system.center(np.array([1, 0, 0]), image=True)
+
+        assert np.allclose(system.pos, np.array([[-2, 0, 0], [0, 0, 0]]))

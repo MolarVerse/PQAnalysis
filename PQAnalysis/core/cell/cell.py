@@ -132,7 +132,7 @@ class Cell(_StandardPropertiesMixin):
         pos = np.reshape(pos, (-1, 3))
 
         if self.alpha == 90 and self.beta == 90 and self.gamma == 90:
-            pos = pos - self.box_lengths * np.rint(pos / self.box_lengths)
+            pos = pos - self.box_lengths * np.round(pos / self.box_lengths)
         else:
 
             fractional_pos = pos @ self.inverse_box_matrix.T

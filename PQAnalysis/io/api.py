@@ -195,7 +195,11 @@ def continue_input_file(input_file: str,
     reader.continue_input_file(n)
 
 
-def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True):
+def rst2xyz(restart_file: str,
+            output: str | None = None,
+            print_box: bool = True,
+            md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+            ):
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -209,6 +213,8 @@ def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True
         The output file. If not specified, the output is printed to stdout.
     print_box : bool
         If True, the box is printed. If False, the box is not printed. Default is True.
+    md_format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     """
     reader = RestartFileReader(restart_file)
     frame = reader.read()
@@ -216,7 +222,7 @@ def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True
     if not print_box:
         frame.cell = Cell()
 
-    writer = TrajectoryWriter(filename=output)
+    writer = TrajectoryWriter(filename=output, format=md_format)
     writer.write(frame, type="xyz")
 
 
