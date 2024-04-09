@@ -6,13 +6,14 @@ from __future__ import annotations
 
 import numpy as np
 
+from scipy.spatial.transform import Rotation
 from beartype.typing import Any
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
 
-from PQAnalysis.core import Atom, Atoms, Cell
+from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from PQAnalysis.topology import Topology
 
@@ -104,6 +105,73 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._forces = np.zeros((0, 3)) if forces is None else forces
         self._charges = np.zeros(0) if charges is None else charges
         self._cell = cell
+
+    def fit_atomic_system(self,
+                          system: 'AtomicSystem',
+                          max_iterations: int = 100,
+                          distance_cutoff: float = 1.0,
+                          max_displacement_percentage: float | Np1DNumberArray = 0.1
+                          ) -> None:
+        """
+        Fit the positions of the system to the positions of another system.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system to fit the positions to.
+        """
+
+        # TODO: change this to a different Exception
+        if self.cell.is_vacuum:
+            raise ValueError(
+                "Cannot fit the positions of a system with a vacuum cell.")
+
+        if max_displacement_percentage < 0:
+            raise ValueError(
+                "The maximum displacement percentage has to be positive.")
+
+        if isinstance(max_displacement_percentage, float):
+            max_displacement_percentage = np.array(
+                [max_displacement_percentage] * 3)
+
+        iter_converged = None
+
+        for _iter in range(max_iterations):
+            com = np.random.random(3)
+            com = com * self.cell.box_lengths - self.cell.box_lengths / 2
+
+            rel_com_positions = system.pos - system.center_of_mass
+
+            displacement = np.random.random(3)
+            displacement = displacement * 2 * max_displacement_percentage - \
+                max_displacement_percentage
+
+            new_pos = rel_com_positions + com + displacement
+
+            rotation = Rotation.random()
+
+            print(new_pos)
+
+            for x in range(0, 360, 10):
+                for y in range(0, 360, 10):
+                    for z in range(0, 360, 10):
+                        rotation = rotation.as_euler(
+                            'xyz', degrees=True) + np.array([x, y, z])
+                        rotation = Rotation.from_euler(
+                            'xyz', rotation, degrees=True)
+                        new_pos = rotation.apply(new_pos)
+                        distances = distance(self.pos, new_pos, self.cell)
+                        if np.all(distances > distance_cutoff):
+                            iter_converged = _iter
+                            break
+
+        if iter_converged is None:
+            raise ValueError("Could not fit the positions of the system.")
+        else:
+            print(f"Fit converged after {_iter} iterations.")
+            system = system.copy()
+            system.pos = new_pos
+            return system
 
     def __eq__(self, other: Any) -> bool:
         """

@@ -23,6 +23,7 @@ classifiers = [
 
 dependencies = [
     "numpy",
+    "scipy",
     "beartype",
     "multimethod",
     "lark",
