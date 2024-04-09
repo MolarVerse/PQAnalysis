@@ -467,7 +467,20 @@ class SelectionTransformer(Transformer):
         return _indices_by_element_types(element, self.topology)
 
     def residue(self, items) -> Np1DIntArray:
-        raise NotImplementedError("Residue selection is not implemented yet.")
+        """
+        Returns the indices of the given residue name.
+
+        Parameters
+        ----------
+        items : 
+            The residue name to get the indices of.
+
+        Returns
+        -------
+        Np1DIntArray
+            The indices of the given residue name.
+        """
+        return np.array(self.topology.get_atom_indices_from_residue_names(items[0]))
 
     def residue_number(self, items) -> Np1DIntArray:
         """
@@ -545,23 +558,6 @@ class SelectionTransformer(Transformer):
         """
 
         return np.arange(self.topology.n_atoms)
-
-    def statement(self, items) -> Np1DIntArray:
-        """
-        Returns the given indices.
-
-        Parameters
-        ----------
-        items : List[Np1DIntArray]
-            The indices to get the indices of.
-
-        Returns
-        -------
-        Np1DIntArray
-            The indices of the statement Token.
-        """
-
-        return items[0]
 
     def without_statement(self, items) -> Np1DIntArray:
         """

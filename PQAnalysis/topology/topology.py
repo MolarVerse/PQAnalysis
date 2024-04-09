@@ -99,9 +99,8 @@ class Topology:
             atom_counter = 0
             for i in range(self.n_residues):
                 self._residue_numbers += [i] * self.residues[i].n_atoms
-                for _ in range(self.residues[i].n_atoms):
-                    self._residue_atom_indices.append(
-                        np.arange(atom_counter, atom_counter + self.residues[i].n_atoms))
+                self._residue_atom_indices.append(
+                    np.arange(atom_counter, atom_counter + self.residues[i].n_atoms))
 
                 atom_counter += self.residues[i].n_atoms
             self._residue_numbers = np.array(self._residue_numbers)
@@ -163,6 +162,27 @@ class Topology:
         residue_ids = self.residue_ids[indices]
 
         return Topology(atoms=atoms, reference_residues=self.reference_residues, residue_ids=residue_ids, check_residues=self.check_residues)
+
+    def get_atom_indices_from_residue_names(self, residue_name: str) -> Np1DIntArray:
+        """
+        Returns the atom indices for the given residue name.
+
+        Parameters
+        ----------
+        residue_name : str
+            The name of the residue to get the atom indices for.
+
+        Returns
+        -------
+        Np1DIntArray
+            The atom indices for the given residue name.
+        """
+        atom_indices = np.array([], dtype=int)
+        for residue, _atom_indices in zip(self.residues, self.residue_atom_indices):
+            if residue.name.lower() == residue_name.lower():
+                atom_indices = np.append(atom_indices, _atom_indices)
+
+        return atom_indices
 
     def get_atom_indices_from_residue_numbers(self, residue_numbers: Np1DIntArray) -> Np1DIntArray:
         """

@@ -58,20 +58,24 @@ class MoldescriptorReader(BaseReader):
                     counter += 1
                     continue
 
-                line = line.strip().split()
+                # remove everything from line after first # to avoid comments
+                splitted_line = line.split('#')[0]
+                splitted_line = splitted_line.strip().split()
 
-                if line[0].lower() == "water_type":
-                    water_type = int(line[1])
+                if splitted_line[0].lower() == "water_type":
+                    water_type = int(splitted_line[1])  # TODO:
                     counter += 1
-                elif line[0].lower() == "ammonia_type":
-                    ammonia_type = int(line[1])
+                elif splitted_line[0].lower() == "ammonia_type":
+                    ammonia_type = int(splitted_line[1])  # TODO:
                     counter += 1
                 else:
-                    if len(line) != 3:
+                    if len(splitted_line) != 3:
+                        line = line.replace('\n', '')
                         raise MoldescriptorReaderError(
-                            "The number of columns in the header of a mol type must be 3.")
+                            f"The number of columns in the header of a mol type must be 3.\nGot {len(splitted_line)} columns instead in text: '{line}'\n"
+                        )
 
-                    n_atoms = int(line[1])
+                    n_atoms = int(splitted_line[1])
 
                     mol_types.append(self._read_mol_type(
                         lines[counter:counter+n_atoms+1], len(mol_types) + 1))
@@ -111,14 +115,17 @@ class MoldescriptorReader(BaseReader):
         partial_charges = []
 
         for line in lines[1:]:
-            line = line.strip().split()
+            splitted_line = line.split('#')[0]
+            splitted_line = splitted_line.strip().split()
 
-            if len(line) != 3 and len(line) != 4:
+            if len(splitted_line) != 3 and len(splitted_line) != 4:
+                line = line.replace('\n', '')
                 raise MoldescriptorReaderError(
-                    "The number of columns in the body of a mol type must be 3 or 4.")
+                    f"The number of columns in the body of a mol type must be 3 or 4.\nGot {len(splitted_line)} columns instead in text: '{line}'\n"
+                )
 
-            elements.append(Element(line[0]))
-            atom_types.append(int(line[1]))
-            partial_charges.append(float(line[2]))
+            elements.append(Element(splitted_line[0]))
+            atom_types.append(int(splitted_line[1]))
+            partial_charges.append(float(splitted_line[2]))
 
         return Residue(name, mol_type_id, total_charge, elements, np.array(atom_types), np.array(partial_charges))

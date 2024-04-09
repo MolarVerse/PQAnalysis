@@ -6,7 +6,7 @@ from . import pytestmark
 from PQAnalysis.io import RestartFileReader
 from PQAnalysis.io.exceptions import RestartFileReaderError
 from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, Residue, Element
 
 
 class Test_RestartFileReader:
@@ -21,10 +21,39 @@ class Test_RestartFileReader:
         reader = RestartFileReader(filename)
         assert reader.filename == filename
         assert reader.md_engine_format == MDEngineFormat.PIMD_QMCF
+        assert reader.moldescriptor_filename == None
+        assert reader.reference_residues == None
 
-        reader = RestartFileReader(filename, md_engine_format="qmcfc")
+        reader = RestartFileReader(
+            filename,
+            md_engine_format="qmcfc",
+            moldescriptor_filename="moldescriptor.dat",
+        )
         assert reader.filename == filename
         assert reader.md_engine_format == MDEngineFormat.QMCFC
+        assert reader.moldescriptor_filename == "moldescriptor.dat"
+        assert reader.reference_residues == None
+
+        residue = Residue("H2O", 1, 0, Element("Ar"), 1, 0)
+        reader = RestartFileReader(
+            filename,
+            md_engine_format="qmcfc",
+            reference_residues=[residue]
+        )
+        assert reader.filename == filename
+        assert reader.md_engine_format == MDEngineFormat.QMCFC
+        assert reader.moldescriptor_filename == None
+        assert reader.reference_residues == [residue]
+
+        with pytest.raises(RestartFileReaderError) as exception:
+            RestartFileReader(
+                filename,
+                md_engine_format="qmcfc",
+                moldescriptor_filename="moldescriptor.dat",
+                reference_residues=[residue]
+            )
+        assert str(
+            exception.value) == "Both moldescriptor_filename and reference_residues are given. They are mutually exclusive."
 
     def test__parse_box(self):
         line = ["box"]
