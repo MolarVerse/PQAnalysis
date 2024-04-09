@@ -12,6 +12,7 @@ from . import Frame
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.core import Cell
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class Trajectory:
@@ -25,17 +26,24 @@ class Trajectory:
     This trajectory class can only handle constant topologies i.e. all frames in the trajectory must have the same topology.
     """
 
-    def __init__(self, frames: List[Frame] = None) -> None:
+    def __init__(self,
+                 frames: List[Frame] | Frame | AtomicSystem | None = None
+                 ) -> None:
         """
         Parameters
         ----------
-        frames : list of Frame, optional
-            The list of frames in the trajectory.
+        frames : List[Frame] | Frame | AtomicSystem | None, optional
+            The list of frames in the trajectory. 
+            If frames is a Frame, it is converted to a list of frames.
+            If frames is an AtomicSystem, it is first converted to a Frame and then to a list of frames.
+            If frames is None, an empty list is created, by default None
         """
         if frames is None:
-            self._frames = []
-        else:
-            self._frames = frames
+            frames = []
+        elif isinstance(frames, AtomicSystem):
+            frames = [Frame(frames)]
+
+        self._frames = list(np.atleast_1d(frames))
 
     @property
     def box_lengths(self) -> Np2DNumberArray:

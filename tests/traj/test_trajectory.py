@@ -32,6 +32,12 @@ class TestTrajectory:
 
         assert Trajectory().frames == []
 
+        traj = Trajectory(self.frame1)
+        assert traj.frames == [self.frame1]
+
+        traj = Trajectory(self.system1)
+        assert traj.frames == [Frame(self.system1)]
+
     def test_check_PBC(self):
         traj = Trajectory(self.frames)
         assert traj.check_PBC() == False

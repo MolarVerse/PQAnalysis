@@ -6,9 +6,9 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseReader, RestartFileReaderError
+from . import BaseReader, RestartFileReaderError, MoldescriptorReader
 from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, Residues
 from PQAnalysis.traj import MDEngineFormat, Frame
 from PQAnalysis.topology import Topology
 
@@ -29,6 +29,8 @@ class RestartFileReader(BaseReader):
 
     def __init__(self,
                  filename: str,
+                 moldescriptor_filename: str | None = None,
+                 reference_residues: Residues | None = None,
                  md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
                  ) -> None:
         """
@@ -36,10 +38,21 @@ class RestartFileReader(BaseReader):
         ----------
         filename : str
             The filename of the restart file.
+        moldescriptor_filename : str, optional
+            The filename of the moldescriptor file that is read by the MoldescriptorReader to obtain the reference residues of the system, by default None
+        reference_residues : Residues, optional
+            The reference residues of the system, in general these are obtained by the MoldescriptorReader - only used if moldescriptor_filename is None, by default None
         md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PIMD_QMCF
         """
         super().__init__(filename)
+
+        if moldescriptor_filename is not None and reference_residues is not None:
+            raise RestartFileReaderError(
+                "Both moldescriptor_filename and reference_residues are given. They are mutually exclusive.")
+
+        self.moldescriptor_filename = moldescriptor_filename
+        self.reference_residues = reference_residues
 
         self.md_engine_format = MDEngineFormat(md_engine_format)
 
@@ -47,11 +60,20 @@ class RestartFileReader(BaseReader):
         """
         Reads the restart file and returns an AtomicSystem and an Np1DIntArray containing the molecular types.
 
+        It reads the restart file and extracts the box information and the atom information. The atom information is then used to create an AtomicSystem object. The box information is used to create a Cell object. The AtomicSystem and the Cell are then used to create a Frame object.
+
+        If a moldescriptor file is given, the molecular types are read from the moldescriptor file and added to the Topology of the Frame.
+
         Returns
         -------
         Frame:
             The Frame object including the AtomicSystem and the Topology with the molecular types.
         """
+
+        if self.moldescriptor_filename is not None:
+            self.reference_residues = MoldescriptorReader(
+                self.moldescriptor_filename
+            ).read()
 
         cell = Cell()
         atom_lines = []
@@ -75,7 +97,7 @@ class RestartFileReader(BaseReader):
                 else:
                     atom_lines.append(" ".join(line))
 
-        return self._parse_atoms(atom_lines, cell)
+        return self._parse_atoms(atom_lines, cell, self.reference_residues)
 
     @classmethod
     def _parse_box(cls, line: List[str]) -> Cell:
@@ -116,7 +138,11 @@ class RestartFileReader(BaseReader):
                 f"Invalid number of arguments for box: {len(line)}")
 
     @classmethod
-    def _parse_atoms(cls, lines: List[str], cell: Cell = Cell()) -> Frame:
+    def _parse_atoms(cls,
+                     lines: List[str],
+                     cell: Cell = Cell(),
+                     reference_residues: Residues | None = None
+                     ) -> Frame:
         """
         Parses the atom lines of the restart file.
 
@@ -204,9 +230,17 @@ class RestartFileReader(BaseReader):
         if atoms == []:
             raise RestartFileReaderError("No atoms found in restart file.")
 
-        topology = Topology(atoms=atoms, residue_ids=np.array(residues))
+        topology = Topology(
+            atoms=atoms,
+            residue_ids=np.array(residues),
+            reference_residues=reference_residues
+        )
 
-        system = AtomicSystem(pos=np.array(positions), vel=np.array(
-            velocities), forces=np.array(forces), cell=cell, topology=topology)
+        system = AtomicSystem(
+            pos=np.array(positions),
+            vel=np.array(velocities), forces=np.array(forces),
+            cell=cell,
+            topology=topology
+        )
 
         return Frame(system=system)

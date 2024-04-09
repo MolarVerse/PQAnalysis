@@ -82,14 +82,66 @@ class TestFrame:
         frame.cell = Cell(10, 10, 10)
         assert frame.cell == Cell(10, 10, 10)
 
+    def test_property_pos(self):
+        frame = Frame(AtomicSystem(pos=np.array([[0, 0, 0]])))
+        assert np.allclose(frame.pos, np.array([[0, 0, 0]]))
+
+        frame.pos = np.array([[1, 1, 1]])
+        assert np.allclose(frame.pos, np.array([[1, 1, 1]]))
+
     def test_property_vel(self):
         frame = Frame(AtomicSystem(vel=np.array([[0, 0, 0]])))
         assert np.allclose(frame.vel, np.zeros((1, 3)))
+
+        frame.vel = np.array([[1, 1, 1]])
+        assert np.allclose(frame.vel, np.array([[1, 1, 1]]))
 
     def test_property_forces(self):
         frame = Frame(AtomicSystem(forces=np.array([[0, 0, 0]])))
         assert np.allclose(frame.forces, np.zeros((1, 3)))
 
+        frame.forces = np.array([[1, 1, 1]])
+        assert np.allclose(frame.forces, np.array([[1, 1, 1]]))
+
     def test_property_charges(self):
         frame = Frame(AtomicSystem(charges=np.array([0, 1])))
         assert np.allclose(frame.charges, np.array([0, 1]))
+
+        frame.charges = np.array([1, 0])
+        assert np.allclose(frame.charges, np.array([1, 0]))
+
+    def test_image(self):
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H1', 1)],
+            pos=np.array([[0, 0, 0], [10, 0, 0]]),
+            cell=Cell(8, 8, 8)
+        )
+        frame = Frame(system)
+        frame.image()
+
+        assert np.allclose(frame.pos, np.array([[0, 0, 0], [2, 0, 0]]))
+
+    def test_center(self):
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H1', 1)],
+            pos=np.array([[0, 0, 0], [10, 0, 0]]),
+            cell=Cell(8, 8, 8)
+        )
+        frame = Frame(system)
+        frame.center(np.array([1, 0, 0]), image=False)
+
+        assert np.allclose(frame.pos, np.array([[-1, 0, 0], [9, 0, 0]]))
+
+        frame.center(np.array([1, 0, 0]), image=True)
+
+        assert np.allclose(frame.pos, np.array([[-2, 0, 0], [0, 0, 0]]))
+
+    def test_center_of_mass(self):
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H1', 1)],
+            pos=np.array([[0, 0, 0], [10, 0, 0]]),
+            cell=Cell(8, 8, 8)
+        )
+        frame = Frame(system)
+
+        assert np.allclose(frame.center_of_mass, system.center_of_mass)
