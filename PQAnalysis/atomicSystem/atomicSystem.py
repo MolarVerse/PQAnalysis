@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 import itertools
+import secrets
 
 from scipy.spatial.transform import Rotation
 from beartype.typing import Any, List
@@ -115,34 +116,97 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                           number_of_additions: PositiveInt = 1,
                           max_iterations: PositiveInt = 100,
                           distance_cutoff: PositiveReal = 1.0,
-                          max_displacement_percentage: PositiveReal | Np1DNumberArray = 0.1
-                          ) -> List[AtomicSystem]:
-
-        systems = []
-
-        for _ in range(number_of_additions):
-            systems.append(self._fit_atomic_system(
-                system,
-                max_iterations,
-                distance_cutoff,
-                max_displacement_percentage
-            ))
-
-        return systems
-
-    def _fit_atomic_system(self,
-                           system: AtomicSystem,
-                           max_iterations: PositiveInt = 100,
-                           distance_cutoff: PositiveReal = 1.0,
-                           max_displacement_percentage: PositiveReal | Np1DNumberArray = 0.1
-                           ) -> AtomicSystem:
+                          max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                          rotation_angle_step: PositiveInt = 10,
+                          ) -> List[AtomicSystem] | AtomicSystem:
         """
         Fit the positions of the system to the positions of another system.
 
         Parameters
         ----------
         system : AtomicSystem
-            The system to fit the positions to.
+            The system that should be fitted into the positions of the AtomicSystem.
+        number_of_additions : PositiveInt, optional
+            The number of times the system should be fitted into the positions of the AtomicSystem, by default 1
+        max_iterations : PositiveInt, optional
+            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+        distance_cutoff : PositiveReal, optional
+            The distance cutoff for the fitting, by default 1.0
+        max_displacement : PositiveReal | Np1DNumberArray, optional
+            The maximum displacement percentage for the fitting, by default 0.1
+        rotation_angle_step : PositiveInt, optional
+            The angle step for the rotation of the system, by default 10
+
+        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+
+        Returns
+        -------
+        List[AtomicSystem] | AtomicSystem
+            The fitted AtomicSystem(s). If number_of_additions is 1, a single AtomicSystem is returned, otherwise a list of AtomicSystems is returned.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell.
+        ValueError
+            If the maximum displacement percentage is negative.
+        AtomicSystemError
+            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+        """
+
+        systems = []
+
+        for _ in range(number_of_additions):
+            systems.append(
+                self._fit_atomic_system(
+                    system=system,
+                    max_iterations=max_iterations,
+                    distance_cutoff=distance_cutoff,
+                    max_displacement=max_displacement,
+                    rotation_angle_step=rotation_angle_step
+                )
+            )
+
+        return systems if number_of_additions > 1 else systems[0]
+
+    def _fit_atomic_system(self,
+                           system: AtomicSystem,
+                           max_iterations: PositiveInt = 100,
+                           distance_cutoff: PositiveReal = 1.0,
+                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                           rotation_angle_step: PositiveInt = 10,
+                           ) -> AtomicSystem:
+        """
+        Fit the positions of the system to the positions of another system.
+
+        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system that should be fitted into the positions of the AtomicSystem.
+        max_iterations : PositiveInt, optional
+            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+        distance_cutoff : PositiveReal, optional
+            The distance cutoff for the fitting, by default 1.0
+        max_displacement : PositiveReal | Np1DNumberArray, optional
+            The maximum displacement percentage for the fitting, by default 0.1
+        rotation_angle_step : PositiveInt, optional
+            The angle step for the rotation of the system, by default 10
+
+        Returns
+        -------
+        AtomicSystem
+            The fitted AtomicSystem.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell.
+        ValueError
+            If the maximum displacement percentage is negative.
+        AtomicSystemError
+            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
         """
 
         if self.cell.is_vacuum:
@@ -150,39 +214,47 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                 "Cannot fit into positions of a system with a vacuum cell."
             )
 
-        if isinstance(max_displacement_percentage, float):
-            max_displacement_percentage = np.array(
-                [max_displacement_percentage] * 3
-            )
+        if isinstance(max_displacement, float):
+            max_displacement = np.array([max_displacement] * 3)
 
-        if np.any(max_displacement_percentage < 0.0):
+        if np.any(max_displacement < 0.0):
             raise ValueError(
                 "The maximum displacement percentage must be a positive number."
             )
 
         iter_converged = None
+        seed = secrets.randbits(128)
+        rng = np.random.default_rng(seed=seed)
 
         for _iter in range(max_iterations):
-            com = np.random.random(3)
+            com = rng.random(3)
             com = com * self.cell.box_lengths - self.cell.box_lengths / 2
 
             rel_com_positions = system.pos - system.center_of_mass
 
-            displacement = np.random.random(3)
-            displacement = displacement * 2 * max_displacement_percentage - \
-                max_displacement_percentage
+            displacement = rng.random(3)
+            displacement *= 2 * max_displacement
+            displacement -= max_displacement
 
             new_pos = rel_com_positions + com + displacement
 
             rotation = Rotation.random()
 
-            for x, y, z in itertools.product(range(0, 360, 10), repeat=3):
-                rotation = rotation.as_euler(
-                    'xyz', degrees=True) + np.array([x, y, z])
+            for x, y, z in itertools.product(range(0, 360, rotation_angle_step), repeat=3):
+                rotation_angles = rotation.as_euler(
+                    'xyz',
+                    degrees=True
+                )
+                rotation_angles += np.array([x, y, z])
                 rotation = Rotation.from_euler(
-                    'xyz', rotation, degrees=True)
+                    'xyz',
+                    rotation_angles,
+                    degrees=True
+                )
                 new_pos = rotation.apply(new_pos)
+
                 distances = distance(self.pos, new_pos, self.cell)
+
                 if np.all(distances > distance_cutoff):
                     iter_converged = _iter
                     break
@@ -191,7 +263,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                 break
 
         if iter_converged is None:
-            raise ValueError("Could not fit the positions of the system.")
+            raise AtomicSystemError(
+                "Could not fit the positions of the system. Try increasing the maximum number of iterations."
+            )
         else:
             print(f"Fit converged after {_iter} iterations.")
             system = system.copy()
