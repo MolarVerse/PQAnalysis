@@ -5,7 +5,17 @@ A module containing different exceptions related to the core subpackage.
 from PQAnalysis.exceptions import PQException
 
 
-class AtomicSystemPositionsError(PQException):
+class AtomicSystemError(PQException):
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+    def __init__(self, message: str) -> None:
+        self.message = message
+        super().__init__(self.message)
+
+
+class AtomicSystemPositionsError(AtomicSystemError):
     """
     Exception raised if atoms is not of the same length as positions
     """
@@ -16,7 +26,7 @@ class AtomicSystemPositionsError(PQException):
         super().__init__(self.message)
 
 
-class AtomicSystemMassError(PQException):
+class AtomicSystemMassError(AtomicSystemError):
     """
     Exception raised if atoms do not contain mass information
     """
