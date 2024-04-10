@@ -20,6 +20,7 @@ from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.utils.random import get_random_seed
 
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
@@ -58,17 +59,17 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  cell: Cell = Cell()
                  ) -> None:
         """
-        For the initialization of an AtomicSystem all parameters are optional. 
-        If no value is given for a parameter, the default value is used which 
+        For the initialization of an AtomicSystem all parameters are optional.
+        If no value is given for a parameter, the default value is used which
         is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces
         and charges, a Topology() object for topology and a Cell() object for cell.
 
-        If the shapes or lengths of the given parameters are not consistent, this will 
+        If the shapes or lengths of the given parameters are not consistent, this will
         only raise an error when a property or method is called that requires the
         given parameter. This is done to allow for the creation of an AtomicSystem
         with only a subset of the properties.
 
-        One important restriction is that atoms and topology are mutually exclusive, 
+        One important restriction is that atoms and topology are mutually exclusive,
         i.e. if atoms is given, topology cannot be given and vice versa (this is
         because the topology is derived from the atoms - if given).
 
@@ -158,8 +159,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         systems = []
 
         for _ in range(number_of_additions):
+            # concatenate the positions of this system with the positions of all systems that have been fitted so far
+            positions_to_fit_into = np.concatenate(
+                [system.pos for system in systems] + [self.pos]
+            )
+
             systems.append(
                 self._fit_atomic_system(
+                    positions_to_fit_into=positions_to_fit_into,
                     system=system,
                     max_iterations=max_iterations,
                     distance_cutoff=distance_cutoff,
@@ -171,6 +178,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         return systems if number_of_additions > 1 else systems[0]
 
     def _fit_atomic_system(self,
+                           positions_to_fit_into: Np2DNumberArray,
                            system: AtomicSystem,
                            max_iterations: PositiveInt = 100,
                            distance_cutoff: PositiveReal = 1.0,
@@ -184,6 +192,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         Parameters
         ----------
+        positions_to_fit_into : Np2DNumberArray
+            The positions of the systems were the new system should be fitted into.
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
         max_iterations : PositiveInt, optional
@@ -224,7 +234,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
 
         iter_converged = None
-        seed = secrets.randbits(128)
+        seed = get_random_seed()
         rng = np.random.default_rng(seed=seed)
 
         for _iter in range(max_iterations):
@@ -239,7 +249,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
             new_pos = rel_com_positions + com + displacement
 
-            rotation = Rotation.random()
+            rotation = Rotation.random(random_state=rng)
 
             for x, y, z in itertools.product(range(0, 360, rotation_angle_step), repeat=3):
                 rotation_angles = rotation.as_euler(
@@ -254,7 +264,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                 )
                 new_pos = rotation.apply(new_pos)
 
-                distances = distance(self.pos, new_pos, self.cell)
+                distances = distance(positions_to_fit_into, new_pos, self.cell)
 
                 if np.all(distances > distance_cutoff):
                     iter_converged = _iter
@@ -271,6 +281,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             print(f"Fit converged after {_iter} iterations.")
             system = system.copy()
             system.pos = new_pos
+            system.cell = self.cell
+            system.image()
             return system
 
     def copy(self) -> AtomicSystem:
@@ -341,9 +353,11 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         >>> system1[0]
         AtomicSystem(atoms=[Atom('C1')], pos=np.array([[0, 0, 0]]))
         >>> system1[0:2]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
+                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
         >>> system1[np.array([0, 1])]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
+                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
 
         Parameters
         ----------

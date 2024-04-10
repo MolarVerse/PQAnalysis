@@ -5,7 +5,7 @@ A module containing a Mixin Class with all methods and properties of an atomic s
 from beartype.typing import List
 
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.topology import Topology
 from PQAnalysis.atomicSystem import AtomicSystem
 
@@ -106,11 +106,12 @@ class AtomicSystemMixin:
 
     def fit_atomic_system(self,
                           system: AtomicSystem,
+                          number_of_additions: PositiveInt = 1,
                           max_iterations: PositiveInt = 100,
                           distance_cutoff: PositiveReal = 1.0,
                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                           rotation_angle_step: PositiveInt = 10,
-                          ) -> AtomicSystem:
+                          ) -> AtomicSystem | List[AtomicSystem]:
         """
         Fit the positions of the system to the positions of another system.
 
@@ -120,6 +121,8 @@ class AtomicSystemMixin:
         ----------
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
+        number_of_additions : PositiveInt, optional
+            The number of times the system should be added to the AtomicSystem, by default 1
         max_iterations : PositiveInt, optional
             The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
         distance_cutoff : PositiveReal, optional
@@ -145,6 +148,7 @@ class AtomicSystemMixin:
         """
         return self.system.fit_atomic_system(
             system,
+            number_of_additions=number_of_additions,
             max_iterations=max_iterations,
             distance_cutoff=distance_cutoff,
             max_displacement=max_displacement,
