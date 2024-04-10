@@ -9,7 +9,7 @@ from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 
 from PQAnalysis.types import PositiveReal
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, Residues
 from PQAnalysis.traj import Trajectory, Frame, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
