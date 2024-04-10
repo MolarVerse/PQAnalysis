@@ -5,17 +5,20 @@ A module containing the AtomicSystem class
 from __future__ import annotations
 
 import numpy as np
+import itertools
 
 from scipy.spatial.transform import Rotation
-from beartype.typing import Any
+from beartype.typing import Any, List
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
+from .exceptions import AtomicSystemError
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from PQAnalysis.topology import Topology
+from PQAnalysis.types import PositiveReal, PositiveInt
 
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
@@ -92,7 +95,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         """
         if topology is not None and atoms is not None:
             raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive.")
+                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
+            )
 
         if atoms is None and topology is None:
             topology = Topology()
@@ -107,11 +111,31 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._cell = cell
 
     def fit_atomic_system(self,
-                          system: 'AtomicSystem',
-                          max_iterations: int = 100,
-                          distance_cutoff: float = 1.0,
-                          max_displacement_percentage: float | Np1DNumberArray = 0.1
-                          ) -> None:
+                          system: AtomicSystem,
+                          number_of_additions: PositiveInt = 1,
+                          max_iterations: PositiveInt = 100,
+                          distance_cutoff: PositiveReal = 1.0,
+                          max_displacement_percentage: PositiveReal | Np1DNumberArray = 0.1
+                          ) -> List[AtomicSystem]:
+
+        systems = []
+
+        for _ in range(number_of_additions):
+            systems.append(self._fit_atomic_system(
+                system,
+                max_iterations,
+                distance_cutoff,
+                max_displacement_percentage
+            ))
+
+        return systems
+
+    def _fit_atomic_system(self,
+                           system: AtomicSystem,
+                           max_iterations: PositiveInt = 100,
+                           distance_cutoff: PositiveReal = 1.0,
+                           max_displacement_percentage: PositiveReal | Np1DNumberArray = 0.1
+                           ) -> AtomicSystem:
         """
         Fit the positions of the system to the positions of another system.
 
@@ -121,18 +145,20 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             The system to fit the positions to.
         """
 
-        # TODO: change this to a different Exception
         if self.cell.is_vacuum:
-            raise ValueError(
-                "Cannot fit the positions of a system with a vacuum cell.")
-
-        if max_displacement_percentage < 0:
-            raise ValueError(
-                "The maximum displacement percentage has to be positive.")
+            raise AtomicSystemError(
+                "Cannot fit into positions of a system with a vacuum cell."
+            )
 
         if isinstance(max_displacement_percentage, float):
             max_displacement_percentage = np.array(
-                [max_displacement_percentage] * 3)
+                [max_displacement_percentage] * 3
+            )
+
+        if np.any(max_displacement_percentage < 0.0):
+            raise ValueError(
+                "The maximum displacement percentage must be a positive number."
+            )
 
         iter_converged = None
 
@@ -150,20 +176,19 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
             rotation = Rotation.random()
 
-            print(new_pos)
+            for x, y, z in itertools.product(range(0, 360, 10), repeat=3):
+                rotation = rotation.as_euler(
+                    'xyz', degrees=True) + np.array([x, y, z])
+                rotation = Rotation.from_euler(
+                    'xyz', rotation, degrees=True)
+                new_pos = rotation.apply(new_pos)
+                distances = distance(self.pos, new_pos, self.cell)
+                if np.all(distances > distance_cutoff):
+                    iter_converged = _iter
+                    break
 
-            for x in range(0, 360, 10):
-                for y in range(0, 360, 10):
-                    for z in range(0, 360, 10):
-                        rotation = rotation.as_euler(
-                            'xyz', degrees=True) + np.array([x, y, z])
-                        rotation = Rotation.from_euler(
-                            'xyz', rotation, degrees=True)
-                        new_pos = rotation.apply(new_pos)
-                        distances = distance(self.pos, new_pos, self.cell)
-                        if np.all(distances > distance_cutoff):
-                            iter_converged = _iter
-                            break
+            if iter_converged is not None:
+                break
 
         if iter_converged is None:
             raise ValueError("Could not fit the positions of the system.")
@@ -172,6 +197,24 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             system = system.copy()
             system.pos = new_pos
             return system
+
+    def copy(self) -> AtomicSystem:
+        """
+        Returns a copy of the AtomicSystem.
+
+        Returns
+        -------
+        AtomicSystem
+            A copy of the AtomicSystem.
+        """
+        return AtomicSystem(
+            pos=self.pos,
+            vel=self.vel,
+            forces=self.forces,
+            charges=self.charges,
+            cell=self.cell,
+            topology=self.topology
+        )
 
     def __eq__(self, other: Any) -> bool:
         """
