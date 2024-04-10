@@ -4,8 +4,62 @@ A module containing different formats related to the io subpackage.
 
 from beartype.typing import Any
 
-from .exceptions import BoxFileFormatError, FileWritingModeError
+from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
 from PQAnalysis.formats import BaseEnumFormat
+
+
+class OutputFileFormat(BaseEnumFormat):
+    #: inference of the file format from the file extension
+    AUTO = "auto"
+
+    #: The xyz file format.
+    XYZ = "xyz"
+
+    #: The restart file format.
+    RESTART = "restart"
+
+    @classmethod
+    def _missing_(cls, value: Any) -> Any:
+        """
+        This method returns the missing value of the enumeration.
+
+        Parameters
+        ----------
+        value : Any
+            The value to return.
+
+        Returns
+        -------
+        Any
+            The value to return.
+        """
+
+        return super()._missing_(value, OutputFileFormatError)
+
+    @classmethod
+    def infer_format_from_extension(cls, file_path: str) -> "OutputFileFormat":
+        """
+        Infer the file format from the file extension.
+
+        Parameters
+        ----------
+        file_path : str
+            The file path to infer the file format from.
+
+        Returns
+        -------
+        OutputFileFormat
+            The inferred file format.
+        """
+
+        if file_path.endswith(".xyz"):
+            return cls.XYZ
+        elif file_path.endswith(".rst"):
+            return cls.RESTART
+        else:
+            raise OutputFileFormatError(
+                f"Could not infer the file format from the file extension of \"{file_path}\". Possible file formats are: {cls._member_names_}"
+            )
 
 
 class FileWritingMode(BaseEnumFormat):
@@ -23,7 +77,7 @@ class FileWritingMode(BaseEnumFormat):
     #: The write mode for writing to a file
     WRITE = "w"
 
-    @classmethod
+    @ classmethod
     def _missing_(cls, value: Any) -> Any:
         """
         This method returns the missing value of the enumeration.
@@ -78,7 +132,7 @@ class BoxFileFormat(BaseEnumFormat):
     #: | represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
     DATA = "data"
 
-    @classmethod
+    @ classmethod
     def _missing_(cls, value: Any) -> Any:
         """
         This method returns the missing value of the enumeration.

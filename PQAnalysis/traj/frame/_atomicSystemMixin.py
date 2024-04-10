@@ -7,6 +7,7 @@ from beartype.typing import List
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class AtomicSystemMixin:
@@ -102,3 +103,50 @@ class AtomicSystemMixin:
             Whether the positions should be imaged back into the cell, by default True
         """
         self.system.center(position, image=image)
+
+    def fit_atomic_system(self,
+                          system: AtomicSystem,
+                          max_iterations: PositiveInt = 100,
+                          distance_cutoff: PositiveReal = 1.0,
+                          max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                          rotation_angle_step: PositiveInt = 10,
+                          ) -> AtomicSystem:
+        """
+        Fit the positions of the system to the positions of another system.
+
+        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system that should be fitted into the positions of the AtomicSystem.
+        max_iterations : PositiveInt, optional
+            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+        distance_cutoff : PositiveReal, optional
+            The distance cutoff for the fitting, by default 1.0
+        max_displacement : PositiveReal | Np1DNumberArray, optional
+            The maximum displacement percentage for the fitting, by default 0.1
+        rotation_angle_step : PositiveInt, optional
+            The angle step for the rotation of the system, by default 10
+
+        Returns
+        -------
+        AtomicSystem
+            The fitted AtomicSystem.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell.
+        ValueError
+            If the maximum displacement percentage is negative.
+        AtomicSystemError
+            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+        """
+        return self.system.fit_atomic_system(
+            system,
+            max_iterations=max_iterations,
+            distance_cutoff=distance_cutoff,
+            max_displacement=max_displacement,
+            rotation_angle_step=rotation_angle_step
+        )

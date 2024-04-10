@@ -94,6 +94,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If both atoms and topology are given.
         """
+
         if topology is not None and atoms is not None:
             raise ValueError(
                 "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
