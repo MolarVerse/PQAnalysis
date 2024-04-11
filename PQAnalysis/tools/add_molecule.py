@@ -9,6 +9,73 @@ from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.types import PositiveInt, PositiveReal, Np1DNumberArray
 
 
+def add_molecule(restart_file: str,
+                 molecule_file: str,
+                 output_file: str | None = None,
+                 molecule_file_type: OutputFileFormat | str = OutputFileFormat.AUTO,
+                 restart_moldescriptor_file: str | None = None,
+                 molecule_moldescriptor_file: str | None = None,
+                 number_of_additions: PositiveInt = 1,
+                 max_iterations: PositiveInt = 100,
+                 distance_cutoff: PositiveReal = 1.0,
+                 max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                 rotation_angle_step: PositiveInt = 10,
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 ) -> None:
+    """
+    Add a molecule to a restart file.
+
+    The function reads a restart file and a molecule file and adds the molecule to the restart file. The molecule is added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The function can add multiple molecules to the restart file. The function can also add a moldescriptor file to the restart file to keep track of the fitting.
+
+    Parameters
+    ----------
+    restart_file : str
+        The filename of the restart file.
+    molecule_file : str
+        The filename of the molecule file.
+    output_file : str | None, optional
+        The filename of the output file, by default None
+    molecule_file_type : OutputFileFormat | str, optional
+        The type of the molecule file, by default OutputFileFormat.AUTO. If the type is AUTO, the type will be inferred from the file extension. If the type is RESTART, a moldescriptor file can be specified.
+    restart_moldescriptor_file : str | None, optional
+        The filename of the moldescriptor file of the restart file, by default None.
+    molecule_moldescriptor_file : str | None, optional
+        The filename of the moldescriptor file of the molecule file, by default None. A moldescriptor file can only be specified for restart file types.
+    number_of_additions : PositiveInt, optional
+        The number of times the molecule should be added to the restart file, by default 1
+    max_iterations : PositiveInt, optional
+        The maximum number of iterations to try to fit the molecule into the restart file, by default 100
+    distance_cutoff : PositiveReal, optional
+        The distance cutoff for the fitting, by default 1.0
+    max_displacement : PositiveReal | Np1DNumberArray, optional
+        The maximum displacement for the fitting, by default 0.1
+    rotation_angle_step : PositiveInt, optional
+        The angle step for the fitting, by default 10
+    md_engine_format : MDEngineFormat | str, optional
+        The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+
+    Raises
+    ------
+    ValueError
+        If the molecule file type is not RESTART and a moldescriptor file is specified.
+    """
+
+    AddMolecule(
+        restart_file=restart_file,
+        molecule_file=molecule_file,
+        output_file=output_file,
+        molecule_file_type=molecule_file_type,
+        restart_moldescriptor_file=restart_moldescriptor_file,
+        molecule_moldescriptor_file=molecule_moldescriptor_file,
+        number_of_additions=number_of_additions,
+        max_iterations=max_iterations,
+        distance_cutoff=distance_cutoff,
+        max_displacement=max_displacement,
+        rotation_angle_step=rotation_angle_step,
+        md_engine_format=md_engine_format
+    ).write_restart_file()
+
+
 class AddMolecule:
     """
     A class for adding a molecule to a restart file.
