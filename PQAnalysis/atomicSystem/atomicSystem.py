@@ -7,6 +7,7 @@ from __future__ import annotations
 import numpy as np
 import itertools
 import logging
+import sys
 
 from scipy.spatial.transform import Rotation
 from beartype.typing import Any, List
@@ -49,14 +50,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
     """
 
-    @property
-    def fitting_logger(self):
-        fitting_logger = logging.getLogger(__name__ + ".fit_atomic_system")
-        fitting_logger.__format__ = logging.Formatter(
-            fmt="%(message)s"
-        )
-        fitting_logger.setLevel(logging.INFO)
-        return fitting_logger
+    logging.basicConfig(level=logging.INFO)
+    fitting_logger = logging.getLogger(__name__ + ".fit_atomic_system")
+    handler = logging.StreamHandler(stream=sys.stderr)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    fitting_logger.addHandler(handler)
+    fitting_logger.propagate = False
 
     def __init__(self,
                  atoms: Atoms | None = None,
@@ -174,7 +174,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
 
             self.fitting_logger.info(
-                f"Performing fitting for {i + 1} out of {number_of_additions}..."
+                f"Performing fitting for {
+                    i + 1}/{number_of_additions} addition(s)."
             )
 
             systems.append(
@@ -292,7 +293,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
         else:
             self.fitting_logger.info(
-                f"\t\tConverged after {_iter + 1} iterations."
+                f"\tConverged after {_iter + 1} iterations.\n"
             )
             system = system.copy()
             system.pos = new_pos
