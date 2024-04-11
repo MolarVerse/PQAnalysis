@@ -73,6 +73,7 @@ class Cell(_StandardPropertiesMixin):
         alpha, beta, gamma = np.deg2rad(self.box_angles)
         cos_alpha, cos_beta, cos_gamma = np.cos([alpha, beta, gamma])
         sin_gamma = np.sin(gamma)
+        sin_beta = np.sin(beta)
         x, y, z = self.box_lengths
 
         matrix[0][0] = x
@@ -80,7 +81,7 @@ class Cell(_StandardPropertiesMixin):
         matrix[0][2] = z * cos_beta
         matrix[1][1] = y * sin_gamma
         matrix[1][2] = z * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
-        matrix[2][2] = z * np.sqrt(1 - cos_beta**2 -
+        matrix[2][2] = z * np.sqrt(sin_beta**2 -
                                    (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2)
 
         return matrix
@@ -190,3 +191,29 @@ class Cell(_StandardPropertiesMixin):
             A string representation of the Cell.
         """
         return self.__str__()
+
+    @classmethod
+    def init_from_box_matrix(cls, box_matrix: Np3x3NumberArray) -> Cell:
+        """
+        Initializes a Cell object from a box matrix.
+
+        Parameters
+        ----------
+        box_matrix : Np3x3NumberArray
+            The box matrix.
+
+        Returns
+        -------
+        Cell
+            The Cell object.
+        """
+        x = np.linalg.norm(np.transpose(box_matrix)[0])
+        y = np.linalg.norm(np.transpose(box_matrix)[1])
+        z = np.linalg.norm(np.transpose(box_matrix)[2])
+
+        gamma = np.arccos(box_matrix[0][1] / y)
+        beta = np.arccos(box_matrix[0][2] / z)
+        alpha = (box_matrix[0][1] * box_matrix[0][2] +
+                 box_matrix[1][1] * box_matrix[1][2]) / (y * z)
+
+        return cls(x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))

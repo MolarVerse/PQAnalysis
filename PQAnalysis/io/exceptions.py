@@ -67,3 +67,11 @@ class OutputFileFormatError(BaseEnumFormatError):
     """
 
     pass
+
+
+class GenFileReaderError(PQException):
+    """
+    Exception raised for errors related to reading .gen files
+    """
+
+    pass
