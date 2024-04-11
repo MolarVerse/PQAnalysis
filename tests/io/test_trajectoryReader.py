@@ -14,18 +14,18 @@ class TestTrajectoryReader:
     @pytest.mark.usefixtures("tmpdir")
     def test__init__(self):
         with pytest.raises(FileNotFoundError) as exception:
-            TrajectoryReader("tmp")
-        assert str(exception.value) == "File tmp not found."
+            TrajectoryReader("tmp.xyz")
+        assert str(exception.value) == "File tmp.xyz not found."
 
-        open("tmp", "w")
-        reader = TrajectoryReader("tmp")
-        assert reader.filename == "tmp"
+        open("tmp.xyz", "w")
+        reader = TrajectoryReader("tmp.xyz")
+        assert reader.filename == "tmp.xyz"
         assert reader.frames == []
 
     @pytest.mark.usefixtures("tmpdir")
     def test_read(self):
 
-        file = open("tmp", "w")
+        file = open("tmp.xyz", "w")
         print("2 1.0 1.0 1.0", file=file)
         print("", file=file)
         print("h 0.0 0.0 0.0", file=file)
@@ -36,7 +36,7 @@ class TestTrajectoryReader:
         print("o 0.0 1.0 1.0", file=file)
         file.close()
 
-        reader = TrajectoryReader("tmp")
+        reader = TrajectoryReader("tmp.xyz")
 
         traj = reader.read()
 
@@ -58,14 +58,14 @@ class TestTrajectoryReader:
         # Cell will be taken from the previous frame
         assert traj[1] == frame2
 
-        reader = TrajectoryReader("tmp", md_format="qmcfc")
+        reader = TrajectoryReader("tmp.xyz", md_format="qmcfc")
 
         with pytest.raises(FrameReaderError) as exception:
             reader.read()
         assert str(
             exception.value) == "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead"
 
-        file = open("tmp", "w")
+        file = open("tmp.xyz", "w")
         print("2 1.0 1.0 1.0", file=file)
         print("", file=file)
         print("X 0.0 0.0 0.0", file=file)
@@ -76,7 +76,7 @@ class TestTrajectoryReader:
         print("o 0.0 1.0 1.0", file=file)
         file.close()
 
-        reader = TrajectoryReader("tmp", md_format="qmcfc")
+        reader = TrajectoryReader("tmp.xyz", md_format="qmcfc")
 
         traj = reader.read()
 
@@ -90,7 +90,7 @@ class TestTrajectoryReader:
 
         traj = reader.read()
 
-        filenames = ["tmp", "tmp"]
+        filenames = ["tmp.xyz", "tmp.xyz"]
         reader = TrajectoryReader(filenames, md_format="qmcfc")
 
         ref_traj = traj + traj

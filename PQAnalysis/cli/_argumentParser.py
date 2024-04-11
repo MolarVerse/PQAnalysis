@@ -8,6 +8,7 @@ the most common methods are implemented here.
 """
 
 import argparse
+import argcomplete
 
 import PQAnalysis.config as config
 from PQAnalysis.traj import MDEngineFormat
@@ -54,6 +55,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         argparse.Namespace
             The parsed arguments.
         """
+        argcomplete.autocomplete(self)
         args = super().parse_args()
         config.with_progress_bar = args.progress
         return args

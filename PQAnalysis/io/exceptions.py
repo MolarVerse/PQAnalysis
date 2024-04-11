@@ -59,3 +59,11 @@ class FileWritingModeError(BaseEnumFormatError):
     """
 
     pass
+
+
+class OutputFileFormatError(BaseEnumFormatError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    pass

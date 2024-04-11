@@ -5,16 +5,23 @@ A module containing the AtomicSystem class
 from __future__ import annotations
 
 import numpy as np
+import itertools
+import logging
+import sys
 
-from beartype.typing import Any
+from scipy.spatial.transform import Rotation
+from beartype.typing import Any, List
 
 from ._properties import _PropertiesMixin
 from ._standardProperties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
+from .exceptions import AtomicSystemError
 
-from PQAnalysis.core import Atom, Atoms, Cell
+from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from PQAnalysis.topology import Topology
+from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.utils.random import get_random_seed
 
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
@@ -43,6 +50,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
     """
 
+    logging.basicConfig(level=logging.INFO)
+    fitting_logger = logging.getLogger(__name__ + ".fit_atomic_system")
+    handler = logging.StreamHandler(stream=sys.stderr)
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    fitting_logger.addHandler(handler)
+    fitting_logger.propagate = False
+
     def __init__(self,
                  atoms: Atoms | None = None,
                  pos: Np2DNumberArray | None = None,
@@ -53,17 +68,17 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  cell: Cell = Cell()
                  ) -> None:
         """
-        For the initialization of an AtomicSystem all parameters are optional. 
-        If no value is given for a parameter, the default value is used which 
+        For the initialization of an AtomicSystem all parameters are optional.
+        If no value is given for a parameter, the default value is used which
         is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces
         and charges, a Topology() object for topology and a Cell() object for cell.
 
-        If the shapes or lengths of the given parameters are not consistent, this will 
+        If the shapes or lengths of the given parameters are not consistent, this will
         only raise an error when a property or method is called that requires the
         given parameter. This is done to allow for the creation of an AtomicSystem
         with only a subset of the properties.
 
-        One important restriction is that atoms and topology are mutually exclusive, 
+        One important restriction is that atoms and topology are mutually exclusive,
         i.e. if atoms is given, topology cannot be given and vice versa (this is
         because the topology is derived from the atoms - if given).
 
@@ -89,9 +104,11 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If both atoms and topology are given.
         """
+
         if topology is not None and atoms is not None:
             raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive.")
+                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
+            )
 
         if atoms is None and topology is None:
             topology = Topology()
@@ -104,6 +121,203 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._forces = np.zeros((0, 3)) if forces is None else forces
         self._charges = np.zeros(0) if charges is None else charges
         self._cell = cell
+
+    def fit_atomic_system(self,
+                          system: AtomicSystem,
+                          number_of_additions: PositiveInt = 1,
+                          max_iterations: PositiveInt = 100,
+                          distance_cutoff: PositiveReal = 1.0,
+                          max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                          rotation_angle_step: PositiveInt = 10,
+                          ) -> List[AtomicSystem] | AtomicSystem:
+        """
+        Fit the positions of the system to the positions of another system.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system that should be fitted into the positions of the AtomicSystem.
+        number_of_additions : PositiveInt, optional
+            The number of times the system should be fitted into the positions of the AtomicSystem, by default 1
+        max_iterations : PositiveInt, optional
+            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+        distance_cutoff : PositiveReal, optional
+            The distance cutoff for the fitting, by default 1.0
+        max_displacement : PositiveReal | Np1DNumberArray, optional
+            The maximum displacement percentage for the fitting, by default 0.1
+        rotation_angle_step : PositiveInt, optional
+            The angle step for the rotation of the system, by default 10
+
+        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+
+        Returns
+        -------
+        List[AtomicSystem] | AtomicSystem
+            The fitted AtomicSystem(s). If number_of_additions is 1, a single AtomicSystem is returned, otherwise a list of AtomicSystems is returned.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell.
+        ValueError
+            If the maximum displacement percentage is negative.
+        AtomicSystemError
+            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+        """
+
+        systems = []
+
+        for i in range(number_of_additions):
+            # concatenate the positions of this system with the positions of all systems that have been fitted so far
+            positions_to_fit_into = np.concatenate(
+                [system.pos for system in systems] + [self.pos]
+            )
+
+            self.fitting_logger.info(
+                f"Performing fitting for {
+                    i + 1}/{number_of_additions} addition(s)."
+            )
+
+            systems.append(
+                self._fit_atomic_system(
+                    positions_to_fit_into=positions_to_fit_into,
+                    system=system,
+                    max_iterations=max_iterations,
+                    distance_cutoff=distance_cutoff,
+                    max_displacement=max_displacement,
+                    rotation_angle_step=rotation_angle_step
+                )
+            )
+
+        return systems if number_of_additions > 1 else systems[0]
+
+    def _fit_atomic_system(self,
+                           positions_to_fit_into: Np2DNumberArray,
+                           system: AtomicSystem,
+                           max_iterations: PositiveInt = 100,
+                           distance_cutoff: PositiveReal = 1.0,
+                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+                           rotation_angle_step: PositiveInt = 10,
+                           ) -> AtomicSystem:
+        """
+        Fit the positions of the system to the positions of another system.
+
+        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+
+        Parameters
+        ----------
+        positions_to_fit_into : Np2DNumberArray
+            The positions of the systems were the new system should be fitted into.
+        system : AtomicSystem
+            The system that should be fitted into the positions of the AtomicSystem.
+        max_iterations : PositiveInt, optional
+            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+        distance_cutoff : PositiveReal, optional
+            The distance cutoff for the fitting, by default 1.0
+        max_displacement : PositiveReal | Np1DNumberArray, optional
+            The maximum displacement percentage for the fitting, by default 0.1
+        rotation_angle_step : PositiveInt, optional
+            The angle step for the rotation of the system, by default 10
+
+        Returns
+        -------
+        AtomicSystem
+            The fitted AtomicSystem.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell.
+        ValueError
+            If the maximum displacement percentage is negative.
+        AtomicSystemError
+            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+        """
+
+        if self.cell.is_vacuum:
+            raise AtomicSystemError(
+                "Cannot fit into positions of a system with a vacuum cell."
+            )
+
+        if isinstance(max_displacement, float):
+            max_displacement = np.array([max_displacement] * 3)
+
+        if np.any(max_displacement < 0.0):
+            raise ValueError(
+                "The maximum displacement percentage must be a positive number."
+            )
+
+        iter_converged = None
+        seed = get_random_seed()
+        rng = np.random.default_rng(seed=seed)
+
+        for _iter in range(max_iterations):
+            com = rng.random(3)
+            com = com * self.cell.box_lengths - self.cell.box_lengths / 2
+
+            rel_com_positions = system.pos - system.center_of_mass
+
+            displacement = rng.random(3)
+            displacement *= 2 * max_displacement
+            displacement -= max_displacement
+
+            new_pos = rel_com_positions + com + displacement
+
+            rotation = Rotation.random(random_state=rng)
+
+            for x, y, z in itertools.product(range(0, 360, rotation_angle_step), repeat=3):
+                rotation_angles = rotation.as_euler(
+                    'xyz',
+                    degrees=True
+                )
+                rotation_angles += np.array([x, y, z])
+                rotation = Rotation.from_euler(
+                    'xyz',
+                    rotation_angles,
+                    degrees=True
+                )
+                new_pos = rotation.apply(new_pos)
+
+                distances = distance(positions_to_fit_into, new_pos, self.cell)
+
+                if np.all(distances > distance_cutoff):
+                    iter_converged = _iter
+                    break
+
+            if iter_converged is not None:
+                break
+
+        if iter_converged is None:
+            raise AtomicSystemError(
+                "Could not fit the positions of the system. Try increasing the maximum number of iterations."
+            )
+        else:
+            self.fitting_logger.info(
+                f"\tConverged after {_iter + 1} iterations.\n"
+            )
+            system = system.copy()
+            system.pos = new_pos
+            system.cell = self.cell
+            system.image()
+            return system
+
+    def copy(self) -> AtomicSystem:
+        """
+        Returns a copy of the AtomicSystem.
+
+        Returns
+        -------
+        AtomicSystem
+            A copy of the AtomicSystem.
+        """
+        return AtomicSystem(
+            pos=self.pos,
+            vel=self.vel,
+            forces=self.forces,
+            charges=self.charges,
+            cell=self.cell,
+            topology=self.topology
+        )
 
     def __eq__(self, other: Any) -> bool:
         """
@@ -155,9 +369,11 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         >>> system1[0]
         AtomicSystem(atoms=[Atom('C1')], pos=np.array([[0, 0, 0]]))
         >>> system1[0:2]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
+                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
         >>> system1[np.array([0, 1])]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
+                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
 
         Parameters
         ----------
