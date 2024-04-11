@@ -15,18 +15,27 @@ class OutputFileFormat(BaseEnumFormat):
     #: The xyz file format.
     XYZ = "xyz"
 
+    #: The vel file format.
+    VEL = "vel"
+
+    #: The force file format.
+    FORCE = "force"
+
+    #: The charge file format.
+    CHARGE = "charge"
+
     #: The restart file format.
     RESTART = "restart"
 
     @classmethod
-    def _missing_(cls, value: Any) -> Any:
+    def _missing_(cls, values: Any) -> Any:
         """
         This method returns the missing value of the enumeration.
 
         Parameters
         ----------
-        value : Any
-            The value to return.
+        values : Tuple[Any | str] | Any
+            The value to be converted to the enumeration or a tuple containing the value and the filename.
 
         Returns
         -------
@@ -34,7 +43,24 @@ class OutputFileFormat(BaseEnumFormat):
             The value to return.
         """
 
-        return super()._missing_(value, OutputFileFormatError)
+        if isinstance(values, tuple):
+            value = values[0]
+            filename = values[1]
+        else:
+            value = values
+            filename = None
+
+        output_file_format = super()._missing_(value, OutputFileFormatError)
+
+        if output_file_format == cls.AUTO and filename is None:
+            raise OutputFileFormatError(
+                "The file format could not be inferred from the file extension because no filename was given."
+            )
+
+        if output_file_format == cls.AUTO:
+            return cls.infer_format_from_extension(filename)
+
+        return output_file_format
 
     @classmethod
     def infer_format_from_extension(cls, file_path: str) -> "OutputFileFormat":
@@ -54,12 +80,30 @@ class OutputFileFormat(BaseEnumFormat):
 
         if file_path.endswith(".xyz"):
             return cls.XYZ
+        elif file_path.endswith(".vel") or file_path.endswith(".velocs"):
+            return cls.VEL
+        elif file_path.endswith(".force") or file_path.endswith(".frc") or file_path.endswith(".forces"):
+            return cls.FORCE
+        elif file_path.endswith(".charge") or file_path.endswith(".chrg"):
+            return cls.CHARGE
         elif file_path.endswith(".rst"):
             return cls.RESTART
         else:
             raise OutputFileFormatError(
                 f"Could not infer the file format from the file extension of \"{file_path}\". Possible file formats are: {cls._member_names_}"
             )
+
+    def lower(self) -> str:
+        """
+        This method returns the lower case representation of the enumeration.
+
+        Returns
+        -------
+        str
+            The lower case representation of the enumeration.
+        """
+
+        return self.value.lower()
 
 
 class FileWritingMode(BaseEnumFormat):
