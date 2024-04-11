@@ -9,7 +9,7 @@ from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 
 from PQAnalysis.types import PositiveReal
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, Residues
 from PQAnalysis.traj import Trajectory, Frame, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.topology import Topology
@@ -83,9 +83,44 @@ def write_trajectory(traj,
     writer.write(traj, type=type)
 
 
+def read_restart_file(filename: str,
+                      moldescriptor_filename: str | None = None,
+                      reference_residues: Residues | None = None,
+                      md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+                      ) -> Frame:
+    """
+    API function for reading a restart file.
+
+    Parameters
+    ----------
+    filename : str
+        The filename of the restart file.
+    moldescriptor_filename : str | None, optional
+        The filename of the moldescriptor file that is read by the MoldescriptorReader to obtain the reference residues of the system, by default None
+    reference_residues : Residues | None, optional
+        The reference residues of the system, in general these are obtained by the MoldescriptorReader - only used if moldescriptor_filename is None, by default None
+    md_engine_format : MDEngineFormat | str, optional
+        The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+
+    Returns
+    -------
+    Frame
+        The Frame object including the AtomicSystem and the Topology with the molecular types.
+    """
+
+    reader = RestartFileReader(
+        filename=filename,
+        moldescriptor_filename=moldescriptor_filename,
+        reference_residues=reference_residues,
+        md_engine_format=md_engine_format
+    )
+
+    return reader.read()
+
+
 def read_trajectory(filename: str,
                     md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                    traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                    traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                     topology: Topology | None = None,
                     constant_topology: bool = True
                     ) -> Trajectory:
@@ -99,7 +134,7 @@ def read_trajectory(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.XYZ
+        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional
@@ -124,7 +159,7 @@ def read_trajectory(filename: str,
 
 def read_trajectory_generator(filename: str,
                               md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                              traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                              traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                               topology: Topology | None = None,
                               constant_topology: bool = True
                               ) -> Generator[Frame]:
@@ -138,7 +173,7 @@ def read_trajectory_generator(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.XYZ
+        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional
