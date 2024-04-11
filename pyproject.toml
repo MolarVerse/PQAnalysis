@@ -57,6 +57,7 @@ rst2xyz = "PQAnalysis.cli.rst2xyz:main"
 continue_input = "PQAnalysis.cli.continue_input:main"
 rdf = "PQAnalysis.cli.rdf:main"
 add_molecules = "PQAnalysis.cli.add_molecules:main"
+activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
