@@ -129,11 +129,12 @@ class AddMolecule:
         ------
         ValueError
             If the molecule file type is not RESTART and a moldescriptor file is specified.
+        ValueError
+            If the molecule file type is not RESTART or XYZ.
         """
         self.restart_file = restart_file
         self.molecule_file = molecule_file
         self.output_file = output_file
-        self.molecule_file_type = OutputFileFormat(molecule_file_type)
         self.restart_moldescriptor_file = restart_moldescriptor_file
         self.molecule_moldescriptor_file = molecule_moldescriptor_file
         self.md_engine_format = MDEngineFormat(md_engine_format)
@@ -143,13 +144,19 @@ class AddMolecule:
         self.max_displacement = max_displacement
         self.rotation_angle_step = rotation_angle_step
 
-        self.molecule_file_type = OutputFileFormat.infer_format_from_extension(
+        self.molecule_file_type = OutputFileFormat(
+            molecule_file_type,
             self.molecule_file
         )
 
         if self.molecule_file_type != OutputFileFormat.RESTART and self.molecule_moldescriptor_file is not None:
             raise ValueError(
                 "A moldescriptor file can only be specified for restart files."
+            )
+
+        if self.molecule_file_type not in [OutputFileFormat.RESTART, OutputFileFormat.XYZ]:
+            raise ValueError(
+                "The molecule file type must be either RESTART or XYZ."
             )
 
     def write_restart_file(self) -> None:

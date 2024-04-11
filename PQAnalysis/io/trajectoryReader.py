@@ -30,7 +30,7 @@ class TrajectoryReader(BaseReader):
 
     def __init__(self,
                  filename: str | List[str],
-                 traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                 traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                  md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                  topology: Topology | None = None,
                  constant_topology: bool = True
@@ -41,7 +41,7 @@ class TrajectoryReader(BaseReader):
         filename : str or list of str
             The name of the file to read from or a list of filenames to read from.
         traj_format : TrajectoryFormat | str, optional
-            The format of the trajectory. Default is TrajectoryFormat.XYZ.
+            The format of the trajectory. Default is TrajectoryFormat.AUTO. The format is inferred from the file extension.
         md_format : MDEngineFormat | str, optional
             The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
         topology : Topology, optional
@@ -54,9 +54,11 @@ class TrajectoryReader(BaseReader):
             self.filenames = [self.filename]
 
         self.frames = []
-        self.traj_format = TrajectoryFormat(traj_format)
         self.topology = topology
         self.constant_topology = constant_topology
+
+        self.traj_format = TrajectoryFormat(traj_format, self.filenames[0])
+
         self.md_format = MDEngineFormat(md_format)
         self.frame_reader = FrameReader(md_format=self.md_format)
 

@@ -120,7 +120,7 @@ def read_restart_file(filename: str,
 
 def read_trajectory(filename: str,
                     md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                    traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                    traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                     topology: Topology | None = None,
                     constant_topology: bool = True
                     ) -> Trajectory:
@@ -134,7 +134,7 @@ def read_trajectory(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.XYZ
+        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional
@@ -159,7 +159,7 @@ def read_trajectory(filename: str,
 
 def read_trajectory_generator(filename: str,
                               md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                              traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                              traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                               topology: Topology | None = None,
                               constant_topology: bool = True
                               ) -> Generator[Frame]:
@@ -173,7 +173,7 @@ def read_trajectory_generator(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.XYZ
+        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional
