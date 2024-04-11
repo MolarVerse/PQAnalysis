@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import numpy as np
 import itertools
-import secrets
+import logging
 
 from scipy.spatial.transform import Rotation
 from beartype.typing import Any, List
@@ -48,6 +48,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
     """
+
+    @property
+    def fitting_logger(self):
+        fitting_logger = logging.getLogger(__name__ + ".fit_atomic_system")
+        fitting_logger.__format__ = logging.Formatter(
+            fmt="%(message)s"
+        )
+        fitting_logger.setLevel(logging.INFO)
+        return fitting_logger
 
     def __init__(self,
                  atoms: Atoms | None = None,
@@ -158,10 +167,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         systems = []
 
-        for _ in range(number_of_additions):
+        for i in range(number_of_additions):
             # concatenate the positions of this system with the positions of all systems that have been fitted so far
             positions_to_fit_into = np.concatenate(
                 [system.pos for system in systems] + [self.pos]
+            )
+
+            self.fitting_logger.info(
+                f"Performing fitting for {i + 1} out of {number_of_additions}..."
             )
 
             systems.append(
@@ -278,7 +291,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                 "Could not fit the positions of the system. Try increasing the maximum number of iterations."
             )
         else:
-            print(f"Fit converged after {_iter} iterations.")
+            self.fitting_logger.info(
+                f"\t\tConverged after {_iter + 1} iterations."
+            )
             system = system.copy()
             system.pos = new_pos
             system.cell = self.cell
