@@ -5,7 +5,6 @@ from . import pytestmark
 
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
-from PQAnalysis.traj import Frame
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomicSystem import AtomicSystem
 
@@ -48,10 +47,18 @@ class TestTrajectoryReader:
         print(traj[0].cell)
         print(traj[1].cell)
 
-        frame1 = Frame(system=AtomicSystem(
-            atoms=atoms, pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]), cell=cell))
-        frame2 = Frame(system=AtomicSystem(
-            atoms=atoms, pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]), cell=cell))
+        frame1 = AtomicSystem(
+            atoms=atoms,
+            pos=np.array([[0.0, 0.0, 0.0],
+                          [0.0, 1.0, 0.0]]),
+            cell=cell
+        )
+        frame2 = AtomicSystem(
+            atoms=atoms,
+            pos=np.array([[1.0, 0.0, 0.0],
+                          [0.0, 1.0, 1.0]]),
+            cell=cell
+        )
 
         assert traj[0] == frame1
         # NOTE: here cell is not none because of the consecutive reading of frames

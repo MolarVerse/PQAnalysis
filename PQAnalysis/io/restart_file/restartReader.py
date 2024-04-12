@@ -10,7 +10,7 @@ from .. import BaseReader, MoldescriptorReader
 from .exceptions import RestartFileReaderError
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.core import Atom, Cell, Residues
-from PQAnalysis.traj import MDEngineFormat, Frame
+from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 
 
@@ -57,7 +57,7 @@ class RestartFileReader(BaseReader):
 
         self.md_engine_format = MDEngineFormat(md_engine_format)
 
-    def read(self) -> Frame:
+    def read(self) -> AtomicSystem:
         """
         Reads the restart file and returns an AtomicSystem and an Np1DIntArray containing the molecular types.
 
@@ -67,8 +67,8 @@ class RestartFileReader(BaseReader):
 
         Returns
         -------
-        Frame:
-            The Frame object including the AtomicSystem and the Topology with the molecular types.
+        AtomicSystem:
+            The AtomicSystem object including the Topology with the molecular types.
         """
 
         if self.moldescriptor_filename is not None:
@@ -143,7 +143,7 @@ class RestartFileReader(BaseReader):
                      lines: List[str],
                      cell: Cell = Cell(),
                      reference_residues: Residues | None = None
-                     ) -> Frame:
+                     ) -> AtomicSystem:
         """
         Parses the atom lines of the restart file.
 
@@ -199,8 +199,8 @@ class RestartFileReader(BaseReader):
 
         Returns
         -------
-        Frame:
-            The Frame object including the AtomicSystem and the Topology with the molecular types.
+        AtomicSystem:
+            The Frame object including the Topology with the molecular types.
 
         Raises
         ------
@@ -237,11 +237,9 @@ class RestartFileReader(BaseReader):
             reference_residues=reference_residues
         )
 
-        system = AtomicSystem(
+        return AtomicSystem(
             pos=np.array(positions),
             vel=np.array(velocities), forces=np.array(forces),
             cell=cell,
             topology=topology
         )
-
-        return Frame(system=system)

@@ -10,7 +10,6 @@ from .exceptions import GenFileReaderError
 from PQAnalysis.io import BaseReader
 from PQAnalysis.types import PositiveInt, Np2DNumberArray, Np1DIntArray
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.traj import Frame
 from PQAnalysis.atomicSystem import AtomicSystem
 
 
@@ -28,14 +27,14 @@ class GenFileReader(BaseReader):
         """
         super().__init__(filename)
 
-    def read(self) -> Frame:
+    def read(self) -> AtomicSystem:
         """
         Reads the gen file and returns a Frame object.
 
         Returns
         -------
-        Frame
-            The Frame object including the AtomicSystem and the Cell.
+        AtomicSystem
+            The AtomicSystem including the Cell object.
         """
         with open(self.filename, 'r') as file:
             lines = file.read_lines()
@@ -51,9 +50,11 @@ class GenFileReader(BaseReader):
 
             atoms = [Atom(atom_names[id - 1]) for id in ids]
 
-            return Frame(AtomicSystem(atoms=atoms, pos=coords, cell=cell))
+            return AtomicSystem(atoms=atoms, pos=coords, cell=cell)
 
-    def read_header(self, header: List[str]) -> Tuple[PositiveInt, bool, List[str]]:
+    def read_header(self,
+                    header: List[str]
+                    ) -> Tuple[PositiveInt, bool, List[str]]:
         """
         Reads the header of the gen file.
 

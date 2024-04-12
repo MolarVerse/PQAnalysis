@@ -6,9 +6,10 @@ from beartype.typing import List
 
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
-from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 class TrajectoryWriter(BaseWriter):
@@ -39,19 +40,24 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = MDEngineFormat(format)
 
-    def write(self, trajectory: Trajectory | Frame, type: TrajectoryFormat | str = TrajectoryFormat.XYZ) -> None:
+    def write(self,
+              trajectory: Trajectory | AtomicSystem,
+              type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+              ) -> None:
         """
         Writes the trajectory to the file.
 
         Parameters
         ----------
-        traj : Trajectory
+        traj : Trajectory | AtomicSystem
             The trajectory to write.
+        type : TrajectoryFormat | str, optional
+            The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
         """
 
         self.type = TrajectoryFormat(type)
 
-        if isinstance(trajectory, Frame):
+        if isinstance(trajectory, AtomicSystem):
             trajectory = Trajectory([trajectory])
 
         if self.type == TrajectoryFormat.XYZ:
@@ -149,13 +155,13 @@ class TrajectoryWriter(BaseWriter):
         else:
             print(f"{n_atoms}", file=self.file)
 
-    def _write_comment(self, frame: Frame) -> None:
+    def _write_comment(self, frame: AtomicSystem) -> None:
         """
         Writes the comment line of the frame to the file.
 
         Parameters
         ----------
-        frame : Frame
+        frame : AtomicSystem
             The frame to write the comment line of.
         """
 

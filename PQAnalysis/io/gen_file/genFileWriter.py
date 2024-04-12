@@ -5,7 +5,6 @@ A module containing the GenFileWriter class
 import numpy as np
 
 from .. import BaseWriter, FileWritingMode
-from PQAnalysis.traj import Frame
 from PQAnalysis.atomicSystem import AtomicSystem
 
 
@@ -32,13 +31,13 @@ class GenFileWriter(BaseWriter):
 
         super().__init__(filename, mode)
 
-    def write(self, system: AtomicSystem | Frame) -> None:
+    def write(self, system: AtomicSystem) -> None:
         """
         Writes the system to the file.
 
         Parameters
         ----------
-        system : AtomicSystem | Frame
+        system : AtomicSystem
             The system to write.
         """
 

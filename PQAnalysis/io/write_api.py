@@ -3,7 +3,7 @@ from beartype.typing import Any
 from . import BoxWriter, FileWritingMode
 from .traj_file.api import write_trajectory
 
-from PQAnalysis.traj import Trajectory, Frame
+from PQAnalysis.traj import Trajectory
 from PQAnalysis.atomicSystem import AtomicSystem
 
 
@@ -19,7 +19,6 @@ def write(object_to_write: Any,
 
     write_trajectory: Writes a trajectory to a file.
         - Trajectory
-        - Frame
         - AtomicSystem
 
 
@@ -37,7 +36,7 @@ def write(object_to_write: Any,
 
     if isinstance(object_to_write, Trajectory):
         write_trajectory(object_to_write, filename, format, type, mode)
-    elif isinstance(object_to_write, Frame) or isinstance(object_to_write, AtomicSystem):
+    elif isinstance(object_to_write, AtomicSystem):
         write_trajectory(Trajectory(object_to_write),
                          filename, format, type, mode)
     else:

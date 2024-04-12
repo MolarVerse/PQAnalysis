@@ -1,13 +1,14 @@
 from .restartReader import RestartFileReader
 from PQAnalysis.core import Residues
-from PQAnalysis.traj import Frame, MDEngineFormat
+from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.atomicSystem import AtomicSystem
 
 
 def read_restart_file(filename: str,
                       moldescriptor_filename: str | None = None,
                       reference_residues: Residues | None = None,
                       md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
-                      ) -> Frame:
+                      ) -> AtomicSystem:
     """
     API function for reading a restart file.
 
@@ -24,8 +25,8 @@ def read_restart_file(filename: str,
 
     Returns
     -------
-    Frame
-        The Frame object including the AtomicSystem and the Topology with the molecular types.
+    AtomicSystem
+        The AtomicSystem object including the Topology with the molecular types.
     """
 
     reader = RestartFileReader(
