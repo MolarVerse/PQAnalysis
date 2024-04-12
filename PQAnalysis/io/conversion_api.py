@@ -52,7 +52,8 @@ def gen2xyz(gen_file: str,
 def xyz2gen(xyz_file: str,
             output: str | None = None,
             periodic: bool | None = None,
-            mode: FileWritingMode | str = "w"
+            mode: FileWritingMode | str = "w",
+            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
             ) -> None:
     """
     Converts a xyz file to a gen file and prints it to stdout or writes it to a file.
@@ -70,9 +71,16 @@ def xyz2gen(xyz_file: str,
         - "w": write
         - "a": append
         - "o": overwrite
+    md_format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PQ.
     """
 
-    system = TrajectoryReader(xyz_file).read()
+    system = TrajectoryReader(
+        xyz_file,
+        md_format=md_format,
+        traj_format="xyz"
+    ).read()
+
     write_gen_file(output, system, periodic, mode)
 
 
