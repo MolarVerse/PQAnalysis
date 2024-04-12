@@ -20,7 +20,7 @@ class Test_RestartFileReader:
 
         reader = RestartFileReader(filename)
         assert reader.filename == filename
-        assert reader.md_engine_format == MDEngineFormat.PIMD_QMCF
+        assert reader.md_engine_format == MDEngineFormat.PQ
         assert reader.moldescriptor_filename == None
         assert reader.reference_residues == None
 

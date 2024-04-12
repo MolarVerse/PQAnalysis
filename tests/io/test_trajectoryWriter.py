@@ -28,7 +28,7 @@ def test_write_trajectory(capsys):
     traj = Trajectory([frame1, frame2])
 
     print()
-    write_trajectory(traj, format="pimd-qmcf")
+    write_trajectory(traj, format="PQ")
 
     captured = capsys.readouterr()
     assert captured.out == """
@@ -58,13 +58,13 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
         assert writer.file == sys.stdout
         assert writer.filename is None
         assert writer.mode == FileWritingMode.WRITE
-        assert writer.format == MDEngineFormat.PIMD_QMCF
+        assert writer.format == MDEngineFormat.PQ
 
         writer = TrajectoryWriter(format="qmcfc")
         assert writer.format == MDEngineFormat.QMCFC
 
-        writer = TrajectoryWriter(format="pimd-qmcf")
-        assert writer.format == MDEngineFormat.PIMD_QMCF
+        writer = TrajectoryWriter(format="PQ")
+        assert writer.format == MDEngineFormat.PQ
 
     def test__write_header(self, capsys):
 

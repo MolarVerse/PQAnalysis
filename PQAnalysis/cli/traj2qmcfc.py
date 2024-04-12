@@ -1,7 +1,7 @@
 """
 .. _cli.traj2qmcfc:
 
-Command Line Tool for Converting PIMD-QMCF to QMCFC Trajectory Files
+Command Line Tool for Converting PQ to QMCFC Trajectory Files
 ---------------------------------------------------------------------------
 
 """
@@ -13,7 +13,7 @@ from PQAnalysis.io import traj2qmcfc
 
 
 __outputdoc__ = """
-Converts a PIMD-QMCF trajectory to a QMCFC trajectory format output.
+Converts a PQ trajectory to a QMCFC trajectory format output.
 
 Both formats are adapted xyz file formats with the box dimensions and box angles
 being placed in the same line after the number of atoms. The QMCFC contains an 

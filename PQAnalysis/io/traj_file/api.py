@@ -16,13 +16,13 @@ from PQAnalysis.traj import (
 
 def write_trajectory(traj: Trajectory | AtomicSystem,
                      filename: str | None = None,
-                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                     format: MDEngineFormat | str = MDEngineFormat.PQ,
                      type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
                      mode: FileWritingMode | str = FileWritingMode.WRITE,
                      ) -> None:
     """Wrapper for TrajectoryWriter to write a trajectory to a file.
 
-    if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
+    if format is None, the default PQ format is used. (see TrajectoryWriter.formats for available formats)
     if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
 
     Parameters
@@ -32,7 +32,7 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
     format : MDEngineFormat | str, optional
-        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
+        The format of the md engine for the output file. The default is MDEngineFormat.PQ.
     type : TrajectoryFormat | str, optional
         The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
     mode  : FileWritingMode | str, optional
@@ -45,7 +45,7 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
 
 
 def read_trajectory(filename: str,
-                    md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                     traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                     topology: Topology | None = None,
                     constant_topology: bool = True
@@ -58,7 +58,7 @@ def read_trajectory(filename: str,
     filename : str
         The name of the file to read from.
     md_format : MDEngineFormat | str, optional
-        The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
+        The format of the trajectory, by default MDEngineFormat.PQ
     traj_format : TrajectoryFormat | str, optional
         The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional
@@ -84,7 +84,7 @@ def read_trajectory(filename: str,
 
 
 def read_trajectory_generator(filename: str,
-                              md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                              md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                               traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                               topology: Topology | None = None,
                               constant_topology: bool = True
@@ -97,7 +97,7 @@ def read_trajectory_generator(filename: str,
     filename : str
         The name of the file to read from.
     md_format : MDEngineFormat | str, optional
-        The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
+        The format of the trajectory, by default MDEngineFormat.PQ
     traj_format : TrajectoryFormat | str, optional
         The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
     topology : Topology | None, optional

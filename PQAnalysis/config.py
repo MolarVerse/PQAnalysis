@@ -1,6 +1,6 @@
 base_url = "https://molarverse.github.io/PQAnalysis/"
 code_base_url = base_url + "code/"
 
-pimd_qmcf_docs_url = "https://molarverse.github.io/pimd_qmcf/"
+PQ_docs_url = "https://molarverse.github.io/PQ/"
 
 with_progress_bar = True

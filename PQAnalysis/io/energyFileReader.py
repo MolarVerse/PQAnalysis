@@ -19,7 +19,7 @@ class EnergyFileReader(BaseReader):
                  filename: str,
                  info_filename: str | None = None,
                  use_info_file: bool = True,
-                 format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+                 format: MDEngineFormat | str = MDEngineFormat.PQ
                  ) -> None:
         """
         For the initialization of the EnergyFileReader, the filename of the energy
@@ -39,7 +39,7 @@ class EnergyFileReader(BaseReader):
         use_info_file : bool, optional
             If True, the info file is searched for, by default True
         format : MDEngineFormat | str, optional
-            The format of the file, by default MDEngineFormat.PIMD_QMCF
+            The format of the file, by default MDEngineFormat.PQ
         """
         super().__init__(filename)
         self.info_filename = info_filename

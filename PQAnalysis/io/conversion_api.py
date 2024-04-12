@@ -9,7 +9,7 @@ from PQAnalysis.traj import MDEngineFormat
 def rst2xyz(restart_file: str,
             output: str | None = None,
             print_box: bool = True,
-            md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+            md_format: MDEngineFormat | str = MDEngineFormat.PQ
             ):
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
@@ -25,7 +25,7 @@ def rst2xyz(restart_file: str,
     print_box : bool
         If True, the box is printed. If False, the box is not printed. Default is True.
     md_format : MDEngineFormat | str, optional
-        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
+        The format of the md engine for the output file. The default is MDEngineFormat.PQ.
     """
     reader = RestartFileReader(restart_file)
     frame = reader.read()
@@ -75,7 +75,7 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
 
 def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
     """
-    Converts multiple trajectory files from a PIMD-QMCF format to a QMCFC format and prints it to stdout or writes it to a file.
+    Converts multiple trajectory files from a PQ format to a QMCFC format and prints it to stdout or writes it to a file.
 
     Parameters
     ----------

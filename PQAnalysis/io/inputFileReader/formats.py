@@ -14,7 +14,7 @@ class InputFileFormat(BaseEnumFormat):
     """
 
     PQANALYSIS = "PQANALYSIS"
-    PIMD_QMCF = "PIMD-QMCF"
+    PQ = "PQ"
     QMCFC = "QMCFC"
 
     @classmethod
@@ -34,4 +34,4 @@ class InputFileFormat(BaseEnumFormat):
         """
         Returns True if the given value is a QMCF input file format.
         """
-        return value in [cls.PIMD_QMCF, cls.QMCFC]
+        return value in [cls.PQ, cls.QMCFC]

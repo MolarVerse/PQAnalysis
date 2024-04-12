@@ -12,7 +12,7 @@ authors = [
   { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
   { name="Clarissa A. Seidler", email="clarissa.seidler@gmail.com" },
 ]
-description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
+description = "PQAnalysis is a python package for the analysis of PQ simulations."
 requires-python = ">=3.10"
 readme = "README.md"
 classifiers = [
@@ -61,4 +61,4 @@ activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
-"PIMD-QMCF" = "https://github.com/MolarVerse/pimd_qmcf"
+"PQ" = "https://github.com/MolarVerse/PQ"

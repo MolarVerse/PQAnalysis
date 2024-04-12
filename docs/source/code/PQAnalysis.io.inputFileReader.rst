@@ -25,7 +25,7 @@ io.inputFileReader
     .. toctree::
        :maxdepth: 1
 
-       PQAnalysis.io.inputFileReader.PIMD_QMCF
+       PQAnalysis.io.inputFileReader.PQ
        PQAnalysis.io.inputFileReader.PQAnalysis
 
 

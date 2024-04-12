@@ -23,12 +23,12 @@ class FrameReader:
     For more information about the format of the string, see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
     """
 
-    def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
+    def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
         """
         Parameters
         ----------
         md_format : MDEngineFormat | str, optional
-            The format of the MD engine. Default is "pimd-qmcf".
+            The format of the MD engine. Default is "PQ".
         """
         self.md_format = MDEngineFormat(md_format)
 
@@ -206,7 +206,7 @@ class FrameReader:
         if self.md_format == MDEngineFormat.QMCFC:
             if atoms[0].upper() != 'X':
                 raise FrameReaderError(
-                    'The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead')
+                    'The first atom in one of the frames is not X. Please use PQ (default) md engine instead')
             value = value[1:]
             atoms = atoms[1:]
 

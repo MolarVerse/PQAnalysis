@@ -2,7 +2,7 @@
 This module provides API functions for input/output handling of molecular dynamics simulations.
 """
 
-from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
+from .inputFileReader import PQ_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 from .write_api import write, write_box
 from .conversion_api import rst2xyz, traj2box, traj2qmcfc
@@ -12,7 +12,7 @@ from PQAnalysis.types import PositiveReal
 
 def continue_input_file(input_file: str,
                         n: PositiveReal = 1,
-                        input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF
+                        input_format: InputFileFormat | str = InputFileFormat.PQ
                         ) -> None:
     """
     API function for continuing an input file.
@@ -26,16 +26,16 @@ def continue_input_file(input_file: str,
     n : PositiveReal, optional
         the number of times the input file should be continued, by default 1
     input_format : InputFileFormat | str, optional
-        the format of the input file, by default InputFileFormat.PIMD_QMCF
+        the format of the input file, by default InputFileFormat.PQ
 
     Raises
     ------
     NotImplementedError
-        if the input format is not pimd-qmcf
+        if the input format is not PQ
     """
     input_format = InputFileFormat(input_format)
 
-    if input_format != InputFileFormat.PIMD_QMCF:
+    if input_format != InputFileFormat.PQ:
         raise NotImplementedError(
             f"Format {input_format} not implemented yet for continuing input file.")
 

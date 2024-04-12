@@ -13,7 +13,7 @@ class TestRestartWriter:
     def test__init__(self):
         writer = RestartFileWriter("restart.dat")
         assert writer.filename == "restart.dat"
-        assert writer.md_engine_format == MDEngineFormat.PIMD_QMCF
+        assert writer.md_engine_format == MDEngineFormat.PQ
 
     def test__write_box(self, capsys):
         writer = RestartFileWriter()

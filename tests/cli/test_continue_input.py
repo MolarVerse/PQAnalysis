@@ -8,7 +8,7 @@ from unittest.mock import patch
 from PQAnalysis.cli.continue_input import main
 
 
-@pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input"], indirect=False)
+@pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input"], indirect=False)
 def test_continue_input(test_with_data_dir, capsys):
 
     with pytest.raises(NotImplementedError) as exception:
@@ -23,7 +23,7 @@ def test_continue_input(test_with_data_dir, capsys):
     assert filecmp("run-09.in", "run-09.in.ref")
     assert filecmp("run-10.in", "run-10.in.ref")
 
-    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.rpmd.in', '-n', '3', '--input-format', 'pimd-qmcf']):
+    with patch('argparse._sys.argv', ['continue_input.py', 'run-08.rpmd.in', '-n', '3', '--input-format', 'PQ']):
         main()
 
     assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")

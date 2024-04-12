@@ -1,11 +1,11 @@
 """
-A module containing a Mixin class for output files of a PIMD_QMCF input file.
+A module containing a Mixin class for output files of a PQ input file.
 """
 
 
 class _OutputFileMixin:
     """
-    Mixin class for output files of a PIMD_QMCF input file.
+    Mixin class for output files of a PQ input file.
     """
 
     start_file_keys = ["start_file", "rpmd_start_file"]

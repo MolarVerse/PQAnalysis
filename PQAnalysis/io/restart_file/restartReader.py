@@ -20,19 +20,19 @@ class RestartFileReader(BaseReader):
 
     Inherits from the BaseReader class.
     It reads restart files from the following molecular dynamics engines:
-    - PIMD_QMCF
+    - PQ
     - QMCFC
 
-    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PIMD_QMCF restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
+    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PQ restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
 
-    For more information on how the restart file of PIMD_QMCF simulations is structured, see the corresponding documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
+    For more information on how the restart file of PQ simulations is structured, see the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
     """
 
     def __init__(self,
                  filename: str,
                  moldescriptor_filename: str | None = None,
                  reference_residues: Residues | None = None,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
                  ) -> None:
         """
         Parameters
@@ -44,7 +44,7 @@ class RestartFileReader(BaseReader):
         reference_residues : Residues, optional
             The reference residues of the system, in general these are obtained by the MoldescriptorReader - only used if moldescriptor_filename is None, by default None
         md_engine_format : MDEngineFormat | str, optional
-            The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+            The format of the restart file, by default MDEngineFormat.PQ
         """
         super().__init__(filename)
 
@@ -148,10 +148,10 @@ class RestartFileReader(BaseReader):
         Parses the atom lines of the restart file.
 
         An atom line can have 12 or 21 arguments.
-        if it has 12 arguments, the atom line is assumed to be from a PIMD_QMCF restart file.
+        if it has 12 arguments, the atom line is assumed to be from a PQ restart file.
         if it has 21 arguments, the atom line is assumed to be from a QMCFC restart file.
 
-        For the PIMD_QMCF restart file, the arguments are:
+        For the PQ restart file, the arguments are:
             - atom name
             - atom id
             - residue id

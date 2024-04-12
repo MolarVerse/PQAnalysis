@@ -4,12 +4,12 @@ from filecmp import cmp as filecmp
 
 from ... import pytestmark
 
-from PQAnalysis.io.inputFileReader.PIMD_QMCF.PIMD_QMCF_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
-from PQAnalysis.io.inputFileReader import PIMD_QMCF_InputFileReader as InputFileReader
+from PQAnalysis.io.inputFileReader.PQ.PQ_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
+from PQAnalysis.io.inputFileReader import PQ_InputFileReader as InputFileReader
 from PQAnalysis.io.inputFileReader.formats import InputFileFormat
 
 
-class TestPIMD_QMCF_inputFileReader:
+class TestPQ_inputFileReader:
     def test__increase_digit_string(self):
         digit_string = "1"
         assert _increase_digit_string(digit_string) == "2"
@@ -56,17 +56,17 @@ class TestPIMD_QMCF_inputFileReader:
         filename = "input_00.in"
         assert _get_digit_string_from_filename(filename) == "00"
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input/"], indirect=False)
     def test__init__(self, test_with_data_dir):
         input_file_reader = InputFileReader("run-08.in")
 
         assert input_file_reader.filename == "run-08.in"
-        assert input_file_reader.format == InputFileFormat("pimd-qmcf")
+        assert input_file_reader.format == InputFileFormat("PQ")
         assert input_file_reader.parser.filename == "run-08.in"
         assert input_file_reader.parser.input_format == InputFileFormat(
-            "pimd-qmcf")
+            "PQ")
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input/"], indirect=False)
     def test_read(self, test_with_data_dir):
         input_file_reader = InputFileReader("run-08.in")
 
@@ -112,7 +112,7 @@ class TestPIMD_QMCF_inputFileReader:
         assert str(
             exception.value) == "No start file defined in input file no_start_file.in."
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input/"], indirect=False)
     def test__parse_start_n(self, test_with_data_dir):
         input_file_reader = InputFileReader("run-08.in")
         input_file_reader.read()
@@ -132,7 +132,7 @@ class TestPIMD_QMCF_inputFileReader:
         assert str(
             exception.value) == "N from start_file (07) and rpmd_start_file (08) do not match."
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input/"], indirect=False)
     def test__parse_actual_n(self, test_with_data_dir):
         input_file_reader = InputFileReader("run-08.in")
         input_file_reader.read()
@@ -164,7 +164,7 @@ class TestPIMD_QMCF_inputFileReader:
         assert str(
             exception.value) == "No output file found to determine actual n."
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader/PIMD_QMCF_input/"], indirect=False)
+    @pytest.mark.parametrize("example_dir", ["inputFileReader/PQ_input/"], indirect=False)
     def test_continue_input_file(self, test_with_data_dir):
         # testing if ValueError is raised if actual n and input file n do not match
         input_file_reader = InputFileReader(

@@ -7,7 +7,7 @@ from PQAnalysis.atomicSystem import AtomicSystem
 def read_restart_file(filename: str,
                       moldescriptor_filename: str | None = None,
                       reference_residues: Residues | None = None,
-                      md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+                      md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
                       ) -> AtomicSystem:
     """
     API function for reading a restart file.
@@ -21,7 +21,7 @@ def read_restart_file(filename: str,
     reference_residues : Residues | None, optional
         The reference residues of the system, in general these are obtained by the MoldescriptorReader - only used if moldescriptor_filename is None, by default None
     md_engine_format : MDEngineFormat | str, optional
-        The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+        The format of the restart file, by default MDEngineFormat.PQ
 
     Returns
     -------
