@@ -8,7 +8,6 @@ import numpy as np
 
 from beartype.typing import List, Any, Iterable
 
-from . import Frame
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.core import Cell
@@ -27,21 +26,18 @@ class Trajectory:
     """
 
     def __init__(self,
-                 frames: List[Frame] | Frame | AtomicSystem | None = None
+                 frames: List[AtomicSystem] | AtomicSystem | None = None
                  ) -> None:
         """
         Parameters
         ----------
-        frames : List[Frame] | Frame | AtomicSystem | None, optional
-            The list of frames in the trajectory. 
-            If frames is a Frame, it is converted to a list of frames.
-            If frames is an AtomicSystem, it is first converted to a Frame and then to a list of frames.
+        frames : AtomicSystem | None, optional
+            The list of atomic systems in the trajectory. 
+            If frames is an AtomicSystem, it is first converted to list of frames.
             If frames is None, an empty list is created, by default None
         """
         if frames is None:
             frames = []
-        elif isinstance(frames, AtomicSystem):
-            frames = [Frame(frames)]
 
         self._frames = list(np.atleast_1d(frames))
 
@@ -82,13 +78,13 @@ class Trajectory:
 
         return not any(frame.PBC for frame in self.frames)
 
-    def append(self, frame: Frame) -> None:
+    def append(self, frame: AtomicSystem) -> None:
         """
         Appends a frame to the trajectory.
 
         Parameters
         ----------
-        frame : Frame
+        frame : AtomicSystem
             The frame to append.
         """
 
@@ -105,14 +101,12 @@ class Trajectory:
         """
         return len(self.frames)
 
-    def __getitem__(self, key: int | slice) -> Frame | Trajectory:
+    def __getitem__(self, key: int | slice) -> AtomicSystem | Trajectory:
         """
         This method allows a frame or a trajectory to be retrieved from the trajectory.
 
         For example, if traj is a trajectory, then traj[0] is the first frame of the trajectory.
         If traj is a trajectory, then traj[0:2] is a trajectory containing the first two frames of the trajectory.
-
-
 
         Parameters
         ----------
@@ -121,7 +115,7 @@ class Trajectory:
 
         Returns
         -------
-        Frame | Trajectory
+        AtomicSystem | Trajectory
             The frame or trajectory retrieved from the trajectory.
         """
         frames = self.frames[key]
@@ -134,7 +128,7 @@ class Trajectory:
             frames.topology = self.topology
             return frames
 
-    def __iter__(self) -> Iterable[Frame]:
+    def __iter__(self) -> Iterable[AtomicSystem]:
         """
         This method allows a trajectory to be iterated over.
 
@@ -147,7 +141,7 @@ class Trajectory:
             frame.topology = self.topology
             yield frame
 
-    def __contains__(self, item: Frame) -> bool:
+    def __contains__(self, item: AtomicSystem) -> bool:
         """
         This method allows a frame to be checked for membership in a trajectory.
 
@@ -194,12 +188,12 @@ class Trajectory:
         return self.frames == other.frames
 
     @property
-    def frames(self) -> List[Frame]:
-        """List[Frame]: The frames in the trajectory."""
+    def frames(self) -> List[AtomicSystem]:
+        """List[AtomicSystem]: The frames in the trajectory."""
         return self._frames
 
     @frames.setter
-    def frames(self, frames: List[Frame]) -> None:
+    def frames(self, frames: List[AtomicSystem]) -> None:
         self._frames = frames
 
     @property

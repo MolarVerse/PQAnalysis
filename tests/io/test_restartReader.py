@@ -4,7 +4,7 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.io import RestartFileReader
-from PQAnalysis.io.exceptions import RestartFileReaderError
+from PQAnalysis.io.restart_file.exceptions import RestartFileReaderError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Atom, Cell, Residue, Element
 
@@ -85,7 +85,7 @@ class Test_RestartFileReader:
         lines = ["C 0 1 1.0 1.0 1.0 1.1 1.2 1.3 1.4 1.5 1.6",
                  "H 0 2 2.0 2.0 2.0 2.1 2.2 2.3 2.4 2.5 2.6"]
         frame = RestartFileReader._parse_atoms(lines, Cell())
-        system = frame.system
+        system = frame
         residue_ids = frame.topology.residue_ids
         assert system.n_atoms == 2
         assert system.atoms == [Atom(name, use_guess_element=False)
@@ -105,7 +105,7 @@ class Test_RestartFileReader:
     @pytest.mark.parametrize("example_dir", ["readRestartFile"], indirect=False)
     def test_read(self, test_with_data_dir):
         frame = RestartFileReader("md-01.rst").read()
-        system = frame.system
+        system = frame
         residue_ids = frame.topology.residue_ids
 
         assert np.allclose(residue_ids, np.array([0, 0, 1, 1]))

@@ -5,7 +5,7 @@ from . import pytestmark
 from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
 from PQAnalysis.core import Atom
 from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.traj import Frame, Trajectory
+from PQAnalysis.traj import Trajectory
 
 
 class TestShakeTopologyGenerator:
@@ -35,7 +35,7 @@ class TestShakeTopologyGenerator:
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)
 
-        traj = Trajectory([Frame(system), Frame(system2)])
+        traj = Trajectory([system, system2])
 
         generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)
@@ -56,7 +56,7 @@ class TestShakeTopologyGenerator:
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)
 
-        traj = Trajectory([Frame(system), Frame(system2)])
+        traj = Trajectory([system, system2])
 
         generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)
@@ -79,7 +79,7 @@ class TestShakeTopologyGenerator:
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)
 
-        traj = Trajectory([Frame(system), Frame(system2)])
+        traj = Trajectory([system, system2])
 
         generator = ShakeTopologyGenerator(selection=[Atom('H')])
         generator.generate_topology(traj)

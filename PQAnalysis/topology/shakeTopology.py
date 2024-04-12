@@ -50,7 +50,7 @@ class ShakeTopologyGenerator:
             The trajectory to generate the shake topology for.
         """
 
-        atomic_system = trajectory[0].system
+        atomic_system = trajectory[0]
         self._topology = trajectory.topology
 
         indices = self.selection.select(
