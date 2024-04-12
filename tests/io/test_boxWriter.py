@@ -7,7 +7,7 @@ from _pytest.capture import CaptureFixture
 
 from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
 from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
-from PQAnalysis.traj import Trajectory, Frame
+from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomicSystem import AtomicSystem
 
@@ -50,8 +50,8 @@ or their case insensitive string representation: vmd, data"""
             atoms=self.atoms1, pos=self.pos1, cell=self.cell1)
         system2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1)
 
-        frame1 = Frame(system1)
-        frame2 = Frame(system2)
+        frame1 = system1
+        frame2 = system2
 
         traj1 = Trajectory([frame1, frame1])
         traj2 = Trajectory([frame1, frame2])
@@ -74,10 +74,16 @@ or their case insensitive string representation: vmd, data"""
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 120)
 
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell1
+        )
+        frame2 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell2
+        )
 
         traj = Trajectory([frame1, frame2])
 
@@ -92,10 +98,16 @@ or their case insensitive string representation: vmd, data"""
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell1
+        )
+        frame2 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell2
+        )
 
         traj = Trajectory([frame1, frame2])
 
@@ -132,10 +144,16 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell1
+        )
+        frame2 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell2
+        )
 
         traj = Trajectory([frame1, frame2])
 
@@ -178,10 +196,16 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell1
+        )
+        frame2 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=cell2
+        )
 
         traj = Trajectory([frame1, frame2])
 

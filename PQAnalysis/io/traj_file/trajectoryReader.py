@@ -18,9 +18,10 @@ import PQAnalysis.config as config
 from .. import BaseReader
 from .exceptions import TrajectoryReaderError
 from .frameReader import FrameReader
+from PQAnalysis.atomicSystem import AtomicSystem
 
 # Local absolute imports
-from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell
 from PQAnalysis.topology import Topology
 
@@ -102,7 +103,7 @@ class TrajectoryReader(BaseReader):
 
         return traj
 
-    def frame_generator(self) -> Generator[Frame]:
+    def frame_generator(self) -> Generator[AtomicSystem]:
         """
         A generator that yields the frames of the trajectory.
 
@@ -112,7 +113,7 @@ class TrajectoryReader(BaseReader):
 
         Yields
         ------
-        Generator[Frame]
+        Generator[AtomicSystem]
             The frames of the trajectory.
         """
         last_cell = None
@@ -206,7 +207,7 @@ class TrajectoryReader(BaseReader):
     def _read_single_frame(self,
                            frame_string: str,
                            topology: Topology | None = None
-                           ) -> Frame:
+                           ) -> AtomicSystem:
         """
         Reads a single frame from the given string.
 
@@ -216,6 +217,11 @@ class TrajectoryReader(BaseReader):
             The string containing the frame information.
         topology : Topology, optional
             The topology of the frame. Default is None.
+
+        Returns
+        -------
+        AtomicSystem
+            The AtomicSystem object of the frame.
 
         Raises
         ------

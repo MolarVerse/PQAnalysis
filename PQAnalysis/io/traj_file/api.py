@@ -1,5 +1,7 @@
 from beartype.typing import Generator
 
+from PQAnalysis.topology import Topology
+from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.io import (
     TrajectoryWriter,
     TrajectoryReader,
@@ -9,12 +11,10 @@ from PQAnalysis.traj import (
     Trajectory,
     MDEngineFormat,
     TrajectoryFormat,
-    Frame,
 )
-from PQAnalysis.topology import Topology
 
 
-def write_trajectory(traj,
+def write_trajectory(traj: Trajectory | AtomicSystem,
                      filename: str | None = None,
                      format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
                      type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
@@ -88,7 +88,7 @@ def read_trajectory_generator(filename: str,
                               traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
                               topology: Topology | None = None,
                               constant_topology: bool = True
-                              ) -> Generator[Frame]:
+                              ) -> Generator[AtomicSystem]:
     """
     API function for building a frame generator from a trajectory file.
 
@@ -107,7 +107,7 @@ def read_trajectory_generator(filename: str,
 
     Returns
     -------
-    Generator[Frame]
+    Generator[AtomicSystem]
         A generator for the frames in the trajectory.
     """
 
