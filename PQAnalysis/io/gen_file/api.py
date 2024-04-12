@@ -1,6 +1,7 @@
 from .genFileReader import GenFileReader
 from .genFileWriter import GenFileWriter
 from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.io.formats import FileWritingMode
 
 
 def read_gen_file(filename: str) -> AtomicSystem:
@@ -23,7 +24,8 @@ def read_gen_file(filename: str) -> AtomicSystem:
 
 def write_gen_file(filename: str,
                    system: AtomicSystem,
-                   periodic: bool | None = None
+                   periodic: bool | None = None,
+                   mode: FileWritingMode | str = "w"
                    ) -> None:
     """
     Function to write a gen file.
@@ -36,6 +38,11 @@ def write_gen_file(filename: str,
         The system to write.
     periodic : bool, optional
         The periodicity of the system. If True, the system is considered periodic. If False, the system is considered non-periodic. If None, the periodicity is inferred from the system, by default None.
+    mode : FileWritingMode | str, optional
+        The writing mode, by default "w". The following modes are available:
+        - "w": write
+        - "a": append
+        - "o": overwrite
     """
 
-    GenFileWriter(filename).write(system, periodic)
+    GenFileWriter(filename, mode=mode).write(system, periodic)
