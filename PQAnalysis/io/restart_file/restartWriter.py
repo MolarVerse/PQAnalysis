@@ -6,7 +6,7 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseWriter
+from .. import BaseWriter, FileWritingMode
 from PQAnalysis.traj import MDEngineFormat, Frame
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
@@ -30,7 +30,7 @@ class RestartFileWriter(BaseWriter):
     def __init__(self,
                  filename: str | None = None,
                  md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                 mode: str = 'w'
+                 mode: FileWritingMode | str = 'w'
                  ) -> None:
         """
         Parameters
@@ -39,8 +39,8 @@ class RestartFileWriter(BaseWriter):
             The filename of the restart file, by default None (stdout)
         md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PIMD_QMCF
-        mode : str, optional
-            The mode of the file, by default 'w'
+        mode : FileWritingMode | str, optional
+            The writing mode, by default 'w' - Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).
         """
         super().__init__(filename, mode)
 
@@ -149,12 +149,12 @@ class RestartFileWriter(BaseWriter):
 
             try:
                 vel = frame.vel[i]
-            except:
+            except Exception:
                 vel = np.zeros(3)
 
             try:
                 force = frame.forces[i]
-            except:
+            except Exception:
                 force = np.zeros(3)
 
             residue = residues[i]

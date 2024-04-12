@@ -2,17 +2,33 @@
 A package containing classes and functions to handle input and output of molecular dynamics simulations.
 """
 
-from .exceptions import *
-
 from .formats import BoxFileFormat, FileWritingMode
 
+# import the classes from the base module
 from .base import BaseReader, BaseWriter
-from .frameReader import FrameReader
+
+# import the classes from the moldescriptorReader module
 from .moldescriptorReader import MoldescriptorReader
-from .restartWriter import RestartFileWriter
-from .restartReader import RestartFileReader
-from .trajectoryReader import TrajectoryReader
-from .trajectoryWriter import TrajectoryWriter
+
+# import the classes from the restart_file subpackage
+from .restart_file.restartWriter import RestartFileWriter
+from .restart_file.restartReader import RestartFileReader
+from .restart_file.api import read_restart_file
+
+# import the classes from the traj_file subpackage
+from .traj_file.trajectoryReader import TrajectoryReader
+from .traj_file.trajectoryWriter import TrajectoryWriter
+from .traj_file.frameReader import FrameReader
+from .traj_file.api import (
+    read_trajectory,
+    write_trajectory,
+    read_trajectory_generator
+)
+
+# import the classes from the gen_file subpackage
+from .gen_file.genFileReader import GenFileReader
+from .gen_file.genFileWriter import GenFileWriter
+
 from .infoFileReader import InfoFileReader
 from .energyFileReader import EnergyFileReader
 from .boxWriter import BoxWriter
