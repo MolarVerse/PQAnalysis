@@ -8,7 +8,7 @@ from beartype.typing import Tuple
 
 from ._decorators import check_atoms_pos
 from PQAnalysis.core import distance
-from PQAnalysis.types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt
+from PQAnalysis.types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt, Np1DNumberArray
 from PQAnalysis.topology import SelectionCompatible, Selection
 
 
@@ -99,3 +99,25 @@ class _PositionsMixin:
             self.topology, use_full_atom_info)
 
         return self._nearest_neighbours(n=n, indices=indices)
+
+    def image(self) -> None:
+        """
+        Images the positions of the system back into the cell.
+        """
+        self.pos = self.cell.image(self.pos)
+
+    def center(self, position: Np1DNumberArray, image: bool = True) -> None:
+        """
+        Center the positions of the system to a given position.
+
+        Parameters
+        ----------
+        position : Np1DIntArray
+            The position to recenter the system to.
+        image : bool, optional
+            If the system should be imaged back into the cell, by default True
+        """
+        self.pos -= position
+
+        if image:
+            self.image()

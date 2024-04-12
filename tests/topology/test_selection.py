@@ -157,6 +157,18 @@ class TestSelection:
         indices = selection.select(topology)
         assert np.all(indices == np.array([1, 2]))
 
+        selection = Selection("res(ala)")
+        indices = selection.select(topology)
+        assert np.all(indices == np.array([1, 2]))
+
+        selection = Selection("* | res(ALA)")
+        indices = selection.select(topology)
+        assert np.all(indices == np.array([0, 3]))
+
+        selection = Selection("res(NotAResidue)")
+        indices = selection.select(topology)
+        assert np.all(indices == np.array([]))
+
     def test__string__(self):
         selection = Selection("C1")
         assert str(selection) == "C1"
