@@ -45,5 +45,7 @@ from .api import (
     rst2xyz,
     traj2box,
     traj2qmcfc,
+    gen2xyz,
+    xyz2gen,
     continue_input_file
 )

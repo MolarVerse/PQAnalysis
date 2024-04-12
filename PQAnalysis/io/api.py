@@ -5,7 +5,7 @@ This module provides API functions for input/output handling of molecular dynami
 from .inputFileReader import PQ_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 from .write_api import write, write_box
-from .conversion_api import rst2xyz, traj2box, traj2qmcfc
+from .conversion_api import rst2xyz, traj2box, traj2qmcfc, gen2xyz, xyz2gen
 
 from PQAnalysis.types import PositiveReal
 
