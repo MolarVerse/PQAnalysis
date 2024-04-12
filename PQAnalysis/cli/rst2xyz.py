@@ -36,13 +36,21 @@ def main():
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
     parser.parse_output_file()
-    parser.parse_engine()
 
     parser.add_argument('restart_file', type=str,
                         help='The restart file to be converted.')
     parser.add_argument('--nobox', action='store_true',
                         help='Do not print the box.')
 
+    parser.parse_engine()
+    parser.parse_mode()
+
     args = parser.parse_args()
 
-    rst2xyz(args.restart_file, args.output, not args.nobox, args.engine)
+    rst2xyz(
+        restart_file=args.restart_file,
+        output=args.output,
+        print_box=not args.nobox,
+        md_format=args.engine,
+        mode=args.mode,
+    )

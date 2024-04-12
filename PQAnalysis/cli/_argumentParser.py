@@ -12,6 +12,7 @@ import argcomplete
 
 import PQAnalysis.config as config
 from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis._version import __version__
 
 
@@ -90,6 +91,15 @@ class _ArgumentParser(argparse.ArgumentParser):
         """
         super().add_argument('--engine', choices=MDEngineFormat.values(), type=MDEngineFormat, default=MDEngineFormat("PQ"),
                              help='The case-insensitive MDEngineFormat of the input trajectory.')
+
+    def parse_mode(self):
+        """
+        The parse_mode method adds the mode argument to the parser.
+        The mode argument is an optional argument and defaults to "w".
+        Possible values are "w", "a" and "o".
+        """
+        super().add_argument('--mode', choices=FileWritingMode.values(), type=FileWritingMode, default=FileWritingMode("w"),
+                             help='The writing mode. The following modes are available: "w": write, "a": append, "o": overwrite.')
 
     def _parse_progress(self):
         """

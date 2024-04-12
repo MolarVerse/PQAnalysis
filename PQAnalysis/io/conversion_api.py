@@ -19,6 +19,7 @@ from PQAnalysis.io.formats import FileWritingMode
 def gen2xyz(gen_file: str,
             output: str | None = None,
             md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+            print_box: bool = True,
             mode: FileWritingMode | str = "w"
             ) -> None:
     """
@@ -32,6 +33,8 @@ def gen2xyz(gen_file: str,
         The output file. If not specified, the output is printed to stdout.
     md_format : MDEngineFormat | str, optional
         The format of the md engine for the output file. The default is MDEngineFormat.PQ.
+    no_box : bool, optional
+        If True, the box is not printed. If False, the box is printed. Default is False.
     mode : FileWritingMode | str, optional
         The writing mode, by default "w". The following modes are available:
         - "w": write
@@ -39,6 +42,9 @@ def gen2xyz(gen_file: str,
         - "o": overwrite
     """
     system = read_gen_file(gen_file)
+
+    if not print_box:
+        system.cell = Cell()
 
     write_trajectory(system, output, format=md_format, type="xyz", mode=mode)
 
@@ -97,12 +103,12 @@ def rst2xyz(restart_file: str,
         - "a": append
         - "o": overwrite
     """
-    frame = read_restart_file(restart_file)
+    system = read_restart_file(restart_file)
 
     if not print_box:
-        frame.cell = Cell()
+        system.cell = Cell()
 
-    write_trajectory(frame, output, format=md_format, type="xyz", mode=mode)
+    write_trajectory(system, output, format=md_format, type="xyz", mode=mode)
 
 
 def traj2box(trajectory_files: List[str],
