@@ -19,17 +19,17 @@ class RestartFileWriter(BaseWriter):
 
     Inherits from the BaseWriter class.
     It writes restart files from the following molecular dynamics engines:
-    - PIMD_QMCF
+    - PQ
     - QMCFC
 
-    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PIMD_QMCF restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
+    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PQ restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
 
-    For more information on how the restart file of PIMD_QMCF simulations is structured, see the corresponding documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
+    For more information on how the restart file of PQ simulations is structured, see the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
     """
 
     def __init__(self,
                  filename: str | None = None,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
                  mode: FileWritingMode | str = 'w'
                  ) -> None:
         """
@@ -38,7 +38,7 @@ class RestartFileWriter(BaseWriter):
         filename : str | None, optional
             The filename of the restart file, by default None (stdout)
         md_engine_format : MDEngineFormat | str, optional
-            The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+            The format of the restart file, by default MDEngineFormat.PQ
         mode : FileWritingMode | str, optional
             The writing mode, by default 'w' - Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).
         """
@@ -166,7 +166,7 @@ class RestartFileWriter(BaseWriter):
             line += f"{vel[0]} {vel[1]} {vel[2]} "
             line += f"{force[0]} {force[1]} {force[2]}"
 
-            if self.md_engine_format != MDEngineFormat.PIMD_QMCF:
+            if self.md_engine_format != MDEngineFormat.PQ:
                 line += f" {pos[0]} {pos[1]} {pos[2]} "
                 line += f"{vel[0]} {vel[1]} {vel[2]} "
                 line += f"{force[0]} {force[1]} {force[2]}"

@@ -1,5 +1,5 @@
 """
-A package containing classes and functions to read and parse input file of a PIMD_QMCF simulation.
+A package containing classes and functions to read and parse input file of a PQ simulation.
 """
 
-from .PIMD_QMCF_inputFileReader import PIMD_QMCF_InputFileReader
+from .PQ_inputFileReader import PQ_InputFileReader

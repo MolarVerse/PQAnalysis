@@ -4,9 +4,9 @@
 output_files
 ===========================================================
 
-.. currentmodule:: PQAnalysis.io.inputFileReader.PIMD_QMCF.output_files
+.. currentmodule:: PQAnalysis.io.inputFileReader.PQ.output_files
 
-.. automodule:: PQAnalysis.io.inputFileReader.PIMD_QMCF.output_files
+.. automodule:: PQAnalysis.io.inputFileReader.PQ.output_files
     
 
 

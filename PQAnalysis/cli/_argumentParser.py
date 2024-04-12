@@ -86,9 +86,9 @@ class _ArgumentParser(argparse.ArgumentParser):
     def parse_engine(self):
         """
         The parse_engine method adds the engine argument to the parser.
-        The engine argument is an optional argument and defaults to pimd-qmcf.
+        The engine argument is an optional argument and defaults to PQ.
         """
-        super().add_argument('--engine', choices=MDEngineFormat.values(), type=MDEngineFormat, default=MDEngineFormat("pimd-qmcf"),
+        super().add_argument('--engine', choices=MDEngineFormat.values(), type=MDEngineFormat, default=MDEngineFormat("PQ"),
                              help='The case-insensitive MDEngineFormat of the input trajectory.')
 
     def _parse_progress(self):

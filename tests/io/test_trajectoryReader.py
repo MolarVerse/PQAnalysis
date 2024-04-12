@@ -70,7 +70,7 @@ class TestTrajectoryReader:
         with pytest.raises(FrameReaderError) as exception:
             reader.read()
         assert str(
-            exception.value) == "The first atom in one of the frames is not X. Please use pimd_qmcf (default) md engine instead"
+            exception.value) == "The first atom in one of the frames is not X. Please use PQ (default) md engine instead"
 
         file = open("tmp.xyz", "w")
         print("2 1.0 1.0 1.0", file=file)

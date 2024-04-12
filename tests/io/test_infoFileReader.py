@@ -30,7 +30,7 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
 
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"
-    assert reader.format == MDEngineFormat.PIMD_QMCF
+    assert reader.format == MDEngineFormat.PQ
 
     reader = InfoFileReader("md-01.info", format="qmcfc")
     assert reader.filename == "md-01.info"
@@ -110,7 +110,7 @@ def test_read(test_with_data_dir):
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
     assert str(
-        exception.value) == "Info file md-01.qmcfc.info is not in pimd-qmcf format."
+        exception.value) == "Info file md-01.qmcfc.info is not in PQ format."
 
     reader = InfoFileReader("md-01.info", format="qmcfc")
     with pytest.raises(MDEngineFormatError) as exception:

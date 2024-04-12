@@ -10,7 +10,7 @@ from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 
 
-def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF):
+def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     """
     Calculates the radial distribution function (RDF) using a given input file.
 
@@ -24,7 +24,7 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PIMD_Q
     input_file : str
         The input file. For more information on the input file keys please visit :py:mod:`~PQAnalysis.analysis.rdf.rdfInputFileReader`.
     md_format : MDEngineFormat | str, optional
-        the format of the input trajectory. Default is "pimd-qmcf". For more information on the supported formats please visit :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
+        the format of the input trajectory. Default is "PQ". For more information on the supported formats please visit :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
     """
     md_format = MDEngineFormat(md_format)
 

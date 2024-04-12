@@ -21,19 +21,19 @@ class TestEnergyReader:
         assert reader.filename == "md-01.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
-        assert reader.format == MDEngineFormat.PIMD_QMCF
+        assert reader.format == MDEngineFormat.PQ
 
         reader = EnergyFileReader("md-01.en", use_info_file=False)
         assert reader.filename == "md-01.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
-        assert reader.format == MDEngineFormat.PIMD_QMCF
+        assert reader.format == MDEngineFormat.PQ
 
         reader = EnergyFileReader("md-01_noinfo.en")
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == None
         assert reader.withInfoFile == False
-        assert reader.format == MDEngineFormat.PIMD_QMCF
+        assert reader.format == MDEngineFormat.PQ
 
         with pytest.raises(FileNotFoundError) as exception:
             EnergyFileReader(
@@ -46,7 +46,7 @@ class TestEnergyReader:
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == "md-01.info"
         assert reader.withInfoFile == True
-        assert reader.format == MDEngineFormat.PIMD_QMCF
+        assert reader.format == MDEngineFormat.PQ
 
         reader = EnergyFileReader("md-01.en", format="qmcfc")
         assert reader.filename == "md-01.en"

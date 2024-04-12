@@ -17,12 +17,12 @@ class TrajectoryWriter(BaseWriter):
     A class for writing a trajectory to a file.
     Inherits from BaseWriter. See BaseWriter for more information.
 
-    It can write a trajectory to a file in either a PIMD-QMCF format or a QMCFC format.
+    It can write a trajectory to a file in either a PQ format or a QMCFC format.
     """
 
     def __init__(self,
                  filename: str | None = None,
-                 format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 format: MDEngineFormat | str = MDEngineFormat.PQ,
                  mode: str | FileWritingMode = 'w'
                  ) -> None:
         """
@@ -31,7 +31,7 @@ class TrajectoryWriter(BaseWriter):
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
         format : MDEngineFormat | str, optional
-            The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
+            The format of the md engine for the output file. The default is MDEngineFormat.PQ.
         mode : str, optional
             The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
         """

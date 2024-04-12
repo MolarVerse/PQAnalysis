@@ -20,7 +20,7 @@ def add_molecule(restart_file: str,
                  distance_cutoff: PositiveReal = 1.0,
                  max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                  rotation_angle_step: PositiveInt = 10,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
                  ) -> None:
     """
     Add a molecule to a restart file.
@@ -52,7 +52,7 @@ def add_molecule(restart_file: str,
     rotation_angle_step : PositiveInt, optional
         The angle step for the fitting, by default 10
     md_engine_format : MDEngineFormat | str, optional
-        The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+        The format of the restart file, by default MDEngineFormat.PQ
 
     Raises
     ------
@@ -95,7 +95,7 @@ class AddMolecule:
                  distance_cutoff: PositiveReal = 1.0,
                  max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                  rotation_angle_step: PositiveInt = 10,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
                  ) -> None:
         """
         Parameters
@@ -123,7 +123,7 @@ class AddMolecule:
         rotation_angle_step : PositiveInt, optional
             The angle step for the fitting, by default 10
         md_engine_format : MDEngineFormat | str, optional
-            The format of the restart file, by default MDEngineFormat.PIMD_QMCF
+            The format of the restart file, by default MDEngineFormat.PQ
 
         Raises
         ------

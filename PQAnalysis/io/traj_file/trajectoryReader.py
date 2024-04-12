@@ -36,7 +36,7 @@ class TrajectoryReader(BaseReader):
     def __init__(self,
                  filename: str | List[str],
                  traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
-                 md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                 md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                  topology: Topology | None = None,
                  constant_topology: bool = True
                  ) -> None:
@@ -48,7 +48,7 @@ class TrajectoryReader(BaseReader):
         traj_format : TrajectoryFormat | str, optional
             The format of the trajectory. Default is TrajectoryFormat.AUTO. The format is inferred from the file extension.
         md_format : MDEngineFormat | str, optional
-            The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
+            The format of the trajectory. Default is MDEngineFormat.PQ.
         topology : Topology, optional
             The topology of the trajectory. Default is None.
         constant_topology : bool, optional
@@ -86,7 +86,7 @@ class TrajectoryReader(BaseReader):
         Parameters
         ----------
         md_format : MDEngineFormat | str, optional
-            The format of the trajectory. Default is MDEngineFormat.PIMD_QMCF.
+            The format of the trajectory. Default is MDEngineFormat.PQ.
 
         Returns
         -------

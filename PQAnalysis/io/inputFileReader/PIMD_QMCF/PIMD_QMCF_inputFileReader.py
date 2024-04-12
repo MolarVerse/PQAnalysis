@@ -1,5 +1,5 @@
 """
-A module containing the PIMD_QMCF_InputFileReader class.
+A module containing the PQ_InputFileReader class.
 """
 
 from __future__ import annotations
@@ -12,9 +12,9 @@ from ..inputFileParser import InputFileParser
 from PQAnalysis.types import PositiveInt
 
 
-class PIMD_QMCF_InputFileReader(_OutputFileMixin):
+class PQ_InputFileReader(_OutputFileMixin):
     """
-    Reads a PIMD_QMCF input file and parses it.
+    Reads a PQ input file and parses it.
 
     Parameters
     ----------
@@ -24,9 +24,9 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
 
     def __init__(self, filename: str):
         """
-        Initialize the PIMD_QMCF_InputFileReader class.
+        Initialize the PQ_InputFileReader class.
 
-        self.format is set to InputFileFormat.PIMD_QMCF.
+        self.format is set to InputFileFormat.PQ.
         A parser is created using the InputFileParser class.
 
         Parameters
@@ -35,7 +35,7 @@ class PIMD_QMCF_InputFileReader(_OutputFileMixin):
             filename of the input file
         """
 
-        self.format = InputFileFormat.PIMD_QMCF
+        self.format = InputFileFormat.PQ
         self.filename = filename
         self.parser = InputFileParser(self.filename, self.format)
 

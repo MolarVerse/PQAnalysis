@@ -24,9 +24,9 @@ class TestInputFileParser:
         assert input_file_parser.filename == input_file
         assert input_file_parser.input_format == InputFileFormat.PQANALYSIS
 
-        input_file_parser = InputFileParser(input_file, "pimd-qmcf")
+        input_file_parser = InputFileParser(input_file, "PQ")
         assert input_file_parser.filename == input_file
-        assert input_file_parser.input_format == InputFileFormat.PIMD_QMCF
+        assert input_file_parser.input_format == InputFileFormat.PQ
 
         input_file_parser = InputFileParser(input_file, "qmcfc")
         assert input_file_parser.filename == input_file
@@ -36,8 +36,8 @@ class TestInputFileParser:
             InputFileParser(input_file, "non-existent-format")
         assert str(exception.value) == """
 'non-existent-format' is not a valid InputFileFormat.
-Possible values are: InputFileFormat.PQANALYSIS, InputFileFormat.PIMD_QMCF, InputFileFormat.QMCFC
-or their case insensitive string representation: PQANALYSIS, PIMD-QMCF, QMCFC"""
+Possible values are: InputFileFormat.PQANALYSIS, InputFileFormat.PQ, InputFileFormat.QMCFC
+or their case insensitive string representation: PQANALYSIS, PQ, QMCFC"""
 
     @pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
     def test_parse(self, test_with_data_dir):
@@ -54,7 +54,7 @@ or their case insensitive string representation: PQANALYSIS, PIMD-QMCF, QMCFC"""
 
         assert input_dictionary.dict == dict
 
-        input_file_parser = InputFileParser("input_pimd-qmcf.in", "pimd-qmcf")
+        input_file_parser = InputFileParser("input_PQ.in", "PQ")
         input_dictionary = input_file_parser.parse()
 
         dict = {}

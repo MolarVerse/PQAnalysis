@@ -13,8 +13,8 @@ from PQAnalysis.core import Residue, Residues, Element
 
 class MoldescriptorReader(BaseReader):
     """
-    This is a class to read moldescriptor files. Moldescriptor files are used by the PIMD-QMCF and QMCFC MD engines to store the mol types of a system. The moldescriptor file is a text file that contains the mol types of a system. The mol types are defined by the elements, atom types and partial charges of the atoms of the mol type. 
-    For more information of how a moldescriptor file should look like please see the documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
+    This is a class to read moldescriptor files. Moldescriptor files are used by the PQ and QMCFC MD engines to store the mol types of a system. The moldescriptor file is a text file that contains the mol types of a system. The mol types are defined by the elements, atom types and partial charges of the atoms of the mol type. 
+    For more information of how a moldescriptor file should look like please see the documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
 
     Calling the read method returns a list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
     """

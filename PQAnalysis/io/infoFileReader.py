@@ -11,22 +11,22 @@ from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
 class InfoFileReader(BaseReader):
     """
     This is a class to read info files from molecular dynamics simulations. The info file
-    is a specific output file related to the energy file of PIMD-QMCF and QMCFC simulations.
+    is a specific output file related to the energy file of PQ and QMCFC simulations.
 
-    For more information on how the info file of PIMD-QMCF simulations is structured, see
-    the corresponding documentation of the `PIMD-QMCF <https://molarverse.github.io/pimd_qmcf>`_ code.
+    For more information on how the info file of PQ simulations is structured, see
+    the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
 
     Calling the read method returns a tuple of dictionaries. For both dictionaries the keys are the names of the information strings (i.e. physical properties). The values of the first dictionary are the corresponding indices of the data entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy` object. The values of the second dictionary are the corresponding units of the information strings (None if no units are given).
     """
 
-    def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF) -> None:
+    def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
         """
         Parameters
         ----------
         filename : str
             The name of the file to read from.
         format : MDEngineFormat | str, optional
-            The format of the info file. Default is MDEngineFormat.PIMD_QMCF.
+            The format of the info file. Default is MDEngineFormat.PQ.
         """
         super().__init__(filename)
 
@@ -46,14 +46,14 @@ class InfoFileReader(BaseReader):
             The units of the info file as a dictionary. The keys are the names of the
             information strings. The values are the corresponding units.
         """
-        if self.format == MDEngineFormat.PIMD_QMCF:
-            return self.read_pimd_qmcf()
+        if self.format == MDEngineFormat.PQ:
+            return self.read_PQ()
         elif self.format == MDEngineFormat.QMCFC:
             return self.read_qmcfc()
 
-    def read_pimd_qmcf(self) -> Tuple[Dict, Dict]:
+    def read_PQ(self) -> Tuple[Dict, Dict]:
         """
-        Reads the info file in pimd-qmcf format.
+        Reads the info file in PQ format.
 
         Returns
         -------
@@ -68,7 +68,7 @@ class InfoFileReader(BaseReader):
         Raises
         ------
         MDEngineFormatError
-            If the info file is not in pimd-qmcf format.
+            If the info file is not in PQ format.
         """
         info = {}
         units = {}
@@ -91,7 +91,7 @@ class InfoFileReader(BaseReader):
                     entry_counter += 1
                 else:
                     raise MDEngineFormatError(
-                        f"Info file {self.filename} is not in pimd-qmcf format.")
+                        f"Info file {self.filename} is not in PQ format.")
 
         return info, units
 

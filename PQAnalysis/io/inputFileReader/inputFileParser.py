@@ -19,7 +19,7 @@ class InputFileParser(BaseReader):
     """
     Class to parse input files.
 
-    This parser is based on a lark grammar. It uses the lark parser to parse the input file. For more information have a look at the `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. This input file parser is used for parsing all kind of input files. By selecting the input_format the automatically invokes the corresponding grammar. The input_format can be either PQANALYSIS, PIMD_QMCF or QMCFC. The PQANALYSIS format is used for parsing the input files of the PQAnalysis code. The PIMD_QMCF and QMCFC formats are used for parsing the input files of the PIMD-QMCF and QMCFC codes, respectively.
+    This parser is based on a lark grammar. It uses the lark parser to parse the input file. For more information have a look at the `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. This input file parser is used for parsing all kind of input files. By selecting the input_format the automatically invokes the corresponding grammar. The input_format can be either PQANALYSIS, PQ or QMCFC. The PQANALYSIS format is used for parsing the input files of the PQAnalysis code. The PQ and QMCFC formats are used for parsing the input files of the PQ and QMCFC codes, respectively.
 
     Parameters
     ----------
@@ -55,8 +55,8 @@ class InputFileParser(BaseReader):
         """
         if self.input_format == InputFileFormat.PQANALYSIS:
             grammar_file = "inputGrammar.lark"
-        elif self.input_format == InputFileFormat.PIMD_QMCF or self.input_format == InputFileFormat.QMCFC:
-            grammar_file = "PIMD_QMCF_inputGrammar.lark"
+        elif self.input_format == InputFileFormat.PQ or self.input_format == InputFileFormat.QMCFC:
+            grammar_file = "PQ_inputGrammar.lark"
 
         grammar_path = __base_path__ / "grammar"
 

@@ -107,7 +107,7 @@ class MDEngineFormat(BaseEnumFormat):
     An enumeration of the supported MD engine formats.
     """
 
-    PIMD_QMCF = "PIMD-QMCF"
+    PQ = "PQ"
     QMCFC = "QMCFC"
 
     @classmethod
@@ -143,4 +143,4 @@ class MDEngineFormat(BaseEnumFormat):
         bool
             True if the format is a QMCF format, False otherwise.
         """
-        return format in [cls.PIMD_QMCF, cls.QMCFC]
+        return format in [cls.PQ, cls.QMCFC]

@@ -33,8 +33,8 @@ def main():
     parser.parse_input_file()
     parser.add_argument('-n', '--number', type=int, default=1,
                         help='The number of times the input file should be continued.')
-    parser.add_argument('--input-format', type=str, default='pimd-qmcf',
-                        help='The format of the input file. Default is pimd-qmcf.')
+    parser.add_argument('--input-format', type=str, default='PQ',
+                        help='The format of the input file. Default is PQ.')
 
     args = parser.parse_args()
 
