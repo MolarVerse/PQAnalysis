@@ -4,7 +4,8 @@ A module containing the TrajectoryWriter class and its associated methods.
 
 from beartype.typing import List
 
-from . import BaseWriter, FileWritingMode
+from PQAnalysis.io.base import BaseWriter
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray

@@ -192,3 +192,8 @@ class Atom():
     @element.setter
     def element(self, element: Element) -> None:
         self._element = element
+
+    @property
+    def element_name(self) -> str:
+        """str: The name of the element (e.g. 'Carbon')"""
+        return self._element.name
