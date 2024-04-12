@@ -9,14 +9,16 @@ import numpy as np
 import warnings
 
 # 3rd party imports
-from beartype.typing import Tuple, List
+from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
 # local imports
 import PQAnalysis.config as config
 
-# local imports
+# local relative imports
 from .exceptions import RDFError, RDFWarning
+
+# local absolute imports
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cells
 from PQAnalysis.traj import Trajectory, check_trajectory_PBC, check_trajectory_vacuum

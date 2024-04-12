@@ -170,8 +170,8 @@ class AddMolecule:
 
         fitted_systems = self.add_molecules()
 
-        self.restart_frame.image()
-        lines = writer.get_lines(self.restart_frame, atom_counter=0)
+        self.restart_system.image()
+        lines = writer.get_lines(self.restart_system, atom_counter=0)
         for i, system in enumerate(fitted_systems):
             system.image()
             lines += writer.get_lines(system, atom_counter=i+1)
@@ -189,8 +189,8 @@ class AddMolecule:
         """
         self.read_files()
 
-        fitted_systems = self.restart_frame.fit_atomic_system(
-            system=self.molecule_frame.system,
+        fitted_systems = self.restart_system.fit_atomic_system(
+            system=self.molecule.system,
             number_of_additions=self.number_of_additions,
             max_iterations=self.max_iterations,
             distance_cutoff=self.distance_cutoff,
@@ -204,26 +204,26 @@ class AddMolecule:
         """
         Read the restart and molecule files.
         """
-        self.restart_frame = read_restart_file(
+        self.restart_system = read_restart_file(
             self.restart_file,
             self.restart_moldescriptor_file,
             md_engine_format=self.md_engine_format
         )
 
-        self.molecule_frame = self.read_molecule_file()
+        self.molecule = self.read_molecule_file()
 
-    def read_molecule_file(self):
+    def read_molecule_file(self) -> AtomicSystem:
         """
         Read the molecule file.
 
         Returns
         -------
-        Frame
-            The frame of the molecule file.
+        AtomicSystem
+            The AtomicSystem of the molecule file.
         """
         if self.molecule_file_type == OutputFileFormat.RESTART:
 
-            molecule_frame = read_restart_file(
+            molecule = read_restart_file(
                 self.molecule_file,
                 self.molecule_moldescriptor_file,
                 md_engine_format=self.md_engine_format
@@ -235,6 +235,6 @@ class AddMolecule:
                 self.molecule_file,
             ).frame_generator()
 
-            molecule_frame = next(frame_generator)
+            molecule = next(frame_generator)
 
-        return molecule_frame
+        return molecule

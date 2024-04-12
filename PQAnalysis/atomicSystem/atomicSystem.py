@@ -301,9 +301,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             system.image()
             return system
 
-    def compute_com_frame(self, group=None) -> AtomicSystem:
+    def compute_com_atomicSystem(self, group=None) -> AtomicSystem:
         """
-        Computes a new Frame with the center of mass of the system or groups of atoms.  
+        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
 
         Parameters
         ----------
@@ -312,12 +312,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         Returns
         -------
-        Frame
-            A new Frame with the center of mass of the system or groups of atoms.
+        AtomicSystem
+            A new AtomicSystem with the center of mass of the system or groups of atoms.
 
         Raises
         ------
-        FrameError
+        AtomicSystemError
             If the number of atoms in the selection is not a multiple of group.
         """
         if group is None:
