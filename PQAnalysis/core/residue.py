@@ -45,9 +45,9 @@ class Residue:
                  name: str,
                  id: int,
                  total_charge: Real,
-                 elements: Elements,
-                 atom_types: Np1DIntArray,
-                 partial_charges: Np1DNumberArray,
+                 elements: Element | Elements,
+                 atom_types: int | Np1DIntArray,
+                 partial_charges: Real | Np1DNumberArray,
                  ) -> None:
         """
         Initializes the Residue with the given parameters.
@@ -73,19 +73,19 @@ class Residue:
             If the number of elements, atom_types and partial_charges are not the same.
         """
 
-        if not (len(elements) == len(atom_types) == len(partial_charges)):
-            raise ResidueError(
-                "The number of elements, atom_types and partial_charges must be the same.")
-
         self.name = name
         self.id = id
         self.total_charge = total_charge
 
         # set here the internal variables to avoid setters
         # (which would check the length of the arrays)
-        self._elements = elements
-        self._atom_types = atom_types
-        self._partial_charges = partial_charges
+        self._elements = list(np.atleast_1d(elements))
+        self._atom_types = np.atleast_1d(atom_types)
+        self._partial_charges = np.atleast_1d(partial_charges)
+
+        if not (len(self.elements) == len(self.atom_types) == len(self.partial_charges)):
+            raise ResidueError(
+                "The number of elements, atom_types and partial_charges must be the same.")
 
     @property
     def n_atoms(self) -> int:

@@ -2,18 +2,169 @@
 This module provides API functions for input/output handling of molecular dynamics simulations.
 """
 
-from beartype.typing import List
+from beartype.typing import List, Any, Generator
 
-from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat
+from . import RestartFileReader, TrajectoryWriter, BoxWriter, TrajectoryReader, BoxFileFormat, FileWritingMode
 from .inputFileReader import PIMD_QMCF_InputFileReader as Reader
 from .inputFileReader.formats import InputFileFormat
 
 from PQAnalysis.types import PositiveReal
 from PQAnalysis.core import Cell
-from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.traj import Trajectory, Frame, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.topology import Topology
 
 
-def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF):
+def write(object_to_write: Any,
+          filename: str | None = None,
+          mode: FileWritingMode | str = FileWritingMode.WRITE,
+          **kwargs,
+          ) -> None:
+    """
+    API write wrapper function for writing different objects to a file.
+
+    It can call the following specialized write functions (depending on the object_to_write):
+
+    write_trajectory: Writes a trajectory to a file.
+        - Trajectory
+        - Frame
+        - AtomicSystem
+
+
+    Parameters
+    ----------
+    object_to_write : Any
+        _description_
+    filename : str | None, optional
+        _description_, by default None
+    mode : FileWritingMode | str, optional
+        _description_, by default FileWritingMode.WRITE
+    kwargs : dict
+        kwargs dictionary which is passed to the specialized write function for the object.
+    """
+
+    if isinstance(object_to_write, Trajectory):
+        write_trajectory(object_to_write, filename, format, type, mode)
+    elif isinstance(object_to_write, Frame) or isinstance(object_to_write, AtomicSystem):
+        write_trajectory(Trajectory(object_to_write),
+                         filename, format, type, mode)
+    else:
+        raise NotImplementedError(
+            f"Writing object of type {type(object_to_write)} is not implemented yet.")
+
+
+def write_trajectory(traj,
+                     filename: str | None = None,
+                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                     mode: FileWritingMode | str = FileWritingMode.WRITE,
+                     ) -> None:
+    """Wrapper for TrajectoryWriter to write a trajectory to a file.
+
+    if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
+    if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
+
+    Parameters
+    ----------
+    traj : Trajectory
+        The trajectory to write.
+    filename : str, optional
+        The name of the file to write to. If None, the output is printed to stdout.
+    format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
+    type : TrajectoryFormat | str, optional
+        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+    mode  : FileWritingMode | str, optional
+        The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
+
+    """
+
+    writer = TrajectoryWriter(filename, format=format, mode=mode)
+    writer.write(traj, type=type)
+
+
+def read_trajectory(filename: str,
+                    md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                    traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                    topology: Topology | None = None,
+                    constant_topology: bool = True
+                    ) -> Trajectory:
+    """
+    API function for reading a trajectory from a file.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to read from.
+    md_format : MDEngineFormat | str, optional
+        The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
+    traj_format : TrajectoryFormat | str, optional
+        The format of the trajectory, by default TrajectoryFormat.XYZ
+    topology : Topology | None, optional
+        The topology of the trajectory, by default None
+    constant_topology : bool, optional
+        Whether the topology is constant over the trajectory or does change, by default True
+
+    Returns
+    -------
+    Trajectory
+        The trajectory read from the file.
+    """
+
+    reader = TrajectoryReader(
+        filename,
+        traj_format=traj_format,
+        md_format=md_format,
+        topology=topology,
+        constant_topology=constant_topology
+    )
+
+    return reader.read()
+
+
+def read_trajectory_generator(filename: str,
+                              md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
+                              traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                              topology: Topology | None = None,
+                              constant_topology: bool = True
+                              ) -> Generator[Frame]:
+    """
+    API function for building a frame generator from a trajectory file.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to read from.
+    md_format : MDEngineFormat | str, optional
+        The format of the trajectory, by default MDEngineFormat.PIMD_QMCF
+    traj_format : TrajectoryFormat | str, optional
+        The format of the trajectory, by default TrajectoryFormat.XYZ
+    topology : Topology | None, optional
+        The topology of the trajectory, by default None
+    constant_topology : bool, optional
+        Whether the topology is constant over the trajectory or does change, by default True
+
+    Returns
+    -------
+    Generator[Frame]
+        A generator for the frames in the trajectory.
+    """
+
+    reader = TrajectoryReader(
+        filename,
+        traj_format=traj_format,
+        md_format=md_format,
+        topology=topology,
+        constant_topology=constant_topology
+    )
+
+    return reader.frame_generator()
+
+
+def continue_input_file(input_file: str,
+                        n: PositiveReal = 1,
+                        input_format: InputFileFormat | str = InputFileFormat.PIMD_QMCF
+                        ) -> None:
     """
     API function for continuing an input file.
 
@@ -44,7 +195,11 @@ def continue_input_file(input_file: str, n: PositiveReal = 1, input_format: Inpu
     reader.continue_input_file(n)
 
 
-def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True):
+def rst2xyz(restart_file: str,
+            output: str | None = None,
+            print_box: bool = True,
+            md_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF
+            ):
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -58,6 +213,8 @@ def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True
         The output file. If not specified, the output is printed to stdout.
     print_box : bool
         If True, the box is printed. If False, the box is not printed. Default is True.
+    md_format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
     """
     reader = RestartFileReader(restart_file)
     frame = reader.read()
@@ -65,7 +222,7 @@ def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True
     if not print_box:
         frame.cell = Cell()
 
-    writer = TrajectoryWriter(filename=output)
+    writer = TrajectoryWriter(filename=output, format=md_format)
     writer.write(frame, type="xyz")
 
 
@@ -97,38 +254,12 @@ def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) 
         output_format = BoxFileFormat.DATA
 
     writer = BoxWriter(filename=output, output_format=output_format)
+
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)
         trajectory = reader.read()
 
         writer.write(trajectory, reset_counter=False)
-
-
-def write_trajectory(traj,
-                     filename: str | None = None,
-                     format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ
-                     ) -> None:
-    """Wrapper for TrajectoryWriter to write a trajectory to a file.
-
-    if format is None, the default PIMD-QMCF format is used. (see TrajectoryWriter.formats for available formats)
-    if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
-
-    Parameters
-    ----------
-    traj : Trajectory
-        The trajectory to write.
-    filename : str, optional
-        The name of the file to write to. If None, the output is printed to stdout.
-    format : MDEngineFormat | str, optional
-        The format of the md engine for the output file. The default is MDEngineFormat.PIMD_QMCF.
-    type : TrajectoryFormat | str, optional
-        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
-
-    """
-
-    writer = TrajectoryWriter(filename, format=format)
-    writer.write(traj, type=type)
 
 
 def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
@@ -142,7 +273,9 @@ def traj2qmcfc(trajectory_files: List[str], output: str | None = None):
     output : str, optional
         The output file. If not specified, the output is printed to stdout.
     """
+
     writer = TrajectoryWriter(filename=output, format="qmcfc")
+
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)
         trajectory = reader.read()

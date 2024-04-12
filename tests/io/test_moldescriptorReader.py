@@ -45,7 +45,7 @@ O 2 -4.6
         with pytest.raises(MoldescriptorReaderError) as exception:
             MoldescriptorReader._read_mol_type(mol_type.splitlines(), 1)
         assert str(
-            exception.value) == "The number of columns in the body of a mol type must be 3 or 4."
+            exception.value) == "The number of columns in the body of a mol type must be 3 or 4.\nGot 2 columns instead in text: 'H 1'\n"
 
     @pytest.mark.parametrize("example_dir", ["readMoldescriptor"], indirect=False)
     def test_read(self, test_with_data_dir):
@@ -81,4 +81,4 @@ O 2 -4.6
         with pytest.raises(MoldescriptorReaderError) as exception:
             reader.read()
         assert str(
-            exception.value) == "The number of columns in the header of a mol type must be 3."
+            exception.value) == "The number of columns in the header of a mol type must be 3.\nGot 2 columns instead in text: '  H2O            3'\n"
