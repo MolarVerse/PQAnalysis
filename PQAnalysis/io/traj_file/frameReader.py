@@ -8,7 +8,7 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from . import FrameReaderError
+from .exceptions import FrameReaderError
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.core import Atom, Cell, ElementNotFoundError
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray

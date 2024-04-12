@@ -6,7 +6,8 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseReader, RestartFileReaderError, MoldescriptorReader
+from .. import BaseReader, MoldescriptorReader
+from .exceptions import RestartFileReaderError
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.core import Atom, Cell, Residues
 from PQAnalysis.traj import MDEngineFormat, Frame

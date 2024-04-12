@@ -13,33 +13,9 @@ class BoxWriterError(PQException):
     pass
 
 
-class FrameReaderError(PQException):
-    """
-    Exception raised for errors related to the FrameReader class
-    """
-
-    pass
-
-
 class MoldescriptorReaderError(PQException):
     """
     Exception raised for errors related to the MoldescriptorReader class
-    """
-
-    pass
-
-
-class RestartFileReaderError(PQException):
-    """
-    Exception raised for errors related to the RestartFileReader class
-    """
-
-    pass
-
-
-class TrajectoryReaderError(PQException):
-    """
-    Exception raised for errors related to the TrajectoryReader class
     """
 
     pass
@@ -54,6 +30,14 @@ class BoxFileFormatError(BaseEnumFormatError):
 
 
 class FileWritingModeError(BaseEnumFormatError):
+    """
+    Exception raised if the given enum is not valid
+    """
+
+    pass
+
+
+class OutputFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """

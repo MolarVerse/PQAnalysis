@@ -5,6 +5,7 @@ A module containing a Mixin Class with different properties derived from the sta
 import numpy as np
 
 from numbers import Real
+from beartype.typing import List
 
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 
@@ -83,3 +84,7 @@ class _PropertiesMixin:
     def combined_name(self) -> str:
         """str: The combined name of the atoms in the system."""
         return ''.join(atom.name for atom in self.atoms)
+
+    @property
+    def unique_element_names(self) -> List[str]:
+        return list(set([atom.element_name for atom in self.atoms]))
