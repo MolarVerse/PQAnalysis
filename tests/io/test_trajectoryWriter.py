@@ -5,7 +5,7 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
-from PQAnalysis.traj import Frame, Trajectory, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
@@ -15,10 +15,16 @@ def test_write_trajectory(capsys):
     atoms = [Atom(atom) for atom in ['h', 'o']]
     coordinates1 = np.array([[0, 0, 0], [0, 0, 1]])
     coordinates2 = np.array([[0, 0, 0], [0, 0, 1]])
-    frame1 = Frame(AtomicSystem(
-        atoms=atoms, pos=coordinates1, cell=Cell(10, 10, 10)))
-    frame2 = Frame(AtomicSystem(
-        atoms=atoms, pos=coordinates2, cell=Cell(11, 10, 10)))
+    frame1 = AtomicSystem(
+        atoms=atoms,
+        pos=coordinates1,
+        cell=Cell(10, 10, 10)
+    )
+    frame2 = AtomicSystem(
+        atoms=atoms,
+        pos=coordinates2,
+        cell=Cell(11, 10, 10)
+    )
     traj = Trajectory([frame1, frame2])
 
     print()
@@ -77,16 +83,25 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
 
         writer = TrajectoryWriter()
         writer.type = TrajectoryFormat.XYZ
-        writer._write_comment(Frame(AtomicSystem(
-            atoms=[Atom(atom) for atom in ["h", "o"]], cell=Cell(10, 10, 10))))
+        writer._write_comment(
+            AtomicSystem(
+                atoms=[Atom(atom) for atom in ["h", "o"]],
+                cell=Cell(10, 10, 10)
+            )
+        )
 
         captured = capsys.readouterr()
         assert captured.out == "\n"
 
         forces = np.array([[1, 0, 3], [0, 2, 1]])
         writer.type = TrajectoryFormat.FORCE
-        writer._write_comment(Frame(AtomicSystem(
-            atoms=[Atom(atom) for atom in ["h", "o"]], cell=Cell(10, 10, 10), forces=forces)))
+        writer._write_comment(
+            AtomicSystem(
+                atoms=[Atom(atom) for atom in ["h", "o"]],
+                cell=Cell(10, 10, 10),
+                forces=forces
+            )
+        )
 
         captured = capsys.readouterr()
         assert captured.out == "sum of forces: 1.000000e+00 2.000000e+00 4.000000e+00\n"
@@ -134,10 +149,16 @@ o     0.0000000000     0.0000000000     1.0000000000
         coordinates1 = np.array([[0, 0, 0], [0, 0, 1]])
         coordinates2 = np.array([[0, 0, 0], [0, 0, 1]])
 
-        frame1 = Frame(AtomicSystem(
-            atoms=atoms, pos=coordinates1, cell=Cell(10, 10, 10)))
-        frame2 = Frame(AtomicSystem(
-            atoms=atoms, pos=coordinates2, cell=Cell(11, 10, 10)))
+        frame1 = AtomicSystem(
+            atoms=atoms,
+            pos=coordinates1,
+            cell=Cell(10, 10, 10)
+        )
+        frame2 = AtomicSystem(
+            atoms=atoms,
+            pos=coordinates2,
+            cell=Cell(11, 10, 10)
+        )
 
         traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()
@@ -171,10 +192,16 @@ h     0.0000000000     0.0000000000     0.0000000000
 o     0.0000000000     0.0000000000     1.0000000000
 """
 
-        frame1 = Frame(AtomicSystem(
-            atoms=atoms, vel=coordinates1, cell=Cell(10, 10, 10)))
-        frame2 = Frame(AtomicSystem(
-            atoms=atoms, vel=coordinates2, cell=Cell(11, 10, 10)))
+        frame1 = AtomicSystem(
+            atoms=atoms,
+            vel=coordinates1,
+            cell=Cell(10, 10, 10)
+        )
+        frame2 = AtomicSystem(
+            atoms=atoms,
+            vel=coordinates2,
+            cell=Cell(11, 10, 10)
+        )
 
         traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()
@@ -194,10 +221,16 @@ h 0.000000000000e+00 0.000000000000e+00 0.000000000000e+00
 o 0.000000000000e+00 0.000000000000e+00 1.000000000000e+00
 """
 
-        frame1 = Frame(AtomicSystem(
-            atoms=atoms, forces=coordinates1, cell=Cell(10, 10, 10)))
-        frame2 = Frame(AtomicSystem(
-            atoms=atoms, forces=coordinates2, cell=Cell(11, 10, 10)))
+        frame1 = AtomicSystem(
+            atoms=atoms,
+            forces=coordinates1,
+            cell=Cell(10, 10, 10)
+        )
+        frame2 = AtomicSystem(
+            atoms=atoms,
+            forces=coordinates2,
+            cell=Cell(11, 10, 10)
+        )
 
         traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()
@@ -220,10 +253,16 @@ o     0.0000000000     0.0000000000     1.0000000000
         charges1 = np.array([1, 2])
         charges2 = np.array([3, 4])
 
-        frame1 = Frame(AtomicSystem(
-            atoms=atoms, charges=charges1, cell=Cell(10, 10, 10)))
-        frame2 = Frame(AtomicSystem(
-            atoms=atoms, charges=charges2, cell=Cell(11, 10, 10)))
+        frame1 = AtomicSystem(
+            atoms=atoms,
+            charges=charges1,
+            cell=Cell(10, 10, 10)
+        )
+        frame2 = AtomicSystem(
+            atoms=atoms,
+            charges=charges2,
+            cell=Cell(11, 10, 10)
+        )
 
         traj = Trajectory([frame1, frame2])
         writer = TrajectoryWriter()

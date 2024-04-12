@@ -6,8 +6,8 @@ import numpy as np
 
 from beartype.typing import List
 
-from . import BaseWriter
-from PQAnalysis.traj import MDEngineFormat, Frame
+from .. import BaseWriter, FileWritingMode
+from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.atomicSystem import AtomicSystem
@@ -30,7 +30,7 @@ class RestartFileWriter(BaseWriter):
     def __init__(self,
                  filename: str | None = None,
                  md_engine_format: MDEngineFormat | str = MDEngineFormat.PIMD_QMCF,
-                 mode: str = 'w'
+                 mode: FileWritingMode | str = 'w'
                  ) -> None:
         """
         Parameters
@@ -39,15 +39,15 @@ class RestartFileWriter(BaseWriter):
             The filename of the restart file, by default None (stdout)
         md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PIMD_QMCF
-        mode : str, optional
-            The mode of the file, by default 'w'
+        mode : FileWritingMode | str, optional
+            The writing mode, by default 'w' - Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).
         """
         super().__init__(filename, mode)
 
         self.md_engine_format = MDEngineFormat(md_engine_format)
 
     def write(self,
-              frame: Frame | AtomicSystem,
+              frame: AtomicSystem,
               atom_counter: int | Np1DNumberArray | None = None,
               ) -> None:
         """
@@ -55,7 +55,7 @@ class RestartFileWriter(BaseWriter):
 
         Parameters
         ----------
-        frame : Frame | AtomicSystem
+        frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
             The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
@@ -83,7 +83,7 @@ class RestartFileWriter(BaseWriter):
         self.close()
 
     def get_lines(self,
-                  frame: Frame | AtomicSystem,
+                  frame: AtomicSystem,
                   atom_counter: int | Np1DNumberArray | None = None,
                   ) -> List[str]:
         """
@@ -91,7 +91,7 @@ class RestartFileWriter(BaseWriter):
 
         Parameters
         ----------
-        frame : Frame | AtomicSystem
+        frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
             The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
@@ -115,7 +115,7 @@ class RestartFileWriter(BaseWriter):
         return f"Box  {cell.x} {cell.y} {cell.z}  {cell.alpha} {cell.beta} {cell.gamma}"
 
     def _write_atoms(self,
-                     frame: Frame | AtomicSystem,
+                     frame: AtomicSystem,
                      atom_counter: int | Np1DNumberArray | None = None
                      ) -> List[str]:
         """
@@ -123,7 +123,7 @@ class RestartFileWriter(BaseWriter):
 
         Parameters
         ----------
-        frame : Frame | AtomicSystem
+        frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
             The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
@@ -149,12 +149,12 @@ class RestartFileWriter(BaseWriter):
 
             try:
                 vel = frame.vel[i]
-            except:
+            except Exception:
                 vel = np.zeros(3)
 
             try:
                 force = frame.forces[i]
-            except:
+            except Exception:
                 force = np.zeros(3)
 
             residue = residues[i]

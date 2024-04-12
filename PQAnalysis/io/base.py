@@ -23,7 +23,10 @@ class BaseWriter:
 
     """
 
-    def __init__(self, filename: str | None = None, mode: str | FileWritingMode = 'w') -> None:
+    def __init__(self,
+                 filename: str | None = None,
+                 mode: str | FileWritingMode = 'w'
+                 ) -> None:
         """
         Parameters
         ----------

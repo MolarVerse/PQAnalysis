@@ -301,6 +301,46 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             system.image()
             return system
 
+    def compute_com_atomicSystem(self, group=None) -> AtomicSystem:
+        """
+        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
+
+        Parameters
+        ----------
+        group : int, optional
+            group of atoms to compute the center of mass of, by default None (all atoms)
+
+        Returns
+        -------
+        AtomicSystem
+            A new AtomicSystem with the center of mass of the system or groups of atoms.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the number of atoms in the selection is not a multiple of group.
+        """
+        if group is None:
+            group = self.n_atoms
+
+        elif self.n_atoms % group != 0:
+            raise AtomicSystemError(
+                'Number of atoms in selection is not a multiple of group.')
+
+        pos = []
+        names = []
+
+        for i in range(0, self.n_atoms, group):
+            atomic_system = AtomicSystem(
+                atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
+
+            pos.append(atomic_system.center_of_mass)
+            names.append(atomic_system.combined_name)
+
+        names = [Atom(name, use_guess_element=False) for name in names]
+
+        return AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell)
+
     def copy(self) -> AtomicSystem:
         """
         Returns a copy of the AtomicSystem.
