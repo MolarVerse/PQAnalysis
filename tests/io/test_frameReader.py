@@ -6,7 +6,7 @@ from beartype.roar import BeartypeException
 from . import pytestmark
 
 from PQAnalysis.io import FrameReader
-from PQAnalysis.io.exceptions import FrameReaderError
+from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.traj.exceptions import TrajectoryFormatError
 from PQAnalysis.traj import TrajectoryFormat

@@ -11,11 +11,15 @@ import numpy as np
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
-# Local modules
+# Local imports
 import PQAnalysis.config as config
 
-# Local modules
-from . import BaseReader, FrameReader, TrajectoryReaderError
+# Local relative modules
+from .. import BaseReader
+from .exceptions import TrajectoryReaderError
+from .frameReader import FrameReader
+
+# Local absolute imports
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat, Frame
 from PQAnalysis.core import Cell
 from PQAnalysis.topology import Topology

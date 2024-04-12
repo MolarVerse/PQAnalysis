@@ -4,7 +4,7 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.io.exceptions import FrameReaderError
+from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.traj import Frame
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomicSystem import AtomicSystem
