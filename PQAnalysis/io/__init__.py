@@ -30,6 +30,11 @@ from .gen_file.genFileReader import GenFileReader
 from .gen_file.genFileWriter import GenFileWriter
 from .gen_file.api import read_gen_file, write_gen_file
 
+# import the classes from the topology_file subpackage
+from .topology_file import TopologyFileReader
+from .topology_file import TopologyFileWriter
+from .topology_file.api import read_topology_file, write_topology_file
+
 from .infoFileReader import InfoFileReader
 from .energyFileReader import EnergyFileReader
 from .boxWriter import BoxWriter
