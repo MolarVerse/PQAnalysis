@@ -5,6 +5,9 @@ A package containing classes and functions to handle molecular/atomic topologies
 from .exceptions import TopologyError
 
 from .bond import Bond
+from .angle import Angle
+from .dihedral import Dihedral
+from .bondedTopology import BondedTopology
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
 

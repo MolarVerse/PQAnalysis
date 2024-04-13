@@ -91,13 +91,13 @@ class TestTopology:
         residue_ids = np.array([0, 1, 1])
 
         topology = Topology(atoms=self.atoms)
-        residues, new_atoms = topology.setup_residues(residue_ids, self.atoms)
+        residues, new_atoms = topology._setup_residues(residue_ids, self.atoms)
         assert residues == []
         assert new_atoms == self.atoms
 
         # residues is here empty because no reference residues are set - otherwise it would throw an error!
         topology = Topology(atoms=self.atoms, residue_ids=residue_ids)
-        residues, new_atoms = topology.setup_residues(residue_ids, self.atoms)
+        residues, new_atoms = topology._setup_residues(residue_ids, self.atoms)
         assert residues == []
         assert new_atoms == self.atoms
 
@@ -108,7 +108,7 @@ class TestTopology:
         topology.reference_residues = reference_residues
 
         with pytest.raises(ResidueError) as exception:
-            topology.setup_residues(residue_ids, atoms)
+            topology._setup_residues(residue_ids, atoms)
         assert str(
             exception.value) == """
 The element of atom 0 is not set. If any reference residues are given
@@ -120,7 +120,7 @@ please set 'check_residues' to False"""
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
         with pytest.warns(ResidueWarning) as record:
-            residues, new_atoms = topology.setup_residues(residue_ids, atoms)
+            residues, new_atoms = topology._setup_residues(residue_ids, atoms)
             assert len(residues) == 2
             assert new_atoms == atoms
             assert residues[0] == QMResidue(Element('C'))
@@ -129,7 +129,7 @@ please set 'check_residues' to False"""
             record[0].message) == "The element of atom 1 (Element(c, 6, 12.0107)) does not match the element of the reference residue ALA (Element(h, 1, 1.00794)). Therefore the element type of the residue description will be used within the topology format!"
 
         topology.check_residues = False
-        residues, new_atoms = topology.setup_residues(residue_ids, atoms)
+        residues, new_atoms = topology._setup_residues(residue_ids, atoms)
         assert residues == []
 
         residue_ids = np.array([0, 2, 2])
@@ -137,7 +137,7 @@ please set 'check_residues' to False"""
         topology.reference_residues = reference_residues
 
         with pytest.raises(ResidueError) as exception:
-            topology.setup_residues(residue_ids, atoms)
+            topology._setup_residues(residue_ids, atoms)
         assert str(
             exception.value) == "Residue ids [2] have no corresponding reference residue."
 
@@ -146,7 +146,7 @@ please set 'check_residues' to False"""
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
         with pytest.raises(ResidueError) as exception:
-            topology.setup_residues(residue_ids, atoms)
+            topology._setup_residues(residue_ids, atoms)
         assert str(
             exception.value) == "The residue ids are not contiguous. Problems with residue ALA with indices 1-2."
 
@@ -154,14 +154,14 @@ please set 'check_residues' to False"""
         atoms = [Atom('H'), Atom('H'), Atom('C')]
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
-        residues, new_atoms = topology.setup_residues(residue_ids, atoms)
+        residues, new_atoms = topology._setup_residues(residue_ids, atoms)
         assert new_atoms == atoms
         assert residues[0] == reference_residues[0]
         assert residues[1] == QMResidue(Element('C'))
 
         topology = Topology(atoms=atoms, residue_ids=residue_ids,
                             reference_residues=reference_residues)
-        residues, new_atoms = topology.setup_residues(residue_ids, atoms)
+        residues, new_atoms = topology._setup_residues(residue_ids, atoms)
         assert new_atoms == atoms
         assert residues[0] == reference_residues[0]
         assert residues[1] == QMResidue(Element('C'))
