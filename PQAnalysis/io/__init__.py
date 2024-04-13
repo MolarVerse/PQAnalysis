@@ -28,6 +28,7 @@ from .traj_file.api import (
 # import the classes from the gen_file subpackage
 from .gen_file.genFileReader import GenFileReader
 from .gen_file.genFileWriter import GenFileWriter
+from .gen_file.api import read_gen_file, write_gen_file
 
 from .infoFileReader import InfoFileReader
 from .energyFileReader import EnergyFileReader
@@ -44,5 +45,7 @@ from .api import (
     rst2xyz,
     traj2box,
     traj2qmcfc,
+    gen2xyz,
+    xyz2gen,
     continue_input_file
 )
