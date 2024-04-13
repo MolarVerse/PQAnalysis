@@ -178,6 +178,12 @@ class AddMolecule:
 
         writer.write_lines_to_file(lines)
 
+    def continue_topology_file(self,
+                               original_shake_file: str,
+                               new_shake_file: str,
+                               ) -> None:
+        pass
+
     def add_molecules(self) -> List[AtomicSystem]:
         """
         Calculates all newly fitted atomic systems
@@ -190,7 +196,7 @@ class AddMolecule:
         self.read_files()
 
         fitted_systems = self.restart_system.fit_atomic_system(
-            system=self.molecule.system,
+            system=self.molecule,
             number_of_additions=self.number_of_additions,
             max_iterations=self.max_iterations,
             distance_cutoff=self.distance_cutoff,
