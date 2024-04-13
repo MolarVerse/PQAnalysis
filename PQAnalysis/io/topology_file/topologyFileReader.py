@@ -110,10 +110,11 @@ class TopologyFileReader(BaseReader):
 
             self._shake_bonds.append(
                 Bond(
-                    int(index),
-                    int(target_index),
-                    float(distance),
-                    is_linker=is_linker
+                    index1=int(index),
+                    index2=int(target_index),
+                    equilibrium_distance=float(distance),
+                    is_linker=is_linker,
+                    is_shake=True,
                 )
             )
 
