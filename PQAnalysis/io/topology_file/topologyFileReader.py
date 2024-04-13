@@ -1,5 +1,9 @@
+import warnings
+
+from beartype.typing import List
+
 from PQAnalysis.io import BaseReader
-from PQAnalysis.topology import Bond
+from PQAnalysis.topology import Bond, BondedTopology
 
 
 class TopologyFileReader(BaseReader):
@@ -10,20 +14,34 @@ class TopologyFileReader(BaseReader):
         blocks = self.get_definitions()
         self.parse_blocks(blocks)
 
-    def parse_blocks(self, blocks):
+    def parse_blocks(self, blocks) -> BondedTopology:
+        bonds = None
+        shake_bonds = None
+        angles = None
+        dihedrals = None
+        impropers = None
+
         for key, value in blocks.items():
             if key.lower() == "bonds":
-                self.parse_bonds(value)
+                bonds = self.parse_bonds(value)
             elif key == "SHAKE":
-                self.parse_bonds(value)
+                shake_bonds = self.parse_shake(value)
             elif key == "ANGLES":
-                self.parse_angles(value)
+                angles = self.parse_angles(value)
             elif key == "DIHEDRALS":
-                self.parse_dihedrals(value)
+                dihedrals = self.parse_dihedrals(value)
             elif key == "IMPROPERS":
-                self.parse_impropers(value)
+                impropers = self.parse_impropers(value)
             else:
                 raise ValueError(f"Unknown block {key}")
+
+        return BondedTopology(
+            bonds=bonds,
+            angles=angles,
+            dihedrals=dihedrals,
+            impropers=impropers,
+            shake_bonds=shake_bonds
+        )
 
     def get_definitions(self):
         with open(self.filename, "r") as file:
@@ -55,50 +73,48 @@ class TopologyFileReader(BaseReader):
             data = {}
             for block in blocks:
                 key = block[0].split()[0]
-                value = block[:-1]
+                value = block[1:-1]
                 data[key] = value
 
             return data
 
     def parse_bonds(self, block):
-        pass
+        warnings.warn("Parsing of bonds is not implemented yet",
+                      NotImplementedError)
+        return None
 
     def parse_angles(self, block):
-        pass
+        warnings.warn("Parsing of angles is not implemented yet",
+                      NotImplementedError)
+        return None
 
     def parse_dihedrals(self, block):
-        pass
+        warnings.warn(
+            "Parsing of dihedrals is not implemented yet", NotImplementedError)
+        return None
 
     def parse_impropers(self, block):
-        pass
+        warnings.warn(
+            "Parsing of impropers is not implemented yet", NotImplementedError)
+        return None
 
-    def parse_shake(self, block):
-        self._shake_bonds = []
+    def parse_shake(self, block) -> List[Bond]:
+        shake_bonds = []
         for line in block:
-            if line.startswith("SHAKE"):
-                _, n_atoms, n_targets, n_link_shakes = line.split()
-                n_atoms = int(n_atoms)
-                n_targets = int(n_targets)
-                n_link_shakes = int(n_link_shakes)
-
+            if len(line.split()) == 4:
+                index, target_index, distance, _ = line.split()
+                is_linker = True
             else:
-                # if line contains a star at the fourth column, it is a link shake
-                if len(line.split()) == 4:
-                    index, target_index, distance, _ = line.split()
-                    is_linker = True
-                else:
-                    index, target_index, distance = line.split()
-                    is_linker = False
+                index, target_index, distance = line.split()
+                is_linker = False
 
-                self._shake_bonds.append(
-                    Bond(
-                        int(index),
-                        int(target_index),
-                        float(distance),
-                        is_linker=is_linker
-                    )
+            self._shake_bonds.append(
+                Bond(
+                    int(index),
+                    int(target_index),
+                    float(distance),
+                    is_linker=is_linker
                 )
+            )
 
-    @property
-    def shake_bonds(self):
-        return self._shake_bonds
+        return shake_bonds
