@@ -31,7 +31,10 @@ class GenFileWriter(BaseWriter):
 
         super().__init__(filename, mode)
 
-    def write(self, system: AtomicSystem) -> None:
+    def write(self,
+              system: AtomicSystem,
+              periodic: bool | None = None,
+              ) -> None:
         """
         Writes the system to the file.
 
@@ -39,26 +42,38 @@ class GenFileWriter(BaseWriter):
         ----------
         system : AtomicSystem
             The system to write.
+        periodicity : bool, optional
+            The periodicity of the system. If True, the system is considered periodic. If False, the system is considered non-periodic. If None, the periodicity is inferred from the system, by default None.
         """
 
         self.system = system
 
+        if periodic is not None:
+            if periodic and self.system.cell.is_vacuum:
+                raise ValueError(
+                    "Invalid periodicity. The system is non-periodic.")
+            elif periodic:
+                self.periodic = "S"
+            else:
+                self.periodic = "C"
+        else:
+            self.periodic = "C" if self.system.cell.is_vacuum else "S"
+
         self.open()
-        self.write_header()
+        self.write_header(self.periodic)
         self.write_coords()
-        if not self.system.cell.is_vacuum:
+
+        if self.periodic == "S":
             self.write_box_matrix()
 
         self.close()
 
-    def write_header(self) -> None:
+    def write_header(self, periodicity: str) -> None:
         """
         Writes the header of the gen file.
 
         The header consists of two lines. The first line contains the number of atoms and the periodicity of the system. The second line contains the atom names from which the indices of the atoms in the coordinates block can be derived.
         """
-        periodicity = "C" if self.system.cell.is_vacuum else "S"
-
         print({self.system.n_atoms}, {periodicity}, file=self.file)
 
         element_names = self.system.unique_element_names
