@@ -3,7 +3,7 @@ import warnings
 from beartype.typing import List
 
 from PQAnalysis.io import BaseReader
-from PQAnalysis.topology import Bond, BondedTopology
+from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
 
 
 class TopologyFileReader(BaseReader):
@@ -78,25 +78,112 @@ class TopologyFileReader(BaseReader):
 
             return data
 
-    def parse_bonds(self, block):
-        warnings.warn("Parsing of bonds is not implemented yet",
-                      UserWarning)
-        return None
+    def parse_bonds(self, block) -> List[Bond]:
+        bonds = []
+        for line in block:
+            if len(line.split()) == 4:
+                index, target_index, bond_type, _ = line.split()
+                is_linker = True
+            elif len(line.split()) == 3:
+                index, target_index, bond_type = line.split()
+                is_linker = False
+            else:
+                # TODO: make an own exception for this
+                raise ValueError(
+                    "Invalid number of columns in bond block. Expected 3 or 4."
+                )
+
+            bonds.append(
+                Bond(
+                    index1=int(index),
+                    index2=int(target_index),
+                    bond_type=int(bond_type),
+                    is_linker=is_linker,
+                )
+            )
+
+        return bonds
 
     def parse_angles(self, block):
-        warnings.warn("Parsing of angles is not implemented yet",
-                      UserWarning)
-        return None
+        angles = []
+        for line in block:
+            if len(line.split()) == 5:
+                index1, index2, index3, angle_type, _ = line.split()
+                is_linker = True
+            elif len(line.split()) == 4:
+                index1, index2, index3, angle_type = line.split()
+                is_linker = False
+            else:
+                raise ValueError(
+                    "Invalid number of columns in angle block. Expected 4 or 5."
+                )
+
+            angles.append(
+                Angle(
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    angle_type=int(angle_type),
+                    is_linker=is_linker,
+                )
+            )
+
+        return angles
 
     def parse_dihedrals(self, block):
-        warnings.warn(
-            "Parsing of dihedrals is not implemented yet", UserWarning)
-        return None
+        dihedrals = []
+        for line in block:
+            if len(line.split()) == 6:
+                index1, index2, index3, index4, dihedral_type, _ = line.split()
+                is_linker = True
+            elif len(line.split()) == 5:
+                index1, index2, index3, index4, dihedral_type = line.split()
+                is_linker = False
+            else:
+                raise ValueError(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                )
+
+            dihedrals.append(
+                Dihedral(
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    index4=int(index4),
+                    dihedral_type=int(dihedral_type),
+                    is_linker=is_linker,
+                )
+            )
+
+        return dihedrals
 
     def parse_impropers(self, block):
-        warnings.warn(
-            "Parsing of impropers is not implemented yet", UserWarning)
-        return None
+        dihedrals = []
+        for line in block:
+            if len(line.split()) == 6:
+                index1, index2, index3, index4, dihedral_type, _ = line.split()
+                is_linker = True
+            elif len(line.split()) == 5:
+                index1, index2, index3, index4, dihedral_type = line.split()
+                is_linker = False
+            else:
+                raise ValueError(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                )
+
+            dihedrals.append(
+                Dihedral(
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    index4=int(index4),
+                    dihedral_type=int(dihedral_type),
+                    is_linker=is_linker,
+                    is_improper=True,
+                )
+            )
+
+        return dihedrals
 
     def parse_shake(self, block) -> List[Bond]:
         shake_bonds = []
