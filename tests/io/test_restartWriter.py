@@ -18,7 +18,7 @@ class TestRestartWriter:
     def test__write_box(self, capsys):
         writer = RestartFileWriter()
         cell = Cell(10.0, 10.0, 10.0)
-        lines = writer._write_box(cell)
+        lines = writer._get_box_line(cell)
 
         assert lines == "Box  10.0 10.0 10.0  90 90 90"
 
@@ -30,7 +30,7 @@ class TestRestartWriter:
                               [2.0, 2.0, 2.0]])
         frame = AtomicSystem(atoms, positions)
 
-        lines = writer._write_atoms(frame)
+        lines = writer._get_atom_lines(frame)
 
         assert lines == [
             "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
@@ -48,7 +48,7 @@ class TestRestartWriter:
 
         writer.md_engine_format = MDEngineFormat.QMCFC
 
-        lines = writer._write_atoms(frame)
+        lines = writer._get_atom_lines(frame)
 
         assert lines == [
             "C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
