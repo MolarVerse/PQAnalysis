@@ -10,9 +10,9 @@ class TopologyFileReader(BaseReader):
     def __init__(self, filename: str) -> None:
         super().__init__(filename)
 
-    def read(self):
+    def read(self) -> BondedTopology:
         blocks = self.get_definitions()
-        self.parse_blocks(blocks)
+        return self.parse_blocks(blocks)
 
     def parse_blocks(self, blocks) -> BondedTopology:
         bonds = None
@@ -22,15 +22,15 @@ class TopologyFileReader(BaseReader):
         impropers = None
 
         for key, value in blocks.items():
-            if key.lower() == "bonds":
+            if key == "bonds":
                 bonds = self.parse_bonds(value)
-            elif key == "SHAKE":
+            elif key == "shake":
                 shake_bonds = self.parse_shake(value)
-            elif key == "ANGLES":
+            elif key == "angles":
                 angles = self.parse_angles(value)
-            elif key == "DIHEDRALS":
+            elif key == "dihedrals":
                 dihedrals = self.parse_dihedrals(value)
-            elif key == "IMPROPERS":
+            elif key == "impropers":
                 impropers = self.parse_impropers(value)
             else:
                 raise ValueError(f"Unknown block {key}")
@@ -72,30 +72,30 @@ class TopologyFileReader(BaseReader):
             # and the value being the rest of the block appart from the last line
             data = {}
             for block in blocks:
-                key = block[0].split()[0]
-                value = block[1:-1]
+                key = block[0].split()[0].lower()
+                value = block[1:]
                 data[key] = value
 
             return data
 
     def parse_bonds(self, block):
         warnings.warn("Parsing of bonds is not implemented yet",
-                      NotImplementedError)
+                      UserWarning)
         return None
 
     def parse_angles(self, block):
         warnings.warn("Parsing of angles is not implemented yet",
-                      NotImplementedError)
+                      UserWarning)
         return None
 
     def parse_dihedrals(self, block):
         warnings.warn(
-            "Parsing of dihedrals is not implemented yet", NotImplementedError)
+            "Parsing of dihedrals is not implemented yet", UserWarning)
         return None
 
     def parse_impropers(self, block):
         warnings.warn(
-            "Parsing of impropers is not implemented yet", NotImplementedError)
+            "Parsing of impropers is not implemented yet", UserWarning)
         return None
 
     def parse_shake(self, block) -> List[Bond]:
@@ -108,7 +108,7 @@ class TopologyFileReader(BaseReader):
                 index, target_index, distance = line.split()
                 is_linker = False
 
-            self._shake_bonds.append(
+            shake_bonds.append(
                 Bond(
                     index1=int(index),
                     index2=int(target_index),

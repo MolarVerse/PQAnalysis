@@ -1,9 +1,10 @@
 from .topologyFileWriter import TopologyFileWriter
+from .topologyFileReader import TopologyFileReader
 from PQAnalysis.topology import Topology, BondedTopology
 from PQAnalysis.io import FileWritingMode
 
 
-def write_topology_file(bonded_topology: Topology | BondedTopology | None,
+def write_topology_file(bonded_topology: Topology | BondedTopology,
                         filename: str | None = None,
                         mode: FileWritingMode | str = "w"
                         ) -> None:
@@ -29,4 +30,4 @@ def read_topology_file(filename: str) -> BondedTopology:
         The bonded topology.
     """
 
-    return TopologyFileWriter(filename).read()
+    return TopologyFileReader(filename).read()

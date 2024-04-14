@@ -32,17 +32,41 @@ class _ArgumentParser(argparse.ArgumentParser):
         The initialization of the ArgumentParser class is the same as the initialization
         of the argparse.ArgumentParser class. The only difference is that the progress
         and version arguments are parsed here automatically.
+
+        Parameters
+        ----------
+        args : list
+            The list of positional arguments for the argparse.ArgumentParser class.
+        kwargs : dict
+            The dictionary of keyword arguments for the argparse.ArgumentParser class.
         """
 
-        # To remove the ".py" ending from the prog argument
-        super().__init__(*args, **kwargs)
+        self.___init___(*args, **kwargs)
 
+        # To remove the ".py" ending from the prog argument
         if 'prog' not in kwargs:
             kwargs['prog'] = self.prog.split(".")[0]
-            super().__init__(*args, **kwargs)
+            self.___init___(*args, **kwargs)
 
         self._parse_progress()
         self._parse_version()
+
+    def ___init___(self, *args, **kwargs):
+        """
+        The ___init___ method is a helper method to initialize the ArgumentParser class.
+
+        Parameters
+        ----------
+        args : list
+            The list of positional arguments for the argparse.ArgumentParser class.
+        kwargs : dict
+            The dictionary of keyword arguments for the argparse.ArgumentParser class.
+        """
+        super().__init__(
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            *args,
+            **kwargs
+        )
 
     def parse_args(self) -> argparse.Namespace:
         """

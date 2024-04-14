@@ -19,7 +19,9 @@ __outputdoc__ = """
 
 This command line tool can be used to add molecules to a restart file.
 
-The molecules are added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The class can add multiple molecules to the restart file. The class can also add a moldescriptor file to the restart file to keep track of the fitting.
+The molecules are added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The class can add multiple molecules to the restart file.
+
+This tool provides also the possibility of not only extending the restart file with the molecule but also the topology file. Therefore, the topology file of the restart file and the topology file of the molecule file have to be provided as well as the desired output topology file.
 """
 
 __epilog__ = f"""
@@ -48,6 +50,7 @@ def main():
     )
 
     parser.parse_output_file()
+    parser.parse_mode()
 
     parser.add_argument(
         '--mol-file-type',
@@ -114,6 +117,30 @@ def main():
         help="If the randomly placed molecule does not fit into the restart file, the molecule is rotated by the given angle step in degrees."
     )
 
+    parser.add_argument(
+        "--topology-file", "--top-file",
+        dest='top_file',
+        type=str,
+        help="The topology file that is associated with the restart file. If not specified, the topology file will not be used.",
+        default=None
+    )
+
+    parser.add_argument(
+        "--added-topology-file", "--added-top-file",
+        dest='added_top_file',
+        type=str,
+        help="The topology file that is associated with the molecule file. If not specified, the topology file will not be used.",
+        default=None
+    )
+
+    parser.add_argument(
+        "--output-topology-file", "--output-top-file",
+        dest='output_top_file',
+        type=str,
+        help="The output topology file. If not specified, the output is printed to stdout.",
+        default=None
+    )
+
     parser.parse_engine()
 
     args = parser.parse_args()
@@ -130,5 +157,9 @@ def main():
         distance_cutoff=args.cut,
         max_displacement=args.max_disp,
         rotation_angle_step=args.rot,
-        md_engine_format=args.engine
+        md_engine_format=args.engine,
+        mode=args.mode,
+        topology_file=args.top_file,
+        topology_file_to_add=args.added_top_file,
+        topology_file_output=args.output_top_file
     )
