@@ -1,5 +1,3 @@
-import warnings
-
 from beartype.typing import List
 
 from PQAnalysis.io import BaseReader
