@@ -11,5 +11,11 @@ class TopologyError(PQException):
     """
 
     def __init__(self, message):
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         self.message = message
         super().__init__(self.message)

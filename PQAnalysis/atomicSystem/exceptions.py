@@ -11,6 +11,12 @@ class AtomicSystemError(PQException):
     """
 
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         self.message = message
         super().__init__(self.message)
 
@@ -23,6 +29,10 @@ class AtomicSystemPositionsError(AtomicSystemError):
     message = """Atoms and positions must be of the same length."""
 
     def __init__(self) -> None:
+        """
+        Parameters
+        ----------
+        """
         super().__init__(self.message)
 
 
@@ -34,4 +44,8 @@ class AtomicSystemMassError(AtomicSystemError):
     message = """AtomicSystem contains atoms without mass information. Which is required for this operation."""
 
     def __init__(self) -> None:
+        """
+        Parameters
+        ----------
+        """
         super().__init__(self.message)

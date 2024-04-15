@@ -1,3 +1,7 @@
+"""
+A module containing API functions to convert between different file formats.
+"""
+
 from beartype.typing import List
 
 from . import (

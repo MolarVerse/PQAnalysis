@@ -7,27 +7,17 @@ import time
 from decorator import decorator
 from collections import defaultdict
 from inspect import getfullargspec
+from beartype.typing import Any
 
 
-def count_decorator(func, *args, **kwargs):
+def count_decorator(func, *args, **kwargs) -> Any:
     """
     Decorator which counts the number of times a function is called.
-
-    Parameters
-    ----------
-    func : function
-        Function to be decorated.
-    *args : list
-        Arguments of the function.
-    **kwargs : dict
-        Keyword arguments of the function.
-
-    Returns
-    -------
-    wrapper : function
-        Decorated function.
     """
     def wrapper(*args, **kwargs):
+        """
+        A wrapper function to count the number of times a function is called.
+        """
         wrapper.counter += 1
         reset_counter = kwargs.get('reset_counter')
 
@@ -35,7 +25,9 @@ def count_decorator(func, *args, **kwargs):
             wrapper.counter = 1
 
         return func(*args, **kwargs)
+
     wrapper.counter = 0
+
     return wrapper
 
 
@@ -59,12 +51,20 @@ def instance_function_count_decorator(func, *args, **kwargs):
 
 
 @decorator
-def timeit_in_class(func, *args, **kwargs):
+def timeit_in_class(func, *args, **kwargs) -> Any:
     """
     Decorator which measures the time a function of a class takes to execute
     and sets elapsed time as an attribute of the class.
     """
-    def wrapper(*args, **kwargs):
+    def wrapper(*args, **kwargs) -> Any:
+        """
+        A wrapper function to measure the time a function takes to execute.
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
         start = time.time()
         result = func(*args, **kwargs)
         end = time.time()

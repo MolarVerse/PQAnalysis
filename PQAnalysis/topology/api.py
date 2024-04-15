@@ -1,3 +1,7 @@
+"""
+A module including the API for the topology subpackage.
+"""
+
 from .selection import SelectionCompatible
 from .shakeTopology import ShakeTopologyGenerator
 from PQAnalysis.traj import Trajectory
