@@ -1,3 +1,7 @@
+"""
+A module containing functions and classes to add a molecule/AtomicSystem to a restart file.
+"""
+
 import numpy as np
 import warnings
 
@@ -119,6 +123,29 @@ def check_topology_args(topology_file: str | None,
                         topology_file_to_add: str | None,
                         topology_file_output: str | None
                         ) -> None:
+    """
+    Check the arguments for the topology files.
+
+    If the topology_file is None and the topology_file_to_add is None, the output topology file will be ignored. If the topology_file is None and the topology_file_to_add is not None, a ValueError is raised. If the topology_file is not None and the topology_file_to_add is None, a ValueError is raised. If the output topology file is None, a ValueError is raised.
+
+    Parameters
+    ----------
+    topology_file : str | None
+        The filename of the topology file.
+    topology_file_to_add : str | None
+        The filename of the topology file to add.
+    topology_file_output : str | None
+        The filename of the output topology file.
+
+    Raises
+    ------
+    ValueError
+        If the topology_file is None and the topology_file_to_add is not None.
+    ValueError
+        If the topology_file is not None and the topology_file_to_add is None.
+    ValueError
+        If the output topology file is None.
+    """
 
     if topology_file is None and topology_file_to_add is None:
         if topology_file_output is not None:
@@ -260,6 +287,24 @@ class AddMolecule:
                              extension_shake_file: str,
                              output: str | None = None,
                              ) -> None:
+        """
+        Extend the topology file with the shake bonds of the extension topology file.
+
+        Parameters
+        ----------
+        original_shake_file : str
+            The filename of the original topology file.
+        extension_shake_file : str
+            The filename of the extension topology file.
+        output : str | None, optional
+            The filename of the output topology file, by default None (stdout).
+
+        Raises
+        ------
+        ValueError
+            If the restart system or the molecule is not read before extending the topology file.
+        """
+
         warnings.warn(
             "Extension of the topology file is only implemented for shake bonds. The extension of general bonded topologies is not implemented yet.", UserWarning)
 

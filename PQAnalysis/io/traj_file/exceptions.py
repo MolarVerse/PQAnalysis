@@ -1,3 +1,7 @@
+"""
+A module containing different exceptions related to the traj_file subpackage.
+"""
+
 from PQAnalysis.exceptions import PQException
 
 

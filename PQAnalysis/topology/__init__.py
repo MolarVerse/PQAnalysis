@@ -4,10 +4,10 @@ A package containing classes and functions to handle molecular/atomic topologies
 
 from .exceptions import TopologyError
 
-from .bond import Bond
-from .angle import Angle
-from .dihedral import Dihedral
-from .bondedTopology import BondedTopology
+from .bonded_topology.bond import Bond
+from .bonded_topology.angle import Angle
+from .bonded_topology.dihedral import Dihedral
+from .bonded_topology.bondedTopology import BondedTopology
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
 

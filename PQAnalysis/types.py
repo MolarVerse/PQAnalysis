@@ -1,3 +1,7 @@
+"""
+A module containing type hints for the PQAnalysis package.
+"""
+
 import numpy as np
 
 from numbers import Real
