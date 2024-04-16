@@ -174,8 +174,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
 
             self.fitting_logger.info(
-                f"Performing fitting for {
-                    i + 1}/{number_of_additions} addition(s)."
+                f"Performing fitting for {i + 1}/{number_of_additions} addition(s)."
             )
 
             systems.append(

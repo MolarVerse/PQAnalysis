@@ -14,10 +14,24 @@ class InputFileFormatError(BaseEnumFormatError):
 
     @multimethod
     def __init__(self, value: object, enum: object) -> None:
+        """
+        Parameters
+        ----------
+        value : object
+            The value that is not valid.
+        enum : object
+            The enum that is not valid.
+        """
         super().__init__(value, enum)
 
     @multimethod
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         super().__init__(message)
 
 
@@ -27,6 +41,12 @@ class InputFileError(PQException):
     """
 
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         self.message = message
         super().__init__(message)
 
@@ -37,5 +57,11 @@ class InputFileWarning(PQWarning):
     """
 
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The warning message.
+        """
         self.message = message
         super().__init__(message)

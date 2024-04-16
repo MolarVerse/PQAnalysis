@@ -1,3 +1,7 @@
+"""
+A subpackage to handle .gen files.
+"""
+
 from .genFileReader import GenFileReader
 from .genFileWriter import GenFileWriter
 
