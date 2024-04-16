@@ -9,6 +9,9 @@ from PQAnalysis.formats import BaseEnumFormat
 
 
 class OutputFileFormat(BaseEnumFormat):
+    """
+    An enumeration of the supported output file formats.
+    """
     #: inference of the file format from the file extension
     AUTO = "auto"
 
@@ -90,7 +93,8 @@ class OutputFileFormat(BaseEnumFormat):
             return cls.RESTART
         else:
             raise OutputFileFormatError(
-                f"Could not infer the file format from the file extension of \"{file_path}\". Possible file formats are: {cls._member_names_}"
+                f"Could not infer the file format from the file extension of \"{
+                    file_path}\". Possible file formats are: {cls._member_names_}"
             )
 
     def lower(self) -> str:

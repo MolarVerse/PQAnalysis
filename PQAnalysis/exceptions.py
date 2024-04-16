@@ -11,6 +11,12 @@ class PQException(Exception):
     """
 
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         self.message = message
         super().__init__(self.message)
 
@@ -21,6 +27,12 @@ class PQWarning(Warning):
     """
 
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         self.message = message
         super().__init__(self.message)
 
@@ -32,6 +44,15 @@ class BaseEnumFormatError(PQException):
 
     @multimethod
     def __init__(self, value: object, enum: object) -> None:
+        """
+        Parameters
+        ----------
+        value : object
+            The value that is not valid.
+        enum : object
+            The enum that is not valid.
+        """
+
         self.enum = enum
         self.value = value
         self.message = f"""
@@ -42,4 +63,10 @@ or their case insensitive string representation: {enum.value_repr()}"""
 
     @multimethod
     def __init__(self, message: str) -> None:
+        """
+        Parameters
+        ----------
+        message : str
+            The error message.
+        """
         super().__init__(message)

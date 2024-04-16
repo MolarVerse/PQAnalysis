@@ -1,3 +1,7 @@
+"""
+A module containing API functions for writing different objects to a file.
+"""
+
 from beartype.typing import Any
 
 from . import BoxWriter, FileWritingMode

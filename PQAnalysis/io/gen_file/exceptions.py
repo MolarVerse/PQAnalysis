@@ -1,3 +1,7 @@
+"""
+A module to represent exceptions related to reading .gen files
+"""
+
 from PQAnalysis.exceptions import PQException
 
 
