@@ -18,7 +18,7 @@ import numpy as np
 from beartype.typing import Any
 from decorator import decorator
 
-from .exceptions import AtomicSystemPositionsError, AtomicSystemMassError
+from .exceptions import AtomicSystemPositionsError, AtomicSystemMassError, AtomicSystemError
 
 
 @decorator
@@ -44,7 +44,7 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
         If the number of atoms is not equal the number of positions.
     """
     if self.n_atoms != np.shape(arg_to_set)[0]:
-        raise ValueError(
+        raise AtomicSystemError(
             "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property.")
 
     return func(self, arg_to_set)

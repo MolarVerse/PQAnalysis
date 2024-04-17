@@ -61,3 +61,30 @@ class Bond:
             is_linker=self.is_linker,
             is_shake=self.is_shake,
         )
+
+    def __eq__(self, value: object) -> bool:
+        """
+        Compare the bond with another bond.
+
+        Parameters
+        ----------
+        value : object
+            The bond to compare.
+
+        Returns
+        -------
+        bool
+            True if the bonds are equal, False otherwise.
+        """
+
+        if not isinstance(value, Bond):
+            return False
+
+        return (
+            self.index1 == value.index1
+            and self.index2 == value.index2
+            and self.equilibrium_distance == value.equilibrium_distance
+            and self.bond_type == value.bond_type
+            and self.is_linker == value.is_linker
+            and self.is_shake == value.is_shake
+        )
