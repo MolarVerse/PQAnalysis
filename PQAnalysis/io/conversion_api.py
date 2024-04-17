@@ -197,31 +197,3 @@ def traj2qmcfc(trajectory_files: List[str],
         trajectory = reader.read()
 
         writer.write(trajectory)
-
-
-def create_nep_traj_files(file_prefixes: List[str] = None,
-                          trajectory_files: List[str] | str = None,
-                          force_files: List[str] | str = None,
-                          stress_files: List[str] | str = None,
-                          virial_files: List[str] | str = None,
-                          energy_files: List[str] | str = None,
-                          info_files: List[str] | str = None,
-                          ):
-    # convert all files to list
-
-    trajectory_files = list(np.atleast_1d(trajectory_files))
-    force_files = list(np.atleast_1d(force_files))
-
-    if stress_files is not None:
-        stress_files = list(np.atleast_1d(stress_files))
-
-    if virial_files is not None:
-        virial_files = list(np.atleast_1d(virial_files))
-
-    if energy_files is not None:
-        energy_files = list(np.atleast_1d(energy_files))
-
-    if info_files is not None:
-        info_files = list(np.atleast_1d(info_files))
-
-    # check if len of all files is the same
