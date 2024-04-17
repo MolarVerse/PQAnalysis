@@ -30,6 +30,7 @@ dependencies = [
     "tqdm",
     "decorator",
     "argcomplete",
+    "unum",
 ]
 
 [project.optional-dependencies]
