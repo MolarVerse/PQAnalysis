@@ -4,13 +4,14 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomicSystem.exceptions import AtomicSystemError
 from PQAnalysis.core import Atom
 
 
 def test_check_atom_number_setter():
     system = AtomicSystem()
 
-    with pytest.raises(ValueError) as exception:
+    with pytest.raises(AtomicSystemError) as exception:
         system.pos = np.array([[0, 0, 0]])
     assert str(exception.value) == "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property."
 
