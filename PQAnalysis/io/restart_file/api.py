@@ -1,3 +1,7 @@
+"""
+A module containing different API functions for reading and writing restart files.
+"""
+
 from .restartReader import RestartFileReader
 from PQAnalysis.core import Residues
 from PQAnalysis.traj import MDEngineFormat

@@ -1,3 +1,7 @@
+"""
+A module containing functions related to generate random numbers.
+"""
+
 import secrets
 import os
 

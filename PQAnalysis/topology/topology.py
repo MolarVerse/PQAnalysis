@@ -11,9 +11,10 @@ from beartype.typing import Any, Tuple, List
 from numbers import Integral
 
 from .exceptions import TopologyError
+from .bonded_topology.bondedTopology import BondedTopology
 from PQAnalysis.core.exceptions import ResidueError, ResidueWarning
 from PQAnalysis.core import Residues, Residue, QMResidue, Atoms, Element
-from PQAnalysis.types import Np1DIntArray, Np2DIntArray
+from PQAnalysis.types import Np1DIntArray
 
 
 class Topology:
@@ -40,6 +41,7 @@ class Topology:
                  residue_ids: Np1DIntArray | None = None,
                  reference_residues: Residues | None = None,
                  check_residues: bool = True,
+                 bonded_topology: BondedTopology | None = None,
                  ) -> None:
         """
         All of the parameters are optional, if they are not given, they are initialized with empty values.
@@ -58,11 +60,15 @@ class Topology:
             a list of residues, by default None (empty list)
         check_residues : bool, optional
             If the residues should be checked, by default True
+        bonded_topology : BondedTopology | None, optional
+            Contains the bonded topology information, by default None
 
         Raises
         ------
         TopologyError
             If the number of atoms does not match the number of residue ids.
+        NotImplementedError
+            If the bonded topology is not None. There is no check yet if the bonded topology is compatible with the topology. Please make sure that the bonded topology is compatible with the topology!
         """
 
         self._check_residues = check_residues
@@ -85,8 +91,32 @@ class Topology:
             raise TopologyError(
                 "The number of atoms does not match the number of residue ids.")
 
+        self.setup_residues(residue_ids)
+
+        self.bonded_topology = bonded_topology
+        if self.bonded_topology is not None:
+            warnings.warn("There is no check yet if the bonded topology is compatible with the topology. Please make sure that the bonded topology is compatible with the topology!", NotImplementedError)
+
+    def setup_residues(self, residue_ids: Np1DIntArray) -> None:
+        """
+        A method to set up the residues of the topology.
+
+        Parameters
+        ----------
+        residue_ids : Np1DIntArray
+            The residue ids of the topology.
+
+        Raises
+        ------
+        ResidueError
+            If the residue ids are not contiguous.
+        ResidueError
+            If the reference residues are not empty and residue_ids with 0 don't have any element information.
+            This problem can be avoided by setting 'check_residues' to False.
+        """
+
         self._residue_ids = residue_ids
-        self._residues, self._atoms = self.setup_residues(
+        self._residues, self._atoms = self._setup_residues(
             self.residue_ids, self.atoms)
 
         if self.residues == []:
@@ -200,7 +230,10 @@ class Topology:
         """
         return np.argwhere(np.isin(self.residue_numbers, residue_numbers)).flatten()
 
-    def setup_residues(self, residue_ids: Np1DIntArray, atoms: Atoms) -> Tuple[Residues, Atoms]:
+    def _setup_residues(self,
+                        residue_ids: Np1DIntArray,
+                        atoms: Atoms
+                        ) -> Tuple[Residues, Atoms]:
         """
         Sets up the residues of the topology.
 
@@ -309,7 +342,7 @@ please set 'check_residues' to False"""
     @check_residues.setter
     def check_residues(self, value: bool) -> None:
         self._check_residues = value
-        self._residues, self._atoms = self.setup_residues(
+        self._residues, self._atoms = self._setup_residues(
             self.residue_ids, self.atoms)
 
     @property

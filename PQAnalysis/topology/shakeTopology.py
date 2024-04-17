@@ -9,7 +9,7 @@ from beartype.typing import List
 from .selection import SelectionCompatible, Selection
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.types import Np1DIntArray, Np2DIntArray
-from PQAnalysis.io import BaseWriter
+from PQAnalysis.io import BaseWriter, FileWritingMode
 
 
 class ShakeTopologyGenerator:
@@ -97,7 +97,10 @@ class ShakeTopologyGenerator:
 
             self.distances[_indices] = mean_distance
 
-    def write_topology(self, filename: str | None = None) -> None:
+    def write_topology(self,
+                       filename: str | None = None,
+                       mode: FileWritingMode | str = "w"
+                       ) -> None:
         """
         Writes the topology to a file.
 
@@ -109,9 +112,14 @@ class ShakeTopologyGenerator:
         ----------
         filename : str
             The filename to write the topology to.
+        mode : FileWritingMode | str, optional
+            The writing mode, by default "w". The following modes are available:
+            - "w": write
+            - "a": append
+            - "o": overwrite
         """
 
-        writer = BaseWriter(filename)
+        writer = BaseWriter(filename, mode=mode)
         writer.open()
 
         print(
