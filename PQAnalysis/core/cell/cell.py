@@ -213,7 +213,12 @@ class Cell(_StandardPropertiesMixin):
 
         gamma = np.arccos(box_matrix[0][1] / y)
         beta = np.arccos(box_matrix[0][2] / z)
-        alpha = (box_matrix[0][1] * box_matrix[0][2] +
-                 box_matrix[1][1] * box_matrix[1][2]) / (y * z)
+        alpha = np.arccos(
+            (box_matrix[0][1] * box_matrix[0][2] +
+             box_matrix[1][1] * box_matrix[1][2]) / (y * z)
+        )
+
+        print(alpha, beta, gamma)
+        print(np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
 
         return cls(x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))

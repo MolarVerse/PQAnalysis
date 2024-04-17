@@ -1,3 +1,7 @@
+"""
+A module containing different API functions for reading and writing trajectory files.
+"""
+
 from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology

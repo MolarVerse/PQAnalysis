@@ -99,3 +99,32 @@ class TestCell:
         cell = Cell()
         assert str(cell) == "Cell()"
         assert str(cell) == repr(cell)
+
+    def test_init_from_box_matrix(self):
+        box_matrix = np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+        cell = Cell.init_from_box_matrix(box_matrix)
+        assert cell.x == 1
+        assert cell.y == 2
+        assert cell.z == 3
+        assert cell.alpha == 90
+        assert cell.beta == 90
+        assert cell.gamma == 90
+        assert np.allclose(cell.box_matrix, box_matrix)
+        assert np.allclose(cell.box_lengths, np.array([1, 2, 3]))
+        assert np.allclose(cell.box_angles, np.array([90, 90, 90]))
+        assert np.isclose(cell.volume, 6)
+
+        box_matrix = np.array(
+            [
+                [1, -1, 0],
+                [0, 1.73205081, 1.73205081],
+                [0, 0, 2.44948974]
+            ]
+        )
+        cell = Cell.init_from_box_matrix(box_matrix)
+        assert np.isclose(cell.x, 1)
+        assert np.isclose(cell.y, 2)
+        assert np.isclose(cell.z, 3)
+        assert np.isclose(cell.alpha, 60)
+        assert np.isclose(cell.beta, 90)
+        assert np.isclose(cell.gamma, 120)

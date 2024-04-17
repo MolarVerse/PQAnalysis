@@ -1,3 +1,7 @@
+"""
+A module containing different functions to read and write .gen files.
+"""
+
 from .genFileReader import GenFileReader
 from .genFileWriter import GenFileWriter
 from PQAnalysis.atomicSystem import AtomicSystem
