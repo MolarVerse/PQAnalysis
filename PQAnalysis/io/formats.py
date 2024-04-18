@@ -12,23 +12,50 @@ class OutputFileFormat(BaseEnumFormat):
     """
     An enumeration of the supported output file formats.
     """
+    file_extensions = {}
     #: inference of the file format from the file extension
     AUTO = "auto"
 
     #: The xyz file format.
     XYZ = "xyz"
+    file_extensions[XYZ] = [".xyz", ".coord", ".coords"]
 
     #: The vel file format.
     VEL = "vel"
+    file_extensions[VEL] = [".vel", ".velocs", ".velocity"]
 
     #: The force file format.
     FORCE = "force"
+    file_extensions[FORCE] = [".force", ".frc", ".forces"]
 
     #: The charge file format.
     CHARGE = "charge"
+    file_extensions[CHARGE] = [".charge", ".chrg", ".charges"]
 
     #: The restart file format.
     RESTART = "restart"
+    file_extensions[RESTART] = [".rst", ".restart"]
+
+    #: The ENERGY file format.
+    ENERGY = "energy"
+    file_extensions[ENERGY] = [".energy", ".energies"]
+
+    #: The ENERGY file format.
+    # TODO:
+    # ENERGY = "energy"
+    # file_extensions[ENERGY] = [".energy", ".energies"]
+
+    #: The STRESS file format.
+    STRESS = "stress"
+    file_extensions[STRESS] = [".stress", ".stresses"]
+
+    #: The VIRIAL file format.
+    VIRIAL = "virial"
+    file_extensions[VIRIAL] = [".virial", ".virials", ".vir"]
+
+    #: The Info file format.
+    INFO = "info"
+    file_extensions[INFO] = [".info", ".information"]
 
     @classmethod
     def _missing_(cls, values: Any) -> Any:
@@ -81,15 +108,17 @@ class OutputFileFormat(BaseEnumFormat):
             The inferred file format.
         """
 
-        if file_path.endswith(".xyz"):
+        file_extension = file_path.split(".")[-1]
+
+        if file_extension in cls.file_extensions[cls.XYZ]:
             return cls.XYZ
-        elif file_path.endswith(".vel") or file_path.endswith(".velocs"):
+        elif file_extension in cls.file_extensions[cls.VEL]:
             return cls.VEL
-        elif file_path.endswith(".force") or file_path.endswith(".frc") or file_path.endswith(".forces"):
+        elif file_extension in cls.file_extensions[cls.FORCE]:
             return cls.FORCE
-        elif file_path.endswith(".charge") or file_path.endswith(".chrg"):
+        elif file_extension in cls.file_extensions[cls.CHARGE]:
             return cls.CHARGE
-        elif file_path.endswith(".rst"):
+        elif file_extension in cls.file_extensions[cls.RESTART]:
             return cls.RESTART
         else:
             raise OutputFileFormatError(
@@ -108,6 +137,22 @@ class OutputFileFormat(BaseEnumFormat):
         """
 
         return self.value.lower()
+
+    def __eq__(self, other: object) -> bool:
+        """
+        This method checks if the enumeration is equal to the other object.
+
+        Parameters
+        ----------
+        other : object
+            The object to compare with.
+
+        Returns
+        -------
+        bool
+            True if the enumeration is equal to the other object, False otherwise.
+        """
+        return super().__eq__(other) or self.value == str(other)
 
 
 class FileWritingMode(BaseEnumFormat):
