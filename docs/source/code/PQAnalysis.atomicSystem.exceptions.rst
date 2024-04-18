@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.atomicSystem.exceptions
 
 .. automodule:: PQAnalysis.atomicSystem.exceptions
-    :members: AtomicSystemMassError, AtomicSystemPositionsError
+    :members: AtomicSystemError, AtomicSystemMassError, AtomicSystemPositionsError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,6 +20,7 @@ exceptions
     .. autosummary::
         :nosignatures:
 
+        AtomicSystemError
         AtomicSystemMassError
         AtomicSystemPositionsError
 

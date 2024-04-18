@@ -2,7 +2,7 @@
 A package containing classes and functions to handle input and output of molecular dynamics simulations.
 """
 
-from .formats import BoxFileFormat, FileWritingMode
+from .formats import BoxFileFormat, FileWritingMode, OutputFileFormat
 
 # import the classes from the base module
 from .base import BaseReader, BaseWriter
