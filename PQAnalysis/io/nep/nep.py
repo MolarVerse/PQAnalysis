@@ -4,7 +4,7 @@ import glob
 from beartype.typing import List
 
 from PQAnalysis.utils.units import *
-from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat
+from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat, read_trajectory_generator
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Trajectory
 
@@ -50,11 +50,21 @@ class NEPWriter(BaseWriter):
             for file in files
             if file.split(".")[-1] in OutputFileFormat.XYZ.file_extensions[OutputFileFormat.XYZ]
         ]
-        # en_files = [
-        #     file
-        #     for file in files
-        #     if file.split(".")[-1] in OutputFileFormat.XYZ.file_extensions[OutputFileFormat.XYZ]
-        # ]
+        sorted(xyz_files)
+
+        en_files = [
+            file
+            for file in files
+            if file.split(".")[-1] in OutputFileFormat.INSTANTANEOUS_ENERGY.file_extensions[OutputFileFormat.INSTANTANEOUS_ENERGY]
+        ]
+        sorted(en_files)
+
+        info_files = [
+            file
+            for file in files
+            if file.split(".")[-1] in OutputFileFormat.INFO.file_extensions[OutputFileFormat.INFO]
+        ]
+
         if use_forces:
             force_files = [
                 file
@@ -63,24 +73,61 @@ class NEPWriter(BaseWriter):
             ]
             sorted(force_files)
 
-        sorted(xyz_files)
+        if use_stress:
+            stress_files = [
+                file
+                for file in files
+                if file.split(".")[-1] in OutputFileFormat.STRESS.file_extensions[OutputFileFormat.STRESS]
+            ]
+            sorted(stress_files)
+
+        if use_virial:
+            virial_files = [
+                file
+                for file in files
+                if file.split(".")[-1] in OutputFileFormat.VIRIAL.file_extensions[OutputFileFormat.VIRIAL]
+            ]
+            sorted(virial_files)
 
         if len(xyz_files) == 0:
             raise ValueError(
                 "No coordinate files found with the specified file prefixes.")
+
+        if len(en_files) != len(xyz_files):
+            raise ValueError(
+                "The number of energy files does not match the number of coordinate files.")
+
+        if len(info_files) != len(xyz_files):
+            raise ValueError(
+                "The number of info files does not match the number of coordinate files.")
 
         if use_forces:
             if len(force_files) != len(xyz_files):
                 raise ValueError(
                     "The number of force files does not match the number of coordinate files.")
 
-            # add here checks for virial and stress files and energy files
-            for xyz_file, force_file in zip(xyz_files, force_files):
-                if xyz_file.split(".")[-1] != force_file.split(".")[-1]:
-                    raise ValueError(
-                        f"The file extensions of the coordinate and force files do not match. The following coordinate files were found: {
-                            xyz_files} and the following force files were found: {force_files}, respectively."
-                    )
+        if use_stress:
+            if len(stress_files) != len(xyz_files):
+                raise ValueError(
+                    "The number of stress files does not match the number of coordinate files.")
+
+        if use_virial:
+            if len(virial_files) != len(xyz_files):
+                raise ValueError(
+                    "The number of virial files does not match the number of coordinate files.")
+
+        for i in range(len(xyz_files)):
+
+            # read stress file in format step stress_xx stress_yy stress_zz stress_xy stress_xz stress_yz as n numpy 2D 3x3 arrays
+            if use_stress:
+                stress_generator = np.genfromtxt(
+                    stress_files[i], skip_header=0, usecols=(1, 2, 3, 4, 5, 6)
+                )
+
+            xyz_generator = read_trajectory_generator(
+                xyz_files[i], OutputFileFormat.XYZ)
+            force_generator = read_trajectory_generator(
+                force_files[i], OutputFileFormat.FORCE) if use_forces else None
 
     def write_from_trajectory(self,
                               trajectory: Trajectory,

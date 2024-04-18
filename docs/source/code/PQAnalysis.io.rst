@@ -18,16 +18,13 @@ io
        PQAnalysis.io.api
        PQAnalysis.io.base
        PQAnalysis.io.boxWriter
+       PQAnalysis.io.conversion_api
        PQAnalysis.io.energyFileReader
        PQAnalysis.io.exceptions
        PQAnalysis.io.formats
-       PQAnalysis.io.frameReader
        PQAnalysis.io.infoFileReader
        PQAnalysis.io.moldescriptorReader
-       PQAnalysis.io.restartReader
-       PQAnalysis.io.restartWriter
-       PQAnalysis.io.trajectoryReader
-       PQAnalysis.io.trajectoryWriter
+       PQAnalysis.io.write_api
 
     Subpackages
     -----------
@@ -35,7 +32,12 @@ io
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.io.gen_file
        PQAnalysis.io.inputFileReader
+       PQAnalysis.io.nep
+       PQAnalysis.io.restart_file
+       PQAnalysis.io.topology_file
+       PQAnalysis.io.traj_file
 
 
 

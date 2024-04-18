@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.io.exceptions
 
 .. automodule:: PQAnalysis.io.exceptions
-    :members: BoxFileFormatError, BoxWriterError, FileWritingModeError, FrameReaderError, MoldescriptorReaderError, RestartFileReaderError, TrajectoryReaderError
+    :members: BoxFileFormatError, BoxWriterError, FileWritingModeError, MoldescriptorReaderError, OutputFileFormatError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -23,10 +23,8 @@ exceptions
         BoxFileFormatError
         BoxWriterError
         FileWritingModeError
-        FrameReaderError
         MoldescriptorReaderError
-        RestartFileReaderError
-        TrajectoryReaderError
+        OutputFileFormatError
 
 
 

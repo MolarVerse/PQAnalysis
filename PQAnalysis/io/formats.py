@@ -38,12 +38,12 @@ class OutputFileFormat(BaseEnumFormat):
 
     #: The ENERGY file format.
     ENERGY = "energy"
-    file_extensions[ENERGY] = [".energy", ".energies"]
+    file_extensions[ENERGY] = [".en", ".energy", ".energies"]
 
-    #: The ENERGY file format.
-    # TODO:
-    # ENERGY = "energy"
-    # file_extensions[ENERGY] = [".energy", ".energies"]
+    #: The INSTANTANEOUS ENERGY file format.
+    INSTANTANEOUS_ENERGY = "instant_en"
+    file_extensions[INSTANTANEOUS_ENERGY] = [
+        ".instant_en", ".instant_energies", ".inst_energy"]
 
     #: The STRESS file format.
     STRESS = "stress"
