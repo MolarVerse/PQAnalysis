@@ -1,9 +1,12 @@
 import numpy as np
+import glob
 
 from beartype.typing import List
 
-from PQAnalysis.io import BaseWriter, FileWritingMode
+from PQAnalysis.utils.units import *
+from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat
 from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.traj import Trajectory
 
 
 class NEPWriter(BaseWriter):
@@ -24,6 +27,78 @@ class NEPWriter(BaseWriter):
             _description_, by default "w"
         """
         super().__init__(filename, mode)
+
+    def write_from_files(self,
+                         file_prefixes: List[str] | str,
+                         use_forces: bool = False,
+                         use_stress: bool = False,
+                         use_virial: bool = False,
+                         xyz_file_extension: str = None,
+                         energy_file_extension: str = None,
+                         force_file_extension: str = None,
+                         stress_file_extension: str = None,
+                         virial_file_extension: str = None,
+                         ) -> None:
+
+        file_prefixes = list(np.atleast_1d(file_prefixes))
+        files = [glob.glob(prefix) for prefix in file_prefixes]
+        files = [file for sublist in files for file in sublist]
+
+        # filter all possible xyz files
+        xyz_files = [
+            file
+            for file in files
+            if file.split(".")[-1] in OutputFileFormat.XYZ.file_extensions[OutputFileFormat.XYZ]
+        ]
+        # en_files = [
+        #     file
+        #     for file in files
+        #     if file.split(".")[-1] in OutputFileFormat.XYZ.file_extensions[OutputFileFormat.XYZ]
+        # ]
+        if use_forces:
+            force_files = [
+                file
+                for file in files
+                if file.split(".")[-1] in OutputFileFormat.FORCE.file_extensions[OutputFileFormat.FORCE]
+            ]
+            sorted(force_files)
+
+        sorted(xyz_files)
+
+        if len(xyz_files) == 0:
+            raise ValueError(
+                "No coordinate files found with the specified file prefixes.")
+
+        if use_forces:
+            if len(force_files) != len(xyz_files):
+                raise ValueError(
+                    "The number of force files does not match the number of coordinate files.")
+
+            # add here checks for virial and stress files and energy files
+            for xyz_file, force_file in zip(xyz_files, force_files):
+                if xyz_file.split(".")[-1] != force_file.split(".")[-1]:
+                    raise ValueError(
+                        f"The file extensions of the coordinate and force files do not match. The following coordinate files were found: {
+                            xyz_files} and the following force files were found: {force_files}, respectively."
+                    )
+
+    def write_from_trajectory(self,
+                              trajectory: Trajectory,
+                              use_forces: bool = False,
+                              use_stress: bool = False,
+                              use_virial: bool = False,
+                              ) -> None:
+
+        self.file.open()
+        for frame in trajectory:
+            self.write_from_atomic_system(
+                frame,
+                use_forces,
+                use_stress,
+                use_virial
+            )
+
+        self.file.close()
 
     def write_from_atomic_system(self,
                                  system: AtomicSystem,
@@ -71,7 +146,11 @@ class NEPWriter(BaseWriter):
 
         print(system.n_atoms, file=self.file)
 
-        self.file.write(f"energy={system.energy} ")
+        energy_unit = kcal_per_mole
+        energy_conversion = energy_unit.asUnit(eV).asNumber()
+        energy *= energy_conversion
+
+        self.file.write(f"energy={energy} ")
 
         self.file.write("config_type=nep2xyz ")
 
@@ -81,18 +160,26 @@ class NEPWriter(BaseWriter):
                 self.file.write(f"{box_matrix[i][j]} ")
         self.file.write("\" ")
 
+        virial_unit = kcal_per_mole
+        virial_conversion = virial_unit.asUnit(eV).asNumber()
+        virial = system.virial * virial_conversion
+
         if use_virial:
             self.file.write("virial=\"")
             for i in range(3):
                 for j in range(3):
-                    self.file.write(f"{system.virial[i][j]} ")
+                    self.file.write(f"{virial[i][j]} ")
             self.file.write("\" ")
+
+        stress_unit = kcal_per_mole / angstrom**3
+        stress_conversion = stress_unit.asUnit(eV / angstrom**3).asNumber()
+        stress = system.stress * stress_conversion
 
         if use_stress:
             self.file.write("stress=\"")
             for i in range(3):
                 for j in range(3):
-                    self.file.write(f"{system.stress[i][j]} ")
+                    self.file.write(f"{stress[i][j]} ")
             self.file.write("\" ")
 
         self.file.write("properties=species:S:1:pos:R:3")
@@ -122,9 +209,13 @@ class NEPWriter(BaseWriter):
                 f"{atom.symbol} {system.pos[i][0]} {system.pos[i][1]} {system.pos[i][2]}", file=self.file, end=" "
             )
 
+            force_unit = kcal_per_mole / angstrom
+            force_conversion = force_unit.asUnit(eV / angstrom).asNumber()
+            forces = system.forces * force_conversion
+
             if use_forces:
                 print(
-                    f"{system.forces[i][0]} {system.forces[i][1]} {system.forces[i][2]}", file=self.file, end=" "
+                    f"{forces[i][0]} {forces[i][1]} {forces[i][2]}", file=self.file, end=" "
                 )
 
             print(file=self.file)
