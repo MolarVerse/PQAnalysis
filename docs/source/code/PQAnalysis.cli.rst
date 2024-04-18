@@ -15,11 +15,14 @@ cli
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.cli.add_molecules
        PQAnalysis.cli.continue_input
+       PQAnalysis.cli.gen2xyz
        PQAnalysis.cli.rdf
        PQAnalysis.cli.rst2xyz
        PQAnalysis.cli.traj2box
        PQAnalysis.cli.traj2qmcfc
+       PQAnalysis.cli.xyz2gen
 
 
 
