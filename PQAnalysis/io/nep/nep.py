@@ -4,9 +4,10 @@ import glob
 from beartype.typing import List
 
 from PQAnalysis.utils.units import *
-from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat, read_trajectory_generator
+from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat, read_trajectory_generator, EnergyFileReader
+from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
 from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 
 
 class NEPWriter(BaseWriter):
@@ -15,7 +16,7 @@ class NEPWriter(BaseWriter):
     """
 
     def __init__(self,
-                 filename: str,
+                 filename: str | None,
                  mode: FileWritingMode | str = "w",
                  ) -> None:
         """
@@ -41,35 +42,38 @@ class NEPWriter(BaseWriter):
                          ) -> None:
 
         file_prefixes = list(np.atleast_1d(file_prefixes))
-        files = [glob.glob(prefix) for prefix in file_prefixes]
+        files = [glob.glob(prefix + ".*") for prefix in file_prefixes]
         files = [file for sublist in files for file in sublist]
+
+        print(files)
+        print(OutputFileFormat.get_file_extensions(OutputFileFormat.XYZ))
 
         # filter all possible xyz files
         xyz_files = [
             file
             for file in files
-            if file.split(".")[-1] in OutputFileFormat.XYZ.file_extensions[OutputFileFormat.XYZ]
+            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.XYZ)
         ]
         sorted(xyz_files)
 
         en_files = [
             file
             for file in files
-            if file.split(".")[-1] in OutputFileFormat.INSTANTANEOUS_ENERGY.file_extensions[OutputFileFormat.INSTANTANEOUS_ENERGY]
+            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.ENERGY)
         ]
         sorted(en_files)
 
         info_files = [
             file
             for file in files
-            if file.split(".")[-1] in OutputFileFormat.INFO.file_extensions[OutputFileFormat.INFO]
+            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.INFO)
         ]
 
         if use_forces:
             force_files = [
                 file
                 for file in files
-                if file.split(".")[-1] in OutputFileFormat.FORCE.file_extensions[OutputFileFormat.FORCE]
+                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.FORCE)
             ]
             sorted(force_files)
 
@@ -77,7 +81,7 @@ class NEPWriter(BaseWriter):
             stress_files = [
                 file
                 for file in files
-                if file.split(".")[-1] in OutputFileFormat.STRESS.file_extensions[OutputFileFormat.STRESS]
+                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.STRESS)
             ]
             sorted(stress_files)
 
@@ -85,7 +89,7 @@ class NEPWriter(BaseWriter):
             virial_files = [
                 file
                 for file in files
-                if file.split(".")[-1] in OutputFileFormat.VIRIAL.file_extensions[OutputFileFormat.VIRIAL]
+                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.VIRIAL)
             ]
             sorted(virial_files)
 
@@ -116,18 +120,39 @@ class NEPWriter(BaseWriter):
                 raise ValueError(
                     "The number of virial files does not match the number of coordinate files.")
 
+        self.open()
+
         for i in range(len(xyz_files)):
 
             # read stress file in format step stress_xx stress_yy stress_zz stress_xy stress_xz stress_yz as n numpy 2D 3x3 arrays
-            if use_stress:
-                stress_generator = np.genfromtxt(
-                    stress_files[i], skip_header=0, usecols=(1, 2, 3, 4, 5, 6)
-                )
+            stress = read_stress_file(stress_files[i]) if use_stress else None
+            virial = read_virial_file(virial_files[i]) if use_virial else None
+            energy = EnergyFileReader(en_files[i], info_files[i]).read()
 
             xyz_generator = read_trajectory_generator(
-                xyz_files[i], OutputFileFormat.XYZ)
+                xyz_files[i], traj_format=TrajectoryFormat.XYZ)
             force_generator = read_trajectory_generator(
-                force_files[i], OutputFileFormat.FORCE) if use_forces else None
+                force_files[i], traj_format=TrajectoryFormat.FORCE) if use_forces else None
+
+            for j in range(len(energy.data)):
+                system = next(xyz_generator)
+
+                if use_forces:
+                    force_system = next(force_generator)
+                    system.forces = force_system.forces
+
+                system.energy = energy.qm_energy[j]
+                # system.stress = stress if stress is not None else None
+                # system.virial = virial if virial is not None else None
+
+                self.write_from_atomic_system(
+                    system,
+                    use_forces,
+                    use_stress,
+                    use_virial
+                )
+
+        self.close()
 
     def write_from_trajectory(self,
                               trajectory: Trajectory,
@@ -136,7 +161,7 @@ class NEPWriter(BaseWriter):
                               use_virial: bool = False,
                               ) -> None:
 
-        self.file.open()
+        self.open()
         for frame in trajectory:
             self.write_from_atomic_system(
                 frame,
@@ -145,7 +170,7 @@ class NEPWriter(BaseWriter):
                 use_virial
             )
 
-        self.file.close()
+        self.close()
 
     def write_from_atomic_system(self,
                                  system: AtomicSystem,
