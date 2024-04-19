@@ -8,15 +8,21 @@ class _BaseReader(BaseReader):
         super().__init__(filename)
 
     def read(self):
-        data = []
-        for line in self.file:
-            matrix = np.zeros((3, 3))
-            for i, row in enumerate(line.split()[1:]):
-                matrix[i] = float(row)
 
-            data.append(matrix)
+        with open(self.filename, 'r') as file:
 
-        return data
+            data = []
+
+            for line in file.readlines():
+                matrix = np.zeros((3, 3))
+                line_elements = line.split()[1:]
+                for i in range(3):
+                    for j in range(3):
+                        matrix[i, j] = float(line_elements[i * 3 + j])
+
+                data.append(matrix)
+
+            return data
 
 
 class VirialFileReader(_BaseReader):

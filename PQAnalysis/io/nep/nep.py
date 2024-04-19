@@ -1,13 +1,20 @@
 import numpy as np
-import glob
 
 from beartype.typing import List
 
-from PQAnalysis.utils.units import *
-from PQAnalysis.io import BaseWriter, FileWritingMode, OutputFileFormat, read_trajectory_generator, EnergyFileReader
+from PQAnalysis.io import (
+    BaseWriter,
+    FileWritingMode,
+    OutputFileFormat,
+    read_trajectory_generator,
+    EnergyFileReader
+)
 from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
+from PQAnalysis.utils.units import angstrom, eV, kcal_per_mole
+from PQAnalysis.utils.files import find_files_with_prefix
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat
+from PQAnalysis import config
 
 
 class NEPWriter(BaseWriter):
@@ -36,89 +43,77 @@ class NEPWriter(BaseWriter):
                          use_virial: bool = False,
                          xyz_file_extension: str = None,
                          energy_file_extension: str = None,
+                         info_file_extension: str = None,
                          force_file_extension: str = None,
                          stress_file_extension: str = None,
                          virial_file_extension: str = None,
                          ) -> None:
 
-        file_prefixes = list(np.atleast_1d(file_prefixes))
-        files = [glob.glob(prefix + ".*") for prefix in file_prefixes]
-        files = [file for sublist in files for file in sublist]
+        files = find_files_with_prefix(file_prefixes)
 
-        print(files)
-        print(OutputFileFormat.get_file_extensions(OutputFileFormat.XYZ))
+        xyz_files = self._get_files(
+            files,
+            OutputFileFormat.XYZ,
+            xyz_file_extension,
+            file_prefixes
+        )
 
-        # filter all possible xyz files
-        xyz_files = [
-            file
-            for file in files
-            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.XYZ)
-        ]
-        sorted(xyz_files)
+        en_files = self._get_files(
+            files,
+            OutputFileFormat.INSTANTANEOUS_ENERGY,
+            energy_file_extension,
+            file_prefixes
+        )
 
-        en_files = [
-            file
-            for file in files
-            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.ENERGY)
-        ]
-        sorted(en_files)
-
-        info_files = [
-            file
-            for file in files
-            if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.INFO)
-        ]
+        info_files = self._get_files(
+            files,
+            OutputFileFormat.INFO,
+            info_file_extension,
+            file_prefixes
+        )
 
         if use_forces:
-            force_files = [
-                file
-                for file in files
-                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.FORCE)
-            ]
-            sorted(force_files)
+            force_files = self._get_files(
+                files,
+                OutputFileFormat.FORCE,
+                force_file_extension,
+                file_prefixes
+            )
 
         if use_stress:
-            stress_files = [
-                file
-                for file in files
-                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.STRESS)
-            ]
-            sorted(stress_files)
+            stress_files = self._get_files(
+                files,
+                OutputFileFormat.STRESS,
+                stress_file_extension,
+                file_prefixes
+            )
 
         if use_virial:
-            virial_files = [
-                file
-                for file in files
-                if "." + file.split(".")[-1] in OutputFileFormat.get_file_extensions(OutputFileFormat.VIRIAL)
-            ]
-            sorted(virial_files)
+            virial_files = self._get_files(
+                files,
+                OutputFileFormat.VIRIAL,
+                virial_file_extension,
+                file_prefixes
+            )
 
-        if len(xyz_files) == 0:
+        def raise_number_of_files_error(file_type: str, files: List[str], xyz_files: List[str]):
             raise ValueError(
-                "No coordinate files found with the specified file prefixes.")
+                f"The number of {file_type} files does not match the number of coordinate files. The found {file_type} files are: {files} and the found coordinate files are: {xyz_files}")
 
         if len(en_files) != len(xyz_files):
-            raise ValueError(
-                "The number of energy files does not match the number of coordinate files.")
+            raise_number_of_files_error("energy", en_files, xyz_files)
 
         if len(info_files) != len(xyz_files):
-            raise ValueError(
-                "The number of info files does not match the number of coordinate files.")
+            raise_number_of_files_error("info", info_files, xyz_files)
 
-        if use_forces:
-            if len(force_files) != len(xyz_files):
-                raise ValueError(
-                    "The number of force files does not match the number of coordinate files.")
+        if use_forces and len(force_files) != len(xyz_files):
+            raise_number_of_files_error("force", force_files, xyz_files)
 
-        if use_stress:
-            if len(stress_files) != len(xyz_files):
-                raise ValueError(
-                    "The number of stress files does not match the number of coordinate files.")
+        if use_stress and len(stress_files) != len(xyz_files):
+            raise_number_of_files_error("stress", stress_files, xyz_files)
 
-        if use_virial:
-            if len(virial_files) != len(xyz_files):
-                raise ValueError(
-                    "The number of virial files does not match the number of coordinate files.")
+        if use_virial and len(virial_files) != len(xyz_files):
+            raise_number_of_files_error("virial", virial_files, xyz_files)
 
         self.open()
 
@@ -134,16 +129,17 @@ class NEPWriter(BaseWriter):
             force_generator = read_trajectory_generator(
                 force_files[i], traj_format=TrajectoryFormat.FORCE) if use_forces else None
 
-            for j in range(len(energy.data)):
-                system = next(xyz_generator)
+            for j, system in enumerate(xyz_generator):
+                system.energy = energy.qm_energy[j]
 
                 if use_forces:
                     force_system = next(force_generator)
                     system.forces = force_system.forces
 
-                system.energy = energy.qm_energy[j]
-                # system.stress = stress if stress is not None else None
-                # system.virial = virial if virial is not None else None
+                if use_virial:
+                    system.virial = virial[j]
+                if use_stress:
+                    system.stress = stress[j]
 
                 self.write_from_atomic_system(
                     system,
@@ -153,6 +149,32 @@ class NEPWriter(BaseWriter):
                 )
 
         self.close()
+
+    def _get_files(self,
+                   files: List[str],
+                   OutputFileFormat: OutputFileFormat,
+                   file_extension: str | None,
+                   file_prefixes: List[str],
+                   ) -> List[str]:
+
+        filtered_files = OutputFileFormat.find_matching_files(
+            files,
+            OutputFileFormat.XYZ,
+            file_extension
+        )
+
+        if len(filtered_files) == 0:
+            if file_extension is not None:
+                raise ValueError(
+                    f"You did specify a file extension for the {OutputFileFormat} files, but no files with the extension
+                    {file_extension} were found, that match the given file prefixes {file_prefixes}."
+                )
+            else:
+                raise ValueError(
+                    f"No {OutputFileFormat} files were found in {files} that match the given file prefixes {file_prefixes}. All possible file      extensions are {OutputFileFormat.get_file_extensions(OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues."
+                )
+
+        return sorted(filtered_files)
 
     def write_from_trajectory(self,
                               trajectory: Trajectory,
@@ -220,7 +242,7 @@ class NEPWriter(BaseWriter):
 
         energy_unit = kcal_per_mole
         energy_conversion = energy_unit.asUnit(eV).asNumber()
-        energy *= energy_conversion
+        energy = system.energy * energy_conversion
 
         self.file.write(f"energy={energy} ")
 
@@ -232,22 +254,22 @@ class NEPWriter(BaseWriter):
                 self.file.write(f"{box_matrix[i][j]} ")
         self.file.write("\" ")
 
-        virial_unit = kcal_per_mole
-        virial_conversion = virial_unit.asUnit(eV).asNumber()
-        virial = system.virial * virial_conversion
-
         if use_virial:
+            virial_unit = kcal_per_mole
+            virial_conversion = virial_unit.asUnit(eV).asNumber()
+            virial = system.virial * virial_conversion
+
             self.file.write("virial=\"")
             for i in range(3):
                 for j in range(3):
                     self.file.write(f"{virial[i][j]} ")
             self.file.write("\" ")
 
-        stress_unit = kcal_per_mole / angstrom**3
-        stress_conversion = stress_unit.asUnit(eV / angstrom**3).asNumber()
-        stress = system.stress * stress_conversion
-
         if use_stress:
+            stress_unit = kcal_per_mole / angstrom**3
+            stress_conversion = stress_unit.asUnit(eV / angstrom**3).asNumber()
+            stress = system.stress * stress_conversion
+
             self.file.write("stress=\"")
             for i in range(3):
                 for j in range(3):
