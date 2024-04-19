@@ -1,6 +1,7 @@
 """
 A module containing different formats related to the io subpackage.
 """
+from __future__ import annotations
 
 from beartype.typing import Any
 
@@ -12,50 +13,38 @@ class OutputFileFormat(BaseEnumFormat):
     """
     An enumeration of the supported output file formats.
     """
-    file_extensions = {}
     #: inference of the file format from the file extension
     AUTO = "auto"
 
     #: The xyz file format.
     XYZ = "xyz"
-    file_extensions[XYZ] = [".xyz", ".coord", ".coords"]
 
     #: The vel file format.
     VEL = "vel"
-    file_extensions[VEL] = [".vel", ".velocs", ".velocity"]
 
     #: The force file format.
     FORCE = "force"
-    file_extensions[FORCE] = [".force", ".frc", ".forces"]
 
     #: The charge file format.
     CHARGE = "charge"
-    file_extensions[CHARGE] = [".charge", ".chrg", ".charges"]
 
     #: The restart file format.
     RESTART = "restart"
-    file_extensions[RESTART] = [".rst", ".restart"]
 
     #: The ENERGY file format.
     ENERGY = "energy"
-    file_extensions[ENERGY] = [".en", ".energy", ".energies"]
 
     #: The INSTANTANEOUS ENERGY file format.
     INSTANTANEOUS_ENERGY = "instant_en"
-    file_extensions[INSTANTANEOUS_ENERGY] = [
-        ".instant_en", ".instant_energies", ".inst_energy"]
 
     #: The STRESS file format.
     STRESS = "stress"
-    file_extensions[STRESS] = [".stress", ".stresses"]
 
     #: The VIRIAL file format.
     VIRIAL = "virial"
-    file_extensions[VIRIAL] = [".virial", ".virials", ".vir"]
 
     #: The Info file format.
     INFO = "info"
-    file_extensions[INFO] = [".info", ".information"]
 
     @classmethod
     def _missing_(cls, values: Any) -> Any:
@@ -93,6 +82,23 @@ class OutputFileFormat(BaseEnumFormat):
         return output_file_format
 
     @classmethod
+    def file_extensions(cls):
+        file_extensions = {}
+        file_extensions[cls.XYZ.value] = [".xyz", ".coord", ".coords"]
+        file_extensions[cls.VEL.value] = [".vel", ".velocs", ".velocity"]
+        file_extensions[cls.FORCE.value] = [".force", ".frc", ".forces"]
+        file_extensions[cls.CHARGE.value] = [".charge", ".chrg", ".charges"]
+        file_extensions[cls.RESTART.value] = [".rst", ".restart"]
+        file_extensions[cls.ENERGY.value] = [".en", ".energy", ".energies"]
+        file_extensions[cls.INSTANTANEOUS_ENERGY.value] = [
+            ".instant_en", ".instant_energies", ".inst_energy"]
+        file_extensions[cls.STRESS.value] = [".stress", ".stresses"]
+        file_extensions[cls.VIRIAL.value] = [".virial", ".virials", ".vir"]
+        file_extensions[cls.INFO.value] = [".info", ".information"]
+
+        return file_extensions
+
+    @classmethod
     def infer_format_from_extension(cls, file_path: str) -> "OutputFileFormat":
         """
         Infer the file format from the file extension.
@@ -125,6 +131,26 @@ class OutputFileFormat(BaseEnumFormat):
                 f"Could not infer the file format from the file extension of \"{
                     file_path}\". Possible file formats are: {cls._member_names_}"
             )
+
+    @classmethod
+    def get_file_extensions(cls, file_format: OutputFileFormat | str) -> list[str]:
+        """
+        Get the file extensions of the given file format.
+
+        Parameters
+        ----------
+        file_format : OutputFileFormat
+            The file format to get the file extensions for.
+
+        Returns
+        -------
+        list[str]
+            The file extensions of the given file format.
+        """
+
+        file_format = cls(file_format)
+
+        return cls.file_extensions()[file_format.value]
 
     def lower(self) -> str:
         """
