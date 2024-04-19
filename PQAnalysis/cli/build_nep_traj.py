@@ -36,13 +36,13 @@ def main():
 
     parser.parse_output_file()
 
-    parser.add_argument('--use-forces', type=bool, default=False,
+    parser.add_argument('--use-forces', action='store_true', default=False,
                         help='Whether to include forces in the output file.')
 
-    parser.add_argument('--use-virial', type=bool, default=False,
+    parser.add_argument('--use-virial', action='store_true', default=False,
                         help='Whether to include the virial in the output file.')
 
-    parser.add_argument('--use-stress', type=bool, default=False,
+    parser.add_argument('--use-stress', action='store_true', default=False,
                         help='Whether to include the stress tensor in the output file.')
 
     parser.parse_mode()
