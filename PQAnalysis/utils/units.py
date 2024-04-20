@@ -1,5 +1,5 @@
 from unum import Unum
-from unum.units import *
+from unum.units import J
 
 cal = Unum.unit('cal', J/4.184)
 kcal = Unum.unit('kcal', cal*1e3)

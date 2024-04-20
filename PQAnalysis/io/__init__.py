@@ -2,6 +2,7 @@
 A package containing classes and functions to handle input and output of molecular dynamics simulations.
 """
 
+
 from .formats import BoxFileFormat, FileWritingMode, OutputFileFormat
 
 # import the classes from the base module
@@ -54,3 +55,7 @@ from .api import (
     xyz2gen,
     continue_input_file
 )
+
+import logging
+
+subpackage_logger = logging.getLogger(__name__)
