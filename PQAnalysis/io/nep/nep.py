@@ -1,6 +1,9 @@
 import numpy as np
+import logging
+import sys
 
 from beartype.typing import List
+from unum.units import eV, angstrom
 
 from PQAnalysis.io import (
     BaseWriter,
@@ -10,17 +13,25 @@ from PQAnalysis.io import (
     EnergyFileReader
 )
 from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
-from PQAnalysis.utils.units import angstrom, eV, kcal_per_mole
+from PQAnalysis.utils.units import kcal_per_mole
 from PQAnalysis.utils.files import find_files_with_prefix
+from PQAnalysis.utils.custom_logging import CustomFormatter
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis import config
+from PQAnalysis import package_name
 
 
 class NEPWriter(BaseWriter):
     """
     A class to write NEP training and testing files.
     """
+
+    logger = logging.getLogger(package_name).getChild(__qualname__)
+    handler = logging.StreamHandler(sys.stderr)
+    handler.setFormatter(CustomFormatter())
+    logger.addHandler(handler)
+    logger.propagate = False
 
     def __init__(self,
                  filename: str | None,
@@ -115,6 +126,28 @@ class NEPWriter(BaseWriter):
         if use_virial and len(virial_files) != len(xyz_files):
             raise_number_of_files_error("virial", virial_files, xyz_files)
 
+        # class_logger.info(f"Using forces: {use_forces}")
+        # class_logger.info(f"Using stress: {use_stress}")
+        # class_logger.info(f"Using virial: {use_virial}")
+        # class_logger.info(f"xyz_files: {xyz_files}")
+        # class_logger.info(f"en_files: {en_files}")
+        # class_logger.info(f"info_files: {info_files}")
+        # if use_forces:
+        #     class_logger.info(f"force_files: {force_files}")
+        # if use_stress:
+        #     class_logger.info(f"stress_files: {stress_files}")
+        # if use_virial:
+        #     class_logger.info(f"virial_files: {virial_files}")
+
+        self.logger.info(f"""
+xyz_files:    {xyz_files}
+en_files:     {en_files}
+info_files:   {info_files}
+force_files:  {force_files if use_forces else None}
+stress_files: {stress_files if use_stress else None}
+virial_files: {virial_files if use_virial else None}
+""")
+
         self.open()
 
         for i in range(len(xyz_files)):
@@ -148,6 +181,10 @@ class NEPWriter(BaseWriter):
                     use_virial
                 )
 
+            self.logger.info(f"""
+Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
+""")
+
         self.close()
 
     def _get_files(self,
@@ -159,19 +196,20 @@ class NEPWriter(BaseWriter):
 
         filtered_files = OutputFileFormat.find_matching_files(
             files,
-            OutputFileFormat.XYZ,
+            OutputFileFormat,
             file_extension
         )
 
         if len(filtered_files) == 0:
             if file_extension is not None:
                 raise ValueError(
-                    f"You did specify a file extension for the {OutputFileFormat} files, but no files with the extension
+                    f"You did specify a file extension for the {OutputFileFormat} files, but no files with the extension \
                     {file_extension} were found, that match the given file prefixes {file_prefixes}."
                 )
             else:
                 raise ValueError(
-                    f"No {OutputFileFormat} files were found in {files} that match the given file prefixes {file_prefixes}. All possible file      extensions are {OutputFileFormat.get_file_extensions(OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues."
+                    f"No {OutputFileFormat} files were found in {files} that match the given file prefixes {file_prefixes}. All possible file      extensions are {OutputFileFormat.get_file_extensions(
+                        OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues."
                 )
 
         return sorted(filtered_files)
