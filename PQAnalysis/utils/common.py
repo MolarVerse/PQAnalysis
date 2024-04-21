@@ -25,7 +25,7 @@ header = f"""
 """
 
 
-def print_header() -> None:
+def print_header(file=sys.stderr) -> None:
     """
     A function to print the header of the program.
 
@@ -33,4 +33,4 @@ def print_header() -> None:
     by all cli scripts without interfering with the output.
     """
 
-    print(header, file=sys.stderr)
+    print(header, file=file)

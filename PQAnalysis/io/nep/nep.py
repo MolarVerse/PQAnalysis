@@ -2,7 +2,7 @@ import numpy as np
 import logging
 import sys
 
-from beartype.typing import List
+from beartype.typing import List, Dict
 from unum.units import eV, angstrom
 
 from PQAnalysis.io import (
@@ -15,11 +15,11 @@ from PQAnalysis.io import (
 from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
 from PQAnalysis.utils.units import kcal_per_mole
 from PQAnalysis.utils.files import find_files_with_prefix
-from PQAnalysis.utils.custom_logging import CustomFormatter
+from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis import config
-from PQAnalysis import package_name
+from PQAnalysis import __package_name__
 
 
 class NEPWriter(BaseWriter):
@@ -27,11 +27,7 @@ class NEPWriter(BaseWriter):
     A class to write NEP training and testing files.
     """
 
-    logger = logging.getLogger(package_name).getChild(__qualname__)
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(CustomFormatter())
-    logger.addHandler(handler)
-    logger.propagate = False
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
 
     def __init__(self,
                  filename: str | None,
@@ -47,6 +43,8 @@ class NEPWriter(BaseWriter):
         """
         super().__init__(filename, mode)
 
+        self.logger = setup_logger(self.logger)
+
     def write_from_files(self,
                          file_prefixes: List[str] | str,
                          use_forces: bool = False,
@@ -59,94 +57,59 @@ class NEPWriter(BaseWriter):
                          stress_file_extension: str = None,
                          virial_file_extension: str = None,
                          ) -> None:
+        """
+        Writes the NEP trajectory file from the given files.
+
+        Parameters
+        ----------
+        file_prefixes : List[str] | str
+            The prefixes of the files to find. Here with prefix we mean the part of the filename not only the name before the extension, but every matching file that starts with the given prefix.
+        use_forces : bool, optional
+            Whether to include forces in the output file, by default False
+        use_stress : bool, optional
+            Whether to include the stress tensor in the output file, by default False
+        use_virial : bool, optional
+            Whether to include the virial in the output file, by default False
+        xyz_file_extension : str, optional
+            The extension of the xyz files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        energy_file_extension : str, optional
+            The extension of the energy files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        info_file_extension : str, optional
+            The extension of the info files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        force_file_extension : str, optional
+            The extension of the force files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        stress_file_extension : str, optional
+            The extension of the stress files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        virial_file_extension : str, optional
+            The extension of the virial files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        """
+
+        self.use_forces = use_forces
+        self.use_stress = use_stress
+        self.use_virial = use_virial
+
+        self.xyz_file_extension = xyz_file_extension
+        self.energy_file_extension = energy_file_extension
+        self.info_file_extension = info_file_extension
+        self.force_file_extension = force_file_extension
+        self.stress_file_extension = stress_file_extension
+        self.virial_file_extension = virial_file_extension
 
         files = find_files_with_prefix(file_prefixes)
 
-        xyz_files = self._get_files(
+        file_dict = self.determine_files(
             files,
-            OutputFileFormat.XYZ,
-            xyz_file_extension,
-            file_prefixes
+            file_prefixes,
         )
 
-        en_files = self._get_files(
-            files,
-            OutputFileFormat.INSTANTANEOUS_ENERGY,
-            energy_file_extension,
-            file_prefixes
-        )
-
-        info_files = self._get_files(
-            files,
-            OutputFileFormat.INFO,
-            info_file_extension,
-            file_prefixes
-        )
-
-        if use_forces:
-            force_files = self._get_files(
-                files,
-                OutputFileFormat.FORCE,
-                force_file_extension,
-                file_prefixes
-            )
-
-        if use_stress:
-            stress_files = self._get_files(
-                files,
-                OutputFileFormat.STRESS,
-                stress_file_extension,
-                file_prefixes
-            )
-
-        if use_virial:
-            virial_files = self._get_files(
-                files,
-                OutputFileFormat.VIRIAL,
-                virial_file_extension,
-                file_prefixes
-            )
-
-        def raise_number_of_files_error(file_type: str, files: List[str], xyz_files: List[str]):
-            raise ValueError(
-                f"The number of {file_type} files does not match the number of coordinate files. The found {file_type} files are: {files} and the found coordinate files are: {xyz_files}")
-
-        if len(en_files) != len(xyz_files):
-            raise_number_of_files_error("energy", en_files, xyz_files)
-
-        if len(info_files) != len(xyz_files):
-            raise_number_of_files_error("info", info_files, xyz_files)
-
-        if use_forces and len(force_files) != len(xyz_files):
-            raise_number_of_files_error("force", force_files, xyz_files)
-
-        if use_stress and len(stress_files) != len(xyz_files):
-            raise_number_of_files_error("stress", stress_files, xyz_files)
-
-        if use_virial and len(virial_files) != len(xyz_files):
-            raise_number_of_files_error("virial", virial_files, xyz_files)
-
-        # class_logger.info(f"Using forces: {use_forces}")
-        # class_logger.info(f"Using stress: {use_stress}")
-        # class_logger.info(f"Using virial: {use_virial}")
-        # class_logger.info(f"xyz_files: {xyz_files}")
-        # class_logger.info(f"en_files: {en_files}")
-        # class_logger.info(f"info_files: {info_files}")
-        # if use_forces:
-        #     class_logger.info(f"force_files: {force_files}")
-        # if use_stress:
-        #     class_logger.info(f"stress_files: {stress_files}")
-        # if use_virial:
-        #     class_logger.info(f"virial_files: {virial_files}")
-
-        self.logger.info(f"""
-xyz_files:    {xyz_files}
-en_files:     {en_files}
-info_files:   {info_files}
-force_files:  {force_files if use_forces else None}
-stress_files: {stress_files if use_stress else None}
-virial_files: {virial_files if use_virial else None}
-""")
+        #fmt: off
+        xyz_files = file_dict[OutputFileFormat.XYZ.value]
+        en_files = file_dict[OutputFileFormat.ENERGY.value]
+        info_files = file_dict[OutputFileFormat.INFO.value]
+        force_files = file_dict[OutputFileFormat.FORCE.value] if use_forces else []
+        stress_files = file_dict[OutputFileFormat.STRESS.value] if use_stress else []
+        virial_files = file_dict[OutputFileFormat.VIRIAL.value] if use_virial else []
+        #fmt: on
 
         self.open()
 
@@ -182,10 +145,107 @@ virial_files: {virial_files if use_virial else None}
                 )
 
             self.logger.info(f"""
-Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
+Processed {len(stress)} frames from files:
+{xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {
+                stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
 """)
 
         self.close()
+
+    def determine_files(self,
+                        files: List[str],
+                        file_prefixes: List[str],
+                        ) -> Dict[str, List[str]]:
+
+        file_dict = {}
+
+        file_dict[OutputFileFormat.XYZ.value] = self._get_files(
+            files,
+            OutputFileFormat.XYZ,
+            self.xyz_file_extension,
+            file_prefixes
+        )
+
+        file_dict[OutputFileFormat.ENERGY.value] = self._get_files(
+            files,
+            OutputFileFormat.INSTANTANEOUS_ENERGY,
+            self.energy_file_extension,
+            file_prefixes
+        )
+
+        file_dict[OutputFileFormat.INFO.value] = self._get_files(
+            files,
+            OutputFileFormat.INFO,
+            self.info_file_extension,
+            file_prefixes
+        )
+
+        if self.use_forces:
+            file_dict[OutputFileFormat.FORCE.value] = self._get_files(
+                files,
+                OutputFileFormat.FORCE,
+                self.force_file_extension,
+                file_prefixes
+            )
+
+        if self.use_stress:
+            file_dict[OutputFileFormat.STRESS.value] = self._get_files(
+                files,
+                OutputFileFormat.STRESS,
+                self.stress_file_extension,
+                file_prefixes
+            )
+
+        if self.use_virial:
+            file_dict[OutputFileFormat.VIRIAL.value] = self._get_files(
+                files,
+                OutputFileFormat.VIRIAL,
+                self.virial_file_extension,
+                file_prefixes
+            )
+
+        def raise_number_of_files_error(file_type: str, files: List[str], xyz_files: List[str]):
+            self.logger.error(
+                f"The number of {file_type} files does not match the number of coordinate files. The found {
+                    file_type} files are: {files} and the found coordinate files are: {xyz_files}"
+            )
+            exit(1)
+
+        #fmt: off
+        en_files = file_dict[OutputFileFormat.ENERGY.value]
+        xyz_files = file_dict[OutputFileFormat.XYZ.value]
+        info_files = file_dict[OutputFileFormat.INFO.value]
+        force_files = file_dict[OutputFileFormat.FORCE.value] if self.use_forces else []
+        stress_files = file_dict[OutputFileFormat.STRESS.value] if self.use_stress else []
+        virial_files = file_dict[OutputFileFormat.VIRIAL.value] if self.use_virial else []
+        #fmt: on
+
+        if len(en_files) != len(xyz_files):
+            raise_number_of_files_error("energy", en_files, xyz_files)
+
+        if len(info_files) != len(xyz_files):
+            raise_number_of_files_error("info", info_files, xyz_files)
+
+        if self.use_forces and len(force_files) != len(xyz_files):
+            raise_number_of_files_error("force", force_files, xyz_files)
+
+        if self.use_stress and len(stress_files) != len(xyz_files):
+            raise_number_of_files_error("stress", stress_files, xyz_files)
+
+        if self.use_virial and len(virial_files) != len(xyz_files):
+            raise_number_of_files_error("virial", virial_files, xyz_files)
+
+        self.logger.info(f"""
+Reading files to write NEP trajectory file:
+    - xyz_files:    {xyz_files}
+    - en_files:     {en_files}
+    - info_files:   {info_files}
+    - force_files:  {force_files if self.use_forces else ""}
+    - stress_files: {stress_files if self.use_stress else ""}
+    - virial_files: {virial_files if self.use_virial else ""}
+""")
+
+        return file_dict
 
     def _get_files(self,
                    files: List[str],
@@ -316,7 +376,7 @@ Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i
 
         self.file.write("properties=species:S:1:pos:R:3")
         if use_forces:
-            self.file.write("forces:R:3")
+            self.file.write(":forces:R:3")
         self.file.write("\n")
 
     def write_body(self,
@@ -328,9 +388,9 @@ Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i
 
         Parameters
         ----------
-        system : AtomicSystem
+        system: AtomicSystem
             The system to be written to the NEP trajectory file.
-        use_forces : bool, optional
+        use_forces: bool, optional
             Whether to write the forces to the NEP trajectory file, by default False
         """
 
@@ -338,7 +398,7 @@ Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i
             atom = system.atoms[i]
 
             print(
-                f"{atom.symbol} {system.pos[i][0]} {system.pos[i][1]} {system.pos[i][2]}", file=self.file, end=" "
+                f"{atom.symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=self.file, end=" "
             )
 
             force_unit = kcal_per_mole / angstrom
@@ -347,7 +407,7 @@ Processed {len(stress)} frames from {xyz_files[i]}, {en_files[i]}, {info_files[i
 
             if use_forces:
                 print(
-                    f"{forces[i][0]} {forces[i][1]} {forces[i][2]}", file=self.file, end=" "
+                    f"{forces[i][0]:15.8e} {forces[i][1]:15.8e} {forces[i][2]:15.8e}", file=self.file, end=" "
                 )
 
             print(file=self.file)
