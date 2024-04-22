@@ -26,15 +26,29 @@ def test_main(test_with_data_dir):
     main_vmd()
 
 
-@mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=ArgparseNamespace(trajectory_file=["test.xyz"], vmd=False, output="test_box.dat"))
+@mock.patch(
+    'argparse.ArgumentParser.parse_args',
+    return_value=ArgparseNamespace(
+        trajectory_file=["test.xyz"],
+        vmd=False,
+        output="test_box.dat",
+        log_file=None,
+    )
+)
 def main_box_file(mock_args):
     main()
     assert filecmp("box.dat", "test_box.dat")
 
 
-@mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=ArgparseNamespace(trajectory_file=["test.xyz"], vmd=True, output="test_box.vmd.xyz"))
+@mock.patch(
+    'argparse.ArgumentParser.parse_args',
+    return_value=ArgparseNamespace(
+        trajectory_file=["test.xyz"],
+        vmd=True,
+        output="test_box.vmd.xyz",
+        log_file=None,
+    )
+)
 def main_vmd(mock_args):
     main()
     assert filecmp("box.vmd.xyz", "test_box.vmd.xyz")
