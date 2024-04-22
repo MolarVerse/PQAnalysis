@@ -1,3 +1,7 @@
+"""
+A module containing different units related to the unum subpackage.
+"""
+
 from unum import Unum
 from unum.units import J
 

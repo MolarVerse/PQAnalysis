@@ -1,3 +1,7 @@
+"""
+A module containing functions to work with files, which are of general use.
+"""
+
 import glob
 import numpy as np
 
