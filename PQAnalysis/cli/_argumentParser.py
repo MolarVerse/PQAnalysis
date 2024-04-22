@@ -48,10 +48,6 @@ class _ArgumentParser(argparse.ArgumentParser):
             kwargs['prog'] = self.prog.split(".")[0]
             self.___init___(*args, **kwargs)
 
-        self._parse_progress()
-        self._parse_version()
-        self._parse_log_file()
-
     def ___init___(self, *args, **kwargs):
         """
         The ___init___ method is a helper method to initialize the ArgumentParser class.
@@ -81,6 +77,10 @@ class _ArgumentParser(argparse.ArgumentParser):
         argparse.Namespace
             The parsed arguments.
         """
+        self._parse_progress()
+        self._parse_version()
+        self._parse_log_file()
+
         argcomplete.autocomplete(self)
         args = super().parse_args()
 
