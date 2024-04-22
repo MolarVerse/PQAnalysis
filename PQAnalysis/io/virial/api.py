@@ -1,3 +1,7 @@
+"""
+A module containing the API for reading virial and stress files.
+"""
+
 from .virialReader import VirialFileReader, StressFileReader
 
 
