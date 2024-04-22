@@ -4,6 +4,7 @@ A module containing the NEPWriter class to write NEP training and testing files.
 
 import numpy as np
 import logging
+import _io
 
 from beartype.typing import List, Dict
 from unum.units import eV, angstrom
@@ -13,14 +14,17 @@ from PQAnalysis.io import (
     FileWritingMode,
     OutputFileFormat,
     read_trajectory_generator,
+    calculate_frames_of_trajectory_file,
     EnergyFileReader
 )
 from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
 from PQAnalysis.utils.units import kcal_per_mole
 from PQAnalysis.utils.files import find_files_with_prefix
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.atomicSystem import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat
+from PQAnalysis.types import PositiveReal
 from PQAnalysis import config
 from PQAnalysis import __package_name__
 
@@ -44,6 +48,7 @@ class NEPWriter(BaseWriter):
         mode : FileWritingMode | str, optional
             _description_, by default "w"
         """
+        self.original_mode = FileWritingMode(mode)
         super().__init__(filename, mode)
 
         self.logger = setup_logger(self.logger)
@@ -59,6 +64,7 @@ class NEPWriter(BaseWriter):
                          force_file_extension: str = None,
                          stress_file_extension: str = None,
                          virial_file_extension: str = None,
+                         test_ratio: PositiveReal = 0.0,
                          ) -> None:
         """
         Writes the NEP trajectory file from the given files.
@@ -85,6 +91,13 @@ class NEPWriter(BaseWriter):
             The extension of the stress files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
         virial_file_extension : str, optional
             The extension of the virial files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+        test_ratio : PositiveReal, optional
+            The ratio of testing frames to the total number of frames, by default 0.0. If the test_ratio is 0.0 no train and test files are created. If the test_ratio is larger not equal to 0.0, the test_ratio is used to determine the number of training and testing frames. The final ratio will be as close to the test_ratio as possible, but if it is not possible to have the exact ratio, always the higher next higher ratio is chosen. As output filenames the original filename is used with the suffix _train or _test appended and the same FileWritingMode as the original file is used.
+
+        Raises
+        ------
+        ValueError
+            If the test_ratio is larger than 1.0.
         """
 
         self.use_forces = use_forces
@@ -97,6 +110,12 @@ class NEPWriter(BaseWriter):
         self.force_file_extension = force_file_extension
         self.stress_file_extension = stress_file_extension
         self.virial_file_extension = virial_file_extension
+
+        if test_ratio > 1.0:
+            self.logger.error(
+                "The test_ratio must be between 0.0 and 1.0.",
+                exception=ValueError
+            )
 
         files = find_files_with_prefix(file_prefixes)
 
@@ -116,6 +135,26 @@ class NEPWriter(BaseWriter):
 
         self.open()
 
+        n_train_frames = 0
+        n_test_frames = 0
+
+        if not np.isclose(test_ratio, 0.0):
+            train_writer = BaseWriter(
+                f"{self.filename}_train",
+                mode=self.original_mode
+            )
+            test_writer = BaseWriter(
+                f"{self.filename}_test",
+                mode=self.original_mode
+            )
+            train_writer.open()
+            test_writer.open()
+            train_file = train_writer.file
+            test_file = test_writer.file
+        else:
+            train_file = None
+            test_file = None
+
         for i in range(len(xyz_files)):
 
             # read stress file in format step stress_xx stress_yy stress_zz stress_xy stress_xz stress_yz as n numpy 2D 3x3 arrays
@@ -128,7 +167,17 @@ class NEPWriter(BaseWriter):
             force_generator = read_trajectory_generator(
                 force_files[i], traj_format=TrajectoryFormat.FORCE) if use_forces else None
 
-            frames_processed = 0
+            n_frames = calculate_frames_of_trajectory_file(xyz_files[i])
+
+            n_train_max, n_test_max = self.calculate_test_train_portion(
+                n_frames,
+                n_train_frames,
+                n_test_frames,
+                test_ratio
+            )
+
+            seed = get_random_seed()
+            rng = np.random.default_rng(seed=seed)
 
             for j, system in enumerate(xyz_generator):
                 system.energy = energy.qm_energy[j]
@@ -144,18 +193,39 @@ class NEPWriter(BaseWriter):
 
                 self.write_from_atomic_system(
                     system,
+                    self.file,
                     use_forces,
                     use_stress,
                     use_virial
                 )
 
-                frames_processed = j + 1
+                if n_train_frames == n_train_max:
+                    file_to_write = test_file
+                    n_test_frames += 1
+                elif n_test_frames == n_test_max or rng.random() > test_ratio:
+                    file_to_write = train_file
+                    n_train_frames += 1
+                else:
+                    file_to_write = train_file
+                    n_train_frames += 1
+
+                self.write_from_atomic_system(
+                    system,
+                    file_to_write,
+                    use_forces,
+                    use_stress,
+                    use_virial
+                )
 
             self.logger.info(f"""
-Processed {frames_processed} frames from files:
+Processed {n_frames} frames from files:
 {xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {
                 stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
 """)
+
+        if train_file is not None:
+            train_writer.close()
+            test_writer.close()
 
         self.close()
 
@@ -342,6 +412,42 @@ Reading files to write NEP trajectory file:
 
         return sorted(filtered_files)
 
+    def calculate_test_train_portion(self,
+                                     n_frames: int,
+                                     n_train_frames: int,
+                                     n_test_frames: int,
+                                     test_ratio: PositiveReal,
+                                     ) -> tuple[int, int]:
+        """
+        Calculates the maximum number of training and testing frames.
+
+        By applying the test_ratio, the maximum number of training and testing frames is calculated. The number of training and testing frames is determined by the test_ratio and the total number of frames. The total number of frames is the sum of the number of training and testing frames and the number of frames in the trajectory file.
+
+        Parameters
+        ----------
+        n_frames : int
+            the number of frames to add to the training and testing files
+        n_train_frames : int
+            the number of training frames already added to the training file
+        n_test_frames : int
+            the number of testing frames already added to the testing file
+        test_ratio : PositiveReal
+            the ratio of testing frames to the total number of frames
+
+        Returns
+        -------
+        tuple[int, int]
+            the maximum number of training and testing frames
+        """
+
+        detected_frames = n_train_frames + n_test_frames
+        total_frames = n_frames + detected_frames
+
+        max_test_frames = int(np.ceil(total_frames * test_ratio))
+        max_train_frames = total_frames - max_test_frames
+
+        return max_train_frames, max_test_frames
+
     def write_from_trajectory(self,
                               trajectory: Trajectory,
                               use_forces: bool = False,
@@ -376,6 +482,7 @@ Reading files to write NEP trajectory file:
 
     def write_from_atomic_system(self,
                                  system: AtomicSystem,
+                                 file: _io.TextIOWrapper | None,
                                  use_forces: bool = False,
                                  use_stress: bool = False,
                                  use_virial: bool = False,
@@ -387,6 +494,8 @@ Reading files to write NEP trajectory file:
         ----------
         system : AtomicSystem
             The system to be written to the NEP trajectory file.
+        file : _io.TextIOWrapper
+            The file to write the NEP trajectory file to. If None, nothing is written
         use_forces : bool, optional
             Whether to write the forces to the NEP trajectory file, by default False
         use_stress : bool, optional
@@ -409,6 +518,9 @@ Reading files to write NEP trajectory file:
         ValueError
             If the system does not have a virial tensor and it was specified to be written to the NEP trajectory file.
         """
+
+        if file is None:
+            return
 
         if not system.has_pos:
             self.logger.error(
@@ -445,11 +557,12 @@ Reading files to write NEP trajectory file:
                 exception=ValueError
             )
 
-        self.write_header(system, use_forces, use_stress, use_virial)
-        self.write_body(system, use_forces)
+        self.write_header(system, file, use_forces, use_stress, use_virial)
+        self.write_body(system, file, use_forces)
 
     def write_header(self,
                      system: AtomicSystem,
+                     file: _io.TextIOWrapper,
                      use_forces: bool = False,
                      use_stress: bool = False,
                      use_virial: bool = False,
@@ -461,6 +574,8 @@ Reading files to write NEP trajectory file:
         ----------
         system : AtomicSystem
             The system to be written to the NEP trajectory file.
+        file : _io.TextIOWrapper
+            The file to write the NEP trajectory file to.
         use_forces : bool, optional
             Whether to write the forces to the NEP trajectory file, by default False
         use_stress : bool, optional
@@ -471,51 +586,52 @@ Reading files to write NEP trajectory file:
 
         box_matrix = np.transpose(system.cell.box_matrix)
 
-        print(system.n_atoms, file=self.file)
+        print(system.n_atoms, file=file)
 
         energy_unit = kcal_per_mole
         energy_conversion = energy_unit.asUnit(eV).asNumber()
         energy = system.energy * energy_conversion
 
-        self.file.write(f"energy={energy} ")
+        file.write(f"energy={energy} ")
 
-        self.file.write("config_type=nep2xyz ")
+        file.write("config_type=nep2xyz ")
 
-        self.file.write("lattice=\"")
+        file.write("lattice=\"")
         for i in range(3):
             for j in range(3):
-                self.file.write(f"{box_matrix[i][j]} ")
-        self.file.write("\" ")
+                file.write(f"{box_matrix[i][j]} ")
+        file.write("\" ")
 
         if use_virial:
             virial_unit = kcal_per_mole
             virial_conversion = virial_unit.asUnit(eV).asNumber()
             virial = system.virial * virial_conversion
 
-            self.file.write("virial=\"")
+            file.write("virial=\"")
             for i in range(3):
                 for j in range(3):
-                    self.file.write(f"{virial[i][j]} ")
-            self.file.write("\" ")
+                    file.write(f"{virial[i][j]} ")
+            file.write("\" ")
 
         if use_stress:
             stress_unit = kcal_per_mole / angstrom**3
             stress_conversion = stress_unit.asUnit(eV / angstrom**3).asNumber()
             stress = system.stress * stress_conversion
 
-            self.file.write("stress=\"")
+            file.write("stress=\"")
             for i in range(3):
                 for j in range(3):
-                    self.file.write(f"{stress[i][j]} ")
-            self.file.write("\" ")
+                    file.write(f"{stress[i][j]} ")
+            file.write("\" ")
 
-        self.file.write("properties=species:S:1:pos:R:3")
+        file.write("properties=species:S:1:pos:R:3")
         if use_forces:
-            self.file.write(":forces:R:3")
-        self.file.write("\n")
+            file.write(":forces:R:3")
+        file.write("\n")
 
     def write_body(self,
                    system: AtomicSystem,
+                   file: _io.TextIOWrapper,
                    use_forces: bool = False,
                    ) -> None:
         """
@@ -525,6 +641,8 @@ Reading files to write NEP trajectory file:
         ----------
         system: AtomicSystem
             The system to be written to the NEP trajectory file.
+        file : _io.TextIOWrapper
+            The file to write the NEP trajectory file to.
         use_forces: bool, optional
             Whether to write the forces to the NEP trajectory file, by default False
         """
@@ -533,7 +651,7 @@ Reading files to write NEP trajectory file:
             atom = system.atoms[i]
 
             print(
-                f"{atom.symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=self.file, end=" "
+                f"{atom.symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=file, end=" "
             )
 
             force_unit = kcal_per_mole / angstrom
@@ -542,7 +660,7 @@ Reading files to write NEP trajectory file:
 
             if use_forces:
                 print(
-                    f"{forces[i][0]:15.8e} {forces[i][1]:15.8e} {forces[i][2]:15.8e}", file=self.file, end=" "
+                    f"{forces[i][0]:15.8e} {forces[i][1]:15.8e} {forces[i][2]:15.8e}", file=file, end=" "
                 )
 
-            print(file=self.file)
+            print(file=file)

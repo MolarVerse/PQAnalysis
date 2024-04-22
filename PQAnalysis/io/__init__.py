@@ -23,7 +23,8 @@ from .traj_file.frameReader import FrameReader
 from .traj_file.api import (
     read_trajectory,
     write_trajectory,
-    read_trajectory_generator
+    read_trajectory_generator,
+    calculate_frames_of_trajectory_file,
 )
 
 # import the classes from the gen_file subpackage
