@@ -30,6 +30,7 @@ dependencies = [
     "tqdm",
     "decorator",
     "argcomplete",
+    "unum",
 ]
 
 [project.optional-dependencies]
@@ -58,6 +59,7 @@ continue_input = "PQAnalysis.cli.continue_input:main"
 rdf = "PQAnalysis.cli.rdf:main"
 add_molecules = "PQAnalysis.cli.add_molecules:main"
 activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
+build_nep_traj = "PQAnalysis.cli.build_nep_traj:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"

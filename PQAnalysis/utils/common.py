@@ -3,11 +3,12 @@ Common things needed by command line scripts.
 """
 
 import sys
+import warnings
 
 from .._version import __version__
 
 line = "                                              *"
-header = f"""
+header = r"""
 **************************************************************
 *                                                            *
 *      ____  ____    ___                __           _       *
@@ -17,7 +18,9 @@ header = f"""
 *  /_/    \___\_\/_/  |_/_/ /_/\__,_/_/\__, /____/_/____/    *
 *                                     /____/                 *
 *                                                            *
-*                                                            *
+*                                                            *"""
+
+header += f"""
 *  authors:    Jakob Gamper, Josef M. Gallmetzer             *
 *  version:    {__version__}{line[len(__version__):]}
 *                                                            *
@@ -25,7 +28,7 @@ header = f"""
 """
 
 
-def print_header() -> None:
+def print_header(file: str = None) -> None:
     """
     A function to print the header of the program.
 
@@ -33,4 +36,7 @@ def print_header() -> None:
     by all cli scripts without interfering with the output.
     """
 
-    print(header, file=sys.stderr)
+    if file is None:
+        print(header, file=sys.stderr)
+    else:
+        print(header, file=file)

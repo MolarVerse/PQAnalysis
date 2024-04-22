@@ -1,8 +1,9 @@
 """
 A module containing different formats related to the io subpackage.
 """
+from __future__ import annotations
 
-from beartype.typing import Any
+from beartype.typing import Any, List
 
 from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
 from PQAnalysis.formats import BaseEnumFormat
@@ -29,6 +30,21 @@ class OutputFileFormat(BaseEnumFormat):
 
     #: The restart file format.
     RESTART = "restart"
+
+    #: The ENERGY file format.
+    ENERGY = "energy"
+
+    #: The INSTANTANEOUS ENERGY file format.
+    INSTANTANEOUS_ENERGY = "instant_en"
+
+    #: The STRESS file format.
+    STRESS = "stress"
+
+    #: The VIRIAL file format.
+    VIRIAL = "virial"
+
+    #: The Info file format.
+    INFO = "info"
 
     @classmethod
     def _missing_(cls, values: Any) -> Any:
@@ -66,7 +82,32 @@ class OutputFileFormat(BaseEnumFormat):
         return output_file_format
 
     @classmethod
-    def infer_format_from_extension(cls, file_path: str) -> "OutputFileFormat":
+    def file_extensions(cls):
+        """
+        Get the file extensions of the different file formats.
+
+        Returns
+        -------
+        dict[str, list[str]]
+            The file extensions of the different file formats.
+        """
+        file_extensions = {}
+        file_extensions[cls.XYZ.value] = [".xyz", ".coord", ".coords"]
+        file_extensions[cls.VEL.value] = [".vel", ".velocs", ".velocity"]
+        file_extensions[cls.FORCE.value] = [".force", ".frc", ".forces"]
+        file_extensions[cls.CHARGE.value] = [".charge", ".chrg", ".charges"]
+        file_extensions[cls.RESTART.value] = [".rst", ".restart"]
+        file_extensions[cls.ENERGY.value] = [".en", ".energy", ".energies"]
+        file_extensions[cls.INSTANTANEOUS_ENERGY.value] = [
+            ".instant_en", ".instant_energies", ".inst_energy"]
+        file_extensions[cls.STRESS.value] = [".stress", ".stresses"]
+        file_extensions[cls.VIRIAL.value] = [".virial", ".virials", ".vir"]
+        file_extensions[cls.INFO.value] = [".info", ".information"]
+
+        return file_extensions
+
+    @classmethod
+    def infer_format_from_extension(cls, file_path: str) -> OutputFileFormat:
         """
         Infer the file format from the file extension.
 
@@ -81,21 +122,75 @@ class OutputFileFormat(BaseEnumFormat):
             The inferred file format.
         """
 
-        if file_path.endswith(".xyz"):
+        file_extension = file_path.split(".")[-1]
+
+        if file_extension in cls.file_extensions[cls.XYZ]:
             return cls.XYZ
-        elif file_path.endswith(".vel") or file_path.endswith(".velocs"):
+        elif file_extension in cls.file_extensions[cls.VEL]:
             return cls.VEL
-        elif file_path.endswith(".force") or file_path.endswith(".frc") or file_path.endswith(".forces"):
+        elif file_extension in cls.file_extensions[cls.FORCE]:
             return cls.FORCE
-        elif file_path.endswith(".charge") or file_path.endswith(".chrg"):
+        elif file_extension in cls.file_extensions[cls.CHARGE]:
             return cls.CHARGE
-        elif file_path.endswith(".rst"):
+        elif file_extension in cls.file_extensions[cls.RESTART]:
             return cls.RESTART
         else:
             raise OutputFileFormatError(
                 f"Could not infer the file format from the file extension of \"{
                     file_path}\". Possible file formats are: {cls._member_names_}"
             )
+
+    @classmethod
+    def get_file_extensions(cls, file_format: OutputFileFormat | str) -> List[str]:
+        """
+        Get the file extensions of the given file format.
+
+        Parameters
+        ----------
+        file_format : OutputFileFormat
+            The file format to get the file extensions for.
+
+        Returns
+        -------
+        list[str]
+            The file extensions of the given file format.
+        """
+
+        file_format = cls(file_format)
+
+        return cls.file_extensions()[file_format.value]
+
+    @classmethod
+    def find_matching_files(cls,
+                            file_path: List[str],
+                            OutputFileFormat: OutputFileFormat | str,
+                            extension: str | None = None
+                            ) -> List[str]:
+        """
+        Find the files that match the given file format.
+
+        Parameters
+        ----------
+        file_path : List[str]
+            The file paths to search for the files.
+        OutputFileFormat : OutputFileFormat | str
+            The file format to search for.
+        extension : str | None, optional
+            The extension to search for, by default None. If None, all files with the given file format are returned.
+            Else, only the files with the given extension are returned.
+
+        Returns
+        -------
+        List[str]
+            The files that match the given file format.
+        """
+        if extension is not None:
+            files = [file for file in file_path if file.endswith(extension)]
+        else:
+            files = [file for file in file_path if file.endswith(
+                tuple(cls.get_file_extensions(OutputFileFormat)))]
+
+        return files
 
     def lower(self) -> str:
         """
@@ -108,6 +203,22 @@ class OutputFileFormat(BaseEnumFormat):
         """
 
         return self.value.lower()
+
+    def __eq__(self, other: object) -> bool:
+        """
+        This method checks if the enumeration is equal to the other object.
+
+        Parameters
+        ----------
+        other : object
+            The object to compare with.
+
+        Returns
+        -------
+        bool
+            True if the enumeration is equal to the other object, False otherwise.
+        """
+        return super().__eq__(other) or self.value == str(other)
 
 
 class FileWritingMode(BaseEnumFormat):
@@ -131,14 +242,14 @@ class FileWritingMode(BaseEnumFormat):
         This method returns the missing value of the enumeration.
 
         Parameters
-        ----------
-        value : Any
-            The value to return.
+        - ---------
+        value: Any
+            The value to return .
 
         Returns
-        -------
+        - ------
         Any
-            The value to return.
+            The value to return .
         """
 
         return super()._missing_(value, FileWritingModeError)
@@ -186,14 +297,14 @@ class BoxFileFormat(BaseEnumFormat):
         This method returns the missing value of the enumeration.
 
         Parameters
-        ----------
-        value : Any
-            The value to return.
+        - ---------
+        value: Any
+            The value to return .
 
         Returns
-        -------
+        - ------
         Any
-            The value to return.
+            The value to return .
         """
 
         return super()._missing_(value, BoxFileFormatError)
