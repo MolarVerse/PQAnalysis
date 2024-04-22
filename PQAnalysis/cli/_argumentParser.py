@@ -9,6 +9,7 @@ the most common methods are implemented here.
 
 import argparse
 import argcomplete
+import logging
 
 import PQAnalysis.config as config
 from PQAnalysis.traj import MDEngineFormat
@@ -80,6 +81,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         self._parse_progress()
         self._parse_version()
         self._parse_log_file()
+        self._parse_logging_level()
 
         argcomplete.autocomplete(self)
         args = super().parse_args()
@@ -90,6 +92,9 @@ class _ArgumentParser(argparse.ArgumentParser):
             config.use_log_file = True
             if args.log_file != "__LOG_DEFINED_BY_TIMESTAMP__":
                 config.log_file_name = args.log_file
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.getLevelName(args.logging_level))
 
         return args
 
@@ -169,4 +174,17 @@ class _ArgumentParser(argparse.ArgumentParser):
             const="__LOG_DEFINED_BY_TIMESTAMP__",
             nargs='?',
             help='This options can be used to set wether a log file should be used or not. If the option is given without a value, the log will be printed to an automatically generated file. If the option is not given, the log will be only printed to stderr. If the option is given with a value, the log will be printed to the given file.'
+        )
+
+    def _parse_logging_level(self):
+        """
+        The _parse_logging_level method adds the logging_level argument to the parser.
+        The logging_level argument is an optional argument and defaults to "INFO".
+        """
+        super().add_argument(
+            '--logging-level',
+            type=str,
+            choices=logging.getLevelNamesMapping().keys(),
+            default="INFO",
+            help='The logging level.'
         )
