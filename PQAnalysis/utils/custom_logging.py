@@ -4,9 +4,11 @@ import logging
 import textwrap
 import os
 import sys
-import PQAnalysis.config as config
+import types
 
 from pathlib import Path
+
+import PQAnalysis.config as config
 
 from PQAnalysis.utils import print_header
 
@@ -31,19 +33,61 @@ def setup_logger(logger):
 
 
 class CustomLogger(logging.Logger):
-    def _log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, stacklevel=1):
-        if logging.getLogger().getEffectiveLevel() == logging.DEBUG:
-            stack_info = True
-
-        super(CustomLogger, self)._log(
+    def _log(self, level, msg, args, exception=None, exc_info=None, extra=None, stack_info=False, stacklevel=1):
+        self._original_log(
             level,
             msg,
             args,
             exc_info,
             extra,
-            stack_info=stack_info,
-            stacklevel=stacklevel
+            stack_info,
+            stacklevel
         )
+
+        if level in [logging.CRITICAL, logging.ERROR]:
+            if self.isEnabledFor(logging.DEBUG):
+                try:
+                    if exception is not None:
+                        raise exception
+                    else:
+                        raise Exception
+                except:
+                    traceback = sys.exc_info()[2]
+                    back_frame = traceback.tb_frame.f_back
+
+                back_tb = types.TracebackType(
+                    tb_next=None,
+                    tb_frame=back_frame,
+                    tb_lasti=back_frame.f_lasti,
+                    tb_lineno=back_frame.f_lineno
+                )
+
+                if exception is not None:
+                    raise Exception(msg).with_traceback(back_tb)
+                else:
+                    raise exception(msg).with_traceback(back_tb)
+
+            else:
+                exit(1)
+
+    def _original_log(self, level, msg, args, exc_info=None, extra=None, stack_info=False, stacklevel=1):
+        super()._log(level, msg, args, exc_info, extra, stack_info, stacklevel)
+
+    def error(self, msg, exception=None, *args, **kwargs):
+        if self.isEnabledFor(logging.ERROR):
+            self._log(logging.ERROR, msg, args, exception, **kwargs)
+
+    def original_error(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.ERROR):
+            self._original_log(logging.ERROR, msg, args, **kwargs)
+
+    def critical(self, msg, exception=None, *args, **kwargs):
+        if self.isEnabledFor(logging.CRITICAL):
+            self._log(logging.CRITICAL, msg, args, exception, **kwargs)
+
+    def original_critical(self, msg, *args, **kwargs):
+        if self.isEnabledFor(logging.CRITICAL):
+            self._original_log(logging.CRITICAL, msg, args, **kwargs)
 
 
 class CustomFormatter(logging.Formatter):
