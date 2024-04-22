@@ -2,6 +2,8 @@
 A module containing API functions to convert between different file formats.
 """
 
+import numpy as np
+
 from beartype.typing import List
 
 from . import (

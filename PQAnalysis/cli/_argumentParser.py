@@ -9,6 +9,7 @@ the most common methods are implemented here.
 
 import argparse
 import argcomplete
+import logging
 
 import PQAnalysis.config as config
 from PQAnalysis.traj import MDEngineFormat
@@ -48,9 +49,6 @@ class _ArgumentParser(argparse.ArgumentParser):
             kwargs['prog'] = self.prog.split(".")[0]
             self.___init___(*args, **kwargs)
 
-        self._parse_progress()
-        self._parse_version()
-
     def ___init___(self, *args, **kwargs):
         """
         The ___init___ method is a helper method to initialize the ArgumentParser class.
@@ -80,9 +78,24 @@ class _ArgumentParser(argparse.ArgumentParser):
         argparse.Namespace
             The parsed arguments.
         """
+        self._parse_progress()
+        self._parse_version()
+        self._parse_log_file()
+        self._parse_logging_level()
+
         argcomplete.autocomplete(self)
         args = super().parse_args()
+
         config.with_progress_bar = args.progress
+
+        if args.log_file is not None:
+            config.use_log_file = True
+            if args.log_file != "__LOG_DEFINED_BY_TIMESTAMP__":
+                config.log_file_name = args.log_file
+
+        logger = logging.getLogger()
+        logger.setLevel(logging.getLevelName(args.logging_level))
+
         return args
 
     def parse_input_file(self):
@@ -122,15 +135,24 @@ class _ArgumentParser(argparse.ArgumentParser):
         The mode argument is an optional argument and defaults to "w".
         Possible values are "w", "a" and "o".
         """
-        super().add_argument('--mode', choices=FileWritingMode.values(), type=FileWritingMode, default=FileWritingMode("w"),
-                             help='The writing mode. The following modes are available: "w": write, "a": append, "o": overwrite.')
+        super().add_argument(
+            '--mode',
+            choices=FileWritingMode.values(),
+            type=FileWritingMode,
+            default=FileWritingMode("w"),
+            help='The writing mode. The following modes are available: "w": write, "a": append, "o": overwrite.'
+        )
 
     def _parse_progress(self):
         """
         The _parse_progress method adds the progress argument to the parser.
         The progress argument is an optional argument and defaults to True.
         """
-        super().add_argument('--progress', action='store_false', help='Show progress bar.')
+        super().add_argument(
+            '--progress',
+            action='store_false',
+            help='Show progress bar.'
+        )
 
     def _parse_version(self):
         """
@@ -138,3 +160,31 @@ class _ArgumentParser(argparse.ArgumentParser):
         The version argument is an optional argument and defaults to the current version.
         """
         super().add_argument('--version', action='version', version=__version__)
+
+    def _parse_log_file(self):
+        """
+        The _parse_log_file method adds the log_file argument to the parser.
+        The log_file argument is an optional argument and defaults to None.
+        If only the option log_file is given without a value the log will be printed to an automatically generated file.
+        """
+        super().add_argument(
+            '--log-file',
+            type=str,
+            default=None,
+            const="__LOG_DEFINED_BY_TIMESTAMP__",
+            nargs='?',
+            help='This options can be used to set wether a log file should be used or not. If the option is given without a value, the log will be printed to an automatically generated file. If the option is not given, the log will be only printed to stderr. If the option is given with a value, the log will be printed to the given file.'
+        )
+
+    def _parse_logging_level(self):
+        """
+        The _parse_logging_level method adds the logging_level argument to the parser.
+        The logging_level argument is an optional argument and defaults to "INFO".
+        """
+        super().add_argument(
+            '--logging-level',
+            type=str,
+            choices=logging.getLevelNamesMapping().keys(),
+            default="INFO",
+            help='The logging level.'
+        )

@@ -7,7 +7,7 @@ formats
 .. currentmodule:: PQAnalysis.io.formats
 
 .. automodule:: PQAnalysis.io.formats
-    :members: BoxFileFormat, FileWritingMode
+    :members: BoxFileFormat, FileWritingMode, OutputFileFormat
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -22,6 +22,7 @@ formats
 
         BoxFileFormat
         FileWritingMode
+        OutputFileFormat
 
 
 

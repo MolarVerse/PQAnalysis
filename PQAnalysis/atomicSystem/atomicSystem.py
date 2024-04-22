@@ -18,10 +18,15 @@ from ._positions import _PositionsMixin
 from .exceptions import AtomicSystemError
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, Np1DIntArray
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.utils.random import get_random_seed
+from PQAnalysis.types import (
+    Np2DNumberArray,
+    Np1DNumberArray,
+    Np1DIntArray,
+    Np3x3NumberArray,
+)
 
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
@@ -65,6 +70,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                  forces: Np2DNumberArray | None = None,
                  charges: Np1DNumberArray | None = None,
                  topology: Topology | None = None,
+                 energy: float | None = None,
+                 virial: Np3x3NumberArray | None = None,
+                 stress: Np3x3NumberArray | None = None,
                  cell: Cell = Cell()
                  ) -> None:
         """
@@ -120,6 +128,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._vel = np.zeros((0, 3)) if vel is None else vel
         self._forces = np.zeros((0, 3)) if forces is None else forces
         self._charges = np.zeros(0) if charges is None else charges
+        self._energy = energy
+        self._virial = virial
+        self._stress = stress
         self._cell = cell
 
     def fit_atomic_system(self,
@@ -174,7 +185,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
 
             self.fitting_logger.info(
-                f"Performing fitting for {i + 1}/{number_of_additions} addition(s)."
+                f"Performing fitting for {
+                    i + 1}/{number_of_additions} addition(s)."
             )
 
             systems.append(

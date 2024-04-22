@@ -1,4 +1,5 @@
 import pytest
+
 from _pytest.capture import CaptureFixture
 
 from PQAnalysis.utils import print_header
@@ -9,6 +10,8 @@ def test_print_header(capsys: CaptureFixture):
     print_header()
 
     captured = capsys.readouterr()
+
+    print(captured.err)
 
     line = "                                              *"
 
