@@ -87,6 +87,24 @@ def read_trajectory(filename: str,
     return reader.read()
 
 
+def calculate_frames_of_trajectory_file(filename: str):
+    """
+    Calculate the number of frames in a trajectory file.
+
+    Parameters
+    ----------
+    filename : str
+        The name of the file to read.
+
+    Returns
+    -------
+    int
+        The number of frames in the trajectory file.
+    """
+    reader = TrajectoryReader(filename)
+    return reader.calculate_number_of_frames()
+
+
 def read_trajectory_generator(filename: str,
                               md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                               traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
