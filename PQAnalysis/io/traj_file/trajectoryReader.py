@@ -149,6 +149,25 @@ class TrajectoryReader(BaseReader):
                 if self.constant_topology and self.topology is not None:
                     self.topology = frame.topology
 
+    def calculate_number_of_frames(self) -> int:
+        """
+        Calculates the number of frames in the trajectory file.
+
+        Returns
+        -------
+        int
+            The number of frames in the trajectory file.
+        """
+
+        n_frames = 0
+
+        for filename in self.filenames:
+            with open(filename, 'r') as f:
+                lines = f.readlines()
+                n_frames += int(len(lines) / int(lines[0].split()[0]))
+
+        return n_frames
+
     @property
     def cells(self) -> list[Cell]:
         """

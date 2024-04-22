@@ -31,19 +31,42 @@ def main():
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    parser.add_argument('file_prefixes', type=str, nargs='+',
-                        help='The file prefixes for all input files.')
+    parser.add_argument(
+        'file_prefixes',
+        type=str,
+        nargs='+',
+        help='The file prefixes for all input files.'
+    )
 
     parser.parse_output_file()
 
-    parser.add_argument('--use-forces', action='store_true', default=False,
-                        help='Whether to include forces in the output file.')
+    parser.add_argument(
+        '--test-ratio',
+        type=float,
+        default=0.0,
+        help="The ratio of testing frames to the total number of frames, by default 0.0. If the test_ratio is 0.0 no train and test files are created. If the test_ratio is larger not equal to 0.0, the test_ratio is used to determine the number of training and testing frames. The final ratio will be as close to the test_ratio as possible, but if it is not possible to have the exact ratio, always the higher next higher ratio is chosen. As output filenames the original filename is used with the suffix _train or _test appended and the same FileWritingMode as the original file is used."
+    )
 
-    parser.add_argument('--use-virial', action='store_true', default=False,
-                        help='Whether to include the virial in the output file.')
+    parser.add_argument(
+        '--use-forces',
+        action='store_true',
+        default=False,
+        help='Whether to include forces in the output file.'
+    )
 
-    parser.add_argument('--use-stress', action='store_true', default=False,
-                        help='Whether to include the stress tensor in the output file.')
+    parser.add_argument(
+        '--use-virial',
+        action='store_true',
+        default=False,
+        help='Whether to include the virial in the output file.'
+    )
+
+    parser.add_argument(
+        '--use-stress',
+        action='store_true',
+        default=False,
+        help='Whether to include the stress tensor in the output file.'
+    )
 
     parser.parse_mode()
 
@@ -53,6 +76,7 @@ def main():
 
     writer.write_from_files(
         file_prefixes=args.file_prefixes,
+        test_ratio=args.test_ratio,
         use_forces=args.use_forces,
         use_virial=args.use_virial,
         use_stress=args.use_stress
