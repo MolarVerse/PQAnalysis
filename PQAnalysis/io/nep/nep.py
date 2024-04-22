@@ -125,6 +125,8 @@ class NEPWriter(BaseWriter):
             force_generator = read_trajectory_generator(
                 force_files[i], traj_format=TrajectoryFormat.FORCE) if use_forces else None
 
+            frames_processed = 0
+
             for j, system in enumerate(xyz_generator):
                 system.energy = energy.qm_energy[j]
 
@@ -144,8 +146,10 @@ class NEPWriter(BaseWriter):
                     use_virial
                 )
 
+                frames_processed = j + 1
+
             self.logger.info(f"""
-Processed {len(stress)} frames from files:
+Processed {frames_processed} frames from files:
 {xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {
                 stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
 """)
@@ -207,7 +211,8 @@ Processed {len(stress)} frames from files:
         def raise_number_of_files_error(file_type: str, files: List[str], xyz_files: List[str]):
             self.logger.error(
                 f"The number of {file_type} files does not match the number of coordinate files. The found {
-                    file_type} files are: {files} and the found coordinate files are: {xyz_files}"
+                    file_type} files are: {files} and the found coordinate files are: {xyz_files}",
+                exception=ValueError
             )
             exit(1)
 
