@@ -64,15 +64,33 @@ N     4.0000000000     4.1000000000     4.2000000000
 """
 
 
-@mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=ArgparseNamespace(restart_file="md-01.rst", output=None, nobox=False, engine="PQ", mode="w"))
+@mock.patch(
+    'argparse.ArgumentParser.parse_args',
+    return_value=ArgparseNamespace(
+        restart_file="md-01.rst",
+        output=None,
+        nobox=False,
+        engine="PQ",
+        mode="w",
+        log_file=None,
+    )
+)
 def main_rst2xyz(mock_args):
     print()
     main()
 
 
-@mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=ArgparseNamespace(restart_file="md-01.rst", output=None, nobox=False, engine="qmcfc", mode="w"))
+@mock.patch(
+    'argparse.ArgumentParser.parse_args',
+    return_value=ArgparseNamespace(
+        restart_file="md-01.rst",
+        output=None,
+        nobox=False,
+        engine="qmcfc",
+        mode="w",
+        log_file=None,
+    )
+)
 def main_rst2xyz_qmcfc(mock_args):
     print()
     main()

@@ -21,9 +21,15 @@ def test_main(test_with_data_dir):
     main_traj2qmcfc()
 
 
-@mock.patch('argparse.ArgumentParser.parse_args',
-            return_value=ArgparseNamespace(trajectory_file=["acof_triclinic.xyz",
-                                                            "acof_triclinic_2.xyz"], vmd=False, output="test_traj.qmcfc.xyz"))
+@mock.patch(
+    'argparse.ArgumentParser.parse_args',
+    return_value=ArgparseNamespace(
+        trajectory_file=["acof_triclinic.xyz", "acof_triclinic_2.xyz"],
+        vmd=False,
+        output="test_traj.qmcfc.xyz",
+        log_file=None,
+    )
+)
 def main_traj2qmcfc(mock_args):
     main()
     assert filecmp("traj.qmcfc.xyz", "test_traj.qmcfc.xyz")
