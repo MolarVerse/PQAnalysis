@@ -1,6 +1,9 @@
+"""
+A module containing the NEPWriter class to write NEP training and testing files.
+"""
+
 import numpy as np
 import logging
-import sys
 
 from beartype.typing import List, Dict
 from unum.units import eV, angstrom
@@ -160,6 +163,26 @@ Processed {frames_processed} frames from files:
                         files: List[str],
                         file_prefixes: List[str],
                         ) -> Dict[str, List[str]]:
+        """
+        Determines the files to be used for writing the NEP trajectory file.
+
+        Parameters
+        ----------
+        files : List[str]
+            The files to be used for writing the NEP trajectory file.
+        file_prefixes : List[str]
+            The prefixes of the files to find.
+
+        Returns
+        -------
+        Dict[str, List[str]]
+            The files to be used for writing the NEP trajectory file. The keys are the file types and the values are the respective files.
+
+        Raises
+        ------
+        ValueError
+            If the number of files does not match the number of coordinate files.
+        """
 
         file_dict = {}
 
@@ -209,6 +232,18 @@ Processed {frames_processed} frames from files:
             )
 
         def raise_number_of_files_error(file_type: str, files: List[str], xyz_files: List[str]):
+            """
+            Raises an error if the number of files does not match the number of coordinate files.
+
+            Parameters
+            ----------
+            file_type : str
+                the type of the files
+            files : List[str]
+                the files to be used for writing the NEP trajectory file
+            xyz_files : List[str]
+                the coordinate files
+            """
             self.logger.error(
                 f"The number of {file_type} files does not match the number of coordinate files. The found {
                     file_type} files are: {files} and the found coordinate files are: {xyz_files}",
@@ -258,6 +293,32 @@ Reading files to write NEP trajectory file:
                    file_extension: str | None,
                    file_prefixes: List[str],
                    ) -> List[str]:
+        """
+        Get the files that match the given file prefixes and file extension.
+
+        Parameters
+        ----------
+        files : List[str]
+            The files to be used for writing the NEP trajectory file.
+        OutputFileFormat : OutputFileFormat
+            The file format of the files to be used for writing the NEP trajectory file.
+        file_extension : str | None
+            The file extension of the files to be used for writing the NEP trajectory file.
+        file_prefixes : List[str]
+            The prefixes of the files to find.
+
+        Returns
+        -------
+        List[str]
+            The files that match the given file prefixes and file extension.
+
+        Raises
+        ------
+        ValueError
+            If no files with the given file prefixes were found.
+        ValueError
+            If no files with the given file prefixes and file extension were found.
+        """
 
         filtered_files = OutputFileFormat.find_matching_files(
             files,
@@ -267,14 +328,16 @@ Reading files to write NEP trajectory file:
 
         if len(filtered_files) == 0:
             if file_extension is not None:
-                raise ValueError(
+                self.logger.error(
                     f"You did specify a file extension for the {OutputFileFormat} files, but no files with the extension \
-                    {file_extension} were found, that match the given file prefixes {file_prefixes}."
+                    {file_extension} were found, that match the given file prefixes {file_prefixes}.",
+                    exception=ValueError
                 )
             else:
-                raise ValueError(
+                self.logger.error(
                     f"No {OutputFileFormat} files were found in {files} that match the given file prefixes {file_prefixes}. All possible file      extensions are {OutputFileFormat.get_file_extensions(
-                        OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues."
+                        OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues.",
+                    exception=ValueError
                 )
 
         return sorted(filtered_files)
@@ -285,6 +348,20 @@ Reading files to write NEP trajectory file:
                               use_stress: bool = False,
                               use_virial: bool = False,
                               ) -> None:
+        """
+        Writes the NEP trajectory file from the given trajectory.
+
+        Parameters
+        ----------
+        trajectory : Trajectory
+            The trajectory to be written to the NEP trajectory file.
+        use_forces : bool, optional
+            Whether to write the forces to the NEP trajectory file, by default False
+        use_stress : bool, optional
+            Whether to write the stress tensor to the NEP trajectory file, by default False
+        use_virial : bool, optional
+            Whether to write the virial tensor to the NEP trajectory file, by default False
+        """
 
         self.open()
         for frame in trajectory:
@@ -303,31 +380,70 @@ Reading files to write NEP trajectory file:
                                  use_stress: bool = False,
                                  use_virial: bool = False,
                                  ) -> None:
+        """
+        Writes the NEP trajectory file from the given atomic system.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system to be written to the NEP trajectory file.
+        use_forces : bool, optional
+            Whether to write the forces to the NEP trajectory file, by default False
+        use_stress : bool, optional
+            Whether to write the stress tensor to the NEP trajectory file, by default False
+        use_virial : bool, optional
+            Whether to write the virial tensor to the NEP trajectory file, by default False
+
+        Raises
+        ------
+        ValueError
+            If the system does not have coordinates.
+        ValueError
+            If the system does not have an energy.
+        ValueError
+            If the system does not have forces and they were specified to be written to the NEP trajectory file.
+        ValueError
+            If both the stress and the virial tensor were specified to be written to the NEP trajectory file. Only one of them can be written at a time.
+        ValueError
+            If the system does not have a stress tensor and it was specified to be written to the NEP trajectory file.
+        ValueError
+            If the system does not have a virial tensor and it was specified to be written to the NEP trajectory file.
+        """
 
         if not system.has_pos:
-            raise ValueError(
-                "The system does not have coordinates, which are required for NEP trajectory files.")
+            self.logger.error(
+                "The system does not have coordinates, which are required for NEP trajectory files.",
+                exception=ValueError
+            )
 
         if not system.has_energy:
-            raise ValueError(
-                "The system does not have an energy, which is required for NEP trajectory files.")
+            self.logger.error(
+                "The system does not have an energy, which is required for NEP trajectory files."
+            )
 
         if use_forces and not system.has_forces:
-            raise ValueError(
-                "The system does not have forces, and they were specified to be written to the NEP trajectory file.")
+            self.logger.error(
+                "The system does not have forces, and they were specified to be written to the NEP trajectory file.",
+                exception=ValueError
+            )
 
         if use_stress and use_virial:
-            raise ValueError(
-                "Both the stress and the virial tensor were specified to be written to the NEP trajectory file. "
-                "Only one of them can be written at a time.")
+            self.logger.error(
+                "Both the stress and the virial tensor were specified to be written to the NEP trajectory file. Only one of them can be written at a time.",
+                exception=ValueError
+            )
 
         if use_stress and not system.has_stress:
-            raise ValueError(
-                "The system does not have a stress tensor, and it was specified to be written to the NEP trajectory file.")
+            self.logger.error(
+                "The system does not have a stress tensor, and it was specified to be written to the NEP trajectory file.",
+                exception=ValueError
+            )
 
         if use_virial and not system.has_virial:
-            raise ValueError(
-                "The system does not have a virial tensor, and it was specified to be written to the NEP trajectory file.")
+            self.logger.error(
+                "The system does not have a virial tensor, and it was specified to be written to the NEP trajectory file.",
+                exception=ValueError
+            )
 
         self.write_header(system, use_forces, use_stress, use_virial)
         self.write_body(system, use_forces)
@@ -338,6 +454,20 @@ Reading files to write NEP trajectory file:
                      use_stress: bool = False,
                      use_virial: bool = False,
                      ) -> None:
+        """
+        Writes the header of the NEP trajectory file.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system to be written to the NEP trajectory file.
+        use_forces : bool, optional
+            Whether to write the forces to the NEP trajectory file, by default False
+        use_stress : bool, optional
+            Whether to write the stress tensor to the NEP trajectory file, by default False
+        use_virial : bool, optional
+            Whether to write the virial tensor to the NEP trajectory file, by default False
+        """
 
         box_matrix = np.transpose(system.cell.box_matrix)
 
