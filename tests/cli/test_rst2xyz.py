@@ -73,6 +73,7 @@ N     4.0000000000     4.1000000000     4.2000000000
         engine="PQ",
         mode="w",
         log_file=None,
+        logging_level="INFO",
     )
 )
 def main_rst2xyz(mock_args):
@@ -89,6 +90,7 @@ def main_rst2xyz(mock_args):
         engine="qmcfc",
         mode="w",
         log_file=None,
+        logging_level="INFO",
     )
 )
 def main_rst2xyz_qmcfc(mock_args):
