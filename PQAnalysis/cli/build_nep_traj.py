@@ -48,6 +48,13 @@ def main():
     )
 
     parser.add_argument(
+        '--total-ratios',
+        type=str,
+        default=None,
+        help="The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used. The validation frames are written to a file with the suffix _validation and a file with the suffix _validation.ref. The _validation file contains only the coordinates and box information to function as crude testing input and the _validation.ref file contains all information additionally provided in the original files. Pay Attention: This keyword argument is mutually exclusive with the test_ratio keyword argument. If both are given, a ValueError is raised."
+    )
+
+    parser.add_argument(
         '--use-forces',
         action='store_true',
         default=False,
@@ -77,6 +84,7 @@ def main():
     writer.write_from_files(
         file_prefixes=args.file_prefixes,
         test_ratio=args.test_ratio,
+        total_ratios=args.total_ratios,
         use_forces=args.use_forces,
         use_virial=args.use_virial,
         use_stress=args.use_stress
