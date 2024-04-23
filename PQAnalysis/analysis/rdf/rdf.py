@@ -7,6 +7,7 @@ from __future__ import annotations
 # 3rd party imports
 import numpy as np
 import warnings
+import logging
 
 # 3rd party imports
 from beartype.typing import Tuple
@@ -24,7 +25,9 @@ from PQAnalysis.core import distance, Cells
 from PQAnalysis.traj import Trajectory, check_trajectory_PBC, check_trajectory_vacuum
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
+from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import TrajectoryReader
+from PQAnalysis import __package_name__
 
 
 class RDF:
@@ -39,6 +42,7 @@ class RDF:
     _use_full_atom_default = False
     _no_intra_molecular_default = False
     _r_min_default = 0.0
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
 
     def __init__(self,
                  traj: Trajectory | TrajectoryReader,
@@ -99,6 +103,12 @@ class RDF:
         :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`
         :py:class:`~PQAnalysis.traj.trajectory.Trajectory`
         """
+        #####################
+        # Initialize logger #
+        #####################
+
+        self.logger = setup_logger(self.logger)
+
         #####################################################
         # Initialize parameters with default values if None #
         #####################################################
@@ -141,7 +151,10 @@ class RDF:
             # use trajectory object as iterator
             self.frame_generator = iter(traj)
         else:
-            raise RDFError("Trajectory cannot be of length 0.")
+            self.logger.error(
+                "Trajectory cannot be of length 0.",
+                exception=RDFError
+            )
 
         self.first_frame = next(self.frame_generator)
         self.topology = traj.topology
@@ -192,13 +205,17 @@ class RDF:
 
         # check if n_bins and delta_r are both not specified
         if n_bins is None and delta_r is None:
-            raise RDFError(
-                "Either n_bins or delta_r must be specified.")
+            self.logger.error(
+                "Either n_bins or delta_r must be specified.",
+                exception=RDFError
+            )
 
         # check if n_bins, delta_r and r_max are all specified
         elif all([n_bins, delta_r, r_max]):
-            raise RDFError(
-                "It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.")
+            self.logger.error(
+                "It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.",
+                exception=RDFError
+            )
 
         # set r_max based on the provided parameters n_bins and delta_r
         if n_bins is not None and delta_r is not None:
@@ -236,8 +253,10 @@ class RDF:
             If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
         """
         if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
-            raise RDFError(
-                "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.")
+            self.logger.error(
+                "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.",
+                exception=RDFError
+            )
 
     @property
     def average_volume(self) -> PositiveReal:
@@ -521,8 +540,10 @@ def _infer_r_max(cells: Cells) -> PositiveReal:
         If the trajectory is in vacuum.
     """
     if not check_trajectory_PBC(cells):
-        raise RDFError(
-            "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.")
+        self.logger.error(
+            "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.",
+            exception=RDFError
+        )
 
     return np.min([cell.box_lengths for cell in cells]) / 2.0
 
