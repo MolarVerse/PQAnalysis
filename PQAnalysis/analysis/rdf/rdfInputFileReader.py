@@ -2,16 +2,22 @@
 A module containing a class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
 
+import logging
+
 from __future__ import annotations
 
 # local imports
+from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
+from PQAnalysis import __package_name__
 
 
 class RDFInputFileReader(Reader):
     """
     A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
     """
+
+    logger = setup_logger(__package_name__).getChild(__qualname__)
 
     #: List[str]: The required keys of the input file
     required_keys = [
@@ -44,6 +50,8 @@ class RDFInputFileReader(Reader):
         self.filename = filename
         super().__init__(filename)
 
+        self.logger = setup_logger(self.logger)
+
     def read(self):
         """
         Reads the input file and parses it.
@@ -68,13 +76,15 @@ class RDFInputFileReader(Reader):
         super().check_known_keys(self.required_keys + self.optional_keys)
 
         if self.no_intra_molecular is not None and (self.restart_file is None or self.moldescriptor_file is None):
-            raise Reader.InputFileError(
-                "The no_intra_molecular key can only be used if both a restart file and a moldescriptor file are given."
+            self.logger.error(
+                "The no_intra_molecular key can only be used if both a restart file and a moldescriptor file are given.",
+                exception=Reader.InputFileError,
             )
 
         if self.moldescriptor_file is not None and self.restart_file is None:
-            raise Reader.InputFileError(
-                "The moldescriptor_file key can only be used in a meaningful way if a restart file is given."
+            self.logger.error(
+                "The moldescriptor_file key can only be used in a meaningful way if a restart file is given.",
+                exception=Reader.InputFileError,
             )
 
 
@@ -119,7 +129,7 @@ For the RDF analysis input file several keys are available of which some are req
         - The restart file to read the topology from.
     * - {Reader.moldescriptor_file_key}
         - The moldescriptor file to read the reference residues from.
-        
+
 Note
 ----
 Optional keys does not mean that they are optional for the analysis. They are optional in the input file, but they might be required for the analysis. This means that if an optional keyword is specified other keywords might be required. For example:

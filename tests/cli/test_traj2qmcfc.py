@@ -28,6 +28,7 @@ def test_main(test_with_data_dir):
         vmd=False,
         output="test_traj.qmcfc.xyz",
         log_file=None,
+        logging_level="INFO",
     )
 )
 def main_traj2qmcfc(mock_args):
