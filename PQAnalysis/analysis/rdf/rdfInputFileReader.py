@@ -1,10 +1,9 @@
 """
 A module containing a class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
+from __future__ import annotations
 
 import logging
-
-from __future__ import annotations
 
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -17,7 +16,7 @@ class RDFInputFileReader(Reader):
     A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
     """
 
-    logger = setup_logger(__package_name__).getChild(__qualname__)
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
 
     #: List[str]: The required keys of the input file
     required_keys = [
