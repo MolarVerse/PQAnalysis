@@ -48,11 +48,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     Examples
     --------
-    >>> AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+    >>> atoms = [Atom('C1', use_guess_element=False), Atom('C2', use_guess_element=False)]
+    >>> AtomicSystem(atoms=atoms, pos=np.array([[0, 0, 0], [1, 0, 0]]))
+    AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
 
     >>> AtomicSystem()
+    AtomicSystem(topology=(Topology with 0 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
 
-    >>> AtomicSystem(topology=Topology(atoms=[Atom('C1'), Atom('C2')]), pos=np.array([[0, 0, 0], [1, 0, 0]])
+    >>> AtomicSystem(topology=Topology(atoms=[Atom('C'), Atom('C')]))
+    AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
     """
 
     logging.basicConfig(level=logging.INFO)
@@ -416,15 +420,24 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         Examples
         --------
-        >>> system1 = AtomicSystem(atoms=[Atom('C1'), Atom('C2')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
-        >>> system1[0]
-        AtomicSystem(atoms=[Atom('C1')], pos=np.array([[0, 0, 0]]))
-        >>> system1[0:2]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
-                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
-        >>> system1[np.array([0, 1])]
-        AtomicSystem(atoms=[Atom('C1'), Atom('C2')],
-                     pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> system = AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> system[0]
+        AtomicSystem(topology=(Topology with 1 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+
+        >>> system[0] == AtomicSystem(atoms=[Atom('C')], pos=np.array([[0, 0, 0]]))
+        True
+
+        >>> system[0:2]
+        AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+
+        >>> system[0:2] == AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        True
+
+        >>> system[np.array([0, 1])]
+        AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+
+        >>> system[np.array([0, 1])] == AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        True
 
         Parameters
         ----------

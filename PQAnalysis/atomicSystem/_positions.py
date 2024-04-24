@@ -67,15 +67,25 @@ class _PositionsMixin:
         Examples
         --------
         >>> import numpy as np
-        >>> from PQAnalysis import AtomicSystem
+        >>> from PQAnalysis.atomicSystem import AtomicSystem
+        >>> from PQAnalysis.core import Atom
+
         >>> pos = np.array([[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 1]])
-        >>> system = AtomicSystem(pos=pos)
+        >>> atoms = [Atom('H'), Atom('H'), Atom('H')]
+        >>> system = AtomicSystem(atoms=atoms, pos=pos)
+
         >>> system.nearest_neighbours()
-        (np.array([[1], [0], [1]]), np.array([[0.8660254], [0.8660254], [0.8660254]]))
+        (array([[1], [0], [1]]), array([[0.8660254], [0.8660254], [0.8660254]]))
+
         >>> system.nearest_neighbours(n=2)
-        (np.array([[1, 2], [0, 2], [1, 0]]), np.array([[0.8660254, 1.73205081], [0.8660254, 1.73205081], [0.8660254, 1.73205081]]))
+        (array([[1, 2],
+               [0, 2],
+               [1, 0]]), array([[0.8660254 , 1.73205081],
+               [0.8660254 , 0.8660254 ],
+               [0.8660254 , 1.73205081]]))
+
         >>> system.nearest_neighbours(selection=np.array([0]))
-        (np.array([[1]]), np.array([[0.8660254]]))
+        (array([[1]]), array([[0.8660254]]))
 
         Parameters
         ----------

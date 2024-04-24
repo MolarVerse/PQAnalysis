@@ -26,14 +26,19 @@ class Topology:
 
     Examples
     --------
-    >>> from PQAnalysis.topology import Topology
     >>> import numpy as np
-    >>> from PQAnalysis.core import Atom
-    >>> from PQAnalysis.topology import Residue
-    >>> atoms = [Atom("H", 1), Atom("O", 8), Atom("H", 1)]
-    >>> residue_ids = np.array([1, 2, 2])
-    >>> reference_residues = [Residue("HO", 1, 0, ["H", "O"], [1, 2], [0, 0]), Residue("H2", 2, 0, ["H", "H"], [1, 2], [0, 0])]
-    >>> topology = Topology(atoms=atoms, residue_ids=residue_ids, residues=residues)
+    >>> import warnings
+    >>> from PQAnalysis.topology import Topology
+    >>> from PQAnalysis.core import Atom, Residue
+    >>> atoms = [Atom("H", 1), Atom("O", 8), Atom("H", 1), Atom("H", 1)]
+    >>> residue_ids = np.array([1, 1, 2, 2])
+    >>> residue1 = Residue("HO", 1, 0, ["H", "O"], np.array([1, 2]), np.array([0, 0]))
+    >>> residue2 = Residue("H2", 2, 0, ["H", "H"], np.array([1, 2]), np.array([0, 0]))
+    >>> residues = [residue1, residue2]
+    >>> with warnings.catch_warnings():
+    ...     warnings.simplefilter("ignore")
+    ...     topology = Topology(atoms=atoms, residue_ids=residue_ids, reference_residues=residues)
+
     """
 
     def __init__(self,
