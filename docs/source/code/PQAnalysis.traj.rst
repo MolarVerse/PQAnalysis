@@ -18,7 +18,6 @@ traj
        PQAnalysis.traj.api
        PQAnalysis.traj.exceptions
        PQAnalysis.traj.formats
-       PQAnalysis.traj.frame
        PQAnalysis.traj.trajectory
 
 
