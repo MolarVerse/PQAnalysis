@@ -16,6 +16,7 @@ cli
        :maxdepth: 1
 
        PQAnalysis.cli.add_molecules
+       PQAnalysis.cli.build_nep_traj
        PQAnalysis.cli.continue_input
        PQAnalysis.cli.gen2xyz
        PQAnalysis.cli.rdf
