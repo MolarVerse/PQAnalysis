@@ -51,7 +51,7 @@ class BaseEnumFormatError(PQException):
             The value that is not valid.
         enum : object
             The enum that is not valid.
-        """
+            """
 
         self.enum = enum
         self.value = value
@@ -63,10 +63,4 @@ or their case insensitive string representation: {enum.value_repr()}"""
 
     @multimethod
     def __init__(self, message: str) -> None:
-        """
-        Parameters
-        ----------
-        message : str
-            The error message.
-        """
         super().__init__(message)

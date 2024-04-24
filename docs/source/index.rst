@@ -15,6 +15,8 @@ PQAnalysis
    developerGuide/developerGuide
    code/PQAnalysis.rst
 
+Welcome to PQAnalysis's documentation!
+======================================
 
 :ref:`userGuide`
 
