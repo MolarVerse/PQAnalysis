@@ -44,7 +44,7 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
 
         if os.stat(config.log_file_name).st_size == 0:
             with open(config.log_file_name, 'a') as file:
-                print_header(stream=file)
+                print_header(file=file)
 
     logger.propagate = False
 
