@@ -15,10 +15,19 @@ topology
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.topology.api
        PQAnalysis.topology.exceptions
        PQAnalysis.topology.selection
        PQAnalysis.topology.shakeTopology
        PQAnalysis.topology.topology
+
+    Subpackages
+    -----------
+
+    .. toctree::
+       :maxdepth: 1
+
+       PQAnalysis.topology.bonded_topology
 
 
 

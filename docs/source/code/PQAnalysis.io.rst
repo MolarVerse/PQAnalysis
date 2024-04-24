@@ -38,6 +38,7 @@ io
        PQAnalysis.io.restart_file
        PQAnalysis.io.topology_file
        PQAnalysis.io.traj_file
+       PQAnalysis.io.virial
 
 
 

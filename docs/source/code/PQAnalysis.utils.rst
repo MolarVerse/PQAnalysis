@@ -18,8 +18,11 @@ utils
        :maxdepth: 1
 
        PQAnalysis.utils.common
+       PQAnalysis.utils.custom_logging
        PQAnalysis.utils.decorators
-       PQAnalysis.utils.math
+       PQAnalysis.utils.files
+       PQAnalysis.utils.random
+       PQAnalysis.utils.units
 
 
 

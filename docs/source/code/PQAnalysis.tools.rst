@@ -15,6 +15,7 @@ tools
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.tools.add_molecule
        PQAnalysis.tools.traj_to_com_traj
 
 

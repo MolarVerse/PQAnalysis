@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.traj.exceptions
 
 .. automodule:: PQAnalysis.traj.exceptions
-    :members: FrameError, MDEngineFormatError, TrajectoryError, TrajectoryFormatError
+    :members: MDEngineFormatError, TrajectoryError, TrajectoryFormatError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,7 +20,6 @@ exceptions
     .. autosummary::
         :nosignatures:
 
-        FrameError
         MDEngineFormatError
         TrajectoryError
         TrajectoryFormatError
