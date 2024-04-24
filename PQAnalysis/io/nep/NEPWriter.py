@@ -48,9 +48,10 @@ class NEPWriter(BaseWriter):
         mode : FileWritingMode | str, optional
             _description_, by default "w"
         """
-        self.original_mode = FileWritingMode(mode)
         super().__init__(filename, mode)
 
+        # set original_mode - baseWriter modifies mode after opening the file
+        self.original_mode = FileWritingMode(mode)
         self.logger = setup_logger(self.logger)
 
     def write_from_files(self,
@@ -65,7 +66,7 @@ class NEPWriter(BaseWriter):
                          stress_file_extension: str = None,
                          virial_file_extension: str = None,
                          test_ratio: PositiveReal = 0.0,
-                         total_ratios: str = None,
+                         total_ratios: str | None = None,
                          ) -> None:
         """
         Writes the NEP trajectory file from the given files.
@@ -134,7 +135,7 @@ class NEPWriter(BaseWriter):
         virial_files = file_dict[OutputFileFormat.VIRIAL.value] if use_virial else []
         #fmt: on
 
-        test_ratio, validation_ratio, train_file, train_writer, test_file, test_writer, validation_file, validation_writer, validation_ref_file, validation_ref_writer = self.setup_frame_splitting_for_training(
+        self.setup_frame_splitting_for_training(
             test_ratio,
             total_ratios
         )
@@ -147,7 +148,6 @@ class NEPWriter(BaseWriter):
 
         for i in range(len(xyz_files)):
 
-            # read stress file in format step stress_xx stress_yy stress_zz stress_xy stress_xz stress_yz as n numpy 2D 3x3 arrays
             stress = read_stress_file(stress_files[i]) if use_stress else None
             virial = read_virial_file(virial_files[i]) if use_virial else None
             energy = EnergyFileReader(en_files[i], info_files[i]).read()
@@ -159,20 +159,24 @@ class NEPWriter(BaseWriter):
 
             n_frames = calculate_frames_of_trajectory_file(xyz_files[i])
 
-            n_train_max, n_test_max, n_validation_max = self.calculate_effective_training_portions(
+            n_train_max, n_test_max, _ = self.calculate_effective_training_portions(
                 n_frames,
-                self.n_train_frames,
-                self.n_test_frames,
-                self.n_validation_frames,
-                test_ratio,
-                validation_ratio,
+                self.test_ratio,
+                self.validation_ratio,
             )
-
-            self.logger.debug(f"{n_train_max=}, {n_test_max=}, {
-                              n_validation_max=}")
 
             seed = get_random_seed()
             rng = np.random.default_rng(seed=seed)
+
+            indices = np.arange(n_frames)
+            rng.shuffle(indices)
+
+            _train = n_train_max - self.n_train_frames
+            _test = n_test_max - self.n_test_frames
+
+            train_indices = indices[:_train]
+            test_indices = indices[_train:_train + _test]
+            validation_indices = indices[_train + _test:]
 
             for j, system in enumerate(xyz_generator):
                 system.energy = energy.qm_energy[j]
@@ -196,62 +200,16 @@ class NEPWriter(BaseWriter):
 
                 self.is_validation = False
 
-                def choose_test_file():
-                    self.n_test_frames += 1
-                    return test_file
-
-                def choose_train_file():
+                if j in train_indices:
                     self.n_train_frames += 1
-                    return train_file
-
-                def choose_validation_file():
+                    file_to_write = self.train_file
+                elif j in test_indices:
+                    self.n_test_frames += 1
+                    file_to_write = self.test_file
+                elif j in validation_indices:
                     self.n_validation_frames += 1
                     self.is_validation = True
-                    return validation_file
-
-                random_number = rng.random()
-
-                if self.n_train_frames == n_train_max and self.n_test_frames == n_test_max:
-                    file_to_write = choose_validation_file()
-                elif self.n_train_frames == n_train_max and self.n_validation_frames == n_validation_max:
-                    file_to_write = choose_test_file()
-                elif self.n_test_frames == n_test_max and self.n_validation_frames == n_validation_max:
-                    file_to_write = choose_train_file()
-
-                elif random_number > validation_ratio + test_ratio and self.n_train_frames != n_train_max:
-                    file_to_write = choose_train_file()
-                elif random_number > validation_ratio:
-                    _new_ratio = validation_ratio / \
-                        (validation_ratio + test_ratio)
-                    if random_number < _new_ratio:
-                        file_to_write = choose_validation_file()
-                    else:
-                        file_to_write = choose_test_file()
-
-                elif random_number <= validation_ratio and self.n_validation_frames != n_validation_max:
-                    file_to_write = choose_validation_file()
-                elif random_number <= validation_ratio:
-                    _new_ratio = test_ratio / \
-                        (1 - validation_ratio)
-                    if random_number < _new_ratio:
-                        file_to_write = choose_test_file()
-                    else:
-                        file_to_write = choose_train_file()
-
-                elif random_number <= test_ratio and self.n_test_frames != n_test_max:
-                    file_to_write = choose_test_file()
-                elif random_number <= test_ratio:
-                    _new_ratio = validation_ratio / \
-                        (1 - test_ratio)
-                    if random_number < _new_ratio:
-                        file_to_write = choose_validation_file()
-                    else:
-                        file_to_write = choose_train_file()
-                else:
-                    self.logger.error(
-                        "Something went wrong with the randomization of the frames. Please check the input",
-                        exception=ValueError
-                    )
+                    file_to_write = self.validation_ref_file
 
                 self.write_from_atomic_system(
                     system,
@@ -264,7 +222,7 @@ class NEPWriter(BaseWriter):
                 if self.is_validation:
                     self.write_from_atomic_system(
                         system,
-                        validation_ref_file,
+                        self.validation_file,
                         use_forces=False,
                         use_stress=False,
                         use_virial=False,
@@ -276,20 +234,51 @@ Processed {n_frames} frames from files:
                 stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
 """)
 
-        if train_file is not None:
-            train_writer.close()
-            test_writer.close()
+        self._close_files()
 
-        if validation_file is not None:
-            validation_writer.close()
-            validation_ref_writer.close()
+    def _close_files(self):
+        """
+        Closes the files used for writing the NEP trajectory file.
+        """
+
+        if self.train_file is not None:
+            self.train_writer.close()
+            self.test_writer.close()
+
+        if self.validation_file is not None:
+            self.validation_writer.close()
+            self.validation_ref_writer.close()
 
         self.close()
 
     def setup_frame_splitting_for_training(self,
                                            test_ratio: PositiveReal = 0.0,
                                            total_ratios: str | None = None,
-                                           ):  # TODO: Add return type
+                                           ) -> None:
+        """
+        Sets up the frame splitting for training.
+
+        It determines the number of training, testing, and validation frames based on the given test_ratio or total_ratios keyword arguments. It also sets up the files to write the training, testing, and validation frames to.
+
+        Parameters
+        ----------
+        test_ratio : PositiveReal, optional
+            The ratio of testing frames to the total number of frames, by default 0.0
+        total_ratios : str | None, optional
+            The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used.
+
+
+        Raises
+        ------
+        ValueError
+            If the test_ratio and total_ratios keyword arguments are mutually exclusive.
+        ValueError
+            If the total_ratios keyword argument is not in the correct format.
+        ValueError
+            If the test_ratio is between 0.0 and 1.0.
+        ValueError
+            If validation frames are given without test frames.
+        """
 
         if not np.isclose(test_ratio, 0.0) and total_ratios is not None:
             self.logger.error(
@@ -298,21 +287,15 @@ Processed {n_frames} frames from files:
             )
 
         if total_ratios is not None:
-            # check if total_ratios is in the correct format
             ratios = total_ratios.split(":")
             if len(ratios) == 2:
                 n_train = float(ratios[0])
                 n_test = float(ratios[1])
                 n_validation = 0
-                test_ratio = n_test / (n_train + n_test + n_validation)
-                validation_ratio = 0
             elif len(ratios) == 3:
                 n_train = float(ratios[0])
                 n_test = float(ratios[1])
                 n_validation = float(ratios[2])
-                test_ratio = n_test / (n_train + n_test + n_validation)
-                validation_ratio = n_validation / \
-                    (n_train + n_test + n_validation)
             else:
                 self.logger.error(
                     f"The total_ratios keyword argument {
@@ -320,59 +303,64 @@ Processed {n_frames} frames from files:
                     exception=ValueError
                 )
         else:
-            validation_ratio = 0.0
+            n_train = 0
+            n_validation = 0
+            n_test = 0
 
-        if test_ratio > 1.0:
+        sum_frames = n_train + n_test + n_validation
+
+        self.test_ratio = n_test / sum_frames
+        self.validation_ratio = n_validation / sum_frames
+
+        if self.test_ratio > 1.0:
             self.logger.error(
-                "The test_ratio must be between 0.0 and 1.0.",
+                f"The test_ratio must be between 0.0 and 1.0. The given test_ratio is {
+                    self.test_ratio}.",
                 exception=ValueError
             )
 
-        if np.isclose(test_ratio, 0.0) and not np.isclose(validation_ratio, 0.0):
+        if np.isclose(self.test_ratio, 0.0) and not np.isclose(self.validation_ratio, 0.0):
             self.logger.error(
                 f"It has no sense to have validation frames without test frames. This error results from the given total_ratios keyword argument {
                     total_ratios}.",
             )
 
-        if not np.isclose(test_ratio, 0.0):
-            train_writer = BaseWriter(
+        self.train_file = None
+        self.train_writer = None
+        self.train_file = None
+        self.train_writer = None
+        self.validation_file = None
+        self.validation_writer = None
+        self.validation_ref_file = None
+        self.validation_ref_writer = None
+
+        if not np.isclose(self.test_ratio, 0.0):
+            self.train_writer = BaseWriter(
                 f"{self.filename}_train",
                 mode=self.original_mode
             )
-            test_writer = BaseWriter(
+            self.test_writer = BaseWriter(
                 f"{self.filename}_test",
                 mode=self.original_mode
             )
-            train_writer.open()
-            test_writer.open()
-            train_file = train_writer.file
-            test_file = test_writer.file
-        else:
-            train_file = None
-            train_writer = None
-            test_file = None
-            test_writer = None
+            self.train_writer.open()
+            self.test_writer.open()
+            self.train_file = self.train_writer.file
+            self.test_file = self.test_writer.file
 
-        if not np.isclose(validation_ratio, 0.0):
-            validation_writer = BaseWriter(
+        if not np.isclose(self.validation_ratio, 0.0):
+            self.validation_writer = BaseWriter(
                 f"{self.filename}_validation",
                 mode=self.original_mode
             )
-            validation_writer.open()
-            validation_ref_writer = BaseWriter(
+            self.validation_writer.open()
+            self.validation_ref_writer = BaseWriter(
                 f"{self.filename}_validation.ref",
                 mode=self.original_mode
             )
-            validation_ref_writer.open()
-            validation_file = validation_writer.file
-            validation_ref_file = validation_ref_writer.file
-        else:
-            validation_file = None
-            validation_writer = None
-            validation_ref_file = None
-            validation_ref_writer = None
-
-        return test_ratio, validation_ratio, train_file, train_writer, test_file, test_writer, validation_file, validation_writer, validation_ref_file, validation_ref_writer
+            self.validation_ref_writer.open()
+            self.validation_file = self.validation_writer.file
+            self.validation_ref_file = self.validation_ref_writer.file
 
     def determine_files(self,
                         files: List[str],
@@ -559,9 +547,6 @@ Reading files to write NEP trajectory file:
 
     def calculate_effective_training_portions(self,
                                               n_frames: int,
-                                              n_train_frames: int,
-                                              n_test_frames: int,
-                                              n_validation_frames: int,
                                               test_ratio: PositiveReal,
                                               validation_ratio: PositiveReal,
                                               ) -> tuple[int, int, int]:
@@ -575,12 +560,6 @@ Reading files to write NEP trajectory file:
         ----------
         n_frames : int
             the number of frames to add to the training and testing files
-        n_train_frames : int
-            the number of training frames already added to the training file
-        n_test_frames : int
-            the number of testing frames already added to the testing file
-        n_validation_frames : int
-            the number of validation frames already added to the validation file
         test_ratio : PositiveReal
             the ratio of testing frames to the total number of frames
         validation_ratio : PositiveReal
@@ -592,7 +571,8 @@ Reading files to write NEP trajectory file:
             the maximum number of training and testing frames
         """
 
-        detected_frames = n_train_frames + n_test_frames + n_validation_frames
+        detected_frames = self.n_train_frames + \
+            self.n_test_frames + self.n_validation_frames
         total_frames = n_frames + detected_frames
 
         max_test_frames = int(np.ceil(total_frames * test_ratio))
