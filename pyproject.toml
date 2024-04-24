@@ -46,6 +46,7 @@ docs = [
     "sphinx-rtd-theme",
     "better-apidoc",
     "six",
+    "docstr-coverage",
 ]
 
 [tool.setuptools_scm]
