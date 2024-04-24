@@ -45,27 +45,30 @@ class Atom():
 
     Examples
     --------
-    >>> atom = Atom('C1') # use_guess_element is True by default - raises ElementNotFoundError if the element is not found
+    >>> atom = Atom('C1') # use_guess_element is True by default
+    Traceback (most recent call last):
+        ...
+    ElementNotFoundError: Id C1 is not a valid element identifier.
 
     >>> atom = Atom('C1', use_guess_element=False)
     >>> (atom.name, atom.element)
-    ('C1', Element())
+    ('C1', Element(None, None, None))
 
     >>> atom = Atom('C1', 'C')
     >>> (atom.name, atom.element)
-    ('C1', Element('C'))
+    ('C1', Element(c, 6, 12.0107))
 
     >>> atom = Atom('C1', 6)
     >>> (atom.name, atom.element)
-    ('C1', Element(6))
+    ('C1', Element(c, 6, 12.0107))
 
     >>> atom = Atom(6)
     >>> (atom.name, atom.element)
-    ('c', Element(6))
+    ('c', Element(c, 6, 12.0107))
 
     >>> atom = Atom('C')
     >>> (atom.name, atom.element)
-    ('C', Element('C'))
+    ('C', Element(c, 6, 12.0107))
     """
 
     def __init__(self, name: str | int, id: int | str | None = None, use_guess_element: bool = True) -> None:

@@ -29,11 +29,11 @@ class Element:
 
     >>> element = Element(6)
     >>> (element.symbol, element.atomic_number, element.mass)
-    ('C', 6, 12.0107)
+    ('c', 6, 12.0107)
 
     >>> element = Element('C')
     >>> (element.symbol, element.atomic_number, element.mass)
-    ('C', 6, 12.0107)
+    ('c', 6, 12.0107)
 
     >>> element = Element()
     >>> (element.symbol, element.atomic_number, element.mass)
