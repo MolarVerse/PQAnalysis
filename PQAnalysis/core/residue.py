@@ -60,7 +60,7 @@ class Residue:
             The id of the residue.
         total_charge : Real
             The total charge of the residue.
-        elements : Elements
+        elements : Element | Elements | str | List[str]
             The elements of the residue.
         atom_types : Np1DIntArray
             The atom types of the residue.
@@ -79,10 +79,12 @@ class Residue:
 
         # set here the internal variables to avoid setters
         # (which would check the length of the arrays)
-        if isinstance(elements, Element) or isinstance(elements, List) and isinstance(elements[0], Element):
-            self._elements = list(np.atleast_1d(elements))
+        if isinstance(elements, Element):
+            self._elements = [elements]
         elif isinstance(elements, str):
             self._elements = [Element(elements)]
+        elif isinstance(elements, list) and len(elements) > 0 and isinstance(elements[0], Element):
+            self._elements = elements
         else:
             self._elements = [Element(element) for element in elements]
 
