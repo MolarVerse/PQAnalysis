@@ -48,9 +48,10 @@ class NEPWriter(BaseWriter):
         mode : FileWritingMode | str, optional
             _description_, by default "w"
         """
-        self.original_mode = FileWritingMode(mode)
         super().__init__(filename, mode)
 
+        # set original_mode - baseWriter modifies mode after opening the file
+        self.original_mode = FileWritingMode(mode)
         self.logger = setup_logger(self.logger)
 
     def write_from_files(self,
@@ -65,6 +66,7 @@ class NEPWriter(BaseWriter):
                          stress_file_extension: str = None,
                          virial_file_extension: str = None,
                          test_ratio: PositiveReal = 0.0,
+                         total_ratios: str | None = None,
                          ) -> None:
         """
         Writes the NEP trajectory file from the given files.
@@ -93,11 +95,17 @@ class NEPWriter(BaseWriter):
             The extension of the virial files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
         test_ratio : PositiveReal, optional
             The ratio of testing frames to the total number of frames, by default 0.0. If the test_ratio is 0.0 no train and test files are created. If the test_ratio is larger not equal to 0.0, the test_ratio is used to determine the number of training and testing frames. The final ratio will be as close to the test_ratio as possible, but if it is not possible to have the exact ratio, always the higher next higher ratio is chosen. As output filenames the original filename is used with the suffix _train or _test appended and the same FileWritingMode as the original file is used.
+        total_ratios: str, optional
+            The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used.
+            The validation frames are written to a file with the suffix _validation and a file with the suffix _validation.ref. The _validation file contains only the coordinates and box information to function as crude testing input and the _validation.ref file contains all information additionally provided in the original files.
+            Pay Attention: This keyword argument is mutually exclusive with the test_ratio keyword argument. If both are given, a ValueError is raised.
 
         Raises
         ------
         ValueError
             If the test_ratio is larger than 1.0.
+        ValueError
+            If test_ratio and total_ratios are given at the same time.
         """
 
         self.use_forces = use_forces
@@ -110,12 +118,6 @@ class NEPWriter(BaseWriter):
         self.force_file_extension = force_file_extension
         self.stress_file_extension = stress_file_extension
         self.virial_file_extension = virial_file_extension
-
-        if test_ratio > 1.0:
-            self.logger.error(
-                "The test_ratio must be between 0.0 and 1.0.",
-                exception=ValueError
-            )
 
         files = find_files_with_prefix(file_prefixes)
 
@@ -133,31 +135,19 @@ class NEPWriter(BaseWriter):
         virial_files = file_dict[OutputFileFormat.VIRIAL.value] if use_virial else []
         #fmt: on
 
+        self.setup_frame_splitting_for_training(
+            test_ratio,
+            total_ratios
+        )
+
         self.open()
 
-        n_train_frames = 0
-        n_test_frames = 0
-
-        if not np.isclose(test_ratio, 0.0):
-            train_writer = BaseWriter(
-                f"{self.filename}_train",
-                mode=self.original_mode
-            )
-            test_writer = BaseWriter(
-                f"{self.filename}_test",
-                mode=self.original_mode
-            )
-            train_writer.open()
-            test_writer.open()
-            train_file = train_writer.file
-            test_file = test_writer.file
-        else:
-            train_file = None
-            test_file = None
+        self.n_train_frames = 0
+        self.n_test_frames = 0
+        self.n_validation_frames = 0
 
         for i in range(len(xyz_files)):
 
-            # read stress file in format step stress_xx stress_yy stress_zz stress_xy stress_xz stress_yz as n numpy 2D 3x3 arrays
             stress = read_stress_file(stress_files[i]) if use_stress else None
             virial = read_virial_file(virial_files[i]) if use_virial else None
             energy = EnergyFileReader(en_files[i], info_files[i]).read()
@@ -169,15 +159,24 @@ class NEPWriter(BaseWriter):
 
             n_frames = calculate_frames_of_trajectory_file(xyz_files[i])
 
-            n_train_max, n_test_max = self.calculate_test_train_portion(
+            n_train_max, n_test_max, _ = self.calculate_effective_training_portions(
                 n_frames,
-                n_train_frames,
-                n_test_frames,
-                test_ratio
+                self.test_ratio,
+                self.validation_ratio,
             )
 
             seed = get_random_seed()
             rng = np.random.default_rng(seed=seed)
+
+            indices = np.arange(n_frames)
+            rng.shuffle(indices)
+
+            _train = n_train_max - self.n_train_frames
+            _test = n_test_max - self.n_test_frames
+
+            train_indices = indices[:_train]
+            test_indices = indices[_train:_train + _test]
+            validation_indices = indices[_train + _test:]
 
             for j, system in enumerate(xyz_generator):
                 system.energy = energy.qm_energy[j]
@@ -199,15 +198,18 @@ class NEPWriter(BaseWriter):
                     use_virial
                 )
 
-                if n_train_frames == n_train_max:
-                    file_to_write = test_file
-                    n_test_frames += 1
-                elif n_test_frames == n_test_max or rng.random() > test_ratio:
-                    file_to_write = train_file
-                    n_train_frames += 1
-                else:
-                    file_to_write = train_file
-                    n_train_frames += 1
+                self.is_validation = False
+
+                if j in train_indices:
+                    self.n_train_frames += 1
+                    file_to_write = self.train_file
+                elif j in test_indices:
+                    self.n_test_frames += 1
+                    file_to_write = self.test_file
+                elif j in validation_indices:
+                    self.n_validation_frames += 1
+                    self.is_validation = True
+                    file_to_write = self.validation_ref_file
 
                 self.write_from_atomic_system(
                     system,
@@ -217,17 +219,148 @@ class NEPWriter(BaseWriter):
                     use_virial
                 )
 
+                if self.is_validation:
+                    self.write_from_atomic_system(
+                        system,
+                        self.validation_file,
+                        use_forces=False,
+                        use_stress=False,
+                        use_virial=False,
+                    )
+
             self.logger.info(f"""
 Processed {n_frames} frames from files:
 {xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {
                 stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
 """)
 
-        if train_file is not None:
-            train_writer.close()
-            test_writer.close()
+        self._close_files()
+
+    def _close_files(self):
+        """
+        Closes the files used for writing the NEP trajectory file.
+        """
+
+        if self.train_file is not None:
+            self.train_writer.close()
+            self.test_writer.close()
+
+        if self.validation_file is not None:
+            self.validation_writer.close()
+            self.validation_ref_writer.close()
 
         self.close()
+
+    def setup_frame_splitting_for_training(self,
+                                           test_ratio: PositiveReal = 0.0,
+                                           total_ratios: str | None = None,
+                                           ) -> None:
+        """
+        Sets up the frame splitting for training.
+
+        It determines the number of training, testing, and validation frames based on the given test_ratio or total_ratios keyword arguments. It also sets up the files to write the training, testing, and validation frames to.
+
+        Parameters
+        ----------
+        test_ratio : PositiveReal, optional
+            The ratio of testing frames to the total number of frames, by default 0.0
+        total_ratios : str | None, optional
+            The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used.
+
+
+        Raises
+        ------
+        ValueError
+            If the test_ratio and total_ratios keyword arguments are mutually exclusive.
+        ValueError
+            If the total_ratios keyword argument is not in the correct format.
+        ValueError
+            If the test_ratio is between 0.0 and 1.0.
+        ValueError
+            If validation frames are given without test frames.
+        """
+
+        if not np.isclose(test_ratio, 0.0) and total_ratios is not None:
+            self.logger.error(
+                "The test_ratio and total_ratios keyword arguments are mutually exclusive.",
+                exception=ValueError
+            )
+
+        if total_ratios is not None:
+            ratios = total_ratios.split(":")
+            if len(ratios) == 2:
+                n_train = float(ratios[0])
+                n_test = float(ratios[1])
+                n_validation = 0
+            elif len(ratios) == 3:
+                n_train = float(ratios[0])
+                n_test = float(ratios[1])
+                n_validation = float(ratios[2])
+            else:
+                self.logger.error(
+                    f"The total_ratios keyword argument {
+                        total_ratios} is not in the correct format. The correct format is train_ratio:test_ratio:validation_ratio.",
+                    exception=ValueError
+                )
+        else:
+            n_train = 0
+            n_validation = 0
+            n_test = 0
+
+        sum_frames = n_train + n_test + n_validation
+
+        self.test_ratio = n_test / sum_frames
+        self.validation_ratio = n_validation / sum_frames
+
+        if self.test_ratio > 1.0:
+            self.logger.error(
+                f"The test_ratio must be between 0.0 and 1.0. The given test_ratio is {
+                    self.test_ratio}.",
+                exception=ValueError
+            )
+
+        if np.isclose(self.test_ratio, 0.0) and not np.isclose(self.validation_ratio, 0.0):
+            self.logger.error(
+                f"It has no sense to have validation frames without test frames. This error results from the given total_ratios keyword argument {
+                    total_ratios}.",
+            )
+
+        self.train_file = None
+        self.train_writer = None
+        self.train_file = None
+        self.train_writer = None
+        self.validation_file = None
+        self.validation_writer = None
+        self.validation_ref_file = None
+        self.validation_ref_writer = None
+
+        if not np.isclose(self.test_ratio, 0.0):
+            self.train_writer = BaseWriter(
+                f"{self.filename}_train",
+                mode=self.original_mode
+            )
+            self.test_writer = BaseWriter(
+                f"{self.filename}_test",
+                mode=self.original_mode
+            )
+            self.train_writer.open()
+            self.test_writer.open()
+            self.train_file = self.train_writer.file
+            self.test_file = self.test_writer.file
+
+        if not np.isclose(self.validation_ratio, 0.0):
+            self.validation_writer = BaseWriter(
+                f"{self.filename}_validation",
+                mode=self.original_mode
+            )
+            self.validation_writer.open()
+            self.validation_ref_writer = BaseWriter(
+                f"{self.filename}_validation.ref",
+                mode=self.original_mode
+            )
+            self.validation_ref_writer.open()
+            self.validation_file = self.validation_writer.file
+            self.validation_ref_file = self.validation_ref_writer.file
 
     def determine_files(self,
                         files: List[str],
@@ -412,41 +545,41 @@ Reading files to write NEP trajectory file:
 
         return sorted(filtered_files)
 
-    def calculate_test_train_portion(self,
-                                     n_frames: int,
-                                     n_train_frames: int,
-                                     n_test_frames: int,
-                                     test_ratio: PositiveReal,
-                                     ) -> tuple[int, int]:
+    def calculate_effective_training_portions(self,
+                                              n_frames: int,
+                                              test_ratio: PositiveReal,
+                                              validation_ratio: PositiveReal,
+                                              ) -> tuple[int, int, int]:
         """
-        Calculates the maximum number of training and testing frames.
+        Calculates the maximum number of training, testing, and validation frames.
 
-        By applying the test_ratio, the maximum number of training and testing frames is calculated. The number of training and testing frames is determined by the test_ratio and the total number of frames. The total number of frames is the sum of the number of training and testing frames and the number of frames in the trajectory file.
+        By calculating the maximum number of training, testing, and validation frames, the number of frames to be added to the training and testing files can be determined.
+
 
         Parameters
         ----------
         n_frames : int
             the number of frames to add to the training and testing files
-        n_train_frames : int
-            the number of training frames already added to the training file
-        n_test_frames : int
-            the number of testing frames already added to the testing file
         test_ratio : PositiveReal
             the ratio of testing frames to the total number of frames
+        validation_ratio : PositiveReal
+            the ratio of validation frames to the total number of frames
 
         Returns
         -------
-        tuple[int, int]
+        tuple[int, int, int]
             the maximum number of training and testing frames
         """
 
-        detected_frames = n_train_frames + n_test_frames
+        detected_frames = self.n_train_frames + \
+            self.n_test_frames + self.n_validation_frames
         total_frames = n_frames + detected_frames
 
         max_test_frames = int(np.ceil(total_frames * test_ratio))
-        max_train_frames = total_frames - max_test_frames
+        max_validation_frames = int(np.ceil(total_frames * validation_ratio))
+        max_train_frames = total_frames - max_test_frames - max_validation_frames
 
-        return max_train_frames, max_test_frames
+        return max_train_frames, max_test_frames, max_validation_frames
 
     def write_from_trajectory(self,
                               trajectory: Trajectory,
