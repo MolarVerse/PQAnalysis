@@ -26,20 +26,21 @@ def distance(pos1: Np1DNumberArray | Np2DNumberArray, pos2: Np1DNumberArray | Np
 
     >>> from PQAnalysis.core import distance
     >>> import numpy as np
+
     >>> pos1 = np.array([0, 0, 0])
     >>> pos2 = np.array([1, 1, 1])
     >>> distance(pos1, pos2)
-    1.7320508075688772
+    array([[1.73205081]])
 
     >>> pos1 = np.array([0, 0, 0])
     >>> pos2 = np.array([[1, 1, 1], [0.5, 0.5, 0.5]])
     >>> distance(pos1, pos2)
-    array([1.73205081, 0.8660254 ])
+    array([[1.73205081, 0.8660254 ]])
 
     >>> pos1 = np.array([0, 0, 0])
     >>> pos2 = np.array([[1, 1, 1], [0.5, 0.5, 0.5]])
     >>> distance(pos1, pos2, cell=cell.Cell(0.7, 0.7, 0.7))
-    array([0.519615, 0.3464102])
+    array([[0.519615, 0.3464102]])
 
     Parameters
     ----------

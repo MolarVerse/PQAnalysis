@@ -16,7 +16,7 @@ import numpy as np
 
 # 3rd party object imports
 from numbers import Real
-from beartype.typing import Any
+from beartype.typing import Any, List
 from beartype.vale import Is
 from typing import Annotated
 
@@ -45,7 +45,7 @@ class Residue:
                  name: str,
                  id: int,
                  total_charge: Real,
-                 elements: Element | Elements,
+                 elements: Element | Elements | str | List[str],
                  atom_types: int | Np1DIntArray,
                  partial_charges: Real | Np1DNumberArray,
                  ) -> None:
@@ -79,7 +79,13 @@ class Residue:
 
         # set here the internal variables to avoid setters
         # (which would check the length of the arrays)
-        self._elements = list(np.atleast_1d(elements))
+        if isinstance(elements, Element) or isinstance(elements, List) and isinstance(elements[0], Element):
+            self._elements = list(np.atleast_1d(elements))
+        elif isinstance(elements, str):
+            self._elements = [Element(elements)]
+        else:
+            self._elements = [Element(element) for element in elements]
+
         self._atom_types = np.atleast_1d(atom_types)
         self._partial_charges = np.atleast_1d(partial_charges)
 
@@ -328,10 +334,11 @@ class QMResidue(Residue):
     Examples
     --------
     >>> QMResidue(Element('C'))
+    Residue(name=QM, id=0, total_charge=0.0, n_atoms=1)
 
     """
 
-    def __init__(self, element: Element) -> None:
+    def __init__(self, element: Element | str) -> None:
         """
         Initializes the QMResidue with the given parameters.
 
@@ -343,5 +350,11 @@ class QMResidue(Residue):
         element : Element
             The element of the QM residue.
         """
-        super().__init__(name="QM", id=0, total_charge=0.0, elements=[
-            element], atom_types=np.array([0]), partial_charges=np.array([element.atomic_number]))
+        super().__init__(
+            name="QM",
+            id=0,
+            total_charge=0.0,
+            elements=[element],
+            atom_types=np.array([0]),
+            partial_charges=np.array([element.atomic_number])
+        )
