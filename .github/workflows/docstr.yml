@@ -30,9 +30,7 @@ jobs:
 
       - name: Install docstr-coverage
         run: |
-          pip install docstr-coverage==2.2.0
-          pip install pkg_resources
-
+          pip install docstr-coverage
 
       - name: Get SHAs
         run: |
