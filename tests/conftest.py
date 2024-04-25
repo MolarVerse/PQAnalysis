@@ -90,7 +90,11 @@ def caplog_for_logger(caplog, logger_name, level):
 
 def assert_logging(caplog, logging_name, logging_level, message_to_test, function, *args, **kwargs):
     with caplog_for_logger(caplog, __package_name__ + "." + logging_name, logging_level):
-        function(*args, **kwargs)
+        try:
+            yield function(*args, **kwargs)
+        except SystemExit:
+            pass
+
         assert caplog.record_tuples[0][0] == __package_name__ + \
             "." + logging_name
         assert caplog.record_tuples[0][1] == logging.getLevelName(
