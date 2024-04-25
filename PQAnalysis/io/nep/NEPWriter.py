@@ -783,8 +783,10 @@ Reading files to write NEP trajectory file:
         for i in range(system.n_atoms):
             atom = system.atoms[i]
 
+            symbol = atom.symbol[0].upper() + atom.symbol[1:].lower()
+
             print(
-                f"{atom.symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=file, end=" "
+                f"{symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=file, end=" "
             )
 
             force_unit = kcal_per_mole / angstrom
