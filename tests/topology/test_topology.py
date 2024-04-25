@@ -1,17 +1,24 @@
+# pylint: disable=protected-access
+
 # 3rd Party library Imports
 import pytest
 import numpy as np
 
-# import topology marker
-from . import pytestmark
-from ..conftest import assert_logging
-
-import PQAnalysis.config as config
-
 # Local Imports
 from PQAnalysis.topology.topology import _find_residue_by_id, _unique_residues_
 from PQAnalysis.topology import Topology, TopologyError, BondedTopology
-from PQAnalysis.core import Atom, Element, Residue, ResidueError, QMResidue, ResidueWarning
+from PQAnalysis.core import (
+    Atom,
+    Element,
+    Residue,
+    ResidueError,
+    QMResidue,
+    ResidueWarning
+)
+
+# import topology marker
+from . import pytestmark  # pylint: disable=unused-import
+from ..conftest import assert_logging
 
 
 def test_find_residue_by_id():
@@ -99,7 +106,7 @@ class TestTopology:
             bonded_topology=BondedTopology()
         )
 
-    def test_setup_residues(self):
+    def test_setup_residues(self, caplog):
         residue_ids = np.array([0, 1, 1])
 
         topology = Topology(atoms=self.atoms)
@@ -119,26 +126,44 @@ class TestTopology:
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
         topology.reference_residues = reference_residues
 
-        with pytest.raises(ResidueError) as exception:
-            topology._setup_residues(residue_ids, atoms)
-        assert str(
-            exception.value) == """
-The element of atom 0 is not set. If any reference residues are given
-the program tries to automatically deduce the residues from the residue ids and the reference residues.
-This means that any atom with an unknown element raises an error. To avoid deducing residue information
-please set 'check_residues' to False"""
+        assert_logging(
+            caplog,
+            Topology.__qualname__,
+            "ERROR",
+            (
+                "The element of atom 0 is not set. If any reference residues are given the "
+                "program tries to automatically deduce the residues from the residue ids and "
+                "the reference residues. This means that any atom with an unknown element "
+                "raises an error. To avoid deducing residue information please set 'check_residues' "
+                "to False"
+            ),
+            topology._setup_residues,
+            residue_ids=residue_ids,
+            atoms=atoms
+        )
 
         atoms = [Atom('C'), Atom('C'), Atom('H')]
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
-        with pytest.warns(ResidueWarning) as record:
-            residues, new_atoms = topology._setup_residues(residue_ids, atoms)
-            assert len(residues) == 2
-            assert new_atoms == atoms
-            assert residues[0] == QMResidue(Element('C'))
-            assert residues[1] == reference_residues[0]
-        assert str(
-            record[0].message) == "The element of atom 1 (Element(c, 6, 12.0107)) does not match the element of the reference residue ALA (Element(h, 1, 1.00794)). Therefore the element type of the residue description will be used within the topology format!"
+
+        residues, new_atoms = assert_logging(
+            caplog,
+            Topology.__qualname__,
+            "WARNING",
+            (
+                "The element of atom 1 (Element(c, 6, 12.0107)) does not match "
+                "the element of the reference residue ALA (Element(h, 1, 1.00794)). "
+                "Therefore the element type of the residue description will be used "
+                "within the topology format!"
+            ),
+            topology._setup_residues,
+            residue_ids=residue_ids,
+            atoms=atoms,
+        )
+        assert len(residues) == 2
+        assert new_atoms == atoms
+        assert residues[0] == QMResidue(Element('C'))
+        assert residues[1] == reference_residues[0]
 
         topology.check_residues = False
         residues, new_atoms = topology._setup_residues(residue_ids, atoms)
