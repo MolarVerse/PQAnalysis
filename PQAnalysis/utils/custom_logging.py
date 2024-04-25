@@ -22,7 +22,11 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
     """
     general setup for the logger
 
-    This function can be used to setup a generic logger for functions/classes... of the PQAnalysis package. It automatically adds a stream handler to the logger and if the config.use_log_file is set to True, it also adds a file handler to the logger. The file handler writes the log messages to the file specified in the config.log_file_name.
+    This function can be used to setup a generic logger for functions/classes...
+    of the PQAnalysis package. It automatically adds a stream handler to the logger
+    and if the config.use_log_file is set to True, it also adds a file handler to
+    the logger. The file handler writes the log messages to the file specified in
+    the config log_file_name.
 
     Parameters
     ----------
@@ -59,11 +63,14 @@ class CustomLogger(logging.Logger):
     """
     A custom logger class that extends the logging.Logger class.
 
-    This class extends the logging.Logger class and is set as the default logger class for the PQAnalysis package. It re-implements the _log method of the logging.Logger class in conjunction with the error and critical methods. For more details see the documentation of the _log, error and critical methods.
+    This class extends the logging.Logger class and is set as the
+    default logger class for the PQAnalysis package. It re-implements
+    the _log method of the logging.Logger class in conjunction with
+    the error and critical methods. For more details see the
+    documentation of the _log, error and critical methods.
 
-    To return to the original logging.Logger class, the original_error and original_critical methods can be used.
-
-    TODO: add exception function wrapper
+    To return to the original logging.Logger class, the original_error
+    and original_critical methods can be used.
     """
 
     def _log(self,   # pylint: disable=arguments-differ
@@ -76,7 +83,9 @@ class CustomLogger(logging.Logger):
         """
         This method is a wrapper method for the original _log method of the logging.Logger class.
 
-        It logs the message with the given level and raises an exception if the level is logging.ERROR or logging.CRITICAL and the logger is enabled for logging.DEBUG. If the logger is not enabled for logging.DEBUG, the program exits with code 1.
+        It logs the message with the given level and raises an exception if the level 
+        is logging.ERROR or logging.CRITICAL and the logger is enabled for logging.DEBUG.
+        If the logger is not enabled for logging.DEBUG, the program exits with code 1.
 
 
         Parameters
@@ -93,9 +102,11 @@ class CustomLogger(logging.Logger):
         Raises
         ------
         exception
-            if the level is logging.ERROR or logging.CRITICAL and the logger is enabled for logging.DEBUG.
+            if the level is logging.ERROR or logging.CRITICAL and the logger
+            is enabled for logging.DEBUG.
         Exception
-            if the level is logging.ERROR or logging.CRITICAL and the logger is not enabled for logging.DEBUG.
+            if the level is logging.ERROR or logging.CRITICAL and the logger
+            is not enabled for logging.DEBUG.
         """
         self._original_log(
             level,
@@ -112,7 +123,7 @@ class CustomLogger(logging.Logger):
                     if exception is not None:
                         raise exception
 
-                    raise Exception  # pylint: disable=raising-bad-type, broad-exception-raised
+                    raise Exception  # pylint: disable=broad-exception-raised
                 except Exception:  # pylint: disable=broad-except
                     traceback = sys.exc_info()[2]
                     back_frame = traceback.tb_frame.f_back
@@ -140,7 +151,8 @@ class CustomLogger(logging.Logger):
         """
         The original _log method of the logging.Logger class.
 
-        This method logs the message with the given level and the given arguments and keyword arguments.
+        This method logs the message with the given level and
+        the given arguments and keyword arguments.
 
         Parameters
         ----------
@@ -161,9 +173,14 @@ class CustomLogger(logging.Logger):
               **kwargs
               ) -> None:
         """
-        This method logs the message with the logging.ERROR level and raises an exception if the logger is enabled for logging.DEBUG. If the logger is not enabled for logging.DEBUG, the program exits with code 1. If an exception is given, it is raised with the message of the log message otherwise a generic Exception is raised.
+        This method logs the message with the logging.ERROR level and raises
+        an exception if the logger is enabled for logging.DEBUG. If the logger
+        is not enabled for logging.DEBUG, the program exits with code 1. If 
+        an exception is given, it is raised with the message of the log message
+        otherwise a generic Exception is raised.
 
-        In order to return to the original logging.Logger class, the original_error method can be used.
+        In order to return to the original logging.Logger class, the original_error
+        method can be used.
 
         Parameters
         ----------
@@ -199,7 +216,11 @@ class CustomLogger(logging.Logger):
                  **kwargs
                  ) -> None:
         """
-        This method logs the message with the logging.CRITICAL level and raises an exception if the logger is enabled for logging.DEBUG. If the logger is not enabled for logging.DEBUG, the program exits with code 1. If an exception is given, it is raised with the message of the log message otherwise a generic Exception is raised.
+        This method logs the message with the logging.CRITICAL level and
+        raises an exception if the logger is enabled for logging.DEBUG. 
+        If the logger is not enabled for logging.DEBUG, the program exits
+        with code 1. If an exception is given, it is raised with the 
+        message of the log message otherwise a generic Exception is raised.
 
         Parameters
         ----------
@@ -236,7 +257,11 @@ class CustomFormatter(logging.Formatter):
     """
     A custom formatter class that extends the logging.Formatter class.
 
-    This class extends the logging.Formatter class and is used to format the log messages of the PQAnalysis package. It re-implements the format method of the logging.Formatter class to format the log messages in a custom way. The format method is used to format the log messages of the logger.
+    This class extends the logging.Formatter class and is used to format
+    the log messages of the PQAnalysis package. It re-implements the 
+    format method of the logging.Formatter class to format the log 
+    messages in a custom way. The format method is used to format the log
+    messages of the logger.
     """
     level_keys = logging.getLevelNamesMapping().keys()
     longest_level = max(level_keys, key=len)
@@ -304,7 +329,9 @@ class CustomColorFormatter(CustomFormatter):
     """
     A custom color formatter class that extends the CustomFormatter class.
 
-    This class extends the CustomFormatter class, so that for each log level a different color is used. The colors are defined in the FORMATS dictionary. The color is set to the log level of the log message.
+    This class extends the CustomFormatter class, so that for each log level
+    a different color is used. The colors are defined in the FORMATS dictionary.
+    The color is set to the log level of the log message.
     """
 
     bold_yellow = "\x1b[33;1m"
