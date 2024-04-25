@@ -51,8 +51,7 @@ jobs:
       - name: Get ${{ github.event.pull_request.base.sha }} coverage
         run: |
           git checkout $BASE
-          docstr-coverage
-          echo "BASE_COV=$(docstr-coverage -p)" >> $GITHUB_ENV
+          echo "BASE_COV=$(docstr-coverage PQAnalysis -p)" >> $GITHUB_ENV
 
       - name: Test ${{ github.event.pull_request.head.sha }} coverage
         run: |
