@@ -7,6 +7,7 @@ from __future__ import annotations
 import logging
 import textwrap
 import os
+import shutil
 import sys
 import types
 
@@ -33,18 +34,21 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
     logging.Logger
         The logger that was setup.
     """
-    stream_handler = logging.StreamHandler(stream=sys.stderr)
-    stream_handler.setFormatter(CustomColorFormatter())
-    logger.addHandler(stream_handler)
+    if logging.getLogger(logger.name).handlers == []:
+        stream_handler = logging.StreamHandler(stream=sys.__stderr__)
+        stream_handler.setFormatter(CustomColorFormatter())
+        logger.addHandler(stream_handler)
 
-    if config.use_log_file:
-        file_handler = logging.FileHandler(config.log_file_name)
-        file_handler.setFormatter(CustomFormatter())
-        logger.addHandler(file_handler)
+        if config.use_log_file:
+            file_handler = logging.FileHandler(config.log_file_name)
+            file_handler.setFormatter(CustomFormatter())
+            logger.addHandler(file_handler)
 
-        if os.stat(config.log_file_name).st_size == 0:
-            with open(config.log_file_name, 'a') as file:
-                print_header(file=file)
+            if os.stat(config.log_file_name).st_size == 0:
+                with open(config.log_file_name, 'a', encoding='utf-8') as file:
+                    print_header(file=file)
+    else:
+        logger = logging.getLogger(logger.name)
 
     logger.propagate = False
 
@@ -62,7 +66,7 @@ class CustomLogger(logging.Logger):
     TODO: add exception function wrapper
     """
 
-    def _log(self,
+    def _log(self,   # pylint: disable=arguments-differ
              level: Any,
              msg: Any,
              args: Any,
@@ -102,29 +106,31 @@ class CustomLogger(logging.Logger):
 
         if level in [logging.CRITICAL, logging.ERROR]:
             if self.isEnabledFor(logging.DEBUG):
+                back_tb = None
+
                 try:
                     if exception is not None:
                         raise exception
-                    else:
-                        raise Exception
-                except:
+
+                    raise Exception  # pylint: disable=raising-bad-type, broad-exception-raised
+                except Exception:  # pylint: disable=broad-except
                     traceback = sys.exc_info()[2]
                     back_frame = traceback.tb_frame.f_back
 
-                back_tb = types.TracebackType(
-                    tb_next=None,
-                    tb_frame=back_frame,
-                    tb_lasti=back_frame.f_lasti,
-                    tb_lineno=back_frame.f_lineno
-                )
+                    back_tb = types.TracebackType(
+                        tb_next=None,
+                        tb_frame=back_frame,
+                        tb_lasti=back_frame.f_lasti,
+                        tb_lineno=back_frame.f_lineno
+                    )
 
                 if exception is not None:
                     raise Exception(msg).with_traceback(back_tb)
-                else:
-                    raise exception(msg).with_traceback(back_tb)
+
+                raise exception(msg).with_traceback(back_tb)
 
             else:
-                exit(1)
+                sys.exit(1)
 
     def _original_log(self,
                       level: Any,
@@ -150,8 +156,8 @@ class CustomLogger(logging.Logger):
 
     def error(self,
               msg: Any,
-              exception: Exception | None = None,
               *args,
+              exception: Exception | None = None,
               **kwargs
               ) -> None:
         """
@@ -188,8 +194,8 @@ class CustomLogger(logging.Logger):
 
     def critical(self,
                  msg: Any,
-                 exception: Exception | None = None,
                  *args,
+                 exception: Exception | None = None,
                  **kwargs
                  ) -> None:
         """
@@ -282,7 +288,8 @@ class CustomFormatter(logging.Formatter):
 
         messages = message.split('\n')
         wrapper = textwrap.TextWrapper(
-            width=os.get_terminal_size().columns - len(level),
+            width=shutil.get_terminal_size(
+                fallback=(80, 100)).columns - len(level),
             initial_indent=' ' * (len(longest_level_key) + 2),
             subsequent_indent=' ' * (len(longest_level_key) + 2),
         )
@@ -290,7 +297,7 @@ class CustomFormatter(logging.Formatter):
                         for message in messages])
 
         record.msg = msg
-        return header + msg + '\n'
+        return '\n' + header + msg
 
 
 class CustomColorFormatter(CustomFormatter):

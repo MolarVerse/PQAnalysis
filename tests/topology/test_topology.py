@@ -4,10 +4,13 @@ import numpy as np
 
 # import topology marker
 from . import pytestmark
+from ..conftest import assert_logging
+
+import PQAnalysis.config as config
 
 # Local Imports
 from PQAnalysis.topology.topology import _find_residue_by_id, _unique_residues_
-from PQAnalysis.topology import Topology, TopologyError
+from PQAnalysis.topology import Topology, TopologyError, BondedTopology
 from PQAnalysis.core import Atom, Element, Residue, ResidueError, QMResidue, ResidueWarning
 
 
@@ -56,7 +59,7 @@ def test_unique_residues():
 class TestTopology:
     atoms = [Atom('C'), Atom('H'), Atom('H')]
 
-    def test__init__(self):
+    def test__init__(self, caplog):
         residue_ids = np.array([0, 0, 0, 1])
 
         with pytest.raises(TopologyError) as exception:
@@ -86,6 +89,15 @@ class TestTopology:
         assert topology.residues == [
             QMResidue(Element('C')), reference_residues[0], QMResidue(Element('H'))]
         assert np.all(topology.residue_numbers == [0, 1, 1, 2])
+
+        assert_logging(
+            caplog,
+            Topology.__qualname__,
+            "WARNING",
+            "There is no check yet if the bonded topology is compatible with the topology. Please make sure that the bonded topology is compatible with the topology!",
+            Topology,
+            bonded_topology=BondedTopology()
+        )
 
     def test_setup_residues(self):
         residue_ids = np.array([0, 1, 1])
