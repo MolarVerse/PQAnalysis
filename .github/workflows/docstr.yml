@@ -57,7 +57,7 @@ jobs:
         run: |
           echo "$BASE coverage was: $BASE_COV%"
           git checkout $HEAD
-          docstr-coverage --fail-under=$(echo {${{ env.RANGE }}} | awk '{print $1;}')
+          docstr-coverage --fail-under=$BASE_COV
 
       - name: Blame
         run: |
