@@ -29,7 +29,10 @@ jobs:
           python-version: 3.x
 
       - name: Install docstr-coverage
-        run: pip install docstr-coverage==2.2.0
+        run: |
+          pip install docstr-coverage==2.2.0
+          pip install pkg_resources
+
 
       - name: Get SHAs
         run: |
