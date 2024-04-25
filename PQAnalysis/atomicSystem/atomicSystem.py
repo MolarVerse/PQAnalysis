@@ -50,7 +50,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     --------
     >>> import numpy as np
     >>> from PQAnalysis.core import Atom
-    >>> from PQAnalysis.core import AtomicSystem
+    >>> from PQAnalysis.atomicSystem import AtomicSystem
 
     >>> atoms = [Atom('C1', use_guess_element=False), Atom('C2', use_guess_element=False)]
     >>> AtomicSystem(atoms=atoms, pos=np.array([[0, 0, 0], [1, 0, 0]]))
