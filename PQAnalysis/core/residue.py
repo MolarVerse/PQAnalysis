@@ -12,24 +12,19 @@ QMResidue
 from __future__ import annotations
 
 # library imports
-import numpy as np
-
-# 3rd party object imports
 from numbers import Real
-from beartype.typing import Any, List
-from beartype.vale import Is
 from typing import Annotated
 
+# 3rd party object imports
+import numpy as np
+
+from beartype.typing import Any, List
+from beartype.vale import Is
+
 # local imports
+from PQAnalysis.types import Np1DIntArray, Np1DNumberArray
 from .atom import Elements, Element
 from .exceptions import ResidueError
-from PQAnalysis.types import Np1DIntArray, Np1DNumberArray
-
-"""
-A type hint for a list of residues (mol types).
-"""
-Residues = Annotated[list, Is[lambda list: all(
-    isinstance(residue, Residue) for residue in list)]]
 
 
 class Residue:
@@ -43,7 +38,7 @@ class Residue:
 
     def __init__(self,
                  name: str,
-                 id: int,
+                 residue_id: int,
                  total_charge: Real,
                  elements: Element | Elements | str | List[str],
                  atom_types: int | Np1DIntArray,
@@ -56,7 +51,7 @@ class Residue:
         ----------
         name : str
             The name of the residue.
-        id : int
+        residue_id : int
             The id of the residue.
         total_charge : Real
             The total charge of the residue.
@@ -74,7 +69,7 @@ class Residue:
         """
 
         self.name = name
-        self.id = id
+        self.id = residue_id
         self.total_charge = total_charge
 
         # set here the internal variables to avoid setters
@@ -91,7 +86,7 @@ class Residue:
         self._atom_types = np.atleast_1d(atom_types)
         self._partial_charges = np.atleast_1d(partial_charges)
 
-        if not (len(self.elements) == len(self.atom_types) == len(self.partial_charges)):
+        if not len(self.elements) == len(self.atom_types) == len(self.partial_charges):
             raise ResidueError(
                 "The number of elements, atom_types and partial_charges must be the same.")
 
@@ -144,7 +139,7 @@ class Residue:
         return self._id
 
     @id.setter
-    def id(self, id: int) -> None:
+    def id(self, residue_id: int) -> None:
         """
         Sets the id of the residue.
 
@@ -153,7 +148,7 @@ class Residue:
         id : int
             The id of the residue.
         """
-        self._id = id
+        self._id = residue_id
 
     @property
     def total_charge(self) -> Real:
@@ -287,7 +282,12 @@ class Residue:
         str
             The string representation of the Residue.
         """
-        return f"Residue(name={self.name}, id={self.id}, total_charge={self.total_charge}, n_atoms={self.n_atoms})"
+
+        name = self.name
+        total_charge = self.total_charge
+        n_atoms = self.n_atoms
+
+        return f"Residue({name=}, id={self.id}, {total_charge=}, {n_atoms=})"
 
     def __repr__(self) -> str:
         """
@@ -336,7 +336,7 @@ class QMResidue(Residue):
     Examples
     --------
     >>> QMResidue(Element('C'))
-    Residue(name=QM, id=0, total_charge=0.0, n_atoms=1)
+    Residue(name='QM', id=0, total_charge=0.0, n_atoms=1)
 
     """
 
@@ -354,9 +354,17 @@ class QMResidue(Residue):
         """
         super().__init__(
             name="QM",
-            id=0,
+            residue_id=0,
             total_charge=0.0,
             elements=[element],
             atom_types=np.array([0]),
             partial_charges=np.array([element.atomic_number])
         )
+
+
+#: A type hint for a list of residues (mol types).
+Residues = Annotated[
+    list, Is[
+        lambda list: all(isinstance(residue, Residue) for residue in list)
+    ]
+]

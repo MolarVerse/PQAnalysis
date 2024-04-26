@@ -14,16 +14,13 @@ number. The name is the symbol in lower case.
 
 from __future__ import annotations
 
-from beartype.typing import Any, NewType
-from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
 
-from . import Element
+from beartype.typing import Any, NewType
+from beartype.vale import Is
 
-#: A type hint for a list of atoms
-Atoms = NewType("Atoms", Annotated[list, Is[lambda list: all(
-    isinstance(atom, Atom) for atom in list)]])
+from . import Element
 
 
 class Atom():
@@ -71,7 +68,11 @@ class Atom():
     ('C', Element(c, 6, 12.0107))
     """
 
-    def __init__(self, name: str | int, id: int | str | None = None, use_guess_element: bool = True) -> None:
+    def __init__(self,
+                 name: str | int,
+                 element_id: int | str | None = None,
+                 use_guess_element: bool = True
+                 ) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
 
@@ -84,25 +85,27 @@ class Atom():
         ----------
         name : str | int
             The name of the atom_type (e.g. 'C1')
-            If this parameter is an integer, it is interpreted as the atomic number of the element symbol and cannot 
-            be used together with the id parameter.
-        id : int | str, optional
-            The atomic number or element symbol of the atom_type (e.g. 6 or 'C')
-            If his parameter is not given, the name parameter is used to determine the element type of the atom_type.
+            If this parameter is an integer, it is interpreted as the atomic number of the 
+            element symbol and cannot be used together with the id parameter.
+        element_id : int | str, optional
+            The atomic number or element symbol of the atom_type (e.g. 6 or 'C') 
+            If his parameter is not given, the name parameter is used to determine 
+            the element type of the atom_type.
         use_guess_element : bool, optional
             Whether to use the guess_element function to determine the element type of the atom_type 
             by its name, by default True
         """
 
-        if id is not None and isinstance(name, int):
+        if element_id is not None and isinstance(name, int):
 
             raise ValueError(
-                "The name of the atom_type cannot be an integer if the id is given.")
+                "The name of the atom_type cannot be an integer if the id is given."
+            )
 
-        elif id is not None and isinstance(name, str):
+        if element_id is not None and isinstance(name, str):
 
             self._name = name
-            self._element = Element(id)
+            self._element = Element(element_id)
 
         elif isinstance(name, int):
 
@@ -200,3 +203,13 @@ class Atom():
     def element_name(self) -> str:
         """str: The name of the element (e.g. 'Carbon')"""
         return self._element.name
+
+
+#: A type hint for a list of atoms
+Atoms = NewType(
+    "Atoms", Annotated[
+        list, Is[
+            lambda list: all(isinstance(atom, Atom) for atom in list)
+        ]
+    ]
+)
