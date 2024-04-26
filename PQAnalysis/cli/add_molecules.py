@@ -17,16 +17,9 @@ __outputdoc__ = """
 
 This command line tool can be used to add molecules to a restart file.
 
-The molecules are added by fitting the molecule to the restart file.
-The fitting is done randomly by rotating the molecule and translating
-it to a random position. After the fitting, the molecule is added to
-the restart file. The class can add multiple molecules to the restart file.
+The molecules are added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The class can add multiple molecules to the restart file.
 
-This tool provides also the possibility of not only extending the
-restart file with the molecule but also the topology file.
-Therefore, the topology file of the restart file and the topology file
-of the molecule file have to be provided as well as the desired output
-topology file.
+This tool provides also the possibility of not only extending the restart file with the molecule but also the topology file. Therefore, the topology file of the restart file and the topology file of the molecule file have to be provided as well as the desired output topology file.
 """
 
 __epilog__ = "\n"

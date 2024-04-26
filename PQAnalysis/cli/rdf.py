@@ -6,10 +6,9 @@ Command Line Tool for RDF Analysis
 
 """
 
-import PQAnalysis.config as config
-
 from PQAnalysis.analysis.rdf import rdf
 from PQAnalysis.analysis.rdf.rdf_input_file_reader import input_keys_documentation
+from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
 
 __outputdoc__ = """
@@ -21,10 +20,10 @@ so that the input file can be used to specify the
 parameters of the RDF calculation.
 """
 
-__epilog__ = f"""
-For more information on required and optional input
-file keys please visit {config.code_base_url}PQAnalysis.cli.rdf.html.
-"""
+__epilog__ = "\n"
+__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.cli.rdf.html."
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
 __doc__ += "For more information on the general the "

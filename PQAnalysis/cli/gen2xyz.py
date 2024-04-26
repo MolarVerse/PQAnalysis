@@ -7,10 +7,9 @@ Command Line Tool for Converting GEN Files to XYZ Files
 
 """
 
-import PQAnalysis.config as config
-
-from ._argument_parser import _ArgumentParser
 from PQAnalysis.io import gen2xyz
+from PQAnalysis.config import code_base_url
+from ._argument_parser import _ArgumentParser
 
 
 __outputdoc__ = """
@@ -21,16 +20,19 @@ If the box information from the gen file should not be included in the xyz file,
 please use the --nobox option.
 """
 
-__epilog__ = f"""
-For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.gen2xyz.html.
-"""
+__epilog__ = "\n"
+__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.cli.gen2xyz.html."
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
 
 
 def main():
     """
-    Main function of the gen2xyz command line tool, which is basically just a wrapper for the gen2xyz function. For more information on the gen2xyz function please visit :py:func:`PQAnalysis.io.api.gen2xyz`.
+    Main function of the gen2xyz command line tool, which is basically just 
+    a wrapper for the gen2xyz function. For more information on the gen2xyz
+    function please visit :py:func:`PQAnalysis.io.api.gen2xyz`.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
@@ -51,6 +53,6 @@ def main():
         gen_file=args.gen_file,
         output=args.output,
         print_box=not args.nobox,
-        engine=args.engine,
+        md_format=args.engine,
         mode=args.mode,
     )

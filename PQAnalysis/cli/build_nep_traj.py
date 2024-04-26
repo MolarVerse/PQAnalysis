@@ -7,10 +7,9 @@ Command Line Tool for Building Neuroevolution Potential (NEP) training/test traj
 
 """
 
-import PQAnalysis.config as config
-
-from ._argument_parser import _ArgumentParser
 from PQAnalysis.io.nep.NEPWriter import NEPWriter
+from PQAnalysis.config import code_base_url
+from ._argument_parser import _ArgumentParser
 
 
 __outputdoc__ = """
@@ -18,16 +17,19 @@ __outputdoc__ = """
 This command line tool can be used to converts output of PQ of QMCFC simulations to training and test files for the Neuroevolution Potential (NEP) method. The output is written to a xyz file.
 """
 
-__epilog__ = f"""
-For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.build_nep_traj.html.
-"""
+__epilog__ = "\n"
+__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.cli.build_nep_traj.html."
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
 
 
 def main():
     """
-    Main function of the build_nep_traj command line tool, which is basically just a wrapper for the build_nep_traj function. For more information on the build_nep_traj function please visit :py:func:`PQAnalysis.io.api.build_nep_traj`.
+    Main function of the build_nep_traj command line tool, which is basically 
+    just a wrapper for the build_nep_traj function. For more information on 
+    the build_nep_traj function please visit :py:func:`PQAnalysis.io.api.build_nep_traj`.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
@@ -44,14 +46,51 @@ def main():
         '--test-ratio',
         type=float,
         default=0.0,
-        help="The ratio of testing frames to the total number of frames, by default 0.0. If the test_ratio is 0.0 no train and test files are created. If the test_ratio is larger not equal to 0.0, the test_ratio is used to determine the number of training and testing frames. The final ratio will be as close to the test_ratio as possible, but if it is not possible to have the exact ratio, always the higher next higher ratio is chosen. As output filenames the original filename is used with the suffix _train or _test appended and the same FileWritingMode as the original file is used."
+        help=(
+            "The ratio of testing frames to the total number of "
+            "frames, by default 0.0. If the test_ratio is 0.0 no "
+            "train and test files are created. If the test_ratio "
+            "is larger not equal to 0.0, the test_ratio is used "
+            "to determine the number of training and testing frames. "
+            "The final ratio will be as close to the test_ratio as "
+            "possible, but if it is not possible to have the exact "
+            "ratio, always the higher next higher ratio is chosen. "
+            "As output filenames the original filename is used with "
+            "the suffix _train or _test appended and the same "
+            "FileWritingMode as the original file is used."
+        )
     )
 
     parser.add_argument(
         '--total-ratios',
         type=str,
         default=None,
-        help="The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used. The validation frames are written to a file with the suffix _validation and a file with the suffix _validation.ref. The _validation file contains only the coordinates and box information to function as crude testing input and the _validation.ref file contains all information additionally provided in the original files. Pay Attention: This keyword argument is mutually exclusive with the test_ratio keyword argument. If both are given, a ValueError is raised."
+        help=(
+            "The total_ratios keyword argument is used to "
+            "describe frame ratios including validation frames "
+            "in the format train_ratio:test_ratio:validation_ratio. "
+            "The validation_ratio is optional and if not given, "
+            "no validation frames are written. The total sum of "
+            "the integer values provided do not have to add up "
+            "to the total number of frames in the input trajectory "
+            "files. The ratios are used to determine the ratios of "
+            "the training, testing, and validation frames. The final"
+            "ratio will be as close to the given ratios as possible, "
+            "but if it is not possible to have the exact ratio, "
+            "always the next higher ratio is chosen. As output "
+            "filenames the original filename is used with the suffix "
+            "_train, _test, or _validation appended and the same "
+            "FileWritingMode as the original file is used. The "
+            "validation frames are written to a file with the "
+            "suffix _validation and a file with the suffix _validation.ref. "
+            "The _validation file contains only the coordinates and "
+            "box information to function as crude testing input and "
+            "the _validation.ref file contains all information "
+            "additionally provided in the original files. "
+            "Pay Attention: This keyword argument is mutually exclusive "
+            "with the test_ratio keyword argument. If both are given, "
+            "a ValueError is raised."
+        )
     )
 
     parser.add_argument(
