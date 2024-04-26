@@ -1,16 +1,16 @@
 """
-A module containing a Mixin Class with different properties derived from the standard properties of an atomic system.
+A module containing a Mixin Class with different properties derived
+from the standard properties of an atomic system.
 """
+from numbers import Real
 
 import numpy as np
 
-from numbers import Real
 from beartype.typing import List
-
-from ._decorators import check_atoms_has_mass, check_atoms_pos
 
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
+from ._decorators import check_atoms_has_mass, check_atoms_pos
 
 
 class _PropertiesMixin:
@@ -18,7 +18,7 @@ class _PropertiesMixin:
     A mixin class containing properties derived from the standard properties of an atomic system.
     """
     @property
-    def PBC(self) -> bool:
+    def pbc(self) -> bool:
         """bool: Whether the system has periodic boundary conditions."""
         return self._cell != Cell()
 
@@ -30,8 +30,8 @@ class _PropertiesMixin:
         Raises
         ------
         ValueError
-            If the number of atoms in the topology, positions, velocities, forces and charges are not equal 
-            (if they are not 0).
+            If the number of atoms in the topology, positions, velocities, 
+            forces and charges are not equal (if they are not 0).
 
         """
         n_atoms = self._topology.n_atoms
@@ -48,7 +48,9 @@ class _PropertiesMixin:
 
         if not np.all(n_atoms_list == n_atoms_list[0]):
             raise ValueError(
-                "The number of atoms (or atoms in the topology), positions, velocities, forces and charges must be equal.")
+                "The number of atoms (or atoms in the topology), "
+                "positions, velocities, forces and charges must be equal."
+            )
 
         return int(n_atoms_list[0])
 

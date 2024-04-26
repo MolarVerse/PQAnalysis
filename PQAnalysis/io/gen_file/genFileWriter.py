@@ -5,7 +5,7 @@ A module containing the GenFileWriter class
 import numpy as np
 
 from .. import BaseWriter, FileWritingMode
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class GenFileWriter(BaseWriter):

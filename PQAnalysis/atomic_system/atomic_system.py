@@ -24,7 +24,7 @@ from PQAnalysis.types import (
 )
 
 from ._properties import _PropertiesMixin
-from ._standardProperties import _StandardPropertiesMixin
+from ._standard_properties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
 from .exceptions import AtomicSystemError
 
@@ -74,7 +74,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     --------
     >>> import numpy as np
     >>> from PQAnalysis.core import Atom
-    >>> from PQAnalysis.atomicSystem import AtomicSystem
+    >>> from PQAnalysis.atomic_system import AtomicSystem
 
     >>> atoms = [Atom('C1', use_guess_element=False), Atom('C2', use_guess_element=False)]
     >>> AtomicSystem(atoms=atoms, pos=np.array([[0, 0, 0], [1, 0, 0]]))
@@ -136,6 +136,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).
         topology : Topology, optional
             The topology of the system, by default Topology()
+        energy : float, optional
+            The energy of the system, by default None
+        virial : Np3x3NumberArray, optional
+            The virial of the system, by default None
+        stress : Np3x3NumberArray, optional
+            The stress of the system, by default None
         cell : Cell, optional
             The unit cell of the system. Defaults to a Cell with no periodic
             boundary conditions, by default Cell()
@@ -468,7 +474,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         --------
         >>> import numpy as np
         >>> from PQAnalysis.core import Atom, Residue
-        >>> from PQAnalysis.atomicSystem import AtomicSystem
+        >>> from PQAnalysis.atomic_system import AtomicSystem
 
         >>> atoms = [Atom('C'), Atom('C')]
         >>> pos = np.array([[0, 0, 0], [1, 0, 0]])
