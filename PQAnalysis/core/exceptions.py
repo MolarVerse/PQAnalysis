@@ -12,14 +12,14 @@ class ElementNotFoundError(PQException):
     Exception raised if the given element id is not valid
     """
 
-    def __init__(self, id: Any) -> None:
+    def __init__(self, element_id: Any) -> None:
         """
         Parameters
         ----------
-        id : Any
+        element_id : Any
             The id that is not valid.
         """
-        self.id = id
+        self.id = element_id
         self.message = f"""Id {self.id} is not a valid element identifier."""
         super().__init__(self.message)
 

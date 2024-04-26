@@ -149,7 +149,7 @@ class TestSelection:
 
         residue_ids = np.array([0, 1, 1, 0])
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('H')]
-        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
         topology = Topology(atoms=atoms, residue_ids=residue_ids,
                             reference_residues=reference_residues)

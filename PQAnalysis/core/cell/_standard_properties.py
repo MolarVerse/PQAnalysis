@@ -1,16 +1,18 @@
 """
-A module containing a Mixin Class with the standard properties of a Cell class (i.e. standard getter and setter methods).
+A module containing a Mixin Class with the standard properties
+of a Cell class (i.e. standard getter and setter methods).
 """
-import numpy as np
-
 from numbers import Real
 
-from ...types import Np1DNumberArray, Np3x3NumberArray
+import numpy as np
+
+from PQAnalysis.types import Np1DNumberArray, Np3x3NumberArray
 
 
 class _StandardPropertiesMixin:
     """
-    A mixin class containing the standard properties of a Cell class (i.e. standard getter and setter methods).
+    A mixin class containing the standard properties of a
+    Cell class (i.e. standard getter and setter methods).
     """
     @property
     def box_lengths(self) -> Np1DNumberArray:

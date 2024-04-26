@@ -25,11 +25,11 @@ from ..conftest import assert_logging
 
 
 def test_find_residue_by_id(caplog):
-    residue1 = Residue(name="name", id=0, total_charge=0.0, elements=[
+    residue1 = Residue(name="name", residue_id=0, total_charge=0.0, elements=[
     ], atom_types=np.array([]), partial_charges=np.array([]))
-    residue2 = Residue(name="name", id=1, total_charge=0.0, elements=[
+    residue2 = Residue(name="name", residue_id=1, total_charge=0.0, elements=[
     ], atom_types=np.array([]), partial_charges=np.array([]))
-    residue3 = Residue(name="name", id=0, total_charge=0.0, elements=[
+    residue3 = Residue(name="name", residue_id=0, total_charge=0.0, elements=[
     ], atom_types=np.array([]), partial_charges=np.array([]))
 
     assert_logging(
@@ -64,11 +64,11 @@ def test_unique_residues():
     residues = []
     assert _unique_residues_(residues) == []
 
-    residues = [Residue(name="name", id=0, total_charge=0.0, elements=[Element(
+    residues = [Residue(name="name", residue_id=0, total_charge=0.0, elements=[Element(
         "C")], atom_types=np.array([0]), partial_charges=np.array([0.0]))]
     assert _unique_residues_(residues) == residues
 
-    residues.append(Residue(name="name", id=1, total_charge=0.0, elements=[
+    residues.append(Residue(name="name", residue_id=1, total_charge=0.0, elements=[
                     Element("C")], atom_types=np.array([0]), partial_charges=np.array([0.0])))
     assert _unique_residues_(residues) == residues
 
@@ -103,7 +103,7 @@ class TestTopology:
 
         residue_ids = np.array([0, 1, 1, 0])
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('H')]
-        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
         topology = Topology(atoms=atoms, residue_ids=residue_ids,
                             reference_residues=reference_residues)
@@ -142,7 +142,7 @@ class TestTopology:
 
         atoms = [Atom('C', use_guess_element=False), Atom('H'), Atom('H')]
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
-        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
         topology.reference_residues = reference_residues
 
@@ -242,7 +242,7 @@ class TestTopology:
         assert Topology(atoms=self.atoms) != Topology(
             atoms=self.atoms, residue_ids=np.array([0, 0, 1]))
 
-        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
         assert Topology(atoms=self.atoms) == Topology(
             atoms=self.atoms, reference_residues=reference_residues)
@@ -260,7 +260,7 @@ class TestTopology:
             atoms=[Atom('C'), Atom('H')], residue_ids=np.array([0, 1]))
 
     def test__str__(self):
-        reference_residues = [Residue(name="ALA", id=1, total_charge=0.0, elements=[Element(
+        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
             "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
 
         topology = Topology(atoms=self.atoms, residue_ids=np.array([0, 1, 1]))
