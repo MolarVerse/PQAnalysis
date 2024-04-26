@@ -4,18 +4,13 @@ A module containing the AtomicSystem class
 
 from __future__ import annotations
 
-import numpy as np
 import itertools
 import logging
 import sys
+import numpy as np
 
 from scipy.spatial.transform import Rotation
 from beartype.typing import Any, List
-
-from ._properties import _PropertiesMixin
-from ._standardProperties import _StandardPropertiesMixin
-from ._positions import _PositionsMixin
-from .exceptions import AtomicSystemError
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
@@ -28,22 +23,51 @@ from PQAnalysis.types import (
     Np3x3NumberArray,
 )
 
+from ._properties import _PropertiesMixin
+from ._standardProperties import _StandardPropertiesMixin
+from ._positions import _PositionsMixin
+from .exceptions import AtomicSystemError
+
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
     A class for storing atomic systems.
 
-    It contains the standard properties of an atomic system (i.e. positions, velocities, forces, charges, topology and cell). The AtomicSystem class can be used as a container for the standard properties of any molecular/atomic system.
+    It contains the standard properties of an atomic system
+    (i.e. positions, velocities, forces, charges, topology and cell).
+    The AtomicSystem class can be used as a container for the 
+    standard properties of any molecular/atomic system.
 
     Notes
     -----
-    An atomic system does not have to containing any positions, velocities, forces and so forth. The only requirement is that the number of atoms in the topology is equal to the number of entries in the positions, velocities, forces and charges arrays. If e.g. only a system containing information of the velocities is needed, the positions, forces and charges arrays can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)). The same goes for the other properties. An empty cell can be created with Cell() and represents a system without periodic boundary conditions. (For more information see the documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`). As the topology is can be really and complex and most of the cases really specific to the system, here no further information is given. (For more information see the documentation of :py:class:`~PQAnalysis.topology.topology.Topology`). Furthermore for this reason if no specialization of the topology is needed, the atomic system can be initialized with only a list of atoms (see examples, and the documentation of :py:class:`~PQAnalysis.core.atom.atom.Atom`).
+    An atomic system does not have to containing any positions,
+    velocities, forces and so forth. The only requirement is that
+    the number of atoms in the topology is equal to the number of
+    entries in the positions, velocities, forces and charges 
+    arrays. If e.g. only a system containing information of the
+    velocities is needed, the positions, forces and charges arrays
+    can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)).
+    The same goes for the other properties. An empty cell can be
+    created with Cell() and represents a system without periodic
+    boundary conditions. (For more information see the 
+    documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`).
+    As the topology is can be really and complex and most of the 
+    cases really specific to the system, here no further 
+    information is given. (For more information see the 
+    documentation of :py:class:`~PQAnalysis.topology.topology.Topology`).
+    Furthermore for this reason if no specialization of the topology
+    is needed, the atomic system can be initialized with only a list
+    of atoms (see examples, and the documentation of 
+    :py:class:`~PQAnalysis.core.atom.atom.Atom`).
 
 
-    Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin, _IndexingMixin, _PositionsMixin
-        - The _StandardPropertiesMixin contains the standard properties of an atomic system (i.e. standard getter and setter methods).
+    Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin,
+    _IndexingMixin, _PositionsMixin
+        - The _StandardPropertiesMixin contains the standard properties of an atomic
+        system (i.e. standard getter and setter methods).
         - The _PropertiesMixin contains special properties derived from the standard properties
-        - The _PositionsMixin contains methods for computing properties based on the positions of the atoms
+        - The _PositionsMixin contains methods for computing properties based
+        on the positions of the atoms
 
 
     Examples
@@ -54,13 +78,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     >>> atoms = [Atom('C1', use_guess_element=False), Atom('C2', use_guess_element=False)]
     >>> AtomicSystem(atoms=atoms, pos=np.array([[0, 0, 0], [1, 0, 0]]))
-    AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+    AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))
 
     >>> AtomicSystem()
-    AtomicSystem(topology=(Topology with 0 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+    AtomicSystem(topology=(Topology with 0 atoms...), cell=(Cell()))
 
     >>> AtomicSystem(topology=Topology(atoms=[Atom('C'), Atom('C')]))
-    AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+    AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))
     """
 
     logging.basicConfig(level=logging.INFO)
@@ -113,7 +137,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         topology : Topology, optional
             The topology of the system, by default Topology()
         cell : Cell, optional
-            The unit cell of the system. Defaults to a Cell with no periodic boundary conditions, by default Cell()
+            The unit cell of the system. Defaults to a Cell with no periodic
+            boundary conditions, by default Cell()
 
         Raises
         ------
@@ -123,7 +148,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         if topology is not None and atoms is not None:
             raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
+                "Cannot initialize AtomicSystem with both atoms and topology "
+                "arguments - they are mutually exclusive."
             )
 
         if atoms is None and topology is None:
@@ -157,22 +183,30 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
         number_of_additions : PositiveInt, optional
-            The number of times the system should be fitted into the positions of the AtomicSystem, by default 1
+            The number of times the system should be fitted into the
+            positions of the AtomicSystem, by default 1
         max_iterations : PositiveInt, optional
-            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+            The maximum number of iterations to try to fit the system
+            into the positions of the AtomicSystem, by default 100
         distance_cutoff : PositiveReal, optional
             The distance cutoff for the fitting, by default 1.0
         max_displacement : PositiveReal | Np1DNumberArray, optional
             The maximum displacement percentage for the fitting, by default 0.1
         rotation_angle_step : PositiveInt, optional
-            The angle step for the rotation of the system, by default 10
+            The angle step for the rotation of the system,
+            by default 10
 
-        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+        First a random center of mass is chosen and a random displacement
+        is applied to the system. Then the system is rotated in all possible
+        ways and the distances between the atoms are checked. If the 
+        distances are larger than the distance cutoff, the system is fitted.
 
         Returns
         -------
         List[AtomicSystem] | AtomicSystem
-            The fitted AtomicSystem(s). If number_of_additions is 1, a single AtomicSystem is returned, otherwise a list of AtomicSystems is returned.
+            The fitted AtomicSystem(s). If number_of_additions is 1,
+            a single AtomicSystem is returned, otherwise a list of 
+            AtomicSystems is returned.
 
         Raises
         ------
@@ -181,13 +215,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If the maximum displacement percentage is negative.
         AtomicSystemError
-            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+            If the system could not be fitted into the positions
+            of the AtomicSystem within the maximum number of iterations.
         """
 
         systems = []
 
         for i in range(number_of_additions):
-            # concatenate the positions of this system with the positions of all systems that have been fitted so far
+            # concatenate the positions of this system with the
+            # positions of all systems that have been fitted so far
             positions_to_fit_into = np.concatenate(
                 [system.pos for system in systems] + [self.pos]
             )
@@ -221,7 +257,10 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         """
         Fit the positions of the system to the positions of another system.
 
-        First a random center of mass is chosen and a random displacement is applied to the system. Then the system is rotated in all possible ways and the distances between the atoms are checked. If the distances are larger than the distance cutoff, the system is fitted.
+        First a random center of mass is chosen and a random displacement 
+        is applied to the system. Then the system is rotated in all possible
+        ways and the distances between the atoms are checked. If the
+        distances are larger than the distance cutoff, the system is fitted.
 
         Parameters
         ----------
@@ -230,7 +269,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
         max_iterations : PositiveInt, optional
-            The maximum number of iterations to try to fit the system into the positions of the AtomicSystem, by default 100
+            The maximum number of iterations to try to fit the system into the
+            positions of the AtomicSystem, by default 100
         distance_cutoff : PositiveReal, optional
             The distance cutoff for the fitting, by default 1.0
         max_displacement : PositiveReal | Np1DNumberArray, optional
@@ -250,7 +290,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If the maximum displacement percentage is negative.
         AtomicSystemError
-            If the system could not be fitted into the positions of the AtomicSystem within the maximum number of iterations.
+            If the system could not be fitted into the positions 
+            of the AtomicSystem within the maximum number of iterations.
         """
 
         if self.cell.is_vacuum:
@@ -308,7 +349,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         if iter_converged is None:
             raise AtomicSystemError(
-                "Could not fit the positions of the system. Try increasing the maximum number of iterations."
+                "Could not fit the positions of the system. "
+                "Try increasing the maximum number of iterations."
             )
         else:
             self.fitting_logger.info(
@@ -320,7 +362,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             system.image()
             return system
 
-    def compute_com_atomicSystem(self, group=None) -> AtomicSystem:
+    def compute_com_atomic_system(self, group=None) -> AtomicSystem:
         """
         Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
 
@@ -428,23 +470,29 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         >>> from PQAnalysis.core import Atom, Residue
         >>> from PQAnalysis.atomicSystem import AtomicSystem
 
-        >>> system = AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> atoms = [Atom('C'), Atom('C')]
+        >>> pos = np.array([[0, 0, 0], [1, 0, 0]])
+        >>> system = AtomicSystem(atoms=atoms, pos=pos)
         >>> system[0]
-        AtomicSystem(topology=(Topology with 1 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+        AtomicSystem(topology=(Topology with 1 atoms...), cell=(Cell()))
 
         >>> system[0] == AtomicSystem(atoms=[Atom('C')], pos=np.array([[0, 0, 0]]))
         True
 
         >>> system[0:2]
-        AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+        AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))
 
-        >>> system[0:2] == AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> atoms = [Atom('C'), Atom('C')]
+        >>> pos = np.array([[0, 0, 0], [1, 0, 0]])
+        >>> system[0:2] == AtomicSystem(atoms=atoms, pos=pos)
         True
 
         >>> system[np.array([0, 1])]
-        AtomicSystem(topology=(Topology with 2 atoms and 0 residues (0 QM residues) and 0 unique residues.), cell=(Cell()))
+        AtomicSystem(topology=(Topology with 2 atoms ...), cell=(Cell()))
 
-        >>> system[np.array([0, 1])] == AtomicSystem(atoms=[Atom('C'), Atom('C')], pos=np.array([[0, 0, 0], [1, 0, 0]]))
+        >>> atoms = [Atom('C'), Atom('C')]
+        >>> pos = np.array([[0, 0, 0], [1, 0, 0]])
+        >>> system[np.array([0, 1])] == AtomicSystem(atoms=atoms, pos=pos)
         True
 
         Parameters
@@ -472,7 +520,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         forces = self.forces[keys] if np.shape(self.forces)[0] > 0 else None
         charges = self.charges[keys] if np.shape(self.charges)[0] > 0 else None
 
-        return AtomicSystem(pos=pos, vel=vel, forces=forces, charges=charges, cell=self.cell, topology=self.topology[keys])
+        return AtomicSystem(
+            pos=pos,
+            vel=vel,
+            forces=forces,
+            charges=charges,
+            cell=self.cell,
+            topology=self.topology[keys]
+        )
 
     def __str__(self) -> str:
         """

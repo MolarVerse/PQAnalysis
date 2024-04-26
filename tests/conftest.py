@@ -90,8 +90,9 @@ def caplog_for_logger(caplog, logger_name, level):
 
 def assert_logging(caplog, logging_name, logging_level, message_to_test, function, *args, **kwargs):
     with caplog_for_logger(caplog, __package_name__ + "." + logging_name, logging_level):
+        result = None
         try:
-            yield function(*args, **kwargs)
+            result = function(*args, **kwargs)
         except SystemExit:
             pass
 
@@ -105,3 +106,5 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
 
         for message in messages:
             assert message in message_to_test
+
+        return result
