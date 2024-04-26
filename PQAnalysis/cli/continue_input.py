@@ -7,7 +7,7 @@ Command Line Tool for Extending MD Simulation Input Files
 """
 import PQAnalysis.config as config
 
-from ._argumentParser import _ArgumentParser
+from ._argument_parser import _ArgumentParser
 from PQAnalysis.io import InputFileFormat, continue_input_file
 
 __outputdoc__ = """

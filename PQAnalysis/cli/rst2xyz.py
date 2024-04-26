@@ -9,7 +9,7 @@ Command Line Tool for Converting Restart Files to XYZ Files
 
 import PQAnalysis.config as config
 
-from ._argumentParser import _ArgumentParser
+from ._argument_parser import _ArgumentParser
 from PQAnalysis.io import rst2xyz
 from PQAnalysis.traj import MDEngineFormat
 

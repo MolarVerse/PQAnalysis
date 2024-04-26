@@ -8,7 +8,7 @@ Command Line Tool for Converting Trajectory Files to Box Files
 
 import PQAnalysis.config as config
 
-from ._argumentParser import _ArgumentParser
+from ._argument_parser import _ArgumentParser
 from PQAnalysis.io import traj2box
 
 

@@ -10,7 +10,7 @@ import PQAnalysis.config as config
 
 from PQAnalysis.analysis.rdf import rdf
 from PQAnalysis.analysis.rdf.rdf_input_file_reader import input_keys_documentation
-from ._argumentParser import _ArgumentParser
+from ._argument_parser import _ArgumentParser
 
 __outputdoc__ = """
 
