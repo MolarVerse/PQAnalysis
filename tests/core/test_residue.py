@@ -8,19 +8,30 @@ from PQAnalysis.core import Element, Residue, ResidueError
 
 class TestResidue:
     def test__init__(self):
-        residue = Residue(name="name", id=0, total_charge=0.0,
-                          elements=[], atom_types=np.array([]), partial_charges=np.array([]))
+        residue = Residue(
+            name="name",
+            residue_id=0,
+            total_charge=0.0,
+            elements=[],
+            atom_types=np.array([]),
+            partial_charges=np.array([])
+        )
         assert residue.name == "name"
         assert residue.id == 0
         assert np.allclose(residue.total_charge, 0.0)
-        assert residue.elements == []
+        assert not residue.elements
         assert len(residue.atom_types) == 0
         assert len(residue.partial_charges) == 0
         assert residue.n_atoms == 0
 
-        residue = Residue(name="name", id=0, total_charge=0.0,
-                          elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1, 1]),
-                          partial_charges=np.array([0.0, 0.1, 0.1]))
+        residue = Residue(
+            name="name",
+            residue_id=0,
+            total_charge=0.0,
+            elements=[Element("C"), Element("H"), Element("H")],
+            atom_types=np.array([0, 1, 1]),
+            partial_charges=np.array([0.0, 0.1, 0.1])
+        )
 
         assert residue.name == "name"
         assert residue.id == 0
@@ -57,7 +68,7 @@ class TestResidue:
             exception.value) == "The number of partial_charges must be the same as the number of atoms."
 
         with pytest.raises(ResidueError) as exception:
-            Residue(name="name", id=0, total_charge=0.0,
+            Residue(name="name", residue_id=0, total_charge=0.0,
                     elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1]),
                     partial_charges=np.array([0.0, 0.1, 0.1]))
         assert str(
@@ -65,7 +76,7 @@ class TestResidue:
 
         residue = Residue(
             name="name",
-            id=0,
+            residue_id=0,
             total_charge=0.1,
             elements="C",
             atom_types=np.array([0]),
@@ -78,10 +89,10 @@ class TestResidue:
         assert residue.n_atoms == 1
 
     def test__str__(self):
-        residue = Residue(name="name", id=0, total_charge=0.0,
+        residue = Residue(name="name", residue_id=0, total_charge=0.0,
                           elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1, 1]),
                           partial_charges=np.array([0.0, 0.1, 0.1]))
 
         assert str(
-            residue) == "Residue(name=name, id=0, total_charge=0.0, n_atoms=3)"
+            residue) == "Residue(name='name', id=0, total_charge=0.0, n_atoms=3)"
         assert str(residue) == repr(residue)

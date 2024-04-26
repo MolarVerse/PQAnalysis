@@ -2,16 +2,13 @@
 A module containing the Element class.
 """
 
-from beartype.typing import Any, NewType
-from beartype.vale import Is
 from typing import Annotated
 from numbers import Real
 
-from .. import ElementNotFoundError
+from beartype.typing import Any, NewType
+from beartype.vale import Is
 
-#: A type hint for a list of elements
-Elements = NewType("Elements", Annotated[list, Is[lambda list: all(
-    isinstance(element, Element) for element in list)]])
+from .. import ElementNotFoundError
 
 
 class Element:
@@ -41,13 +38,13 @@ class Element:
 
     """
 
-    def __init__(self, id: int | str | None = None) -> None:
+    def __init__(self, element_id: int | str | None = None) -> None:
         """
         Initializes the Element with the given parameters.
 
         Parameters
         ----------
-        id : int | str | None, optional
+        element_id : int | str | None, optional
             The identifier of the element. If an integer is given, it is
             interpreted as the atomic number. If a string is given, it is
             interpreted as the symbol of the element. If None is given, the
@@ -61,19 +58,20 @@ class Element:
 
         try:
             # If id is an integer, it is interpreted as the atomic number.
-            if isinstance(id, int):
+            if isinstance(element_id, int):
 
-                self._atomic_number = id
-                self._symbol = atomicNumbersReverse[id]
+                self._atomic_number = element_id
+                self._symbol = atomicNumbersReverse[element_id]
 
             # If id is a string, it is interpreted as the symbol of the element.
-            elif isinstance(id, str):
+            elif isinstance(element_id, str):
 
-                self._symbol = id.lower()
+                self._symbol = element_id.lower()
                 self._atomic_number = atomicNumbers[self._symbol]
 
-            # If id is None, the symbol, atomic number and mass are set to None, meaning an empty element.
-            if id is None:
+            # If id is None, the symbol, atomic number
+            # and mass are set to None, meaning an empty element.
+            if element_id is None:
 
                 self._symbol = None
                 self._atomic_number = None
@@ -83,8 +81,8 @@ class Element:
 
                 self._mass = atomicMasses[self._symbol]
 
-        except KeyError:
-            raise ElementNotFoundError(id)
+        except KeyError as e:
+            raise ElementNotFoundError(element_id) from e
 
     def __str__(self) -> str:
         """
@@ -142,6 +140,16 @@ class Element:
     def mass(self) -> Real | None:
         """Real | None: The mass of the Element."""
         return self._mass
+
+
+#: A type hint for a list of elements
+Elements = NewType(
+    "Elements", Annotated[
+        list, Is[
+            lambda list: all(isinstance(element, Element) for element in list)
+        ]
+    ]
+)
 
 
 atomicMasses = {"h":    1.00794,    "d":    2.014101778,   "t":    3.0160492675,
