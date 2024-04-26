@@ -236,14 +236,14 @@ class TestTopology:
         assert str(
             topology) == "Topology with 3 atoms and 0 residues (0 QM residues) and 0 unique residues."
         assert str(topology) == repr(topology)
-        assert topology.n_MM_residues == 0
+        assert topology.n_mm_residues == 0
 
         topology = Topology(atoms=self.atoms, residue_ids=np.array(
             [0, 1, 1]), reference_residues=reference_residues)
         assert str(
             topology) == "Topology with 3 atoms and 2 residues (1 QM residues) and 2 unique residues."
         assert str(topology) == repr(topology)
-        assert topology.n_MM_residues == 1
+        assert topology.n_mm_residues == 1
 
         topology = Topology(atoms=self.atoms, residue_ids=np.array(
             [0, 0, 0]), reference_residues=reference_residues)
@@ -251,4 +251,4 @@ class TestTopology:
         assert str(
             topology) == "Topology with 3 atoms and 3 residues (3 QM residues) and 2 unique residues."
         assert str(topology) == repr(topology)
-        assert topology.n_MM_residues == 0
+        assert topology.n_mm_residues == 0
