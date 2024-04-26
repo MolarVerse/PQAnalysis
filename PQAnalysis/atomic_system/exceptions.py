@@ -41,7 +41,8 @@ class AtomicSystemMassError(AtomicSystemError):
     Exception raised if atoms do not contain mass information
     """
 
-    message = """AtomicSystem contains atoms without mass information. Which is required for this operation."""
+    message = "AtomicSystem contains atoms without mass information. "
+    message += "Which is required for this operation."
 
     def __init__(self) -> None:
         """

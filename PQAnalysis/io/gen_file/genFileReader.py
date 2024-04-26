@@ -6,11 +6,11 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from .exceptions import GenFileReaderError
 from PQAnalysis.io import BaseReader
 from PQAnalysis.types import PositiveInt, Np2DNumberArray, Np1DIntArray
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
+from .exceptions import GenFileReaderError
 
 
 class GenFileReader(BaseReader):

@@ -2,10 +2,10 @@
 A module containing different functions to read and write .gen files.
 """
 
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.io.formats import FileWritingMode
 from .genFileReader import GenFileReader
 from .genFileWriter import GenFileWriter
-from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.io.formats import FileWritingMode
 
 
 def read_gen_file(filename: str) -> AtomicSystem:

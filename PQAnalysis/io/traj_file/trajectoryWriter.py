@@ -9,7 +9,7 @@ from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class TrajectoryWriter(BaseWriter):

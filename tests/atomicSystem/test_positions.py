@@ -3,8 +3,8 @@ import pytest
 
 from . import pytestmark
 
-from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.atomicSystem.exceptions import AtomicSystemPositionsError
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system.exceptions import AtomicSystemPositionsError
 from PQAnalysis.core import Atom, Cell
 
 

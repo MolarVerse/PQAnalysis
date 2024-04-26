@@ -6,7 +6,7 @@ from . import pytestmark
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
 
 

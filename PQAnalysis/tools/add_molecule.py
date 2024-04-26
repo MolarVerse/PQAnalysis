@@ -8,7 +8,7 @@ import warnings
 from beartype.typing import List
 
 from PQAnalysis.io.formats import OutputFileFormat, FileWritingMode
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.types import (
     PositiveInt,

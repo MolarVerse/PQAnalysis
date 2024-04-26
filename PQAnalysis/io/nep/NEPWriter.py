@@ -22,7 +22,7 @@ from PQAnalysis.utils.units import kcal_per_mole
 from PQAnalysis.utils.files import find_files_with_prefix
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.utils.random import get_random_seed
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis.types import PositiveReal
 from PQAnalysis import config

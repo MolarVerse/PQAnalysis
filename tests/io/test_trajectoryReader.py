@@ -6,7 +6,7 @@ from . import pytestmark
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class TestTrajectoryReader:

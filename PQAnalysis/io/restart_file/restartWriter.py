@@ -10,7 +10,7 @@ from .. import BaseWriter, FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class RestartFileWriter(BaseWriter):
