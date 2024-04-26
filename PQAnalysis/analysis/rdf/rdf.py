@@ -1,13 +1,18 @@
 """
-A module containing the RDF class. The RDF class is used to calculate the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
+A module containing the RDF class. The RDF class is used
+to calculate the radial distribution of a reference
+selection to a target selection. The radial distribution
+function (RDF) is a measure of the probability density 
+of finding a particle at a distance r from another particle. 
 """
 
 from __future__ import annotations
 
-# 3rd party imports
-import numpy as np
 import warnings
 import logging
+
+# 3rd party imports
+import numpy as np
 
 # 3rd party imports
 from beartype.typing import Tuple
@@ -15,9 +20,6 @@ from tqdm.auto import tqdm
 
 # local imports
 import PQAnalysis.config as config
-
-# local relative imports
-from .exceptions import RDFError, RDFWarning
 
 # local absolute imports
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
@@ -29,14 +31,41 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis import __package_name__
 
+# local relative imports
+from .exceptions import RDFError, RDFWarning
+
+module_logger = logging.getLogger(__package_name__).getChild(__name__)
+module_logger = setup_logger(module_logger)
+
 
 class RDF:
     """
-    A class for calculating the radial distribution of a reference selection to a target selection. The radial distribution function (RDF) is a measure of the probability density of finding a particle at a distance r from another particle. 
+    A class for calculating the radial distribution of a 
+    reference selection to a target selection. The radial
+    distribution function (RDF) is a measure of the 
+    probability density of finding a particle at a 
+    distance r from another particle. 
 
-    The RDF analysis is initialized with the provided parameters. The RDF analysis can be run by calling the run method. The run method returns the middle points of the bins of the RDF analysis, the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+    The RDF analysis is initialized with the provided 
+    parameters. The RDF analysis can be run by calling
+    the run method. The run method returns the middle 
+    points of the bins of the RDF analysis, the normalized
+    bins of the RDF analysis based on the spherical shell
+    model, the integrated bins of the RDF analysis, the
+    normalized bins of the RDF analysis based on the
+    number of atoms in the system and the differential 
+    bins of the RDF analysis based on the spherical 
+    shell model.
 
-    The RDF class can be initialized with either a trajectory object or via a TrajectoryReader object. If a trajectory object is given, it is assumed to have a constant topology over all frames! The main difference between the two is that the TrajectoryReader object allows for lazy loading of the trajectory, meaning that the trajectory is only loaded frame by frame when needed. This can be useful for large trajectories that do not fit into memory.
+    The RDF class can be initialized with either a 
+    trajectory object or via a TrajectoryReader object.
+    If a trajectory object is given, it is assumed to 
+    have a constant topology over all frames! The main 
+    difference between the two is that the 
+    TrajectoryReader object allows for lazy loading of
+    the trajectory, meaning that the trajectory is only
+    loaded frame by frame when needed. This can be useful
+    for large trajectories that do not fit into memory.
     """
 
     _use_full_atom_default = False
@@ -59,13 +88,15 @@ class RDF:
         Parameters
         ----------
         traj : Trajectory | TrajectoryReader
-            The trajectory to analyze. If a TrajectoryReader is provided, the trajectory frame by frame via a frame_generator
+            The trajectory to analyze. If a TrajectoryReader is provided,
+            the trajectory frame by frame via a frame_generator
         reference_species : SelectionCompatible
             The reference species of the RDF analysis.
         target_species : SelectionCompatible
             The target species of the RDF analysis.
         use_full_atom_info : bool, optional
-            Whether to use the full atom information of the trajectory or not, by default None (False).
+            Whether to use the full atom information of the trajectory
+            or not, by default None (False).
         no_intra_molecular : bool, optional
             Whether to exclude intra-molecular distances or not, by default None (False).
         n_bins : PositiveInt | None, optional
@@ -73,28 +104,44 @@ class RDF:
         delta_r : PositiveReal | None, optional
             delta r between bins, by default None
         r_max : PositiveReal | None, optional
-            maximum radius from reference species of the RDF analysis, by default None
+            maximum radius from reference species of the RDF analysis,
+            by default None
         r_min : PositiveReal, optional
-            minimum (starting) radius from reference species of the RDF analysis, by default 0.0 (equals to None)
+            minimum (starting) radius from reference species of the 
+            RDF analysis, by default 0.0 (equals to None)
 
         Raises
         ------
         RDFError
-            If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
+            If the trajectory is not fully periodic or fully in vacuum.
+            Meaning that some frames are in vacuum and others are periodic.
         RDFError
             If the trajectory is empty.
         RDFError
             If n_bins and delta_r are both not specified.
         RDFError
-            If n_bins, delta_r and r_max are all specified. This would lead to ambiguous results.
+            If n_bins, delta_r and r_max are all specified.
+            This would lead to ambiguous results.
 
         Notes
         -----        
-        Furthermore, to initialize the RDF analysis object at least one of the parameters n_bins or delta_r must be specified. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
+        Furthermore, to initialize the RDF analysis object at least
+        one of the parameters n_bins or delta_r must be specified. 
+        If n_bins and delta_r are both specified, r_max is calculated
+        from these parameters. If n_bins and r_max are both specified,
+        delta_r is calculated from these parameters. If delta_r and 
+        r_max are both specified, n_bins is calculated from 
+        these parameters.
 
-        It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.
+        It is not possible to specify all of n_bins, delta_r and r_max
+        in the same RDF analysis as this would lead to ambiguous results.
 
-        It is also possible to initialize a non-vacuum trajectory by only using n_bins or delta_r. In this case, r_max is calculated from the provided parameters and the box vectors of the trajectory. If the trajectory is in vacuum, an RDFError is raised as the maximum radius cannot be inferred from the box vectors.
+        It is also possible to initialize a non-vacuum trajectory by
+        only using n_bins or delta_r. In this case, r_max is calculated
+        from the provided parameters and the box vectors of the 
+        trajectory. If the trajectory is in vacuum, an RDFError is
+        raised as the maximum radius cannot be inferred from the 
+        box vectors.
 
         See Also
         --------
@@ -108,6 +155,18 @@ class RDF:
         #####################
 
         self.logger = setup_logger(self.logger)
+
+        ##############
+        # dummy init #
+        ##############
+
+        self._average_volume = 0.0
+        self._reference_density = 0.0
+        self.target_index_combinations = []
+        self.normalized_bins = np.array([])
+        self.integrated_bins = np.array([])
+        self.normalized_bins2 = np.array([])
+        self.differential_bins = np.array([])
 
         #####################################################
         # Initialize parameters with default values if None #
@@ -176,7 +235,16 @@ class RDF:
         """
         Sets up the bins of the RDF analysis.
 
-        This method is called by the __init__ method of the RDF class, but can also be called manually to re-initialize the bins of the RDF analysis. It sets up the bins of the RDF analysis based on the provided parameters. If n_bins and delta_r are both specified, r_max is calculated from these parameters. If n_bins and r_max are both specified, delta_r is calculated from these parameters. If delta_r and r_max are both specified, n_bins is calculated from these parameters.
+        This method is called by the __init__ method of the 
+        RDF class, but can also be called manually to 
+        re-initialize the bins of the RDF analysis. It sets
+        up the bins of the RDF analysis based on the
+        provided parameters. If n_bins and delta_r are both
+        specified, r_max is calculated from these parameters.
+        If n_bins and r_max are both specified, delta_r is
+        calculated from these parameters. If delta_r and 
+        r_max are both specified, n_bins is calculated from
+        these parameters.
 
         Parameters
         ----------
@@ -192,7 +260,8 @@ class RDF:
         Raises
         ------
         RDFError
-            If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
+            If the trajectory is not fully periodic or fully in vacuum.
+            Meaning that some frames are in vacuum and others are periodic.
         RDFError
             If n_bins and delta_r are both not specified.
         RDFError
@@ -213,7 +282,11 @@ class RDF:
         # check if n_bins, delta_r and r_max are all specified
         elif all([n_bins, delta_r, r_max]):
             self.logger.error(
-                "It is not possible to specify all of n_bins, delta_r and r_max in the same RDF analysis as this would lead to ambiguous results.",
+                (
+                    "It is not possible to specify all of n_bins, "
+                    "delta_r and r_max in the same RDF analysis "
+                    "as this would lead to ambiguous results."
+                ),
                 exception=RDFError
             )
 
@@ -250,11 +323,17 @@ class RDF:
         Raises
         ------
         RDFError
-            If the trajectory is not fully periodic or fully in vacuum. Meaning that some frames are in vacuum and others are periodic.
+            If the trajectory is not fully periodic or fully in vacuum.
+            Meaning that some frames are in vacuum and others are periodic.
         """
         if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
-                "The provided trajectory is not fully periodic or in vacuum, meaning that some frames are in vacuum and others are periodic. This is not supported by the RDF analysis.",
+                (
+                    "The provided trajectory is not fully periodic or "
+                    "in vacuum, meaning that some frames are in vacuum "
+                    "and others are periodic. This is not supported by "
+                    "the RDF analysis.",
+                ),
                 exception=RDFError
             )
 
@@ -264,26 +343,43 @@ class RDF:
         return np.mean([cell.volume for cell in self.cells])
 
     @timeit_in_class
-    def run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
+    def run(self) -> Tuple[
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray
+    ]:
         """
         Runs the RDF analysis.
 
-        This method runs the RDF analysis and returns the middle points of the bins of the RDF analysis, the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+        This method runs the RDF analysis and returns the 
+        middle points of the bins of the RDF analysis, the
+        normalized bins of the RDF analysis based on the 
+        spherical shell model, the integrated bins of the
+        RDF analysis, the normalized bins of the RDF 
+        analysis based on the number of atoms in the 
+        system and the differential bins of the RDF 
+        analysis based on the spherical shell model.
 
-        This method will display a progress bar by default. This can be disabled by setting with_progress_bar to False.
+        This method will display a progress bar by default.
+        This can be disabled by setting with_progress_bar to False.
 
         Returns
         -------
         bin_middle_points : Np1DNumberArray
             The middle points of the bins of the RDF analysis.
         normalized_bins : Np1DNumberArray
-            The normalized bins of the RDF analysis based on the spherical shell model.
+            The normalized bins of the RDF analysis based 
+            on the spherical shell model.
         integrated_bins : Np1DNumberArray
             The integrated bins of the RDF analysis.
         normalized_bins2 : Np1DNumberArray
-            The normalized bins of the RDF analysis based on the number of atoms in the system.
+            The normalized bins of the RDF analysis based
+            on the number of atoms in the system.
         differential_bins : Np1DNumberArray
-            The differential bins of the RDF analysis based on the spherical shell model.
+            The differential bins of the RDF analysis based
+            on the spherical shell model.
         """
         self._initialize_run()
         self._calculate_bins()
@@ -293,7 +389,11 @@ class RDF:
         """
         Initializes the RDF analysis for running.
 
-        This method is called by the run method of the RDF class. It initializes the RDF analysis for running by calculating the average volume of the trajectory, the reference density of the RDF analysis and the target index combinations of the RDF analysis.
+        This method is called by the run method of the RDF class.
+        It initializes the RDF analysis for running by calculating
+        the average volume of the trajectory, the reference 
+        density of the RDF analysis and the target index 
+        combinations of the RDF analysis.
         """
         self._average_volume = self.average_volume
         self._reference_density = len(
@@ -304,7 +404,11 @@ class RDF:
         """
         Initializes the target index combinations of the RDF analysis.
 
-        This method is called by the _initialize_run method of the RDF class. It initializes the target index combinations of the RDF analysis by calculating the target index combinations of the RDF analysis based on the no_intra_molecular parameter.
+        This method is called by the _initialize_run method of 
+        the RDF class. It initializes the target index combinations
+        of the RDF analysis by calculating the target index 
+        combinations of the RDF analysis based on the 
+        no_intra_molecular parameter.
         """
         self.target_index_combinations = []
         if self.no_intra_molecular:
@@ -317,24 +421,55 @@ class RDF:
         """
         Calculates the bins of the RDF analysis.
 
-        This method is called by the run method of the RDF class. It calculates the bins of the RDF analysis by iterating over the frames of the trajectory and calculating the distances between the reference and target indices of the RDF analysis. The bins of the RDF analysis are then calculated from these distances.
+        This method is called by the run method of the RDF class.
+        It calculates the bins of the RDF analysis by iterating 
+        over the frames of the trajectory and calculating the 
+        distances between the reference and target indices of the
+        RDF analysis. The bins of the RDF analysis are then 
+        calculated from these distances.
         """
-        for frame in tqdm(self.frame_generator, total=self.n_frames, disable=not config.with_progress_bar):
+        for frame in tqdm(
+            self.frame_generator,
+            total=self.n_frames,
+            disable=not config.with_progress_bar
+        ):
             for i, reference_index in enumerate(self.reference_indices):
+
                 target_indices = self.target_index_combinations[
                     i] if self.no_intra_molecular else self.target_indices
                 reference_position = frame.pos[reference_index]
                 target_positions = frame.pos[target_indices]
-                distances = distance(reference_position,
-                                     target_positions, frame.cell)
-                self.bins += _add_to_bins(distances,
-                                          self.r_min, self.delta_r, self.n_bins)
 
-    def _finalize_run(self) -> Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]:
+                distances = distance(
+                    reference_position,
+                    target_positions,
+                    frame.cell
+                )
+
+                self.bins += _add_to_bins(
+                    distances,
+                    self.r_min,
+                    self.delta_r,
+                    self.n_bins
+                )
+
+    def _finalize_run(self) -> Tuple[
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray
+    ]:
         """
         Finalizes the RDF analysis after running.
 
-        This method is called by the run method of the RDF class. It finalizes the RDF analysis after running by calculating the normalized bins of the RDF analysis based on the spherical shell model, the integrated bins of the RDF analysis, the normalized bins of the RDF analysis based on the number of atoms in the system and the differential bins of the RDF analysis based on the spherical shell model.
+        This method is called by the run method of the RDF class.
+        It finalizes the RDF analysis after running by calculating
+        the normalized bins of the RDF analysis based on the 
+        spherical shell model, the integrated bins of the RDF 
+        analysis, the normalized bins of the RDF analysis based
+        on the number of atoms in the system and the differential
+        bins of the RDF analysis based on the spherical shell model.
 
         Returns
         -------
@@ -352,8 +487,13 @@ class RDF:
         target_density = len(
             self.target_index_combinations[0]) / self._average_volume
 
-        norm = _norm(self.n_bins, self.delta_r, target_density,
-                     len(self.reference_indices), self.n_frames)
+        norm = _norm(
+            self.n_bins,
+            self.delta_r,
+            target_density,
+            len(self.reference_indices),
+            self.n_frames
+        )
 
         self.normalized_bins = self.bins / norm
         self.integrated_bins = _integration(
@@ -362,7 +502,13 @@ class RDF:
             len(self.reference_indices) / self.n_frames
         self.differential_bins = self.bins - norm
 
-        return self.bin_middle_points, self.normalized_bins, self.integrated_bins, self.normalized_bins2, self.differential_bins
+        return (
+            self.bin_middle_points,
+            self.normalized_bins,
+            self.integrated_bins,
+            self.normalized_bins2,
+            self.differential_bins
+        )
 
     @property
     def n_frames(self) -> int:
@@ -375,7 +521,11 @@ class RDF:
         return self.topology.n_atoms
 
 
-def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: PositiveReal, n_bins: PositiveInt) -> Np1DNumberArray:
+def _add_to_bins(distances: Np1DNumberArray,
+                 r_min: PositiveReal,
+                 delta_r: PositiveReal,
+                 n_bins: PositiveInt
+                 ) -> Np1DNumberArray:
     """
     Returns the bins of the RDF analysis based on the provided distances.
 
@@ -403,7 +553,11 @@ def _add_to_bins(distances: Np1DNumberArray, r_min: PositiveReal, delta_r: Posit
     return np.bincount(distances, minlength=n_bins)
 
 
-def _setup_bin_middle_points(n_bins: PositiveInt, r_min: PositiveReal, r_max: PositiveReal, delta_r: PositiveReal) -> Np1DNumberArray:
+def _setup_bin_middle_points(n_bins: PositiveInt,
+                             r_min: PositiveReal,
+                             r_max: PositiveReal,
+                             delta_r: PositiveReal
+                             ) -> Np1DNumberArray:
     """
     Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
 
@@ -430,7 +584,11 @@ def _setup_bin_middle_points(n_bins: PositiveInt, r_min: PositiveReal, r_max: Po
     return bin_middle_points
 
 
-def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: PositiveReal, cells: Cells) -> PositiveReal:
+def _calculate_r_max(n_bins: PositiveInt,
+                     delta_r: PositiveReal,
+                     r_min: PositiveReal,
+                     cells: Cells
+                     ) -> PositiveReal:
     """
     Calculates the maximum radius of the RDF analysis from the provided parameters.
 
@@ -443,7 +601,8 @@ def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: Positive
     r_min : PositiveReal
         minimum (starting) radius of the RDF analysis
     cells : Cells
-        The cells of the trajectory to calculate the maximum radius of the RDF analysis from.
+        The cells of the trajectory to calculate the
+        maximum radius of the RDF analysis from.
 
     Returns
     -------
@@ -458,43 +617,59 @@ def _calculate_r_max(n_bins: PositiveInt, delta_r: PositiveReal, r_min: Positive
 
 def _check_r_max(r_max: PositiveReal, cells: Cells) -> PositiveReal:
     """
-    Checks if the provided maximum radius is larger than the maximum allowed radius according to the box vectors of the trajectory.
+    Checks if the provided maximum radius is larger than the 
+    maximum allowed radius according to the box vectors of the trajectory.
 
     Parameters
     ----------
     r_max : PositiveReal
         maximum radius of the RDF analysis
     cells : Cells
-        The cells of the trajectory to check the maximum radius of the RDF analysis against.
+        The cells of the trajectory to check the
+        maximum radius of the RDF analysis against.
 
     Returns
     -------
     PositiveReal
-        maximum radius of the RDF analysis if it is smaller than the maximum allowed radius
-        according to the box vectors of the trajectory, than the maximum allowed radius according to the box vectors of the trajectory.
+        maximum radius of the RDF analysis if it is smaller
+        than the maximum allowed radius according to the box
+        vectors of the trajectory, than the maximum allowed 
+        radius according to the box vectors of the trajectory.
 
     Raises
     ------
     RDFWarning
-        If the calculated r_max is larger than the maximum allowed radius according to the box vectors of the trajectory.
+        If the calculated r_max is larger than the maximum
+        allowed radius according to the box vectors of the trajectory.
     """
     if check_trajectory_PBC(cells) and r_max > _infer_r_max(cells):
         warnings.warn(
-            f"The calculated r_max {r_max} is larger than the maximum allowed radius \
-according to the box vectors of the trajectory {_infer_r_max(cells)}. \
-r_max will be set to the maximum allowed radius.", RDFWarning)
+            (
+                f"The calculated r_max {r_max} is larger "
+                "than the maximum allowed radius according "
+                "to the box vectors of the trajectory "
+                f"{_infer_r_max(cells)}. r_max will be "
+                "set to the maximum allowed radius."
+            ),
+            RDFWarning
+        )
 
         r_max = _infer_r_max(cells)
 
     return r_max
 
 
-def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal) -> Tuple[PositiveInt, PositiveReal]:
+def _calculate_n_bins(delta_r: PositiveReal,
+                      r_max: PositiveReal,
+                      r_min: PositiveReal
+                      ) -> Tuple[PositiveInt, PositiveReal]:
     """
     Calculates the number of bins of the RDF analysis from the provided parameters.
 
-    The number of bins is calculated as the number of bins that fit in the range between r_min and r_max.
-    The maximum radius is re-calculated from the number of bins and delta_r to ensure that the maximum radius is a multiple of delta_r.
+    The number of bins is calculated as the number of bins that 
+    fit in the range between r_min and r_max. The maximum radius
+    is re-calculated from the number of bins and delta_r to ensure
+    that the maximum radius is a multiple of delta_r.
 
     Parameters
     ----------
@@ -520,14 +695,17 @@ def _calculate_n_bins(delta_r: PositiveReal, r_max: PositiveReal, r_min: Positiv
 
 def _infer_r_max(cells: Cells) -> PositiveReal:
     """
-    Infers the maximum radius of the RDF analysis from the box vectors of the trajectory.
+    Infers the maximum radius of the RDF analysis from 
+    the box vectors of the trajectory.
 
-    If the trajectory is in vacuum, an RDFError is raised as the maximum radius cannot be inferred from the box vectors.
+    If the trajectory is in vacuum, an RDFError is raised as
+    the maximum radius cannot be inferred from the box vectors.
 
     Parameters
     ----------
     cells : Cells
-        The cells of the trajectory to infer the maximum radius of the RDF analysis from.
+        The cells of the trajectory to infer the maximum
+        radius of the RDF analysis from.
 
     Returns
     -------
@@ -540,17 +718,28 @@ def _infer_r_max(cells: Cells) -> PositiveReal:
         If the trajectory is in vacuum.
     """
     if not check_trajectory_PBC(cells):
-        self.logger.error(
-            "To infer r_max of the RDF analysis, the trajectory cannot be a vacuum trajectory. Please specify r_max manually or use the combination n_bins and delta_r.",
+        module_logger.error(
+            (
+                "To infer r_max of the RDF analysis, "
+                "the trajectory cannot be a vacuum trajectory. "
+                "Please specify r_max manually or use the "
+                "combination n_bins and delta_r."
+            ),
             exception=RDFError
         )
 
     return np.min([cell.box_lengths for cell in cells]) / 2.0
 
 
-def _norm(n_bins: int, delta_r: PositiveReal, target_density: PositiveReal, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
+def _norm(n_bins: int,
+          delta_r: PositiveReal,
+          target_density: PositiveReal,
+          n_reference_indices: int,
+          n_frames: int
+          ) -> Np1DNumberArray:
     """
-    Calculates the normalization of the RDF analysis based on a spherical shell model.
+    Calculates the normalization of the RDF analysis 
+    based on a spherical shell model.
 
     Parameters
     ----------
@@ -578,9 +767,13 @@ def _norm(n_bins: int, delta_r: PositiveReal, target_density: PositiveReal, n_re
     return volume * target_density * n_reference_indices * n_frames
 
 
-def _integration(bins: Np1DNumberArray, n_reference_indices: int, n_frames: int) -> Np1DNumberArray:
+def _integration(bins: Np1DNumberArray,
+                 n_reference_indices: int,
+                 n_frames: int
+                 ) -> Np1DNumberArray:
     """
-    Calculates the integrated RDF analysis. The integral is calculated using a cumulative sum.
+    Calculates the integrated RDF analysis. 
+    The integral is calculated using a cumulative sum.
 
     Parameters
     ----------
