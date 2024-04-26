@@ -123,7 +123,9 @@ class Topology:
         self.bonded_topology = bonded_topology
         if self.bonded_topology is not None:
             self.logger.warning(
-                "There is no check yet if the bonded topology is compatible with the topology. Please make sure that the bonded topology is compatible with the topology!"
+                "There is no check yet if the bonded topology is compatible "
+                "with the topology. Please make sure that the bonded topology "
+                "is compatible with the topology!"
             )
 
     def setup_residues(self, residue_ids: Np1DIntArray) -> None:
@@ -140,8 +142,9 @@ class Topology:
         ResidueError
             If the residue ids are not contiguous.
         ResidueError
-            If the reference residues are not empty and residue_ids with 0 don't have any element information.
-            This problem can be avoided by setting 'check_residues' to False.
+            If the reference residues are not empty and residue_ids
+            with 0 don't have any element information. This problem
+            can be avoided by setting 'check_residues' to False.
         """
 
         self._residue_ids = residue_ids
@@ -220,7 +223,12 @@ class Topology:
         atoms = [self.atoms[index] for index in indices]
         residue_ids = self.residue_ids[indices]
 
-        return Topology(atoms=atoms, reference_residues=self.reference_residues, residue_ids=residue_ids, check_residues=self.check_residues)
+        return Topology(
+            atoms=atoms,
+            reference_residues=self.reference_residues,
+            residue_ids=residue_ids,
+            check_residues=self.check_residues
+        )
 
     def get_atom_indices_from_residue_names(self, residue_name: str) -> Np1DIntArray:
         """
@@ -286,8 +294,9 @@ class Topology:
         ResidueError
             If the residue ids are not contiguous.
         ResidueError
-            If the reference residues are not empty and residue_ids with 0 don't have any element information.
-            This problem can be avoided by setting 'check_residues' to False.
+            If the reference residues are not empty and residue_ids with 0
+            don't have any element information. This problem can be avoided
+            by setting 'check_residues' to False.
         """
         residues = []
 
@@ -301,7 +310,10 @@ class Topology:
             not_found_residue_ids = np.unique(
                 residue_ids[np.argwhere(~np.array(bool_array))])
             self.logger.error(
-                "Residue ids {not_found_residue_ids} have no corresponding reference residue.",
+                (
+                    f"Residue ids {not_found_residue_ids} "
+                    "have no corresponding reference residue.",
+                ),
                 exception=ResidueError
             )
 
@@ -326,7 +338,10 @@ please set 'check_residues' to False"""
 
             residue_element_counter = 0
             for i in np.arange(residue.n_atoms) + atom_counter:
-                if atoms[i].element != Element() and atoms[i].element != residue.elements[residue_element_counter]:
+                if (
+                    atoms[i].element != Element() and
+                    atoms[i].element != residue.elements[residue_element_counter]
+                ):
                     self.logger.warning(
                         (
                             f"The element of atom {i} ({atoms[i].element})"
@@ -366,7 +381,12 @@ please set 'check_residues' to False"""
             The string representation of the Topology.
         """
 
-        return f"Topology with {self.n_atoms} atoms and {self.n_residues} residues ({self.n_QM_residues} QM residues) and {self.n_unique_residues} unique residues."
+        message = f"Topology with {self.n_atoms} atoms "
+        message += f"and {self.n_residues} residues "
+        message += f"({self.n_qm_residues} QM residues) " if self.n_qm_residues > 0 else " "
+        message += f"and {self.n_unique_residues} unique residues"
+
+        return message
 
     def __repr__(self) -> str:
         """
@@ -435,14 +455,14 @@ please set 'check_residues' to False"""
         return len(self.residues)
 
     @ property
-    def n_QM_residues(self) -> int:
+    def n_qm_residues(self) -> int:
         """int: The number of QM residues in the topology."""
         return len([residue for residue in self.residues if isinstance(residue, QMResidue)])
 
     @ property
-    def n_MM_residues(self) -> int:
+    def n_mm_residues(self) -> int:
         """int: The number of MM residues in the topology."""
-        return self.n_residues - self.n_QM_residues
+        return self.n_residues - self.n_qm_residues
 
     @ property
     def n_unique_residues(self) -> int:
@@ -460,7 +480,7 @@ please set 'check_residues' to False"""
         return self._residue_atom_indices
 
 
-def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
+def _find_residue_by_id(res_id: Integral, residues: Residues) -> Residue:
     """
     Finds a residue by its id.
 
@@ -484,16 +504,16 @@ def _find_residue_by_id(id: Integral, residues: Residues) -> Residue:
         If the residue id is not found.
     """
     bool_array = np.array(
-        [residue.id == id for residue in residues])
+        [residue.id == res_id for residue in residues])
 
     residues = np.array(residues)
     residue = residues[np.argwhere(bool_array)].flatten()
 
     if len(residue) > 1:
-        raise ResidueError(f"The residue id {id} is not unique.")
+        raise ResidueError(f"The residue id {res_id} is not unique.")
 
     if len(residue) == 0:
-        raise ResidueError(f"The residue id {id} was not found.")
+        raise ResidueError(f"The residue id {res_id} was not found.")
 
     return residue[0]
 
