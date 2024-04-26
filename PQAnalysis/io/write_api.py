@@ -4,11 +4,11 @@ A module containing API functions for writing different objects to a file.
 
 from beartype.typing import Any
 
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.atomic_system import AtomicSystem
+
 from . import BoxWriter, FileWritingMode
 from .traj_file.api import write_trajectory
-
-from PQAnalysis.traj import Trajectory
-from PQAnalysis.atomicSystem import AtomicSystem
 
 
 def write(object_to_write: Any,

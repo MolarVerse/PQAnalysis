@@ -5,7 +5,7 @@ from . import pytestmark
 from PQAnalysis.io import RestartFileWriter
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
 
 

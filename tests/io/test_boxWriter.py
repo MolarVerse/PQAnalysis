@@ -9,7 +9,7 @@ from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
 from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class TestBoxWriter:

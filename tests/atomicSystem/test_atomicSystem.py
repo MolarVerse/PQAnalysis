@@ -3,8 +3,8 @@ import numpy as np
 
 from . import pytestmark
 
-from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.atomicSystem.exceptions import (
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
     AtomicSystemMassError,
     AtomicSystemError,
@@ -22,7 +22,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell()
-        assert system.PBC is False
+        assert system.pbc is False
         assert system.n_atoms == 0
         assert system.atomic_masses.shape == (0,)
         assert np.isclose(system.mass, 0.0)
@@ -36,7 +36,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell()
-        assert system.PBC is False
+        assert system.pbc is False
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
 
@@ -59,7 +59,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell(0.75, 0.75, 0.75)
-        assert system.PBC is True
+        assert system.pbc is True
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.atomic_masses, [12.0107, 1.00794])

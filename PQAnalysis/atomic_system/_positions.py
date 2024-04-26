@@ -6,10 +6,17 @@ import numpy as np
 
 from beartype.typing import Tuple
 
-from ._decorators import check_atoms_pos
 from PQAnalysis.core import distance
-from PQAnalysis.types import Np2DIntArray, Np2DNumberArray, Np1DIntArray, PositiveInt, Np1DNumberArray
 from PQAnalysis.topology import SelectionCompatible, Selection
+from PQAnalysis.types import (
+    Np2DIntArray,
+    Np2DNumberArray,
+    Np1DIntArray,
+    PositiveInt,
+    Np1DNumberArray
+)
+
+from ._decorators import check_atoms_pos
 
 
 class _PositionsMixin:
@@ -62,12 +69,14 @@ class _PositionsMixin:
         """
         Returns the n nearest neighbours of the given atoms in the system.
 
-        If no selection of target atoms is given, the n nearest neighbours of all atoms are returned. With the parameter 'n' the number of nearest neighbours can be specified.
+        If no selection of target atoms is given, the n nearest neighbours 
+        of all atoms are returned. With the parameter 'n' the number of 
+        nearest neighbours can be specified.
 
         Examples
         --------
         >>> import numpy as np
-        >>> from PQAnalysis.atomicSystem import AtomicSystem
+        >>> from PQAnalysis.atomic_system import AtomicSystem
         >>> from PQAnalysis.core import Atom
 
         >>> pos = np.array([[0, 0, 0], [0.5, 0.5, 0.5], [1, 1, 1]])
@@ -92,17 +101,21 @@ class _PositionsMixin:
         n : PositiveInt, optional
             The number of nearest neighbours to return, by default 1
         selection : SelectionCompatible, optional
-            Selection is either a selection object or any object that can be initialized via 'Selection(selection)', 
+            Selection is either a selection object or any object that can 
+            be initialized via 'Selection(selection)',
             default None (all atoms)
         use_full_atom_info : bool, optional
-            If the full atom object should be used to match the atoms or only the element type, by default False
+            If the full atom object should be used to match the 
+            atoms or only the element type, 
+            by default False
 
         Returns
         -------
         Tuple[Np2DIntArray, Np2DNumberArray]
             The n nearest neighbours of the given atoms in the system.
-            The first array contains the indices of the nearest neighbours and the second array contains 
-            the distances to the nearest neighbours.
+            The first array contains the indices of the nearest 
+            neighbours and the second array contains the distances 
+            to the nearest neighbours.
         """
 
         indices = Selection(selection).select(
