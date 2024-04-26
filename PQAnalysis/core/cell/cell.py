@@ -4,20 +4,18 @@ A module containing the Cell class.
 
 from __future__ import annotations
 
-import numpy as np
 import sys
 import warnings
 
-from beartype.typing import Any, NewType, Annotated
-from beartype.vale import Is
 from numbers import Real
 
-from ...types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
-from ._standardProperties import _StandardPropertiesMixin
+import numpy as np
 
-#: A type hint for a list of cells
-Cells = NewType("Cells", Annotated[list, Is[lambda list: all(
-    isinstance(atom, Cell) for atom in list)]])
+from beartype.typing import Any, NewType, Annotated
+from beartype.vale import Is
+
+from ...types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
+from ._standard_properties import _StandardPropertiesMixin
 
 
 class Cell(_StandardPropertiesMixin):
@@ -53,7 +51,9 @@ class Cell(_StandardPropertiesMixin):
 
         Notes
         -----
-        A vacuum cell can be created by calling Cell(), which is equivalent to Cell(x=sys.float_info.max, y=sys.float_info.max, z=sys.float_info.max, alpha=90, beta=90, gamma=90).
+        A vacuum cell can be created by calling Cell(), which is equivalent to 
+        Cell(x=sys.float_info.max, y=sys.float_info.max, z=sys.float_info.max,
+        alpha=90, beta=90, gamma=90).
         """
         self._box_lengths = np.array([x, y, z])
         self._box_angles = np.array([alpha, beta, gamma])
@@ -116,7 +116,9 @@ class Cell(_StandardPropertiesMixin):
         """
         Images the given position(s) into the unit cell.
 
-        This class can be used to image positions of arbitrary shape into the unit cell. The shape of the input is preserved. The only requirement is that the last dimension of the input is 3, representing the x, y and z coordinates of the position(s).
+        This class can be used to image positions of arbitrary shape into the unit cell.
+        The shape of the input is preserved. The only requirement is that the last 
+        dimension of the input is 3, representing the x, y and z coordinates of the position(s).
 
         Parameters
         ----------
@@ -176,10 +178,17 @@ class Cell(_StandardPropertiesMixin):
         str
             A string representation of the Cell.
         """
+        x = self.x
+        y = self.y
+        z = self.z
+        alpha = self.alpha
+        beta = self.beta
+        gamma = self.gamma
+
         if self != Cell():
-            return f"Cell(x={self.x}, y={self.y}, z={self.z}, alpha={self.alpha}, beta={self.beta}, gamma={self.gamma})"
-        else:
-            return "Cell()"
+            return f"Cell({x=}, {y=}, {z=}, {alpha=}, {beta=}, {gamma=})"
+
+        return "Cell()"
 
     def __repr__(self) -> str:
         """
@@ -222,3 +231,13 @@ class Cell(_StandardPropertiesMixin):
         print(np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
 
         return cls(x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
+
+
+#: A type hint for a list of cells
+Cells = NewType(
+    "Cells", Annotated[
+        list, Is[
+            lambda list: all(isinstance(atom, Cell) for atom in list)
+        ]
+    ]
+)
