@@ -63,6 +63,20 @@ class TestResidue:
         assert str(
             exception.value) == "The number of elements, atom_types and partial_charges must be the same."
 
+        residue = Residue(
+            name="name",
+            id=0,
+            total_charge=0.1,
+            elements="C",
+            atom_types=np.array([0]),
+            partial_charges=np.array([0.1])
+        )
+
+        assert residue.elements == [Element("C")]
+        assert np.allclose(residue.atom_types, np.array([0]))
+        assert np.allclose(residue.partial_charges, np.array([0.1]))
+        assert residue.n_atoms == 1
+
     def test__str__(self):
         residue = Residue(name="name", id=0, total_charge=0.0,
                           elements=[Element("C"), Element("H"), Element("H")], atom_types=np.array([0, 1, 1]),

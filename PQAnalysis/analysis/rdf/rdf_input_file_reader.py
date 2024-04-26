@@ -1,5 +1,6 @@
 """
-A module containing a class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
+A module containing a class to read input files to setup the 
+:py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
 from __future__ import annotations
 
@@ -8,6 +9,7 @@ import logging
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
+from PQAnalysis.io.inputFileReader.exceptions import InputFileError
 from PQAnalysis import __package_name__
 
 
@@ -74,16 +76,25 @@ class RDFInputFileReader(Reader):
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
 
-        if self.no_intra_molecular is not None and (self.restart_file is None or self.moldescriptor_file is None):
+        if (
+            self.no_intra_molecular is not None and
+            (self.restart_file is None or self.moldescriptor_file is None)
+        ):
             self.logger.error(
-                "The no_intra_molecular key can only be used if both a restart file and a moldescriptor file are given.",
-                exception=Reader.InputFileError,
+                (
+                    "The no_intra_molecular key can only be used "
+                    "if both a restart file and a moldescriptor file are given."
+                ),
+                exception=InputFileError,
             )
 
         if self.moldescriptor_file is not None and self.restart_file is None:
             self.logger.error(
-                "The moldescriptor_file key can only be used in a meaningful way if a restart file is given.",
-                exception=Reader.InputFileError,
+                (
+                    "The moldescriptor_file key can only be "
+                    "used in a meaningful way if a restart file is given."
+                ),
+                exception=InputFileError,
             )
 
 
@@ -131,11 +142,24 @@ For the RDF analysis input file several keys are available of which some are req
 
 Note
 ----
-Optional keys does not mean that they are optional for the analysis. They are optional in the input file, but they might be required for the analysis. This means that if an optional keyword is specified other keywords might be required. For example:
+Optional keys does not mean that they are optional for the analysis.
+They are optional in the input file, but they might be required for
+the analysis. This means that if an optional keyword is specified
+other keywords might be required. For example:
 
-- If the :code:`{Reader.no_intra_molecular_key}` key is specified, the :code:`{Reader.restart_file_key}` and :code:`{Reader.moldescriptor_file_key}` keys are required in order to exclude intra molecular pairs.
-- If the :code:`{Reader.moldescriptor_file_key}` key is specified, the :code:`{Reader.restart_file_key}` key is required in order use the reference residues in any meaningful way.
-- In general, the :code:`{Reader.r_max_key}`, :code:`{Reader.n_bins_key}` and :code:`{Reader.delta_r_key}` are mutual exclusive, meaning that they can't be specified at the same time. Furthermore, at least one of :code:`{Reader.n_bins}' or :code:`{Reader.delta_r}` is required (for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).
+- If the :code:`{Reader.no_intra_molecular_key}` key is specified,
+the :code:`{Reader.restart_file_key}` and
+:code:`{Reader.moldescriptor_file_key}` keys
+are required in order to exclude intra molecular pairs.
+- If the :code:`{Reader.moldescriptor_file_key}` key is specified,
+the :code:`{Reader.restart_file_key}` key is required in order
+use the reference residues in any meaningful way.
+- In general, the :code:`{Reader.r_max_key}`,
+:code:`{Reader.n_bins_key}` and :code:`{Reader.delta_r_key}`
+are mutual exclusive, meaning that they can't be specified at
+the same time. Furthermore, at least one of
+:code:`{Reader.n_bins}' or :code:`{Reader.delta_r}` is required
+(for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).
 
 """
 
