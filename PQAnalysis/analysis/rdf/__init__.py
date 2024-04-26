@@ -20,6 +20,6 @@ Functions
 
 from .api import rdf
 from .rdf import RDF
-from .rdfInputFileReader import RDFInputFileReader
-from .rdfOutputFileWriter import RDFDataWriter, RDFLogWriter
+from .rdf_input_file_reader import RDFInputFileReader
+from .rdf_output_file_writer import RDFDataWriter, RDFLogWriter
 from .exceptions import *

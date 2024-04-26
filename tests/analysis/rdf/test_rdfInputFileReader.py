@@ -1,6 +1,6 @@
 import pytest
 
-from PQAnalysis.analysis.rdf.rdfInputFileReader import RDFInputFileReader
+from PQAnalysis.analysis.rdf.rdf_input_file_reader import RDFInputFileReader
 from PQAnalysis.io.inputFileReader.exceptions import InputFileError
 
 

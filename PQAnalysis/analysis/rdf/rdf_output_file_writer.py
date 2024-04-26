@@ -1,20 +1,23 @@
 """
-A module containing the classes for writing related to an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
+A module containing the classes for writing related to an
+:py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
 """
 
 # 3rd party imports
 from beartype.typing import Tuple
 
 # local imports
-from .rdf import RDF
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import header
+from .rdf import RDF
 
 
 class RDFDataWriter(BaseWriter):
     """
-    Class for writing the data of an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
+    Class for writing the data of an 
+    :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
+    analysis to a file.
     """
 
     def __init__(self, filename: str) -> None:
@@ -36,7 +39,8 @@ class RDFDataWriter(BaseWriter):
 
         Parameters
         ----------
-        data : Tuple[Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
+        data : Tuple[Np1DNumberArray, Np1DNumberArray,
+            Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
             the data output from the RadialDistributionFunction.run() method
         """
         super().open()
@@ -50,7 +54,9 @@ class RDFDataWriter(BaseWriter):
 
 class RDFLogWriter(BaseWriter):
     """
-    Class for writing the log (setup parameters) of an :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
+    Class for writing the log (setup parameters) of an 
+    :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis
+    to a file.
     """
 
     def __init__(self, filename: str | None) -> None:
@@ -65,10 +71,13 @@ class RDFLogWriter(BaseWriter):
 
     def write_before_run(self, rdf: RDF):
         """
-        Writes the log before the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method is called.
+        Writes the log before the 
+        :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
+        run() method is called.
 
         This includes the general header of PQAnalysis
-        and the most important setup parameters of the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis.
+        and the most important setup parameters of the
+        :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis.
 
         Parameters
         ----------
@@ -84,7 +93,7 @@ class RDFLogWriter(BaseWriter):
         print("RDF calculation:", file=self.file)
         print(file=self.file)
 
-        angstrom = u'\u212B'.encode('utf-8')
+        angstrom = '\u212B'.encode('utf-8')
 
         # fmt: off
         print(f"    Number of bins: {rdf.n_bins}", file=self.file)
@@ -98,18 +107,34 @@ class RDFLogWriter(BaseWriter):
         print(f"    Number of atoms:  {rdf.n_atoms}", file=self.file)
         print(file=self.file)
 
-        # fmt: off
-        print(f"    Reference selection: {rdf.reference_selection}", file=self.file)
-        print(f"    total number of atoms in reference selection: {len(rdf.reference_indices)}", file=self.file)
-        print(f"    Target selection:    {rdf.target_selection}", file=self.file)
-        print(f"    total number of atoms in target selection:    {len(rdf.target_indices)}", file=self.file)
+        print(
+            "    Reference selection:",
+            rdf.reference_selection,
+            file=self.file
+        )
+        print(
+            "    total number of atoms in reference selection:",
+            len(rdf.reference_indices),
+            file=self.file
+        )
+        print(
+            "    Target selection:   ",
+            {rdf.target_selection},
+            file=self.file
+        )
+        print(
+            "    total number of atoms in target selection:   ",
+            len(rdf.target_indices),
+            file=self.file
+        )
         print(file=self.file)
-        # fmt: on
 
-        #fmt: off
-        print(f"    Eliminate intra molecular contributions: {rdf.no_intra_molecular}", file=self.file)
+        print(
+            "    Eliminate intra molecular contributions:",
+            rdf.no_intra_molecular,
+            file=self.file
+        )
         print(file=self.file)
-        #fmt: on
 
         print(file=self.file)
         print(file=self.file)
@@ -120,9 +145,13 @@ class RDFLogWriter(BaseWriter):
 
     def write_after_run(self, rdf: RDF):
         """
-        Writes the log after the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method is called.
+        Writes the log after the 
+        :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
+        run() method is called.
 
-        This includes the elapsed time of the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` run() method.
+        This includes the elapsed time of the
+        :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
+        run() method.
 
         Parameters
         ----------
