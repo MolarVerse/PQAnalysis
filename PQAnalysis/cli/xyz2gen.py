@@ -9,7 +9,7 @@ Command Line Tool for Converting XYZ Files to GEN Files
 
 import PQAnalysis.config as config
 
-from ._argumentParser import _ArgumentParser
+from ._argument_parser import _ArgumentParser
 from PQAnalysis.io import xyz2gen
 
 
