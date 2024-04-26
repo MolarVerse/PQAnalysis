@@ -130,7 +130,7 @@ class TestTopology:
 
         topology = Topology(atoms=self.atoms)
         residues, new_atoms = topology._setup_residues(residue_ids, self.atoms)
-        assert residues == []
+        assert not residues
         assert new_atoms == self.atoms
 
         # residues is here empty because no reference residues are set
