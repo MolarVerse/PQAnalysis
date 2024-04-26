@@ -5,6 +5,9 @@ import pytest
 import numpy as np
 
 # Local Imports
+import PQAnalysis.topology.topology as topology_module
+
+# Local Imports
 from PQAnalysis.topology.topology import _find_residue_by_id, _unique_residues_
 from PQAnalysis.topology import Topology, TopologyError, BondedTopology
 from PQAnalysis.core import (
@@ -21,7 +24,7 @@ from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging
 
 
-def test_find_residue_by_id():
+def test_find_residue_by_id(caplog):
     residue1 = Residue(name="name", id=0, total_charge=0.0, elements=[
     ], atom_types=np.array([]), partial_charges=np.array([]))
     residue2 = Residue(name="name", id=1, total_charge=0.0, elements=[
@@ -29,13 +32,29 @@ def test_find_residue_by_id():
     residue3 = Residue(name="name", id=0, total_charge=0.0, elements=[
     ], atom_types=np.array([]), partial_charges=np.array([]))
 
-    with pytest.raises(ResidueError) as exception:
-        _find_residue_by_id(2, [residue1, residue2, residue3])
-    assert str(exception.value) == "The residue id 2 was not found."
+    assert_logging(
+        caplog=caplog,
+        logging_name=topology_module.__name__,
+        logging_level="ERROR",
+        message_to_test=(
+            "The residue id 2 was not found."
+        ),
+        function=_find_residue_by_id,
+        res_id=2,
+        residues=[residue1, residue2, residue3]
+    )
 
-    with pytest.raises(ResidueError) as exception:
-        _find_residue_by_id(0, [residue1, residue2, residue3])
-    assert str(exception.value) == "The residue id 0 is not unique."
+    assert_logging(
+        caplog=caplog,
+        logging_name=topology_module.__name__,
+        logging_level="ERROR",
+        message_to_test=(
+            "The residue id 0 is not unique."
+        ),
+        function=_find_residue_by_id,
+        res_id=0,
+        residues=[residue1, residue2, residue3]
+    )
 
     residue = _find_residue_by_id(1, [residue1, residue2, residue3])
     assert residue == residue2
@@ -114,10 +133,11 @@ class TestTopology:
         assert residues == []
         assert new_atoms == self.atoms
 
-        # residues is here empty because no reference residues are set - otherwise it would throw an error!
+        # residues is here empty because no reference residues are set
+        # otherwise it would throw an error!
         topology = Topology(atoms=self.atoms, residue_ids=residue_ids)
         residues, new_atoms = topology._setup_residues(residue_ids, self.atoms)
-        assert residues == []
+        assert not residues
         assert new_atoms == self.atoms
 
         atoms = [Atom('C', use_guess_element=False), Atom('H'), Atom('H')]
@@ -173,19 +193,30 @@ class TestTopology:
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
 
-        with pytest.raises(ResidueError) as exception:
-            topology._setup_residues(residue_ids, atoms)
-        assert str(
-            exception.value) == "Residue ids [2] have no corresponding reference residue."
+        assert_logging(
+            caplog,
+            Topology.__qualname__,
+            "ERROR",
+            "Residue ids [2] have no corresponding reference residue.",
+            topology._setup_residues,
+            residue_ids=residue_ids,
+            atoms=atoms
+        )
 
         residue_ids = np.array([0, 1, 0])
         atoms = [Atom('C'), Atom('H'), Atom('H')]
         topology = Topology(atoms=atoms, residue_ids=residue_ids)
         topology.reference_residues = reference_residues
-        with pytest.raises(ResidueError) as exception:
-            topology._setup_residues(residue_ids, atoms)
-        assert str(
-            exception.value) == "The residue ids are not contiguous. Problems with residue ALA with indices 1-2."
+
+        assert_logging(
+            caplog,
+            Topology.__qualname__,
+            "ERROR",
+            "The residue ids are not contiguous. Problems with residue ALA with indices 1-2.",
+            topology._setup_residues,
+            residue_ids=residue_ids,
+            atoms=atoms
+        )
 
         residue_ids = np.array([1, 1, 0])
         atoms = [Atom('H'), Atom('H'), Atom('C')]
@@ -234,7 +265,7 @@ class TestTopology:
 
         topology = Topology(atoms=self.atoms, residue_ids=np.array([0, 1, 1]))
         assert str(
-            topology) == "Topology with 3 atoms and 0 residues (0 QM residues) and 0 unique residues."
+            topology) == "Topology with 3 atoms and 0 residues and 0 unique residues."
         assert str(topology) == repr(topology)
         assert topology.n_mm_residues == 0
 
@@ -248,7 +279,10 @@ class TestTopology:
         topology = Topology(atoms=self.atoms, residue_ids=np.array(
             [0, 0, 0]), reference_residues=reference_residues)
 
-        assert str(
-            topology) == "Topology with 3 atoms and 3 residues (3 QM residues) and 2 unique residues."
+        topology_str = (
+            "Topology with 3 atoms and 3 residues"
+            " (3 QM residues) and 2 unique residues."
+        )
+        assert str(topology) == topology_str
         assert str(topology) == repr(topology)
         assert topology.n_mm_residues == 0

@@ -35,6 +35,6 @@ def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Traj
             selection = slice(0, frame.n_atoms)
 
         frame = frame[selection]
-        com_traj.append(frame.compute_com_atomicSystem(group=group))
+        com_traj.append(frame.compute_com_atomic_system(group=group))
 
     return com_traj
