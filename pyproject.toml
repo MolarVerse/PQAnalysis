@@ -37,7 +37,9 @@ dependencies = [
 test = [
     "pytest",
     "coverage",
-    "pytest-cov"
+    "pytest-cov",
+    "pylint",
+    "pylint-django",
 ]
 docs = [
     "sphinx",
