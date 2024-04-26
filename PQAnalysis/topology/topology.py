@@ -21,6 +21,9 @@ from PQAnalysis import __package_name__
 from .exceptions import TopologyError
 from .bonded_topology.bondedTopology import BondedTopology
 
+module_logger = logging.getLogger(__package_name__).getChild(__name__)
+module_logger = setup_logger(module_logger)
+
 
 class Topology:
     """
@@ -312,7 +315,7 @@ class Topology:
             self.logger.error(
                 (
                     f"Residue ids {not_found_residue_ids} "
-                    "have no corresponding reference residue.",
+                    "have no corresponding reference residue."
                 ),
                 exception=ResidueError
             )
@@ -344,10 +347,10 @@ please set 'check_residues' to False"""
                 ):
                     self.logger.warning(
                         (
-                            f"The element of atom {i} ({atoms[i].element})"
-                            "does not match the element of the reference residue"
-                            f"{residue.name}"
-                            f"({residue.elements[residue_element_counter]})."
+                            f"The element of atom {i} ({atoms[i].element}) "
+                            "does not match the element of the reference residue "
+                            f"{residue.name} "
+                            f"({residue.elements[residue_element_counter]}). "
                             "Therefore the element type of the residue "
                             "description will be used within the topology format!"
                         )
@@ -355,21 +358,21 @@ please set 'check_residues' to False"""
 
                     atoms[i].element = residue.elements[residue_element_counter]
 
-                    if residue_ids[i] != residue_ids[atom_counter]:
-                        self.logger.error(
-                            (
-                                "The residue ids are not contiguous. Problems with residue "
-                                f"{residue.name} with indices {atom_counter}-"
-                                f"{atom_counter + residue.n_atoms-1}"
-                            ),
-                            exception=ResidueError
-                        )
+                if residue_ids[i] != residue_ids[atom_counter]:
+                    self.logger.error(
+                        (
+                            "The residue ids are not contiguous. Problems with residue "
+                            f"{residue.name} with indices {atom_counter}-"
+                            f"{atom_counter + residue.n_atoms-1}"
+                        ),
+                        exception=ResidueError
+                    )
 
-                    residues.append(residue)
+            residues.append(residue)
 
-                    atom_counter += residue.n_atoms
+            atom_counter += residue.n_atoms
 
-                    return residues, atoms
+        return residues, atoms
 
     def __str__(self) -> str:
         """
@@ -383,8 +386,8 @@ please set 'check_residues' to False"""
 
         message = f"Topology with {self.n_atoms} atoms "
         message += f"and {self.n_residues} residues "
-        message += f"({self.n_qm_residues} QM residues) " if self.n_qm_residues > 0 else " "
-        message += f"and {self.n_unique_residues} unique residues"
+        message += f"({self.n_qm_residues} QM residues) " if self.n_qm_residues > 0 else ""
+        message += f"and {self.n_unique_residues} unique residues."
 
         return message
 
@@ -510,10 +513,16 @@ def _find_residue_by_id(res_id: Integral, residues: Residues) -> Residue:
     residue = residues[np.argwhere(bool_array)].flatten()
 
     if len(residue) > 1:
-        raise ResidueError(f"The residue id {res_id} is not unique.")
+        module_logger.error(
+            f"The residue id {res_id} is not unique.",
+            exception=ResidueError
+        )
 
     if len(residue) == 0:
-        raise ResidueError(f"The residue id {res_id} was not found.")
+        module_logger.error(
+            f"The residue id {res_id} was not found.",
+            exception=ResidueError
+        )
 
     return residue[0]
 
