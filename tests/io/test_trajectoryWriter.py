@@ -7,7 +7,7 @@ from . import pytestmark
 from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 

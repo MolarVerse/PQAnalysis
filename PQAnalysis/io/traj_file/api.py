@@ -5,7 +5,7 @@ A module containing different API functions for reading and writing trajectory f
 from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io import (
     TrajectoryWriter,
     TrajectoryReader,

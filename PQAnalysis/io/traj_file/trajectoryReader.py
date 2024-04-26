@@ -18,7 +18,7 @@ import PQAnalysis.config as config
 from .. import BaseReader
 from .exceptions import TrajectoryReaderError
 from .frameReader import FrameReader
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 # Local absolute imports
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat

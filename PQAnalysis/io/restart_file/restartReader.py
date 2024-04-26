@@ -8,7 +8,7 @@ from beartype.typing import List
 
 from .. import BaseReader, MoldescriptorReader
 from .exceptions import RestartFileReaderError
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell, Residues
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology

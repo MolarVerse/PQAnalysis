@@ -31,7 +31,7 @@ __doc__ += "For more information on the general the "
 __doc__ += "RDF analysis and its input file options "
 __doc__ += "please visit "
 __doc__ += ":py:class:`PQAnalysis.analysis.rdf.rdf.RDF` "
-__doc__ += "and :py:mod:`PQAnalysis.analysis.rdf.rdfInputFileReader`\n"
+__doc__ += "and :py:mod:`PQAnalysis.analysis.rdf.rdf_input_file_reader`\n"
 __doc__ += input_keys_documentation
 
 

@@ -9,7 +9,7 @@ import numpy as np
 from beartype.typing import List, Tuple
 
 from .exceptions import FrameReaderError
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell, ElementNotFoundError
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.traj import TrajectoryFormat, MDEngineFormat

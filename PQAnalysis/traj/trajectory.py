@@ -11,7 +11,7 @@ from beartype.typing import List, Any, Iterable
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.core import Cell
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class Trajectory:
@@ -64,7 +64,7 @@ class Trajectory:
         if len(self.frames) == 0:
             return False
 
-        return all(frame.PBC for frame in self.frames)
+        return all(frame.pbc for frame in self.frames)
 
     def check_vacuum(self) -> bool:
         """
@@ -76,7 +76,7 @@ class Trajectory:
             True if all frames of the trajectory are in vacuum, False otherwise.
         """
 
-        return not any(frame.PBC for frame in self.frames)
+        return not any(frame.pbc for frame in self.frames)
 
     def append(self, frame: AtomicSystem) -> None:
         """
