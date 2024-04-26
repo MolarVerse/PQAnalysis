@@ -7,9 +7,12 @@ Therefore, in order to be able to change the behavior of all scripts at once,
 the most common methods are implemented here.
 """
 
+import logging
 import argparse
 import argcomplete
-import logging
+
+
+from beartype.typing import Sequence
 
 import PQAnalysis.config as config
 from PQAnalysis.traj import MDEngineFormat
@@ -42,31 +45,25 @@ class _ArgumentParser(argparse.ArgumentParser):
             The dictionary of keyword arguments for the argparse.ArgumentParser class.
         """
 
-        self.___init___(*args, **kwargs)
-
-        # To remove the ".py" ending from the prog argument
-        if 'prog' not in kwargs:
-            kwargs['prog'] = self.prog.split(".")[0]
-            self.___init___(*args, **kwargs)
-
-    def ___init___(self, *args, **kwargs):
-        """
-        The ___init___ method is a helper method to initialize the ArgumentParser class.
-
-        Parameters
-        ----------
-        args : list
-            The list of positional arguments for the argparse.ArgumentParser class.
-        kwargs : dict
-            The dictionary of keyword arguments for the argparse.ArgumentParser class.
-        """
         super().__init__(
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             *args,
             **kwargs
         )
 
-    def parse_args(self) -> argparse.Namespace:
+        # To remove the ".py" ending from the prog argument
+        if 'prog' not in kwargs:
+            kwargs['prog'] = self.prog.split(".")[0]
+            super().__init__(
+                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                *args,
+                **kwargs
+            )
+
+    def parse_args(self,
+                   args: Sequence[str] | None = None,
+                   namespace: None = None
+                   ) -> argparse.Namespace:
         """
         The parse_args method is the same as the parse_args method of the
         argparse.ArgumentParser class. The only difference is that the progress
@@ -84,7 +81,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         self._parse_logging_level()
 
         argcomplete.autocomplete(self)
-        args = super().parse_args()
+        args = super().parse_args(args, namespace)
 
         config.with_progress_bar = args.progress
 
@@ -103,31 +100,48 @@ class _ArgumentParser(argparse.ArgumentParser):
         The parse_input_file method adds the input_file argument to the parser.
         The input_file argument is a positional argument and is required.
         """
-        super().add_argument('input_file', type=str, help='The input file.')
+        super().add_argument(
+            'input_file',
+            type=str,
+            help='The input file.'
+        )
 
     def parse_trajectory_file(self):
         """
         The parse_trajectory_file method adds the trajectory_file argument to the parser.
         The trajectory_file argument is a positional argument and is required.
         """
-        super().add_argument('trajectory_file', type=str,
-                             nargs='+', help='The trajectory file(s).')
+        super().add_argument(
+            'trajectory_file',
+            type=str,
+            nargs='+',
+            help='The trajectory file(s).'
+        )
 
     def parse_output_file(self):
         """
         The parse_output_file method adds the output_file argument to the parser.
         The output_file argument is an optional argument and defaults to None.
         """
-        super().add_argument('-o', '--output', type=str, default=None,
-                             help='The output file. If not specified, the output is printed to stdout.')
+        super().add_argument(
+            '-o', '--output',
+            type=str,
+            default=None,
+            help='The output file. If not specified, the output is printed to stdout.'
+        )
 
     def parse_engine(self):
         """
         The parse_engine method adds the engine argument to the parser.
         The engine argument is an optional argument and defaults to PQ.
         """
-        super().add_argument('--engine', choices=MDEngineFormat.values(), type=MDEngineFormat, default=MDEngineFormat("PQ"),
-                             help='The case-insensitive MDEngineFormat of the input trajectory.')
+        super().add_argument(
+            '--engine',
+            choices=MDEngineFormat.values(),
+            type=MDEngineFormat,
+            default=MDEngineFormat("PQ"),
+            help='The case-insensitive MDEngineFormat of the input trajectory.'
+        )
 
     def parse_mode(self):
         """
@@ -140,7 +154,11 @@ class _ArgumentParser(argparse.ArgumentParser):
             choices=FileWritingMode.values(),
             type=FileWritingMode,
             default=FileWritingMode("w"),
-            help='The writing mode. The following modes are available: "w": write, "a": append, "o": overwrite.'
+            help=(
+                'The writing mode. The following modes '
+                'are available: "w": write, "a": append, '
+                '"o": overwrite.'
+            )
         )
 
     def _parse_progress(self):
@@ -159,13 +177,18 @@ class _ArgumentParser(argparse.ArgumentParser):
         The _parse_version method adds the version argument to the parser.
         The version argument is an optional argument and defaults to the current version.
         """
-        super().add_argument('--version', action='version', version=__version__)
+        super().add_argument(
+            '--version',
+            action='version',
+            version=__version__
+        )
 
     def _parse_log_file(self):
         """
         The _parse_log_file method adds the log_file argument to the parser.
         The log_file argument is an optional argument and defaults to None.
-        If only the option log_file is given without a value the log will be printed to an automatically generated file.
+        If only the option log_file is given without a value the log will
+        be printed to an automatically generated file.
         """
         super().add_argument(
             '--log-file',
@@ -173,7 +196,16 @@ class _ArgumentParser(argparse.ArgumentParser):
             default=None,
             const="__LOG_DEFINED_BY_TIMESTAMP__",
             nargs='?',
-            help='This options can be used to set wether a log file should be used or not. If the option is given without a value, the log will be printed to an automatically generated file. If the option is not given, the log will be only printed to stderr. If the option is given with a value, the log will be printed to the given file.'
+            help=(
+                "This options can be used to set wether "
+                "a log file should be used or not. "
+                "If the option is given without a value, "
+                "the log will be printed to an "
+                "automatically generated file. If the option "
+                "is not given, the log will be only printed "
+                "to stderr. If the option is given with a "
+                "value, the log will be printed to the given file."
+            )
         )
 
     def _parse_logging_level(self):
