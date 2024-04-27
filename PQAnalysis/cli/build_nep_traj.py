@@ -7,7 +7,7 @@ Command Line Tool for Building Neuroevolution Potential (NEP) training/test traj
 
 """
 
-from PQAnalysis.io.nep.NEPWriter import NEPWriter
+from PQAnalysis.io.nep.nep_writer import NEPWriter
 from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
 

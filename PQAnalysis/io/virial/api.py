@@ -2,10 +2,12 @@
 A module containing the API for reading virial and stress files.
 """
 
+from beartype.typing import List
+
 from .virialReader import VirialFileReader, StressFileReader
 
 
-def read_virial_file(filename: str):
+def read_virial_file(filename: str) -> List:
     """
     Read a virial file.
 
@@ -23,7 +25,7 @@ def read_virial_file(filename: str):
     return reader.read()
 
 
-def read_stress_file(filename: str):
+def read_stress_file(filename: str) -> List:
     """
     Read a stress file.
 
