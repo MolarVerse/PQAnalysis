@@ -47,17 +47,16 @@ fail-under=10
 
 # Files or directories to be skipped. They should be base names, not paths.
 ignore=CVS,
-       build,
-       _build,
-       .build,
-       .venv,
-       venv,
 
 # Add files or directories matching the regular expressions patterns to the
 # ignore-list. The regex matches against paths and can be in Posix or Windows
 # format. Because '\\' represents the directory delimiter on Windows systems,
 # it can't be used as an escape character.
-ignore-paths=
+ignore-paths= build,
+              _build,
+              .build,
+              .venv,
+              venv
 
 # Files or directories matching the regular expression patterns are skipped.
 # The regex matches against base names, not paths. The default value ignores
@@ -436,7 +435,8 @@ disable=raw-checker-failed,
         use-implicit-booleaness-not-comparison-to-string,
         use-implicit-booleaness-not-comparison-to-zero,
         use-symbolic-message-instead,
-        logging-fstring-interpolation
+        logging-fstring-interpolation, # added
+        too-few-public-methods # added
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

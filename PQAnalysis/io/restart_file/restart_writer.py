@@ -6,11 +6,12 @@ import numpy as np
 
 from beartype.typing import List
 
-from .. import BaseWriter, FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.atomic_system import AtomicSystem
+
+from .. import BaseWriter, FileWritingMode
 
 
 class RestartFileWriter(BaseWriter):
@@ -22,9 +23,26 @@ class RestartFileWriter(BaseWriter):
     - PQ
     - QMCFC
 
-    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PQ restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
+    The restart file of these two md-engines are very similar.
+    Both contain one line including the step information and one
+    line including the box information. The following lines 
+    contain the atom information. The atom information is 
+    different for the two md-engines. The atom information of
+    the PQ restart file contains the atom name, atom id, 
+    residue id, x position, y position, z position, x velocity,
+    y velocity, z velocity, x force, y force and z force. 
+    The atom information of the QMCFC restart file contains
+    the atom name, atom id, residue id, x position, y position,
+    z position, x velocity, y velocity, z velocity, x force, 
+    y force, z force, x pos of previous step, y pos of previous
+    step, z pos of previous step, x vel of previous step, 
+    y vel of previous step, z vel of previous step, 
+    x force of previous step, y force of previous step and
+    z force of previous step. The old values are ignored.
 
-    For more information on how the restart file of PQ simulations is structured, see the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
+    For more information on how the restart file of PQ simulations
+    is structured, see the corresponding documentation of the
+    `PQ <https://molarverse.github.io/PQ>`_ code.
     """
 
     def __init__(self,
@@ -40,7 +58,9 @@ class RestartFileWriter(BaseWriter):
         md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PQ
         mode : FileWritingMode | str, optional
-            The writing mode, by default 'w' - Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).
+            The writing mode, 
+            by default 'w' - 
+            Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).
         """
         super().__init__(filename, mode)
 
@@ -58,7 +78,10 @@ class RestartFileWriter(BaseWriter):
         frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
-            The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
+            The atom counter, by default None. If only a single integer is given,
+            this number will be used as the atom counter for all atoms. If an
+            array is given, this array has to have the same length as the number
+            of atoms in the frame.
         """
 
         lines = self.get_lines(frame, atom_counter)
@@ -94,7 +117,10 @@ class RestartFileWriter(BaseWriter):
         frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
-            The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
+            The atom counter, by default None. If only a single integer is
+            given, this number will be used as the atom counter for all 
+            atoms. If an array is given, this array has to have the same 
+            length as the number of atoms in the frame.
         """
 
         lines = []
@@ -126,13 +152,17 @@ class RestartFileWriter(BaseWriter):
         frame : AtomicSystem
             The frame to write.
         atom_counter : int | Np1DNumberArray | None, optional
-            The atom counter, by default None. If only a single integer is given, this number will be used as the atom counter for all atoms. If an array is given, this array has to have the same length as the number of atoms in the frame.
+            The atom counter, by default None. If only a single integer is 
+            given, this number will be used as the atom counter for all 
+            atoms. If an array is given, this array has to have the same 
+            length as the number of atoms in the frame.
         """
 
         if atom_counter is not None and not isinstance(atom_counter, int):
             if len(atom_counter) != frame.n_atoms:
                 raise ValueError(
-                    "The atom counter has to have the same length as the number of atoms in the frame."
+                    "The atom counter has to have the same length as "
+                    "the number of atoms in the frame."
                 )
         elif isinstance(atom_counter, int):
             atom_counter = [atom_counter] * frame.n_atoms
@@ -149,12 +179,12 @@ class RestartFileWriter(BaseWriter):
 
             try:
                 vel = frame.vel[i]
-            except Exception:
+            except IndexError:
                 vel = np.zeros(3)
 
             try:
                 force = frame.forces[i]
-            except Exception:
+            except IndexError:
                 force = np.zeros(3)
 
             residue = residues[i]
