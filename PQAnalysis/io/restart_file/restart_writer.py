@@ -125,7 +125,7 @@ class RestartFileWriter(BaseWriter):
 
         lines = []
         lines.append(self._get_box_line(frame.cell))
-        lines += self._get_atom_lines(frame, atom_counter)
+        lines += self.get_atom_lines(frame, atom_counter)
 
         return lines
 
@@ -140,10 +140,10 @@ class RestartFileWriter(BaseWriter):
         """
         return f"Box  {cell.x} {cell.y} {cell.z}  {cell.alpha} {cell.beta} {cell.gamma}"
 
-    def _get_atom_lines(self,
-                        frame: AtomicSystem,
-                        atom_counter: int | Np1DNumberArray | None = None
-                        ) -> List[str]:
+    def get_atom_lines(self,
+                       frame: AtomicSystem,
+                       atom_counter: int | Np1DNumberArray | None = None
+                       ) -> List[str]:
         """
         Writes the atoms to the file.
 
