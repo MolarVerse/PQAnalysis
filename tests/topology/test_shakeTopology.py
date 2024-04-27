@@ -2,7 +2,7 @@ import numpy as np
 
 from . import pytestmark
 
-from PQAnalysis.topology.shakeTopology import ShakeTopologyGenerator
+from PQAnalysis.topology.shake_topology import ShakeTopologyGenerator
 from PQAnalysis.core import Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory

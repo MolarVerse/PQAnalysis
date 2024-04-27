@@ -9,14 +9,13 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
-from beartype.typing import List, TypeVar
-from multimethod import overload
+from beartype.typing import List, TypeVar, Any
 
 # local imports
-from .topology import Topology
 from PQAnalysis import __base_path__
 from PQAnalysis.types import Np1DIntArray
 from PQAnalysis.core import Atom, Atoms, Element, Elements
+from .topology import Topology
 
 #: | A type variable for the Selection class.
 #: | It can be used to specify the type of the selection object.
@@ -30,8 +29,16 @@ from PQAnalysis.core import Atom, Atoms, Element, Elements
 #: |     - List[str]: all atoms with the given atom type names are selected
 #: |     - Selection: the given selection is copied
 #: |     - None: all atoms are selected
-SelectionCompatible = TypeVar("SelectionCompatible", str, Atoms, Atom, Element, Elements, Np1DIntArray, List[
-    str], 'Selection', None)
+SelectionCompatible = TypeVar(
+    "SelectionCompatible",
+    str,
+    Atoms, Atom,
+    Element, Elements,
+    Np1DIntArray,
+    List[str],
+    'Selection',
+    None
+)
 
 
 class Selection:
@@ -48,35 +55,49 @@ class Selection:
         - Elements: all atoms with the given element types are selected
         - Np1DIntArray: the atoms with the given indices are selected
         - List[str]: all atoms with the given atom type names are selected
-        - str: the given string is parsed and the atoms selected by the selection are selected
+        - str: the given string is parsed and the atoms selected by the 
+        selection are selected
 
-            This string will be parsed based on a Lark grammar. Which is defined as follows:
+            This string will be parsed based on a Lark grammar. Which is 
+            defined as follows:
 
-                - simple word containing only letters and numbers: the atom type with the given name is selected
+                - simple word containing only letters and numbers: the
+                atom type with the given name is selected
                 - <integer>: the atom with the given index is selected
-                - <integer1>..<integer2>: the indices from integer1 to integer2 are selected
-                - <integer1>-<integer2>: the indices from integer1 to integer2 are selected
-                - <integer1>..<integer2>..<integer3>: the indices from integer1 to integer3 with a step size of integer3 are selected
-                - atom(<atomtype>, <atomic_number>): the atom with the given atom type and atomic number is selected
-                - atom(<atomtype>, <element_symbol>): the atom with the given atom type and element symbol is selected
-                - elem(<atomic_number>): all atoms with the given element type are selected
-                - elem(<element_symbol>): all atoms with the given element type are selected
-                - `*`: all atoms are selected (same as 'all'), useful if only few atoms should be excluded
+                - <integer1>..<integer2>: the indices from integer1 to integer2 
+                are selected
+                - <integer1>-<integer2>: the indices from integer1 to integer2
+                are selected
+                - <integer1>..<integer2>..<integer3>: the indices from integer1 to
+                integer3 with a step size of integer3 are selected
+                - atom(<atomtype>, <atomic_number>): the atom with the given atom 
+                type and atomic number is selected
+                - atom(<atomtype>, <element_symbol>): the atom with the given atom
+                type and element symbol is selected
+                - elem(<atomic_number>): all atoms with the given element type
+                are selected
+                - elem(<element_symbol>): all atoms with the given element type
+                are selected
+                - `*`: all atoms are selected (same as 'all'), useful if only
+                few atoms should be excluded
 
             All of the above statements can be combined with the following operators:
 
-                - ',': the union of the two statements is selected, meaning that the atoms selected by the first statement
-                    and the atoms selected by the second statement are selected 
-                - '&': the intersection of the two statements is selected, meaning that only the atoms selected by both
-                    statements are selected
-                - '|': the set difference of the two statements is selected, meaning that only the atoms selected by the
-                    first statement are selected, which are not selected by the second statement
+                - ',': the union of the two statements is selected, meaning that
+                the atoms selected by the first statement and the atoms selected
+                by the second statement are selected
+                - '&': the intersection of the two statements is selected, meaning 
+                that only the atoms selected by both statements are selected
+                - '|': the set difference of the two statements is selected, 
+                meaning that only the atoms selected by the first statement are
+                selected, which are not selected by the second statement
 
             The operators are evaluated in the following order: '|' -> '&' -> ','
-            This means that the ',' operator has the lowest precedence and the '|' operator has the highest precedence
-            and therefore binds the strongest.
+            This means that the ',' operator has the lowest precedence and the '|' 
+            operator has the highest precedence and therefore binds the strongest.
 
-            Additionally, parentheses can be used to group statements and change the order of evaluation.
+            Additionally, parentheses can be used to group statements and change
+            the order of evaluation.
 
 
     Notes
@@ -100,10 +121,11 @@ class Selection:
         """
         Returns the indices of the atoms selected by the selection object.
 
-        If the selection_object is None all atoms are selected.
-        With the parameter use_full_atom_info the selection can be performed 
-        based on the full atom information (i.e. atom type names and element type information).
-        If use_full_atom_info is False, the selection is performed based on the element type information only.
+        If the selection_object is None all atoms are selected. With the 
+        parameter use_full_atom_info the selection can be performed based
+        on the full atom information (i.e. atom type names and element type
+        information). If use_full_atom_info is False, the selection is 
+        performed based on the element type information only.
 
         Parameters
         ----------
@@ -150,7 +172,8 @@ def _selection(atoms: SelectionCompatible,
                use_full_atom_info: bool
                ) -> Np1DIntArray:
     """
-    Overloaded function for selecting atoms based on a list of atoms/elements or a single atom/element.
+    Overloaded function for selecting atoms based
+    on a list of atoms/elements or a single atom/element.
 
     Parameters
     ----------
@@ -167,16 +190,23 @@ def _selection(atoms: SelectionCompatible,
         The indices of the atoms selected by the selection object.
     """
 
-    if isinstance(atoms, Atom) or isinstance(atoms, Element):
+    if isinstance(atoms, (Atom, Element)):
         return _selection_of_atoms(atoms, topology, use_full_atom_info)
-    elif isinstance(atoms, List) and len(atoms) > 0 and (isinstance(atoms[0], Atom) or isinstance(atoms[0], Element)):
+
+    if (
+        isinstance(atoms, List) and
+        len(atoms) > 0 and
+        isinstance(atoms[0], (Atom, Element))
+    ):
         return _selection_of_atoms(atoms[0], topology, use_full_atom_info)
-    elif isinstance(atoms, List):
+
+    if isinstance(atoms, List):
         return _selection_of_atomtypes(atoms, topology)
-    elif isinstance(atoms, str):
+
+    if isinstance(atoms, str):
         return _selection_of_string(atoms, topology, use_full_atom_info)
-    else:
-        return atoms
+
+    return atoms
 
 
 def _selection_of_atoms(atoms: Atoms | Atom | Element | Elements,
@@ -205,15 +235,16 @@ def _selection_of_atoms(atoms: Atoms | Atom | Element | Elements,
     ValueError
         If the use_full_atom_info parameter is True and the atoms parameter is an Element object.
     """
-    if isinstance(atoms, Atom) or isinstance(atoms, Element):
+    if isinstance(atoms, (Atom, Element)):
         atoms = [atoms]
 
     if isinstance(atoms[0], Element):
         if use_full_atom_info:
             raise ValueError(
-                "The use_full_atom_info parameter is not supported for Element objects.")
-        else:
-            atoms = [Atom(element.symbol, element.symbol) for element in atoms]
+                "The use_full_atom_info parameter is not supported for Element objects."
+            )
+
+        atoms = [Atom(element.symbol, element.symbol) for element in atoms]
 
     indices = []
 
@@ -375,7 +406,7 @@ class SelectionTransformer(Transformer):
         """
         return int(items[0])
 
-    def UNSIGNED_INT(self, items: Token | List[Token]) -> int:
+    def UNSIGNED_INT(self, items: Token | List[Token]) -> int:  # pylint: disable=invalid-name
         """
         Returns the unsigned integer of the given token.
 
@@ -391,7 +422,7 @@ class SelectionTransformer(Transformer):
         """
         return int(items[0])
 
-    def INT(self, items: List[Token] | Token) -> int:
+    def INT(self, items: List[Token] | Token) -> int:  # pylint: disable=invalid-name
         """
         Returns the integer of the given token.
 
@@ -407,13 +438,13 @@ class SelectionTransformer(Transformer):
         """
         return int(items[0])
 
-    def atomtype(self, items) -> Np1DIntArray:
+    def atomtype(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the atoms with the given atom type name.
 
         Parameters
         ----------
-        items :
+        items : Any
             The atom type name to get the indices of.
 
         Returns
@@ -425,13 +456,13 @@ class SelectionTransformer(Transformer):
 
         return _indices_by_atom_type_name(atomtype, self.topology)
 
-    def atom(self, items) -> Np1DIntArray:
+    def atom(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the given atom.
 
         Parameters
         ----------
-        items : 
+        items : Any
             The atom to get the indices of.
 
         Returns
@@ -444,16 +475,16 @@ class SelectionTransformer(Transformer):
 
         if self.use_full_atom_info:
             return _indices_by_atom(atom, self.topology)
-        else:
-            return _indices_by_element_types(atom, self.topology)
 
-    def element(self, items) -> Np1DIntArray:
+        return _indices_by_element_types(atom, self.topology)
+
+    def element(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the given element type.
 
         Parameters
         ----------
-        items : 
+        items : Any
             The element type to get the indices of.
 
         Returns
@@ -466,13 +497,13 @@ class SelectionTransformer(Transformer):
 
         return _indices_by_element_types(element, self.topology)
 
-    def residue(self, items) -> Np1DIntArray:
+    def residue(self, items: List[Np1DIntArray]) -> Np1DIntArray:
         """
         Returns the indices of the given residue name.
 
         Parameters
         ----------
-        items : 
+        items : List[Np1DIntArray]
             The residue name to get the indices of.
 
         Returns
@@ -482,13 +513,13 @@ class SelectionTransformer(Transformer):
         """
         return np.array(self.topology.get_atom_indices_from_residue_names(items[0]))
 
-    def residue_number(self, items) -> Np1DIntArray:
+    def residue_number(self, items: List[Np1DIntArray]) -> Np1DIntArray:
         """
         Returns the indices of the given residue number.
 
         Parameters
         ----------
-        items :
+        items : List[Np1DIntArray]
             The residue number to get the indices of.
 
         Returns
@@ -499,13 +530,13 @@ class SelectionTransformer(Transformer):
 
         return np.array(self.topology.get_atom_indices_from_residue_numbers(items[0]))
 
-    def index(self, items) -> Np1DIntArray:
+    def index(self, items: List[int]) -> Np1DIntArray:
         """
         Returns the given index as an array.
 
         Parameters
         ----------
-        items :
+        items: List[int]
             The index to get the indices of.
 
         Returns
@@ -517,18 +548,18 @@ class SelectionTransformer(Transformer):
 
         return np.array([index])
 
-    def indices(self, items) -> Np1DIntArray:
+    def indices(self, items: Np1DIntArray) -> Np1DIntArray:
         """
         Returns a range of indices based on the given indices.
 
-        if two indices are given, a range from the first index to 
+        if two indices are given, a range from the first index to
         the second index is returned.
-        if three indices are given, a range from the first index to 
+        if three indices are given, a range from the first index to
         the third index with a step size of the second index is returned.
 
         Parameters
         ----------
-        items : List[Np1DIntArray]
+        items : Np1DIntArray
             The indices to get the indices of.
 
         Returns
@@ -539,17 +570,15 @@ class SelectionTransformer(Transformer):
 
         if len(items) == 2:
             return np.arange(items[0], items[1] + 1)
-        elif len(items) == 3:
+
+        if len(items) == 3:
             return np.arange(items[0], items[2] + 1, items[1])
 
-    def all(self, items) -> Np1DIntArray:
+        raise ValueError("The indices Token must have 2 or 3 items.")
+
+    def all(self, _) -> Np1DIntArray:
         """
         Returns all indices.
-
-        Parameters
-        ----------
-        items : List[Np1DIntArray]
-            The indices to get the indices of.
 
         Returns
         -------
@@ -559,7 +588,7 @@ class SelectionTransformer(Transformer):
 
         return np.arange(self.topology.n_atoms)
 
-    def without_statement(self, items) -> Np1DIntArray:
+    def without_statement(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the the first item
         without the indices of all other items.
@@ -582,7 +611,7 @@ class SelectionTransformer(Transformer):
 
         return difference
 
-    def and_statement(self, items) -> Np1DIntArray:
+    def and_statement(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the and_statement Token.
 
@@ -604,7 +633,7 @@ class SelectionTransformer(Transformer):
 
         return intersection
 
-    def or_statement(self, items) -> Np1DIntArray:
+    def or_statement(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the or_statement Token.
 
@@ -733,7 +762,9 @@ def _indices_by_atom(atom: Atom, topology: Topology) -> Np1DIntArray:
     return indices
 
 
-def _indices_by_element_types(atom: Atom | Element, topology: Topology) -> Np1DIntArray:
+def _indices_by_element_types(atom: Atom | Element,
+                              topology: Topology
+                              ) -> Np1DIntArray:
     """
     Returns the indices of the given element type.
 
