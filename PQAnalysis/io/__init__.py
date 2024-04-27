@@ -12,8 +12,8 @@ from .base import BaseReader, BaseWriter
 from .moldescriptorReader import MoldescriptorReader
 
 # import the classes from the restart_file subpackage
-from .restart_file.restartWriter import RestartFileWriter
-from .restart_file.restartReader import RestartFileReader
+from .restart_file.restart_writer import RestartFileWriter
+from .restart_file.restart_reader import RestartFileReader
 from .restart_file.api import read_restart_file
 
 # import the classes from the traj_file subpackage

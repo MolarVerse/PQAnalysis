@@ -6,12 +6,13 @@ import numpy as np
 
 from beartype.typing import List
 
-from .. import BaseReader, MoldescriptorReader
-from .exceptions import RestartFileReaderError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell, Residues
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
+
+from .. import BaseReader, MoldescriptorReader
+from .exceptions import RestartFileReaderError
 
 
 class RestartFileReader(BaseReader):
@@ -23,9 +24,23 @@ class RestartFileReader(BaseReader):
     - PQ
     - QMCFC
 
-    The restart file of these two md-engines are very similar. Both contain one line including the step information and one line including the box information. The following lines contain the atom information. The atom information is different for the two md-engines. The atom information of the PQ restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force and z force. The atom information of the QMCFC restart file contains the atom name, atom id, residue id, x position, y position, z position, x velocity, y velocity, z velocity, x force, y force, z force, x pos of previous step, y pos of previous step, z pos of previous step, x vel of previous step, y vel of previous step, z vel of previous step, x force of previous step, y force of previous step and z force of previous step. The old values are ignored.
+    The restart file of these two md-engines are very similar. Both contain 
+    one line including the step information and one line including the box
+    information. The following lines contain the atom information. The atom
+    information is different for the two md-engines. The atom information 
+    of the PQ restart file contains the atom name, atom id, residue id, 
+    x position, y position, z position, x velocity, y velocity, z velocity,
+    x force, y force and z force. The atom information of the QMCFC restart
+    file contains the atom name, atom id, residue id, x position, y position,
+    z position, x velocity, y velocity, z velocity, x force, y force,
+    z force, x pos of previous step, y pos of previous step, z pos of 
+    previous step, x vel of previous step, y vel of previous step, 
+    z vel of previous step, x force of previous step, y force of previous 
+    step and z force of previous step. The old values are ignored.
 
-    For more information on how the restart file of PQ simulations is structured, see the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
+    For more information on how the restart file of PQ simulations is 
+    structured, see the corresponding documentation of the 
+    `PQ <https://molarverse.github.io/PQ>`_ code.
     """
 
     def __init__(self,
@@ -40,9 +55,13 @@ class RestartFileReader(BaseReader):
         filename : str
             The filename of the restart file.
         moldescriptor_filename : str, optional
-            The filename of the moldescriptor file that is read by the MoldescriptorReader to obtain the reference residues of the system, by default None
+            The filename of the moldescriptor file that is read by the
+            MoldescriptorReader to obtain the reference residues of 
+            the system, by default None
         reference_residues : Residues, optional
-            The reference residues of the system, in general these are obtained by the MoldescriptorReader - only used if moldescriptor_filename is None, by default None
+            The reference residues of the system, in general these are
+            obtained by the MoldescriptorReader - only used if 
+            moldescriptor_filename is None, by default None
         md_engine_format : MDEngineFormat | str, optional
             The format of the restart file, by default MDEngineFormat.PQ
         """
@@ -50,7 +69,9 @@ class RestartFileReader(BaseReader):
 
         if moldescriptor_filename is not None and reference_residues is not None:
             raise RestartFileReaderError(
-                "Both moldescriptor_filename and reference_residues are given. They are mutually exclusive.")
+                "Both moldescriptor_filename and reference_residues "
+                "are given. They are mutually exclusive."
+            )
 
         self.moldescriptor_filename = moldescriptor_filename
         self.reference_residues = reference_residues
@@ -59,11 +80,18 @@ class RestartFileReader(BaseReader):
 
     def read(self) -> AtomicSystem:
         """
-        Reads the restart file and returns an AtomicSystem and an Np1DIntArray containing the molecular types.
+        Reads the restart file and returns an AtomicSystem and
+        an Np1DIntArray containing the molecular types.
 
-        It reads the restart file and extracts the box information and the atom information. The atom information is then used to create an AtomicSystem object. The box information is used to create a Cell object. The AtomicSystem and the Cell are then used to create a Frame object.
+        It reads the restart file and extracts the box information
+        and the atom information. The atom information is then used
+        to create an AtomicSystem object. The box information is used
+        to create a Cell object. The AtomicSystem and the Cell are
+        then used to create a Frame object.
 
-        If a moldescriptor file is given, the molecular types are read from the moldescriptor file and added to the Topology of the Frame.
+        If a moldescriptor file is given, the molecular types are 
+        read from the moldescriptor file and added to the Topology 
+        of the Frame.
 
         Returns
         -------
@@ -79,7 +107,7 @@ class RestartFileReader(BaseReader):
         cell = Cell()
         atom_lines = []
 
-        with open(self.filename, 'r') as file:
+        with open(self.filename, 'r', encoding="utf-8") as file:
             for line in file.readlines():
                 if line.strip().startswith('#'):
                     continue
@@ -127,16 +155,19 @@ class RestartFileReader(BaseReader):
         """
         if len(line) == 1:
             return Cell()
-        elif len(line) == 4:
+
+        if len(line) == 4:
             box_lengths = [float(l) for l in line[1:]]
             return Cell(*box_lengths)
-        elif len(line) == 7:
+
+        if len(line) == 7:
             box_lengths = [float(l) for l in line[1:4]]
             box_angles = [float(a) for a in line[4:]]
             return Cell(*box_lengths, *box_angles)
-        else:
-            raise RestartFileReaderError(
-                f"Invalid number of arguments for box: {len(line)}")
+
+        raise RestartFileReaderError(
+            f"Invalid number of arguments for box: {len(line)}"
+        )
 
     @classmethod
     def _parse_atoms(cls,
@@ -228,7 +259,7 @@ class RestartFileReader(BaseReader):
             velocities.append(np.array([float(l) for l in line[6:9]]))
             forces.append(np.array([float(l) for l in line[9:12]]))
 
-        if atoms == []:
+        if not atoms:
             raise RestartFileReaderError("No atoms found in restart file.")
 
         topology = Topology(

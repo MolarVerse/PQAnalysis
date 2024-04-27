@@ -9,5 +9,3 @@ class RestartFileReaderError(PQException):
     """
     Exception raised for errors related to the RestartFileReader class
     """
-
-    pass
