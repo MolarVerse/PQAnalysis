@@ -2,9 +2,9 @@
 A module containing the NEPWriter class to write NEP training and testing files.
 """
 
-import numpy as np
 import logging
 import _io
+import numpy as np
 
 from beartype.typing import List, Dict
 from unum.units import eV, angstrom
@@ -54,6 +54,38 @@ class NEPWriter(BaseWriter):
         self.original_mode = FileWritingMode(mode)
         self.logger = setup_logger(self.logger)
 
+        #########################
+        # dummy initializations #
+        #########################
+
+        self.use_forces = False
+        self.use_stress = False
+        self.use_virial = False
+
+        self.xyz_file_extension = None
+        self.energy_file_extension = None
+        self.info_file_extension = None
+        self.force_file_extension = None
+        self.stress_file_extension = None
+        self.virial_file_extension = None
+
+        self.train_file = None
+        self.train_writer = None
+        self.test_file = None
+        self.test_writer = None
+        self.validation_file = None
+        self.validation_writer = None
+        self.validation_ref_file = None
+        self.validation_ref_writer = None
+
+        self.n_train_frames = 0
+        self.n_test_frames = 0
+        self.n_validation_frames = 0
+
+        self.test_ratio = 0.0
+        self.validation_ratio = 0.0
+        self.is_validation = False
+
     def write_from_files(self,
                          file_prefixes: List[str] | str,
                          use_forces: bool = False,
@@ -74,7 +106,10 @@ class NEPWriter(BaseWriter):
         Parameters
         ----------
         file_prefixes : List[str] | str
-            The prefixes of the files to find. Here with prefix we mean the part of the filename not only the name before the extension, but every matching file that starts with the given prefix.
+            The prefixes of the files to find. Here with prefix we mean 
+            the part of the filename not only the name before the 
+            extension, but every matching file that starts with the
+            given prefix.
         use_forces : bool, optional
             Whether to include forces in the output file, by default False
         use_stress : bool, optional
@@ -82,23 +117,74 @@ class NEPWriter(BaseWriter):
         use_virial : bool, optional
             Whether to include the virial in the output file, by default False
         xyz_file_extension : str, optional
-            The extension of the xyz files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the xyz files, by default None.
+            This means that the respective file extension will
+            be automatically determined from all files with the
+            given file prefixes.
         energy_file_extension : str, optional
-            The extension of the energy files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the energy files, by default None.
+            This means that the respective file extension will 
+            be automatically determined from all files with the
+            given file prefixes.
         info_file_extension : str, optional
-            The extension of the info files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the info files, by default None. 
+            This means that the respective file extension will 
+            be automatically determined from all files with 
+            the given file prefixes.
         force_file_extension : str, optional
-            The extension of the force files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the force files, by default None.
+            This means that the respective file extension will 
+            be automatically determined from all files with the 
+            given file prefixes.
         stress_file_extension : str, optional
-            The extension of the stress files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the stress files, by default None. 
+            This means that the respective file extension will
+            be automatically determined from all files with the 
+            given file prefixes.
         virial_file_extension : str, optional
-            The extension of the virial files, by default None. This means that the respective file extension will be automatically determined from all files with the given file prefixes.
+            The extension of the virial files, by default None. 
+            This means that the respective file extension will 
+            be automatically determined from all files with the 
+            given file prefixes.
         test_ratio : PositiveReal, optional
-            The ratio of testing frames to the total number of frames, by default 0.0. If the test_ratio is 0.0 no train and test files are created. If the test_ratio is larger not equal to 0.0, the test_ratio is used to determine the number of training and testing frames. The final ratio will be as close to the test_ratio as possible, but if it is not possible to have the exact ratio, always the higher next higher ratio is chosen. As output filenames the original filename is used with the suffix _train or _test appended and the same FileWritingMode as the original file is used.
+            The ratio of testing frames to the total number of 
+            frames, by default 0.0. If the test_ratio is 0.0 no
+            train and test files are created. If the test_ratio 
+            is larger not equal to 0.0, the test_ratio is used 
+            to determine the number of training and testing 
+            frames. The final ratio will be as close to the 
+            test_ratio as possible, but if it is not possible 
+            to have the exact ratio, always the higher next 
+            higher ratio is chosen. As output filenames the 
+            original filename is used with the suffix _train 
+            or _test appended and the same FileWritingMode as
+            the original file is used.
         total_ratios: str, optional
-            The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used.
-            The validation frames are written to a file with the suffix _validation and a file with the suffix _validation.ref. The _validation file contains only the coordinates and box information to function as crude testing input and the _validation.ref file contains all information additionally provided in the original files.
-            Pay Attention: This keyword argument is mutually exclusive with the test_ratio keyword argument. If both are given, a ValueError is raised.
+            The total_ratios keyword argument is used to describe
+            frame ratios including validation frames in the format 
+            train_ratio:test_ratio:validation_ratio. The 
+            validation_ratio is optional and if not given, no
+            validation frames are written. The total sum of the 
+            integer values provided do not have to add up to the
+            total number of frames in the input trajectory files.
+            The ratios are used to determine the ratios of the 
+            training, testing, and validation frames. The final
+            ratio will be as close to the given ratios as possible,
+            but if it is not possible to have the exact ratio, 
+            always the next higher ratio is chosen. As output 
+            filenames the original filename is used with the suffix 
+            _train, _test, or _validation appended and the same 
+            FileWritingMode as the original file is used.
+            The validation frames are written to a file with the 
+            suffix _validation and a file with the suffix 
+            _validation.ref. The _validation file contains only
+            the coordinates and box information to function as 
+            crude testing input and the _validation.ref file
+            contains all information additionally provided in
+            the original files.
+            Pay Attention: This keyword argument is mutually
+            exclusive with the test_ratio keyword argument. 
+            If both are given, a ValueError is raised.
 
         Raises
         ------
@@ -146,18 +232,22 @@ class NEPWriter(BaseWriter):
         self.n_test_frames = 0
         self.n_validation_frames = 0
 
-        for i in range(len(xyz_files)):
+        for i, xyz_file in enumerate(xyz_files):
 
-            stress = read_stress_file(stress_files[i]) if use_stress else None
-            virial = read_virial_file(virial_files[i]) if use_virial else None
+            stress = read_stress_file(stress_files[i]) if use_stress else []
+            virial = read_virial_file(virial_files[i]) if use_virial else []
             energy = EnergyFileReader(en_files[i], info_files[i]).read()
 
             xyz_generator = read_trajectory_generator(
-                xyz_files[i], traj_format=TrajectoryFormat.XYZ)
+                xyz_file,
+                traj_format=TrajectoryFormat.XYZ
+            )
             force_generator = read_trajectory_generator(
-                force_files[i], traj_format=TrajectoryFormat.FORCE) if use_forces else None
+                force_files[i],
+                traj_format=TrajectoryFormat.FORCE
+            ) if use_forces else None
 
-            n_frames = calculate_frames_of_trajectory_file(xyz_files[i])
+            n_frames = calculate_frames_of_trajectory_file(xyz_file)
 
             n_train_max, n_test_max, _ = self.calculate_effective_training_portions(
                 n_frames,
@@ -179,15 +269,27 @@ class NEPWriter(BaseWriter):
             validation_indices = indices[_train + _test:]
 
             for j, system in enumerate(xyz_generator):
-                system.energy = energy.qm_energy[j]
+                if hasattr(energy, "qm_energy"):
+                    system.energy = energy.qm_energy[j]
+                else:
+                    self.logger.error(
+                        (
+                            "No QM energy found in the energy file. "
+                            "The NEP builder is implemented only for QM energies. "
+                            "If there is a need for a different energy type, "
+                            "please file an issue at "
+                            f"{config.code_base_url}issues."
+                        ),
+                        exception=ValueError
+                    )
 
                 if use_forces:
                     force_system = next(force_generator)
                     system.forces = force_system.forces
 
-                if use_virial:
+                if use_virial and virial:
                     system.virial = virial[j]
-                if use_stress:
+                if use_stress and stress:
                     system.stress = stress[j]
 
                 self.write_from_atomic_system(
@@ -228,11 +330,17 @@ class NEPWriter(BaseWriter):
                         use_virial=False,
                     )
 
-            self.logger.info(f"""
-Processed {n_frames} frames from files:
-{xyz_files[i]}, {en_files[i]}, {info_files[i]}, {force_files[i] if use_forces else None}, {
-                stress_files[i] if use_stress else None}, {virial_files[i] if use_virial else None}
-""")
+            self.logger.info(
+                (
+                    f"Processed {n_frames} frames from files:\n"
+                    f"{xyz_files[i]}, "
+                    f"{en_files[i]}, "
+                    f"{info_files[i]}, "
+                    f"{force_files[i] if use_forces else None}, "
+                    f"{stress_files[i] if use_stress else None}, "
+                    f"{virial_files[i] if use_virial else None}"
+                )
+            )
 
         self._close_files()
 
@@ -258,14 +366,30 @@ Processed {n_frames} frames from files:
         """
         Sets up the frame splitting for training.
 
-        It determines the number of training, testing, and validation frames based on the given test_ratio or total_ratios keyword arguments. It also sets up the files to write the training, testing, and validation frames to.
+        It determines the number of training, testing, and validation frames
+        based on the given test_ratio or total_ratios keyword arguments. 
+        It also sets up the files to write the training, testing, and 
+        validation frames to.
 
         Parameters
         ----------
         test_ratio : PositiveReal, optional
             The ratio of testing frames to the total number of frames, by default 0.0
         total_ratios : str | None, optional
-            The total_ratios keyword argument is used to describe frame ratios including validation frames in the format train_ratio:test_ratio:validation_ratio. The validation_ratio is optional and if not given, no validation frames are written. The total sum of the integer values provided do not have to add up to the total number of frames in the input trajectory files. The ratios are used to determine the ratios of the training, testing, and validation frames. The final ratio will be as close to the given ratios as possible, but if it is not possible to have the exact ratio, always the next higher ratio is chosen. As output filenames the original filename is used with the suffix _train, _test, or _validation appended and the same FileWritingMode as the original file is used.
+            The total_ratios keyword argument is used to describe
+            frame ratios including validation frames in the format
+            train_ratio:test_ratio:validation_ratio. The validation_ratio
+            is optional and if not given, no validation frames are
+            written. The total sum of the integer values provided do
+            not have to add up to the total number of frames in the 
+            input trajectory files. The ratios are used to determine
+            the ratios of the training, testing, and validation 
+            frames. The final ratio will be as close to the given 
+            ratios as possible, but if it is not possible to have 
+            the exact ratio, always the next higher ratio is chosen.
+            As output filenames the original filename is used with 
+            the suffix _train, _test, or _validation appended and the
+            same FileWritingMode as the original file is used.
 
 
         Raises
@@ -298,8 +422,11 @@ Processed {n_frames} frames from files:
                 n_validation = float(ratios[2])
             else:
                 self.logger.error(
-                    f"The total_ratios keyword argument {
-                        total_ratios} is not in the correct format. The correct format is train_ratio:test_ratio:validation_ratio.",
+                    (
+                        f"The total_ratios keyword argument {total_ratios} "
+                        "is not in the correct format. The correct format "
+                        "is train_ratio:test_ratio:validation_ratio."
+                    ),
                     exception=ValueError
                 )
         else:
@@ -314,15 +441,22 @@ Processed {n_frames} frames from files:
 
         if self.test_ratio > 1.0:
             self.logger.error(
-                f"The test_ratio must be between 0.0 and 1.0. The given test_ratio is {
-                    self.test_ratio}.",
+                (
+                    "The test_ratio must be between 0.0 and 1.0. The given test_ratio "
+                    f"is {self.test_ratio}."
+                ),
                 exception=ValueError
             )
 
         if np.isclose(self.test_ratio, 0.0) and not np.isclose(self.validation_ratio, 0.0):
             self.logger.error(
-                f"It has no sense to have validation frames without test frames. This error results from the given total_ratios keyword argument {
-                    total_ratios}.",
+                (
+                    "It has no sense to have validation frames without test "
+                    "frames. This error results from the given total_ratios "
+                    f"keyword argument {total_ratios}."
+
+                ),
+                exception=ValueError
             )
 
         self.train_file = None
@@ -379,7 +513,8 @@ Processed {n_frames} frames from files:
         Returns
         -------
         Dict[str, List[str]]
-            The files to be used for writing the NEP trajectory file. The keys are the file types and the values are the respective files.
+            The files to be used for writing the NEP trajectory file. 
+            The keys are the file types and the values are the respective files.
 
         Raises
         ------
@@ -448,8 +583,13 @@ Processed {n_frames} frames from files:
                 the coordinate files
             """
             self.logger.error(
-                f"The number of {file_type} files does not match the number of coordinate files. The found {
-                    file_type} files are: {files} and the found coordinate files are: {xyz_files}",
+                (
+                    f"The number of {file_type} files does not match "
+                    "the number of coordinate files. The found "
+                    f"{file_type} files are: {files} "
+                    "and the found coordinate files are: "
+                    f"{xyz_files}"
+                ),
                 exception=ValueError
             )
             exit(1)
@@ -492,7 +632,7 @@ Reading files to write NEP trajectory file:
 
     def _get_files(self,
                    files: List[str],
-                   OutputFileFormat: OutputFileFormat,
+                   output_file_format: OutputFileFormat,
                    file_extension: str | None,
                    file_prefixes: List[str],
                    ) -> List[str]:
@@ -503,7 +643,7 @@ Reading files to write NEP trajectory file:
         ----------
         files : List[str]
             The files to be used for writing the NEP trajectory file.
-        OutputFileFormat : OutputFileFormat
+        outputFileFormat : OutputFileFormat
             The file format of the files to be used for writing the NEP trajectory file.
         file_extension : str | None
             The file extension of the files to be used for writing the NEP trajectory file.
@@ -525,21 +665,40 @@ Reading files to write NEP trajectory file:
 
         filtered_files = OutputFileFormat.find_matching_files(
             files,
-            OutputFileFormat,
+            output_file_format,
             file_extension
         )
 
         if len(filtered_files) == 0:
             if file_extension is not None:
                 self.logger.error(
-                    f"You did specify a file extension for the {OutputFileFormat} files, but no files with the extension \
-                    {file_extension} were found, that match the given file prefixes {file_prefixes}.",
+                    (
+                        "You did specify a file extension for the "
+                        f"{output_file_format} files, but no files with "
+                        f"the extension {file_extension} were found, "
+                        f"that match the given file prefixes {file_prefixes}."
+                    ),
                     exception=ValueError
                 )
             else:
+                output_file_formats = OutputFileFormat.get_file_extensions(
+                    output_file_format
+                )
                 self.logger.error(
-                    f"No {OutputFileFormat} files were found in {files} that match the given file prefixes {file_prefixes}. All possible file      extensions are {OutputFileFormat.get_file_extensions(
-                        OutputFileFormat)}. If the specific file extension you are looking for is not in the list, please specify it using the corresponding file_extension argument. If the files should be found, please check the file paths and the file prefixes. Additionally, if you think that the file extension you chose is of general interest and should be added to the list of possible file extensions, please file an issue at {config.code_base_url}issues.",
+                    (
+                        f"No {output_file_format} files were found in "
+                        f"{files} that match the given file prefixes "
+                        f"{file_prefixes}. All possible file extensions are "
+                        f"{output_file_formats}. "
+                        "If the specific file extension you are looking for is not "
+                        "in the list, please specify it using the corresponding "
+                        "file_extension argument. If the files should be found, please "
+                        "check the file paths and the file prefixes. Additionally, if "
+                        "you think that the file extension you chose is of general "
+                        "interest and should be added to the list of possible file "
+                        "extensions, please file an issue at "
+                        f"{config.code_base_url}issues."
+                    ),
                     exception=ValueError
                 )
 
@@ -553,7 +712,9 @@ Reading files to write NEP trajectory file:
         """
         Calculates the maximum number of training, testing, and validation frames.
 
-        By calculating the maximum number of training, testing, and validation frames, the number of frames to be added to the training and testing files can be determined.
+        By calculating the maximum number of training, testing, and validation 
+        frames, the number of frames to be added to the training and testing 
+        files can be determined.
 
 
         Parameters
@@ -643,13 +804,18 @@ Reading files to write NEP trajectory file:
         ValueError
             If the system does not have an energy.
         ValueError
-            If the system does not have forces and they were specified to be written to the NEP trajectory file.
+            If the system does not have forces and they 
+            were specified to be written to the NEP trajectory file.
         ValueError
-            If both the stress and the virial tensor were specified to be written to the NEP trajectory file. Only one of them can be written at a time.
+            If both the stress and the virial tensor were 
+            specified to be written to the NEP trajectory file. 
+            Only one of them can be written at a time.
         ValueError
-            If the system does not have a stress tensor and it was specified to be written to the NEP trajectory file.
+            If the system does not have a stress tensor and it
+            was specified to be written to the NEP trajectory file.
         ValueError
-            If the system does not have a virial tensor and it was specified to be written to the NEP trajectory file.
+            If the system does not have a virial tensor and it
+            was specified to be written to the NEP trajectory file.
         """
 
         if file is None:
@@ -657,7 +823,10 @@ Reading files to write NEP trajectory file:
 
         if not system.has_pos:
             self.logger.error(
-                "The system does not have coordinates, which are required for NEP trajectory files.",
+                (
+                    "The system does not have coordinates, "
+                    "which are required for NEP trajectory files."
+                ),
                 exception=ValueError
             )
 
@@ -668,25 +837,38 @@ Reading files to write NEP trajectory file:
 
         if use_forces and not system.has_forces:
             self.logger.error(
-                "The system does not have forces, and they were specified to be written to the NEP trajectory file.",
+                (
+                    "The system does not have forces, and they were "
+                    "specified to be written to the NEP trajectory file."
+                ),
                 exception=ValueError
             )
 
         if use_stress and use_virial:
             self.logger.error(
-                "Both the stress and the virial tensor were specified to be written to the NEP trajectory file. Only one of them can be written at a time.",
+                (
+                    "Both the stress and the virial tensor were "
+                    "specified to be written to the NEP trajectory file. "
+                    "Only one of them can be written at a time."
+                ),
                 exception=ValueError
             )
 
         if use_stress and not system.has_stress:
             self.logger.error(
-                "The system does not have a stress tensor, and it was specified to be written to the NEP trajectory file.",
+                (
+                    "The system does not have a stress tensor, "
+                    "and it was specified to be written to the NEP trajectory file."
+                ),
                 exception=ValueError
             )
 
         if use_virial and not system.has_virial:
             self.logger.error(
-                "The system does not have a virial tensor, and it was specified to be written to the NEP trajectory file.",
+                (
+                    "The system does not have a virial tensor, and "
+                    "it was specified to be written to the NEP trajectory file."
+                ),
                 exception=ValueError
             )
 
@@ -783,10 +965,15 @@ Reading files to write NEP trajectory file:
         for i in range(system.n_atoms):
             atom = system.atoms[i]
 
-            symbol = atom.symbol[0].upper() + atom.symbol[1:].lower()
-
             print(
-                f"{symbol:<4} {system.pos[i][0]:12.8f} {system.pos[i][1]:12.8f} {system.pos[i][2]:12.8f}", file=file, end=" "
+                (
+                    f"{atom.symbol:<4} "
+                    f"{system.pos[i][0]:12.8f} "
+                    f"{system.pos[i][1]:12.8f} "
+                    f"{system.pos[i][2]:12.8f}"
+                ),
+                file=file,
+                end=" "
             )
 
             force_unit = kcal_per_mole / angstrom
@@ -795,7 +982,13 @@ Reading files to write NEP trajectory file:
 
             if use_forces:
                 print(
-                    f"{forces[i][0]:15.8e} {forces[i][1]:15.8e} {forces[i][2]:15.8e}", file=file, end=" "
+                    (
+                        f"{forces[i][0]:15.8e} "
+                        f"{forces[i][1]:15.8e} "
+                        f"{forces[i][2]:15.8e}"
+                    ),
+                    file=file,
+                    end=" "
                 )
 
             print(file=file)
