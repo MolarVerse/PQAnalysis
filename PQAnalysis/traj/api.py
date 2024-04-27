@@ -5,9 +5,10 @@ A module containing api functions to handle trajectories and frame objects.
 from PQAnalysis.core import Cells
 
 
-def check_trajectory_PBC(cells: Cells) -> bool:
+def check_trajectory_pbc(cells: Cells) -> bool:
     """
-    Checks no cell in the trajectory is Cell() i.e. checks if the trajectory is never in vacuum.
+    Checks no cell in the trajectory is Cell() i.e. 
+    checks if the trajectory is never in vacuum.
 
     Parameters
     ----------

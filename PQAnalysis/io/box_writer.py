@@ -151,7 +151,7 @@ class BoxWriter(BaseWriter):
             If the cell of a frame of the trajectory is None.
         """
 
-        if not traj.check_PBC():
+        if not traj.check_pbc():
             raise BoxWriterError(
                 "At least on cell of the trajectory is None. Cannot write box file.")
 
