@@ -6,17 +6,23 @@ import numpy as np
 
 from beartype.typing import List
 
+from PQAnalysis.core import Residue, Residues, Element
 from . import BaseReader
 from .exceptions import MoldescriptorReaderError
-from PQAnalysis.core import Residue, Residues, Element
 
 
 class MoldescriptorReader(BaseReader):
     """
-    This is a class to read moldescriptor files. Moldescriptor files are used by the PQ and QMCFC MD engines to store the mol types of a system. The moldescriptor file is a text file that contains the mol types of a system. The mol types are defined by the elements, atom types and partial charges of the atoms of the mol type. 
-    For more information of how a moldescriptor file should look like please see the documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
+    This is a class to read moldescriptor files. Moldescriptor files
+    are used by the PQ and QMCFC MD engines to store the mol types of 
+    a system. The moldescriptor file is a text file that contains the 
+    mol types of a system. The mol types are defined by the elements, 
+    atom types and partial charges of the atoms of the mol type. 
+    For more information of how a moldescriptor file should look like 
+    please see the documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
 
-    Calling the read method returns a list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
+    Calling the read method returns a list of mol types. Each mol 
+    type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
     """
 
     def __init__(self, filename: str) -> None:
@@ -30,7 +36,9 @@ class MoldescriptorReader(BaseReader):
 
     def read(self) -> Residues:
         """
-        The read method reads a moldescriptor file and returns a list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
+        The read method reads a moldescriptor file and returns a 
+        list of mol types. Each mol type is a :py:class:`~PQAnalysis.core.residue.Residue`
+        object.
 
         Returns
         -------
@@ -42,7 +50,7 @@ class MoldescriptorReader(BaseReader):
         MoldescriptorReaderError
             If the number of columns in the header of a mol type is not 3.
         """
-        with open(self.filename, 'r') as f:
+        with open(self.filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
             mol_types = []
@@ -64,16 +72,17 @@ class MoldescriptorReader(BaseReader):
                 splitted_line = splitted_line.strip().split()
 
                 if splitted_line[0].lower() == "water_type":
-                    water_type = int(splitted_line[1])  # TODO:
+                    # TODO: water_type = int(splitted_line[1])
                     counter += 1
                 elif splitted_line[0].lower() == "ammonia_type":
-                    ammonia_type = int(splitted_line[1])  # TODO:
+                    # TODO: ammonia_type = int(splitted_line[1])
                     counter += 1
                 else:
                     if len(splitted_line) != 3:
                         line = line.replace('\n', '')
                         raise MoldescriptorReaderError(
-                            f"The number of columns in the header of a mol type must be 3.\nGot {len(splitted_line)} columns instead in text: '{line}'\n"
+                            f"The number of columns in the header of a mol type must be 3.\nGot {
+                                len(splitted_line)} columns instead in text: '{line}'\n"
                         )
 
                     n_atoms = int(splitted_line[1])
@@ -122,11 +131,19 @@ class MoldescriptorReader(BaseReader):
             if len(splitted_line) != 3 and len(splitted_line) != 4:
                 line = line.replace('\n', '')
                 raise MoldescriptorReaderError(
-                    f"The number of columns in the body of a mol type must be 3 or 4.\nGot {len(splitted_line)} columns instead in text: '{line}'\n"
+                    f"The number of columns in the body of a mol type must be 3 or 4.\nGot {
+                        len(splitted_line)} columns instead in text: '{line}'\n"
                 )
 
             elements.append(Element(splitted_line[0]))
             atom_types.append(int(splitted_line[1]))
             partial_charges.append(float(splitted_line[2]))
 
-        return Residue(name, mol_type_id, total_charge, elements, np.array(atom_types), np.array(partial_charges))
+        return Residue(
+            name,
+            mol_type_id,
+            total_charge,
+            elements,
+            np.array(atom_types),
+            np.array(partial_charges)
+        )

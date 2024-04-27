@@ -1,13 +1,11 @@
 """
-This module provides API functions for input/output handling of molecular dynamics simulations.
+This module provides API functions for input/output 
+handling of molecular dynamics simulations.
 """
+from PQAnalysis.types import PositiveReal
 
 from .input_file_reader import PQInputFileReader as Reader
 from .input_file_reader.formats import InputFileFormat
-from .write_api import write, write_box
-from .conversion_api import rst2xyz, traj2box, traj2qmcfc, gen2xyz, xyz2gen
-
-from PQAnalysis.types import PositiveReal
 
 
 def continue_input_file(input_file: str,
@@ -17,7 +15,10 @@ def continue_input_file(input_file: str,
     """
     API function for continuing an input file.
 
-    This function reads the input file and continues it n times. This means that the number in the filename is increased by one and all other numbers in the start- and output-file keys within the input file are increased by one as well.
+    This function reads the input file and continues it n times.
+    This means that the number in the filename is increased by one
+    and all other numbers in the start- and output-file keys within 
+    the input file are increased by one as well.
 
     Parameters
     ----------
@@ -37,7 +38,9 @@ def continue_input_file(input_file: str,
 
     if input_format != InputFileFormat.PQ:
         raise NotImplementedError(
-            f"Format {input_format} not implemented yet for continuing input file.")
+            f"Format {input_format} not implemented "
+            "yet for continuing input file."
+        )
 
     reader = Reader(input_file)
     reader.read()

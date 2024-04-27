@@ -4,8 +4,8 @@ A module containing the InfoFileReader class.
 
 from beartype.typing import Tuple, Dict
 
-from .base import BaseReader
 from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
+from .base import BaseReader
 
 
 class InfoFileReader(BaseReader):
@@ -16,25 +16,38 @@ class InfoFileReader(BaseReader):
     For more information on how the info file of PQ simulations is structured, see
     the corresponding documentation of the `PQ <https://molarverse.github.io/PQ>`_ code.
 
-    Calling the read method returns a tuple of dictionaries. For both dictionaries the keys are the names of the information strings (i.e. physical properties). The values of the first dictionary are the corresponding indices of the data entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy` object. The values of the second dictionary are the corresponding units of the information strings (None if no units are given).
+    Calling the read method returns a tuple of dictionaries. For both dictionaries
+    the keys are the names of the information strings (i.e. physical properties). 
+    The values of the first dictionary are the corresponding indices of the data
+    entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy`
+    object. The values of the second dictionary are the corresponding units of the 
+    information strings (None if no units are given).
     """
 
-    def __init__(self, filename: str, format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
+    def __init__(self,
+                 filename: str,
+                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+                 ) -> None:
         """
         Parameters
         ----------
         filename : str
             The name of the file to read from.
-        format : MDEngineFormat | str, optional
+        engine_format : MDEngineFormat | str, optional
             The format of the info file. Default is MDEngineFormat.PQ.
         """
         super().__init__(filename)
 
-        self.format = MDEngineFormat(format)
+        self.format = MDEngineFormat(engine_format)
 
     def read(self) -> Tuple[Dict, Dict | None]:
         """
-        Calling the read method returns a tuple of dictionaries. For both dictionaries the keys are the names of the information strings (i.e. physical properties). The values of the first dictionary are the corresponding indices of the data entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy` object. The values of the second dictionary are the corresponding units of the information strings (None if no units are given).
+        Calling the read method returns a tuple of dictionaries. For both dictionaries 
+        the keys are the names of the information strings (i.e. physical properties).
+        The values of the first dictionary are the corresponding indices of the data 
+        entries, which can be used to index an :py:class:`~PQAnalysis.physicalData.energy.Energy`
+        object. The values of the second dictionary are the corresponding units of the 
+        information strings (None if no units are given).
 
         Returns
         -------
@@ -45,13 +58,23 @@ class InfoFileReader(BaseReader):
         dict
             The units of the info file as a dictionary. The keys are the names of the
             information strings. The values are the corresponding units.
+
+        Raises
+        ------
+        MDEngineFormatError
+            If the info file is not in PQ or qmcfc format.
         """
         if self.format == MDEngineFormat.PQ:
-            return self.read_PQ()
-        elif self.format == MDEngineFormat.QMCFC:
+            return self.read_pq()
+
+        if self.format == MDEngineFormat.QMCFC:
             return self.read_qmcfc()
 
-    def read_PQ(self) -> Tuple[Dict, Dict]:
+        raise MDEngineFormatError(
+            f"Info file {self.filename} is not in PQ or qmcfc format."
+        )
+
+    def read_pq(self) -> Tuple[Dict, Dict]:
         """
         Reads the info file in PQ format.
 
@@ -73,7 +96,7 @@ class InfoFileReader(BaseReader):
         info = {}
         units = {}
 
-        with open(self.filename, "r") as file:
+        with open(self.filename, "r", encoding='utf-8') as file:
 
             lines = file.readlines()
 
@@ -115,7 +138,7 @@ class InfoFileReader(BaseReader):
         """
         info = {}
 
-        with open(self.filename, "r") as file:
+        with open(self.filename, "r", encoding='utf-8') as file:
 
             lines = file.readlines()
 

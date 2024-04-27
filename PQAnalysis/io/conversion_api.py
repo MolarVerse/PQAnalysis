@@ -2,9 +2,11 @@
 A module containing API functions to convert between different file formats.
 """
 
-import numpy as np
-
 from beartype.typing import List
+
+from PQAnalysis.core import Cell
+from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.io.formats import FileWritingMode
 
 from . import (
     TrajectoryWriter,
@@ -16,10 +18,6 @@ from . import (
     read_restart_file,
     write_trajectory,
 )
-
-from PQAnalysis.core import Cell
-from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.io.formats import FileWritingMode
 
 
 def gen2xyz(gen_file: str,
@@ -72,7 +70,9 @@ def xyz2gen(xyz_file: str,
     output : str | None
         The output file. If not specified, the output is printed to stdout.
     periodic : bool | None, optional
-        The periodicity of the system. If True, the system is considered periodic. If False, the system is considered non-periodic. If None, the periodicity is inferred from the system, by default None.
+        The periodicity of the system. If True, the system is considered periodic.
+        If False, the system is considered non-periodic. If None, the periodicity 
+        is inferred from the system, by default None.
     mode : FileWritingMode | str, optional
         The writing mode, by default "w". The following modes are available:
         - "w": write
@@ -100,7 +100,9 @@ def rst2xyz(restart_file: str,
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
 
-    When the print_box flag is set to True, the box is printed as well. This means that after the number of atoms the box is printed in the same line in the format a b c alpha beta gamma.
+    When the print_box flag is set to True, the box is printed as well.
+    This means that after the number of atoms the box is printed in the
+    same line in the format a b c alpha beta gamma.
 
     Parameters
     ----------
@@ -177,7 +179,8 @@ def traj2qmcfc(trajectory_files: List[str],
                mode: FileWritingMode | str = "w"
                ) -> None:
     """
-    Converts multiple trajectory files from a PQ format to a QMCFC format and prints it to stdout or writes it to a file.
+    Converts multiple trajectory files from a PQ format to a 
+    QMCFC format and prints it to stdout or writes it to a file.
 
     Parameters
     ----------
