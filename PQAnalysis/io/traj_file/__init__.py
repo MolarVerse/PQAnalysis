@@ -2,6 +2,6 @@
 A subpackage to handle trajectory files.
 """
 
-from .trajectoryReader import TrajectoryReader
-from .trajectoryWriter import TrajectoryWriter
-from .frameReader import FrameReader
+from .trajectory_reader import TrajectoryReader
+from .trajectory_writer import TrajectoryWriter
+from .frame_reader import FrameReader
