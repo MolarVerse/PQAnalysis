@@ -5,25 +5,20 @@ A module containing classes for reading a trajectory from a file.
 from __future__ import annotations
 
 # 3rd party modules
-import numpy as np
-
-# 3rd party modules
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
-# Local imports
-import PQAnalysis.config as config
+# Local absolute imports
+from PQAnalysis.config import with_progress_bar
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
+from PQAnalysis.core import Cell
+from PQAnalysis.topology import Topology
 
 # Local relative modules
 from .. import BaseReader
 from .exceptions import TrajectoryReaderError
-from .frameReader import FrameReader
-from PQAnalysis.atomic_system import AtomicSystem
-
-# Local absolute imports
-from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
-from PQAnalysis.core import Cell
-from PQAnalysis.topology import Topology
+from .frame_reader import FrameReader
 
 
 class TrajectoryReader(BaseReader):
@@ -46,7 +41,8 @@ class TrajectoryReader(BaseReader):
         filename : str or list of str
             The name of the file to read from or a list of filenames to read from.
         traj_format : TrajectoryFormat | str, optional
-            The format of the trajectory. Default is TrajectoryFormat.AUTO. The format is inferred from the file extension.
+            The format of the trajectory. Default is TrajectoryFormat.AUTO.
+            The format is inferred from the file extension.
         md_format : MDEngineFormat | str, optional
             The format of the trajectory. Default is MDEngineFormat.PQ.
         topology : Topology, optional
@@ -55,14 +51,17 @@ class TrajectoryReader(BaseReader):
             Whether the topology is constant over the trajectory or does change. Default is True.
         """
         super().__init__(filename)
+
         if not self.multiple_files:
             self.filenames = [self.filename]
+
+        self.file = None
 
         self.frames = []
         self.topology = topology
         self.constant_topology = constant_topology
 
-        self.traj_format = TrajectoryFormat(traj_format, self.filenames[0])
+        self.traj_format = TrajectoryFormat((traj_format, self.filenames[0]))
 
         self.md_format = MDEngineFormat(md_format)
         self.frame_reader = FrameReader(md_format=self.md_format)
@@ -77,11 +76,16 @@ class TrajectoryReader(BaseReader):
         """
         Reads the trajectory from the file.
 
-        It reads the trajectory from the file and concatenates the lines of the same frame. The frame information is then read from the concatenated string with the FrameReader class and a Frame object is created.
+        It reads the trajectory from the file and concatenates the lines of the
+        same frame. The frame information is then read from the concatenated
+        string with the FrameReader class and a Frame object is created.
 
-        In order to read the cell information given in the file, the cell information of the last frame is used for all following frames that do not have cell information.
+        In order to read the cell information given in the file, the cell 
+        information of the last frame is used for all following frames that
+        do not have cell information.
 
-        If the trajectory is split into multiple files, the files are read one after another and the frames are concatenated into a single trajectory.
+        If the trajectory is split into multiple files, the files are read one 
+        after another and the frames are concatenated into a single trajectory.
 
         Parameters
         ----------
@@ -94,7 +98,7 @@ class TrajectoryReader(BaseReader):
             The trajectory read from the file.
         """
 
-        self.with_progress_bar = config.with_progress_bar
+        self.with_progress_bar = with_progress_bar
         self.topology = topology
 
         traj = Trajectory()
@@ -107,9 +111,14 @@ class TrajectoryReader(BaseReader):
         """
         A generator that yields the frames of the trajectory.
 
-        The difference to the read method is that the read method returns the whole trajectory at once, while the frame_generator yields the frames one after another. This is useful if the trajectory is very large and cannot be stored in memory.
+        The difference to the read method is that the read method returns the whole
+        trajectory at once, while the frame_generator yields the frames one after 
+        another. This is useful if the trajectory is very large and cannot be stored in memory.
 
-        This method is used to read the trajectory from the file. It reads the trajectory from the file and concatenates the lines of the same frame. The frame information is then read from the concatenated string with the FrameReader class and a Frame object is created.
+        This method is used to read the trajectory from the file. It reads the 
+        trajectory from the file and concatenates the lines of the same frame. 
+        The frame information is then read from the concatenated string with the
+        FrameReader class and a Frame object is created.
 
         Yields
         ------
@@ -118,10 +127,10 @@ class TrajectoryReader(BaseReader):
         """
         last_cell = None
         for filename in self.filenames:
-            with open(filename, 'r') as self.file:
+            with open(filename, 'r', encoding='utf-8') as self.file:
                 sum_lines = sum(1 for _ in self.file)
 
-            with open(filename, 'r') as self.file:
+            with open(filename, 'r', encoding='utf-8') as self.file:
                 frame_lines = []
                 for line in tqdm(self.file, total=sum_lines, disable=not self.with_progress_bar):
                     stripped_line = line.strip()
@@ -162,7 +171,7 @@ class TrajectoryReader(BaseReader):
         n_frames = 0
 
         for filename in self.filenames:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 lines = f.readlines()
                 n_frames += int(len(lines) / int(lines[0].split()[0]))
 
@@ -184,7 +193,11 @@ class TrajectoryReader(BaseReader):
         """
         A generator that yields the cells of the trajectory.
 
-        This method is used to read the cells from the file. It reads the cells from the file and yields them one after another. If the cell information is not given in the file, the cell information of the last frame is used for all following frames that do not have cell information.
+        This method is used to read the cells from the file. 
+        It reads the cells from the file and yields them one after
+        another. If the cell information is not given in the 
+        file, the cell information of the last frame is used 
+        for all following frames that do not have cell information.
 
         Yields
         ------
@@ -192,36 +205,59 @@ class TrajectoryReader(BaseReader):
             The list of cells read from the trajectory.
         """
         last_cell = None
-        with open(self.filenames[0], 'r') as f:
+        with open(self.filenames[0], 'r', encoding='utf-8') as f:
             line = f.readline()
             n_atoms = int(line.split()[0])
 
         for filename in self.filenames:
-            with open(filename, 'r') as f:
+            with open(filename, 'r', encoding='utf-8') as f:
                 for line in f:
                     stripped_line = line.strip()
                     splitted_line = stripped_line.split()
+
                     if len(splitted_line) == 1 and cell is None:
                         cell = Cell()
+
                         if last_cell is not None:
                             cell = last_cell
+
                         yield cell
+
                     elif len(splitted_line) == 4:
-                        cell = Cell(float(splitted_line[1]), float(
-                            splitted_line[2]), float(splitted_line[3]))
+
+                        cell = Cell(
+                            float(splitted_line[1]),
+                            float(splitted_line[2]),
+                            float(splitted_line[3])
+                        )
+
                         yield cell
+
                     elif len(splitted_line) == 7:
-                        cell = Cell(float(splitted_line[1]), float(splitted_line[2]), float(splitted_line[3]),
-                                    float(splitted_line[4]), float(splitted_line[5]), float(splitted_line[6]))
+
+                        cell = Cell(
+                            float(splitted_line[1]),
+                            float(splitted_line[2]),
+                            float(splitted_line[3]),
+                            float(splitted_line[4]),
+                            float(splitted_line[5]),
+                            float(splitted_line[6])
+                        )
+
                         yield cell
+
                     else:
+
                         raise TrajectoryReaderError(
-                            f"Invalid number of arguments for box: {len(splitted_line)} encountered in file {filename} {stripped_line}.")
+                            "Invalid number of arguments for box: "
+                            f"{len(splitted_line)} encountered in file "
+                            f"{filename} {stripped_line}."
+                        )
 
                     last_cell = cell
 
                     for _ in range(n_atoms+1):
-                        next(f)
+                        next(f, None)  # Skip the next n_atoms+1 lines
 
     def _read_single_frame(self,
                            frame_string: str,
@@ -248,4 +284,4 @@ class TrajectoryReader(BaseReader):
             If the first atom in the frame is not X for QMCFC.
         """
         return self.frame_reader.read(
-            frame_string, format=self.traj_format, topology=topology)
+            frame_string, traj_format=self.traj_format, topology=topology)

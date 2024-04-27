@@ -79,11 +79,14 @@ class TrajectoryFormat(BaseEnumFormat):
         """
         if file_path.endswith(".xyz"):
             return cls.XYZ
-        elif file_path.endswith(".vel") or file_path.endswith(".velocs"):
+
+        if file_path.endswith(".vel") or file_path.endswith(".velocs"):
             return cls.VEL
-        elif file_path.endswith(".force") or file_path.endswith(".forces") or file_path.endswith(".frc"):
+
+        if file_path.endswith(".force") or file_path.endswith(".forces") or file_path.endswith(".frc"):
             return cls.FORCE
-        elif file_path.endswith(".charge") or file_path.endswith(".chrg"):
+
+        if file_path.endswith(".charge") or file_path.endswith(".chrg"):
             return cls.CHARGE
         else:
             raise TrajectoryFormatError(

@@ -88,7 +88,7 @@ class TestFrameReader:
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", format="vel")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", traj_format="vel")
         assert frame.n_atoms == 2
         assert frame.atoms == [Atom(atom, use_guess_element=False)
                                for atom in ["h", "o1"]]
@@ -97,7 +97,7 @@ class TestFrameReader:
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", format="force")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", traj_format="force")
         assert frame.n_atoms == 2
         assert frame.atoms == [Atom(atom, use_guess_element=False)
                                for atom in ["h", "o1"]]
@@ -106,7 +106,7 @@ class TestFrameReader:
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0\no1 2.0", format="charge")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0\no1 2.0", traj_format="charge")
         assert frame.n_atoms == 2
         assert frame.atoms == [Atom(atom, use_guess_element=False)
                                for atom in ["h", "o1"]]
@@ -117,7 +117,7 @@ class TestFrameReader:
         reader = FrameReader()
 
         with pytest.raises(TrajectoryFormatError) as exception:
-            reader.read("", format="invalid")
+            reader.read("", traj_format="invalid")
         assert str(
             exception.value) == f"""
 'invalid' is not a valid TrajectoryFormat.
