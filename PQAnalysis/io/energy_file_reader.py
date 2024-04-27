@@ -5,7 +5,7 @@ A module containing the EnergyFileReader class.
 import os
 import numpy as np
 
-from PQAnalysis.physicalData import Energy
+from PQAnalysis.physical_data import Energy
 from PQAnalysis.traj import MDEngineFormat
 from . import BaseReader, InfoFileReader
 

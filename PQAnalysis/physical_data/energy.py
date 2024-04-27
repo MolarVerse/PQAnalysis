@@ -2,13 +2,14 @@
 A module containing the Energy class.
 """
 
+from collections import defaultdict
+
 import numpy as np
 
 from beartype.typing import Dict
-from collections import defaultdict
 
-from . import EnergyError
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from . import EnergyError
 
 
 class Energy():
@@ -40,12 +41,18 @@ class Energy():
 
         Notes
         -----
-        If no info dictionary is given, a default dictionary is created, where the keys are the indices of the data array and the values are the indices of the data array. Furthermore a units dictionary can be given, where the keys have to match the keys of the info dictionary and the values are the units of the physical properties. If no units dictionary is given, the units are set to None.
+        If no info dictionary is given, a default dictionary is created,
+        where the keys are the indices of the data array and the values 
+        are the indices of the data array. Furthermore a units dictionary
+        can be given, where the keys have to match the keys of the info
+        dictionary and the values are the units of the physical properties.
+        If no units dictionary is given, the units are set to None.
 
-        The attributes of any Energy object are created for each physical property found in the info file.
-        The attribute names can be found in the __data_attributes__ dictionary. The
-        attribute names are the keys of the dictionary and the values are the names
-        of the physical properties found in the info file. The attributes are created
+        The attributes of any Energy object are created for each physical
+        property found in the info file. The attribute names can be found 
+        in the __data_attributes__ dictionary. The attribute names are the
+        keys of the dictionary and the values are the names of the physical 
+        properties found in the info file. The attributes are created
         as follows:
 
         - The attribute name is the key of the __data_attributes__ dictionary.
@@ -65,11 +72,14 @@ class Energy():
 
         self.data = np.array(data)
 
-        self.__setup_info_dictionary__(info, units)
+        self._setup_info_dictionary(info, units)
 
-        self.__make_attributes__()
+        self._make_attributes()
 
-    def __setup_info_dictionary__(self, info: Dict | None = None, units: Dict | None = None) -> None:
+    def _setup_info_dictionary(self,
+                               info: Dict | None = None,
+                               units: Dict | None = None
+                               ) -> None:
         """
         Sets up the info dictionary.
 
@@ -126,7 +136,7 @@ class Energy():
             raise EnergyError(
                 "The keys of the info and units dictionary do not match.")
 
-    def __make_attributes__(self) -> None:
+    def _make_attributes(self) -> None:
         """
         Creates attributes for the physical properties of the Energy object.
 
@@ -148,15 +158,28 @@ class Energy():
         is the corresponding unit. The attribute "simulation_time_with_unit" is a tuple of
         the corresponding data entry and the corresponding unit.
         """
-        for attribute in self.__data_attributes__:
+
+        for attribute, value in self.__data_attributes__.items():
             info_string = attribute
             if info_string in self.info or info_string in self.units:
-                setattr(self, self.__data_attributes__[attribute],
-                        self.data[self.info[attribute]])
-                setattr(self, self.__data_attributes__[attribute] + "_unit",
-                        self.units[attribute])
-                setattr(self, self.__data_attributes__[attribute] + "_with_unit", (self.data[self.info[
-                        attribute]], self.units[attribute]))
+                setattr(
+                    self,
+                    value,
+                    self.data[self.info[attribute]]
+                )
+                setattr(
+                    self,
+                    value + "_unit",
+                    self.units[attribute]
+                )
+                setattr(
+                    self,
+                    value + "_with_unit",
+                    (
+                        self.data[self.info[attribute]],
+                        self.units[attribute]
+                    )
+                )
 
     ################################################
     #                                              #
