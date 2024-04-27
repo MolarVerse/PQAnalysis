@@ -51,6 +51,8 @@ class FrameReader:
         ----------
         frame_string : str
             The string to read the frame from.
+        topology : Topology | None, optional
+            The topology of the frame. Default is None.
         traj_format : TrajectoryFormat | str, optional
             The format of the trajectory. Default is TrajectoryFormat.XYZ.
 
@@ -61,7 +63,7 @@ class FrameReader:
 
         Raises
         ------
-        MDEngineFormatError
+        FrameReaderError
             If the given format is not valid.
         """
 
@@ -281,11 +283,11 @@ class FrameReader:
 
         if len(header_line) == 4:
             n_atoms = int(header_line[0])
-            a, b, c = map(float, header_line[1:4])
+            a, b, c = (float(x) for x in header_line[1:4])
             cell = Cell(a, b, c)
         elif len(header_line) == 7:
             n_atoms = int(header_line[0])
-            a, b, c, alpha, beta, gamma = map(float, header_line[1:7])
+            a, b, c, alpha, beta, gamma = (float(x) for x in header_line[1:7])
             cell = Cell(a, b, c, alpha, beta, gamma)
         elif len(header_line) == 1:
             n_atoms = int(header_line[0])

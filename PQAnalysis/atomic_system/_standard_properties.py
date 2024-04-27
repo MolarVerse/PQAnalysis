@@ -4,8 +4,13 @@ of an atomic system (i.e. standard getter and setter methods).
 """
 
 from PQAnalysis.core import Atoms, Cell
-from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.topology import Topology
+from PQAnalysis.types import (
+    Np1DNumberArray,
+    Np2DNumberArray,
+    Real,
+)
+
 from ._decorators import check_atom_number_setters
 
 
@@ -133,12 +138,12 @@ class _StandardPropertiesMixin:
         self._cell = cell
 
     @property
-    def energy(self) -> float:
+    def energy(self) -> Real | None:
         """float: The energy of the system."""
         return self._energy
 
     @energy.setter
-    def energy(self, energy: float) -> None:
+    def energy(self, energy: Real) -> None:
         self._energy = energy
 
     @property
@@ -147,7 +152,7 @@ class _StandardPropertiesMixin:
         return self._energy is not None
 
     @property
-    def stress(self) -> Np2DNumberArray:
+    def stress(self) -> Np2DNumberArray | None:
         """Np2DNumberArray: The stress tensor of the system."""
         return self._stress
 
@@ -161,7 +166,7 @@ class _StandardPropertiesMixin:
         return self._stress is not None
 
     @property
-    def virial(self) -> Np2DNumberArray:
+    def virial(self) -> Np2DNumberArray | None:
         """Np2DNumberArray: The virial tensor of the system."""
         return self._virial
 
