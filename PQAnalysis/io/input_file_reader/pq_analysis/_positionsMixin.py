@@ -1,9 +1,10 @@
 """
-A module containing a Mixin class for position related keywords of a PQAnalysis input file.
+A module containing a Mixin class for position
+related keywords of a PQAnalysis input file.
 """
 
-from ._parse import _parse_positive_int, _parse_positive_real
 from PQAnalysis.types import PositiveInt, PositiveReal
+from ._parse import _parse_positive_int, _parse_positive_real
 
 
 class _PositionsMixin:

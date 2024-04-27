@@ -9,9 +9,24 @@ class _OutputFileMixin:
     """
 
     start_file_keys = ["start_file", "rpmd_start_file"]
-    output_file_keys = ["restart_file", "traj_file", "vel_file", "force_file", "charge_file", "energy_file", "info_file",
-                        "output_file", "file_prefix", "rpmd_restart_file", "rpmd_traj_file", "rpmd_vel_file", "rpmd_force_file",
-                        "rpmd_energy_file", "rpmd_charge_file"]
+
+    output_file_keys = [
+        "restart_file",
+        "traj_file",
+        "vel_file",
+        "force_file",
+        "charge_file",
+        "energy_file",
+        "info_file",
+        "output_file",
+        "file_prefix",
+        "rpmd_restart_file",
+        "rpmd_traj_file",
+        "rpmd_vel_file",
+        "rpmd_force_file",
+        "rpmd_energy_file",
+        "rpmd_charge_file"
+    ]
 
     @property
     def start_file(self) -> str:
@@ -22,9 +37,9 @@ class _OutputFileMixin:
     def is_start_file_defined(self) -> bool:
         """bool: Whether a start file is defined in the input file."""
         try:
-            self.start_file
+            _ = self.start_file
             return True
-        except Exception:
+        except KeyError:
             return False
 
     @property
@@ -36,9 +51,9 @@ class _OutputFileMixin:
     def is_rpmd_start_file_defined(self) -> bool:
         """bool: Whether a rpmd start file is defined in the input file."""
         try:
-            self.rpmd_start_file
+            _ = self.rpmd_start_file
             return True
-        except Exception:
+        except KeyError:
             return False
 
     @property

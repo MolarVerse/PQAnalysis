@@ -2,7 +2,7 @@ from lark import Tree, Token
 
 from .. import pytestmark
 
-from PQAnalysis.io.inputFileReader.inputFileParser import InputFileVisitor, InputDictionary
+from PQAnalysis.io.input_file_reader.input_file_parser import InputFileVisitor, InputDictionary
 
 
 class TestInputFileVisitor:

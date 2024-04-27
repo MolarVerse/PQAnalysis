@@ -3,7 +3,7 @@ import pytest
 from .. import pytestmark
 
 from PQAnalysis.io import InputFileParser
-from PQAnalysis.io.inputFileReader.formats import InputFileFormat, InputFileFormatError
+from PQAnalysis.io.input_file_reader.formats import InputFileFormat, InputFileFormatError
 
 
 class TestInputFileParser:

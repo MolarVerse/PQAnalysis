@@ -4,22 +4,30 @@ A module containing the input file parser.
 
 from __future__ import annotations
 
-from lark import Visitor, Transformer, Lark, Tree
 from glob import glob
-from beartype.typing import Any, List, Tuple
 from numbers import Real
+from lark import Visitor, Transformer, Lark, Tree
+from beartype.typing import Any, List, Tuple
 
-from .formats import InputFileFormat
-from .. import BaseReader
 from PQAnalysis import __base_path__
 from PQAnalysis.types import Range
+from .formats import InputFileFormat
+from .. import BaseReader
 
 
 class InputFileParser(BaseReader):
     """
     Class to parse input files.
 
-    This parser is based on a lark grammar. It uses the lark parser to parse the input file. For more information have a look at the `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. This input file parser is used for parsing all kind of input files. By selecting the input_format the automatically invokes the corresponding grammar. The input_format can be either PQANALYSIS, PQ or QMCFC. The PQANALYSIS format is used for parsing the input files of the PQAnalysis code. The PQ and QMCFC formats are used for parsing the input files of the PQ and QMCFC codes, respectively.
+    This parser is based on a lark grammar. It uses the lark parser to parse
+    the input file. For more information have a look at the 
+    `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. 
+    This input file parser is used for parsing all kind of input files. 
+    By selecting the input_format the automatically invokes the corresponding
+    grammar. The input_format can be either PQANALYSIS, PQ or QMCFC. 
+    The PQANALYSIS format is used for parsing the input files of the 
+    PQAnalysis code. The PQ and QMCFC formats are used for parsing the input
+    files of the PQ and QMCFC codes, respectively.
 
     Parameters
     ----------
@@ -27,7 +35,10 @@ class InputFileParser(BaseReader):
         BaseReader class from PQAnalysis.io
     """
 
-    def __init__(self, filename: str, input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS) -> None:
+    def __init__(self,
+                 filename: str,
+                 input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS
+                 ) -> None:
         """
         Parameters
         ----------
@@ -38,6 +49,15 @@ class InputFileParser(BaseReader):
         """
         super().__init__(filename)
         self.input_format = InputFileFormat(input_format)
+
+        ########################
+        # dummy initialization #
+        ########################
+
+        self.raw_input_file = None
+        self.tree = None
+        self.transformed_tree = None
+        self.input_dictionary = None
 
     def parse(self) -> InputDictionary:
         """
@@ -55,7 +75,7 @@ class InputFileParser(BaseReader):
         """
         if self.input_format == InputFileFormat.PQANALYSIS:
             grammar_file = "inputGrammar.lark"
-        elif self.input_format == InputFileFormat.PQ or self.input_format == InputFileFormat.QMCFC:
+        elif self.input_format in [InputFileFormat.PQ, InputFileFormat.QMCFC]:
             grammar_file = "PQ_inputGrammar.lark"
 
         grammar_path = __base_path__ / "grammar"
@@ -63,8 +83,9 @@ class InputFileParser(BaseReader):
         parser = Lark.open(grammar_path / grammar_file,
                            propagate_positions=True)
 
-        file = open(self.filename, "r")
-        self.raw_input_file = file.read()
+        with open(self.filename, "r", encoding="utf-8") as file:
+            self.raw_input_file = file.read()
+
         self.tree = parser.parse(self.raw_input_file)
 
         self.transformed_tree = PrimitiveTransformer(
@@ -115,7 +136,7 @@ class InputDictionary:
         """
         key = key.lower()
 
-        if key not in self.dict.keys():
+        if key not in self.dict:
             raise KeyError(
                 f"Input file key \"{key}\" not defined in input file.")
 
@@ -140,7 +161,7 @@ class InputDictionary:
         """
         key = key.lower()
 
-        if key in self.dict.keys():
+        if key in self.dict:
             raise KeyError(
                 f"Input file key \"{key}\" defined multiple times in input file.")
 
@@ -251,7 +272,8 @@ class PrimitiveTransformer(Transformer):
         """
         Method to transform float values
 
-        A "float" token is transformed into a float value, the string "float", and the line where the token was defined.
+        A "float" token is transformed into a float value,
+        the string "float", and the line where the token was defined.
 
         Parameters
         ----------
@@ -261,7 +283,8 @@ class PrimitiveTransformer(Transformer):
         Returns
         -------
         Tuple[Real, str, str]
-            tuple containing the float value, the string "float", and the line where the token was defined.
+            tuple containing the float value, the string "float",
+            and the line where the token was defined.
         """
         return float(items[0]), "float", str(items[0].end_line)
 
@@ -277,7 +300,8 @@ class PrimitiveTransformer(Transformer):
         Returns
         -------
         Tuple[Integral, str, str]
-            tuple containing the int value, the string "int", and the line where the token was defined.
+            tuple containing the int value, the string "int",
+            and the line where the token was defined.
         """
         return int(items[0]), "int", str(items[0].end_line)
 
@@ -293,7 +317,8 @@ class PrimitiveTransformer(Transformer):
         Returns
         -------
         Tuple[str, str, str]
-            tuple containing the word value, the string "str", and the line where the token was defined.
+            tuple containing the word value, the string "str",
+            and the line where the token was defined.
         """
         return str(items[0]), "str", str(items[0].end_line)
 
@@ -309,7 +334,8 @@ class PrimitiveTransformer(Transformer):
         Returns
         -------
         Tuple[bool, str, str]
-            tuple containing the bool value, the string "bool", and the line where the token was defined.
+            tuple containing the bool value, the string "bool",
+            and the line where the token was defined.
         """
         return bool(items[0]), "bool", str(items[0].end_line)
 
@@ -374,8 +400,10 @@ class ComposedDatatypesTransformer(Transformer):
         """
         Method to transform array values
 
-        It transforms a list of items into a list of values, the string "{most_general_type}", and the line where the token was defined.
-        The most general type is inferred from the list of items. If the list contains a bool and another type, a TypeError is raised.
+        It transforms a list of items into a list of values, the string
+        "{most_general_type}", and the line where the token was defined.
+        The most general type is inferred from the list of items. 
+        If the list contains a bool and another type, a TypeError is raised.
         The list of items must contain only primitive types.
 
         Parameters
@@ -386,7 +414,8 @@ class ComposedDatatypesTransformer(Transformer):
         Returns
         -------
         Tuple[List[Any], str, str]
-            tuple containing the array value, the string "{most_general_type}", and the line where the token was defined.
+            tuple containing the array value, the string "{most_general_type}",
+            and the line where the token was defined.
 
         Raises
         ------
@@ -427,7 +456,8 @@ class ComposedDatatypesTransformer(Transformer):
         Returns
         -------
         Tuple[Range, str, str]
-            tuple containing the range value, the string "range", and the line where the token was defined.
+            tuple containing the range value, the string "range",
+            and the line where the token was defined.
         """
         if len(items) == 2:
             return_range = range(items[0][0], items[1][0])
@@ -448,7 +478,8 @@ class ComposedDatatypesTransformer(Transformer):
         Returns
         -------
         Tuple[List[str], str, str]
-            tuple containing the glob value, the string "glob", and the line where the token was defined.
+            tuple containing the glob value, the string "glob",
+            and the line where the token was defined.
         """
         return glob("".join(items).strip()), "glob", str(items[0].end_line)
 
@@ -480,7 +511,8 @@ class ComposedDatatypesTransformer(Transformer):
         Returns
         -------
         Tuple[Any, str, str]
-            tuple containing the value value, the string "value", and the line where the token was defined.
+            tuple containing the value value, the string "value",
+            and the line where the token was defined.
         """
         return items[0]
 
@@ -502,7 +534,7 @@ class InputFileVisitor(Visitor):
         It initializes the dictionary and the composed datatypes transformer.
         """
         self.dict = InputDictionary()
-        self.composedDatatypeTransformer = ComposedDatatypesTransformer()
+        self.composed_datatype_transformer = ComposedDatatypesTransformer()
 
     def assign(self, items: Tree) -> Tree:
         """
@@ -510,7 +542,8 @@ class InputFileVisitor(Visitor):
 
         key = value; 
 
-        where key is a string, and the value is a tuple containing the value, the type of the value and the line where the key was defined.
+        where key is a string, and the value is a tuple containing the value,
+        the type of the value and the line where the key was defined.
 
         Parameters
         ----------
@@ -536,7 +569,8 @@ class InputFileVisitor(Visitor):
         ...
         END
 
-        where key is a string, and the values are a tuple containing the value, the type of the value and the line where the key was defined.
+        where key is a string, and the values are a tuple containing the value,
+        the type of the value and the line where the key was defined.
 
         Parameters
         ----------
@@ -548,11 +582,14 @@ class InputFileVisitor(Visitor):
         Tree
             The multiline statement.
         """
-        array = self.composedDatatypeTransformer.array(
+        array = self.composed_datatype_transformer.array(
             [item for item in items.children[1:-1]])
 
-        self.dict[str(items.children[0])
-                  ] = array[0], array[1], f"{items.children[0].end_line}-{items.children[-1].end_line}"
+        self.dict[str(items.children[0])] = (
+            array[0],
+            array[1],
+            f"{items.children[0].end_line}-{items.children[-1].end_line}"
+        )
 
         return items
 

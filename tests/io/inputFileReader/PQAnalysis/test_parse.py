@@ -2,10 +2,10 @@ import pytest
 
 from ... import pytestmark
 
-import PQAnalysis.io.inputFileReader.PQAnalysis._parse as parse
+import PQAnalysis.io.input_file_reader.pq_analysis._parse as parse
 
-from PQAnalysis.io.inputFileReader import InputDictionary
-from PQAnalysis.io.inputFileReader.exceptions import InputFileError
+from PQAnalysis.io.input_file_reader import InputDictionary
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis.traj import MDEngineFormat
 
 
