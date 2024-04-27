@@ -9,7 +9,7 @@ import logging
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
-from PQAnalysis.io.inputFileReader.exceptions import InputFileError
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis import __package_name__
 
 

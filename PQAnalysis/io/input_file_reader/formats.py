@@ -4,8 +4,8 @@ A module containing the InputFileFormat enumeration.
 
 from beartype.typing import Any
 
-from .exceptions import InputFileFormatError
 from PQAnalysis.formats import BaseEnumFormat
+from .exceptions import InputFileFormatError
 
 
 class InputFileFormat(BaseEnumFormat):
@@ -18,7 +18,7 @@ class InputFileFormat(BaseEnumFormat):
     QMCFC = "QMCFC"
 
     @classmethod
-    def _missing_(cls, value: object) -> Any:
+    def _missing_(cls, value: object) -> Any:  # pylint: disable=arguments-differ
         """
         This method allows an InputFileFormat to be retrieved from a string.
         """

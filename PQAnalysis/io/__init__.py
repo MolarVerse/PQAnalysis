@@ -28,8 +28,8 @@ from .traj_file.api import (
 )
 
 # import the classes from the gen_file subpackage
-from .gen_file.genFileReader import GenFileReader
-from .gen_file.genFileWriter import GenFileWriter
+from .gen_file.gen_file_reader import GenFileReader
+from .gen_file.gen_file_writer import GenFileWriter
 from .gen_file.api import read_gen_file, write_gen_file
 
 # import the classes from the topology_file subpackage
@@ -41,10 +41,10 @@ from .infoFileReader import InfoFileReader
 from .energyFileReader import EnergyFileReader
 from .boxWriter import BoxWriter
 
-from .inputFileReader import InputFileParser
-from .inputFileReader import PQ_InputFileReader
-from .inputFileReader import PQAnalysisInputFileReader
-from .inputFileReader import InputFileFormat
+from .input_file_reader import InputFileParser
+from .input_file_reader import PQInputFileReader
+from .input_file_reader import PQAnalysisInputFileReader
+from .input_file_reader import InputFileFormat
 
 from .api import (
     write,

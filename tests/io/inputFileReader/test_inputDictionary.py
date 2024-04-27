@@ -2,7 +2,7 @@ import pytest
 
 from .. import pytestmark
 
-from PQAnalysis.io.inputFileReader.inputFileParser import InputDictionary
+from PQAnalysis.io.input_file_reader.input_file_parser import InputDictionary
 
 
 class TestInputFileDictionary:

@@ -2,8 +2,8 @@
 This module provides API functions for input/output handling of molecular dynamics simulations.
 """
 
-from .inputFileReader import PQ_InputFileReader as Reader
-from .inputFileReader.formats import InputFileFormat
+from .input_file_reader import PQInputFileReader as Reader
+from .input_file_reader.formats import InputFileFormat
 from .write_api import write, write_box
 from .conversion_api import rst2xyz, traj2box, traj2qmcfc, gen2xyz, xyz2gen
 

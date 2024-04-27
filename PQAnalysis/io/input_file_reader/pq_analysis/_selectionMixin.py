@@ -1,5 +1,6 @@
 """
-A module containing a mixin class to read all selection related keywords from the input dictionary
+A module containing a mixin class to read all selection 
+related keywords from the input dictionary
 """
 
 from ._parse import _parse_bool, _parse_string

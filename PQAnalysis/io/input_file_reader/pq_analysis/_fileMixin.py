@@ -1,5 +1,6 @@
 """
-A module containing a Mixin class for file related keywords of a PQAnalysis input file.
+A module containing a Mixin class for file 
+related keywords of a PQAnalysis input file.
 """
 
 from beartype.typing import List
@@ -9,7 +10,8 @@ from ._parse import _parse_files, _parse_string
 
 class _FileMixin:
     """
-    A mixin class to read all file related keywords from the input dictionary.
+    A mixin class to read all file related
+    keywords from the input dictionary.
 
     The following keywords are read:
         - traj_files

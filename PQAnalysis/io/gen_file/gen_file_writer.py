@@ -4,8 +4,8 @@ A module containing the GenFileWriter class
 
 import numpy as np
 
-from .. import BaseWriter, FileWritingMode
 from PQAnalysis.atomic_system import AtomicSystem
+from .. import BaseWriter, FileWritingMode
 
 
 class GenFileWriter(BaseWriter):
@@ -31,6 +31,9 @@ class GenFileWriter(BaseWriter):
 
         super().__init__(filename, mode)
 
+        self.system = None
+        self.periodic = None
+
     def write(self,
               system: AtomicSystem,
               periodic: bool | None = None,
@@ -43,7 +46,9 @@ class GenFileWriter(BaseWriter):
         system : AtomicSystem
             The system to write.
         periodicity : bool, optional
-            The periodicity of the system. If True, the system is considered periodic. If False, the system is considered non-periodic. If None, the periodicity is inferred from the system, by default None.
+            The periodicity of the system. If True, the system is considered periodic. 
+            If False, the system is considered non-periodic. If None, the periodicity 
+            is inferred from the system, by default None.
         """
 
         self.system = system
@@ -72,7 +77,9 @@ class GenFileWriter(BaseWriter):
         """
         Writes the header of the gen file.
 
-        The header consists of two lines. The first line contains the number of atoms and the periodicity of the system. The second line contains the atom names from which the indices of the atoms in the coordinates block can be derived.
+        The header consists of two lines. The first line contains the number of atoms and 
+        the periodicity of the system. The second line contains the atom names from which 
+        the indices of the atoms in the coordinates block can be derived.
         """
         print({self.system.n_atoms}, {periodicity}, file=self.file)
 
