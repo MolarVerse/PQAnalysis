@@ -22,7 +22,8 @@ class Trajectory:
     The length of a trajectory is the number of frames in the trajectory.
     A frame can be checked for membership in a trajectory.
 
-    This trajectory class can only handle constant topologies i.e. all frames in the trajectory must have the same topology.
+    This trajectory class can only handle constant topologies
+    i.e. all frames in the trajectory must have the same topology.
     """
 
     def __init__(self,
@@ -51,7 +52,7 @@ class Trajectory:
         """Np1DNumberArray: The box volumes of the trajectory."""
         return np.array([frame.cell.volume for frame in self.frames])
 
-    def check_PBC(self) -> bool:
+    def check_pbc(self) -> bool:
         """
         Checks if one cell of the trajectory is Cell().
 
@@ -105,8 +106,9 @@ class Trajectory:
         """
         This method allows a frame or a trajectory to be retrieved from the trajectory.
 
-        For example, if traj is a trajectory, then traj[0] is the first frame of the trajectory.
-        If traj is a trajectory, then traj[0:2] is a trajectory containing the first two frames of the trajectory.
+        For example, if traj is a trajectory, then traj[0] is the first frame 
+        of the trajectory. If traj is a trajectory, then traj[0:2] is a trajectory
+        containing the first two frames of the trajectory.
 
         Parameters
         ----------
@@ -124,9 +126,9 @@ class Trajectory:
             traj = Trajectory(frames)
             traj.topology = self.topology
             return traj
-        else:
-            frames.topology = self.topology
-            return frames
+
+        frames.topology = self.topology
+        return frames
 
     def __iter__(self) -> Iterable[AtomicSystem]:
         """
