@@ -82,6 +82,7 @@ class FrameReader:
         if TrajectoryFormat(traj_format) is TrajectoryFormat.CHARGE:
             return self.read_charges(frame_string)
 
+        # This should never happen - only for safety
         raise FrameReaderError(
             f'Invalid TrajectoryFormat given.{traj_format=}'
         )

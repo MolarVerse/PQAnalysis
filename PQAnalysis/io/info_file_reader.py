@@ -70,6 +70,7 @@ class InfoFileReader(BaseReader):
         if self.format == MDEngineFormat.QMCFC:
             return self.read_qmcfc()
 
+        # should never reach this point - if it does, it is a bug
         raise MDEngineFormatError(
             f"Info file {self.filename} is not in PQ or qmcfc format."
         )
