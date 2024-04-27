@@ -6,10 +6,10 @@ import numpy as np
 
 from beartype.typing import List
 
-from .selection import SelectionCompatible, Selection
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.types import Np1DIntArray, Np2DIntArray
 from PQAnalysis.io import BaseWriter, FileWritingMode
+from .selection import SelectionCompatible, Selection
 
 
 class ShakeTopologyGenerator:
@@ -25,20 +25,28 @@ class ShakeTopologyGenerator:
         Parameters
         ----------
         selection : SelectionCompatible, optional
-            Selection is either a selection object or any object that can be initialized via 'Selection(selection)'. default None (all atoms)
+            Selection is either a selection object or any object that can be
+            initialized via 'Selection(selection)'. default None (all atoms)
         use_full_atom_info : bool, optional
-            If True, the full atom information (name, index, mass) is used for the selection, by default False
+            If True, the full atom information (name, index, mass) is used
+            for the selection, by default False
             Is always ignored if atoms is not a list of atom objects.
         """
 
         self._use_full_atom_info = use_full_atom_info
         self.selection = Selection(selection)
 
+        self.indices = None
+        self.target_indices = None
+        self.distances = None
+        self._topology = None
+
     def generate_topology(self, trajectory: Trajectory) -> None:
         """
         Generates a tuple of indices, target_indices, and distances for the given trajectory.
 
-        The generated numpy arrays represent all important information about the shake topology for the given trajectory.
+        The generated numpy arrays represent all important information about the shake
+        topology for the given trajectory.
 
             - indices: The indices of the atoms to use for the topology.
             - target_indices: The indices of the target atoms for the shaked atoms.
@@ -123,7 +131,13 @@ class ShakeTopologyGenerator:
         writer.open()
 
         print(
-            f"SHAKE {len(self.indices)}  {len(np.unique(self.target_indices))}  0", file=writer.file)
+            (
+                f"SHAKE {len(self.indices)}  "
+                f"{len(np.unique(self.target_indices))}  0"
+            ),
+            file=writer.file
+        )
+
         for i, index in enumerate(self.indices):
             target_index = self.target_indices[i]
             distance = self.distances[i]

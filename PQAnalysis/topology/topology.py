@@ -19,7 +19,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import TopologyError
-from .bonded_topology.bondedTopology import BondedTopology
+from .bonded_topology.bonded_topology import BondedTopology
 
 module_logger = logging.getLogger(__package_name__).getChild(__name__)
 module_logger = setup_logger(module_logger)
