@@ -1,17 +1,21 @@
 """
-A module to read a topology file for the bonded topology of the PQ or QMCFC project and return a BondedTopology object. For more information please visit the documentation page of PQ https://molarverse.github.io/PQ/
+A module to read a topology file for the bonded topology of the PQ or QMCFC project 
+and return a BondedTopology object. For more information please visit the 
+documentation page of PQ https://molarverse.github.io/PQ/
 """
 
 from beartype.typing import List
 
-from .exceptions import TopologyFileError
 from PQAnalysis.io import BaseReader
 from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
+from .exceptions import TopologyFileError
 
 
 class TopologyFileReader(BaseReader):
     """
-    A class to read a topology file for the bonded topology of the PQ or QMCFC project and return a BondedTopology object. The topology file can have the following blocks in any order and case-insensitive:
+    A class to read a topology file for the bonded topology of the PQ or QMCFC 
+    project and return a BondedTopology object. The topology file can have the 
+    following blocks in any order and case-insensitive:
     - bonds
     - shake
     - angles
@@ -34,7 +38,8 @@ class TopologyFileReader(BaseReader):
         """
         Read the topology file and return a BondedTopology object.
 
-        It gets all defined blocks in the topology file and parses them to create a BondedTopology object.
+        It gets all defined blocks in the topology file and parses them to 
+        create a BondedTopology object.
 
         Returns
         -------
@@ -48,19 +53,22 @@ class TopologyFileReader(BaseReader):
         """
         Read the topology file and return a dictionary with the blocks.
 
-        The blocks are defined by the first word of the first line of each block. The value of the dictionary is the rest of the block apart from the last line.
+        The blocks are defined by the first word of the first line of each block.
+        The value of the dictionary is the rest of the block apart from the last line.
 
         Returns
         -------
         dict[str, List[str]]
-            A dictionary with the blocks of the topology file. The key is the first word of the first line in lower case of each block and the value is the rest of the block apart from the last line.
+            A dictionary with the blocks of the topology file. The key is the first
+            word of the first line in lower case of each block and the value is 
+            the rest of the block apart from the last line.
 
         Raises
         ------
         TopologyFileError
             If not all blocks end with 'END'.
         """
-        with open(self.filename, "r") as file:
+        with open(self.filename, "r", encoding="utf-8") as file:
             lines = file.readlines()
 
             # remove all #.... parts from all lines
@@ -85,7 +93,8 @@ class TopologyFileReader(BaseReader):
                 else:
                     block.append(line)
 
-            # make a dictionary for each block with the key being the first word of the first line of each block
+            # make a dictionary for each block with the key
+            # being the first word of the first line of each block
             # and the value being the rest of the block apart from the last line
             data = {}
             for block in blocks:
@@ -108,7 +117,9 @@ class TopologyFileReader(BaseReader):
         Parameters
         ----------
         blocks : dict[str, List[str]]
-            A dictionary with the blocks of the topology file. The key is the first word of the first line in lower case of each block and the value is the rest of the block apart from the last line.
+            A dictionary with the blocks of the topology file. The key is the first 
+            word of the first line in lower case of each block and the value is the
+            rest of the block apart from the last line.
 
         Returns
         -------
