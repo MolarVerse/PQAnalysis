@@ -1,6 +1,7 @@
 """
 PQAnalysis is a Python package for the analysis of molecular topologies and trajectories.
 """
+# pylint: disable=invalid-name
 
 import logging
 import os
@@ -9,7 +10,7 @@ import time
 from pathlib import Path
 from beartype.claw import beartype_this_package
 
-import PQAnalysis.config as config
+import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
 
 from PQAnalysis.utils.custom_logging import CustomLogger
 

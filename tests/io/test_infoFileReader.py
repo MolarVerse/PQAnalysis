@@ -22,11 +22,13 @@ def test__init__(test_with_data_dir):
     with pytest.raises(MDEngineFormatError) as exception:
         InfoFileReader(
             "md-01.info", engine_format="tmp")
-    assert str(
-        exception.value) == f"""
-'tmp' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+    assert str(exception.value) == (
+        "\n"
+        "'tmp' is not a valid MDEngineFormat.\n"
+        f"Possible values are: {MDEngineFormat.member_repr()} "
+        "or their case insensitive string representation: "
+        f"{MDEngineFormat.value_repr()}"
+    )
 
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"

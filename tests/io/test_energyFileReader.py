@@ -56,11 +56,13 @@ class TestEnergyReader:
 
         with pytest.raises(MDEngineFormatError) as exception:
             EnergyFileReader("md-01.en", engine_format="tmp")
-        assert str(
-            exception.value) == f"""
-'tmp' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+        assert str(exception.value) == (
+            "\n"
+            "'tmp' is not a valid MDEngineFormat.\n"
+            f"Possible values are: {MDEngineFormat.member_repr()} "
+            "or their case insensitive string representation: "
+            f"{MDEngineFormat.value_repr()}"
+        )
 
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test__info_file_found__(self, test_with_data_dir):

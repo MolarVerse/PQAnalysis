@@ -9,7 +9,7 @@ from beartype.typing import Tuple
 # local imports
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
-from PQAnalysis.utils import header
+from PQAnalysis.utils import __header__
 from .rdf import RDF
 
 
@@ -87,7 +87,7 @@ class RDFLogWriter(BaseWriter):
         super().open()
 
         if self.filename is not None:
-            print(header, file=self.file)
+            print(__header__, file=self.file)
             print(file=self.file)
 
         print("RDF calculation:", file=self.file)
