@@ -104,11 +104,14 @@ class Test_RestartFileReader:
 
     @pytest.mark.parametrize("example_dir", ["readRestartFile"], indirect=False)
     def test_read(self, test_with_data_dir):
-        frame = RestartFileReader("md-01.rst").read()
+        frame = RestartFileReader(
+            "md-01.rst",
+            moldescriptor_filename="moldescriptor.dat"
+        ).read()
         system = frame
         residue_ids = frame.topology.residue_ids
 
-        assert np.allclose(residue_ids, np.array([0, 0, 1, 1]))
+        assert np.allclose(residue_ids, np.array([1, 1, 2, 2]))
         assert system.n_atoms == 4
         assert system.atoms == [Atom(name, use_guess_element=False)
                                 for name in ["C", "H", "N", "N"]]
@@ -124,3 +127,5 @@ class Test_RestartFileReader:
             [[1.6, 1.7, 1.8], [2.6, 2.7, 2.8], [3.6, 3.7, 3.8], [4.6, 4.7, 4.8]]))
         assert system.cell == Cell(
             15.0623, 15.0964, 20.0232,  89.9232, 90.2261, 120.324)
+        assert np.allclose(system.topology.residue_ids, np.array([1, 1, 2, 2]))
+        assert len(system.topology.reference_residues) == 2

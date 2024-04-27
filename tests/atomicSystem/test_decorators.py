@@ -3,8 +3,8 @@ import numpy as np
 
 from . import pytestmark
 
-from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.atomicSystem.exceptions import AtomicSystemError
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.core import Atom
 
 

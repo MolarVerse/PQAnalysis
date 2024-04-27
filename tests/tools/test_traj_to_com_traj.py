@@ -4,7 +4,7 @@ from PQAnalysis.tools import traj_to_com_traj
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 def test_traj_to_com_traj():

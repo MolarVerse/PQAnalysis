@@ -7,7 +7,7 @@ from .exceptions import TopologyError
 from .bonded_topology.bond import Bond
 from .bonded_topology.angle import Angle
 from .bonded_topology.dihedral import Dihedral
-from .bonded_topology.bondedTopology import BondedTopology
+from .bonded_topology.bonded_topology import BondedTopology
 from .selection import Selection, SelectionCompatible
 from .topology import Topology
 

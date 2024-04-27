@@ -17,22 +17,24 @@ def test__init__(test_with_data_dir):
 
     with pytest.raises(BeartypeException) as exception:
         InfoFileReader(
-            "md-01.info", format=None)
+            "md-01.info", engine_format=None)
 
     with pytest.raises(MDEngineFormatError) as exception:
         InfoFileReader(
-            "md-01.info", format="tmp")
-    assert str(
-        exception.value) == f"""
-'tmp' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+            "md-01.info", engine_format="tmp")
+    assert str(exception.value) == (
+        "\n"
+        "'tmp' is not a valid MDEngineFormat.\n"
+        f"Possible values are: {MDEngineFormat.member_repr()} "
+        "or their case insensitive string representation: "
+        f"{MDEngineFormat.value_repr()}"
+    )
 
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"
     assert reader.format == MDEngineFormat.PQ
 
-    reader = InfoFileReader("md-01.info", format="qmcfc")
+    reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     assert reader.filename == "md-01.info"
     assert reader.format == MDEngineFormat.QMCFC
 
@@ -78,7 +80,7 @@ def test_read(test_with_data_dir):
     assert info["LOOPTIME"] == 11
     assert units["LOOPTIME"] == "s"
 
-    reader = InfoFileReader("md-01.qmcfc.info", format="qmcfc")
+    reader = InfoFileReader("md-01.qmcfc.info", engine_format="qmcfc")
     info, units = reader.read()
 
     assert info["SIMULATION TIME"] == 0
@@ -112,7 +114,7 @@ def test_read(test_with_data_dir):
     assert str(
         exception.value) == "Info file md-01.qmcfc.info is not in PQ format."
 
-    reader = InfoFileReader("md-01.info", format="qmcfc")
+    reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
     assert str(exception.value) == "Info file md-01.info is not in qmcfc format."

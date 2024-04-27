@@ -1,6 +1,6 @@
 """
-A module containing different exceptions and warnings for the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class
-
+A module containing different exceptions and warnings for 
+the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class
 """
 
 from ...exceptions import PQException, PQWarning

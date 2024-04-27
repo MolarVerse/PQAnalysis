@@ -3,12 +3,11 @@ Common things needed by command line scripts.
 """
 
 import sys
-import warnings
 
 from .._version import __version__
 
-line = "                                              *"
-header = r"""
+__line__ = "                                              *"
+__header__ = r"""
 **************************************************************
 *                                                            *
 *      ____  ____    ___                __           _       *
@@ -20,9 +19,9 @@ header = r"""
 *                                                            *
 *                                                            *"""
 
-header += f"""
+__header__ += f"""
 *  authors:    Jakob Gamper, Josef M. Gallmetzer             *
-*  version:    {__version__}{line[len(__version__):]}
+*  version:    {__version__}{__line__[len(__version__):]}
 *                                                            *
 **************************************************************
 """
@@ -37,6 +36,6 @@ def print_header(file: str = None) -> None:
     """
 
     if file is None:
-        print(header, file=sys.stderr)
+        print(__header__, file=sys.stderr)
     else:
-        print(header, file=file)
+        print(__header__, file=file)

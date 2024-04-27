@@ -11,7 +11,7 @@ from beartype.typing import List, Any, Iterable
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.core import Cell
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class Trajectory:
@@ -22,7 +22,8 @@ class Trajectory:
     The length of a trajectory is the number of frames in the trajectory.
     A frame can be checked for membership in a trajectory.
 
-    This trajectory class can only handle constant topologies i.e. all frames in the trajectory must have the same topology.
+    This trajectory class can only handle constant topologies
+    i.e. all frames in the trajectory must have the same topology.
     """
 
     def __init__(self,
@@ -51,7 +52,7 @@ class Trajectory:
         """Np1DNumberArray: The box volumes of the trajectory."""
         return np.array([frame.cell.volume for frame in self.frames])
 
-    def check_PBC(self) -> bool:
+    def check_pbc(self) -> bool:
         """
         Checks if one cell of the trajectory is Cell().
 
@@ -64,7 +65,7 @@ class Trajectory:
         if len(self.frames) == 0:
             return False
 
-        return all(frame.PBC for frame in self.frames)
+        return all(frame.pbc for frame in self.frames)
 
     def check_vacuum(self) -> bool:
         """
@@ -76,7 +77,7 @@ class Trajectory:
             True if all frames of the trajectory are in vacuum, False otherwise.
         """
 
-        return not any(frame.PBC for frame in self.frames)
+        return not any(frame.pbc for frame in self.frames)
 
     def append(self, frame: AtomicSystem) -> None:
         """
@@ -105,8 +106,9 @@ class Trajectory:
         """
         This method allows a frame or a trajectory to be retrieved from the trajectory.
 
-        For example, if traj is a trajectory, then traj[0] is the first frame of the trajectory.
-        If traj is a trajectory, then traj[0:2] is a trajectory containing the first two frames of the trajectory.
+        For example, if traj is a trajectory, then traj[0] is the first frame 
+        of the trajectory. If traj is a trajectory, then traj[0:2] is a trajectory
+        containing the first two frames of the trajectory.
 
         Parameters
         ----------
@@ -124,9 +126,9 @@ class Trajectory:
             traj = Trajectory(frames)
             traj.topology = self.topology
             return traj
-        else:
-            frames.topology = self.topology
-            return frames
+
+        frames.topology = self.topology
+        return frames
 
     def __iter__(self) -> Iterable[AtomicSystem]:
         """

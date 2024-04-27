@@ -5,8 +5,8 @@ from __future__ import annotations
 
 from beartype.typing import Any, List
 
-from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
 from PQAnalysis.formats import BaseEnumFormat
+from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
 
 
 class OutputFileFormat(BaseEnumFormat):
@@ -47,14 +47,15 @@ class OutputFileFormat(BaseEnumFormat):
     INFO = "info"
 
     @classmethod
-    def _missing_(cls, values: Any) -> Any:
+    def _missing_(cls, values: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
 
         Parameters
         ----------
         values : Tuple[Any | str] | Any
-            The value to be converted to the enumeration or a tuple containing the value and the filename.
+            The value to be converted to the enumeration
+            or a tuple containing the value and the filename.
 
         Returns
         -------
@@ -73,7 +74,8 @@ class OutputFileFormat(BaseEnumFormat):
 
         if output_file_format == cls.AUTO and filename is None:
             raise OutputFileFormatError(
-                "The file format could not be inferred from the file extension because no filename was given."
+                "The file format could not be inferred from "
+                "the file extension because no filename was given."
             )
 
         if output_file_format == cls.AUTO:
@@ -98,11 +100,14 @@ class OutputFileFormat(BaseEnumFormat):
         file_extensions[cls.CHARGE.value] = [".charge", ".chrg", ".charges"]
         file_extensions[cls.RESTART.value] = [".rst", ".restart"]
         file_extensions[cls.ENERGY.value] = [".en", ".energy", ".energies"]
-        file_extensions[cls.INSTANTANEOUS_ENERGY.value] = [
-            ".instant_en", ".instant_energies", ".inst_energy"]
         file_extensions[cls.STRESS.value] = [".stress", ".stresses"]
         file_extensions[cls.VIRIAL.value] = [".virial", ".virials", ".vir"]
         file_extensions[cls.INFO.value] = [".info", ".information"]
+        file_extensions[cls.INSTANTANEOUS_ENERGY.value] = [
+            ".instant_en",
+            ".instant_energies",
+            ".inst_energy"
+        ]
 
         return file_extensions
 
@@ -124,21 +129,26 @@ class OutputFileFormat(BaseEnumFormat):
 
         file_extension = file_path.split(".")[-1]
 
-        if file_extension in cls.file_extensions[cls.XYZ]:
+        if file_extension in cls.file_extensions()[cls.XYZ]:
             return cls.XYZ
-        elif file_extension in cls.file_extensions[cls.VEL]:
+
+        if file_extension in cls.file_extensions()[cls.VEL]:
             return cls.VEL
-        elif file_extension in cls.file_extensions[cls.FORCE]:
+
+        if file_extension in cls.file_extensions()[cls.FORCE]:
             return cls.FORCE
-        elif file_extension in cls.file_extensions[cls.CHARGE]:
+
+        if file_extension in cls.file_extensions()[cls.CHARGE]:
             return cls.CHARGE
-        elif file_extension in cls.file_extensions[cls.RESTART]:
+
+        if file_extension in cls.file_extensions()[cls.RESTART]:
             return cls.RESTART
-        else:
-            raise OutputFileFormatError(
-                f"Could not infer the file format from the file extension of \"{
-                    file_path}\". Possible file formats are: {cls._member_names_}"
-            )
+
+        raise OutputFileFormatError(
+            "Could not infer the file format from the file extension of "
+            f"\"{file_path}\". Possible file formats are: "
+            f"{cls.__members__.values()}"
+        )
 
     @classmethod
     def get_file_extensions(cls, file_format: OutputFileFormat | str) -> List[str]:
@@ -163,7 +173,7 @@ class OutputFileFormat(BaseEnumFormat):
     @classmethod
     def find_matching_files(cls,
                             file_path: List[str],
-                            OutputFileFormat: OutputFileFormat | str,
+                            output_file_format: OutputFileFormat | str,
                             extension: str | None = None
                             ) -> List[str]:
         """
@@ -173,10 +183,11 @@ class OutputFileFormat(BaseEnumFormat):
         ----------
         file_path : List[str]
             The file paths to search for the files.
-        OutputFileFormat : OutputFileFormat | str
+        output_file_format : OutputFileFormat | str
             The file format to search for.
         extension : str | None, optional
-            The extension to search for, by default None. If None, all files with the given file format are returned.
+            The extension to search for, by default None.
+            If None, all files with the given file format are returned.
             Else, only the files with the given extension are returned.
 
         Returns
@@ -188,7 +199,7 @@ class OutputFileFormat(BaseEnumFormat):
             files = [file for file in file_path if file.endswith(extension)]
         else:
             files = [file for file in file_path if file.endswith(
-                tuple(cls.get_file_extensions(OutputFileFormat)))]
+                tuple(cls.get_file_extensions(output_file_format)))]
 
         return files
 
@@ -237,7 +248,7 @@ class FileWritingMode(BaseEnumFormat):
     WRITE = "w"
 
     @ classmethod
-    def _missing_(cls, value: Any) -> Any:
+    def _missing_(cls, value: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
 
@@ -277,8 +288,10 @@ class BoxFileFormat(BaseEnumFormat):
     #: |            Box  2.0  2.0  2.0    90.0 90.0 90.0
     #: |            X   -1.0 -1.0 -1.0
     #: |            ...
-    #: | where all X represent the vertices of the box. The first line contains the number of vertices.
-    #: | The second line contains the box dimensions and box angles as the comment line for a xyz file.
+    #: | where all X represent the vertices of the box.
+    # The first line contains the number of vertices.
+    #: | The second line contains the box dimensions and
+    # box angles as the comment line for a xyz file.
     VMD = "vmd"
 
     #: | The data file format.
@@ -287,12 +300,14 @@ class BoxFileFormat(BaseEnumFormat):
     #: |            2 1.0 1.0 1.0 90.0 90.0 90.0
     #: |            ...
     #: |            n 1.1 1.1 1.1 90.0 90.0 90.0
-    #: | where the first column represents the step starting from 1, the second to fourth column
-    #: | represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
+    #: | where the first column represents the step
+    # starting from 1, the second to fourth column
+    #: | represent the box vectors a, b, c,
+    # the fifth to seventh column represent the box angles.
     DATA = "data"
 
     @ classmethod
-    def _missing_(cls, value: Any) -> Any:
+    def _missing_(cls, value: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
 

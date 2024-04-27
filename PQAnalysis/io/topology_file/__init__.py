@@ -2,5 +2,5 @@
 A subpackage to handle trajectory files.
 """
 
-from .topologyFileReader import TopologyFileReader
-from .topologyFileWriter import TopologyFileWriter
+from .topology_file_reader import TopologyFileReader
+from .topology_file_writer import TopologyFileWriter

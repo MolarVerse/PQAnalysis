@@ -7,7 +7,7 @@ from . import pytestmark
 from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
@@ -28,7 +28,7 @@ def test_write_trajectory(capsys):
     traj = Trajectory([frame1, frame2])
 
     print()
-    write_trajectory(traj, format="PQ")
+    write_trajectory(traj, engine_format="PQ")
 
     captured = capsys.readouterr()
     assert captured.out == """
@@ -47,12 +47,14 @@ class TestTrajectoryWriter:
     def test__init__(self):
 
         with pytest.raises(MDEngineFormatError) as exception:
-            TrajectoryWriter(format="notAFormat")
-        assert str(
-            exception.value) == f"""
-'notaformat' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+            TrajectoryWriter(engine_format="notAFormat")
+        assert str(exception.value) == (
+            "\n"
+            "'notaformat' is not a valid MDEngineFormat.\n"
+            f"Possible values are: {MDEngineFormat.member_repr()} "
+            "or their case insensitive string representation: "
+            f"{MDEngineFormat.value_repr()}"
+        )
 
         writer = TrajectoryWriter()
         assert writer.file == sys.stdout
@@ -60,10 +62,10 @@ or their case insensitive string representation: {MDEngineFormat.value_repr()}""
         assert writer.mode == FileWritingMode.WRITE
         assert writer.format == MDEngineFormat.PQ
 
-        writer = TrajectoryWriter(format="qmcfc")
+        writer = TrajectoryWriter(engine_format="qmcfc")
         assert writer.format == MDEngineFormat.QMCFC
 
-        writer = TrajectoryWriter(format="PQ")
+        writer = TrajectoryWriter(engine_format="PQ")
         assert writer.format == MDEngineFormat.PQ
 
     def test__write_header(self, capsys):
@@ -207,7 +209,7 @@ o     0.0000000000     0.0000000000     1.0000000000
         writer = TrajectoryWriter()
 
         print()
-        writer.write(traj, type="vel")
+        writer.write(traj, traj_type="vel")
 
         captured = capsys.readouterr()
         assert captured.out == """
@@ -236,7 +238,7 @@ o 0.000000000000e+00 0.000000000000e+00 1.000000000000e+00
         writer = TrajectoryWriter()
 
         print()
-        writer.write(traj, type="force")
+        writer.write(traj, traj_type="force")
 
         captured = capsys.readouterr()
         assert captured.out == """
@@ -268,7 +270,7 @@ o     0.0000000000     0.0000000000     1.0000000000
         writer = TrajectoryWriter()
 
         print()
-        writer.write(traj, type="charge")
+        writer.write(traj, traj_type="charge")
 
         captured = capsys.readouterr()
         assert captured.out == """

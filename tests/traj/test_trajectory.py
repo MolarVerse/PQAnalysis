@@ -6,7 +6,7 @@ from . import pytestmark
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
 
 
@@ -40,7 +40,7 @@ class TestTrajectory:
 
     def test_check_PBC(self):
         traj = Trajectory(self.frames)
-        assert traj.check_PBC() == False
+        assert traj.check_pbc() == False
 
         system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
             [[0, 1, 2]]), cell=Cell(10, 10, 10))
@@ -51,7 +51,7 @@ class TestTrajectory:
         frames = [frame1, frame2]
 
         traj = Trajectory(frames)
-        assert traj.check_PBC() == True
+        assert traj.check_pbc() == True
 
         system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
             [[1, 1, 2]]))
@@ -60,10 +60,10 @@ class TestTrajectory:
         frames = [frame1, frame2]
 
         traj = Trajectory(frames)
-        assert traj.check_PBC() == False
+        assert traj.check_pbc() == False
 
         traj = Trajectory()
-        assert traj.check_PBC() == False
+        assert traj.check_pbc() == False
 
     def test_check_vacuum(self):
         traj = Trajectory(self.frames)

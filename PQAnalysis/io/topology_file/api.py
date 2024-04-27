@@ -2,10 +2,11 @@
 A module containing the API for reading and writing topology files.
 """
 
-from .topologyFileWriter import TopologyFileWriter
-from .topologyFileReader import TopologyFileReader
 from PQAnalysis.topology import Topology, BondedTopology
 from PQAnalysis.io import FileWritingMode
+
+from .topology_file_writer import TopologyFileWriter
+from .topology_file_reader import TopologyFileReader
 
 
 def write_topology_file(bonded_topology: Topology | BondedTopology,

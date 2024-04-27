@@ -4,9 +4,9 @@ from filecmp import cmp as filecmp
 
 from ... import pytestmark
 
-from PQAnalysis.io.inputFileReader.PQ.PQ_inputFileReader import _increase_digit_string, _get_digit_string_from_filename
-from PQAnalysis.io.inputFileReader import PQ_InputFileReader as InputFileReader
-from PQAnalysis.io.inputFileReader.formats import InputFileFormat
+from PQAnalysis.io.input_file_reader.pq.pq_input_file_reader import _increase_digit_string, _get_digit_string_from_filename
+from PQAnalysis.io.input_file_reader import PQInputFileReader as InputFileReader
+from PQAnalysis.io.input_file_reader.formats import InputFileFormat
 
 
 class TestPQ_inputFileReader:
