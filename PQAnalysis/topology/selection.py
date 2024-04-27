@@ -497,13 +497,13 @@ class SelectionTransformer(Transformer):
 
         return _indices_by_element_types(element, self.topology)
 
-    def residue(self, items: List[Np1DIntArray]) -> Np1DIntArray:
+    def residue(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the given residue name.
 
         Parameters
         ----------
-        items : List[Np1DIntArray]
+        items : Any
             The residue name to get the indices of.
 
         Returns
@@ -513,13 +513,13 @@ class SelectionTransformer(Transformer):
         """
         return np.array(self.topology.get_atom_indices_from_residue_names(items[0]))
 
-    def residue_number(self, items: List[Np1DIntArray]) -> Np1DIntArray:
+    def residue_number(self, items: Any) -> Np1DIntArray:
         """
         Returns the indices of the given residue number.
 
         Parameters
         ----------
-        items : List[Np1DIntArray]
+        items : Any
             The residue number to get the indices of.
 
         Returns
@@ -548,7 +548,7 @@ class SelectionTransformer(Transformer):
 
         return np.array([index])
 
-    def indices(self, items: Np1DIntArray) -> Np1DIntArray:
+    def indices(self, items: List[int]) -> Np1DIntArray:
         """
         Returns a range of indices based on the given indices.
 
@@ -559,7 +559,7 @@ class SelectionTransformer(Transformer):
 
         Parameters
         ----------
-        items : Np1DIntArray
+        items : List[int]
             The indices to get the indices of.
 
         Returns
