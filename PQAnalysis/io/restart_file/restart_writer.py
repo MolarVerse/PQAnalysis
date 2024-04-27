@@ -125,7 +125,11 @@ class RestartFileWriter(BaseWriter):
 
         lines = []
         lines.append(self._get_box_line(frame.cell))
-        lines += self.get_atom_lines(frame, atom_counter)
+        lines += self.get_atom_lines(
+            frame,
+            atom_counter,
+            self.md_engine_format
+        )
 
         return lines
 
@@ -140,9 +144,11 @@ class RestartFileWriter(BaseWriter):
         """
         return f"Box  {cell.x} {cell.y} {cell.z}  {cell.alpha} {cell.beta} {cell.gamma}"
 
-    def get_atom_lines(self,
+    @classmethod
+    def get_atom_lines(cls,
                        frame: AtomicSystem,
-                       atom_counter: int | Np1DNumberArray | None = None
+                       atom_counter: int | Np1DNumberArray | None = None,
+                       md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
                        ) -> List[str]:
         """
         Writes the atoms to the file.
@@ -156,13 +162,15 @@ class RestartFileWriter(BaseWriter):
             given, this number will be used as the atom counter for all 
             atoms. If an array is given, this array has to have the same 
             length as the number of atoms in the frame.
+        md_engine_format : MDEngineFormat | str, optional
+            The format of the restart file, by default MDEngineFormat.PQ
         """
 
         if atom_counter is not None and not isinstance(atom_counter, int):
             if len(atom_counter) != frame.n_atoms:
                 raise ValueError(
                     "The atom counter has to have the same length as "
-                    "the number of atoms in the frame."
+                    "the number of atoms in the frame if it is given as an array."
                 )
         elif isinstance(atom_counter, int):
             atom_counter = [atom_counter] * frame.n_atoms
@@ -177,15 +185,8 @@ class RestartFileWriter(BaseWriter):
             atom = frame.atoms[i]
             pos = frame.pos[i]
 
-            try:
-                vel = frame.vel[i]
-            except IndexError:
-                vel = np.zeros(3)
-
-            try:
-                force = frame.forces[i]
-            except IndexError:
-                force = np.zeros(3)
+            vel = frame.vel[i] if frame.has_vel else np.zeros(3)
+            force = frame.forces[i] if frame.has_forces else np.zeros(3)
 
             residue = residues[i]
 
@@ -196,7 +197,7 @@ class RestartFileWriter(BaseWriter):
             line += f"{vel[0]} {vel[1]} {vel[2]} "
             line += f"{force[0]} {force[1]} {force[2]}"
 
-            if self.md_engine_format != MDEngineFormat.PQ:
+            if md_engine_format != MDEngineFormat.PQ:
                 line += f" {pos[0]} {pos[1]} {pos[2]} "
                 line += f"{vel[0]} {vel[1]} {vel[2]} "
                 line += f"{force[0]} {force[1]} {force[2]}"
