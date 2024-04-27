@@ -17,11 +17,13 @@ class TestBoxWriter:
     def test__init__(self):
         with pytest.raises(BoxFileFormatError) as exception:
             BoxWriter(filename="tmp", output_format="r")
-        assert str(
-            exception.value) == """
-'r' is not a valid BoxFileFormat.
-Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA
-or their case insensitive string representation: vmd, data"""
+        assert str(exception.value) == (
+            "\n"
+            "'r' is not a valid BoxFileFormat.\n"
+            "Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA "
+            "or their case insensitive string representation: "
+            "vmd, data"
+        )
 
         writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None

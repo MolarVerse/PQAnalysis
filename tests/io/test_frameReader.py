@@ -118,11 +118,13 @@ class TestFrameReader:
 
         with pytest.raises(TrajectoryFormatError) as exception:
             reader.read("", traj_format="invalid")
-        assert str(
-            exception.value) == f"""
-'invalid' is not a valid TrajectoryFormat.
-Possible values are: {TrajectoryFormat.member_repr()}
-or their case insensitive string representation: {TrajectoryFormat.value_repr()}"""
+        assert str(exception.value) == (
+            "\n"
+            "'invalid' is not a valid TrajectoryFormat.\n"
+            f"Possible values are: {TrajectoryFormat.member_repr()} "
+            "or their case insensitive string representation: "
+            f"{TrajectoryFormat.value_repr()}"
+        )
 
     def test__get_topology(self):
         reader = FrameReader()
