@@ -2,5 +2,5 @@
 A subpackage to handle restart files.
 """
 
-from .restartReader import RestartFileReader
-from .restartWriter import RestartFileWriter
+from .restart_reader import RestartFileReader
+from .restart_writer import RestartFileWriter

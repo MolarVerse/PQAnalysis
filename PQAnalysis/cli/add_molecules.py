@@ -7,12 +7,10 @@ Command Line Tool for Converting Restart Files to XYZ Files
 
 """
 
-import PQAnalysis.config as config
-
-from ._argumentParser import _ArgumentParser
+from PQAnalysis.config import code_base_url
 from PQAnalysis.tools.add_molecule import add_molecule
-from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import OutputFileFormat
+from ._argument_parser import _ArgumentParser
 
 
 __outputdoc__ = """
@@ -24,16 +22,21 @@ The molecules are added by fitting the molecule to the restart file. The fitting
 This tool provides also the possibility of not only extending the restart file with the molecule but also the topology file. Therefore, the topology file of the restart file and the topology file of the molecule file have to be provided as well as the desired output topology file.
 """
 
-__epilog__ = f"""
-For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.add_molecules.html.
-"""
+__epilog__ = "\n"
+__epilog__ += "For more information on required and optional input "
+__epilog__ += "file keys please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.cli.add_molecules.html."
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
 
 
 def main():
     """
-    Main function of the add_molecules command line tool, which is basically just a wrapper for the add_molecules function. For more information on the add_molecules function please visit :py:func:`PQAnalysis.tools.add_molecule`.
+    Main function of the add_molecules command line tool,
+    which is basically just a wrapper for the add_molecules
+    function. For more information on the add_molecules
+    function please visit :py:func:`PQAnalysis.tools.add_molecule`.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
@@ -46,7 +49,11 @@ def main():
     parser.add_argument(
         'molecule_file',
         type=str,
-        help='The molecule file that contains the coordinates of the molecule that should be added. Can be in any format that is supported by the PQAnalysis library.'
+        help=(
+            "The molecule file that contains the coordinates "
+            "of the molecule that should be added. Can be in "
+            "any format that is supported by the PQAnalysis library."
+        )
     )
 
     parser.parse_output_file()
@@ -57,15 +64,23 @@ def main():
         dest='mol_file_type',
         type=OutputFileFormat,
         default=OutputFileFormat.AUTO,
-        choices=OutputFileFormat._member_names_,
-        help='The file format of the molecule file. If not specified, the file format will be inferred from the file extension.'
+        choices=OutputFileFormat.__members__.values(),
+        help=(
+            'The file format of the molecule file. '
+            'If not specified, the file format will '
+            'be inferred from the file extension.'
+        )
     )
 
     parser.add_argument(
         "--rst-mol-desc-file",
         dest='rst_mol_desc_file',
         type=str,
-        help="The moldescriptor file that is associated with the restart file. If not specified, the moldescriptor file will not be used.",
+        help=(
+            "The moldescriptor file that is associated with the "
+            "restart file. If not specified, the moldescriptor "
+            "file will not be used."
+        ),
         default=None
     )
 
@@ -73,7 +88,12 @@ def main():
         "--molecule-mol-desc-file",
         dest='molecule_mol_desc_file',
         type=str,
-        help="The moldescriptor file that is associated with the molecule file. If not specified, the moldescriptor file will not be used. Can only be used if the molecule file is a restart file type.",
+        help=(
+            "The moldescriptor file that is associated with "
+            "the molecule file. If not specified, the moldescriptor "
+            "file will not be used. Can only be used if the "
+            "molecule file is a restart file type."
+        ),
         default=None
     )
 
@@ -90,7 +110,10 @@ def main():
         dest='max_iter',
         type=int,
         default=100,
-        help="The maximum number of iterations that should be used to fit the molecule to the restart file."
+        help=(
+            "The maximum number of iterations that should "
+            "be used to fit the molecule to the restart file."
+        )
     )
 
     parser.add_argument(
@@ -98,7 +121,10 @@ def main():
         dest='cut',
         type=float,
         default=1.0,
-        help="The distance cutoff that should be used to fit the molecule to the restart file in Angstrom."
+        help=(
+            "The distance cutoff that should be used "
+            "to fit the molecule to the restart file in Angstrom."
+        )
     )
 
     parser.add_argument(
@@ -106,7 +132,11 @@ def main():
         dest='max_disp',
         type=float,
         default=0.1,
-        help="The maximum displacement that should be applied to the given molecule geometry relative to its center of mass in percentage."
+        help=(
+            "The maximum displacement that should be applied "
+            "to the given molecule geometry relative to "
+            "its center of mass in percentage."
+        )
     )
 
     parser.add_argument(
@@ -114,14 +144,22 @@ def main():
         dest='rot',
         type=int,
         default=10,
-        help="If the randomly placed molecule does not fit into the restart file, the molecule is rotated by the given angle step in degrees."
+        help=(
+            "If the randomly placed molecule does not "
+            "fit into the restart file, the molecule "
+            "is rotated by the given angle step in degrees."
+        )
     )
 
     parser.add_argument(
         "--topology-file", "--top-file",
         dest='top_file',
         type=str,
-        help="The topology file that is associated with the restart file. If not specified, the topology file will not be used.",
+        help=(
+            "The topology file that is associated with "
+            "the restart file. If not specified, "
+            "the topology file will not be used."
+        ),
         default=None
     )
 
@@ -129,7 +167,11 @@ def main():
         "--added-topology-file", "--added-top-file",
         dest='added_top_file',
         type=str,
-        help="The topology file that is associated with the molecule file. If not specified, the topology file will not be used.",
+        help=(
+            "The topology file that is associated with "
+            "the molecule file. If not specified, the "
+            "topology file will not be used."
+        ),
         default=None
     )
 

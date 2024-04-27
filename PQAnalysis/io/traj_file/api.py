@@ -5,7 +5,7 @@ A module containing different API functions for reading and writing trajectory f
 from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io import (
     TrajectoryWriter,
     TrajectoryReader,
@@ -20,14 +20,16 @@ from PQAnalysis.traj import (
 
 def write_trajectory(traj: Trajectory | AtomicSystem,
                      filename: str | None = None,
-                     format: MDEngineFormat | str = MDEngineFormat.PQ,
-                     type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+                     engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+                     traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
                      mode: FileWritingMode | str = FileWritingMode.WRITE,
                      ) -> None:
     """Wrapper for TrajectoryWriter to write a trajectory to a file.
 
-    if format is None, the default PQ format is used. (see TrajectoryWriter.formats for available formats)
-    if format is 'qmcfc', the QMCFC format is used (see TrajectoryWriter.formats for more information).
+    if format is None, the default PQ format is used
+    (see TrajectoryWriter.formats for available formats).
+    if format is 'qmcfc', the QMCFC format is used
+    (see TrajectoryWriter.formats for more information).
 
     Parameters
     ----------
@@ -36,16 +38,19 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
     format : MDEngineFormat | str, optional
-        The format of the md engine for the output file. The default is MDEngineFormat.PQ.
+        The format of the md engine for the output file.
+        The default is MDEngineFormat.PQ.
     type : TrajectoryFormat | str, optional
-        The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+        The type of the data to write to the file.
+        Default is TrajectoryFormat.XYZ.
     mode  : FileWritingMode | str, optional
-        The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
+        The mode of the file. Either 'w' for write, 
+        'a' for append or 'o' for overwrite. The default is 'w'.
 
     """
 
-    writer = TrajectoryWriter(filename, format=format, mode=mode)
-    writer.write(traj, type=type)
+    writer = TrajectoryWriter(filename, engine_format=engine_format, mode=mode)
+    writer.write(traj, traj_type=traj_type)
 
 
 def read_trajectory(filename: str,
@@ -64,7 +69,8 @@ def read_trajectory(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PQ
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
+        The format of the trajectory, by default TrajectoryFormat.AUTO.
+        The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional
@@ -121,7 +127,8 @@ def read_trajectory_generator(filename: str,
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PQ
     traj_format : TrajectoryFormat | str, optional
-        The format of the trajectory, by default TrajectoryFormat.AUTO. The format is inferred from the file extension.
+        The format of the trajectory, by default TrajectoryFormat.AUTO.
+        The format is inferred from the file extension.
     topology : Topology | None, optional
         The topology of the trajectory, by default None
     constant_topology : bool, optional

@@ -1,3 +1,5 @@
+import pytest
+
 import numpy as np
 
 from . import pytestmark
@@ -5,7 +7,7 @@ from . import pytestmark
 from PQAnalysis.io import RestartFileWriter
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
 
 
@@ -22,21 +24,12 @@ class TestRestartWriter:
 
         assert lines == "Box  10.0 10.0 10.0  90 90 90"
 
-    def test__write_atoms(self, capsys):
+    def test__get_atom_lines(self, capsys):
         writer = RestartFileWriter()
         atoms = [Atom("C"), Atom("H"), Atom("H")]
         positions = np.array([[0.0, 0.0, 0.0],
                               [1.0, 1.0, 1.0],
                               [2.0, 2.0, 2.0]])
-        frame = AtomicSystem(atoms, positions)
-
-        lines = writer._get_atom_lines(frame)
-
-        assert lines == [
-            "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
-            "H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0",
-            "H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0",
-        ]
 
         frame = AtomicSystem(
             topology=Topology(
@@ -46,15 +39,43 @@ class TestRestartWriter:
             pos=positions
         )
 
-        writer.md_engine_format = MDEngineFormat.QMCFC
-
-        lines = writer._get_atom_lines(frame)
+        lines = writer.get_atom_lines(
+            frame,
+            md_engine_format=MDEngineFormat.QMCFC
+        )
 
         assert lines == [
             "C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
             "H    1    2    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0",
             "H    2    3    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0 2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0",
         ]
+
+        system = AtomicSystem(
+            atoms=[Atom("C"), Atom("H"), Atom("H")],
+            pos=np.array([[0.0, 0.0, 0.0],
+                          [1.0, 1.0, 1.0],
+                          [2.0, 2.0, 2.0]]),
+        )
+
+        atom_counter = np.array([0, 1])
+
+        with pytest.raises(ValueError) as exc:
+            RestartFileWriter.get_atom_lines(system, atom_counter)
+        assert str(exc.value) == (
+            "The atom counter has to have the same length as "
+            "the number of atoms in the frame if it is given as an array."
+        )
+
+        atom_lines = RestartFileWriter.get_atom_lines(system, 0)
+        assert atom_lines[0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[1] == "H    0    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[2] == "H    0    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
+
+        atom_lines = RestartFileWriter.get_atom_lines(
+            system, np.array([0, 1, 2]))
+        assert atom_lines[0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[1] == "H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[2] == "H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
 
     def test_write(self, capsys):
         writer = RestartFileWriter()
@@ -86,4 +107,16 @@ Box  10.0 10.0 10.0  90 90 90
 C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
 H    1    0    1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
 H    2    0    2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0
+"""
+
+        print()
+        writer.md_engine_format = MDEngineFormat.QMCFC
+        writer.write(frame)
+
+        captured = capsys.readouterr()
+        assert captured.out == """
+Box  10.0 10.0 10.0  90 90 90
+C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+H    1    0    1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
+H    2    0    2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0
 """

@@ -3,8 +3,8 @@ import numpy as np
 
 from . import pytestmark
 
-from PQAnalysis.atomicSystem import AtomicSystem
-from PQAnalysis.atomicSystem.exceptions import (
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
     AtomicSystemMassError,
     AtomicSystemError,
@@ -22,7 +22,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell()
-        assert system.PBC is False
+        assert system.pbc is False
         assert system.n_atoms == 0
         assert system.atomic_masses.shape == (0,)
         assert np.isclose(system.mass, 0.0)
@@ -36,7 +36,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell()
-        assert system.PBC is False
+        assert system.pbc is False
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
 
@@ -59,7 +59,7 @@ class TestAtomicSystem:
         assert system.forces.shape == (0, 3)
         assert system.charges.shape == (0,)
         assert system.cell == Cell(0.75, 0.75, 0.75)
-        assert system.PBC is True
+        assert system.pbc is True
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.atomic_masses, [12.0107, 1.00794])
@@ -283,3 +283,94 @@ class TestAtomicSystem:
         )
         system.charges = np.array([0])
         assert np.allclose(system.charges, np.array([0]))
+
+    def test_has_properties(self):
+        system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
+        assert not system.has_pos
+        assert not system.has_vel
+        assert not system.has_forces
+        assert not system.has_charges
+
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H')],
+            pos=np.array([[0, 0, 0], [1, 1, 1]])
+        )
+        assert system.has_pos
+        assert not system.has_vel
+        assert not system.has_forces
+        assert not system.has_charges
+
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H')],
+            vel=np.array([[0, 0, 0], [1, 1, 1]])
+        )
+        assert not system.has_pos
+        assert system.has_vel
+        assert not system.has_forces
+        assert not system.has_charges
+
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H')],
+            forces=np.array([[0, 0, 0], [1, 1, 1]])
+        )
+        assert not system.has_pos
+        assert not system.has_vel
+        assert system.has_forces
+        assert not system.has_charges
+
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H')],
+            charges=np.array([0, 1])
+        )
+        assert not system.has_pos
+        assert not system.has_vel
+        assert not system.has_forces
+        assert system.has_charges
+
+    def test_energy(self):
+        system = AtomicSystem(energy=1.0)
+
+        assert np.isclose(system.energy, 1.0)
+        assert system.has_energy
+
+        system.energy = 2.0
+        assert np.isclose(system.energy, 2.0)
+        assert system.has_energy
+
+        system = AtomicSystem()
+        assert not system.has_energy
+        assert system.energy is None
+
+    def test_virial(self):
+        system = AtomicSystem(virial=np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+
+        assert np.allclose(system.virial, np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        assert system.has_virial
+
+        system.virial = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
+        assert np.allclose(system.virial, np.array(
+            [[2, 0, 0], [0, 2, 0], [0, 0, 2]]))
+        assert system.has_virial
+
+        system = AtomicSystem()
+        assert not system.has_virial
+        assert system.virial is None
+
+    def test_stress(self):
+        system = AtomicSystem(stress=np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+
+        assert np.allclose(system.stress, np.array(
+            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        assert system.has_stress
+
+        system.stress = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
+        assert np.allclose(system.stress, np.array(
+            [[2, 0, 0], [0, 2, 0], [0, 0, 2]]))
+        assert system.has_stress
+
+        system = AtomicSystem()
+        assert not system.has_stress
+        assert system.stress is None

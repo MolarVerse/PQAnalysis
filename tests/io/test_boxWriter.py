@@ -9,7 +9,7 @@ from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
 from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 
 
 class TestBoxWriter:
@@ -17,11 +17,13 @@ class TestBoxWriter:
     def test__init__(self):
         with pytest.raises(BoxFileFormatError) as exception:
             BoxWriter(filename="tmp", output_format="r")
-        assert str(
-            exception.value) == """
-'r' is not a valid BoxFileFormat.
-Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA
-or their case insensitive string representation: vmd, data"""
+        assert str(exception.value) == (
+            "\n"
+            "'r' is not a valid BoxFileFormat.\n"
+            "Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA "
+            "or their case insensitive string representation: "
+            "vmd, data"
+        )
 
         writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None
@@ -59,12 +61,12 @@ or their case insensitive string representation: vmd, data"""
         writer = BoxWriter()
 
         try:
-            writer.__check_PBC__(traj1)
+            writer.__check_pbc__(traj1)
         except:
             assert False
 
         with pytest.raises(BoxWriterError) as exception:
-            writer.__check_PBC__(traj2)
+            writer.__check_pbc__(traj2)
         assert str(
             exception.value) == "At least on cell of the trajectory is None. Cannot write box file."
 

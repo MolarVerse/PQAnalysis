@@ -55,12 +55,15 @@ class BaseEnumFormatError(PQException):
 
         self.enum = enum
         self.value = value
-        self.message = f"""
-'{self.value}' is not a valid {enum.__name__}.
-Possible values are: {enum.member_repr()}
-or their case insensitive string representation: {enum.value_repr()}"""
+        self.message = (
+            f"\n"
+            f"\'{self.value}\' is not a valid "
+            f"{enum.__name__}.\n"
+            f"Possible values are: {enum.member_repr()} or their "
+            f"case insensitive string representation: {enum.value_repr()}"
+        )
         super().__init__(self.message)
 
     @multimethod
-    def __init__(self, message: str) -> None:
+    def __init__(self, message: str) -> None:  # pylint: disable=function-redefined
         super().__init__(message)

@@ -2,13 +2,13 @@
 A module containing functions and classes to add a molecule/AtomicSystem to a restart file.
 """
 
-import numpy as np
 import warnings
+import numpy as np
 
 from beartype.typing import List
 
 from PQAnalysis.io.formats import OutputFileFormat, FileWritingMode
-from PQAnalysis.atomicSystem import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.types import (
     PositiveInt,
@@ -44,7 +44,14 @@ def add_molecule(restart_file: str,
     """
     Add a molecule to a restart file.
 
-    The function reads a restart file and a molecule file and adds the molecule to the restart file. The molecule is added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The function can add multiple molecules to the restart file. The function can also add a moldescriptor file to the restart file to keep track of the fitting.
+    The function reads a restart file and a molecule file and adds the
+    molecule to the restart file. The molecule is added by fitting 
+    the molecule to the restart file. The fitting is done randomly 
+    by rotating the molecule and translating it to a random position. 
+    After the fitting, the molecule is added to the restart file.
+    The function can add multiple molecules to the restart file. 
+    The function can also add a moldescriptor file to the restart
+    file to keep track of the fitting.
 
     Parameters
     ----------
@@ -60,15 +67,19 @@ def add_molecule(restart_file: str,
         - "a": append
         - "o": overwrite
     molecule_file_type : OutputFileFormat | str, optional
-        The type of the molecule file, by default OutputFileFormat.AUTO. If the type is AUTO, the type will be inferred from the file extension. If the type is RESTART, a moldescriptor file can be specified.
+        The type of the molecule file, by default OutputFileFormat.AUTO. 
+        If the type is AUTO, the type will be inferred from the file extension.
+        If the type is RESTART, a moldescriptor file can be specified.
     restart_moldescriptor_file : str | None, optional
         The filename of the moldescriptor file of the restart file, by default None.
     molecule_moldescriptor_file : str | None, optional
-        The filename of the moldescriptor file of the molecule file, by default None. A moldescriptor file can only be specified for restart file types.
+        The filename of the moldescriptor file of the molecule file, by default None.
+        A moldescriptor file can only be specified for restart file types.
     number_of_additions : PositiveInt, optional
         The number of times the molecule should be added to the restart file, by default 1
     max_iterations : PositiveInt, optional
-        The maximum number of iterations to try to fit the molecule into the restart file, by default 100
+        The maximum number of iterations to try to fit the molecule
+        into the restart file, by default 100
     distance_cutoff : PositiveReal, optional
         The distance cutoff for the fitting, by default 1.0
     max_displacement : PositiveReal | Np1DNumberArray, optional
@@ -93,7 +104,7 @@ def add_molecule(restart_file: str,
     check_topology_args(topology_file, topology_file_to_add,
                         topology_file_output)
 
-    add_molecule = AddMolecule(
+    _add_molecule = AddMolecule(
         restart_file=restart_file,
         molecule_file=molecule_file,
         output_file=output_file,
@@ -109,10 +120,10 @@ def add_molecule(restart_file: str,
         md_engine_format=md_engine_format
     )
 
-    add_molecule.write_restart_file()
+    _add_molecule.write_restart_file()
 
     if topology_file is not None:
-        add_molecule.extend_topology_file(
+        _add_molecule.extend_topology_file(
             original_shake_file=topology_file,
             extension_shake_file=topology_file_to_add,
             output=topology_file_output
@@ -126,7 +137,11 @@ def check_topology_args(topology_file: str | None,
     """
     Check the arguments for the topology files.
 
-    If the topology_file is None and the topology_file_to_add is None, the output topology file will be ignored. If the topology_file is None and the topology_file_to_add is not None, a ValueError is raised. If the topology_file is not None and the topology_file_to_add is None, a ValueError is raised. If the output topology file is None, a ValueError is raised.
+    If the topology_file is None and the topology_file_to_add is None,
+    the output topology file will be ignored. If the topology_file is 
+    None and the topology_file_to_add is not None, a ValueError is raised.
+    If the topology_file is not None and the topology_file_to_add is None,
+    a ValueError is raised. If the output topology file is None, a ValueError is raised.
 
     Parameters
     ----------
@@ -150,21 +165,29 @@ def check_topology_args(topology_file: str | None,
     if topology_file is None and topology_file_to_add is None:
         if topology_file_output is not None:
             warnings.warn(
-                "The output topology file is specified, but no topology files are given to add. The output topology file will be ignored."
+                (
+                    "The output topology file is specified, but no topology "
+                    "files are given to add. The output topology file will be ignored."
+                )
             )
+
         return
-    elif topology_file is None and topology_file_to_add is not None:
+
+    if topology_file is None and topology_file_to_add is not None:
         raise ValueError(
             "The topology file must be specified if a topology file to add is given."
         )
-    elif topology_file is not None and topology_file_to_add is None:
+
+    if topology_file is not None and topology_file_to_add is None:
         raise ValueError(
             "The topology file to add must be specified if a topology file is given."
         )
 
     if topology_file_output is None:
         raise ValueError(
-            "The output topology file must be specified if topology files are given to add. This is a special case where None cannot be treated as stdout as it is already used for the restart file."
+            "The output topology file must be specified if topology files are "
+            "given to add. This is a special case where None cannot be treated "
+            "as stdout as it is already used for the restart file."
         )
 
 
@@ -172,7 +195,14 @@ class AddMolecule:
     """
     A class for adding a molecule to a restart file.
 
-    The class reads a restart file and a molecule file and adds the molecule to the restart file. The molecule is added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The class can add multiple molecules to the restart file. The class can also add a moldescriptor file to the restart file to keep track of the fitting.
+    The class reads a restart file and a molecule file and adds the 
+    molecule to the restart file. The molecule is added by fitting t
+    he molecule to the restart file. The fitting is done randomly by 
+    rotating the molecule and translating it to a random position. 
+    After the fitting, the molecule is added to the restart file. 
+    The class can add multiple molecules to the restart file. 
+    The class can also add a moldescriptor file to the restart file
+    to keep track of the fitting.
     """
 
     def __init__(self,
@@ -205,15 +235,21 @@ class AddMolecule:
             - "a": append
             - "o": overwrite
         molecule_file_type : OutputFileFormat | str, optional
-            The type of the molecule file, by default OutputFileFormat.AUTO. If the type is AUTO, the type will be inferred from the file extension. If the type is RESTART, a moldescriptor file can be specified.
+            The type of the molecule file, by default OutputFileFormat.AUTO.
+            If the type is AUTO, the type will be inferred from the file extension.
+            If the type is RESTART, a moldescriptor file can be specified.
         restart_moldescriptor_file : str | None, optional
-            The filename of the moldescriptor file of the restart file, by default None.
+            The filename of the moldescriptor file of the restart file,
+            by default None.
         molecule_moldescriptor_file : str | None, optional
-            The filename of the moldescriptor file of the molecule file, by default None. A moldescriptor file can only be specified for restart file types.
+            The filename of the moldescriptor file of the molecule file,
+            by default None.
+            A moldescriptor file can only be specified for restart file types.
         number_of_additions : PositiveInt, optional
             The number of times the molecule should be added to the restart file, by default 1
         max_iterations : PositiveInt, optional
-            The maximum number of iterations to try to fit the molecule into the restart file, by default 100
+            The maximum number of iterations to try to fit
+            the molecule into the restart file, by default 100
         distance_cutoff : PositiveReal, optional
             The distance cutoff for the fitting, by default 1.0
         max_displacement : PositiveReal | Np1DNumberArray, optional
@@ -248,11 +284,16 @@ class AddMolecule:
         self.restart_system = None
 
         self.molecule_file_type = OutputFileFormat(
-            molecule_file_type,
-            self.molecule_file
+            (
+                molecule_file_type,
+                self.molecule_file
+            )
         )
 
-        if self.molecule_file_type != OutputFileFormat.RESTART and self.molecule_moldescriptor_file is not None:
+        if (
+            self.molecule_file_type != OutputFileFormat.RESTART and
+            self.molecule_moldescriptor_file is not None
+        ):
             raise ValueError(
                 "A moldescriptor file can only be specified for restart files."
             )
@@ -278,7 +319,7 @@ class AddMolecule:
         lines = writer.get_lines(self.restart_system, atom_counter=0)
         for i, system in enumerate(fitted_systems):
             system.image()
-            lines += writer._get_atom_lines(system, atom_counter=i+1)
+            lines += writer.get_atom_lines(system, atom_counter=i+1)
 
         writer.write_lines_to_file(lines)
 
@@ -306,14 +347,21 @@ class AddMolecule:
         """
 
         warnings.warn(
-            "Extension of the topology file is only implemented for shake bonds. The extension of general bonded topologies is not implemented yet.", UserWarning)
+            (
+                "Extension of the topology file is only implemented for shake bonds. "
+                "The extension of general bonded topologies is not implemented yet."
+            ),
+            UserWarning
+        )
 
         original_topology = read_topology_file(original_shake_file)
         new_topology = read_topology_file(extension_shake_file)
 
         if self.restart_system is None or self.molecule is None:
             raise ValueError(
-                "The restart frame and the molecule must be read before extending the topology file. Either call the read_files method or the add_molecules method first."
+                "The restart frame and the molecule must be read "
+                "before extending the topology file. Either call "
+                "the read_files method or the add_molecules method first."
             )
 
         original_topology.extend_shake_bonds(

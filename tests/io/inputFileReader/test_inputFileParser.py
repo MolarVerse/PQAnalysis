@@ -3,7 +3,7 @@ import pytest
 from .. import pytestmark
 
 from PQAnalysis.io import InputFileParser
-from PQAnalysis.io.inputFileReader.formats import InputFileFormat, InputFileFormatError
+from PQAnalysis.io.input_file_reader.formats import InputFileFormat, InputFileFormatError
 
 
 class TestInputFileParser:
@@ -34,12 +34,15 @@ class TestInputFileParser:
 
         with pytest.raises(InputFileFormatError) as exception:
             InputFileParser(input_file, "non-existent-format")
-        assert str(exception.value) == """
-'non-existent-format' is not a valid InputFileFormat.
-Possible values are: InputFileFormat.PQANALYSIS, InputFileFormat.PQ, InputFileFormat.QMCFC
-or their case insensitive string representation: PQANALYSIS, PQ, QMCFC"""
+        assert str(exception.value) == (
+            "\n"
+            "'non-existent-format' is not a valid InputFileFormat.\n"
+            "Possible values are: InputFileFormat.PQANALYSIS, InputFileFormat.PQ, "
+            "InputFileFormat.QMCFC or their case insensitive string representation: "
+            "PQANALYSIS, PQ, QMCFC"
+        )
 
-    @pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
+    @ pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
     def test_parse(self, test_with_data_dir):
         input_file_parser = InputFileParser("input.in")
         input_dictionary = input_file_parser.parse()
