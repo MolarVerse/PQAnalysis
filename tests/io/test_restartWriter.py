@@ -30,7 +30,7 @@ class TestRestartWriter:
                               [2.0, 2.0, 2.0]])
         frame = AtomicSystem(atoms, positions)
 
-        lines = writer._get_atom_lines(frame)
+        lines = writer.get_atom_lines(frame)
 
         assert lines == [
             "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
@@ -48,7 +48,7 @@ class TestRestartWriter:
 
         writer.md_engine_format = MDEngineFormat.QMCFC
 
-        lines = writer._get_atom_lines(frame)
+        lines = writer.get_atom_lines(frame)
 
         assert lines == [
             "C    0    1    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0",
