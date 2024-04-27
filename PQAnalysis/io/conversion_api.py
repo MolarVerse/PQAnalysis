@@ -52,7 +52,8 @@ def gen2xyz(gen_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, format=md_format, type="xyz", mode=mode)
+    write_trajectory(system, output, engine_format=md_format,
+                     traj_type="xyz", mode=mode)
 
 
 def xyz2gen(xyz_file: str,
@@ -122,7 +123,8 @@ def rst2xyz(restart_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, format=md_format, type="xyz", mode=mode)
+    write_trajectory(system, output, engine_format=md_format,
+                     traj_type="xyz", mode=mode)
 
 
 def traj2box(trajectory_files: List[str],
@@ -190,7 +192,8 @@ def traj2qmcfc(trajectory_files: List[str],
         - "o": overwrite
     """
 
-    writer = TrajectoryWriter(filename=output, format="qmcfc", mode=mode)
+    writer = TrajectoryWriter(
+        filename=output, engine_format="qmcfc", mode=mode)
 
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)

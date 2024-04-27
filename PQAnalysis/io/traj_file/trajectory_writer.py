@@ -22,7 +22,7 @@ class TrajectoryWriter(BaseWriter):
 
     def __init__(self,
                  filename: str | None = None,
-                 format: MDEngineFormat | str = MDEngineFormat.PQ,
+                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
                  mode: str | FileWritingMode = 'w'
                  ) -> None:
         """
@@ -30,19 +30,20 @@ class TrajectoryWriter(BaseWriter):
         ----------
         filename : str, optional
             The name of the file to write to. If None, the output is printed to stdout.
-        format : MDEngineFormat | str, optional
+        engine_format : MDEngineFormat | str, optional
             The format of the md engine for the output file. The default is MDEngineFormat.PQ.
         mode : str, optional
-            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
+            The mode of the file. Either 'w' for write, 
+            'a' for append or 'o' for overwrite. The default is 'w'.
         """
 
         super().__init__(filename, FileWritingMode(mode))
 
-        self.format = MDEngineFormat(format)
+        self.format = MDEngineFormat(engine_format)
 
     def write(self,
               trajectory: Trajectory | AtomicSystem,
-              type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+              traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ
               ) -> None:
         """
         Writes the trajectory to the file.
@@ -51,11 +52,11 @@ class TrajectoryWriter(BaseWriter):
         ----------
         traj : Trajectory | AtomicSystem
             The trajectory to write.
-        type : TrajectoryFormat | str, optional
+        traj_type : TrajectoryFormat | str, optional
             The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
         """
 
-        self.type = TrajectoryFormat(type)
+        self.type = TrajectoryFormat(traj_type)
 
         if isinstance(trajectory, AtomicSystem):
             trajectory = Trajectory([trajectory])
@@ -151,7 +152,13 @@ class TrajectoryWriter(BaseWriter):
 
         if cell != Cell():
             print(
-                f"{n_atoms} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
+                (
+                    f"{n_atoms} "
+                    f"{cell.x} {cell.y} {cell.z} "
+                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                ),
+                file=self.file
+            )
         else:
             print(f"{n_atoms}", file=self.file)
 
@@ -168,7 +175,12 @@ class TrajectoryWriter(BaseWriter):
         if self.type == TrajectoryFormat.FORCE:
             sum_forces = sum(frame.forces)
             print(
-                f"sum of forces: {sum_forces[0]:e} {sum_forces[1]:e} {sum_forces[2]:e}", file=self.file)
+                (
+                    f"sum of forces: {sum_forces[0]:e} "
+                    f"{sum_forces[1]:e} {sum_forces[2]:e}"
+                ),
+                file=self.file
+            )
         else:
             print("", file=self.file)
 
@@ -189,13 +201,23 @@ class TrajectoryWriter(BaseWriter):
         if self.format == MDEngineFormat.QMCFC and self._type == TrajectoryFormat.XYZ:
             print("X   0.0 0.0 0.0", file=self.file)
 
-        for i in range(len(atoms)):
+        for i, atom in enumerate(atoms):
             if self.type == TrajectoryFormat.VEL:
                 print(
-                    f"{atoms[i].name} {xyz[i][0]:16.12e} {xyz[i][1]:16.12e} {xyz[i][2]:16.12e}", file=self.file)
+                    (
+                        f"{atom.name} {xyz[i][0]:16.12e} "
+                        f"{xyz[i][1]:16.12e} {xyz[i][2]:16.12e}"
+                    ),
+                    file=self.file
+                )
             else:
                 print(
-                    f"{atoms[i].name} {xyz[i][0]:16.10f} {xyz[i][1]:16.10f} {xyz[i][2]:16.10f}", file=self.file)
+                    (
+                        f"{atom.name} {xyz[i][0]:16.10f} "
+                        f"{xyz[i][1]:16.10f} {xyz[i][2]:16.10f}"
+                    ),
+                    file=self.file
+                )
 
     def _write_scalar(self, scalar: Np1DNumberArray, atoms: List[Atom]) -> None:
         """
@@ -209,54 +231,25 @@ class TrajectoryWriter(BaseWriter):
             The elements of the frame.
         """
 
-        for i in range(len(atoms)):
+        for i, atom in enumerate(atoms):
             print(
-                f"{atoms[i].name} {scalar[i]}", file=self.file)
+                f"{atom.name} {scalar[i]}", file=self.file
+            )
 
     @property
     def format(self) -> MDEngineFormat:
-        """
-        Returns the format of the trajectory file.
-
-        Returns
-        -------
-        MDEngineFormat
-            The format of the trajectory file.
-        """
+        """MDEngineFormat: The format of the md engine for the output file."""
         return self._format
 
     @format.setter
-    def format(self, format: MDEngineFormat | str) -> None:
-        """
-        Sets the format of the trajectory file.
-
-        Parameters
-        ----------
-        format : MDEngineFormat | str
-            The format of the trajectory file.
-        """
-        self._format = MDEngineFormat(format)
+    def format(self, engine_format: MDEngineFormat | str) -> None:
+        self._format = MDEngineFormat(engine_format)
 
     @property
     def type(self) -> TrajectoryFormat:
-        """
-        Returns the type of the trajectory file.
-
-        Returns
-        -------
-        TrajectoryFormat
-            The type of the trajectory file.
-        """
+        """TrajectoryFormat: The type of the data to write to the file."""
         return self._type
 
     @type.setter
-    def type(self, type: TrajectoryFormat | str) -> None:
-        """
-        Sets the type of the trajectory file.
-
-        Parameters
-        ----------
-        type : TrajectoryFormat | str
-            The type of the trajectory file.
-        """
-        self._type = TrajectoryFormat(type)
+    def type(self, traj_type: TrajectoryFormat | str) -> None:
+        self._type = TrajectoryFormat(traj_type)
