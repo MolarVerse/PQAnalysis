@@ -1,5 +1,6 @@
 """
-A package containing classes and functions to handle input and output of molecular dynamics simulations.
+A package containing classes and functions to handle input
+and output of molecular dynamics simulations.
 """
 
 
@@ -9,7 +10,7 @@ from .formats import BoxFileFormat, FileWritingMode, OutputFileFormat
 from .base import BaseReader, BaseWriter
 
 # import the classes from the moldescriptorReader module
-from .moldescriptorReader import MoldescriptorReader
+from .moldescriptor_reader import MoldescriptorReader
 
 # import the classes from the restart_file subpackage
 from .restart_file.restart_writer import RestartFileWriter
@@ -37,26 +38,21 @@ from .topology_file import TopologyFileReader
 from .topology_file import TopologyFileWriter
 from .topology_file.api import read_topology_file, write_topology_file
 
-from .infoFileReader import InfoFileReader
-from .energyFileReader import EnergyFileReader
-from .boxWriter import BoxWriter
+from .info_file_reader import InfoFileReader
+from .energy_file_reader import EnergyFileReader
+from .box_writer import BoxWriter
 
 from .input_file_reader import InputFileParser
 from .input_file_reader import PQInputFileReader
 from .input_file_reader import PQAnalysisInputFileReader
 from .input_file_reader import InputFileFormat
 
-from .api import (
-    write,
-    write_box,
-    rst2xyz,
-    traj2box,
-    traj2qmcfc,
+from .api import continue_input_file
+from .conversion_api import (
     gen2xyz,
     xyz2gen,
-    continue_input_file
+    rst2xyz,
+    traj2box,
+    traj2qmcfc
 )
-
-import logging
-
-subpackage_logger = logging.getLogger(__name__)
+from .write_api import write, write_box

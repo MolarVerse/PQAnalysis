@@ -26,7 +26,8 @@ class _BaseReader(BaseReader):
         """
         Read the file.
 
-        The file is read line by line. Each line is split into its elements and the elements are used to create a 3x3 matrix. One line has the following format:
+        The file is read line by line. Each line is split into its elements and
+        the elements are used to create a 3x3 matrix. One line has the following format:
 
         ```
         _ xx xy xz yx yy yz zx zy zz
@@ -37,7 +38,7 @@ class _BaseReader(BaseReader):
         list[Np3x3NumberArray]
             The data read from the file.
         """
-        with open(self.filename, 'r') as file:
+        with open(self.filename, 'r', encoding='utf-8') as file:
 
             data = []
 
@@ -57,11 +58,9 @@ class VirialFileReader(_BaseReader):
     """
     A class to read virial files.
     """
-    pass
 
 
 class StressFileReader(_BaseReader):
     """
     A class to read stress files.
     """
-    pass

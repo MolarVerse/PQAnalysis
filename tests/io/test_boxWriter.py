@@ -59,12 +59,12 @@ or their case insensitive string representation: vmd, data"""
         writer = BoxWriter()
 
         try:
-            writer.__check_PBC__(traj1)
+            writer.__check_pbc__(traj1)
         except:
             assert False
 
         with pytest.raises(BoxWriterError) as exception:
-            writer.__check_PBC__(traj2)
+            writer.__check_pbc__(traj2)
         assert str(
             exception.value) == "At least on cell of the trajectory is None. Cannot write box file."
 
