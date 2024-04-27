@@ -4,8 +4,8 @@ A module containing different format types of the trajectory.
 
 from beartype.typing import Any
 
-from . import TrajectoryFormatError, MDEngineFormatError
 from PQAnalysis.formats import BaseEnumFormat
+from . import TrajectoryFormatError, MDEngineFormatError
 
 
 class TrajectoryFormat(BaseEnumFormat):
@@ -29,14 +29,15 @@ class TrajectoryFormat(BaseEnumFormat):
     CHARGE = "CHARGE"
 
     @classmethod
-    def _missing_(cls, values: Any) -> Any:
+    def _missing_(cls, values: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
 
         Parameters
         ----------
         values : Tuple[Any | str] | Any
-            The value to be converted to the enumeration or a tuple containing the value and the filename.
+            The value to be converted to the enumeration or 
+            a tuple containing the value and the filename.
 
         Returns
         -------
@@ -57,7 +58,8 @@ class TrajectoryFormat(BaseEnumFormat):
             raise TrajectoryFormatError(
                 "The trajectory format could not be inferred from the file extension."
             )
-        elif traj_format == cls.AUTO:
+
+        if traj_format == cls.AUTO:
             return cls.infer_format_from_extension(filename)
 
         return traj_format
@@ -80,17 +82,29 @@ class TrajectoryFormat(BaseEnumFormat):
         if file_path.endswith(".xyz"):
             return cls.XYZ
 
-        if file_path.endswith(".vel") or file_path.endswith(".velocs"):
+        if (
+            file_path.endswith(".vel") or
+            file_path.endswith(".velocs")
+        ):
             return cls.VEL
 
-        if file_path.endswith(".force") or file_path.endswith(".forces") or file_path.endswith(".frc"):
+        if (
+            file_path.endswith(".force") or
+            file_path.endswith(".forces") or
+            file_path.endswith(".frc")
+        ):
             return cls.FORCE
 
-        if file_path.endswith(".charge") or file_path.endswith(".chrg"):
+        if (
+            file_path.endswith(".charge") or
+            file_path.endswith(".chrg")
+        ):
             return cls.CHARGE
-        else:
-            raise TrajectoryFormatError(
-                f"Could not infer the trajectory format from the file extension of the file {file_path}.")
+
+        raise TrajectoryFormatError(
+            "Could not infer the trajectory format from the file "
+            f"extension of the file {file_path}."
+        )
 
     def lower(self) -> str:
         """
@@ -114,7 +128,7 @@ class MDEngineFormat(BaseEnumFormat):
     QMCFC = "QMCFC"
 
     @classmethod
-    def _missing_(cls, value: Any) -> Any:
+    def _missing_(cls, value: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
 
@@ -132,13 +146,13 @@ class MDEngineFormat(BaseEnumFormat):
         return super()._missing_(value, MDEngineFormatError)
 
     @classmethod
-    def isQMCFType(cls, format: Any) -> bool:
+    def is_qmcfc_type(cls, engine_format: Any) -> bool:
         """
         This method checks if the given format is a QMCF format.
 
         Parameters
         ----------
-        format : Any
+        engine_format : Any
             The format to check.
 
         Returns
@@ -146,4 +160,4 @@ class MDEngineFormat(BaseEnumFormat):
         bool
             True if the format is a QMCF format, False otherwise.
         """
-        return format in [cls.PQ, cls.QMCFC]
+        return engine_format in [cls.PQ, cls.QMCFC]

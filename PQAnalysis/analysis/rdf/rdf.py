@@ -24,7 +24,7 @@ import PQAnalysis.config as config
 # local absolute imports
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cells
-from PQAnalysis.traj import Trajectory, check_trajectory_PBC, check_trajectory_vacuum
+from PQAnalysis.traj import Trajectory, check_trajectory_pbc, check_trajectory_vacuum
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -326,7 +326,7 @@ class RDF:
             If the trajectory is not fully periodic or fully in vacuum.
             Meaning that some frames are in vacuum and others are periodic.
         """
-        if not check_trajectory_PBC(self.cells) and not check_trajectory_vacuum(self.cells):
+        if not check_trajectory_pbc(self.cells) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
                 (
                     "The provided trajectory is not fully periodic or "
@@ -642,7 +642,7 @@ def _check_r_max(r_max: PositiveReal, cells: Cells) -> PositiveReal:
         If the calculated r_max is larger than the maximum
         allowed radius according to the box vectors of the trajectory.
     """
-    if check_trajectory_PBC(cells) and r_max > _infer_r_max(cells):
+    if check_trajectory_pbc(cells) and r_max > _infer_r_max(cells):
         warnings.warn(
             (
                 f"The calculated r_max {r_max} is larger "
@@ -717,7 +717,7 @@ def _infer_r_max(cells: Cells) -> PositiveReal:
     RDFError
         If the trajectory is in vacuum.
     """
-    if not check_trajectory_PBC(cells):
+    if not check_trajectory_pbc(cells):
         module_logger.error(
             (
                 "To infer r_max of the RDF analysis, "

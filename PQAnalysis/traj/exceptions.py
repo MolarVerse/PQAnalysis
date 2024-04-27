@@ -10,15 +10,11 @@ class TrajectoryFormatError(BaseEnumFormatError):
     Exception raised if the given enum is not valid
     """
 
-    pass
-
 
 class MDEngineFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
-
-    pass
 
 
 class TrajectoryError(PQException):
