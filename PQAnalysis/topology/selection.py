@@ -574,6 +574,7 @@ class SelectionTransformer(Transformer):
         if len(items) == 3:
             return np.arange(items[0], items[2] + 1, items[1])
 
+        # should never be reached
         raise ValueError("The indices Token must have 2 or 3 items.")
 
     def all(self, _) -> Np1DIntArray:
