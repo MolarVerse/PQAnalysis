@@ -1,8 +1,12 @@
-name: CI
+name: Test Coverage
 
 on:
   push:
-    branches: [main]
+    branches: 
+      - '*'
+  pull_request:
+    branches:
+      - '*'
   workflow_dispatch:
 
 jobs:
@@ -22,9 +26,7 @@ jobs:
 
     - name: Generate coverage report
       run: |
-        pip install pytest
-        pip install pytest-cov
-        python -m pytest --cov=PQAnalysis --cov-report=xml
+        python -m pytest
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
