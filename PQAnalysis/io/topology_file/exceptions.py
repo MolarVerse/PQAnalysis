@@ -9,5 +9,3 @@ class TopologyFileError(PQException):
     """
     A class to represent a topology file exception.
     """
-
-    pass

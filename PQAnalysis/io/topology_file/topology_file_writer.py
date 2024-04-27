@@ -1,5 +1,7 @@
 """
-A module for writing topology files containing bonded information for the PQ and QMCFC MD software packages. For more information about the topology file structure please visit the documentation page of PQ https://molarverse.github.io/PQ/.
+A module for writing topology files containing bonded information for the PQ and
+QMCFC MD software packages. For more information about the topology file structure
+please visit the documentation page of PQ https://molarverse.github.io/PQ/.
 """
 
 from _io import TextIOWrapper as File  # type: ignore
@@ -7,12 +9,14 @@ from _io import TextIOWrapper as File  # type: ignore
 from beartype.typing import List
 
 from PQAnalysis.io import BaseWriter, FileWritingMode
-from PQAnalysis.topology import Bond, BondedTopology, Topology
+from PQAnalysis.topology import BondedTopology, Topology
 
 
 class TopologyFileWriter(BaseWriter):
     """
-    Class for writing topology files containing bonded information for the PQ and QMCFC MD software packages. For more information about the topology file structure please visit the documentation page of PQ https://molarverse.github.io/PQ/.
+    Class for writing topology files containing bonded information for the PQ and 
+    QMCFC MD software packages. For more information about the topology file 
+    structure please visit the documentation page of PQ https://molarverse.github.io/PQ/.
     """
 
     def __init__(self,
@@ -36,11 +40,11 @@ class TopologyFileWriter(BaseWriter):
         super().__init__(filename, mode=mode)
 
         self.key_topology_map = {
-            "bonds": self.write_bond_info,
-            "angles": self.write_angle_info,
-            "dihedrals": self.write_dihedral_info,
-            "impropers": self.write_improper_info,
-            "shake": self.write_shake_info
+            "bonds": write_bond_info,
+            "angles": write_angle_info,
+            "dihedrals": write_dihedral_info,
+            "impropers": write_improper_info,
+            "shake": write_shake_info
         }
 
     def write(self, bonded_topology: Topology | BondedTopology) -> None:
@@ -50,7 +54,8 @@ class TopologyFileWriter(BaseWriter):
         Parameters
         ----------
         bonded_topology : Topology | BondedTopology
-            The bonded topology to write to the file. If a Topology object is provided, the bonded topology will be extracted from it.
+            The bonded topology to write to the file. If a Topology object is
+            provided, the bonded topology will be extracted from it.
 
         Raises
         ------
@@ -78,7 +83,8 @@ class TopologyFileWriter(BaseWriter):
 
 def write_bond_info(bonded_topology: BondedTopology, file: File) -> None:
     """
-    Determines if the bonded topology contains bonds and writes the bond information to the file.
+    Determines if the bonded topology contains bonds and 
+    writes the bond information to the file.
 
     Parameters
     ----------
@@ -95,7 +101,8 @@ def write_bond_info(bonded_topology: BondedTopology, file: File) -> None:
 
 def write_angle_info(bonded_topology: BondedTopology, file: File) -> None:
     """
-    Determines if the bonded topology contains angles and writes the angle information to the file.
+    Determines if the bonded topology contains angles and
+    writes the angle information to the file.
 
     Parameters
     ----------
@@ -112,7 +119,8 @@ def write_angle_info(bonded_topology: BondedTopology, file: File) -> None:
 
 def write_dihedral_info(bonded_topology: BondedTopology, file: File) -> None:
     """
-    Determines if the bonded topology contains dihedrals and writes the dihedral information to the file.
+    Determines if the bonded topology contains dihedrals and
+    writes the dihedral information to the file.
 
     Parameters
     ----------
@@ -165,7 +173,8 @@ def get_bond_lines(bonded_topology: BondedTopology) -> List[str]:
     """
     Get the bond lines for the bonded topology.
 
-    The lines contain one header line, one line for each bond, and an end line in the following format:
+    The lines contain one header line, one line for each bond,
+    and an end line in the following format:
 
     BONDS n_unique_indices n_unique_target_indices n_linkers
     index1 index2 bond_type
@@ -206,7 +215,8 @@ def get_angle_lines(bonded_topology: BondedTopology) -> List[str]:
     """
     Get the angle lines for the bonded topology.
 
-    The lines contain one header line, one line for each angle, and an end line in the following format:
+    The lines contain one header line, one line for each angle,
+    and an end line in the following format:
 
     ANGLES n_unique_indices1 n_unique_indices2 n_unique_indices3 n_linkers
     index1 index2 index3 angle_type
@@ -249,7 +259,8 @@ def get_dihedral_lines(bonded_topology: BondedTopology) -> List[str]:
     """
     Get the dihedral lines for the bonded topology.
 
-    The lines contain one header line, one line for each dihedral, and an end line in the following format:
+    The lines contain one header line, one line for each dihedral,
+    and an end line in the following format:
 
     DIHEDRALS n_unique_indices1 n_unique_indices2 n_unique_indices3 n_unique_indices4
     index1 index2 index3 index4 dihedral_type
@@ -293,7 +304,8 @@ def get_improper_lines(bonded_topology: BondedTopology) -> List[str]:
     """
     Get the improper lines for the bonded topology.
 
-    The lines contain one header line, one line for each improper, and an end line in the following format:
+    The lines contain one header line, one line for each improper,
+    and an end line in the following format:
 
     IMPROPERS n_unique_indices1 n_unique_indices2 n_unique_indices3 n_unique_indices4
     index1 index2 index3 index4 improper_type
@@ -337,7 +349,8 @@ def get_shake_lines(bonded_topology: BondedTopology) -> List[str]:
     """
     Get the shake lines for the bonded topology.
 
-    The lines contain one header line, one line for each shake bond, and an end line in the following format:
+    The lines contain one header line, one line for each shake bond,
+    and an end line in the following format:
 
     SHAKE n_unique_indices n_unique_target_indices n_linkers
     index1 index2 equilibrium_distance linker
