@@ -1,22 +1,27 @@
 """
-A module containing the BondedTopology class. This class represents a bonded topology in a molecular topology and is used to store the bonds, angles, dihedrals, impropers, and shake bonds of a molecular system along with their properties.
+A module containing the BondedTopology class. 
+
+The BondedTopology class represents a bonded topology in a molecular
+topology and is used to store the bonds, angles, dihedrals,
+impropers, and shake bonds of a molecular system along with their properties.
 """
 
 from beartype.typing import List
 
+from PQAnalysis.types import PositiveInt
+
 from .bond import Bond
 from .angle import Angle
 from .dihedral import Dihedral
-from ._topologyPropertiesMixin import TopologyPropertiesMixin
-
-from PQAnalysis.types import PositiveInt
+from ._topology_properties import TopologyPropertiesMixin
 
 
 class BondedTopology(TopologyPropertiesMixin):
     """
     A class to represent a bonded topology in a molecular topology.
 
-    It inherits from TopologyPropertiesMixin. A mixin class to add the most common properties of a topology.
+    It inherits from TopologyPropertiesMixin.
+    A mixin class to add the most common properties of a topology.
     """
 
     def __init__(self,
@@ -41,7 +46,8 @@ class BondedTopology(TopologyPropertiesMixin):
         shake_bonds : List[Bond], optional
             A list of shake bonds in the bonded topology, by default None.
         ordering_keys : List[str], optional
-            A list of keys to order the blocks of the bonded topology, when initializing from a file, by default None.
+            A list of keys to order the blocks of the bonded topology,
+            when initializing from a file, by default None.
         """
 
         self.bonds = bonds or []
@@ -61,7 +67,8 @@ class BondedTopology(TopologyPropertiesMixin):
         """
         Extend the shake bonds in the bonded topology.
 
-        This function is useful when two or more atomic systems are merged, and the shake bonds need to be extended to the new atoms.
+        This function is useful when two or more atomic systems are merged,
+        and the shake bonds need to be extended to the new atoms.
 
         Parameters
         ----------
@@ -96,7 +103,8 @@ class BondedTopology(TopologyPropertiesMixin):
             n_atoms_per_extension = 0
         elif n_atoms_per_extension < max_index_shake_bonds:
             raise ValueError(
-                "n_atoms_per_extension must be greater or equal than the highest index in the provided shake bonds."
+                "n_atoms_per_extension must be greater or equal "
+                "than the highest index in the provided shake bonds."
             )
 
         for i in range(n_extensions):
