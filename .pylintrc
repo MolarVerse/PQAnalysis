@@ -85,8 +85,18 @@ limit-inference-results=100
 
 # List of plugins (as comma separated values of python module names) to load,
 # usually to register additional checkers.
-load-plugins=pylint.extensions.docparams,
-             pylint.extensions.docstyle
+load-plugins=
+    pylint.extensions.check_elif,
+    pylint.extensions.bad_builtin,
+    pylint.extensions.docparams,
+    pylint.extensions.docstyle,
+    pylint.extensions.for_any_all,
+    pylint.extensions.set_membership,
+    pylint.extensions.code_style,
+    pylint.extensions.overlapping_exceptions,
+    pylint.extensions.redefined_variable_type,
+    pylint.extensions.comparison_placement,
+    pylint.extensions.mccabe,
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -438,7 +448,7 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         logging-fstring-interpolation, # added
         too-few-public-methods, # added
-        docstring-first-line-empty
+        docstring-first-line-empty #added
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
