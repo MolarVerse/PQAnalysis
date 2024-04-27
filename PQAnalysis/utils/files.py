@@ -2,11 +2,12 @@
 A module containing functions to work with files, which are of general use.
 """
 
+from pathlib import Path
+
 import glob
 import numpy as np
 
 from beartype.typing import List
-from pathlib import Path
 
 
 def find_files_with_prefix(file_prefixes: List[str] | str) -> List[str]:
@@ -16,7 +17,9 @@ def find_files_with_prefix(file_prefixes: List[str] | str) -> List[str]:
     Parameters
     ----------
     file_prefixes : List[str] or str
-        The prefixes of the files to find. Here with prefix we mean the part of the filename not only the name before the extension, but every matching file that starts with the given prefix.
+        The prefixes of the files to find. Here with prefix we mean
+        the part of the filename not only the name before the extension,
+        but every matching file that starts with the given prefix.
 
     Returns
     -------

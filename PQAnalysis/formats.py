@@ -38,7 +38,7 @@ class BaseEnumFormat(Enum):
         return ', '.join([str(member.value) for member in cls])
 
     @classmethod
-    def _missing_(cls, value: object, exception: type(Exception)) -> Any:
+    def _missing_(cls, value: object, exception: type(Exception)) -> Any:  # pylint: disable=arguments-differ
         """
         This method allows a FileWriteMode to be retrieved from a string.
 
