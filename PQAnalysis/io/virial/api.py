@@ -4,7 +4,7 @@ A module containing the API for reading virial and stress files.
 
 from beartype.typing import List
 
-from .virialReader import VirialFileReader, StressFileReader
+from .virial_reader import VirialFileReader, StressFileReader
 
 
 def read_virial_file(filename: str) -> List:

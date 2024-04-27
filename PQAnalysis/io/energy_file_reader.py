@@ -5,9 +5,9 @@ A module containing the EnergyFileReader class.
 import os
 import numpy as np
 
-from . import BaseReader, InfoFileReader
 from PQAnalysis.physicalData import Energy
 from PQAnalysis.traj import MDEngineFormat
+from . import BaseReader, InfoFileReader
 
 
 class EnergyFileReader(BaseReader):
@@ -19,16 +19,28 @@ class EnergyFileReader(BaseReader):
                  filename: str,
                  info_filename: str | None = None,
                  use_info_file: bool = True,
-                 format: MDEngineFormat | str = MDEngineFormat.PQ
+                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ
                  ) -> None:
         """
         For the initialization of the EnergyFileReader, the filename of the energy
         file has to be given. The info_filename can be given as well. If no
-        info_filename is given, the energy filename is used to find the info file with the proper extension and the base name of the energy file. If a info_filename is given, this filename is used to find the info file. If the info_filename was explicitly set to a non-existing file, a FileNotFoundError is raised. If use_info_file is set to False, no info file is searched for.
+        info_filename is given, the energy filename is used to find the info 
+        file with the proper extension and the base name of the energy file. 
+        If a info_filename is given, this filename is used to find the info 
+        file. If the info_filename was explicitly set to a non-existing file,
+        a FileNotFoundError is raised. If use_info_file is set to False, no info
+        file is searched for.
 
-        Providing info files is optional, but where possible, it is recommended to provide an info file. The info file contains information about the physical quantities stored in the energy file. If an info file is provided, the physical quantities are assumed to be in the order of the info file. The info file can also contain units for the physical quantities. If units are provided, the units are stored in the Energy object, which is returned by the read method.
+        Providing info files is optional, but where possible, it is recommended to 
+        provide an info file. The info file contains information about the physical
+        quantities stored in the energy file. If an info file is provided, the 
+        physical quantities are assumed to be in the order of the info file. The 
+        info file can also contain units for the physical quantities. If units are
+        provided, the units are stored in the Energy object, which is returned by 
+        the read method.
 
-        For more information about the energy object, see :py:class:`~PQAnalysis.physicalData.energy.Energy`.
+        For more information about the energy object, see
+        :py:class:`~PQAnalysis.physicalData.energy.Energy`.
 
         Parameters
         ----------
@@ -38,18 +50,18 @@ class EnergyFileReader(BaseReader):
             The name of the info file to read from, by default None
         use_info_file : bool, optional
             If True, the info file is searched for, by default True
-        format : MDEngineFormat | str, optional
+        engine_format : MDEngineFormat | str, optional
             The format of the file, by default MDEngineFormat.PQ
         """
         super().__init__(filename)
         self.info_filename = info_filename
 
         if use_info_file:
-            self.withInfoFile = self.__info_file_found__()
+            self.with_info_file = self.__info_file_found__()
         else:
-            self.withInfoFile = False
+            self.with_info_file = False
 
-        self.format = MDEngineFormat(format)
+        self.format = MDEngineFormat(engine_format)
 
     def read(self) -> Energy:
         """
@@ -68,11 +80,12 @@ class EnergyFileReader(BaseReader):
         """
         info, units = None, None
 
-        if self.withInfoFile:
-            reader = InfoFileReader(self.info_filename, format=self.format)
+        if self.with_info_file:
+            reader = InfoFileReader(
+                self.info_filename, engine_format=self.format)
             info, units = reader.read()
 
-        with open(self.filename, "r") as file:
+        with open(self.filename, "r", encoding='utf-8') as file:
 
             data = []
 
@@ -80,7 +93,7 @@ class EnergyFileReader(BaseReader):
                 if line.startswith("#"):
                     continue
 
-                data_line = map(lambda x: float(x), line.split())
+                data_line = map(float, line.split())
                 data.append(list(data_line))
 
         return Energy(np.array(data).T, info, units)
@@ -114,8 +127,9 @@ class EnergyFileReader(BaseReader):
         else:
             try:
                 BaseReader(self.info_filename)
-            except FileNotFoundError:
+            except FileNotFoundError as e:
                 raise FileNotFoundError(
-                    f"Info File {self.info_filename} not found.")
+                    f"Info File {self.info_filename} not found."
+                ) from e
 
         return self.info_filename is not None

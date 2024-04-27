@@ -2,10 +2,10 @@
 A module containing the BoxWriter class and its associated methods.
 """
 
-from . import BaseWriter, BoxFileFormat, FileWritingMode
-from .exceptions import BoxWriterError
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.utils import instance_function_count_decorator
+from . import BaseWriter, BoxFileFormat, FileWritingMode
+from .exceptions import BoxWriterError
 
 
 class BoxWriter(BaseWriter):
@@ -13,7 +13,9 @@ class BoxWriter(BaseWriter):
     A class for writing a trajectory to a box file.
     Inherits from BaseWriter
 
-    It can write a trajectory to a box file in either a data file format or a VMD file format. For more information see :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
+    It can write a trajectory to a box file in either a data file
+    format or a VMD file format. For more information see
+    :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
     """
 
     def __init__(self,
@@ -24,11 +26,14 @@ class BoxWriter(BaseWriter):
         Parameters
         ----------
         filename : str, optional
-            The name of the file to write to. If None, the output is printed to stdout.
+            The name of the file to write to.
+            If None, the output is printed to stdout.
         output_format : str | BoxFileFormat, optional
-            The format of the file. The default is 'data' i.e. BoxFileFormat.DATA.
+            The format of the file.
+            The default is 'data' i.e. BoxFileFormat.DATA.
         mode : str | FileWritingMode, optional
-            The mode of the file. Either 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
+            The mode of the file. Either 'w' for write,
+            'a' for append or 'o' for overwrite. The default is 'w'.
 
         Raises
         ------
@@ -49,7 +54,7 @@ class BoxWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         reset_counter : bool, optional
-            If True, the function execution counter of write_box_file 
+            If True, the function execution counter of write_box_file
             is reset to 0, otherwise it is not reset.
         """
 
@@ -70,20 +75,31 @@ class BoxWriter(BaseWriter):
         traj : Trajectory
             The trajectory to write.
         """
-        self.__check_PBC__(traj)
+        self.__check_pbc__(traj)
 
         for frame in traj:
             cell = frame.cell
 
             print("8", file=self.file)
             print(
-                f"Box   {cell.x} {cell.y} {cell.z}    {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
+                (
+                    f"Box   "
+                    f"{cell.x} {cell.y} {cell.z}    "
+                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                ),
+                file=self.file
+            )
+
             edges = cell.bounding_edges
+
             for edge in edges:
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
-    @instance_function_count_decorator
-    def write_box_file(self, traj: Trajectory, reset_counter: bool = True) -> None:
+    @ instance_function_count_decorator
+    def write_box_file(self,
+                       traj: Trajectory,
+                       reset_counter: bool = True  # pylint: disable=unused-argument # is needed for the decorator
+                       ) -> None:
         """
         Writes the given trajectory to the file in data file format.
 
@@ -104,17 +120,23 @@ class BoxWriter(BaseWriter):
         BoxWriterError
             If the cell of a frame of the trajectory is None.
         """
-        self.__check_PBC__(traj)
+        self.__check_pbc__(traj)
 
-        counter = self.counter[BoxWriter.write_box_file.__name__]
+        counter = self.counter[BoxWriter.write_box_file.__name__]  # pylint: disable=no-member # is added via decorator
         counter = len(traj)*(counter - 1)
 
         for i, frame in enumerate(traj):
             cell = frame.cell
             print(
-                f"{counter + i+1} {cell.x} {cell.y} {cell.z} {cell.alpha} {cell.beta} {cell.gamma}", file=self.file)
+                (
+                    f"{counter + i+1} "
+                    f"{cell.x} {cell.y} {cell.z} "
+                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                ),
+                file=self.file
+            )
 
-    def __check_PBC__(self, traj: Trajectory) -> None:
+    def __check_pbc__(self, traj: Trajectory) -> None:
         """
         Checks if the cell of the trajectory is not None.
 
@@ -133,11 +155,11 @@ class BoxWriter(BaseWriter):
             raise BoxWriterError(
                 "At least on cell of the trajectory is None. Cannot write box file.")
 
-    @property
+    @ property
     def output_format(self) -> BoxFileFormat:
         """BoxFileFormat: The format of the file."""
         return self._output_format
 
-    @output_format.setter
+    @ output_format.setter
     def output_format(self, output_format: str | BoxFileFormat) -> None:
         self._output_format = BoxFileFormat(output_format)
