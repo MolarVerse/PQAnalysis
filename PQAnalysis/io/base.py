@@ -14,12 +14,25 @@ class BaseWriter:
     """
     A base class for all writers.
 
-    This class can be used as a base class for all writers. It provides the functionality to write to a file or stdout. Meaning, if the filename is None, the output is printed to stdout. Otherwise, the output is written to the given file. The mode of the file can be either 'w' for write or 'a' for append. If the mode is 'w' and the file already exists, a ValueError is raised. If the mode is 'a' and the file does not exist, it is created. If the mode is 'o' and the file already exists, it is overwritten.
+    This class can be used as a base class for all writers. It provides the
+    functionality to write to a file or stdout. Meaning, if the filename is
+    None, the output is printed to stdout. Otherwise, the output is written
+    to the given file. The mode of the file can be either 'w' for write or 
+    'a' for append. If the mode is 'w' and the file already exists, a 
+    ValueError is raised. If the mode is 'a' and the file does not exist, 
+    it is created. If the mode is 'o' and the file already exists, it is 
+    overwritten.
 
     Attention
     ---------
 
-    Please be aware that after the initialization of the BaseWriter, the file is not opened yet. To open the file, the open() method has to be called. To close the file, the close() method has to be called. After calling the open() method of a file that already exists, the mode is automatically set to 'a'. This means that for all subsequent calls of the open() method, the mode is 'a' and not 'w'. This is to prevent overwriting the file by accident. 
+    Please be aware that after the initialization of the BaseWriter, the 
+    file is not opened yet. To open the file, the open() method has to be
+    called. To close the file, the close() method has to be called. After
+    calling the open() method of a file that already exists, the mode is 
+    automatically set to 'a'. This means that for all subsequent calls of
+    the open() method, the mode is 'a' and not 'w'. This is to prevent 
+    overwriting the file by accident. 
 
     """
 
@@ -33,7 +46,9 @@ class BaseWriter:
         filename : str or None, optional
             The name of the file to write to. If None, the output is printed to stdout.
         mode : FileWritingMode or str, optional
-            The mode of the file. Use one of the modes in FileWritingMode or 'w' for write, 'a' for append or 'o' for overwrite. The default is 'w'.
+            The mode of the file. Use one of the modes in FileWritingMode or 
+            'w' for write, 'a' for append or 'o' for overwrite.
+            The default is 'w'.
 
         Raises
         ------
@@ -57,7 +72,12 @@ class BaseWriter:
         Opens the file to write to.
         """
         if self.filename is not None:
-            self.file = open(self.filename, self.mode.value)
+
+            self.file = open(  # pylint: disable=consider-using-with
+                self.filename,
+                self.mode.value,
+                encoding='utf-8'
+            )
 
         self.mode = FileWritingMode.APPEND
 
@@ -75,7 +95,11 @@ class BaseWriter:
         """
         FileWritingMode: The mode of the file.
 
-        The setter checks if the given mode is in BaseWriter.modes. Furthermore, if the mode is 'w' and the file already exists, a ValueError is raised. If the mode is 'a' and the file does not exist, it is created. If the mode is 'o' and the file already exists, it is overwritten.
+        The setter checks if the given mode is in BaseWriter.modes. 
+        Furthermore, if the mode is 'w' and the file already exists,
+        a ValueError is raised. If the mode is 'a' and the file does
+        not exist, it is created. If the mode is 'o' and the file
+        already exists, it is overwritten.
         """
         return self._mode
 
@@ -84,23 +108,40 @@ class BaseWriter:
         """
         Sets the mode of the file.
 
-        It can be either a string or a FileWritingMode. If it is a string, it has to be one of the modes defined in the Enum class :py:class:`~PQAnalysis.io.formats.FileWritingMode`. Furthermore, if the mode is 'w' and the file already exists, a ValueError is raised. If the mode is 'a' and the file does not exist, it is created. If the mode is 'o' and the file already exists, it is overwritten.
+        It can be either a string or a FileWritingMode. If it is a
+        string, it has to be one of the modes defined in the Enum 
+        class :py:class:`~PQAnalysis.io.formats.FileWritingMode`. 
+        Furthermore, if the mode is 'w' and the file already exists,
+        a ValueError is raised. If the mode is 'a' and the file
+        does not exist, it is created. If the mode is 'o' and the
+        file already exists, it is overwritten.
 
         Parameters
         ----------
         mode : str | FileWritingMode
-            The mode of the file. It can be either a string or a FileWritingMode. If it is a string, it has to be one of the modes defined in the Enum class :py:class:`~PQAnalysis.io.formats.FileWritingMode`.
+            The mode of the file. It can be either a string or a 
+            FileWritingMode. If it is a string, it has to be one 
+            of the modes defined in the Enum class 
+            :py:class:`~PQAnalysis.io.formats.FileWritingMode`.
 
         Raises
         ------
         ValueError
-            If the given mode is 'w' and the file already exists. This is to prevent overwriting the file by accident.
+            If the given mode is 'w' and the file already exists.
+            This is to prevent overwriting the file by accident.
         """
         mode = FileWritingMode(mode)
 
-        if mode == FileWritingMode.WRITE and self.filename is not None and os.path.isfile(self.filename):
+        if (
+            mode == FileWritingMode.WRITE and
+            self.filename is not None and
+            os.path.isfile(self.filename)
+        ):
             raise ValueError(
-                f"File {self.filename} already exists. Use mode \'a\' to append to the file or mode \'o\' to overwrite the file.")
+                f"File {self.filename} already exists. "
+                "Use mode \'a\' to append to the file or mode "
+                "\'o\' to overwrite the file."
+            )
 
         if mode == 'o':
             mode = FileWritingMode('w')
@@ -112,7 +153,15 @@ class BaseReader:
     """
     A base class for all readers.
 
-    This class can be used as a base class for all Readers implemented in the PQAnalysis package. It provides the functionality to read from a file or multiple files. If the filename is a string, the file is read from. The basic idea is just to ease the handling of multiple files and to provide a common interface for all readers. The actual reading is done in the methods of the subclasses. This wrapper only sets the filename/filenames and checks if the file/files exist. Furthermore, a boolean is set to indicate if the reader reads from a single file or multiple files.
+    This class can be used as a base class for all Readers implemented 
+    in the PQAnalysis package. It provides the functionality to read 
+    from a file or multiple files. If the filename is a string, the file
+    is read from. The basic idea is just to ease the handling of 
+    multiple files and to provide a common interface for all readers.
+    The actual reading is done in the methods of the subclasses. 
+    This wrapper only sets the filename/filenames and checks if the 
+    file/files exist. Furthermore, a boolean is set to indicate if 
+    the reader reads from a single file or multiple files.
     """
 
     def __init__(self, filename: str | List[str]) -> None:
@@ -138,10 +187,12 @@ class BaseReader:
             self.multiple_files = False
         else:
             filenames = filename
-            for filename in filenames:
-                if not os.path.isfile(filename):
+            for _filename in filenames:
+                if not os.path.isfile(_filename):
                     raise FileNotFoundError(
-                        f"At least one of the given files does not exist. File {filename} not found.")
+                        "At least one of the given files does not exist. "
+                        f"File {_filename} not found."
+                    )
 
             self.filenames = filenames
             self.multiple_files = True
