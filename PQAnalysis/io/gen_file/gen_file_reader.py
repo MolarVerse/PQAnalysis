@@ -27,6 +27,8 @@ class GenFileReader(BaseReader):
         """
         super().__init__(filename)
 
+        self.n_atoms = 0
+
     def read(self) -> AtomicSystem:
         """
         Reads the gen file and returns a Frame object.
@@ -36,7 +38,7 @@ class GenFileReader(BaseReader):
         AtomicSystem
             The AtomicSystem including the Cell object.
         """
-        with open(self.filename, 'r') as file:
+        with open(self.filename, 'r', encoding='utf-8') as file:
             lines = file.read_lines()
 
             self.n_atoms, is_periodic, atom_names = self.read_header(lines[:2])
@@ -58,7 +60,10 @@ class GenFileReader(BaseReader):
         """
         Reads the header of the gen file.
 
-        The header consists of two lines. The first line contains the number of atoms and the periodicity of the system. The second line contains the atom names from which the indices of the atoms in the coordinates block can be derived.
+        The header consists of two lines. The first line contains the number 
+        of atoms and the periodicity of the system. The second line contains
+        the atom names from which the indices of the atoms in the coordinates 
+        block can be derived.
 
         Parameters
         ----------
@@ -95,7 +100,8 @@ class GenFileReader(BaseReader):
         """
         Reads the coordinates block of the gen file.
 
-        One line corresponds to one atom and contains a counter index, the atom index and the x, y and z coordinates.
+        One line corresponds to one atom and contains a counter index, 
+        the atom index and the x, y and z coordinates.
 
         Parameters
         ----------
@@ -136,5 +142,6 @@ class GenFileReader(BaseReader):
         for i, line in enumerate(lines):
             box_matrix[i] = np.array(line.split(), dtype=float)
 
-        # NOTE: The box matrix is stored in row-major order in the gen file, so we need to transpose it.
-        return Cell(box_matrix=np.transpose(box_matrix))
+        # NOTE: The box matrix is stored in row-major order
+        # in the gen file, so we need to transpose it.
+        return Cell.init_from_box_matrix(box_matrix=np.transpose(box_matrix))

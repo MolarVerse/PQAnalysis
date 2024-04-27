@@ -6,13 +6,13 @@ from __future__ import annotations
 
 import re
 
+from PQAnalysis.types import PositiveInt
 from .output_files import _OutputFileMixin
 from ..formats import InputFileFormat
-from ..inputFileParser import InputFileParser
-from PQAnalysis.types import PositiveInt
+from ..input_file_parser import InputFileParser
 
 
-class PQ_InputFileReader(_OutputFileMixin):
+class PQInputFileReader(_OutputFileMixin):
     """
     Reads a PQ input file and parses it.
 
@@ -34,6 +34,16 @@ class PQ_InputFileReader(_OutputFileMixin):
         filename : str
             filename of the input file
         """
+
+        ########################
+        # dummy initialization #
+        ########################
+
+        self.dictionary = None
+        self.raw_input_file = None
+        self.input_file_n = None
+        self.start_n = None
+        self.actual_n = None
 
         self.format = InputFileFormat.PQ
         self.filename = filename
@@ -57,12 +67,14 @@ class PQ_InputFileReader(_OutputFileMixin):
 
         if not self.is_start_file_defined:
             raise ValueError(
-                f"No start file defined in input file {self.filename}.")
+                f"No start file defined in input file {self.filename}."
+            )
 
     def continue_input_file(self, n: PositiveInt):
         """
-        Creates n new input files by increasing the number in the filename by one.
-        All other numbers in the start- and output-files within the input file are increased by one as well.
+        Creates n new input files by increasing the number in the 
+        filename by one. All other numbers in the start- and
+        output-files within the input file are increased by one as well.
 
         Parameters
         ----------
@@ -72,7 +84,8 @@ class PQ_InputFileReader(_OutputFileMixin):
         Raises
         ------
         ValueError
-            if the n parsed from the output files defined in the input file does not match the n parsed from the input file name
+            if the n parsed from the output files defined in the input file does
+            not match the n parsed from the input file name
         ValueError
             if the n parsed from the start file does not match the n parsed from the output files
         """
@@ -124,7 +137,7 @@ class PQ_InputFileReader(_OutputFileMixin):
             # create new input file and write new_raw_input_file to it
             new_filename = self.filename.replace(
                 self.input_file_n, new_input_file_n)
-            file = open(new_filename, "w")
+            file = open(new_filename, "w", encoding="utf-8")
             file.write(new_raw_input_file)
             file.close()
 
@@ -136,8 +149,9 @@ class PQ_InputFileReader(_OutputFileMixin):
         """
         Parses the n from the start file.
 
-        If the rpmd_start_file is defined, the n from the start_file and the rpmd_start_file are compared.
-        If they do not match, a ValueError is raised.
+        If the rpmd_start_file is defined, the n from the start_file and 
+        the rpmd_start_file are compared. If they do not match,
+        a ValueError is raised.
 
         Returns
         -------
@@ -188,13 +202,15 @@ class PQ_InputFileReader(_OutputFileMixin):
                 if _n != n and n is not None:
                     print(_n, n, key)
                     raise ValueError(
-                        f"Actual n in output files is not consistent.")
+                        "Actual n in output files is not consistent."
+                    )
 
                 n = _n
 
         if n is None:
             raise ValueError(
-                f"No output file found to determine actual n.")
+                "No output file found to determine actual n."
+            )
 
         return n
 
@@ -232,14 +248,17 @@ def _increase_digit_string(digit_string: str) -> str:
         raise ValueError(
             f"digit_string {digit_string} contains non-digit characters.")
 
-    string_without_leading_zeros = digit_string.lstrip("0")
+    without_leading_zeros = digit_string.lstrip("0")
 
-    if string_without_leading_zeros == "":
-        string_without_leading_zeros = "0"
+    if without_leading_zeros == "":
+        without_leading_zeros = "0"
 
-    string_without_leading_zeros = str(int(string_without_leading_zeros) + 1)
+    without_leading_zeros = str(int(without_leading_zeros) + 1)
 
-    return "0" * (len(digit_string) - len(string_without_leading_zeros)) + string_without_leading_zeros
+    number_leading_zeros = len(digit_string) - len(without_leading_zeros)
+    leading_zeros = "0" * number_leading_zeros
+
+    return leading_zeros + without_leading_zeros
 
 
 def _get_digit_string_from_filename(filename: str) -> str:
@@ -276,6 +295,8 @@ def _get_digit_string_from_filename(filename: str) -> str:
 
     if regex is None:
         raise ValueError(
-            f"Filename {filename} does not contain a number to be continued from. It has to be of the form \"...<number>.<extension>\".")
+            f"Filename {filename} does not contain a number to be "
+            "continued from. It has to be of the form \"...<number>.<extension>\"."
+        )
 
     return regex.group(0)[:-1]

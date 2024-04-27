@@ -1,15 +1,15 @@
 """
 A module containing functions to parse the input file.
 """
-from beartype.typing import List
 from numbers import Real
+from beartype.typing import List
 
-from ..inputFileParser import InputDictionary
-from ..exceptions import InputFileError
 from PQAnalysis.types import PositiveReal, PositiveInt
+from ..input_file_parser import InputDictionary
+from ..exceptions import InputFileError
 
 
-def _parse_positive_real(dict: InputDictionary, key: str) -> PositiveReal | None:
+def _parse_positive_real(input_dict: InputDictionary, key: str) -> PositiveReal | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive real number.
     If the key is not in the dictionary, None is returned.
@@ -31,7 +31,7 @@ def _parse_positive_real(dict: InputDictionary, key: str) -> PositiveReal | None
     InputFileError
         if the value is not a positive real number
     """
-    value = _parse_real(dict, key)
+    value = _parse_real(input_dict, key)
 
     if value is None:
         return None
@@ -43,7 +43,7 @@ def _parse_positive_real(dict: InputDictionary, key: str) -> PositiveReal | None
     return value
 
 
-def _parse_real(dict: InputDictionary, key: str) -> Real | None:
+def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a real number.
     None is returned if the key is not in the dictionary.
@@ -66,7 +66,7 @@ def _parse_real(dict: InputDictionary, key: str) -> Real | None:
         if the value is not a real number
     """
     try:
-        data = dict[key]
+        data = input_dict[key]
     except KeyError:
         return None
 
@@ -79,9 +79,10 @@ def _parse_real(dict: InputDictionary, key: str) -> Real | None:
     return data[0]
 
 
-def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
+def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
     """
-    Gets the value of a key from the input dictionary and checks if it is a list of strings, a glob or a string.
+    Gets the value of a key from the input dictionary and
+    checks if it is a list of strings, a glob or a string.
     If the key is not in the dictionary, None is returned.
 
     Parameters
@@ -102,7 +103,7 @@ def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
         if the value is not a list of strings, a glob or a string
     """
     try:
-        data = dict[key]
+        data = input_dict[key]
     except KeyError:
         return None
 
@@ -110,14 +111,18 @@ def _parse_files(dict: InputDictionary, key: str) -> List[str] | None:
 
     if data_type == "str":
         return [data[0]]
-    elif data_type == "glob" or data_type == "list(str)":
+
+    if data_type == "glob" or data_type == "list(str)":
         return data[0]
-    else:
-        raise InputFileError(
-            f"The \"{key}\" value has to be either a string, glob or a list of strings - actually it is parsed as a {data_type}")
+
+    raise InputFileError(
+        f"The \"{key}\" value has to be either a "
+        "string, glob or a list of strings - actually "
+        f"it is parsed as a {data_type}"
+    )
 
 
-def _parse_int(dict: InputDictionary, key: str) -> int | None:
+def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
     """
     Gets the value of a key from the input dictionary and checks if it is an integer.
 
@@ -139,7 +144,7 @@ def _parse_int(dict: InputDictionary, key: str) -> int | None:
         if the value is not an integer
     """
     try:
-        data = dict[key]
+        data = input_dict[key]
     except KeyError:
         return None
 
@@ -152,7 +157,7 @@ def _parse_int(dict: InputDictionary, key: str) -> int | None:
     return data[0]
 
 
-def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
+def _parse_positive_int(input_dict: InputDictionary, key: str) -> PositiveInt | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive integer.
 
@@ -173,7 +178,7 @@ def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
     InputFileError
         if the value is not a positive integer
     """
-    value = _parse_int(dict, key)
+    value = _parse_int(input_dict, key)
 
     if value is None:
         return None
@@ -185,7 +190,7 @@ def _parse_positive_int(dict: InputDictionary, key: str) -> PositiveInt | None:
     return value
 
 
-def _parse_string(dict: InputDictionary, key: str) -> str | None:
+def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a string.
 
@@ -207,7 +212,7 @@ def _parse_string(dict: InputDictionary, key: str) -> str | None:
         if the value is not a string
     """
     try:
-        data = dict[key]
+        data = input_dict[key]
     except KeyError:
         return None
 
@@ -215,12 +220,14 @@ def _parse_string(dict: InputDictionary, key: str) -> str | None:
 
     if data_type != "str":
         raise InputFileError(
-            f"The \"{key}\" value has to be of string type - actually it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of "
+            f"string type - actually it is parsed as a {data_type}"
+        )
 
     return data[0]
 
 
-def _parse_bool(dict: InputDictionary, key: str) -> bool | None:
+def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a bool.
 
@@ -242,7 +249,7 @@ def _parse_bool(dict: InputDictionary, key: str) -> bool | None:
         if the value is not a bool
     """
     try:
-        data = dict[key]
+        data = input_dict[key]
     except KeyError:
         return None
 
