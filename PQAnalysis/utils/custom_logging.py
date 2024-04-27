@@ -13,8 +13,7 @@ import types
 
 from beartype.typing import Any
 
-import PQAnalysis.config as config
-
+from PQAnalysis.config import log_file_name, use_log_file
 from PQAnalysis.utils import print_header
 
 
@@ -24,7 +23,7 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
 
     This function can be used to setup a generic logger for functions/classes...
     of the PQAnalysis package. It automatically adds a stream handler to the logger
-    and if the config.use_log_file is set to True, it also adds a file handler to
+    and if the use_log_file is set to True, it also adds a file handler to
     the logger. The file handler writes the log messages to the file specified in
     the config log_file_name.
 
@@ -43,13 +42,13 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
         stream_handler.setFormatter(CustomColorFormatter())
         logger.addHandler(stream_handler)
 
-        if config.use_log_file:
-            file_handler = logging.FileHandler(config.log_file_name)
+        if use_log_file:
+            file_handler = logging.FileHandler(log_file_name)
             file_handler.setFormatter(CustomFormatter())
             logger.addHandler(file_handler)
 
-            if os.stat(config.log_file_name).st_size == 0:
-                with open(config.log_file_name, 'a', encoding='utf-8') as file:
+            if os.stat(log_file_name).st_size == 0:
+                with open(log_file_name, 'a', encoding='utf-8') as file:
                     print_header(file=file)
     else:
         logger = logging.getLogger(logger.name)
@@ -140,8 +139,7 @@ class CustomLogger(logging.Logger):
 
                 raise exception(msg).with_traceback(back_tb)
 
-            else:
-                sys.exit(1)
+            sys.exit(1)
 
     def _original_log(self,
                       level: Any,
@@ -188,6 +186,10 @@ class CustomLogger(logging.Logger):
             The message to log.
         exception : Exception, optional
             The exception to raise, by default None. If None, a generic Exception is raised.
+        *args : Any
+            The arguments of the log message.
+        **kwargs : Any
+            The keyword arguments of the log message.
         """
         if self.isEnabledFor(logging.ERROR):
             self._log(logging.ERROR, msg, args, exception=exception, **kwargs)
@@ -202,8 +204,10 @@ class CustomLogger(logging.Logger):
         ----------
         msg : Any
             The message to log.
-        args : Any
+        *args : Any
             The arguments of the log message.
+        **kwargs : Any
+            The keyword arguments of the log message.
         """
 
         if self.isEnabledFor(logging.ERROR):
@@ -228,6 +232,10 @@ class CustomLogger(logging.Logger):
             The message to log.
         exception : Exception, optional
             The exception to raise, by default None. If None, a generic Exception is raised.
+        *args : Any
+            The arguments of the log message.
+        **kwargs : Any
+            The keyword arguments of the log message.
         """
         if self.isEnabledFor(logging.CRITICAL):
             self._log(
@@ -248,6 +256,10 @@ class CustomLogger(logging.Logger):
         ----------
         msg : Any
             The message to log.
+        *args : Any
+            The arguments of the log message.
+        **kwargs : Any
+            The keyword arguments of the log message.
         """
         if self.isEnabledFor(logging.CRITICAL):
             self._original_log(logging.CRITICAL, msg, args, **kwargs)

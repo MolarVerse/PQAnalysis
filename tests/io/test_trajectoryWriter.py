@@ -48,11 +48,13 @@ class TestTrajectoryWriter:
 
         with pytest.raises(MDEngineFormatError) as exception:
             TrajectoryWriter(engine_format="notAFormat")
-        assert str(
-            exception.value) == f"""
-'notaformat' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+        assert str(exception.value) == (
+            "\n"
+            "'notaformat' is not a valid MDEngineFormat.\n"
+            f"Possible values are: {MDEngineFormat.member_repr()} "
+            "or their case insensitive string representation: "
+            f"{MDEngineFormat.value_repr()}"
+        )
 
         writer = TrajectoryWriter()
         assert writer.file == sys.stdout

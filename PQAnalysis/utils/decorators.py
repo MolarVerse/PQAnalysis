@@ -4,24 +4,33 @@ A module containing different decorators which could be useful.
 
 import time
 
-from decorator import decorator
 from collections import defaultdict
 from inspect import getfullargspec
+
+from decorator import decorator
 from beartype.typing import Any
 
 
-def count_decorator(func, *args, **kwargs) -> Any:
+def count_decorator(func, *args, **kwargs) -> Any:  # pylint: disable=unused-argument, missing-function-docstring
     """
     Decorator which counts the number of times a function is called.
+
+    Parameters
+    ----------
+    func : Callable
+        The function to be decorated.
+    args : 
+        The arguments of the function.
+    kwargs : 
+        The keyword arguments of the function.
     """
     def wrapper(*args, **kwargs):
         """
         A wrapper function to count the number of times a function is called.
         """
         wrapper.counter += 1
-        reset_counter = kwargs.get('reset_counter')
 
-        if reset_counter:
+        if kwargs.get('reset_counter', False):
             wrapper.counter = 1
 
         return func(*args, **kwargs)
@@ -42,9 +51,7 @@ def instance_function_count_decorator(func, *args, **kwargs):
         setattr(self, 'counter', defaultdict(int))
     self.counter[func.__name__] += 1
 
-    reset_counter = get_argvar_by_name(func, args, 'reset_counter')
-
-    if reset_counter:
+    if get_arg_var_by_name(func, args, 'reset_counter'):
         self.counter[func.__name__] = 1
 
     return func(*args, **kwargs)
@@ -59,11 +66,6 @@ def timeit_in_class(func, *args, **kwargs) -> Any:
     def wrapper(*args, **kwargs) -> Any:
         """
         A wrapper function to measure the time a function takes to execute.
-
-        Returns
-        -------
-        _type_
-            _description_
         """
         start = time.time()
         result = func(*args, **kwargs)
@@ -74,7 +76,7 @@ def timeit_in_class(func, *args, **kwargs) -> Any:
     return wrapper(*args, **kwargs)
 
 
-def get_argvar_by_name(func, args, arg_name):
+def get_arg_var_by_name(func, args, arg_name):
     """
     Returns the value of the argument with the given name.
     """
