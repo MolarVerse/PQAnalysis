@@ -14,16 +14,15 @@ def main(lines):
 
     report = lines[report_start_index:report_end_index-2]
 
-    print("PYLINT REPORT")
-    print()
-    print(summary)
-    print()
+    print("PYLINT REPORT    ")
+    print("    ")
+    print(summary, "    ")
+    print("    ")
     print("<details>")
     print("  <summary>Full report</summary>")
-    print()
+    print("    ")
     for line in report:
-        print("  ", line, "\n")
-    print()
+        print("  ", line, "    \n")
     print("</details>")
 
 
