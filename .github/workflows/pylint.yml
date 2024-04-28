@@ -28,8 +28,8 @@ jobs:
     - name: Lint with pylint
       run: |
         pip install pylint
-        OUTPUT=$(pylint PQAnalysis --exit-zero)
-        #OUTPUT=$()
+        _OUTPUT=$(pylint PQAnalysis --exit-zero)
+        OUTPUT=$(python .github/scripts/parse_pylint.py $_OUTPUT)
         echo "MESSAGE=$OUTPUT" >> $GITHUB_ENV
     - name: Post result to PR
       uses: mshick/add-pr-comment@v1
