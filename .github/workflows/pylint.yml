@@ -1,0 +1,44 @@
+name: Test Coverage
+
+on:
+  push:
+    branches: 
+      - main
+      - dev
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: build PQAnalysis
+      run: |
+        pip install .[test]
+
+    - name: Lint with pylint
+      run: |
+        pip install pylint
+        OUTPUT=$(pylint PQAnalysis --exit-zero)
+        #OUTPUT=$()
+        echo "MESSAGE=$OUTPUT" >> $GITHUB_ENV
+    - name: Post result to PR
+      uses: mshick/add-pr-comment@v1
+      with:
+        message: ${{ env.MESSAGE }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token-user-login: 'github-actions[bot]' # The user.login for temporary GitHub tokens
+        allow-repeats: false # This is the default
+      if: always() && github.event_name == 'pull_request'
+
+    
+
