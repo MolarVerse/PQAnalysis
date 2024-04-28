@@ -30,7 +30,7 @@ jobs:
         pip install pylint
         _OUTPUT=$(pylint PQAnalysis --exit-zero)
         OUTPUT=$(python .github/scripts/parse_pylint.py "$_OUTPUT")
-        echo "MESSAGE=$OUTPUT" >> $GITHUB_ENV
+        echo "MESSAGE="$OUTPUT"" >> $GITHUB_ENV
     - name: Post result to PR
       uses: mshick/add-pr-comment@v1
       with:
