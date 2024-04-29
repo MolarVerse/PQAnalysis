@@ -2,13 +2,11 @@
 A module containing different units related to the unum subpackage.
 """
 
-from unum import Unum
-from unum.units import J
+mol = 6.02214076e23
 
-cal = Unum.unit('cal', J/4.184)
-kcal = Unum.unit('kcal', cal*1e3)
-
-__mole__ = 6.02214076e23
-
-cal_per_mole = Unum.unit('cal/mol', J/4.184/__mole__)
-kcal_per_mole = Unum.unit('kcal/mol', cal_per_mole*1e3)
+J = 1.0
+J_per_mol = J * mol
+cal = J / 4.184
+kcal = cal / 1000.0
+eV = 6.241506363094e18
+kcal_per_mol = kcal * mol
