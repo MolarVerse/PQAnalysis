@@ -7,7 +7,6 @@ import _io
 import numpy as np
 
 from beartype.typing import List, Dict
-from unum.units import eV, angstrom
 
 from PQAnalysis.io import (
     BaseWriter,
@@ -18,7 +17,7 @@ from PQAnalysis.io import (
     EnergyFileReader
 )
 from PQAnalysis.io.virial.api import read_stress_file, read_virial_file
-from PQAnalysis.utils.units import kcal_per_mole
+from PQAnalysis.utils.units import kcal_per_mol, eV
 from PQAnalysis.utils.files import find_files_with_prefix
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.utils.random import get_random_seed
@@ -903,9 +902,7 @@ Reading files to write NEP trajectory file:
 
         print(system.n_atoms, file=file)
 
-        energy_unit = kcal_per_mole
-        energy_conversion = energy_unit.asUnit(eV).asNumber()
-        energy = system.energy * energy_conversion
+        energy = system.energy * eV / kcal_per_mol
 
         file.write(f"energy={energy} ")
 
@@ -918,9 +915,7 @@ Reading files to write NEP trajectory file:
         file.write("\" ")
 
         if use_virial:
-            virial_unit = kcal_per_mole
-            virial_conversion = virial_unit.asUnit(eV).asNumber()
-            virial = system.virial * virial_conversion
+            virial = system.virial * eV / kcal_per_mol
 
             file.write("virial=\"")
             for i in range(3):
@@ -929,9 +924,7 @@ Reading files to write NEP trajectory file:
             file.write("\" ")
 
         if use_stress:
-            stress_unit = kcal_per_mole / angstrom**3
-            stress_conversion = stress_unit.asUnit(eV / angstrom**3).asNumber()
-            stress = system.stress * stress_conversion
+            stress = system.stress * eV / kcal_per_mol
 
             file.write("stress=\"")
             for i in range(3):
@@ -976,9 +969,7 @@ Reading files to write NEP trajectory file:
                 end=" "
             )
 
-            force_unit = kcal_per_mole / angstrom
-            force_conversion = force_unit.asUnit(eV / angstrom).asNumber()
-            forces = system.forces * force_conversion
+            forces = system.forces * eV / kcal_per_mol
 
             if use_forces:
                 print(
