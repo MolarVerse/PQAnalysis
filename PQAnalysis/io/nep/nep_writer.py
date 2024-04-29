@@ -332,7 +332,7 @@ class NEPWriter(BaseWriter):
             self.logger.info(
                 (
                     f"Processed {n_frames} frames from files:\n"
-                    f"{xyz_files[i]}, "
+                    f"{xyz_file}, "
                     f"{en_files[i]}, "
                     f"{info_files[i]}, "
                     f"{force_files[i] if use_forces else None}, "
@@ -429,9 +429,9 @@ class NEPWriter(BaseWriter):
                     exception=ValueError
                 )
         else:
-            n_train = 0
-            n_validation = 0
-            n_test = 0
+            n_train = 0.0
+            n_validation = 0.0
+            n_test = 0.0
 
         sum_frames = n_train + n_test + n_validation
 
@@ -591,7 +591,6 @@ class NEPWriter(BaseWriter):
                 ),
                 exception=ValueError
             )
-            exit(1)
 
         #fmt: off
         en_files = file_dict[OutputFileFormat.ENERGY.value]
