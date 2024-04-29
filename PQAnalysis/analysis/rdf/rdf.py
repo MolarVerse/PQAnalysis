@@ -18,10 +18,9 @@ import numpy as np
 from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
-# local imports
-import PQAnalysis.config as config
 
 # local absolute imports
+from PQAnalysis.config import with_progress_bar
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cells
 from PQAnalysis.traj import Trajectory, check_trajectory_pbc, check_trajectory_vacuum
@@ -431,7 +430,7 @@ class RDF:
         for frame in tqdm(
             self.frame_generator,
             total=self.n_frames,
-            disable=not config.with_progress_bar
+            disable=not with_progress_bar
         ):
             for i, reference_index in enumerate(self.reference_indices):
 
