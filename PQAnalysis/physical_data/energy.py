@@ -9,7 +9,7 @@ import numpy as np
 from beartype.typing import Dict
 
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
-from . import EnergyError
+from .exceptions import EnergyError
 
 
 class Energy():
