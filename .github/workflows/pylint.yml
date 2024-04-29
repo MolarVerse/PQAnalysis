@@ -23,28 +23,22 @@ jobs:
 
     - name: build PQAnalysis
       run: |
-        pip install .[test]
+        pip install pylint
+        pip install pylint-django
+        pip install .
 
     - name: Lint with pylint
       run: |
-        pip install pylint
-        mkdir -p output
         _OUTPUT=$(pylint PQAnalysis --exit-zero)
-        python .github/scripts/parse_pylint.py > output/results.txt
-    - uses: actions/upload-artifact@v1
+        python .github/scripts/parse_pylint.py | tee comment.txt
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: (success() || failure()) && github.event.pull_request
       with:
-        name: results
-        path: output
-    - uses: actions/download-artifact@v1
-      with:
-        name: results
-    - name: comment PR
-      uses: machine-learning-apps/pr-comment@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        path: results/results.txt
-      if: always() && github.event_name == 'pull_request'
+        recreate: true
+        path: comment.txt
+    - if: (success() || failure()) && !github.event.pull_request
+      run: |
+        cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
 
     
 
