@@ -145,7 +145,7 @@ class Residue:
 
         Parameters
         ----------
-        id : int
+        residue_id : int
             The id of the residue.
         """
         self._id = residue_id
@@ -198,7 +198,7 @@ class Residue:
 
         Raises
         ------
-        MolTypeError
+        ResidueError
             If the number of elements is not the same as the number of atoms.
         """
         if len(elements) != self.n_atoms:
@@ -231,7 +231,7 @@ class Residue:
 
         Raises
         ------
-        MolTypeError
+        ResidueError
             If the number of atom_types is not the same as the number of atoms.
         """
         if len(atom_types) != self.n_atoms:
@@ -264,7 +264,7 @@ class Residue:
 
         Raises
         ------
-        MolTypeError
+        ResidueError
             If the number of partial_charges is not the same as the number of atoms.
         """
         if len(partial_charges) != self.n_atoms:
