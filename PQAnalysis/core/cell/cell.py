@@ -19,9 +19,9 @@ from ._standard_properties import _StandardPropertiesMixin
 
 
 class Cell(_StandardPropertiesMixin):
-    '''
+    """
     Class for storing unit cell parameters.
-    '''
+    """
 
     def __init__(self,
                  x: Real = sys.float_info.max,
