@@ -14,7 +14,7 @@ import argcomplete
 
 from beartype.typing import Sequence
 
-import PQAnalysis.config as config
+import PQAnalysis.config as config  # pylint: disable=consider-using-from-import # here needed to set the config attributes
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis._version import __version__
