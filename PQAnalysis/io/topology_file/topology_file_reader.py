@@ -6,7 +6,7 @@ documentation page of PQ https://molarverse.github.io/PQ/
 
 from beartype.typing import List
 
-from PQAnalysis.io import BaseReader
+from PQAnalysis.io.base import BaseReader
 from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
 from .exceptions import TopologyFileError
 
