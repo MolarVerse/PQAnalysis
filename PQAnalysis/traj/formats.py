@@ -5,7 +5,7 @@ A module containing different format types of the trajectory.
 from beartype.typing import Any
 
 from PQAnalysis.formats import BaseEnumFormat
-from . import TrajectoryFormatError, MDEngineFormatError
+from .exceptions import TrajectoryFormatError, MDEngineFormatError
 
 
 class TrajectoryFormat(BaseEnumFormat):
