@@ -15,6 +15,18 @@ def main(file):
 
     report = lines[report_start_index:report_end_index-2]
 
+    new_report = []
+    for line in report:
+        if len(line.strip()) == 0:
+            new_report.append(line)
+        elif len(line.strip().replace("-", "")) == 0:
+            line = line.replace("-", "=")
+            new_report.append(line)
+        else:
+            line = line.replace("+", "|")
+            line = line.replace("=", "-")
+            new_report.append(line)
+
     print("PYLINT REPORT    ")
     print("    ")
     print(summary, "    ")
@@ -22,7 +34,7 @@ def main(file):
     print("<details>")
     print("  <summary>Full report</summary>")
     print("    ")
-    for line in report:
+    for line in new_report:
         print("  ", line, "    \n")
     print("</details>")
 
