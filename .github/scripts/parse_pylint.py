@@ -1,8 +1,9 @@
 import sys
 
 
-def main(lines):
-    lines = lines.split("\n")
+def main(file):
+    with open(file, "r", encoding="utf-8") as f:
+        lines = f.readlines()
 
     summary = [line for line in lines if line.startswith(
         "Your code has been rated at")][0]
