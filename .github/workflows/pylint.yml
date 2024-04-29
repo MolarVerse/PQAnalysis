@@ -1,0 +1,50 @@
+name: Pylint
+
+on:
+  push:
+    branches: 
+      - main
+      - dev
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pylint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: build PQAnalysis
+      run: |
+        pip install pylint
+        pip install pylint-django
+        pip install .
+
+    - name: Lint with pylint
+      shell: bash
+      run: |
+        pylint PQAnalysis --exit-zero | tee pylint_output.txt
+        python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: (success() || failure()) && github.event.pull_request
+      with:
+        recreate: true
+        path: comment.txt
+    - if: (success() || failure()) && !github.event.pull_request
+      run: |
+        cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
+
+    
+
