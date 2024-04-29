@@ -6,7 +6,7 @@ import numpy as np
 
 from beartype.typing import List, Tuple
 
-from PQAnalysis.io import BaseReader
+from PQAnalysis.io.base import BaseReader
 from PQAnalysis.types import PositiveInt, Np2DNumberArray, Np1DIntArray
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
@@ -45,10 +45,9 @@ class GenFileReader(BaseReader):
 
             coords, ids = self.read_coords(lines[2:2+self.n_atoms])
 
-            if is_periodic:
-                cell = self.read_cell(lines[2+self.n_atoms:2+self.n_atoms+3])
-            else:
-                cell = Cell()
+            cell = self.read_cell(
+                lines[2+self.n_atoms:2+self.n_atoms+3]
+            ) if is_periodic else Cell()
 
             atoms = [Atom(atom_names[id - 1]) for id in ids]
 

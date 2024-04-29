@@ -7,7 +7,8 @@ import numpy as np
 
 from PQAnalysis.physical_data import Energy
 from PQAnalysis.traj import MDEngineFormat
-from . import BaseReader, InfoFileReader
+from .base import BaseReader
+from .info_file_reader import InfoFileReader
 
 
 class EnergyFileReader(BaseReader):
@@ -93,7 +94,7 @@ class EnergyFileReader(BaseReader):
                 if line.startswith("#"):
                     continue
 
-                data_line = map(float, line.split())
+                data_line = [float(x) for x in line.split()]
                 data.append(list(data_line))
 
         return Energy(np.array(data).T, info, units)

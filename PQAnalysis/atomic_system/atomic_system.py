@@ -358,15 +358,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
                 "Could not fit the positions of the system. "
                 "Try increasing the maximum number of iterations."
             )
-        else:
-            self.fitting_logger.info(
-                f"\tConverged after {_iter + 1} iterations.\n"
-            )
-            system = system.copy()
-            system.pos = new_pos
-            system.cell = self.cell
-            system.image()
-            return system
+
+        self.fitting_logger.info(
+            f"\tConverged after {_iter + 1} iterations.\n"
+        )
+        system = system.copy()
+        system.pos = new_pos
+        system.cell = self.cell
+        system.image()
+        return system
 
     def compute_com_atomic_system(self, group=None) -> AtomicSystem:
         """

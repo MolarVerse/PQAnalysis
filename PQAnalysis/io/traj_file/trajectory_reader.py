@@ -14,9 +14,9 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell
 from PQAnalysis.topology import Topology
+from PQAnalysis.io.base import BaseReader
 
 # Local relative modules
-from .. import BaseReader
 from .exceptions import TrajectoryReaderError
 from .frame_reader import FrameReader
 
@@ -89,8 +89,8 @@ class TrajectoryReader(BaseReader):
 
         Parameters
         ----------
-        md_format : MDEngineFormat | str, optional
-            The format of the trajectory. Default is MDEngineFormat.PQ.
+        topology : Topology, optional
+            The topology of the trajectory. Default is None.
 
         Returns
         -------

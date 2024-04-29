@@ -90,4 +90,4 @@ class _PropertiesMixin:
     @property
     def unique_element_names(self) -> List[str]:
         """List[str]: The unique element names of the atoms in the system."""
-        return list(set([atom.element_name for atom in self.atoms]))
+        return list({atom.element_name for atom in self.atoms})
