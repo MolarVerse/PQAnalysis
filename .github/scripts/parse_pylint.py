@@ -20,7 +20,7 @@ def main(file):
         if len(line.strip()) == 0:
             new_report.append(line)
         elif len(line.strip().replace("-", "")) == 0:
-            line = line.replace("-", "*")
+            line = line.replace("-", "#")
             new_report.append(line)
         elif line.startswith("+="):
             line = line.replace("+", "|")
