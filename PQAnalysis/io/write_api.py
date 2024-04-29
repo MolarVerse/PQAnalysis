@@ -7,7 +7,8 @@ from beartype.typing import Any
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.atomic_system import AtomicSystem
 
-from . import BoxWriter, FileWritingMode
+from .box_writer import BoxWriter
+from .formats import FileWritingMode
 from .traj_file.api import write_trajectory
 
 

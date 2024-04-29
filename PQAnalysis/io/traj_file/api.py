@@ -6,11 +6,11 @@ from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.io import (
+from PQAnalysis.io.traj_file import (
     TrajectoryWriter,
     TrajectoryReader,
-    FileWritingMode,
 )
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import (
     Trajectory,
     MDEngineFormat,

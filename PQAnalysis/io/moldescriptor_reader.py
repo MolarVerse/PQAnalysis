@@ -7,7 +7,7 @@ import numpy as np
 from beartype.typing import List
 
 from PQAnalysis.core import Residue, Residues, Element
-from . import BaseReader
+from PQAnalysis.io.base import BaseReader
 from .exceptions import MoldescriptorReaderError
 
 
