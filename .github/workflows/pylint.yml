@@ -34,8 +34,8 @@ jobs:
     - name: Lint with pylint
       shell: bash
       run: |
-        OUTPUT=$(pylint PQAnalysis --exit-zero)
-        python .github/scripts/parse_pylint.py $OUTPUT | tee comment.txt
+        pylint PQAnalysis --exit-zero) | tee pylint_output.txt
+        python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
 
     - uses: marocchino/sticky-pull-request-comment@v2
       if: (success() || failure()) && github.event.pull_request
