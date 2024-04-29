@@ -11,8 +11,8 @@ from beartype.typing import Any, List, Tuple
 
 from PQAnalysis import __base_path__
 from PQAnalysis.types import Range
+from PQAnalysis.io.base import BaseReader
 from .formats import InputFileFormat
-from .. import BaseReader
 
 
 class InputFileParser(BaseReader):

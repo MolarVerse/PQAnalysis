@@ -451,7 +451,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         logging-fstring-interpolation, # added
         too-few-public-methods, # added
-        docstring-first-line-empty #added
+        docstring-first-line-empty, #added
+        consider-using-assignment-expr, #added
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

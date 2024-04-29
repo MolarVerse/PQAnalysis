@@ -5,12 +5,12 @@ import warnings
 
 from beartype.typing import List
 
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError, InputFileWarning
+from PQAnalysis.io.input_file_reader.input_file_parser import InputFileParser
+from PQAnalysis.io.input_file_reader.formats import InputFileFormat
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
-from ..exceptions import InputFileError, InputFileWarning
-from ..input_file_parser import InputFileParser
-from ..formats import InputFileFormat
 
 
 class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):

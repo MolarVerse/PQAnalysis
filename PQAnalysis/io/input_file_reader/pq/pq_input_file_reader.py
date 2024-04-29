@@ -7,9 +7,9 @@ from __future__ import annotations
 import re
 
 from PQAnalysis.types import PositiveInt
+from PQAnalysis.io.input_file_reader.formats import InputFileFormat
+from PQAnalysis.io.input_file_reader.input_file_parser import InputFileParser
 from .output_files import _OutputFileMixin
-from ..formats import InputFileFormat
-from ..input_file_parser import InputFileParser
 
 
 class PQInputFileReader(_OutputFileMixin):

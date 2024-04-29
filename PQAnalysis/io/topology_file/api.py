@@ -3,7 +3,7 @@ A module containing the API for reading and writing topology files.
 """
 
 from PQAnalysis.topology import Topology, BondedTopology
-from PQAnalysis.io import FileWritingMode
+from PQAnalysis.io.formats import FileWritingMode
 
 from .topology_file_writer import TopologyFileWriter
 from .topology_file_reader import TopologyFileReader

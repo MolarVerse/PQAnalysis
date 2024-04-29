@@ -5,8 +5,8 @@ from numbers import Real
 from beartype.typing import List
 
 from PQAnalysis.types import PositiveReal, PositiveInt
-from ..input_file_parser import InputDictionary
-from ..exceptions import InputFileError
+from PQAnalysis.io.input_file_reader.input_file_parser import InputDictionary
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 
 
 def _parse_positive_real(input_dict: InputDictionary, key: str) -> PositiveReal | None:

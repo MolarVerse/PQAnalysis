@@ -4,7 +4,8 @@ A module containing the BoxWriter class and its associated methods.
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.utils import instance_function_count_decorator
-from . import BaseWriter, BoxFileFormat, FileWritingMode
+from .base import BaseWriter
+from .formats import BoxFileFormat, FileWritingMode
 from .exceptions import BoxWriterError
 
 
