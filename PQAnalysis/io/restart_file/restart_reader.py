@@ -10,8 +10,9 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell, Residues
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
+from PQAnalysis.io.base import BaseReader
+from PQAnalysis.io.moldescriptor_reader import MoldescriptorReader
 
-from .. import BaseReader, MoldescriptorReader
 from .exceptions import RestartFileReaderError
 
 

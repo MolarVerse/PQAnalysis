@@ -8,16 +8,18 @@ from PQAnalysis.core import Cell
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
 
-from . import (
+from .traj_file import (
     TrajectoryWriter,
-    BoxWriter,
     TrajectoryReader,
-    BoxFileFormat,
+)
+from .box_writer import BoxWriter
+from .formats import BoxFileFormat
+from .gen_file import (
     write_gen_file,
     read_gen_file,
-    read_restart_file,
-    write_trajectory,
 )
+from .restart_file.api import read_restart_file
+from .traj_file.api import write_trajectory
 
 
 def gen2xyz(gen_file: str,
@@ -37,7 +39,7 @@ def gen2xyz(gen_file: str,
         The output file. If not specified, the output is printed to stdout.
     md_format : MDEngineFormat | str, optional
         The format of the md engine for the output file. The default is MDEngineFormat.PQ.
-    no_box : bool, optional
+    print_box : bool, optional
         If True, the box is not printed. If False, the box is printed. Default is False.
     mode : FileWritingMode | str, optional
         The writing mode, by default "w". The following modes are available:
@@ -147,7 +149,7 @@ def traj2box(trajectory_files: List[str],
 
     Parameters
     ----------
-    trajectory_file : list of str
+    trajectory_files : list of str
         The trajectory file(s) to be converted.
     vmd : bool
         Output in VMD format.
@@ -184,7 +186,7 @@ def traj2qmcfc(trajectory_files: List[str],
 
     Parameters
     ----------
-    trajectory_file : list of str
+    trajectory_files : list of str
         The trajectory file(s) to be converted.
     output : str, optional
         The output file. If not specified, the output is printed to stdout.
