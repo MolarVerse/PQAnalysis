@@ -35,7 +35,7 @@ def main(file):
     print("  <summary>Full report</summary>")
     print("    ")
     for line in new_report:
-        print("  ", line)
+        print("  ", line, end="")
     print("</details>")
 
 
