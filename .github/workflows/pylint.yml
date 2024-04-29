@@ -36,6 +36,7 @@ jobs:
       run: |
         pylint PQAnalysis --exit-zero) | tee pylint_output.txt
         python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        cat comment.txt
 
     - uses: marocchino/sticky-pull-request-comment@v2
       if: (success() || failure()) && github.event.pull_request
