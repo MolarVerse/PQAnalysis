@@ -89,8 +89,8 @@ class TrajectoryReader(BaseReader):
 
         Parameters
         ----------
-        md_format : MDEngineFormat | str, optional
-            The format of the trajectory. Default is MDEngineFormat.PQ.
+        topology : Topology, optional
+            The topology of the trajectory. Default is None.
 
         Returns
         -------

@@ -70,11 +70,9 @@ def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
     except KeyError:
         return None
 
-    data_type = data[1]
-
-    if data_type != "float" and data_type != "int":
+    if data[1] not in ["float", "int"]:
         raise InputFileError(
-            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}")
 
     return data[0]
 
@@ -112,7 +110,7 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
     if data_type == "str":
         return [data[0]]
 
-    if data_type == "glob" or data_type == "list(str)":
+    if data_type in {"glob", "list(str)"}:
         return data[0]
 
     raise InputFileError(
@@ -148,11 +146,9 @@ def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
     except KeyError:
         return None
 
-    data_type = data[1]
-
-    if data_type != "int":
+    if data[1] != "int":
         raise InputFileError(
-            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}")
 
     return data[0]
 
@@ -216,12 +212,10 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
     except KeyError:
         return None
 
-    data_type = data[1]
-
-    if data_type != "str":
+    if data[1] != "str":
         raise InputFileError(
             f"The \"{key}\" value has to be of "
-            f"string type - actually it is parsed as a {data_type}"
+            f"string type - actually it is parsed as a {data[1]}"
         )
 
     return data[0]
@@ -253,10 +247,8 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     except KeyError:
         return None
 
-    data_type = data[1]
-
-    if data_type != "bool":
+    if data[1] != "bool":
         raise InputFileError(
-            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data_type}")
+            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}")
 
     return data[0]

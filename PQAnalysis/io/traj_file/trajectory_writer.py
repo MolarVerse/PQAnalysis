@@ -50,7 +50,7 @@ class TrajectoryWriter(BaseWriter):
 
         Parameters
         ----------
-        traj : Trajectory | AtomicSystem
+        trajectory : Trajectory | AtomicSystem
             The trajectory to write.
         traj_type : TrajectoryFormat | str, optional
             The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
@@ -76,7 +76,7 @@ class TrajectoryWriter(BaseWriter):
 
         Parameters
         ----------
-        traj : Trajectory
+        trajectory : Trajectory
             The trajectory to write.
         """
         self.open()
@@ -93,7 +93,7 @@ class TrajectoryWriter(BaseWriter):
 
         Parameters
         ----------
-        traj : Trajectory
+        trajectory : Trajectory
             The trajectory to write.
         """
         self.open()
@@ -110,7 +110,7 @@ class TrajectoryWriter(BaseWriter):
 
         Parameters
         ----------
-        traj : Trajectory
+        trajectory : Trajectory
             The trajectory to write.
         """
         self.open()
@@ -127,7 +127,7 @@ class TrajectoryWriter(BaseWriter):
 
         Parameters
         ----------
-        traj : Trajectory
+        trajectory : Trajectory
             The trajectory to write.
         """
         self.open()
