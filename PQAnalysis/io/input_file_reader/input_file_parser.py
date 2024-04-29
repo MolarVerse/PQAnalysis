@@ -20,12 +20,12 @@ class InputFileParser(BaseReader):
     Class to parse input files.
 
     This parser is based on a lark grammar. It uses the lark parser to parse
-    the input file. For more information have a look at the 
-    `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_. 
-    This input file parser is used for parsing all kind of input files. 
+    the input file. For more information have a look at the
+    `lark documentation <https://lark-parser.readthedocs.io/en/latest/>`_.
+    This input file parser is used for parsing all kind of input files.
     By selecting the input_format the automatically invokes the corresponding
-    grammar. The input_format can be either PQANALYSIS, PQ or QMCFC. 
-    The PQANALYSIS format is used for parsing the input files of the 
+    grammar. The input_format can be either PQANALYSIS, PQ or QMCFC.
+    The PQANALYSIS format is used for parsing the input files of the
     PQAnalysis code. The PQ and QMCFC formats are used for parsing the input
     files of the PQ and QMCFC codes, respectively.
 
@@ -134,9 +134,8 @@ class InputDictionary:
         KeyError
             If the key is not defined in the input file.
         """
-        key = key.lower()
 
-        if key not in self.dict:
+        if (key := key.lower()) not in self.dict:
             raise KeyError(
                 f"Input file key \"{key}\" not defined in input file.")
 
@@ -159,9 +158,8 @@ class InputDictionary:
         KeyError
             If the key is already defined in the input file.
         """
-        key = key.lower()
 
-        if key in self.dict:
+        if (key := key.lower()) in self.dict:
             raise KeyError(
                 f"Input file key \"{key}\" defined multiple times in input file.")
 
@@ -295,7 +293,7 @@ class PrimitiveTransformer(Transformer):
         Parameters
         ----------
         items: List[Token]
-            items containing the int value  
+            items containing the int value
 
         Returns
         -------
@@ -386,15 +384,18 @@ class ComposedDatatypesTransformer(Transformer):
         if "str" in types:
             return "str"
 
-        if "bool" in types and not all([item == "bool" for item in types]):
+        if "bool" in types and not all(item == "bool" for item in types):
             raise TypeError(
-                f"Bool cannot be used with other types. Found {types}")
-        elif "bool" in types:
+                f"Bool cannot be used with other types. Found {types}"
+            )
+        if "bool" in types:
             return "bool"
-        elif "float" in types:
+        if "float" in types:
             return "float"
-        elif "int" in types:
+        if "int" in types:
             return "int"
+
+        raise TypeError(f"Could not infer most general type from {types}")
 
     def array(self, items) -> Tuple[List[Any], str, str]:
         """
@@ -402,7 +403,7 @@ class ComposedDatatypesTransformer(Transformer):
 
         It transforms a list of items into a list of values, the string
         "{most_general_type}", and the line where the token was defined.
-        The most general type is inferred from the list of items. 
+        The most general type is inferred from the list of items.
         If the list contains a bool and another type, a TypeError is raised.
         The list of items must contain only primitive types.
 
@@ -459,10 +460,15 @@ class ComposedDatatypesTransformer(Transformer):
             tuple containing the range value, the string "range",
             and the line where the token was defined.
         """
-        if len(items) == 2:
-            return_range = range(items[0][0], items[1][0])
-        else:
-            return_range = range(items[0][0], items[2][0], items[1][0])
+
+        return_range = range(
+            items[0][0],
+            items[1][0]
+        ) if len(items) == 2 else range(
+            items[0][0],
+            items[2][0],
+            items[1][0]
+        )
 
         return return_range, "range", str(items[0][2])
 
@@ -505,7 +511,7 @@ class ComposedDatatypesTransformer(Transformer):
 
         Parameters
         ----------
-        items
+        items: List[Any]
             items containing the value value
 
         Returns
@@ -523,7 +529,7 @@ class InputFileVisitor(Visitor):
 
     Parameters
     ----------
-    Visitor : 
+    Visitor :
         Visitor class from lark.
     """
 
@@ -540,7 +546,7 @@ class InputFileVisitor(Visitor):
         """
         Parse an assign statement. The assign statement is of the form:
 
-        key = value; 
+        key = value;
 
         where key is a string, and the value is a tuple containing the value,
         the type of the value and the line where the key was defined.
@@ -583,7 +589,8 @@ class InputFileVisitor(Visitor):
             The multiline statement.
         """
         array = self.composed_datatype_transformer.array(
-            [item for item in items.children[1:-1]])
+            list(items.children[1:-1])
+        )
 
         self.dict[str(items.children[0])] = (
             array[0],

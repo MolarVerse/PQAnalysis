@@ -97,7 +97,6 @@ load-plugins=
     pylint.extensions.redefined_variable_type,
     pylint.extensions.comparison_placement,
     pylint.extensions.mccabe,
-    pylint.extensions.consider_ternary_expression
 
 # Pickle collected data for later comparisons.
 persistent=yes

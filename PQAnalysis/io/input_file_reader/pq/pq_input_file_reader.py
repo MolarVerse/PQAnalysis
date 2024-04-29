@@ -129,17 +129,24 @@ class PQInputFileReader(_OutputFileMixin):
                 if key in self.dictionary.keys():
 
                     new_filename = self.dictionary[key][0].replace(
-                        self.start_n, new_start_n)
+                        self.start_n,
+                        new_start_n
+                    )
 
                     new_raw_input_file = new_raw_input_file.replace(
-                        self.dictionary[key][0], new_filename)
+                        self.dictionary[key][0],
+                        new_filename
+                    )
 
             # create new input file and write new_raw_input_file to it
             new_filename = self.filename.replace(
-                self.input_file_n, new_input_file_n)
-            file = open(new_filename, "w", encoding="utf-8")
-            file.write(new_raw_input_file)
-            file.close()
+                self.input_file_n,
+                new_input_file_n
+            )
+
+            with open(new_filename, "w", encoding="utf-8") as file:
+                file.write(new_raw_input_file)
+                file.close()
 
             old_input_file_n = new_input_file_n
             old_start_n = new_start_n
@@ -167,9 +174,7 @@ class PQInputFileReader(_OutputFileMixin):
 
         if self.is_rpmd_start_file_defined:
             # add "." to match also files without extension
-            _n = _get_digit_string_from_filename(self.rpmd_start_file + ".")
-
-            if _n != n:
+            if (_n := _get_digit_string_from_filename(self.rpmd_start_file + '.')) != n:
                 raise ValueError(
                     f"N from start_file ({n}) and rpmd_start_file ({_n}) do not match.")
 
@@ -244,13 +249,11 @@ def _increase_digit_string(digit_string: str) -> str:
         if digit_string contains non-digit characters
     """
 
-    if not all([char.isdigit() for char in digit_string]):
+    if not all(char.isdigit() for char in digit_string):
         raise ValueError(
             f"digit_string {digit_string} contains non-digit characters.")
 
-    without_leading_zeros = digit_string.lstrip("0")
-
-    if without_leading_zeros == "":
+    if (without_leading_zeros := digit_string.lstrip('0')) == '':
         without_leading_zeros = "0"
 
     without_leading_zeros = str(int(without_leading_zeros) + 1)
@@ -291,9 +294,7 @@ def _get_digit_string_from_filename(filename: str) -> str:
         if filename does not contain a number to be parsed
     """
 
-    regex = re.search(r"\d+.", filename)
-
-    if regex is None:
+    if (regex := re.search(r"\d+.", filename)) is None:
         raise ValueError(
             f"Filename {filename} does not contain a number to be "
             "continued from. It has to be of the form \"...<number>.<extension>\"."

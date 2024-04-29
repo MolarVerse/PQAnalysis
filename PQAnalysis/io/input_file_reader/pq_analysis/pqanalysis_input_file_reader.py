@@ -5,9 +5,9 @@ import warnings
 
 from beartype.typing import List
 
-from ._fileMixin import _FileMixin
-from ._selectionMixin import _SelectionMixin
-from ._positionsMixin import _PositionsMixin
+from ._file_mixin import _FileMixin
+from ._selection_mixin import _SelectionMixin
+from ._positions_mixin import _PositionsMixin
 from ..exceptions import InputFileError, InputFileWarning
 from ..input_file_parser import InputFileParser
 from ..formats import InputFileFormat
@@ -90,7 +90,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         InputFileError
             if not all required keys are set in the input file
         """
-        if not all([key in self.dictionary.keys() for key in required_keys]):
+        if not all(key in self.dictionary.keys() for key in required_keys):
             raise InputFileError(
                 "Not all required keys were set in "
                 f"the input file! The required keys are: {required_keys}."
@@ -113,7 +113,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         if known_keys is None:
             known_keys = self.known_keys
 
-        if not all([key in known_keys for key in self.dictionary.keys()]):
+        if not all(key in known_keys for key in self.dictionary.keys()):
             warnings.warn(
                 "Unknown keys were set in the input file! "
                 f"The known keys are: {known_keys}. They will be ignored!",
