@@ -6,11 +6,11 @@ from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.io import (
+from PQAnalysis.io.traj_file import (
     TrajectoryWriter,
     TrajectoryReader,
-    FileWritingMode,
 )
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import (
     Trajectory,
     MDEngineFormat,
@@ -37,13 +37,13 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
         The trajectory to write.
     filename : str, optional
         The name of the file to write to. If None, the output is printed to stdout.
-    format : MDEngineFormat | str, optional
+    engine_format : MDEngineFormat | str, optionalsssss
         The format of the md engine for the output file.
         The default is MDEngineFormat.PQ.
-    type : TrajectoryFormat | str, optional
+    traj_type : TrajectoryFormat | str, optional
         The type of the data to write to the file.
         Default is TrajectoryFormat.XYZ.
-    mode  : FileWritingMode | str, optional
+    mode : FileWritingMode | str, optional
         The mode of the file. Either 'w' for write, 
         'a' for append or 'o' for overwrite. The default is 'w'.
 

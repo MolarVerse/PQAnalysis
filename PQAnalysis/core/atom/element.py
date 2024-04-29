@@ -8,7 +8,7 @@ from numbers import Real
 from beartype.typing import Any, NewType
 from beartype.vale import Is
 
-from .. import ElementNotFoundError
+from ..exceptions import ElementNotFoundError
 
 
 class Element:

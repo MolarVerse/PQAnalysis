@@ -20,7 +20,7 @@ from numbers import Real
 from beartype.typing import Any, NewType
 from beartype.vale import Is
 
-from . import Element
+from .element import Element
 
 
 class Atom():

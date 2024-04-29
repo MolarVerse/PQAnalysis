@@ -97,7 +97,6 @@ load-plugins=
     pylint.extensions.redefined_variable_type,
     pylint.extensions.comparison_placement,
     pylint.extensions.mccabe,
-    pylint.extensions.consider_ternary_expression
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -452,7 +451,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         logging-fstring-interpolation, # added
         too-few-public-methods, # added
-        docstring-first-line-empty #added
+        docstring-first-line-empty, #added
+        consider-using-assignment-expr, #added
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option

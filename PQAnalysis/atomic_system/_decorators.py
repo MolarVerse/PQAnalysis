@@ -40,7 +40,7 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
 
     Raises
     ------
-    ValueError
+    AtomicSystemError
         If the number of atoms is not equal the number of positions.
     """
     if self.n_atoms != np.shape(arg_to_set)[0]:
@@ -62,6 +62,10 @@ def check_atoms_pos(func, *args, **kwargs):
     ----------
     func : function
         Function to be decorated.
+    *args : Any
+        The arguments of the function.
+    **kwargs : Any
+        The keyword arguments of the function.
 
     Raises
     ------
@@ -85,16 +89,20 @@ def check_atoms_has_mass(func, *args, **kwargs):
     ----------
     func : function
         Function to be decorated.
+    *args : Any
+        The arguments of the function.
+    **kwargs : Any
+        The keyword arguments of the function.    
 
     Raises
     ------
-    ValueError
+    AtomicSystemMassError
         If any atom does not have mass information.
     """
 
     self = args[0]
 
-    if not all([atom.mass is not None for atom in self.atoms]):
+    if not all(atom.mass is not None for atom in self.atoms):
         raise AtomicSystemMassError()
 
     return func(*args, **kwargs)

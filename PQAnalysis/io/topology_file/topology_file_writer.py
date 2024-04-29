@@ -8,7 +8,8 @@ from _io import TextIOWrapper as File  # type: ignore
 
 from beartype.typing import List
 
-from PQAnalysis.io import BaseWriter, FileWritingMode
+from PQAnalysis.io.base import BaseWriter
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.topology import BondedTopology, Topology
 
 

@@ -7,7 +7,7 @@ import os
 
 from beartype.typing import List
 
-from . import FileWritingMode
+from PQAnalysis.io.formats import FileWritingMode
 
 
 class BaseWriter:

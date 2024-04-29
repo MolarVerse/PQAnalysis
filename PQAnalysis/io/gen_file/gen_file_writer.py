@@ -5,7 +5,8 @@ A module containing the GenFileWriter class
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
-from .. import BaseWriter, FileWritingMode
+from PQAnalysis.io.base import BaseWriter
+from PQAnalysis.io.formats import FileWritingMode
 
 
 class GenFileWriter(BaseWriter):
@@ -45,7 +46,7 @@ class GenFileWriter(BaseWriter):
         ----------
         system : AtomicSystem
             The system to write.
-        periodicity : bool, optional
+        periodic : bool, optional
             The periodicity of the system. If True, the system is considered periodic. 
             If False, the system is considered non-periodic. If None, the periodicity 
             is inferred from the system, by default None.
@@ -57,7 +58,8 @@ class GenFileWriter(BaseWriter):
             if periodic and self.system.cell.is_vacuum:
                 raise ValueError(
                     "Invalid periodicity. The system is non-periodic.")
-            elif periodic:
+
+            if periodic:
                 self.periodic = "S"
             else:
                 self.periodic = "C"
