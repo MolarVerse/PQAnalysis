@@ -105,8 +105,8 @@ class NEPWriter(BaseWriter):
         Parameters
         ----------
         file_prefixes : List[str] | str
-            The prefixes of the files to find. Here with prefix we mean 
-            the part of the filename not only the name before the 
+            The prefixes of the files to find. Here with prefix we mean
+            the part of the filename not only the name before the
             extension, but every matching file that starts with the
             given prefix.
         use_forces : bool, optional
@@ -122,67 +122,67 @@ class NEPWriter(BaseWriter):
             given file prefixes.
         energy_file_extension : str, optional
             The extension of the energy files, by default None.
-            This means that the respective file extension will 
+            This means that the respective file extension will
             be automatically determined from all files with the
             given file prefixes.
         info_file_extension : str, optional
-            The extension of the info files, by default None. 
-            This means that the respective file extension will 
-            be automatically determined from all files with 
+            The extension of the info files, by default None.
+            This means that the respective file extension will
+            be automatically determined from all files with
             the given file prefixes.
         force_file_extension : str, optional
             The extension of the force files, by default None.
-            This means that the respective file extension will 
-            be automatically determined from all files with the 
+            This means that the respective file extension will
+            be automatically determined from all files with the
             given file prefixes.
         stress_file_extension : str, optional
-            The extension of the stress files, by default None. 
+            The extension of the stress files, by default None.
             This means that the respective file extension will
-            be automatically determined from all files with the 
+            be automatically determined from all files with the
             given file prefixes.
         virial_file_extension : str, optional
-            The extension of the virial files, by default None. 
-            This means that the respective file extension will 
-            be automatically determined from all files with the 
+            The extension of the virial files, by default None.
+            This means that the respective file extension will
+            be automatically determined from all files with the
             given file prefixes.
         test_ratio : PositiveReal, optional
-            The ratio of testing frames to the total number of 
+            The ratio of testing frames to the total number of
             frames, by default 0.0. If the test_ratio is 0.0 no
-            train and test files are created. If the test_ratio 
-            is larger not equal to 0.0, the test_ratio is used 
-            to determine the number of training and testing 
-            frames. The final ratio will be as close to the 
-            test_ratio as possible, but if it is not possible 
-            to have the exact ratio, always the higher next 
-            higher ratio is chosen. As output filenames the 
-            original filename is used with the suffix _train 
+            train and test files are created. If the test_ratio
+            is larger not equal to 0.0, the test_ratio is used
+            to determine the number of training and testing
+            frames. The final ratio will be as close to the
+            test_ratio as possible, but if it is not possible
+            to have the exact ratio, always the higher next
+            higher ratio is chosen. As output filenames the
+            original filename is used with the suffix _train
             or _test appended and the same FileWritingMode as
             the original file is used.
         total_ratios: str, optional
             The total_ratios keyword argument is used to describe
-            frame ratios including validation frames in the format 
-            train_ratio:test_ratio:validation_ratio. The 
+            frame ratios including validation frames in the format
+            train_ratio:test_ratio:validation_ratio. The
             validation_ratio is optional and if not given, no
-            validation frames are written. The total sum of the 
+            validation frames are written. The total sum of the
             integer values provided do not have to add up to the
             total number of frames in the input trajectory files.
-            The ratios are used to determine the ratios of the 
+            The ratios are used to determine the ratios of the
             training, testing, and validation frames. The final
             ratio will be as close to the given ratios as possible,
-            but if it is not possible to have the exact ratio, 
-            always the next higher ratio is chosen. As output 
-            filenames the original filename is used with the suffix 
-            _train, _test, or _validation appended and the same 
+            but if it is not possible to have the exact ratio,
+            always the next higher ratio is chosen. As output
+            filenames the original filename is used with the suffix
+            _train, _test, or _validation appended and the same
             FileWritingMode as the original file is used.
-            The validation frames are written to a file with the 
-            suffix _validation and a file with the suffix 
+            The validation frames are written to a file with the
+            suffix _validation and a file with the suffix
             _validation.ref. The _validation file contains only
-            the coordinates and box information to function as 
+            the coordinates and box information to function as
             crude testing input and the _validation.ref file
             contains all information additionally provided in
             the original files.
             Pay Attention: This keyword argument is mutually
-            exclusive with the test_ratio keyword argument. 
+            exclusive with the test_ratio keyword argument.
             If both are given, a ValueError is raised.
 
         Raises
@@ -220,10 +220,22 @@ class NEPWriter(BaseWriter):
         virial_files = file_dict[OutputFileFormat.VIRIAL.value] if use_virial else []
         #fmt: on
 
-        self.setup_frame_splitting_for_training(
-            test_ratio,
-            total_ratios
-        )
+        if not np.isclose(test_ratio, 0.0) or total_ratios is not None:
+            if self.filename is None:
+                self.logger.error(
+                    (
+                        "No output filename was specified. In order to "
+                        "use the test_ratio or total_ratios splitting feature "
+                        "a filename has to be given in order to write all "
+                        "generated files."
+                    ),
+                    exception=ValueError
+                )
+
+            self.setup_frame_splitting_for_training(
+                test_ratio,
+                total_ratios
+            )
 
         self.open()
 
@@ -366,8 +378,8 @@ class NEPWriter(BaseWriter):
         Sets up the frame splitting for training.
 
         It determines the number of training, testing, and validation frames
-        based on the given test_ratio or total_ratios keyword arguments. 
-        It also sets up the files to write the training, testing, and 
+        based on the given test_ratio or total_ratios keyword arguments.
+        It also sets up the files to write the training, testing, and
         validation frames to.
 
         Parameters
@@ -380,13 +392,13 @@ class NEPWriter(BaseWriter):
             train_ratio:test_ratio:validation_ratio. The validation_ratio
             is optional and if not given, no validation frames are
             written. The total sum of the integer values provided do
-            not have to add up to the total number of frames in the 
+            not have to add up to the total number of frames in the
             input trajectory files. The ratios are used to determine
-            the ratios of the training, testing, and validation 
-            frames. The final ratio will be as close to the given 
-            ratios as possible, but if it is not possible to have 
+            the ratios of the training, testing, and validation
+            frames. The final ratio will be as close to the given
+            ratios as possible, but if it is not possible to have
             the exact ratio, always the next higher ratio is chosen.
-            As output filenames the original filename is used with 
+            As output filenames the original filename is used with
             the suffix _train, _test, or _validation appended and the
             same FileWritingMode as the original file is used.
 
@@ -512,7 +524,7 @@ class NEPWriter(BaseWriter):
         Returns
         -------
         Dict[str, List[str]]
-            The files to be used for writing the NEP trajectory file. 
+            The files to be used for writing the NEP trajectory file.
             The keys are the file types and the values are the respective files.
 
         Raises
@@ -710,8 +722,8 @@ Reading files to write NEP trajectory file:
         """
         Calculates the maximum number of training, testing, and validation frames.
 
-        By calculating the maximum number of training, testing, and validation 
-        frames, the number of frames to be added to the training and testing 
+        By calculating the maximum number of training, testing, and validation
+        frames, the number of frames to be added to the training and testing
         files can be determined.
 
 
@@ -802,11 +814,11 @@ Reading files to write NEP trajectory file:
         ValueError
             If the system does not have an energy.
         ValueError
-            If the system does not have forces and they 
+            If the system does not have forces and they
             were specified to be written to the NEP trajectory file.
         ValueError
-            If both the stress and the virial tensor were 
-            specified to be written to the NEP trajectory file. 
+            If both the stress and the virial tensor were
+            specified to be written to the NEP trajectory file.
             Only one of them can be written at a time.
         ValueError
             If the system does not have a stress tensor and it
@@ -955,11 +967,12 @@ Reading files to write NEP trajectory file:
         """
 
         for i in range(system.n_atoms):
-            atom = system.atoms[i]
+            symbol = system.atoms[i].symbol
+            symbol = symbol[0].upper() + symbol[1:]
 
             print(
                 (
-                    f"{atom.symbol:<4} "
+                    f"{symbol:<4} "
                     f"{system.pos[i][0]:12.8f} "
                     f"{system.pos[i][1]:12.8f} "
                     f"{system.pos[i][2]:12.8f}"
