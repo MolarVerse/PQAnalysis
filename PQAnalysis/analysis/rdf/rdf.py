@@ -331,7 +331,7 @@ class RDF:
                     "The provided trajectory is not fully periodic or "
                     "in vacuum, meaning that some frames are in vacuum "
                     "and others are periodic. This is not supported by "
-                    "the RDF analysis.",
+                    "the RDF analysis."
                 ),
                 exception=RDFError
             )
