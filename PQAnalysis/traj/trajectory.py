@@ -143,6 +143,77 @@ class Trajectory:
             frame.topology = self.topology
             yield frame
 
+    def window(self, step: int, gap: int = 1, start: int = 0, stop: int = 0) -> Iterable[AtomicSystem]:
+        """
+        This method allows a window of the trajectory to be retrieved.
+        Window is a sequence of frames from start to stop with a step size and a gap size.
+
+        Parameters
+        ----------
+        step : int, optional
+            The step of the window
+        gap : int, optional
+            The gap of the window, by default 1.
+        start : int, optional
+            The start of the window, by default 0.
+        stop : int, optional
+            The stop of the window, by default len(self.frames).
+
+        Raises
+        ------
+        IndexError
+            If start is greater than the length of the trajectory.
+            If stop is greater than the length of the trajectory.
+            If step is less than 1.
+            If gap is less than 1.
+            If start is less than 0.
+            If stop is less than 0.
+            If step is greater than stop - start.
+
+        Returns
+        -------
+        Iterable[Frame]
+            An Iterable over the frames in the window.
+        """
+
+        # If stop is not provided, set it to the length of the trajectory
+        if stop == 0:
+            stop = len(self)
+
+        # If start is greater than the length of the trajectory, raise an IndexError
+        if start > len(self):
+            raise IndexError("start index is greater than the length of the trajectory")
+        
+        # If stop is greater than the length of the trajectory, raise an IndexError
+        if stop > len(self):
+            raise IndexError("stop index is greater than the length of the trajectory")
+        
+        # If step is less than 1, raise an IndexError
+        if step == 0:
+            raise IndexError("step must be greater than 0")
+        
+        # If gap is less than 1, raise an IndexError
+        if gap < 1:
+            raise IndexError("gap must be greater than 0")
+        
+        # If start is less than 0, raise an IndexError
+        if start < 0:
+            raise IndexError("start index must be greater than or equal to 0")
+        
+        # If stop is less than 0, raise an IndexError
+        if stop < 0:
+            raise IndexError("stop index must be greater than or equal to 0")
+        
+        # If step is greater than stop - start, raise an IndexError
+        if step > stop - start:
+            raise IndexError("step must be less than or equal to stop - start")
+            
+        # generate the window
+        for i in range(start, stop, gap):
+            if i + step > len(self):
+                break
+            yield self.frames[i:i + step]
+
     def __contains__(self, item: AtomicSystem) -> bool:
         """
         This method allows a frame to be checked for membership in a trajectory.
