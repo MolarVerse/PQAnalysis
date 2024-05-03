@@ -128,6 +128,65 @@ class TestTrajectory:
             Trajectory()[0]
         assert str(exception.value) == "list index out of range"
 
+    def test_window(self):
+        traj = Trajectory(self.frames)
+
+        test_frames = [frame for frame in traj.window(1, 2)]
+        assert test_frames == [[self.frame1], [self.frame3]]
+
+        test_frames = [frame for frame in traj.window(2, 1)]
+        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+
+        test_frames = [frame for frame in traj.window(2)]
+        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+
+        test_frames = [frame for frame in traj.window(1)]
+        assert test_frames == [[self.frame1], [self.frame2], [self.frame3]]
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(0)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(0, 1)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 0)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(4)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(4, 1)
+            generator.__next__()
+        
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(4, 4)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, start=4)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, stop=4)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, start=2, stop=1)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, start=-1)
+            generator.__next__()
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, stop=-1)
+            generator.__next__()
+
     def test__iter__(self):
         traj = Trajectory(self.frames)
         assert [frame for frame in traj] == self.frames
