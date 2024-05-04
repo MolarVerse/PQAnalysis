@@ -143,76 +143,70 @@ class Trajectory:
             frame.topology = self.topology
             yield frame
 
-    def window(self, step: int, gap: int = 1, start: int = 0, stop: int = 0) -> Iterable[AtomicSystem]:
+    def window(self, window_size: int, window_gap: int = 1, window_start: int = 0, window_stop: int = 0) -> Iterable[Iterable[AtomicSystem]]:
         """
         This method allows a window of the trajectory to be retrieved.
         Window is a sequence of frames from start to stop with a step size and a gap size.
 
         Parameters
         ----------
-        step : int, optional
-            The step of the window
-        gap : int, optional
-            The gap of the window, by default 1.
-        start : int, optional
-            The start of the window, by default 0.
-        stop : int, optional
-            The stop of the window, by default len(self.frames).
+        window_size : int
+            The size of the window.
+        window_gap : int, optional
+            The gap size between two windows, by default 1
+        window_start : int, optional
+            The start index of the window, by default 0
+        window_stop : int, optional
+            The stop index of the window, by default 0
 
         Raises
         ------
         IndexError
-            If start is greater than the length of the trajectory.
-            If stop is greater than the length of the trajectory.
-            If step is less than 1.
-            If gap is less than 1.
-            If start is less than 0.
-            If stop is less than 0.
-            If step is greater than stop - start.
+            If window_start is less than 0 or greater than the length of the trajectory.
+            If window_stop is less than 0 or greater than the length of the trajectory.
+            If window_size is less than 1.
+            If window_gap is less than 1.
+            If window_size is greater than window_stop - window_start.
 
         Returns
         -------
-        Iterable[Frame]
-            An Iterable over the frames in the window.
+        Iterable[Iterable[Frame]]
+            An Iterable over the windows in the trajectory.
         """
 
-        # If stop is not provided, set it to the length of the trajectory
-        if stop == 0:
-            stop = len(self)
+        # If window_stop is not provided, set it to the length of the trajectory
+        if window_stop == 0:
+            window_stop = len(self)
 
-        # If start is greater than the length of the trajectory, raise an IndexError
-        if start > len(self):
-            raise IndexError("start index is greater than the length of the trajectory")
+        # If window_start is less than 0 or greater than the length of the trajectory, raise an IndexError
+        if window_start < 0 or window_start > len(self):
+            raise IndexError("start index is less than 0 or greater than the length of the trajectory")
         
-        # If stop is greater than the length of the trajectory, raise an IndexError
-        if stop > len(self):
-            raise IndexError("stop index is greater than the length of the trajectory")
+        # If window_stop is less than 0 or greater than the length of the trajectory, raise an IndexError
+        if window_stop < 0 or window_stop > len(self):
+            raise IndexError("stop index is less than 0 or greater than the length of the trajectory")
         
-        # If step is less than 1, raise an IndexError
-        if step == 0:
-            raise IndexError("step must be greater than 0")
+        # If window_step is less than 1 or greater than the length of the trajectory, raise an IndexError
+        if window_size < 1 or window_size > len(self):
+            raise IndexError("window size can not be less than 1 or greater than the length of the trajectory")
         
-        # If gap is less than 1, raise an IndexError
-        if gap < 1:
-            raise IndexError("gap must be greater than 0")
+        # If window_gap is less than 1 or greater than the length of the trajectory, raise an IndexError
+        if window_gap < 1 or window_gap > len(self):
+            raise IndexError("window gap can not be less than 1 or greater than the length of the trajectory")
         
-        # If start is less than 0, raise an IndexError
-        if start < 0:
-            raise IndexError("start index must be greater than or equal to 0")
+        # If window_start is greater than or equal to window_stop, raise an IndexError
+        if window_start >= window_stop:
+            raise IndexError("start index is greater than or equal to the stop index")
         
-        # If stop is less than 0, raise an IndexError
-        if stop < 0:
-            raise IndexError("stop index must be greater than or equal to 0")
-        
-        # If step is greater than stop - start, raise an IndexError
-        if step > stop - start:
-            raise IndexError("step must be less than or equal to stop - start")
-            
-        # generate the window
-        for i in range(start, stop, gap):
-            if i + step > len(self):
-                break
-            yield self.frames[i:i + step]
+        # If window_size is greater than window_stop - window_start, raise an IndexError
+        if window_size > window_stop - window_start:
+            raise IndexError("window size is greater than the window_stop - window_start")
+
+        #TODO: Check if all frames are included in the windows
+
+        # generate the window of the trajectory
+        for i in range(window_start, window_stop - window_size + 1, window_gap):
+            yield self.frames[i:i + window_size]
 
     def __contains__(self, item: AtomicSystem) -> bool:
         """

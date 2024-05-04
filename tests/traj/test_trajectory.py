@@ -42,10 +42,12 @@ class TestTrajectory:
         traj = Trajectory(self.frames)
         assert traj.check_pbc() == False
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(10, 10, 10)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -53,8 +55,7 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_pbc() == True
 
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array([[1, 1, 2]]))
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -69,10 +70,12 @@ class TestTrajectory:
         traj = Trajectory(self.frames)
         assert traj.check_vacuum() == True
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(10, 10, 10)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -80,8 +83,7 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_vacuum() == False
 
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array([[1, 1, 2]]))
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -95,16 +97,18 @@ class TestTrajectory:
         assert traj.box_volumes[1] > 10**10
         assert traj.box_volumes[2] > 10**10
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(11, 11, 11))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(11, 11, 11)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
 
         traj = Trajectory(frames)
-        assert np.allclose(traj.box_volumes, np.array([1000, 11*11*11]))
+        assert np.allclose(traj.box_volumes, np.array([1000, 11 * 11 * 11]))
 
     def test__len__(self):
         traj = Trajectory(self.frames)
@@ -146,46 +150,109 @@ class TestTrajectory:
         with pytest.raises(IndexError) as exception:
             generator = traj.window(0)
             generator.__next__()
+        assert (
+            str(exception.value)
+            == "window size can not be less than 1 or greater than the length of the trajectory"
+        )
 
         with pytest.raises(IndexError) as exception:
             generator = traj.window(0, 1)
             generator.__next__()
 
+        assert (
+            str(exception.value)
+            == "window size can not be less than 1 or greater than the length of the trajectory"
+        )
+
         with pytest.raises(IndexError) as exception:
             generator = traj.window(1, 0)
             generator.__next__()
+
+        assert (
+            str(exception.value)
+            == "window gap can not be less than 1 or greater than the length of the trajectory"
+        )
 
         with pytest.raises(IndexError) as exception:
             generator = traj.window(4)
             generator.__next__()
 
+        assert (
+            str(exception.value)
+            == "window size can not be less than 1 or greater than the length of the trajectory"
+        )
+
         with pytest.raises(IndexError) as exception:
             generator = traj.window(4, 1)
             generator.__next__()
-        
+
+        assert (
+            str(exception.value)
+            == "window size can not be less than 1 or greater than the length of the trajectory"
+        )
+
         with pytest.raises(IndexError) as exception:
             generator = traj.window(4, 4)
             generator.__next__()
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, start=4)
-            generator.__next__()
+        assert (
+            str(exception.value)
+            == "window size can not be less than 1 or greater than the length of the trajectory"
+        )
 
         with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, stop=4)
+            generator = traj.window(1, 1, window_start=4)
             generator.__next__()
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, start=2, stop=1)
-            generator.__next__()
+        assert (
+            str(exception.value)
+            == "start index is less than 0 or greater than the length of the trajectory"
+        )
 
         with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, start=-1)
+            generator = traj.window(1, 1, window_stop=4)
             generator.__next__()
 
+        assert (
+            str(exception.value)
+            == "stop index is less than 0 or greater than the length of the trajectory"
+        )
+
         with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, stop=-1)
+            generator = traj.window(1, 1, window_start=2, window_stop=1)
             generator.__next__()
+
+        assert (
+            str(exception.value)
+            == "start index is greater than or equal to the stop index"
+        )
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, window_start=-1)
+            generator.__next__()
+
+        assert (
+            str(exception.value)
+            == "start index is less than 0 or greater than the length of the trajectory"
+        )
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(1, 1, window_stop=-1)
+            generator.__next__()
+
+        assert (
+            str(exception.value)
+            == "stop index is less than 0 or greater than the length of the trajectory"
+        )
+
+        with pytest.raises(IndexError) as exception:
+            generator = traj.window(3, 1, window_start=1, window_stop=3)
+            generator.__next__()
+
+        assert (
+            str(exception.value)
+            == "window size is greater than the window_stop - window_start"
+        )
 
     def test__iter__(self):
         traj = Trajectory(self.frames)
@@ -254,12 +321,15 @@ class TestTrajectory:
         max_float = sys.float_info.max
 
         traj = Trajectory([frame1, frame2])
-        assert np.allclose(traj.box_lengths, np.array(
-            [[max_float, max_float, max_float], [max_float, max_float, max_float]]))
+        assert np.allclose(
+            traj.box_lengths,
+            np.array(
+                [[max_float, max_float, max_float], [max_float, max_float, max_float]]
+            ),
+        )
 
         frame1 = AtomicSystem(cell=Cell(10, 10, 10))
         frame2 = AtomicSystem(cell=Cell(11, 11, 11))
 
         traj = Trajectory([frame1, frame2])
-        assert np.allclose(traj.box_lengths, np.array(
-            [[10, 10, 10], [11, 11, 11]]))
+        assert np.allclose(traj.box_lengths, np.array([[10, 10, 10], [11, 11, 11]]))
