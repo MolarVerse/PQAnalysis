@@ -9,8 +9,8 @@ from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
 
-
 class TestTrajectory:
+
     atoms1 = [Atom("H")]
     atoms2 = [Atom("C")]
     atoms3 = [Atom("O")]
@@ -147,9 +147,13 @@ class TestTrajectory:
         test_frames = [frame for frame in traj.window(1)]
         assert test_frames == [[self.frame1], [self.frame2], [self.frame3]]
 
+        test_frames = [frame for frame in traj.window(2, 2)]
+        assert test_frames == [[self.frame1, self.frame2]]
+
         with pytest.raises(IndexError) as exception:
             generator = traj.window(0)
             generator.__next__()
+
         assert (
             str(exception.value)
             == "window size can not be less than 1 or greater than the length of the trajectory"
