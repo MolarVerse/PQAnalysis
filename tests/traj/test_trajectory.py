@@ -1,8 +1,12 @@
+"""
+Unit tests for the Trajectory class.
+"""
+
+import sys
 import pytest
 import numpy as np
-import sys
 
-from . import pytestmark
+from ..conftest import assert_logging
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
@@ -11,6 +15,7 @@ from PQAnalysis.topology import Topology
 
 
 class TestTrajectory:
+
     atoms1 = [Atom("H")]
     atoms2 = [Atom("C")]
     atoms3 = [Atom("O")]
@@ -42,10 +47,12 @@ class TestTrajectory:
         traj = Trajectory(self.frames)
         assert traj.check_pbc() == False
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(10, 10, 10)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -53,8 +60,7 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_pbc() == True
 
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array([[1, 1, 2]]))
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -69,10 +75,12 @@ class TestTrajectory:
         traj = Trajectory(self.frames)
         assert traj.check_vacuum() == True
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(10, 10, 10))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(10, 10, 10)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -80,8 +88,7 @@ class TestTrajectory:
         traj = Trajectory(frames)
         assert traj.check_vacuum() == False
 
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]))
+        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array([[1, 1, 2]]))
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
@@ -95,16 +102,18 @@ class TestTrajectory:
         assert traj.box_volumes[1] > 10**10
         assert traj.box_volumes[2] > 10**10
 
-        system1 = AtomicSystem(atoms=self.atoms1, pos=np.array(
-            [[0, 1, 2]]), cell=Cell(10, 10, 10))
-        system2 = AtomicSystem(atoms=self.atoms2, pos=np.array(
-            [[1, 1, 2]]), cell=Cell(11, 11, 11))
+        system1 = AtomicSystem(
+            atoms=self.atoms1, pos=np.array([[0, 1, 2]]), cell=Cell(10, 10, 10)
+        )
+        system2 = AtomicSystem(
+            atoms=self.atoms2, pos=np.array([[1, 1, 2]]), cell=Cell(11, 11, 11)
+        )
         frame1 = system1
         frame2 = system2
         frames = [frame1, frame2]
 
         traj = Trajectory(frames)
-        assert np.allclose(traj.box_volumes, np.array([1000, 11*11*11]))
+        assert np.allclose(traj.box_volumes, np.array([1000, 11 * 11 * 11]))
 
     def test__len__(self):
         traj = Trajectory(self.frames)
@@ -127,6 +136,98 @@ class TestTrajectory:
         with pytest.raises(IndexError) as exception:
             Trajectory()[0]
         assert str(exception.value) == "list index out of range"
+
+    def test_window(self, caplog):
+        traj = Trajectory(self.frames)
+
+        test_frames = [traj.frames for traj in traj.window(1, 2)]
+        assert test_frames == [[self.frame1], [self.frame3]]
+
+        test_frames = [traj.frames for traj in traj.window(2, 1)]
+        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+
+        test_frames = [traj.frames for traj in traj.window(2)]
+        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+
+        test_frames = [traj.frames for traj in traj.window(1)]
+        assert test_frames == [[self.frame1], [self.frame2], [self.frame3]]
+
+        test_frames = [traj.frames for traj in traj.window(2, 2)]
+        assert test_frames == [[self.frame1, self.frame2]]
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "WARNING",
+            "Not all frames are included in the windows. Check the window size and gap.",
+            traj.window(2, 2).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+                "window size can not be less than 1 or greater than the length of the trajectory"
+            ),
+            function=traj.window(0).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window size can not be less than 1 or greater than the length of the trajectory",
+            traj.window(4).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window gap can not be less than 1 or greater than the length of the trajectory",
+            traj.window(1, 0).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window gap can not be less than 1 or greater than the length of the trajectory",
+            traj.window(1, 4).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "start index is less than 0 or greater than the length of the trajectory",
+            traj.window(1, 1, window_start=-1).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "stop index is less than 0 or greater than the length of the trajectory",
+            traj.window(1, 1, window_stop=-1).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "start index is greater than or equal to the stop index",
+            traj.window(1, 1, window_start=2, window_stop=1).__next__,
+        )
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window size is greater than the window_stop - window_start",
+            traj.window(3, 1, window_start=1, window_stop=3).__next__,
+        )
 
     def test__iter__(self):
         traj = Trajectory(self.frames)
@@ -195,12 +296,15 @@ class TestTrajectory:
         max_float = sys.float_info.max
 
         traj = Trajectory([frame1, frame2])
-        assert np.allclose(traj.box_lengths, np.array(
-            [[max_float, max_float, max_float], [max_float, max_float, max_float]]))
+        assert np.allclose(
+            traj.box_lengths,
+            np.array(
+                [[max_float, max_float, max_float], [max_float, max_float, max_float]]
+            ),
+        )
 
         frame1 = AtomicSystem(cell=Cell(10, 10, 10))
         frame2 = AtomicSystem(cell=Cell(11, 11, 11))
 
         traj = Trajectory([frame1, frame2])
-        assert np.allclose(traj.box_lengths, np.array(
-            [[10, 10, 10], [11, 11, 11]]))
+        assert np.allclose(traj.box_lengths, np.array([[10, 10, 10], [11, 11, 11]]))
