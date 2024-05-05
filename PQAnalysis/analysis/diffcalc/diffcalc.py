@@ -44,20 +44,20 @@ class DiffCalc:
     _use_full_atom_default = False
     _window_size_default = 1000
     _gap_default = 10
-    _n_start_default = 0
-    _n_stop_default = 10000000000
-    _n_frames_default = 0
+    _frame_start_default = 0
+    
    
 
     def __init__(self,
                  traj: Trajectory | TrajectoryReader,
                  target_species: SelectionCompatible,
+                 use_full_atom_info: bool = False,
                  window_size: PositiveInt | None = 500,
                  gap: PositiveInt | None = 1,
-                 n_start: PositiveInt | None = None,
-                 n_stop: PositiveInt | None = None,
+                 frame_start: PositiveInt | None = None,
+                 frame_stop: PositiveInt | None = None,
                  n_frames: PositiveInt | None = None,
-                 use_full_atom_info: bool = False,
+
                  ):
         """
         Parameters
@@ -66,20 +66,18 @@ class DiffCalc:
             The trajectory to analyze. If a TrajectoryReader is provided, the trajectory frame by frame via a frame_generator
         target_species : SelectionCompatible
             The target species of the self-diffusion coefficient calculation.
+        use_full_atom_info : bool, optional
+            Whether to use the full atom information of the trajectory or not, by default None (False).
         window_size : PositiveInt, optional
             The window size of the running average, by default 500.
         gap : PositiveInt, optional
             The gap of the running average, by default 1.
-        n_start : PositiveInt, optional
+        frame_start : PositiveInt, optional
             The starting frame of the trajectory, by default None.
-        n_stop : PositiveInt, optional
+        frame_stop : PositiveInt, optional
             The stopping frame of the trajectory, by default None.
         n_frames : PositiveInt, optional
             The number of frames to use, by default None.
-        use_full_atom_info : bool, optional
-            Whether to use the full atom information of the trajectory or not, by default None (False).
-    
-
       
 
         Raises
@@ -106,11 +104,7 @@ class DiffCalc:
         # Initialize parameters with default values if None #
         #####################################################        
 
-        if use_full_atom_info is None:
-            self.use_full_atom_info = self._use_full_atom_default
-        else:
-            self.use_full_atom_info = use_full_atom_info
-
+   
         if window_size is None:
             self.window_size = self._window_size_default
         else:
@@ -120,21 +114,31 @@ class DiffCalc:
             self.gap = self._gap_default
         else:
             self.gap = gap
-        
-        if n_start is None:
-            self.n_start = self._n_start_default
+
+        if use_full_atom_info is None:
+            self.use_full_atom_info = self._use_full_atom_default
         else:
-            self.n_start = n_start
-        
-        if n_stop is None:
-            self.n_stop = self._n_stop_default
+            self.use_full_atom_info = use_full_atom_info
+
+        if frame_start is None:
+            self.frame_start = self._frame_start_default
         else:
-            self.n_stop = n_stop
-                
-        if n_frames is None:
-            self.n_frames = self._n_frames_default
-        else:
+            self.frame_start = frame_start
+
+        if n_frames is None and frame_stop is None:
+            raise DiffCalcError(
+                "Either n_frames or frame_stop has to be defined.")
+        elif n_frames is not None and frame_stop is not None:
+            raise DiffCalcError(
+                "Either n_frames or frame_stop has to be defined, not both.")
+        elif n_frames is not None:
             self.n_frames = n_frames
+            self.frame_stop = None
+        elif frame_stop is not None:
+            self.frame_stop = frame_stop
+            self.n_frames = self.frame_stop - self.frame_start
+        
+
 
 
 
@@ -145,13 +149,7 @@ class DiffCalc:
      
         self.target_species = target_species
 
-        if selection =="resid~1":
-            residue_names_1 = np.argwhere(np.isin(topology._residue_ids, 1)).flatten()
-            residue_numbers_1  = topology._residue_numbers[residue_names_1]
-            print(residue_names_1)
-            print(residue_numbers_1)
-            print(topology._residue_numbers)
-            print(topology._residue_ids)
+
 
         self.target_selection = Selection(target_species)
 
@@ -191,7 +189,7 @@ class DiffCalc:
         str
             A string representation of the diffcalc object.
         """
-        return f"DiffCalc object with window size {self.window_size}, gap {self.gap}, start frame {self.n_start}, stop frame {self.n_stop}, number of configurations {self.n_frames}, target species {self.target_species}, using full atom information {self.use_full_atom_info}"
+        return f"DiffCalc object with window size {self.window_size}, gap {self.gap}, start frame {self.frame_start}, stop frame {self.frame_stop}, number of configurations {self.n_frames}, target species {self.target_species}, using full atom information {self.use_full_atom_info}"
     
     def __repr__(self) -> str:
         """
@@ -202,7 +200,8 @@ class DiffCalc:
         str
             A string representation of the diffcalc object.
         """
-        return f"DiffCalc(window_size={self.window_size}, gap={self.gap}, n_start={self.n_start}, n_stop={self.n_stop}, n_frames={self.n_frames}, target_species={self.target_species}, use_full_atom_info={self.use_full_atom_info}"
+        return f"DiffCalc(window_size={self.window_size}, gap={self.gap}, frame_start={self.frame_start}, frame_stop={self.frame_stop}, n_frames={self.n_frames}, target_species={self.target_species}, use_full_atom_info={self.use_full_atom_info}"
+    
     def _center_of_mass(self) -> None:
         """
         Calculates the center of mass of the target species.
@@ -212,38 +211,6 @@ class DiffCalc:
         """
 
 
-    def _add_origin(self, active_origins: int):
-        """
-        Adds an origin to the diffcalc .
-
-        This method adds an origin to the diffcalc and calculates the mean square displacement (MSD) of the target species.
-
-        Parameters
-        ----------
-        active_origins : int
-            The number of active origins.
-
-        """
-        self.origins[active_origins] = self.target_pos
-
-    def _remove_origin(self):
-        """
-        Removes an origin from the diffcalc .
-
-        This method removes an origin from the diffcalc and calculates the mean square displacement (MSD) of the target species.
-
-        """
-        self.origins = np.delete(self.origins, 0, axis=0)
-        self.image_distances = np.delete(self.image_distances, 0, axis=0)
-    def _shift_origin(self):
-        """
-        Shifts the origin of the diffcalc .
-
-        This method shifts the origin of the diffcalc and calculates the mean square displacement (MSD) of the target species.
-
-        """
-        self.origins = np.roll(self.origins, -1, axis=0)
-        self.image_distances = np.roll(self.image_distances, -1, axis=0)
 
     def _check_trajectory_conditions(self):
         """
@@ -275,135 +242,72 @@ class DiffCalc:
         self._calculate_msd()
         return self._finalize_run()
     
-    def _initialize_run(self):
+    def _initialize_run(self) -> None:
         """
-        Initializes the diffcalc for running.
+        Initializes the diffcalc run.
 
-        This method is called by the run method of the DiffCalc class. It initializes the number of origins which indicates the number of completing one window and the total number of origins which indicates the total number of completing the used trajectory from starting and end point. The used trajectory is defined by the start_frame and the stop_frame. 
-        The method also initializes the targets position, the targets previous position, the image distances and the origins of the diffcalc. Furthermore, the method prints the initialized run parameters.
+        This method initializes the diffcalc run by setting the initial values for the MSD, RMSD and DC calculations.
 
         """
-        if self.n_frames == 0:
-            self.n_frames = self.n_stop - self.n_start
-      
+        self._check_trajectory_conditions()
+        self._initialize_arrays()
+
+    def _initialize_arrays(self) -> None:
+        """
+        Initializes the arrays for the MSD, RMSD and DC calculations.
+
+        This method initializes the arrays for the MSD, RMSD and DC calculations.
+
+        """
         
-        self.n_origin  = np.fix(self.window_size / self.gap) # number of orgin per window
-        self.total_origin = np.fix((self.n_frames - self.window_size - self.n_start) / self.gap) # number of total origin for the used trajectory
-        if self.n_start > (self.n_frames - self.window_size):
-            raise DiffCalcError("Starting configuration {self.n_start} is larger than the number of configurations {self.n_frames} minus the window size {self.window_size}. \
-                                Establish a window size {self.window_size} within the {self.n_frames} total configurations minus the starting configuration {self.n_start}.")
-        
-        if self.n_start > 0:
-            print(f"Starting from configuration {self.n_start} of {self.n_frames} configurations.")
+        self.msd_x = np.zeros(self.residue_length)
+        self.msd_y = np.zeros(self.residue_length)
+        self.msd_z = np.zeros(self.residue_length)
+        self.origin_x = np.zeros(self.residue_length)
+        self.origin_y = np.zeros(self.residue_length)
+        self.origin_z = np.zeros(self.residue_length)
+        self.im_x = np.zeros(self.residue_length)
+        self.im_y = np.zeros(self.residue_length)
+        self.im_z = np.zeros(self.residue_length)
 
 
 
-
-        self.stop_frame = np.floor((self.n_frames - self.window_size) / self.gap) * self.gap # the last frame of the used trajectory
-
-
-        if self.stop_frame == 0:
-            self.stop_frame = 1
-        
-        if self.topology is None:
-            for i,target_index in enumerate(self.target_indices):
-                self.target_pos = self.first_frame.pos[target_index]
-                self.target_prev_pos = np.zeros((len(self.target_indices), 3))
-                self.image_distances = np.zeros((len(self.target_indices), 3))
-                self.origins = np.zeros((self.n_origin, len(self.target_indices), 3))
-          
-        else:
-            self._center_of_mass()
-            for i,target_index in enumerate(self.target_indices):
-                self.target_prev_pos = np.zeros(len(self.target_pos), 3)
-                self.image_distances = np.zeros(len(self.target_pos), 3)
-                self.origins = np.zeros((self.n_origin, len(self.target_indices), 3))
-
-        print("###### Initialized run ######")
-        print(f"Window size: {self.window_size}")
-        print(f"Gap: {self.gap}")
-        print(f"Start frame: {self.n_start}")
-        print(f"Stop frame: {self.n_stop}")
-        print(f"Number of configurations: {self.n_frames}")
-        print(f"Number of target species: {len(self.target_indices)}")
-        print("Cells: ", self.cells)
-        print("Target species: ", self.target_species)
-        print("Target indices: ", self.target_indices)
-     
-        print("Using full atom information" if self.use_full_atom_info else "Not using full atom information")
-        print("Using topology and center of mass as reference for the target species" if self.topology is not None else "Not using topology as reference the target species are used")
-
-
-
-
-    
-
-    def _calculate_msd(self):
+    def _calculate_msd(self) -> None:
         """
-    #     Calculates the mds of the trajectory.
-    #     """
-        total_frames = 0
-        stepping = 0
-        active_origins = 0
-        last = 0
-        origin_counter = 0
-        entry = 0
-        for frame in tqdm(self.frame_generator, total=self.n_frames, desc="Calculating MSD"):
-            if total_frames >= self.n_start:
-                stepping = total_frames % self.gap
-                if stepping == 0:
-                    if (active_origins != self.n_origin) and (total_frames <= self.stop_frame):
-                        if active_origins == 0:
-                            last = total_frames
-                        
-                        self._add_origin(active_origins)
-                        active_origins += 1
-                        origin_counter += 1
+        Calculates the MSD of the target species by using running average. The window size is defined by the window_size parameter and the gap is defined by the gap parameter. The window is the number of frames to average over and the gap specifies the spacing between the frames in the window.  
 
-                    if (last + self.window_size) == total_frames:
-                        # loop over all target species used the distace function to calculate the mean square displacement from this position and last frame position
-                        for frame in tqdm(self.frame_generator, total=self.n_frames, disable=not config.with_progress_bar):
-                            distances = distance(self.target_pos,self.target_prev_pos,cells=self.cells)
-                            distances 
-                            self.image_distances = distance(self.image_distances, distances, cells=self.cells)
-                            distances = self.target_pos - self.origins + self.image_distances 
-                            self.msd = np.sum(self.msd, axis=1) + np.sum(distances**2, axis=1)
-                        if total_frames > self.n_stop:
-                            self._remove_origin()
-                            active_origins -= 1
-                            last = last + self.gap
-                        else:
-                            self._shift_origin()
-                            last = last + self.gap
-                            origin_counter += 1
+        If the the trajectory is fully periodic, the distance between the target species is calculated by the minimum image convention. If the trajectory is fully in vacuum, the distance between the target species is calculated by the Euclidean distance.
 
-                    entry = total_frames - last
-                  
-                    for i in range(0,active_origins-1,-1):
-                        for j in range(0,len(self.target_indices)-1,1):
-                            if entry != 0:
-                                distances = distance(self.target_pos,self.target_prev_pos,cells=self.cells)
-
-                                self.image_distances = distance(self.image_distances, distances, cells=self.cells)
-                            distances = self.target_pos - self.origins + self.image_distances
-                            self.msd = np.sum(self.msd, axis=1) + np.sum(distances**2, axis=1)
-                        entry = entry - self.gap
-
-        
-    def _finalize_run(self):
-        """
-        Finalizes the diffcalc after running.
+        This method calculates the MSD of the target species.
 
         """
-        total_origins = self.stop_frame / self.gap
-        self.diffusion_coeff = self.msd / len(self.target_indices) / total_origins 
-        self.diffusion_coeff = self.diffusion_coeff / 6 / self.gap
+        prev_index = 0
+        step_index = 0
+        n_steps = np.floor(self.window_size / self.gap)
+        n_windows = np.floor(self.n_frames / self.window_size)
+        n_total = n_windows * self.window_size
+        present_index = 0
 
-        self.diffusion_coeff_x = self.msd_x / len(self.target_indices) / total_origins
-        self.diffusion_coeff_x = self.diffusion_coeff_x / 6 / self.gap
+        if self.frame_start + self.window_size > self.n_frames:
+            raise DiffCalcError("The window size is too large for the trajectory.")
+        self
+        for frame_index, frame in enumerate(tqdm(self.frame_generator, total=self.n_frames)):
+            if frame_index < self.frame_start:
+                continue
+            if self.frame_stop is not None and frame_index >= self.frame_stop - 1:
+                break
+            
+            if ((frame_index + 1) % self.gap == 0):
+                if (step_index != n_steps) and (frame_index != self.frame_stop):
+                    if step_index == 0:
+                        present_index = frame_index
+                    previous_frame = frame
+                    step_index += 1
+                    n_prev += 1
+                if (present_index + self.window_size) ==frame_index:
+        
 
-        self.diffusion_coeff_y = self.msd_y / len(self.target_indices) / total_origins
-        self.diffusion_coeff_y = self.diffusion_coeff_y / 6 / self.gap
+                    
+                # do the calculations until range of window size
 
 
-    
