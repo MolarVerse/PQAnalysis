@@ -107,12 +107,16 @@ class CustomLogger(logging.Logger):
             if the level is logging.ERROR or logging.CRITICAL and the logger
             is not enabled for logging.DEBUG.
         """
-        self.custom_exception = exception
+        if exception is not None:
+            extra = {'custom_exception': exception}
+        else:
+            extra = None
 
         self._original_log(
             level,
             msg,
             args,
+            extra,
             **kwargs
         )
 
@@ -147,6 +151,7 @@ class CustomLogger(logging.Logger):
                       level: Any,
                       msg: Any,
                       args: Any,
+                      extra=None,
                       **kwargs) -> None:
         """
         The original _log method of the logging.Logger class.
@@ -162,22 +167,11 @@ class CustomLogger(logging.Logger):
             The message to log.
         args : Any
             The arguments of the log message.
+        extra : Any, optional
+            Additional information to log, by default None.
         """
 
-        super()._log(level, msg, args, **kwargs)
-
-    def makeRecord(self, name, level, fn, lno, msg, args, exc_info,
-                   func=None, extra=None, sinfo=None):
-        """
-        This method creates a log record.
-        """
-
-        record = super().makeRecord(name, level, fn, lno, msg, args, exc_info,
-                                    func=func, extra=extra, sinfo=sinfo)
-        if hasattr(self, 'custom_exception'):
-            setattr(record, 'custom_exception', self.custom_exception)
-
-        return record
+        super()._log(level, msg, args, extra=extra, **kwargs)
 
     def error(self,
               msg: Any,
@@ -338,7 +332,10 @@ class CustomFormatter(logging.Formatter):
         name = record.name
 
         if hasattr(record, 'custom_exception'):
-            header = f'{formatted_level} {name} - {record.custom_exception}\n\n'
+            header = (
+                f'{formatted_level} {name} - '
+                f'{record.custom_exception.__qualname__}\n\n'
+            )
         else:
             header = f'{formatted_level} {name}\n\n'
 
