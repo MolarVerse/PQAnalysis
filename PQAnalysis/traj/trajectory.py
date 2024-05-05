@@ -166,9 +166,9 @@ class Trajectory:
         window_gap : int, optional
             The gap size between two windows, by default 1
         window_start : int, optional
-            The start index of the window, by default 0
+            The start index of the first window, by default 0
         window_stop : int | None, optional
-            The stop index of the window, by default None, which then
+            The last index of the last window, by default None, which then
             set to the length of the trajectory.
 
         Raises
