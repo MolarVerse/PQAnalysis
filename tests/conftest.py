@@ -88,7 +88,7 @@ def caplog_for_logger(caplog, logger_name, level):
     logger.removeHandler(caplog.handler)
 
 
-def assert_logging(caplog, logging_name, logging_level, message_to_test, function, *args, **kwargs):
+def assert_logging_with_exception(caplog, logging_name, logging_level, message_to_test, exception, function, *args, **kwargs):
     with caplog_for_logger(caplog, __package_name__ + "." + logging_name, logging_level):
         result = None
         try:
@@ -96,11 +96,18 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
         except SystemExit:
             pass
 
-        assert caplog.record_tuples[0][0] == __package_name__ + \
+        record = caplog.records[0]
+
+        assert record.name == __package_name__ + \
             "." + logging_name
-        assert caplog.record_tuples[0][1] == logging.getLevelName(
-            logging_level)
-        message = caplog.record_tuples[0][2]
+        assert record.levelno == logging.getLevelName(
+            logging_level
+        )
+
+        if exception is not None:
+            assert record.custom_exception == exception
+
+        message = record.msg
 
         messages = [message.strip() for message in message.split("\n")]
 
@@ -108,3 +115,16 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
             assert message in message_to_test
 
         return result
+
+
+def assert_logging(caplog, logging_name, logging_level, message_to_test, function, *args, **kwargs):
+    return assert_logging_with_exception(
+        caplog,
+        logging_name,
+        logging_level,
+        message_to_test,
+        None,
+        function,
+        *args,
+        **kwargs
+    )
