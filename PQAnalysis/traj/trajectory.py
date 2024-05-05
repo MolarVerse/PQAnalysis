@@ -4,8 +4,8 @@ A module containing the Trajectory class.
 
 from __future__ import annotations
 
-import numpy as np
 import logging
+import numpy as np
 
 from beartype.typing import List, Any, Iterable
 
@@ -154,10 +154,10 @@ class Trajectory:
         window_gap: int = 1,
         window_start: int = 0,
         window_stop: int | None = None,
-    ) -> Iterable[List[AtomicSystem]]:
+    ) -> Iterable[Trajectory]:
         """
         This method allows a window of the trajectory to be retrieved.
-        Window is a sequence of frames from start to stop with a step size and a gap size.
+        Window is a sequence of frames from start to stop with a window size and a gap size.
 
         Parameters
         ----------
@@ -167,7 +167,7 @@ class Trajectory:
             The gap size between two windows, by default 1
         window_start : int, optional
             The start index of the window, by default 0
-        window_stop : int, optional
+        window_stop : int | None, optional
             The stop index of the window, by default None, which then
             set to the length of the trajectory.
 
@@ -180,10 +180,14 @@ class Trajectory:
             If window_gap is less than 1.
             If window_size is greater than window_stop - window_start.
 
+        Warning
+        -------
+        If not all frames are included in the windows, a warning is issued.
+
         Returns
         -------
-        Iterable[List[AtomicSystem]]
-            An iterable that yields the window of the trajectory.
+        Iterable[Trajectory]
+            An iterable over the windows of the trajectory with the specified window size and gap.
         """
 
         # If window_stop is not provided, set it to the length of the trajectory
@@ -233,7 +237,7 @@ class Trajectory:
 
         # generate the window of the trajectory
         for i in range(window_start, window_stop - window_size + 1, window_gap):
-            yield self.frames[i : i + window_size]
+            yield self[i : i + window_size]
 
     def __contains__(self, item: AtomicSystem) -> bool:
         """
