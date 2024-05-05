@@ -184,8 +184,8 @@ class Trajectory:
         -------
         If not all frames are included in the windows, a warning is issued.
 
-        Returns
-        -------
+        Yields
+        ------
         Iterable[Trajectory]
             An iterable over the windows of the trajectory with the specified window size and gap.
         """
@@ -194,28 +194,32 @@ class Trajectory:
         if window_stop is None:
             window_stop = len(self)
 
-        # If window_start is less than 0 or greater than the length of the trajectory, raise an IndexError
+        # If window_start is less than 0 or greater than the
+        # length of the trajectory, raise an IndexError
         if window_start < 0 or window_start > len(self):
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
                 exception=IndexError,
             )
 
-        # If window_stop is less than 0 or greater than the length of the trajectory, raise an IndexError
+        # If window_stop is less than 0 or greater than the
+        # length of the trajectory, raise an IndexError
         if window_stop < 0 or window_stop > len(self):
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
                 exception=IndexError,
             )
 
-        # If window_step is less than 1 or greater than the length of the trajectory, raise an IndexError
+        # If window_step is less than 1 or greater than
+        # the length of the trajectory, raise an IndexError
         if window_size < 1 or window_size > len(self):
             self.logger.error(
                 "window size can not be less than 1 or greater than the length of the trajectory",
                 exception=IndexError,
             )
 
-        # If window_gap is less than 1 or greater than the length of the trajectory, raise an IndexError
+        # If window_gap is less than 1 or greater than
+        # the length of the trajectory, raise an IndexError
         if window_gap < 1 or window_gap > len(self):
             self.logger.error(
                 "window gap can not be less than 1 or greater than the length of the trajectory",
@@ -245,7 +249,7 @@ class Trajectory:
 
         # generate the window of the trajectory
         for i in range(window_start, window_stop - window_size + 1, window_gap):
-            yield self[i : i + window_size]
+            yield self[i: i + window_size]
 
     def __contains__(self, item: AtomicSystem) -> bool:
         """
