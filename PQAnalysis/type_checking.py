@@ -4,21 +4,13 @@ from decorator import decorator
 from beartype.door import is_bearable
 
 from PQAnalysis.utils.custom_logging import setup_logger
-from .types import (
-    Np1DIntArray,
-    Np2DIntArray,
-    Np1DNumberArray,
-    Np2DNumberArray,
-    Np3x3NumberArray,
-    NpnDNumberArray,
-)
 
-__logger_name__ = "PQAnalysis.TypeChecking"
+logger_name = "PQAnalysis.TypeChecking"
 
-if not logging.getLogger(__logger_name__).handlers:
-    logger = setup_logger(logging.getLogger(__logger_name__))
+if not logging.getLogger(logger_name).handlers:
+    logger = setup_logger(logging.getLogger(logger_name))
 else:
-    logger = logging.getLogger(__logger_name__)
+    logger = logging.getLogger(logger_name)
 
 
 @decorator
@@ -35,11 +27,8 @@ def runtime_type_checking(func, *args, **kwargs):
         if arg_name in type_hints:
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
-                    _get_type_error_message(
-                        arg_name,
-                        type_hints[arg_name],
-                        type(arg_value)
-                    ),
+                    f"Argument '{arg_name}' should be of type "
+                    f"{type_hints[arg_name]}, but got {type(arg_value)}",
                     exception=TypeError,
                 )
 
@@ -48,11 +37,8 @@ def runtime_type_checking(func, *args, **kwargs):
         if kwarg_name in type_hints:
             if not is_bearable(kwarg_value, type_hints[kwarg_name]):
                 logger.error(
-                    _get_type_error_message(
-                        kwarg_name,
-                        type_hints[kwarg_name],
-                        type(kwarg_value)
-                    ),
+                    f"Argument '{kwarg_name}' should be of type "
+                    f"{type_hints[kwarg_name]}, but got {type(kwarg_value)}",
                     exception=TypeError,
                 )
 
@@ -67,20 +53,5 @@ def _get_type_error_message(arg_name, expected_type, actual_type):
 
     header = (
         f"Argument '{arg_name}' should be of type {expected_type}, "
-        f"but got {actual_type}."
+        f"but got {actual_type}"
     )
-
-    if expected_type is Np1DIntArray:
-        header += " Expected a 1D numpy integer array."
-    elif expected_type is Np2DIntArray:
-        header += " Expected a 2D numpy integer array."
-    elif expected_type is Np1DNumberArray:
-        header += " Expected a 1D numpy number array."
-    elif expected_type is Np2DNumberArray:
-        header += " Expected a 2D numpy number array."
-    elif expected_type is Np3x3NumberArray:
-        header += " Expected a 3x3 numpy number array."
-    elif expected_type is NpnDNumberArray:
-        header += " Expected an n-dimensional numpy number array."
-
-    return header

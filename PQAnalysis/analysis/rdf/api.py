@@ -2,10 +2,14 @@
 This module provides API functions for the radial distribution function (RDF) analysis.
 """
 
+import logging
+
 from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 
 from .rdf import RDF
 from .rdf_input_file_reader import RDFInputFileReader
@@ -34,6 +38,19 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
     """
+
+
+    logger = logging.getLogger(__package_name__).getChild(__name__)
+    logger = setup_logger(logger)
+
+    if not isinstance(input_file, str):
+        logger.error("Input file must be a string", exception=TypeError)
+
+    if not isinstance(md_format, (MDEngineFormat, str)):
+        logger.error(
+            "md_format must be a MDEngineFormat or a string",
+            exception=TypeError
+        )
 
     md_format = MDEngineFormat(md_format)
 
