@@ -1,13 +1,18 @@
+"""
+Unit tests for the Trajectory class.
+"""
+
+import sys
 import pytest
 import numpy as np
-import sys
 
-from . import pytestmark
+from ..conftest import assert_logging
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
+
 
 class TestTrajectory:
 
@@ -132,23 +137,31 @@ class TestTrajectory:
             Trajectory()[0]
         assert str(exception.value) == "list index out of range"
 
-    def test_window(self):
+    def test_window(self, caplog):
         traj = Trajectory(self.frames)
 
-        test_frames = [frame for frame in traj.window(1, 2)]
+        test_frames = [traj.frames for traj in traj.window(1, 2)]
         assert test_frames == [[self.frame1], [self.frame3]]
 
-        test_frames = [frame for frame in traj.window(2, 1)]
+        test_frames = [traj.frames for traj in traj.window(2, 1)]
         assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
 
-        test_frames = [frame for frame in traj.window(2)]
+        test_frames = [traj.frames for traj in traj.window(2)]
         assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
 
-        test_frames = [frame for frame in traj.window(1)]
+        test_frames = [traj.frames for traj in traj.window(1)]
         assert test_frames == [[self.frame1], [self.frame2], [self.frame3]]
 
-        test_frames = [frame for frame in traj.window(2, 2)]
+        test_frames = [traj.frames for traj in traj.window(2, 2)]
         assert test_frames == [[self.frame1, self.frame2]]
+
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "WARNING",
+            "Not all frames are included in the windows. Check the window size and gap.",
+            traj.window(2, 2).__next__,
+        )
 
         with pytest.raises(IndexError) as exception:
             generator = traj.window(0)
