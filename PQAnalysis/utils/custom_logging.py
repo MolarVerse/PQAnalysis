@@ -107,6 +107,8 @@ class CustomLogger(logging.Logger):
             if the level is logging.ERROR or logging.CRITICAL and the logger
             is not enabled for logging.DEBUG.
         """
+        self.custom_exception = exception
+
         self._original_log(
             level,
             msg,
@@ -163,6 +165,19 @@ class CustomLogger(logging.Logger):
         """
 
         super()._log(level, msg, args, **kwargs)
+
+    def makeRecord(self, name, level, fn, lno, msg, args, exc_info,
+                   func=None, extra=None, sinfo=None):
+        """
+        This method creates a log record.
+        """
+
+        record = super().makeRecord(name, level, fn, lno, msg, args, exc_info,
+                                    func=func, extra=extra, sinfo=sinfo)
+        if hasattr(self, 'custom_exception'):
+            setattr(record, 'custom_exception', self.custom_exception)
+
+        return record
 
     def error(self,
               msg: Any,
@@ -321,7 +336,11 @@ class CustomFormatter(logging.Formatter):
         longest_level_key = max(level_keys, key=len)
 
         name = record.name
-        header = f'{formatted_level} {name}\n\n'
+
+        if hasattr(record, 'custom_exception'):
+            header = f'{formatted_level} {name} - {record.custom_exception}\n\n'
+        else:
+            header = f'{formatted_level} {name}\n\n'
 
         messages = message.split('\n')
         wrapper = textwrap.TextWrapper(
