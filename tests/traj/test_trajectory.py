@@ -163,112 +163,70 @@ class TestTrajectory:
             traj.window(2, 2).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(0)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+                "window size can not be less than 1 or greater than the length of the trajectory"
+            ),
+            function=traj.window(0).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(0, 1)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window size can not be less than 1 or greater than the length of the trajectory",
+            traj.window(4).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 0)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window gap can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window gap can not be less than 1 or greater than the length of the trajectory",
+            traj.window(1, 0).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(4)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window gap can not be less than 1 or greater than the length of the trajectory",
+            traj.window(1, 4).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(4, 1)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "start index is less than 0 or greater than the length of the trajectory",
+            traj.window(1, 1, window_start=-1).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(4, 4)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size can not be less than 1 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "stop index is less than 0 or greater than the length of the trajectory",
+            traj.window(1, 1, window_stop=-1).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, window_start=4)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "start index is less than 0 or greater than the length of the trajectory"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "start index is greater than or equal to the stop index",
+            traj.window(1, 1, window_start=2, window_stop=1).__next__,
         )
 
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, window_stop=4)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "stop index is less than 0 or greater than the length of the trajectory"
-        )
-
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, window_start=2, window_stop=1)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "start index is greater than or equal to the stop index"
-        )
-
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, window_start=-1)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "start index is less than 0 or greater than the length of the trajectory"
-        )
-
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(1, 1, window_stop=-1)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "stop index is less than 0 or greater than the length of the trajectory"
-        )
-
-        with pytest.raises(IndexError) as exception:
-            generator = traj.window(3, 1, window_start=1, window_stop=3)
-            generator.__next__()
-
-        assert (
-            str(exception.value)
-            == "window size is greater than the window_stop - window_start"
+        assert_logging(
+            caplog,
+            Trajectory.__qualname__,
+            "ERROR",
+            "window size is greater than the window_stop - window_start",
+            traj.window(3, 1, window_start=1, window_stop=3).__next__,
         )
 
     def test__iter__(self):

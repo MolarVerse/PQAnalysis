@@ -176,8 +176,8 @@ class Trajectory:
         IndexError
             If window_start is less than 0 or greater than the length of the trajectory.
             If window_stop is less than 0 or greater than the length of the trajectory.
-            If window_size is less than 1.
-            If window_gap is less than 1.
+            If window_size is less than 1 or greater than the length of the trajectory.
+            If window_gap is less than 1 or greater than the length of the trajectory.
             If window_size is greater than window_stop - window_start.
 
         Warning
@@ -196,36 +196,44 @@ class Trajectory:
 
         # If window_start is less than 0 or greater than the length of the trajectory, raise an IndexError
         if window_start < 0 or window_start > len(self):
-            raise IndexError(
-                "start index is less than 0 or greater than the length of the trajectory"
+            self.logger.error(
+                "start index is less than 0 or greater than the length of the trajectory",
+                exception=IndexError,
             )
 
         # If window_stop is less than 0 or greater than the length of the trajectory, raise an IndexError
         if window_stop < 0 or window_stop > len(self):
-            raise IndexError(
-                "stop index is less than 0 or greater than the length of the trajectory"
+            self.logger.error(
+                "stop index is less than 0 or greater than the length of the trajectory",
+                exception=IndexError,
             )
 
         # If window_step is less than 1 or greater than the length of the trajectory, raise an IndexError
         if window_size < 1 or window_size > len(self):
-            raise IndexError(
-                "window size can not be less than 1 or greater than the length of the trajectory"
+            self.logger.error(
+                "window size can not be less than 1 or greater than the length of the trajectory",
+                exception=IndexError,
             )
 
         # If window_gap is less than 1 or greater than the length of the trajectory, raise an IndexError
         if window_gap < 1 or window_gap > len(self):
-            raise IndexError(
-                "window gap can not be less than 1 or greater than the length of the trajectory"
+            self.logger.error(
+                "window gap can not be less than 1 or greater than the length of the trajectory",
+                exception=IndexError,
             )
 
         # If window_start is greater than or equal to window_stop, raise an IndexError
         if window_start >= window_stop:
-            raise IndexError("start index is greater than or equal to the stop index")
+            self.logger.error(
+                "start index is greater than or equal to the stop index",
+                exception=IndexError,
+            )
 
         # If window_size is greater than window_stop - window_start, raise an IndexError
         if window_size > window_stop - window_start:
-            raise IndexError(
-                "window size is greater than the window_stop - window_start"
+            self.logger.error(
+                "window size is greater than the window_stop - window_start",
+                exception=IndexError,
             )
 
         # Check if all frames are included in the windows
