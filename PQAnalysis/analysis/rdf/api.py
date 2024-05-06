@@ -5,19 +5,21 @@ This module provides API functions for the radial distribution function (RDF) an
 from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .rdf import RDF
 from .rdf_input_file_reader import RDFInputFileReader
 from .rdf_output_file_writer import RDFDataWriter, RDFLogWriter
 
 
+@runtime_type_checking
 def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     """
     Calculates the radial distribution function (RDF) using a given input file.
 
     This is just a wrapper function combining the underlying classes and functions.
 
-    For more information on the input file keys please 
+    For more information on the input file keys please
     visit :py:mod:`~PQAnalysis.analysis.rdf.rdfInputFileReader`.
     For more information on the exact calculation of
     the RDF please visit :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`.
@@ -25,13 +27,14 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     Parameters
     ----------
     input_file : str
-        The input file. For more information on the input file 
+        The input file. For more information on the input file
         keys please visit :py:mod:`~PQAnalysis.analysis.rdf.rdfInputFileReader`.
     md_format : MDEngineFormat | str, optional
-        the format of the input trajectory. Default is "PQ". 
+        the format of the input trajectory. Default is "PQ".
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
     """
+
     md_format = MDEngineFormat(md_format)
 
     input_reader = RDFInputFileReader(input_file)

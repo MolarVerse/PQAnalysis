@@ -3,6 +3,10 @@ import pytest
 from PQAnalysis.analysis.rdf.rdf_input_file_reader import RDFInputFileReader
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 
+# import topology marker
+from .. import pytestmark  # pylint: disable=unused-import
+from ...conftest import assert_logging
+
 
 class TestRDFInputFileReader:
     @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)

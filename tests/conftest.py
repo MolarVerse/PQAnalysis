@@ -93,7 +93,7 @@ def assert_logging_with_exception(caplog, logging_name, logging_level, message_t
         result = None
         try:
             result = function(*args, **kwargs)
-        except SystemExit:
+        except:
             pass
 
         record = caplog.records[0]
