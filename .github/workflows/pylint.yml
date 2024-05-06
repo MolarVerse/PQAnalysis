@@ -53,11 +53,13 @@ jobs:
         score=$(head -n 1 comment.txt | awk '{print $7}' | cut -d '/' -f 1)
         if (( $(echo "$score > 9.75" | bc -l) )); then
           echo "Pylint score is higher than 9.75"
-          echo "::set-output name=score::true"
+          echo "{score}={true}" >> $GITHUB_PYLINT_SCORE
         else
           echo "Pylint score is lower than 9.75"
-          echo "::set-output name=score::false"
+          echo "{score}={false}" >> $GITHUB_PYLINT_SCORE
         fi
+      shell: bash
+      
 
     #fail the job if pylint score is lower than 9.75
     - name: Fail job if pylint score is lower than 9.75
@@ -72,11 +74,12 @@ jobs:
         previous_score=$(head -n 1 comment.txt | awk '{print $11}' | cut -d ')' -f 1)
         if [ -z "$previous_score" ]; then
           echo "Previous score is empty"
-          echo "::set-output name=previous_score::empty"
+          echo "{previous_score}={empty}" >> $GITHUB_PREVIOUS_PYLINT_SCORE
         else
           echo "Previous score is not empty"
-          echo "::set-output name=previous_score::$previous_score"
+          echo "{previous_score}=$previous_score" >> $GITHUB_PREVIOUS_PYLINT_SCORE
         fi
+      shell: bash
 
     #fail the job if changes score is lower than -0.1
     - name: Fail job if changes score is lower than -0.1
