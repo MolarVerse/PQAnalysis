@@ -108,6 +108,7 @@ jobs:
         git commit -m "Add .github/.pylint_cache on push event"
 
     - name: Push changes
+      if: github.event_name == 'push'
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}

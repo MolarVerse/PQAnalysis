@@ -1,4 +1,8 @@
-import pytest
+"""
+A module to test the RDF API.
+"""
+
+import pytest  # pylint: disable=unused-import
 
 from PQAnalysis.analysis.rdf.api import rdf
 from PQAnalysis.type_checking import _get_type_error_message
