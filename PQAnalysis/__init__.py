@@ -14,11 +14,25 @@ import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
 
 from PQAnalysis.utils.custom_logging import CustomLogger
 
-beartype_this_package()
-
 __base_path__ = Path(__file__).parent
-
 __package_name__ = __name__
+
+##################
+# BEARTYPE SETUP #
+##################
+
+# TODO: change the default level to "RELEASE" after all changes are implemented
+__beartype_default_level__ = "DEBUG"
+__beartype_level__ = os.getenv(
+    "PQANALYSIS_BEARTYPE_LEVEL", __beartype_default_level__
+)
+
+if __beartype_level__.upper() == "DEBUG":
+    beartype_this_package()
+
+#################
+# LOGGING SETUP #
+#################
 
 logging_env_var = os.getenv("PQANALYSIS_LOGGING_LEVEL")
 

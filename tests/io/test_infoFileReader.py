@@ -1,12 +1,10 @@
 import pytest
 
-from beartype.roar import BeartypeException
-
-from . import pytestmark
-
 from PQAnalysis.io import InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
+
+from . import pytestmark
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
@@ -14,10 +12,6 @@ def test__init__(test_with_data_dir):
     with pytest.raises(FileNotFoundError) as exception:
         InfoFileReader("tmp")
     assert str(exception.value) == "File tmp not found."
-
-    with pytest.raises(BeartypeException) as exception:
-        InfoFileReader(
-            "md-01.info", engine_format=None)
 
     with pytest.raises(MDEngineFormatError) as exception:
         InfoFileReader(

@@ -121,15 +121,15 @@ class CustomLogger(logging.Logger):
         )
 
         if level in [logging.CRITICAL, logging.ERROR]:
+
+            exception = exception or Exception
+
             if self.isEnabledFor(logging.DEBUG):
                 back_tb = None
 
                 try:
-                    if exception is not None:
-                        raise exception
-
-                    raise Exception  # pylint: disable=broad-exception-raised
-                except Exception:  # pylint: disable=broad-except
+                    raise exception  # pylint: disable=broad-exception-raised
+                except exception:  # pylint: disable=broad-except
                     traceback = sys.exc_info()[2]
                     back_frame = traceback.tb_frame.f_back
 
@@ -140,12 +140,21 @@ class CustomLogger(logging.Logger):
                         tb_lineno=back_frame.f_lineno
                     )
 
-                if exception is not None:
-                    raise Exception(msg).with_traceback(back_tb)
-
                 raise exception(msg).with_traceback(back_tb)
 
-            sys.exit(1)
+            class DevNull:
+                """
+                Dummy class to redirect the sys.stderr to /dev/null.
+                """
+
+                def write(self, _):
+                    """
+                    Dummy write method.
+                    """
+
+            sys.stderr = DevNull()
+
+            raise exception(msg)  # pylint: disable=raise-missing-from
 
     def _original_log(self,
                       level: Any,
