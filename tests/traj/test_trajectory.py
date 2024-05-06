@@ -144,10 +144,12 @@ class TestTrajectory:
         assert test_frames == [[self.frame1], [self.frame3]]
 
         test_frames = [traj.frames for traj in traj.window(2, 1)]
-        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+        assert test_frames == [
+            [self.frame1, self.frame2], [self.frame2, self.frame3]]
 
         test_frames = [traj.frames for traj in traj.window(2)]
-        assert test_frames == [[self.frame1, self.frame2], [self.frame2, self.frame3]]
+        assert test_frames == [
+            [self.frame1, self.frame2], [self.frame2, self.frame3]]
 
         test_frames = [traj.frames for traj in traj.window(1)]
         assert test_frames == [[self.frame1], [self.frame2], [self.frame3]]
@@ -234,7 +236,8 @@ class TestTrajectory:
             Trajectory.__qualname__,
             exception=IndexError,
             logging_level="ERROR",
-            message_to_test=("start index is greater than or equal to the stop index"),
+            message_to_test=(
+                "start index is greater than or equal to the stop index"),
             function=traj.window(1, 1, window_start=2, window_stop=1).__next__,
         )
 
@@ -319,7 +322,8 @@ class TestTrajectory:
         assert np.allclose(
             traj.box_lengths,
             np.array(
-                [[max_float, max_float, max_float], [max_float, max_float, max_float]]
+                [[max_float, max_float, max_float], [
+                    max_float, max_float, max_float]]
             ),
         )
 
@@ -327,4 +331,20 @@ class TestTrajectory:
         frame2 = AtomicSystem(cell=Cell(11, 11, 11))
 
         traj = Trajectory([frame1, frame2])
-        assert np.allclose(traj.box_lengths, np.array([[10, 10, 10], [11, 11, 11]]))
+        assert np.allclose(traj.box_lengths, np.array(
+            [[10, 10, 10], [11, 11, 11]]))
+
+    def test_property_cells(self):
+        frame1 = AtomicSystem()
+        frame2 = AtomicSystem()
+
+        traj = Trajectory([frame1, frame2])
+
+        assert traj.cells == [Cell(), Cell()]
+
+        frame1 = AtomicSystem(cell=Cell(10, 10, 10))
+        frame2 = AtomicSystem(cell=Cell(11, 11, 11))
+
+        traj = Trajectory([frame1, frame2])
+
+        assert traj.cells == [Cell(10, 10, 10), Cell(11, 11, 11)]
