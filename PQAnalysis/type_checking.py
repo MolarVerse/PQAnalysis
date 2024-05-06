@@ -88,5 +88,8 @@ def _get_type_error_message(arg_name, value, expected_type):
         header += " Expected a 3x3 numpy number array."
     elif expected_type is NpnDNumberArray:
         header += " Expected an n-dimensional numpy number array."
+    elif str(expected_type) == '~SelectionCompatible':
+        header += " Expected a SelectionCompatible object. For more "
+        header += "information, see the documentation for Selections."
 
     return header

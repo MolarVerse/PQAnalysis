@@ -10,6 +10,8 @@ from beartype.typing import Tuple
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .rdf import RDF
 
 
@@ -20,6 +22,7 @@ class RDFDataWriter(BaseWriter):
     analysis to a file.
     """
 
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters
@@ -30,9 +33,14 @@ class RDFDataWriter(BaseWriter):
         self.filename = filename
         super().__init__(filename)
 
+    @runtime_type_checking
     def write(self,
-              data: Tuple[Np1DNumberArray, Np1DNumberArray,
-                          Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
+              data: Tuple[Np1DNumberArray,
+                          Np1DNumberArray,
+                          Np1DNumberArray,
+                          Np1DNumberArray,
+                          Np1DNumberArray
+                          ]
               ):
         """
         Writes the data to the file.
@@ -59,6 +67,7 @@ class RDFLogWriter(BaseWriter):
     to a file.
     """
 
+    @runtime_type_checking
     def __init__(self, filename: str | None) -> None:
         """
         Parameters
@@ -69,6 +78,7 @@ class RDFLogWriter(BaseWriter):
         self.filename = filename
         super().__init__(filename)
 
+    @runtime_type_checking
     def write_before_run(self, rdf: RDF):
         """
         Writes the log before the 
@@ -143,6 +153,7 @@ class RDFLogWriter(BaseWriter):
 
         super().close()
 
+    @runtime_type_checking
     def write_after_run(self, rdf: RDF):
         """
         Writes the log after the 
