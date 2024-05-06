@@ -34,8 +34,54 @@ jobs:
     - name: Lint with pylint
       shell: bash
       run: |
-        pylint PQAnalysis --exit-zero | tee pylint_output.txt
-        python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        mkdir -p .github/.pylint_cache
+        export PYLINTHOME=$(pwd)/.github/.pylint_cache
+        if ${{ github.event_name == 'pull_request' }}; then
+          pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
+          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        elif ${{ github.event_name == 'push' }}; then
+          pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
+          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        fi
+
+
+    #check if the first line of comment.txt rates higher than 9.75 with following format
+    #Your code has been rated at 9.86/10 (previous run: 7.63/10, +2.22)
+    - name: Check if pylint score is higher than 9.75
+      id: check_pylint_score
+      run: |
+        score=$(head -n 1 comment.txt | awk '{print $7}' | cut -d '/' -f 1)
+        if (( $(echo "$score > 9.75" | bc -l) )); then
+          echo "Pylint score is higher than 9.75"
+          echo "::set-output name=score::true"
+        else
+          echo "Pylint score is lower than 9.75"
+          echo "::set-output name=score::false"
+        fi
+
+    #fail the job if pylint score is lower than 9.75
+    - name: Fail job if pylint score is lower than 9.75
+      if: steps.check_pylint_score.outputs.score == 'false'
+      run: exit 1
+
+    #check if previous scor is not empty
+    #if it is not empty then fail if change is lower than -0.1
+    - name: Check if previous score is not empty
+      id: check_previous_score
+      run: |
+        previous_score=$(head -n 1 comment.txt | awk '{print $11}' | cut -d ')' -f 1)
+        if [ -z "$previous_score" ]; then
+          echo "Previous score is empty"
+          echo "::set-output name=previous_score::empty"
+        else
+          echo "Previous score is not empty"
+          echo "::set-output name=previous_score::$previous_score"
+        fi
+
+    #fail the job if changes score is lower than -0.1
+    - name: Fail job if changes score is lower than -0.1
+      if: steps.check_previous_score.outputs.previous_score != 'empty' && steps.check_previous_score.outputs.previous_score < -0.1
+      run: exit 1
 
     - uses: marocchino/sticky-pull-request-comment@v2
       if: (success() || failure()) && github.event.pull_request
@@ -46,5 +92,14 @@ jobs:
       run: |
         cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
 
-    
+    #add changes of .github/.pylint_cache to the commit if it is based on push event
+    - name: Add .github/.pylint_cache to the commit
+      if: github.event_name == 'push'
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
+        git add .github/.pylint_cache
+        git commit -m "Add .github/.pylint_cache on push event"
+        git push
 
