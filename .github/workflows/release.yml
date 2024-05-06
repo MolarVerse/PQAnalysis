@@ -100,8 +100,6 @@ jobs:
     - build
     runs-on: ubuntu-latest
 
-    if: ${{ github.event_name == 'workflow_dispatch' }}  # only publish to TestPyPI on manual trigger
-
     environment:
       name: testpypi
       url: https://test.pypi.org/p/PQAnalysis
