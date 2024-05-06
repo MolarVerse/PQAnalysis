@@ -27,8 +27,11 @@ def runtime_type_checking(func, *args, **kwargs):
         if arg_name in type_hints:
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
-                    f"Argument '{arg_name}' should be of type "
-                    f"{type_hints[arg_name]}, but got {type(arg_value)}",
+                    _get_type_error_message(
+                        arg_name,
+                        arg_value,
+                        type_hints[arg_name],
+                    ),
                     exception=TypeError,
                 )
 
@@ -37,8 +40,11 @@ def runtime_type_checking(func, *args, **kwargs):
         if kwarg_name in type_hints:
             if not is_bearable(kwarg_value, type_hints[kwarg_name]):
                 logger.error(
-                    f"Argument '{kwarg_name}' should be of type "
-                    f"{type_hints[kwarg_name]}, but got {type(kwarg_value)}",
+                    _get_type_error_message(
+                        kwarg_name,
+                        kwarg_value,
+                        type_hints[kwarg_name],
+                    ),
                     exception=TypeError,
                 )
 
@@ -46,12 +52,14 @@ def runtime_type_checking(func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-def _get_type_error_message(arg_name, expected_type, actual_type):
+def _get_type_error_message(arg_name, value, expected_type):
     """
     Get the error message for a type error.
     """
 
+    actual_type = type(value)
+
     header = (
-        f"Argument '{arg_name}' should be of type {expected_type}, "
-        f"but got {actual_type}"
+        f"Argument '{arg_name}' with {value=} should be "
+        f"of type {expected_type}, but got {actual_type}."
     )

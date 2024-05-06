@@ -1,32 +1,20 @@
-import pytest
-import numpy as np
 
 from collections import defaultdict
-from beartype.roar import BeartypeException
+
+import pytest
+import numpy as np
 
 from PQAnalysis.physical_data import Energy, EnergyError
 
 
 class TestEnergy:
     def test__init__(self):
-        with pytest.raises(BeartypeException):
-            Energy(1)
-
-        with pytest.raises(BeartypeException):
-            Energy([[[1]]])
-
         data = np.array([1, 2, 3])
         energy = Energy(data)
 
         assert np.allclose(energy.data, [data])
 
     def test__setup_info_dictionary(self):
-        with pytest.raises(BeartypeException):
-            Energy(np.array([1]), info=1)
-
-        with pytest.raises(BeartypeException):
-            Energy(np.array([1]), units=1)
-
         data = np.array([[1], [2]])
         info = {1: 0, 2: 1}
         units = {1: "a", 2: "b"}

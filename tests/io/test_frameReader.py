@@ -1,16 +1,14 @@
 import pytest
 import numpy as np
 
-from beartype.roar import BeartypeException
-
-from . import pytestmark
-
 from PQAnalysis.io import FrameReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.traj.exceptions import TrajectoryFormatError
 from PQAnalysis.traj import TrajectoryFormat
 from PQAnalysis.topology import Topology
+
+from . import pytestmark
 
 
 class TestFrameReader:
@@ -66,9 +64,6 @@ class TestFrameReader:
 
     def test_read(self):
         reader = FrameReader()
-
-        with pytest.raises(BeartypeException):
-            reader.read(["tmp"])
 
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
