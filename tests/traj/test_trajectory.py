@@ -6,7 +6,7 @@ import sys
 import pytest
 import numpy as np
 
-from ..conftest import assert_logging
+from ..conftest import assert_logging, assert_logging_with_exception
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
@@ -163,9 +163,10 @@ class TestTrajectory:
             traj.window(2, 2).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
+            exception=IndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window size can not be less than 1 or greater than the length of the trajectory"
@@ -173,60 +174,79 @@ class TestTrajectory:
             function=traj.window(0).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "window size can not be less than 1 or greater than the length of the trajectory",
-            traj.window(4).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "window size can not be less than 1 or greater than the length of the trajectory"
+            ),
+            function=traj.window(4).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "window gap can not be less than 1 or greater than the length of the trajectory",
-            traj.window(1, 0).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "window gap can not be less than 1 or greater than the length of the trajectory"
+            ),
+            function=traj.window(1, 0).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "window gap can not be less than 1 or greater than the length of the trajectory",
-            traj.window(1, 4).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "window gap can not be less than 1 or greater than the length of the trajectory"
+            ),
+            function=traj.window(1, 4).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "start index is less than 0 or greater than the length of the trajectory",
-            traj.window(1, 1, window_start=-1).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "start index is less than 0 or greater than the length of the trajectory"
+            ),
+            function=traj.window(1, 1, window_start=-1).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "stop index is less than 0 or greater than the length of the trajectory",
-            traj.window(1, 1, window_stop=-1).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "stop index is less than 0 or greater than the length of the trajectory"
+            ),
+            function=traj.window(1, 1, window_stop=-1).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "start index is greater than or equal to the stop index",
-            traj.window(1, 1, window_start=2, window_stop=1).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=("start index is greater than or equal to the stop index"),
+            function=traj.window(1, 1, window_start=2, window_stop=1).__next__,
         )
 
-        assert_logging(
+        assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            "ERROR",
-            "window size is greater than the window_stop - window_start",
-            traj.window(3, 1, window_start=1, window_stop=3).__next__,
+            exception=IndexError,
+            logging_level="ERROR",
+            message_to_test=(
+                "window size is greater than the window_stop - window_start"
+            ),
+            function=traj.window(3, 1, window_start=1, window_stop=3).__next__,
         )
 
     def test__iter__(self):
