@@ -24,3 +24,16 @@ class TestRDFAPI:
             function=rdf,
             input_file=1,
         )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="TypeChecking",
+            logging_level="ERROR",
+            message_to_test=_get_type_error_message(
+                "md_format", 1, "PQAnalysis.traj.formats.MDEngineFormat | str",
+            ),
+            exception=TypeError,
+            function=rdf,
+            input_file="test",
+            md_format=1,
+        )
