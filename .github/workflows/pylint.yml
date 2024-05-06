@@ -16,10 +16,19 @@ permissions:
 
 jobs:
   pylint:
+
     runs-on: ubuntu-latest
+
+    permissions:                # Job-level permissions configuration starts here
+      contents: write           # 'write' access to repository contents
+      pull-requests: write      # 'write' access to pull requests
 
     steps:
     - uses: actions/checkout@master
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
@@ -97,5 +106,10 @@ jobs:
 
         git add .github/.pylint_cache
         git commit -m "Add .github/.pylint_cache on push event"
-        git push
+
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
 
