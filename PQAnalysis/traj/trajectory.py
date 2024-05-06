@@ -297,6 +297,28 @@ class Trajectory:
 
         return self.frames == other.frames
 
+    def __str__(self) -> str:
+        """
+        This method allows the string representation of a trajectory to be retrieved.
+
+        Returns
+        -------
+        str
+            The string representation of the trajectory.
+        """
+        return f"Trajectory with {len(self)} frames"
+
+    def __repr__(self) -> str:
+        """
+        This method allows the string representation of a trajectory to be retrieved.
+
+        Returns
+        -------
+        str
+            The string representation of the trajectory.
+        """
+        return self.__str__()
+
     @property
     def frames(self) -> List[AtomicSystem]:
         """List[AtomicSystem]: The frames in the trajectory."""

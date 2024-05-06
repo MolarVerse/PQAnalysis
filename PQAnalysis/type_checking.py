@@ -67,3 +67,21 @@ def _get_type_error_message(arg_name, value, expected_type):
         f"Argument '{arg_name}' with {value=} should be "
         f"of type {expected_type}, but got {actual_type}."
     )
+
+    if expected_type is Np1DIntArray:
+        header += " Expected a 1D numpy integer array."
+    elif expected_type is Np2DIntArray:
+        header += " Expected a 2D numpy integer array."
+    elif expected_type is Np1DNumberArray:
+        header += " Expected a 1D numpy number array."
+    elif expected_type is Np2DNumberArray:
+        header += " Expected a 2D numpy number array."
+    elif expected_type is Np3x3NumberArray:
+        header += " Expected a 3x3 numpy number array."
+    elif expected_type is NpnDNumberArray:
+        header += " Expected an n-dimensional numpy number array."
+    elif str(expected_type) == '~SelectionCompatible':
+        header += " Expected a SelectionCompatible object. For more "
+        header += "information, see the documentation for Selections."
+
+    return header
