@@ -52,19 +52,12 @@ jobs:
       run: |
         score=$(head -n 1 comment.txt | awk '{print $7}' | cut -d '/' -f 1)
         if (( $(echo "$score > 9.75" | bc -l) )); then
-          echo "Pylint score is higher than 9.75"
-          echo "{score}={true}" >> $GITHUB_PYLINT_SCORE
+          echo "Pylint score is higher than 9.75 and is $score"
         else
-          echo "Pylint score is lower than 9.75"
-          echo "{score}={false}" >> $GITHUB_PYLINT_SCORE
+          echo "Pylint score is lower than 9.75 and is $score"
+          exit 1
         fi
       shell: bash
-      
-
-    #fail the job if pylint score is lower than 9.75
-    - name: Fail job if pylint score is lower than 9.75
-      if: steps.check_pylint_score.outputs.score == 'false'
-      run: exit 1
 
     #check if previous scor is not empty
     #if it is not empty then fail if change is lower than -0.1
@@ -74,17 +67,14 @@ jobs:
         previous_score=$(head -n 1 comment.txt | awk '{print $11}' | cut -d ')' -f 1)
         if [ -z "$previous_score" ]; then
           echo "Previous score is empty"
-          echo "{previous_score}={empty}" >> $GITHUB_PREVIOUS_PYLINT_SCORE
         else
-          echo "Previous score is not empty"
-          echo "{previous_score}=$previous_score" >> $GITHUB_PREVIOUS_PYLINT_SCORE
+          echo "Previous score is $previous_score"
+          if (( $(echo "$previous_score < -0.1" | bc -l) )); then
+            echo "Changes score is lower than -0.1"
+            exit 1
+          fi
         fi
       shell: bash
-
-    #fail the job if changes score is lower than -0.1
-    - name: Fail job if changes score is lower than -0.1
-      if: steps.check_previous_score.outputs.previous_score != 'empty' && steps.check_previous_score.outputs.previous_score < -0.1
-      run: exit 1
 
     - uses: marocchino/sticky-pull-request-comment@v2
       if: (success() || failure()) && github.event.pull_request
