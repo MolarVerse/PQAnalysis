@@ -33,7 +33,6 @@ jobs:
 
     - name: Lint with pylint
       id: run_pylint
-      shell: bash
       run: |
         mkdir -p .github/.pylint_cache
         export PYLINTHOME=$(pwd)/.github/.pylint_cache
