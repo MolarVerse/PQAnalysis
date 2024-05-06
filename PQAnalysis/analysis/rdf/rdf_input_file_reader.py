@@ -2,8 +2,6 @@
 A module containing a class to read input files to setup the 
 :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
-from __future__ import annotations
-
 import logging
 
 # local imports
@@ -11,6 +9,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 class RDFInputFileReader(Reader):
@@ -19,6 +18,7 @@ class RDFInputFileReader(Reader):
     """
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     #: List[str]: The required keys of the input file
     required_keys = [
@@ -41,6 +41,7 @@ class RDFInputFileReader(Reader):
         Reader.moldescriptor_file_key,
     ]
 
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters
@@ -50,8 +51,6 @@ class RDFInputFileReader(Reader):
         """
         self.filename = filename
         super().__init__(filename)
-
-        self.logger = setup_logger(self.logger)
 
     def read(self):
         """
@@ -78,7 +77,10 @@ class RDFInputFileReader(Reader):
 
         if (
             self.no_intra_molecular is not None and
-            (self.restart_file is None or self.moldescriptor_file is None)
+            (
+                self.restart_file is None or
+                self.moldescriptor_file is None
+            )
         ):
             self.logger.error(
                 (
