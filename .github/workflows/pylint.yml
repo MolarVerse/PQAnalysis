@@ -40,11 +40,12 @@ jobs:
         if ${{ github.event_name == 'pull_request' }}; then
           pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+          echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
         elif ${{ github.event_name == 'push' }}; then
           pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+          echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
         fi
-        echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
 
 
     #check if the first line of comment.txt rates higher than 9.75 with following format
