@@ -37,8 +37,8 @@ def runtime_type_checking(func, *args, **kwargs):
                 logger.error(
                     _get_type_error_message(
                         arg_name,
+                        arg_value,
                         type_hints[arg_name],
-                        type(arg_value)
                     ),
                     exception=TypeError,
                 )
@@ -50,8 +50,8 @@ def runtime_type_checking(func, *args, **kwargs):
                 logger.error(
                     _get_type_error_message(
                         kwarg_name,
+                        kwarg_value,
                         type_hints[kwarg_name],
-                        type(kwarg_value)
                     ),
                     exception=TypeError,
                 )
@@ -60,14 +60,16 @@ def runtime_type_checking(func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-def _get_type_error_message(arg_name, expected_type, actual_type):
+def _get_type_error_message(arg_name, value, expected_type):
     """
     Get the error message for a type error.
     """
 
+    actual_type = type(value)
+
     header = (
-        f"Argument '{arg_name}' should be of type {expected_type}, "
-        f"but got {actual_type}."
+        f"Argument '{arg_name}' with {value=} should be "
+        f"of type {expected_type}, but got {actual_type}."
     )
 
     if expected_type is Np1DIntArray:
