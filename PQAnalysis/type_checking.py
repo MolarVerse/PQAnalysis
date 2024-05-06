@@ -1,3 +1,7 @@
+"""
+A module for type checking of arguments passed to functions at runtime.
+"""
+
 import logging
 
 from decorator import decorator
