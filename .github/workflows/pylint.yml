@@ -40,11 +40,9 @@ jobs:
         if ${{ github.event_name == 'pull_request' }}; then
           pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
-          echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
         elif ${{ github.event_name == 'push' }}; then
           pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
-          echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
         fi
 
 
@@ -53,10 +51,10 @@ jobs:
     - name: Check if pylint score is higher than 9.75
       id: check_pylint_score
       run: |
-        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }}
-        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}'
-        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}' | cut -d '/' -f 1
-        score=$(echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}' | cut -d '/' -f 1)
+        head -n3 comment.txt | tail -n 1
+        head -n3 comment.txt | tail -n 1 | awk '{print $7}'
+        head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1
+        score=$(head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1)
         if (( $(echo "$score > 9.75" | bc -l) )); then
           echo "Pylint score is higher than 9.75 and is $score"
         else
@@ -70,7 +68,7 @@ jobs:
     - name: Check if previous score is not empty
       id: check_previous_score
       run: |
-        previous_score=$(echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $11}' | cut -d ')' -f 1)
+        previous_score=$(head -n3 comment.txt | tail -n 1 | awk '{print $11}' | cut -d ')' -f 1)
         if [ -z "$previous_score" ]; then
           echo "Previous score is empty"
         else
