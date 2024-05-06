@@ -32,6 +32,7 @@ jobs:
         pip install .
 
     - name: Lint with pylint
+      id: run_pylint
       shell: bash
       run: |
         mkdir -p .github/.pylint_cache
@@ -43,6 +44,7 @@ jobs:
           pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
         fi
+        echo "{pylint_output_last_line}:{tail -n 1 pylint_output.txt}" >> "${GITHUB_PYLINT_SUMMARY}"
 
 
     #check if the first line of comment.txt rates higher than 9.75 with following format
@@ -50,10 +52,10 @@ jobs:
     - name: Check if pylint score is higher than 9.75
       id: check_pylint_score
       run: |
-        tail -n 1 pylint_output.txt
-        tail -n 1 pylint_output.txt | awk '{print $7}'
-        tail -n 1 pylint_output.txt | awk '{print $7}' | cut -d '/' -f 1
-        score=$(tail -n 1 pylint_output.txt | awk '{print $7}' | cut -d '/' -f 1)
+        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }}
+        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}'
+        echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}' | cut -d '/' -f 1
+        score=$(echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $7}' | cut -d '/' -f 1)
         if (( $(echo "$score > 9.75" | bc -l) )); then
           echo "Pylint score is higher than 9.75 and is $score"
         else
@@ -67,7 +69,7 @@ jobs:
     - name: Check if previous score is not empty
       id: check_previous_score
       run: |
-        previous_score=$(tail -n 1 pylint_output.txt | awk '{print $11}' | cut -d ')' -f 1)
+        previous_score=$(echo ${{ steps.run_pylint.outputs.pylint_output_last_line }} | awk '{print $11}' | cut -d ')' -f 1)
         if [ -z "$previous_score" ]; then
           echo "Previous score is empty"
         else
