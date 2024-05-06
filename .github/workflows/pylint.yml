@@ -50,6 +50,9 @@ jobs:
     - name: Check if pylint score is higher than 9.75
       id: check_pylint_score
       run: |
+        head -n 1 comment.txt
+        head -n 1 comment.txt | awk '{print $7}'
+        head -n 1 comment.txt | awk '{print $7}' | cut -d '/' -f 1
         score=$(head -n 1 comment.txt | awk '{print $7}' | cut -d '/' -f 1)
         if (( $(echo "$score > 9.75" | bc -l) )); then
           echo "Pylint score is higher than 9.75 and is $score"
