@@ -147,17 +147,17 @@ class TestTopology:
         topology.reference_residues = reference_residues
 
         assert_logging(
-            caplog,
-            Topology.__qualname__,
-            "ERROR",
-            (
+            caplog=caplog,
+            logging_name=Topology.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
                 "The element of atom 0 is not set. If any reference residues are given the "
                 "program tries to automatically deduce the residues from the residue ids and "
                 "the reference residues. This means that any atom with an unknown element "
                 "raises an error. To avoid deducing residue information please set 'check_residues' "
                 "to False"
             ),
-            topology._setup_residues,
+            function=topology._setup_residues,
             residue_ids=residue_ids,
             atoms=atoms
         )
@@ -167,19 +167,20 @@ class TestTopology:
         topology.reference_residues = reference_residues
 
         residues, new_atoms = assert_logging(
-            caplog,
-            Topology.__qualname__,
-            "WARNING",
-            (
+            caplog=caplog,
+            logging_name=Topology.__qualname__,
+            logging_level="WARNING",
+            message_to_test=(
                 "The element of atom 1 (Element(c, 6, 12.0107)) does not match "
                 "the element of the reference residue ALA (Element(h, 1, 1.00794)). "
                 "Therefore the element type of the residue description will be used "
                 "within the topology format!"
             ),
-            topology._setup_residues,
+            function=topology._setup_residues,
             residue_ids=residue_ids,
             atoms=atoms,
         )
+
         assert len(residues) == 2
         assert new_atoms == atoms
         assert residues[0] == QMResidue(Element('C'))
