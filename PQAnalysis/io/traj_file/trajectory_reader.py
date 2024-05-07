@@ -158,6 +158,9 @@ class TrajectoryReader(BaseReader):
                 if self.constant_topology and self.topology is not None:
                     self.topology = frame.topology
 
+    def window_generator(self, window_size: int) -> Generator[List[AtomicSystem]]:
+        pass
+
     def calculate_number_of_frames(self) -> int:
         """
         Calculates the number of frames in the trajectory file.
