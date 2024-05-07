@@ -5,7 +5,7 @@ of an atomic system (i.e. standard getter and setter methods).
 
 from PQAnalysis.core import Atoms, Cell
 from PQAnalysis.topology import Topology
-from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.type_checking import runtime_type_checking_setter
 from PQAnalysis.types import (
     Np1DNumberArray,
     Np2DNumberArray,
@@ -37,7 +37,7 @@ class _StandardPropertiesMixin:
         return self._topology
 
     @topology.setter
-    @runtime_type_checking
+    @runtime_type_checking_setter
     def topology(self, topology: Topology) -> None:
         if topology.n_atoms != self.n_atoms:
             raise ValueError(
@@ -59,8 +59,8 @@ class _StandardPropertiesMixin:
         return self._pos
 
     @pos.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
-    @runtime_type_checking
     def pos(self, pos: Np2DNumberArray) -> None:
         self._pos = pos
 
@@ -92,8 +92,8 @@ class _StandardPropertiesMixin:
         return self._vel
 
     @vel.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
-    @runtime_type_checking
     def vel(self, vel: Np2DNumberArray) -> None:
         self._vel = vel
 
@@ -125,8 +125,8 @@ class _StandardPropertiesMixin:
         return self._forces
 
     @forces.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
-    @runtime_type_checking
     def forces(self, forces: Np2DNumberArray) -> None:
         self._forces = forces
 
@@ -158,8 +158,8 @@ class _StandardPropertiesMixin:
         return self._charges
 
     @charges.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
-    @runtime_type_checking
     def charges(self, charges: Np1DNumberArray) -> None:
         self._charges = charges
 
@@ -185,7 +185,7 @@ class _StandardPropertiesMixin:
         return self._cell
 
     @cell.setter
-    @runtime_type_checking
+    @runtime_type_checking_setter
     def cell(self, cell: Cell) -> None:
         self._cell = cell
 
@@ -195,7 +195,7 @@ class _StandardPropertiesMixin:
         return self._energy
 
     @energy.setter
-    @runtime_type_checking
+    @runtime_type_checking_setter
     def energy(self, energy: Real) -> None:
         self._energy = energy
 
@@ -210,7 +210,7 @@ class _StandardPropertiesMixin:
         return self._stress
 
     @stress.setter
-    @runtime_type_checking
+    @runtime_type_checking_setter
     def stress(self, stress: Np3x3NumberArray) -> None:
         self._stress = stress
 
@@ -225,7 +225,7 @@ class _StandardPropertiesMixin:
         return self._virial
 
     @virial.setter
-    @runtime_type_checking
+    @runtime_type_checking_setter
     def virial(self, virial: Np3x3NumberArray) -> None:
         self._virial = virial
 

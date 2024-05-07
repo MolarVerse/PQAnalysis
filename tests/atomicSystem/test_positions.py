@@ -9,7 +9,7 @@ import pytest
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system.exceptions import AtomicSystemPositionsError
 from PQAnalysis.core import Atom, Cell
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.types import PositiveInt, Np1DNumberArray
 from PQAnalysis.topology import SelectionCompatible
 
@@ -23,7 +23,7 @@ class TestPositionsMixin:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "n",
                 -1,
                 PositiveInt,
@@ -37,7 +37,7 @@ class TestPositionsMixin:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "selection",
                 AtomicSystem(),
                 SelectionCompatible,
@@ -51,7 +51,7 @@ class TestPositionsMixin:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "use_full_atom_info",
                 "2",
                 bool,
@@ -152,7 +152,7 @@ class TestPositionsMixin:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "position",
                 "2",
                 Np1DNumberArray,
@@ -166,7 +166,7 @@ class TestPositionsMixin:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "image",
                 "2",
                 bool,

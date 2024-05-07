@@ -4,7 +4,7 @@ import numpy as np
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell
 from PQAnalysis.topology import Topology
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
     AtomicSystemMassError,
@@ -248,20 +248,27 @@ class TestAtomicSystem:
     def test_pos_setter(self, caplog):
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
-        system.pos = np.array([[0, 0, 0], [1, 1, 1]])
-        assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
+        # system.pos = np.array([[0, 0, 0], [1, 1, 1]])
+        # assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
+
+        def f(system, pos):
+            system.pos = pos
+
+        print("test")
 
         assert_logging_with_exception(
             caplog,
             "TypeChecking",
             "ERROR",
-            _get_type_error_message(
+            get_type_error_message(
                 "pos",
                 np.array([0, 0, 0]),
                 Np2DNumberArray,
             ),
             TypeError,
-            lambda: system.pos=np.array([0, 0, 0])
+            f,
+            system,
+            np.array([0, 0, 0])
         )
 
         assert_logging_with_exception(

@@ -4,7 +4,7 @@ import numpy as np
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.core import Atom
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 
 from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception
