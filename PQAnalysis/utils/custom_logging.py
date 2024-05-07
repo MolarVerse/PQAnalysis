@@ -1,10 +1,12 @@
 """
-A module containing custom logging classes and functions, that are used in the PQAnalysis package.
+A module containing custom logging classes and functions,
+that are used in the PQAnalysis package.
 """
 
 from __future__ import annotations
 
 import logging
+
 import textwrap
 import os
 import shutil
@@ -15,6 +17,27 @@ from beartype.typing import Any
 
 from PQAnalysis.config import log_file_name, use_log_file
 from PQAnalysis.utils import print_header
+
+
+class CustomLoggerException(Exception):
+    """
+    A custom exception class for the CustomLogger class.
+
+    This class is a custom exception class for the CustomLogger class.
+    It is used to raise an exception with the message of the log message
+    if the log message has the level logging.ERROR or logging.CRITICAL.
+    """
+
+    def __init__(self, message: str):
+        """
+        Initializes the CustomLoggerException class.
+
+        Parameters
+        ----------
+        message : str
+            The message of the exception.
+        """
+        super().__init__(message)
 
 
 def setup_logger(logger: logging.Logger) -> logging.Logger:
@@ -142,19 +165,15 @@ class CustomLogger(logging.Logger):
 
                 raise exception(msg).with_traceback(back_tb)
 
-            class DevNull:
+            def exception_hook(exc_type, exc_value, exc_traceback):
                 """
-                Dummy class to redirect the sys.stderr to /dev/null.
+                A custom exception hook that ignores the CustomLoggerException.
                 """
+                if exc_type != CustomLoggerException:
+                    sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
-                def write(self, _):
-                    """
-                    Dummy write method.
-                    """
-
-            sys.stderr = DevNull()
-
-            raise exception(msg)  # pylint: disable=raise-missing-from
+            sys.excepthook = exception_hook
+            raise CustomLoggerException(msg)
 
     def _original_log(self,
                       level: Any,
