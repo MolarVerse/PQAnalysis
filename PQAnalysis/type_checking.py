@@ -34,9 +34,15 @@ def runtime_type_checking(func, *args, **kwargs):
     # Get the type hints of the function
     type_hints = func.__annotations__
 
+    print(func.__name__, type_hints)
+
     # Check the type of each argument
     for arg_name, arg_value in zip(func.__code__.co_varnames, args):
+        print(arg_name, arg_value)
         if arg_name in type_hints:
+            if arg_name == 'pos':
+                print(arg_name, arg_value, type_hints[arg_name])
+                print(is_bearable(arg_value, type_hints[arg_name]))
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
                     _get_type_error_message(
