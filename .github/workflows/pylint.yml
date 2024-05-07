@@ -72,7 +72,7 @@ jobs:
       shell: bash
 
     #check if previous scor is not empty
-    #if it is not empty then fail if change is lower than -0.1
+    #if it is not empty then fail if change is lower than -0.05
     - name: Check if previous score is not empty
       id: check_previous_score
       run: |
@@ -81,8 +81,8 @@ jobs:
           echo "Previous score is empty"
         else
           echo "Previous score is $previous_score"
-          if (( $(echo "$previous_score < -0.1" | bc -l) )); then
-            echo "Changes score is lower than -0.1"
+          if (( $(echo "$previous_score < -0.05" | bc -l) )); then
+            echo "Changes score is lower than -0.05"
             exit 1
           fi
         fi
