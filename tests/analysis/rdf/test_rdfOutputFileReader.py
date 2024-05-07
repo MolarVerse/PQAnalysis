@@ -1,7 +1,7 @@
 import pytest
 
 from PQAnalysis.analysis.rdf import RDFDataWriter, RDFLogWriter, RDF
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 
 # import topology marker
 from .. import pytestmark  # pylint: disable=unused-import
@@ -14,7 +14,7 @@ class TestRDFLogWriter:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "filename",
                 1.0,
                 str | None
@@ -28,7 +28,7 @@ class TestRDFLogWriter:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message("rdf", 1.0, RDF),
+            message_to_test=get_type_error_message("rdf", 1.0, RDF),
             exception=TypeError,
             function=RDFLogWriter("test.out").write_before_run,
             rdf=1.0,
@@ -38,7 +38,7 @@ class TestRDFLogWriter:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message("rdf", 1.0, RDF),
+            message_to_test=get_type_error_message("rdf", 1.0, RDF),
             exception=TypeError,
             function=RDFLogWriter("test.out").write_after_run,
             rdf=1.0,

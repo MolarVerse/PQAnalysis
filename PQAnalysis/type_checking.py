@@ -26,6 +26,31 @@ else:
 
 
 @decorator
+def runtime_type_checking_setter(func, self, value):
+    """
+    A decorator to check the type of the arguments passed to a setter function at runtime.
+    """
+
+    type_hints = func.__annotations__
+
+    # get var_name and type_hint from func.__annotations__
+    var_name = list(type_hints.keys())[0]
+
+    if not is_bearable(value, type_hints[var_name]):
+        logger.error(
+            get_type_error_message(
+                var_name,
+                value,
+                type_hints[var_name],
+            ),
+            exception=TypeError,
+        )
+
+    # Call the function
+    return func(self, value)
+
+
+@decorator
 def runtime_type_checking(func, *args, **kwargs):
     """
     A decorator to check the type of the arguments passed to a function at runtime.
@@ -34,18 +59,12 @@ def runtime_type_checking(func, *args, **kwargs):
     # Get the type hints of the function
     type_hints = func.__annotations__
 
-    print(func.__name__, type_hints)
-
     # Check the type of each argument
     for arg_name, arg_value in zip(func.__code__.co_varnames, args):
-        print(arg_name, arg_value)
         if arg_name in type_hints:
-            if arg_name == 'pos':
-                print(arg_name, arg_value, type_hints[arg_name])
-                print(is_bearable(arg_value, type_hints[arg_name]))
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
-                    _get_type_error_message(
+                    get_type_error_message(
                         arg_name,
                         arg_value,
                         type_hints[arg_name],
@@ -58,7 +77,7 @@ def runtime_type_checking(func, *args, **kwargs):
         if kwarg_name in type_hints:
             if not is_bearable(kwarg_value, type_hints[kwarg_name]):
                 logger.error(
-                    _get_type_error_message(
+                    get_type_error_message(
                         kwarg_name,
                         kwarg_value,
                         type_hints[kwarg_name],
@@ -70,7 +89,7 @@ def runtime_type_checking(func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-def _get_type_error_message(arg_name, value, expected_type):
+def get_type_error_message(arg_name, value, expected_type):
     """
     Get the error message for a type error.
     """

@@ -2,7 +2,7 @@ import pytest
 
 from PQAnalysis.analysis.rdf.rdf_input_file_reader import RDFInputFileReader
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 
 # import topology marker
 from .. import pytestmark  # pylint: disable=unused-import
@@ -27,7 +27,7 @@ class TestRDFInputFileReader:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message("filename", 1.0, str),
+            message_to_test=get_type_error_message("filename", 1.0, str),
             exception=TypeError,
             function=RDFInputFileReader,
             filename=1.0,

@@ -30,7 +30,7 @@ from .exceptions import (
 
 
 @decorator
-def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
+def check_atom_number_setters(func, self, arg_to_set: Any) -> None:
     """
     Decorator which checks that the number of
     atoms is equal to the number of positions.
