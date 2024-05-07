@@ -26,7 +26,7 @@ class AtomicSystemPositionsError(AtomicSystemError):
     Exception raised if atoms is not of the same length as positions
     """
 
-    message = """Atoms and positions must be of the same length."""
+    message = "Atoms and positions must be of the same length."
 
     def __init__(self) -> None:
         """

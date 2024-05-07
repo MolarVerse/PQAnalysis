@@ -1,8 +1,6 @@
 import pytest
 import numpy as np
 
-from . import pytestmark
-
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
@@ -11,10 +9,14 @@ from PQAnalysis.atomic_system.exceptions import (
 )
 from PQAnalysis.core import Atom, Cell
 from PQAnalysis.topology import Topology
+from PQAnalysis.type_checking import _get_type_error_message
+
+from . import pytestmark
+from ..conftest import assert_logging_with_exception
 
 
 class TestAtomicSystem:
-    def test__init__(self):
+    def test__init__(self, caplog):
         system = AtomicSystem()
         assert system.atoms == []
         assert system.pos.shape == (0, 3)
@@ -43,10 +45,15 @@ class TestAtomicSystem:
         assert system.atomic_masses.shape == (0,)
         assert system.mass == 0
 
-        with pytest.raises(AtomicSystemPositionsError) as exception:
-            system.center_of_mass
-        assert str(
-            exception.value) == AtomicSystemPositionsError.message
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            AtomicSystemPositionsError.message,
+            AtomicSystemPositionsError,
+            AtomicSystem.center_of_mass.__get__,
+            system
+        )
 
         assert system.combined_name == ''
 
@@ -75,24 +82,45 @@ class TestAtomicSystem:
             [0.07742283, 0.07742283, 0.07742283]))
 
         system = AtomicSystem(
-            atoms=[Atom('C', use_guess_element=False)], pos=np.array([[0, 0, 0]]))
+            atoms=[Atom('C', use_guess_element=False)],
+            pos=np.array([[0, 0, 0]])
+        )
 
         assert system.atoms == [Atom('C', use_guess_element=False)]
-        with pytest.raises(AtomicSystemMassError) as exception:
-            system.atomic_masses
-        assert str(
-            exception.value) == AtomicSystemMassError.message
-        with pytest.raises(AtomicSystemMassError) as exception:
-            system.mass
-        assert str(
-            exception.value) == AtomicSystemMassError.message
-        with pytest.raises(AtomicSystemMassError) as exception:
-            system.center_of_mass
-        assert str(
-            exception.value) == AtomicSystemMassError.message
+
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            AtomicSystemMassError.message,
+            AtomicSystemMassError,
+            AtomicSystem.atomic_masses.__get__,
+            system
+        )
+
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            AtomicSystemMassError.message,
+            AtomicSystemMassError,
+            AtomicSystem.mass.__get__,
+            system
+        )
+
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            AtomicSystemMassError.message,
+            AtomicSystemMassError,
+            AtomicSystem.center_of_mass.__get__,
+            system
+        )
 
         atoms = [Atom('C1', use_guess_element=False), Atom('H')]
         topology = Topology(atoms=atoms)
+
         with pytest.raises(ValueError) as exception:
             AtomicSystem(atoms=atoms, topology=topology)
         assert str(
@@ -216,15 +244,25 @@ class TestAtomicSystem:
             system) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
         assert str(system) == repr(system)
 
-    def test_pos_setter(self):
+    def test_pos_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.pos = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
 
-        with pytest.raises(AtomicSystemError) as exception:
-            system.pos = np.array([[0, 0, 0]])
-        assert str(
-            exception.value) == "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
+            ),
+            AtomicSystemError,
+            AtomicSystem.pos.__set__,
+            system,
+            np.array([[0, 0, 0]])
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C')],
@@ -233,15 +271,25 @@ class TestAtomicSystem:
         system.pos = np.array([[0, 0, 0]])
         assert np.allclose(system.pos, np.array([[0, 0, 0]]))
 
-    def test_vel_setter(self):
+    def test_vel_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.vel = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.vel, np.array([[0, 0, 0], [1, 1, 1]]))
 
-        with pytest.raises(AtomicSystemError) as exception:
-            system.vel = np.array([[0, 0, 0]])
-        assert str(
-            exception.value) == "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
+            ),
+            AtomicSystemError,
+            AtomicSystem.vel.__set__,
+            system,
+            np.array([[0, 0, 0]])
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C')],
@@ -250,15 +298,25 @@ class TestAtomicSystem:
         system.vel = np.array([[0, 0, 0]])
         assert np.allclose(system.vel, np.array([[0, 0, 0]]))
 
-    def test_force_setter(self):
+    def test_force_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.forces = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.forces, np.array([[0, 0, 0], [1, 1, 1]]))
 
-        with pytest.raises(AtomicSystemError) as exception:
-            system.forces = np.array([[0, 0, 0]])
-        assert str(
-            exception.value) == "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
+            ),
+            AtomicSystemError,
+            AtomicSystem.forces.__set__,
+            system,
+            np.array([[0, 0, 0]])
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C')],
@@ -267,15 +325,25 @@ class TestAtomicSystem:
         system.forces = np.array([[0, 0, 0]])
         assert np.allclose(system.forces, np.array([[0, 0, 0]]))
 
-    def test_charge_setter(self):
+    def test_charge_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.charges = np.array([0, 1])
         assert np.allclose(system.charges, np.array([0, 1]))
 
-        with pytest.raises(AtomicSystemError) as exception:
-            system.charges = np.array([0])
-        assert str(
-            exception.value) == "The number of atoms in the AtomicSystem object have to be equal to the number of atoms in the new array in order to set the property."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
+            ),
+            AtomicSystemError,
+            AtomicSystem.charges.__set__,
+            system,
+            np.array([0])
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C')],

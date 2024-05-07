@@ -1,30 +1,40 @@
 """
-A module containing different decorators associated to methods of the AtomicSystem class.
+A module containing different decorators 
+associated to methods of the AtomicSystem class.
 
 ...
 
 Functions
 ---------
 check_atoms_pos
-    Decorator which checks that the number of atoms is equal to the number of positions.
+    Decorator which checks that the number 
+    of atoms is equal to the number of positions.
 check_atoms_has_mass
-    Decorator which checks that all atoms have mass information.
+    Decorator which checks that all atoms 
+    have mass information.
 check_atom_number_setters
-    Decorator which checks that the number of atoms is equal to the number of positions.
+    Decorator which checks that the number 
+    of atoms is equal to the number of positions.
 """
 
+import logging
 import numpy as np
 
 from beartype.typing import Any
 from decorator import decorator
 
-from .exceptions import AtomicSystemPositionsError, AtomicSystemMassError, AtomicSystemError
+from .exceptions import (
+    AtomicSystemPositionsError,
+    AtomicSystemMassError,
+    AtomicSystemError
+)
 
 
 @decorator
 def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
     """
-    Decorator which checks that the number of atoms is equal to the number of positions.
+    Decorator which checks that the number of
+    atoms is equal to the number of positions.
 
     Parameters
     ----------
@@ -44,10 +54,13 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
         If the number of atoms is not equal the number of positions.
     """
     if self.n_atoms != np.shape(arg_to_set)[0]:
-        raise AtomicSystemError(
-            "The number of atoms in the AtomicSystem object have "
-            "to be equal to the number of atoms in the new array "
-            "in order to set the property."
+        self.logger.error(
+            (
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
+            ),
+            exception=AtomicSystemError
         )
 
     return func(self, arg_to_set)
@@ -56,7 +69,8 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> Any:
 @decorator
 def check_atoms_pos(func, *args, **kwargs):
     """
-    Decorator which checks that the number of atoms is equal to the number of positions.
+    Decorator which checks that the number
+    of atoms is equal to the number of positions.
 
     Parameters
     ----------
@@ -75,7 +89,10 @@ def check_atoms_pos(func, *args, **kwargs):
     self = args[0]
 
     if self.pos.shape[0] != len(self.atoms):
-        raise AtomicSystemPositionsError()
+        self.logger.error(
+            AtomicSystemPositionsError.message,
+            exception=AtomicSystemPositionsError
+        )
 
     return func(*args, **kwargs)
 
@@ -103,6 +120,9 @@ def check_atoms_has_mass(func, *args, **kwargs):
     self = args[0]
 
     if not all(atom.mass is not None for atom in self.atoms):
-        raise AtomicSystemMassError()
+        self.logger.error(
+            AtomicSystemMassError.message,
+            exception=AtomicSystemMassError
+        )
 
     return func(*args, **kwargs)
