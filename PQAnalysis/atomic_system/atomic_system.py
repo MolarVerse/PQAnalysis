@@ -16,6 +16,8 @@ from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.utils.random import get_random_seed
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 from PQAnalysis.types import (
     Np2DNumberArray,
     Np1DNumberArray,
@@ -94,6 +96,9 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     handler.setFormatter(logging.Formatter("%(message)s"))
     fitting_logger.addHandler(handler)
     fitting_logger.propagate = False
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self,
                  atoms: Atoms | None = None,

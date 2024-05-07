@@ -8,6 +8,7 @@ from beartype.typing import Tuple
 
 from PQAnalysis.core import distance
 from PQAnalysis.topology import SelectionCompatible, Selection
+from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.types import (
     Np2DIntArray,
     Np2DNumberArray,
@@ -21,7 +22,8 @@ from ._decorators import check_atoms_pos
 
 class _PositionsMixin:
     """
-    A mixin class containing methods for related information to the positions of an atomic system.
+    A mixin class containing methods for related 
+    information to the positions of an atomic system.
     """
 
     @check_atoms_pos
@@ -40,7 +42,8 @@ class _PositionsMixin:
         n : PositiveInt, optional
             The number of nearest neighbours to return, by default 1
         indices : Np1DIntArray, optional
-            The indices of the atoms to get the nearest neighbours of, by default None (all atoms)
+            The indices of the atoms to get the nearest neighbours of,
+            by default None (all atoms)
 
         Returns
         -------
@@ -61,6 +64,7 @@ class _PositionsMixin:
 
         return nearest_neighbours, nearest_neighbours_distances
 
+    @runtime_type_checking
     def nearest_neighbours(self,
                            n: PositiveInt = 1,
                            selection: SelectionCompatible = None,
@@ -129,6 +133,7 @@ class _PositionsMixin:
         """
         self.pos = self.cell.image(self.pos)
 
+    @runtime_type_checking
     def center(self, position: Np1DNumberArray, image: bool = True) -> None:
         """
         Center the positions of the system to a given position.
