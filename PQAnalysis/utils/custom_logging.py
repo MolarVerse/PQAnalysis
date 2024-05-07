@@ -1,5 +1,6 @@
 """
-A module containing custom logging classes and functions, that are used in the PQAnalysis package.
+A module containing custom logging classes and functions,
+that are used in the PQAnalysis package.
 """
 
 from __future__ import annotations
@@ -165,6 +166,9 @@ class CustomLogger(logging.Logger):
                 raise exception(msg).with_traceback(back_tb)
 
             def exception_hook(exc_type, exc_value, exc_traceback):
+                """
+                A custom exception hook that ignores the CustomLoggerException.
+                """
                 if exc_type != CustomLoggerException:
                     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
