@@ -348,3 +348,10 @@ class TestTrajectory:
         traj = Trajectory([frame1, frame2])
 
         assert traj.cells == [Cell(10, 10, 10), Cell(11, 11, 11)]
+
+    def test_str_repr(self):
+        traj = Trajectory(self.frames)
+        assert str(traj) == "Trajectory with 3 frames"
+        assert repr(traj) == "Trajectory with 3 frames"
+        assert str(Trajectory()) == "Trajectory with 0 frames"
+        assert repr(Trajectory()) == "Trajectory with 0 frames"

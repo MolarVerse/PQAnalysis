@@ -6,9 +6,6 @@ function (RDF) is a measure of the probability density
 of finding a particle at a distance r from another particle. 
 """
 
-from __future__ import annotations
-
-import warnings
 import logging
 
 # 3rd party imports
@@ -29,12 +26,10 @@ from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
-from .exceptions import RDFError, RDFWarning
-
-module_logger = logging.getLogger(__package_name__).getChild(__name__)
-module_logger = setup_logger(module_logger)
+from .exceptions import RDFError
 
 
 class RDF:
@@ -71,7 +66,9 @@ class RDF:
     _no_intra_molecular_default = False
     _r_min_default = 0.0
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  traj: Trajectory | TrajectoryReader,
                  reference_species: SelectionCompatible,
@@ -149,11 +146,6 @@ class RDF:
         :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`
         :py:class:`~PQAnalysis.traj.trajectory.Trajectory`
         """
-        #####################
-        # Initialize logger #
-        #####################
-
-        self.logger = setup_logger(self.logger)
 
         ##############
         # dummy init #
@@ -217,20 +209,20 @@ class RDF:
         self.first_frame = next(self.frame_generator)
         self.topology = traj.topology
 
-        self.setup_bins(n_bins=n_bins, delta_r=delta_r,
-                        r_max=r_max, r_min=self.r_min)
+        self._setup_bins(n_bins=n_bins, delta_r=delta_r,
+                         r_max=r_max, r_min=self.r_min)
 
         self.reference_indices = self.reference_selection.select(
             self.topology, self.use_full_atom_info)
         self.target_indices = self.target_selection.select(
             self.topology, self.use_full_atom_info)
 
-    def setup_bins(self,
-                   n_bins: PositiveInt | None = None,
-                   delta_r: PositiveReal | None = None,
-                   r_max: PositiveReal | None = None,
-                   r_min: PositiveReal = 0.0
-                   ):
+    def _setup_bins(self,
+                    n_bins: PositiveInt | None = None,
+                    delta_r: PositiveReal | None = None,
+                    r_max: PositiveReal | None = None,
+                    r_min: PositiveReal = 0.0
+                    ):
         """
         Sets up the bins of the RDF analysis.
 
@@ -291,28 +283,53 @@ class RDF:
 
         # set r_max based on the provided parameters n_bins and delta_r
         if n_bins is not None and delta_r is not None:
+
             self.n_bins = n_bins
+
             self.delta_r = delta_r
-            self.r_max = _calculate_r_max(n_bins, delta_r, r_min, self.cells)
-            self.n_bins, self.r_max = _calculate_n_bins(
-                delta_r, self.r_max, r_min)
+
+            self.r_max = self._calculate_r_max(
+                n_bins,
+                delta_r,
+                r_min,
+                self.cells
+            )
+
+            self.n_bins, self.r_max = self._calculate_n_bins(
+                delta_r,
+                self.r_max,
+                r_min
+            )
 
         else:
-            self.r_max = r_max if r_max is not None else _infer_r_max(
-                self.cells)
-            self.r_max = _check_r_max(self.r_max, self.cells)
+
+            self.r_max = r_max if r_max is not None else self._infer_r_max(
+                self.cells
+            )
+
+            self.r_max = self._check_r_max(self.r_max, self.cells)
 
             if n_bins is None:
+
                 self.delta_r = delta_r
-                self.n_bins, self.r_max = _calculate_n_bins(
-                    delta_r, self.r_max, r_min)
+
+                self.n_bins, self.r_max = self._calculate_n_bins(
+                    delta_r,
+                    self.r_max,
+                    r_min
+                )
 
             else:
                 self.n_bins = n_bins
                 self.delta_r = (self.r_max - self.r_min) / self.n_bins
 
-        self.bin_middle_points = _setup_bin_middle_points(
-            self.n_bins, self.r_min, self.r_max, self.delta_r)
+        self.bin_middle_points = self._setup_bin_middle_points(
+            self.n_bins,
+            self.r_min,
+            self.r_max,
+            self.delta_r
+        )
+
         self.bins = np.zeros(self.n_bins)
 
     def _check_trajectory_conditions(self):
@@ -325,6 +342,7 @@ class RDF:
             If the trajectory is not fully periodic or fully in vacuum.
             Meaning that some frames are in vacuum and others are periodic.
         """
+
         if not check_trajectory_pbc(self.cells) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
                 (
@@ -380,6 +398,7 @@ class RDF:
             The differential bins of the RDF analysis based
             on the spherical shell model.
         """
+
         self._initialize_run()
         self._calculate_bins()
         return self._finalize_run()
@@ -394,9 +413,13 @@ class RDF:
         density of the RDF analysis and the target index 
         combinations of the RDF analysis.
         """
+
         self._average_volume = self.average_volume
-        self._reference_density = len(
-            self.reference_indices) / self._average_volume
+
+        _ref_indices_len = len(self.reference_indices)
+
+        self._reference_density = _ref_indices_len / self._average_volume
+
         self._initialize_target_index_combinations()
 
     def _initialize_target_index_combinations(self):
@@ -409,7 +432,9 @@ class RDF:
         combinations of the RDF analysis based on the 
         no_intra_molecular parameter.
         """
+
         self.target_index_combinations = []
+
         if self.no_intra_molecular:
             for reference_index in self.reference_indices:
                 residue_indices = self.topology.residue_atom_indices[reference_index]
@@ -427,6 +452,7 @@ class RDF:
         RDF analysis. The bins of the RDF analysis are then 
         calculated from these distances.
         """
+
         for frame in tqdm(
             self.frame_generator,
             total=self.n_frames,
@@ -434,8 +460,11 @@ class RDF:
         ):
             for i, reference_index in enumerate(self.reference_indices):
 
-                target_indices = self.target_index_combinations[
-                    i] if self.no_intra_molecular else self.target_indices
+                if self.no_intra_molecular:
+                    target_indices = self.target_index_combinations[i]
+                else:
+                    target_indices = self.target_indices
+
                 reference_position = frame.pos[reference_index]
                 target_positions = frame.pos[target_indices]
 
@@ -445,7 +474,7 @@ class RDF:
                     frame.cell
                 )
 
-                self.bins += _add_to_bins(
+                self.bins += self._add_to_bins(
                     distances,
                     self.r_min,
                     self.delta_r,
@@ -483,10 +512,11 @@ class RDF:
         differential_bins : Np1DNumberArray
             The differential bins of the RDF analysis based on the spherical shell model.
         """
-        target_density = len(
-            self.target_index_combinations[0]) / self._average_volume
 
-        norm = _norm(
+        target_density = len(self.target_index_combinations[0])
+        target_density /= self._average_volume
+
+        norm = self._norm(
             self.n_bins,
             self.delta_r,
             target_density,
@@ -495,10 +525,17 @@ class RDF:
         )
 
         self.normalized_bins = self.bins / norm
-        self.integrated_bins = _integration(
-            self.bins, len(self.reference_indices), self.n_frames)
-        self.normalized_bins2 = self.bins / target_density / \
-            len(self.reference_indices) / self.n_frames
+
+        self.integrated_bins = self._integration(
+            self.bins,
+            len(self.reference_indices),
+            self.n_frames
+        )
+
+        self.normalized_bins2 = self.bins / target_density
+        self.normalized_bins2 /= len(self.reference_indices)
+        self.normalized_bins2 /= self.n_frames
+
         self.differential_bins = self.bins - norm
 
         return (
@@ -519,274 +556,295 @@ class RDF:
         """int: The number of atoms of the RDF analysis."""
         return self.topology.n_atoms
 
-
-def _add_to_bins(distances: Np1DNumberArray,
-                 r_min: PositiveReal,
-                 delta_r: PositiveReal,
-                 n_bins: PositiveInt
-                 ) -> Np1DNumberArray:
-    """
-    Returns the bins of the RDF analysis based on the provided distances.
-
-    Parameters
-    ----------
-    distances : Np1DNumberArray
-        The distances to add to the bins of the RDF analysis.
-    r_min : PositiveReal
-        minimum (starting) radius of the RDF analysis
-    delta_r : PositiveReal
-        spacing between bins
-    n_bins : PositiveInt
-        number of bins
-
-    Returns
-    -------
-    Np1DNumberArray
-        The bins of the RDF analysis.
-    """
-    distances = np.floor_divide(
-        distances - r_min, delta_r).astype(int)
-
-    distances = distances[(distances < n_bins) & (distances >= 0)]
-
-    return np.bincount(distances, minlength=n_bins)
-
-
-def _setup_bin_middle_points(n_bins: PositiveInt,
-                             r_min: PositiveReal,
-                             r_max: PositiveReal,
-                             delta_r: PositiveReal
-                             ) -> Np1DNumberArray:
-    """
-    Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
-
-    Parameters
-    ----------
-    n_bins : PositiveInt
-        number of bins
-    r_min : PositiveReal
-        minimum (starting) radius of the RDF analysis
-    r_max : PositiveReal
-        maximum radius of the RDF analysis
-    delta_r : PositiveReal
-        spacing between bins
-
-    Returns
-    -------
-    Np1DNumberArray
-        The middle points of the bins of the RDF analysis.
-    """
-    bin_middle_points = np.arange(r_min + delta_r / 2, r_max, delta_r)
-
-    assert len(bin_middle_points) == n_bins
-
-    return bin_middle_points
-
-
-def _calculate_r_max(n_bins: PositiveInt,
-                     delta_r: PositiveReal,
+    @classmethod
+    def _add_to_bins(cls,
+                     distances: Np1DNumberArray,
                      r_min: PositiveReal,
+                     delta_r: PositiveReal,
+                     n_bins: PositiveInt
+                     ) -> Np1DNumberArray:
+        """
+        Returns the bins of the RDF analysis based on the provided distances.
+
+        Parameters
+        ----------
+        distances : Np1DNumberArray
+            The distances to add to the bins of the RDF analysis.
+        r_min : PositiveReal
+            minimum (starting) radius of the RDF analysis
+        delta_r : PositiveReal
+            spacing between bins
+        n_bins : PositiveInt
+            number of bins
+
+        Returns
+        -------
+        Np1DNumberArray
+            The bins of the RDF analysis.
+        """
+
+        distances = np.floor_divide(
+            distances - r_min,
+            delta_r
+        ).astype(int)
+
+        distances = distances[(distances < n_bins) & (distances >= 0)]
+
+        return np.bincount(distances, minlength=n_bins)
+
+    @classmethod
+    def _setup_bin_middle_points(cls,
+                                 n_bins: PositiveInt,
+                                 r_min: PositiveReal,
+                                 r_max: PositiveReal,
+                                 delta_r: PositiveReal
+                                 ) -> Np1DNumberArray:
+        """
+        Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
+
+        Parameters
+        ----------
+        n_bins : PositiveInt
+            number of bins
+        r_min : PositiveReal
+            minimum (starting) radius of the RDF analysis
+        r_max : PositiveReal
+            maximum radius of the RDF analysis
+        delta_r : PositiveReal
+            spacing between bins
+
+        Returns
+        -------
+        Np1DNumberArray
+            The middle points of the bins of the RDF analysis.
+        """
+
+        bin_middle_points = np.arange(r_min + delta_r / 2, r_max, delta_r)
+
+        assert len(bin_middle_points) == n_bins
+
+        return bin_middle_points
+
+    @classmethod
+    def _calculate_r_max(cls,
+                         n_bins: PositiveInt,
+                         delta_r: PositiveReal,
+                         r_min: PositiveReal,
+                         cells: Cells
+                         ) -> PositiveReal:
+        """
+        Calculates the maximum radius of the RDF analysis from the provided parameters.
+
+        Parameters
+        ----------
+        n_bins : PositiveInt
+            number of bins
+        delta_r : PositiveReal
+            spacing between bins
+        r_min : PositiveReal
+            minimum (starting) radius of the RDF analysis
+        cells : Cells
+            The cells of the trajectory to calculate the
+            maximum radius of the RDF analysis from.
+
+        Returns
+        -------
+        PositiveReal
+            maximum radius of the RDF analysis
+        """
+
+        r_max = delta_r * n_bins + r_min
+        r_max = cls._check_r_max(r_max, cells)
+
+        return r_max
+
+    @classmethod
+    def _check_r_max(cls,
+                     r_max: PositiveReal,
                      cells: Cells
                      ) -> PositiveReal:
-    """
-    Calculates the maximum radius of the RDF analysis from the provided parameters.
+        """
+        Checks if the provided maximum radius is larger than the 
+        maximum allowed radius according to the box vectors of the trajectory.
 
-    Parameters
-    ----------
-    n_bins : PositiveInt
-        number of bins
-    delta_r : PositiveReal
-        spacing between bins
-    r_min : PositiveReal
-        minimum (starting) radius of the RDF analysis
-    cells : Cells
-        The cells of the trajectory to calculate the
-        maximum radius of the RDF analysis from.
+        Parameters
+        ----------
+        r_max : PositiveReal
+            maximum radius of the RDF analysis
+        cells : Cells
+            The cells of the trajectory to check the
+            maximum radius of the RDF analysis against.
 
-    Returns
-    -------
-    PositiveReal
-        maximum radius of the RDF analysis
-    """
-    r_max = delta_r * n_bins + r_min
-    r_max = _check_r_max(r_max, cells)
+        Returns
+        -------
+        PositiveReal
+            maximum radius of the RDF analysis if it is smaller
+            than the maximum allowed radius according to the box
+            vectors of the trajectory, than the maximum allowed 
+            radius according to the box vectors of the trajectory.
 
-    return r_max
+        Raises
+        ------
+        RDFWarning
+            If the calculated r_max is larger than the maximum
+            allowed radius according to the box vectors of the trajectory.
+        """
 
+        if check_trajectory_pbc(cells) and r_max > cls._infer_r_max(cells):
+            cls.logger.warning(
+                (
+                    f"The calculated r_max {r_max} is larger "
+                    "than the maximum allowed radius according "
+                    "to the box vectors of the trajectory "
+                    f"{cls._infer_r_max(cells)}. r_max will be "
+                    "set to the maximum allowed radius."
+                ),
+            )
 
-def _check_r_max(r_max: PositiveReal, cells: Cells) -> PositiveReal:
-    """
-    Checks if the provided maximum radius is larger than the 
-    maximum allowed radius according to the box vectors of the trajectory.
+            r_max = cls._infer_r_max(cells)
 
-    Parameters
-    ----------
-    r_max : PositiveReal
-        maximum radius of the RDF analysis
-    cells : Cells
-        The cells of the trajectory to check the
-        maximum radius of the RDF analysis against.
+        return r_max
 
-    Returns
-    -------
-    PositiveReal
-        maximum radius of the RDF analysis if it is smaller
-        than the maximum allowed radius according to the box
-        vectors of the trajectory, than the maximum allowed 
-        radius according to the box vectors of the trajectory.
+    @classmethod
+    def _calculate_n_bins(cls,
+                          delta_r: PositiveReal,
+                          r_max: PositiveReal,
+                          r_min: PositiveReal
+                          ) -> Tuple[PositiveInt, PositiveReal]:
+        """
+        Calculates the number of bins of the RDF analysis from the provided parameters.
 
-    Raises
-    ------
-    RDFWarning
-        If the calculated r_max is larger than the maximum
-        allowed radius according to the box vectors of the trajectory.
-    """
-    if check_trajectory_pbc(cells) and r_max > _infer_r_max(cells):
-        warnings.warn(
-            (
-                f"The calculated r_max {r_max} is larger "
-                "than the maximum allowed radius according "
-                "to the box vectors of the trajectory "
-                f"{_infer_r_max(cells)}. r_max will be "
-                "set to the maximum allowed radius."
-            ),
-            RDFWarning
-        )
+        The number of bins is calculated as the number of bins that 
+        fit in the range between r_min and r_max. The maximum radius
+        is re-calculated from the number of bins and delta_r to ensure
+        that the maximum radius is a multiple of delta_r.
 
-        r_max = _infer_r_max(cells)
+        Parameters
+        ----------
+        delta_r : PositiveReal
+            spacing between bins
+        r_max : PositiveReal
+            maximum radius of the RDF analysis
+        r_min : PositiveReal
+            minimum (starting) radius of the RDF analysis
 
-    return r_max
+        Returns
+        -------
+        PositiveInt
+            number of bins of the RDF analysis
+        PositiveReal
+            maximum radius of the RDF analysis
+        """
 
+        n_bins = int((r_max - r_min) / delta_r)
+        r_max = delta_r * n_bins + r_min
 
-def _calculate_n_bins(delta_r: PositiveReal,
-                      r_max: PositiveReal,
-                      r_min: PositiveReal
-                      ) -> Tuple[PositiveInt, PositiveReal]:
-    """
-    Calculates the number of bins of the RDF analysis from the provided parameters.
+        return n_bins, r_max
 
-    The number of bins is calculated as the number of bins that 
-    fit in the range between r_min and r_max. The maximum radius
-    is re-calculated from the number of bins and delta_r to ensure
-    that the maximum radius is a multiple of delta_r.
+    @classmethod
+    def _infer_r_max(cls, cells: Cells) -> PositiveReal:
+        """
+        Infers the maximum radius of the RDF analysis from 
+        the box vectors of the trajectory.
 
-    Parameters
-    ----------
-    delta_r : PositiveReal
-        spacing between bins
-    r_max : PositiveReal
-        maximum radius of the RDF analysis
-    r_min : PositiveReal
-        minimum (starting) radius of the RDF analysis
+        If the trajectory is in vacuum, an RDFError is raised as
+        the maximum radius cannot be inferred from the box vectors.
 
-    Returns
-    -------
-    PositiveInt
-        number of bins of the RDF analysis
-    PositiveReal
-        maximum radius of the RDF analysis
-    """
-    n_bins = int((r_max - r_min) / delta_r)
-    r_max = delta_r * n_bins + r_min
+        Parameters
+        ----------
+        cells : Cells
+            The cells of the trajectory to infer the maximum
+            radius of the RDF analysis from.
 
-    return n_bins, r_max
+        Returns
+        -------
+        r_max: PositiveReal
+            The maximum radius of the RDF analysis.
 
+        Raises
+        ------
+        RDFError
+            If the trajectory is in vacuum.
+        """
 
-def _infer_r_max(cells: Cells) -> PositiveReal:
-    """
-    Infers the maximum radius of the RDF analysis from 
-    the box vectors of the trajectory.
+        if not check_trajectory_pbc(cells):
+            cls.logger.error(
+                (
+                    "To infer r_max of the RDF analysis, "
+                    "the trajectory cannot be a vacuum trajectory. "
+                    "Please specify r_max manually or use the "
+                    "combination n_bins and delta_r."
+                ),
+                exception=RDFError
+            )
 
-    If the trajectory is in vacuum, an RDFError is raised as
-    the maximum radius cannot be inferred from the box vectors.
+        return np.min([cell.box_lengths for cell in cells]) / 2.0
 
-    Parameters
-    ----------
-    cells : Cells
-        The cells of the trajectory to infer the maximum
-        radius of the RDF analysis from.
+    @classmethod
+    def _norm(cls,
+              n_bins: int,
+              delta_r: PositiveReal,
+              target_density: PositiveReal,
+              n_reference_indices: int,
+              n_frames: int
+              ) -> Np1DNumberArray:
+        """
+        Calculates the normalization of the RDF analysis 
+        based on a spherical shell model.
 
-    Returns
-    -------
-    r_max: PositiveReal
-        The maximum radius of the RDF analysis.
+        Parameters
+        ----------
+        n_bins : int
+            The number of bins of the RDF analysis.
+        delta_r : PositiveReal
+            The spacing between bins of the RDF analysis.
+        target_density : PositiveReal
+            The target density of the RDF analysis.
+        n_reference_indices : int
+            The number of reference indices of the RDF analysis.
+        n_frames : int
+            The number of frames of the RDF analysis.
 
-    Raises
-    ------
-    RDFError
-        If the trajectory is in vacuum.
-    """
-    if not check_trajectory_pbc(cells):
-        module_logger.error(
-            (
-                "To infer r_max of the RDF analysis, "
-                "the trajectory cannot be a vacuum trajectory. "
-                "Please specify r_max manually or use the "
-                "combination n_bins and delta_r."
-            ),
-            exception=RDFError
-        )
+        Returns
+        -------
+        Np1DNumberArray
+            The normalization of the RDF analysis.
+        """
 
-    return np.min([cell.box_lengths for cell in cells]) / 2.0
+        surface_prefactor = 4.0 / 3.0 * np.pi
 
+        small_radius_range = np.arange(0, n_bins)
+        large_radius_range = np.arange(1, n_bins + 1)
+        delta_radius_range = large_radius_range**3 - small_radius_range**3
 
-def _norm(n_bins: int,
-          delta_r: PositiveReal,
-          target_density: PositiveReal,
-          n_reference_indices: int,
-          n_frames: int
-          ) -> Np1DNumberArray:
-    """
-    Calculates the normalization of the RDF analysis 
-    based on a spherical shell model.
+        delta_volume = delta_r ** 3 * delta_radius_range
+        volume = surface_prefactor * delta_volume
 
-    Parameters
-    ----------
-    n_bins : int
-        The number of bins of the RDF analysis.
-    delta_r : PositiveReal
-        The spacing between bins of the RDF analysis.
-    target_density : PositiveReal
-        The target density of the RDF analysis.
-    n_reference_indices : int
-        The number of reference indices of the RDF analysis.
-    n_frames : int
-        The number of frames of the RDF analysis.
+        return volume * target_density * n_reference_indices * n_frames
 
-    Returns
-    -------
-    Np1DNumberArray
-        The normalization of the RDF analysis.
-    """
+    @classmethod
+    def _integration(cls,
+                     bins: Np1DNumberArray,
+                     n_reference_indices: int,
+                     n_frames: int
+                     ) -> Np1DNumberArray:
+        """
+        Calculates the integrated RDF analysis. 
+        The integral is calculated using a cumulative sum.
 
-    volume = 4.0 / 3.0 * np.pi * \
-        (np.arange(1, n_bins + 1)**3 -
-            np.arange(0, n_bins) ** 3) * delta_r ** 3
+        Parameters
+        ----------
+        bins : Np1DNumberArray
+            The bins of the RDF analysis.
+        n_reference_indices : int
+            The number of reference indices of the RDF analysis.
+        n_frames : int
+            The number of frames of the RDF analysis.
 
-    return volume * target_density * n_reference_indices * n_frames
+        Returns
+        -------
+        Np1DNumberArray
+            The integrated RDF analysis.
+        """
 
-
-def _integration(bins: Np1DNumberArray,
-                 n_reference_indices: int,
-                 n_frames: int
-                 ) -> Np1DNumberArray:
-    """
-    Calculates the integrated RDF analysis. 
-    The integral is calculated using a cumulative sum.
-
-    Parameters
-    ----------
-    bins : Np1DNumberArray
-        The bins of the RDF analysis.
-    n_reference_indices : int
-        The number of reference indices of the RDF analysis.
-    n_frames : int
-        The number of frames of the RDF analysis.
-
-    Returns
-    -------
-    Np1DNumberArray
-        The integrated RDF analysis.
-    """
-
-    return np.cumsum(bins) / (n_reference_indices * n_frames)
+        return np.cumsum(bins) / (n_reference_indices * n_frames)
