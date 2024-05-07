@@ -2,16 +2,17 @@ import pytest
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.core import Atom, Cell
+from PQAnalysis.topology import Topology
+from PQAnalysis.type_checking import _get_type_error_message
 from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
     AtomicSystemMassError,
     AtomicSystemError,
 )
-from PQAnalysis.core import Atom, Cell
-from PQAnalysis.topology import Topology
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.types import Real, Np1DNumberArray, Np2DNumberArray, Np3x3NumberArray
 
-from . import pytestmark
+from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception
 
 
@@ -245,9 +246,23 @@ class TestAtomicSystem:
         assert str(system) == repr(system)
 
     def test_pos_setter(self, caplog):
+
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.pos = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
+
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            _get_type_error_message(
+                "pos",
+                np.array([0, 0, 0]),
+                Np2DNumberArray,
+            ),
+            TypeError,
+            lambda: system.pos=np.array([0, 0, 0])
+        )
 
         assert_logging_with_exception(
             caplog,

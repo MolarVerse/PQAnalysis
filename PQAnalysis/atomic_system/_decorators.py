@@ -17,7 +17,6 @@ check_atom_number_setters
     of atoms is equal to the number of positions.
 """
 
-import logging
 import numpy as np
 
 from beartype.typing import Any
