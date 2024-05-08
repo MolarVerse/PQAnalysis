@@ -159,7 +159,7 @@ class TestTrajectoryReader:
         test_frames = [frame for frame in reader.frame_generator(trajectory_start=1)]
         assert test_frames == [frame2, frame1, frame2]
 
-        test_frames = [frame for frame in reader.frame_generator(trajectory_stop=2)]
+        test_frames = [frame for frame in reader.frame_generator(trajectory_stop=3)]
         assert test_frames == [frame1, frame2, frame1]
 
         # TODO: test topology set when const_topology and topology is None (Pylint)
@@ -227,12 +227,33 @@ class TestTrajectoryReader:
 
         # TODO: Check why the following test is not working
 
-        test_frames = [window for window in reader.window_generator(window_size=1)]
+        test_frames = list(reader.window_generator(window_size=1))
         assert test_frames == [
             Trajectory([frame1]),
             Trajectory([frame2]),
             Trajectory([frame1]),
-            Trajectory([frame2])
+            Trajectory([frame2]),
+        ]
+
+        test_frames = list(reader.window_generator(window_size=2))
+        assert test_frames == [
+            Trajectory([frame1, frame2]),
+            Trajectory([frame2, frame1]),
+            Trajectory([frame1, frame2]),
+        ]
+
+        test_frames = list(reader.window_generator(window_size=4))
+        assert test_frames == [Trajectory([frame1, frame2, frame1, frame2])]
+
+        test_frames = list(reader.window_generator(window_size=2, window_gap=2))
+        assert test_frames == [
+            Trajectory([frame1, frame2]), 
+            Trajectory([frame1, frame2])
+        ]
+
+        test_frames = list(reader.window_generator(window_size=2, window_gap=1, trajectory_start=1, trajectory_stop=3))
+        assert test_frames == [
+            Trajectory([frame2, frame1])
         ]
 
         assert_logging(

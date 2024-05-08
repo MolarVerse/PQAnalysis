@@ -112,6 +112,18 @@ class Trajectory:
         """
 
         return self.frames.pop(index)
+    
+    def copy(self) -> Trajectory:
+        """
+        Returns a copy of the trajectory.
+
+        Returns
+        -------
+        Trajectory
+            A copy of the trajectory.
+        """
+
+        return Trajectory(self.frames.copy())
 
     def __len__(self) -> int:
         """
@@ -185,7 +197,7 @@ class Trajectory:
         trajectory_start : int, optional
             The start index of the first window, by default 0
         trajectory_stop : int | None, optional
-            The last index of the last window, by default None, which then
+            Stop index of the window generator, by default None, which then
             set to the length of the trajectory.
 
         Raises
