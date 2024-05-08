@@ -219,11 +219,12 @@ class TrajectoryReader(BaseReader):
                                 frame.cell = last_cell
                             last_cell = frame.cell
 
+
                             # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                             # Check if the number of frames yielded is equal to the total number of frames
                             if not (
                                 frame_index < trajectory_start
-                                or frame_index > trajectory_stop
+                                or frame_index >= trajectory_stop
                             ):
                                 yield frame # only yield the frame if it is within the range
 
@@ -247,10 +248,10 @@ class TrajectoryReader(BaseReader):
                     # Check if the number of frames yielded is equal to the total number of frames
                     if not (
                         frame_index < trajectory_start
-                        or frame_index > trajectory_stop
+                        or frame_index >= trajectory_stop
                     ):
                         yield frame # only yield the frame if it is within the range
-                    
+
                     # then increment the frame index
                     frame_index += 1
 
@@ -279,7 +280,7 @@ class TrajectoryReader(BaseReader):
         trajectory_start : int, optional
             The start index of the first window, by default 0
         trajectory_stop : int | None, optional
-            The last index of the last window, by default None, which then
+            Stop index of the window generator, by default None, which then
             set to the length of the trajectory.
 
         Raises
@@ -366,7 +367,7 @@ class TrajectoryReader(BaseReader):
         window = Trajectory([next(generator) for _ in range(window_size)])
 
         # yield the first window
-        yield window
+        yield window.copy()
 
         # generate the rest of the windows up to trajectory_stop
         for _ in range(
@@ -380,7 +381,7 @@ class TrajectoryReader(BaseReader):
                 window.append(next(generator))
 
             # yield the next window
-            yield window
+            yield window.copy()
 
     def calculate_number_of_frames(self) -> int:
         """
