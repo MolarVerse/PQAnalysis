@@ -225,13 +225,15 @@ class TestTrajectoryReader:
             atoms=atoms, pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]), cell=cell
         )
 
-        # test_frames = [window for window in reader.window_generator(window_size=1)]
-        # assert test_frames == [
-        #     Trajectory([frame1]),
-        #     Trajectory([frame2]),
-        #     Trajectory([frame1]),
-        #     Trajectory([frame2])
-        # ]
+        # TODO: Check why the following test is not working
+
+        test_frames = [window for window in reader.window_generator(window_size=1)]
+        assert test_frames == [
+            Trajectory([frame1]),
+            Trajectory([frame2]),
+            Trajectory([frame1]),
+            Trajectory([frame2])
+        ]
 
         assert_logging(
             caplog,
