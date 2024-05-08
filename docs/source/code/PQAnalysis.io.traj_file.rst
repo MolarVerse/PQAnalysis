@@ -17,9 +17,9 @@ io.traj_file
 
        PQAnalysis.io.traj_file.api
        PQAnalysis.io.traj_file.exceptions
-       PQAnalysis.io.traj_file.frameReader
-       PQAnalysis.io.traj_file.trajectoryReader
-       PQAnalysis.io.traj_file.trajectoryWriter
+       PQAnalysis.io.traj_file.frame_reader
+       PQAnalysis.io.traj_file.trajectory_reader
+       PQAnalysis.io.traj_file.trajectory_writer
 
 
 

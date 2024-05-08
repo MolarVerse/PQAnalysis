@@ -7,7 +7,7 @@ api
 .. currentmodule:: PQAnalysis.topology.api
 
 .. automodule:: PQAnalysis.topology.api
-    :members: generate_shake_topology_file
+    :members: generate_shake_topology_file, select_from_restart_file, selection_from_restart_file_as_list
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,6 +21,8 @@ api
         :nosignatures:
 
         generate_shake_topology_file
+        select_from_restart_file
+        selection_from_restart_file_as_list
 
 
 

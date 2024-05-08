@@ -7,7 +7,7 @@ traj2qmcfc
 .. currentmodule:: PQAnalysis.cli.traj2qmcfc
 
 .. automodule:: PQAnalysis.cli.traj2qmcfc
-    :members: main
+    :members: code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
