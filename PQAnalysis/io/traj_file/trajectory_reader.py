@@ -342,7 +342,7 @@ class TrajectoryReader(BaseReader):
         for filename in self.filenames:
             with open(filename, "r", encoding="utf-8") as f:
                 lines = f.readlines()
-                
+
                 # +2 for the cell and atom count lines
                 n_frames += int(len(lines) / int(lines[0].split()[0]) + 2)
 
@@ -431,7 +431,8 @@ class TrajectoryReader(BaseReader):
                         next(f, None)  # Skip the next n_atoms+1 lines
 
     def _read_single_frame(
-        self, frame_string: str, topology: Topology | None = None
+        self, frame_string: str,
+        topology: Topology | None = None
     ) -> AtomicSystem:
         """
         Reads a single frame from the given string.
