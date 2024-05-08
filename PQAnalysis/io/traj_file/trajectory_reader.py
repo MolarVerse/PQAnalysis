@@ -219,14 +219,15 @@ class TrajectoryReader(BaseReader):
                                 frame.cell = last_cell
                             last_cell = frame.cell
 
-
-                            # TODO: Implement the trajectory_start and trajectory_stop more efficiently
-                            # Check if the number of frames yielded is equal to the total number of frames
+                            # TODO: Implement the trajectory_start and trajectory_stop
+                            # more efficiently
+                            # Check if the number of frames yielded is equal to the
+                            # total number of frames
                             if not (
                                 frame_index < trajectory_start
                                 or frame_index >= trajectory_stop
                             ):
-                                yield frame # only yield the frame if it is within the range
+                                yield frame  # only yield the frame if it is within the range
 
                             # then increment the frame index
                             frame_index += 1
@@ -247,10 +248,9 @@ class TrajectoryReader(BaseReader):
                     # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                     # Check if the number of frames yielded is equal to the total number of frames
                     if not (
-                        frame_index < trajectory_start
-                        or frame_index >= trajectory_stop
+                        frame_index < trajectory_start or frame_index >= trajectory_stop
                     ):
-                        yield frame # only yield the frame if it is within the range
+                        yield frame  # only yield the frame if it is within the range
 
                     # then increment the frame index
                     frame_index += 1
@@ -361,7 +361,9 @@ class TrajectoryReader(BaseReader):
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
-        generator = self.frame_generator(trajectory_start=trajectory_start, trajectory_stop=trajectory_stop)
+        generator = self.frame_generator(
+            trajectory_start=trajectory_start, trajectory_stop=trajectory_stop
+        )
 
         # reads first window and converts it to a queue
         window = Trajectory([next(generator) for _ in range(window_size)])
@@ -396,8 +398,8 @@ class TrajectoryReader(BaseReader):
         n_frames = 0
 
         for filename in self.filenames:
-            
-            # TODO: Add check to BaseReader to check if the file is empty            
+
+            # TODO: Add check to BaseReader to check if the file is empty
             if os.path.getsize(filename) == 0:
                 continue
 
