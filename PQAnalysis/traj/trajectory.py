@@ -112,7 +112,7 @@ class Trajectory:
         """
 
         return self.frames.pop(index)
-    
+
     def copy(self) -> Trajectory:
         """
         Returns a copy of the trajectory.

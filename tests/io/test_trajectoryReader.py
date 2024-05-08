@@ -247,14 +247,16 @@ class TestTrajectoryReader:
 
         test_frames = list(reader.window_generator(window_size=2, window_gap=2))
         assert test_frames == [
-            Trajectory([frame1, frame2]), 
-            Trajectory([frame1, frame2])
+            Trajectory([frame1, frame2]),
+            Trajectory([frame1, frame2]),
         ]
 
-        test_frames = list(reader.window_generator(window_size=2, window_gap=1, trajectory_start=1, trajectory_stop=3))
-        assert test_frames == [
-            Trajectory([frame2, frame1])
-        ]
+        test_frames = list(
+            reader.window_generator(
+                window_size=2, window_gap=1, trajectory_start=1, trajectory_stop=3
+            )
+        )
+        assert test_frames == [Trajectory([frame2, frame1])]
 
         assert_logging(
             caplog,
