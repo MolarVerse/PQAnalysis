@@ -248,13 +248,11 @@ class TestAtomicSystem:
     def test_pos_setter(self, caplog):
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
-        # system.pos = np.array([[0, 0, 0], [1, 1, 1]])
-        # assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
+        system.pos = np.array([[0, 0, 0], [1, 1, 1]])
+        assert np.allclose(system.pos, np.array([[0, 0, 0], [1, 1, 1]]))
 
         def f(system, pos):
             system.pos = pos
-
-        print("test")
 
         assert_logging_with_exception(
             caplog,
@@ -271,6 +269,10 @@ class TestAtomicSystem:
             np.array([0, 0, 0])
         )
 
+        # should work without raising an exception
+        system.set_pos_no_checks(np.array([0, 0, 0]))
+        system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
+
         assert_logging_with_exception(
             caplog,
             AtomicSystem.__qualname__,
@@ -281,7 +283,7 @@ class TestAtomicSystem:
                 "in order to set the property."
             ),
             AtomicSystemError,
-            AtomicSystem.pos.__set__,
+            f,
             system,
             np.array([[0, 0, 0]])
         )
@@ -290,8 +292,12 @@ class TestAtomicSystem:
             atoms=[Atom('C')],
             pos=np.array([[1, 1, 1]])
         )
+
         system.pos = np.array([[0, 0, 0]])
         assert np.allclose(system.pos, np.array([[0, 0, 0]]))
+
+        system.set_pos_no_checks(np.array([[1, 1, 1]]))
+        assert np.allclose(system.pos, np.array([[1, 1, 1]]))
 
     def test_vel_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])

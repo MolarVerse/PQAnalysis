@@ -17,6 +17,7 @@ check_atom_number_setters
     of atoms is equal to the number of positions.
 """
 
+import sys
 import numpy as np
 
 from beartype.typing import Any
@@ -52,7 +53,12 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> None:
     AtomicSystemError
         If the number of atoms is not equal the number of positions.
     """
+    print("test")
+    print(func.__name__, file=sys.stderr)
+    print(self.logger)
+    print(arg_to_set)
     if self.n_atoms != np.shape(arg_to_set)[0]:
+        print("test")
         self.logger.error(
             (
                 "The number of atoms in the AtomicSystem object have "
