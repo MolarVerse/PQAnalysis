@@ -1,34 +1,34 @@
 """
-This module provides API functions for the radial distribution function (Diffcalc) analysis.
+This module provides API functions for the radial distribution function (MSD) analysis.
 """
 
-from .diffcalc import Diffcalc
-from .diffcalcInputFileReader import DiffcalcInputFileReader
-from .diffcalcOutputFileWriter import DiffcalcDataWriter, DiffcalcLogWriter
+from .msd import MSD
+from .msdInputFileReader import MSDInputFileReader
+from .msdOutputFileWriter import MSDDataWriter, MSDLogWriter
 from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 
 
-def diffcalc(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
+def msd(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     """
-    Calculates the self-diffusion coefficient function (Diffcalc) using a given input file.
+    Calculates the self-diffusion coefficient function (MSD) using a given input file.
 
     This is just a wrapper function combining the underlying classes and functions.
 
-    For more information on the input file keys please visit :py:mod:`~PQAnalysis.analysis.diffcalc.diffcalcInputFileReader`.
-    For more information on the exact calculation of the Diffcalc please visit :py:class:`~PQAnalysis.analysis.diffcalc.diffcalc.Diffcalc`.
+    For more information on the input file keys please visit :py:mod:`~PQAnalysis.analysis.msd.msdInputFileReader`.
+    For more information on the exact calculation of the MSD please visit :py:class:`~PQAnalysis.analysis.msd.msd.MSD`.
 
     Parameters
     ----------
     input_file : str
-        The input file. For more information on the input file keys please visit :py:mod:`~PQAnalysis.analysis.diffcalc.diffcalcInputFileReader`.
+        The input file. For more information on the input file keys please visit :py:mod:`~PQAnalysis.analysis.msd.msdInputFileReader`.
     md_format : MDEngineFormat | str, optional
         the format of the input trajectory. Default is "PQ". For more information on the supported formats please visit :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
     """
     md_format = MDEngineFormat(md_format)
 
-    input_reader = DiffcalcInputFileReader(input_file)
+    input_reader = MSDInputFileReader(input_file)
     input_reader.read()
 
     if input_reader.restart_file is not None:
@@ -52,7 +52,7 @@ def diffcalc(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.P
     traj_reader = TrajectoryReader(
         input_reader.traj_files, md_format=md_format, topology=topology)
 
-    diffcalc = Diffcalc(
+    msd = MSD(
         traj=traj_reader,
         reference_species=input_reader.reference_selection,
         target_species=input_reader.target_selection,
@@ -64,11 +64,11 @@ def diffcalc(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.P
         r_min=input_reader.r_min,
     )
 
-    data_writer = DiffcalcDataWriter(input_reader.out_file)
-    log_writer = DiffcalcLogWriter(input_reader.log_file)
-    log_writer.write_before_run(diffcalc)
+    data_writer = MSDDataWriter(input_reader.out_file)
+    log_writer = MSDLogWriter(input_reader.log_file)
+    log_writer.write_before_run(msd)
 
-    diffcalc_data = diffcalc.run()
+    msd_data = msd.run()
 
-    data_writer.write(diffcalc_data)
-    log_writer.write_after_run(diffcalc)
+    data_writer.write(msd_data)
+    log_writer.write_after_run(msd)

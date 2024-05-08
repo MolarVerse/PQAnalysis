@@ -1,5 +1,5 @@
 """
-A module containing a class to read input files to setup the :py:class:`~PQAnalysis.analysis.diffcalc.diffcalc.diffcalc` class.
+A module containing a class to read input files to setup the :py:class:`~PQAnalysis.analysis.msd.msd.msd` class.
 """
 
 from __future__ import annotations
@@ -8,10 +8,10 @@ from __future__ import annotations
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
 
 
-class DiffCalcInputFileReader(Reader):
+class MSDInputFileReader(Reader):
 
     """
-    A class to read input files to setup the :py:class:`~PQAnalysis.analysis.diffcalc.diffcalc.diffcalc` class.
+    A class to read input files to setup the :py:class:`~PQAnalysis.analysis.msd.msd.msd` class.
     """
 
     #: List[str]: The required keys of the input file
@@ -81,7 +81,7 @@ class DiffCalcInputFileReader(Reader):
 
 input_keys_documentation = f"""
 
-For the diffcalc input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
+For the msd input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
 .. list-table:: Required keys
     :header-rows: 1
@@ -97,7 +97,7 @@ For the diffcalc input file several keys are available of which some are require
     * - {Reader.gap_key}
         - The gap of the running average.
     * - {Reader.out_file_key}
-        - The output file to write the diffcalc data to.
+        - The output file to write the msd data to.
 
 
 .. list-table:: Optional keys
@@ -114,11 +114,11 @@ For the diffcalc input file several keys are available of which some are require
     * - {Reader.moldescriptor_file_key}
         - The moldescriptor file to read the reference residues from.
     * - {Reader.n_start_key}    
-        - The start frame of the diffcalc.
+        - The start frame of the msd.
     * - {Reader.n_stop_key}
-        - The stop frame of the diffcalc.
+        - The stop frame of the msd.
     * - {Reader.n_frame_key}
-        - The number of frames to calculate the diffcalc.
+        - The number of frames to calculate the msd.
         
 Note
 ----
@@ -127,4 +127,4 @@ Optional keys does not mean that they are optional for the analysis. They are op
 - If the :code:`{Reader.moldescriptor_file_key}` key is specified, the :code:`{Reader.restart_file_key}` key is required in order use the reference residues in any meaningful way.
 """
 
-DiffCalcInputFileReader.__doc__ += input_keys_documentation
+MSDInputFileReader.__doc__ += input_keys_documentation
