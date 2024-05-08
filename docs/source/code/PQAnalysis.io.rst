@@ -17,13 +17,13 @@ io
 
        PQAnalysis.io.api
        PQAnalysis.io.base
-       PQAnalysis.io.boxWriter
+       PQAnalysis.io.box_writer
        PQAnalysis.io.conversion_api
-       PQAnalysis.io.energyFileReader
+       PQAnalysis.io.energy_file_reader
        PQAnalysis.io.exceptions
        PQAnalysis.io.formats
-       PQAnalysis.io.infoFileReader
-       PQAnalysis.io.moldescriptorReader
+       PQAnalysis.io.info_file_reader
+       PQAnalysis.io.moldescriptor_reader
        PQAnalysis.io.write_api
 
     Subpackages
@@ -33,7 +33,7 @@ io
        :maxdepth: 1
 
        PQAnalysis.io.gen_file
-       PQAnalysis.io.inputFileReader
+       PQAnalysis.io.input_file_reader
        PQAnalysis.io.nep
        PQAnalysis.io.restart_file
        PQAnalysis.io.topology_file

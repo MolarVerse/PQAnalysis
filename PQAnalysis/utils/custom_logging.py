@@ -135,6 +135,8 @@ class CustomLogger(logging.Logger):
         else:
             extra = None
 
+        del kwargs['extra']
+
         self._original_log(
             level,
             msg,
@@ -197,6 +199,8 @@ class CustomLogger(logging.Logger):
             The arguments of the log message.
         extra : Any, optional
             Additional information to log, by default None.
+        **kwargs : Any
+            The keyword arguments of the log message.
         """
 
         super()._log(level, msg, args, extra=extra, **kwargs)
