@@ -96,6 +96,23 @@ class Trajectory:
 
         self.frames.append(frame)
 
+    def pop(self, index: int = -1) -> AtomicSystem:
+        """
+        Removes a frame from the trajectory at the specified index.
+
+        Parameters
+        ----------
+        index : int
+            The index of the frame to remove.
+
+        Returns
+        -------
+        AtomicSystem
+            The frame removed from the trajectory.
+        """
+
+        return self.frames.pop(index)
+
     def __len__(self) -> int:
         """
         This method allows the length of a trajectory to be computed.

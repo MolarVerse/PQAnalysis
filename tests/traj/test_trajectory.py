@@ -298,6 +298,18 @@ class TestTrajectory:
 
         assert traj.frames == [self.frame1]
 
+    def test_pop(self): 
+        traj = Trajectory(self.frames)
+        assert traj.pop() == self.frame3
+        assert traj.frames == [self.frame1, self.frame2]
+
+        assert traj.pop(0) == self.frame1
+        assert traj.frames == [self.frame2]
+
+        with pytest.raises(IndexError) as exception:
+            traj.pop(1)
+        assert str(exception.value) == "pop index out of range"
+
     def test_property_topology(self):
         frame1 = AtomicSystem()
         frame2 = AtomicSystem()
