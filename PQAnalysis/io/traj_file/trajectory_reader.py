@@ -187,13 +187,22 @@ class TrajectoryReader(BaseReader):
                 exception=IndexError,
             )
 
+        # Track the number of frames that have been yielded
+        frame_index = 0
+
         last_cell = None
+
         for filename in self.filenames:
+
+            # Read the number of lines in the file
             with open(filename, "r", encoding="utf-8") as self.file:
                 sum_lines = sum(1 for _ in self.file)
 
+            # Read the file again to get the frames
             with open(filename, "r", encoding="utf-8") as self.file:
                 frame_lines = []
+
+                # Read the lines of the file using tqdm for progress bar
                 for line in tqdm(
                     self.file, total=sum_lines, disable=not self.with_progress_bar
                 ):
@@ -208,17 +217,42 @@ class TrajectoryReader(BaseReader):
                             if frame.cell.is_vacuum and last_cell is not None:
                                 frame.cell = last_cell
                             last_cell = frame.cell
+
+                            # TODO: Implement the trajectory_start and trajectory_stop more efficiently
+                            # Check if the number of frames yielded is equal to the total number of frames
+                            if (
+                                frame_index < trajectory_start
+                                or frame_index > trajectory_stop
+                            ):
+                                continue  # Skip the frame
+
+                            frame_index += 1
                             yield frame
+
                             if self.constant_topology and self.topology is not None:
                                 self.topology = frame.topology
+
                         frame_lines = [line]
 
                 if frame_lines:
                     frame = self._read_single_frame("".join(frame_lines), self.topology)
+
                     if frame.cell.is_vacuum and last_cell is not None:
                         frame.cell = last_cell
+
                     last_cell = frame.cell
+
+                    # TODO: Implement the trajectory_start and trajectory_stop more efficiently
+                    # Check if the number of frames yielded is equal to the total number of frames
+                    if (
+                        frame_index < trajectory_start
+                        or frame_index > trajectory_stop
+                    ):
+                        continue  # Skip the frame
+
+                    frame_index += 1
                     yield frame
+
                 if self.constant_topology and self.topology is not None:
                     self.topology = frame.topology
 
@@ -308,7 +342,7 @@ class TrajectoryReader(BaseReader):
             next(generator)
 
         # reads first window and converts it to a queue
-        window = Trajectory([generator.__next__() for _ in range(window_size)])
+        window = Trajectory([next(generator) for _ in range(window_size)])
 
         # yield the first window
         yield window
@@ -321,7 +355,7 @@ class TrajectoryReader(BaseReader):
             # pop the first frame and append the next frame for window_gap times to
             # get the next window
             for _ in range(window_gap):
-                window.frames.pop(0)
+                window.pop(0)
                 window.append(next(generator))
 
             # yield the next window
@@ -341,10 +375,19 @@ class TrajectoryReader(BaseReader):
 
         for filename in self.filenames:
             with open(filename, "r", encoding="utf-8") as f:
+
+                # Check if file is empty
+                if not f.read(1):
+                    continue
+                
+                # Reset the file pointer to the beginning of the file
+                f.seek(0)
+
+                # Read the lines
                 lines = f.readlines()
 
                 # +2 for the cell and atom count lines
-                n_frames += int(len(lines) / int(lines[0].split()[0]) + 2)
+                n_frames += int(len(lines) / (int(lines[0].split()[0]) + 2))
 
         return n_frames
 
@@ -431,8 +474,7 @@ class TrajectoryReader(BaseReader):
                         next(f, None)  # Skip the next n_atoms+1 lines
 
     def _read_single_frame(
-        self, frame_string: str,
-        topology: Topology | None = None
+        self, frame_string: str, topology: Topology | None = None
     ) -> AtomicSystem:
         """
         Reads a single frame from the given string.
