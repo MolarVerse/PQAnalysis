@@ -6,6 +6,7 @@ from __future__ import annotations
 
 # 3rd party modules
 import logging
+import os
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
@@ -163,14 +164,6 @@ class TrajectoryReader(BaseReader):
         if trajectory_stop is None:
             trajectory_stop = self.length_of_traj
 
-        # If trajectory_start is greater than or equal to trajectory_stop,
-        # raise an IndexError
-        if trajectory_start >= trajectory_stop:
-            self.logger.error(
-                "start index is greater than or equal to the stop index",
-                exception=IndexError,
-            )
-
         # If trajectory_start is less than 0 or greater than the
         # length of the trajectory, raise an IndexError
         if trajectory_start < 0 or trajectory_start > self.length_of_traj:
@@ -184,6 +177,14 @@ class TrajectoryReader(BaseReader):
         if trajectory_stop < 0 or trajectory_stop > self.length_of_traj:
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
+                exception=IndexError,
+            )
+
+        # If trajectory_start is greater than or equal to trajectory_stop,
+        # raise an IndexError
+        if trajectory_start >= trajectory_stop:
+            self.logger.error(
+                "start index is greater than or equal to the stop index",
                 exception=IndexError,
             )
 
@@ -220,14 +221,14 @@ class TrajectoryReader(BaseReader):
 
                             # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                             # Check if the number of frames yielded is equal to the total number of frames
-                            if (
+                            if not (
                                 frame_index < trajectory_start
                                 or frame_index > trajectory_stop
                             ):
-                                continue  # Skip the frame
+                                yield frame # only yield the frame if it is within the range
 
+                            # then increment the frame index
                             frame_index += 1
-                            yield frame
 
                             if self.constant_topology and self.topology is not None:
                                 self.topology = frame.topology
@@ -244,14 +245,14 @@ class TrajectoryReader(BaseReader):
 
                     # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                     # Check if the number of frames yielded is equal to the total number of frames
-                    if (
+                    if not (
                         frame_index < trajectory_start
                         or frame_index > trajectory_stop
                     ):
-                        continue  # Skip the frame
-
+                        yield frame # only yield the frame if it is within the range
+                    
+                    # then increment the frame index
                     frame_index += 1
-                    yield frame
 
                 if self.constant_topology and self.topology is not None:
                     self.topology = frame.topology
@@ -305,6 +306,30 @@ class TrajectoryReader(BaseReader):
         if trajectory_stop is None:
             trajectory_stop = self.length_of_traj
 
+        # If trajectory_start is less than 0 or greater than the
+        # length of the trajectory, raise an IndexError
+        if trajectory_start < 0 or trajectory_start > self.length_of_traj:
+            self.logger.error(
+                "start index is less than 0 or greater than the length of the trajectory",
+                exception=IndexError,
+            )
+
+        # If trajectory_stop is less than 0 or greater than the
+        # length of the trajectory, raise an IndexError
+        if trajectory_stop < 0 or trajectory_stop > self.length_of_traj:
+            self.logger.error(
+                "stop index is less than 0 or greater than the length of the trajectory",
+                exception=IndexError,
+            )
+
+        # If trajectory_start is greater than or equal to trajectory_stop,
+        # raise an IndexError
+        if trajectory_start >= trajectory_stop:
+            self.logger.error(
+                "start index is greater than or equal to the stop index",
+                exception=IndexError,
+            )
+
         # If window_step is less than 1 or greater than
         # the length of the trajectory, raise an IndexError
         if window_size < 1 or window_size > self.length_of_traj:
@@ -335,11 +360,7 @@ class TrajectoryReader(BaseReader):
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
-        generator = self.frame_generator()
-
-        # Skip the frames up to trajectory_start
-        for _ in range(trajectory_start):
-            next(generator)
+        generator = self.frame_generator(trajectory_start=trajectory_start, trajectory_stop=trajectory_stop)
 
         # reads first window and converts it to a queue
         window = Trajectory([next(generator) for _ in range(window_size)])
@@ -374,20 +395,18 @@ class TrajectoryReader(BaseReader):
         n_frames = 0
 
         for filename in self.filenames:
-            with open(filename, "r", encoding="utf-8") as f:
+            
+            # TODO: Add check to BaseReader to check if the file is empty            
+            if os.path.getsize(filename) == 0:
+                continue
 
-                # Check if file is empty
-                if not f.read(1):
-                    continue
-                
-                # Reset the file pointer to the beginning of the file
-                f.seek(0)
+            with open(filename, "r", encoding="utf-8") as f:
 
                 # Read the lines
                 lines = f.readlines()
 
-                # +2 for the cell and atom count lines
-                n_frames += int(len(lines) / (int(lines[0].split()[0]) + 2))
+            # +2 for the cell and atom count lines
+            n_frames += int(len(lines) / (int(lines[0].split()[0]) + 2))
 
         return n_frames
 
