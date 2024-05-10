@@ -27,7 +27,8 @@ jobs:
 
     - name: Generate coverage report
       run: |
-        python -m pytest
+        bash pytest.sh
+      shell: bash
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3

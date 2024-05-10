@@ -16,7 +16,7 @@ io.virial
        :maxdepth: 1
 
        PQAnalysis.io.virial.api
-       PQAnalysis.io.virial.virialReader
+       PQAnalysis.io.virial.virial_reader
 
 
 

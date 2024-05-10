@@ -5,9 +5,7 @@ utils
 ========================
 
 .. automodule:: PQAnalysis.utils
-    :members: header
-    :undoc-members:
-    :show-inheritance:
+    
 
 
 
@@ -27,10 +25,4 @@ utils
 
 
 
-    Summary
-    -------
 
-
-
-    Reference
-    ---------

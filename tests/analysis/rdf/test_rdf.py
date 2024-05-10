@@ -6,10 +6,11 @@ from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.type_checking import _get_type_error_message
+from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.topology import SelectionCompatible
 from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.exceptions import PQTypeError
 
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
@@ -193,10 +194,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "traj", 1, Trajectory | TrajectoryReader
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=1,
             reference_species=["h"],
@@ -207,10 +208,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "reference_species", Trajectory(), SelectionCompatible
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=Trajectory(),
@@ -221,10 +222,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "target_species", Trajectory(), SelectionCompatible
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -235,10 +236,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "use_full_atom_info", 1, bool
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -250,10 +251,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "no_intra_molecular", 1, bool
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -265,10 +266,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "r_max", -1, PositiveReal | None
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -280,10 +281,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "r_min", -1, PositiveReal | None
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -295,10 +296,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "delta_r", -1, PositiveReal | None
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],
@@ -310,10 +311,10 @@ class TestRDF:
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
-            message_to_test=_get_type_error_message(
+            message_to_test=get_type_error_message(
                 "n_bins", -1, PositiveInt | None
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDF,
             traj=Trajectory(),
             reference_species=["h"],

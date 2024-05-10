@@ -14,7 +14,9 @@ import numpy as np
 from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
 
-from ...types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
+from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
+
 from ._standard_properties import _StandardPropertiesMixin
 
 
@@ -23,6 +25,7 @@ class Cell(_StandardPropertiesMixin):
     Class for storing unit cell parameters.
     """
 
+    @runtime_type_checking
     def __init__(self,
                  x: Real = sys.float_info.max,
                  y: Real = sys.float_info.max,
@@ -102,7 +105,9 @@ class Cell(_StandardPropertiesMixin):
         """volume: The volume of the unit cell."""
         with warnings.catch_warnings():
             warnings.filterwarnings(
-                "ignore", message="overflow encountered in det")
+                "ignore",
+                message="overflow encountered in det"
+            )
             volume = np.linalg.det(self.box_matrix)
 
         return volume
@@ -112,6 +117,7 @@ class Cell(_StandardPropertiesMixin):
         """bool: Returns whether the unit cell is a vacuum."""
         return bool(self.volume > 1e100)
 
+    @runtime_type_checking
     def image(self, pos: NpnDNumberArray) -> NpnDNumberArray:
         """
         Images the given position(s) into the unit cell.
@@ -202,6 +208,7 @@ class Cell(_StandardPropertiesMixin):
         return self.__str__()
 
     @classmethod
+    @runtime_type_checking
     def init_from_box_matrix(cls, box_matrix: Np3x3NumberArray) -> Cell:
         """
         Initializes a Cell object from a box matrix.

@@ -7,7 +7,7 @@ api
 .. currentmodule:: PQAnalysis.traj.api
 
 .. automodule:: PQAnalysis.traj.api
-    :members: check_trajectory_PBC, check_trajectory_vacuum
+    :members: check_trajectory_pbc, check_trajectory_vacuum
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,7 +20,7 @@ api
     .. autosummary::
         :nosignatures:
 
-        check_trajectory_PBC
+        check_trajectory_pbc
         check_trajectory_vacuum
 
 

@@ -1,21 +1,40 @@
 import pytest
 import numpy as np
 
-from .. import pytestmark
 
-from PQAnalysis.core import Element
-from PQAnalysis.core import ElementNotFoundError
+from PQAnalysis.core import Element, ElementNotFoundError
+from PQAnalysis.type_checking import get_type_error_message
+from PQAnalysis.exceptions import PQTypeError
+
+from .. import pytestmark
+from ...conftest import assert_logging_with_exception
 
 
 class TestElement:
-    def test__init__(self):
-        with pytest.raises(ElementNotFoundError) as exception:
-            Element('C1')
-        assert str(exception.value) == "Id C1 is not a valid element identifier."
+    def test__init__(self, caplog):
+        assert_logging_with_exception(
+            caplog,
+            Element.__qualname__,
+            "ERROR",
+            "Id C1 is not a valid element identifier.",
+            ElementNotFoundError,
+            Element,
+            'C1'
+        )
 
-        with pytest.raises(ElementNotFoundError) as exception:
-            Element(-1)
-        assert str(exception.value) == "Id -1 is not a valid element identifier."
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            get_type_error_message(
+                "element_id",
+                1.2,
+                int | str | None
+            ),
+            PQTypeError,
+            Element,
+            1.2
+        )
 
         element = Element()
         assert element.symbol == None

@@ -17,7 +17,7 @@ topology.bonded_topology
 
        PQAnalysis.topology.bonded_topology.angle
        PQAnalysis.topology.bonded_topology.bond
-       PQAnalysis.topology.bonded_topology.bondedTopology
+       PQAnalysis.topology.bonded_topology.bonded_topology
        PQAnalysis.topology.bonded_topology.dihedral
 
 
