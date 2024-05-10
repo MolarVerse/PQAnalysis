@@ -122,10 +122,19 @@ class TestAtomicSystem:
         atoms = [Atom('C1', use_guess_element=False), Atom('H')]
         topology = Topology(atoms=atoms)
 
-        with pytest.raises(ValueError) as exception:
-            AtomicSystem(atoms=atoms, topology=topology)
-        assert str(
-            exception.value) == "Cannot initialize AtomicSystem with both atoms and topology arguments - they are mutually exclusive."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "Cannot initialize AtomicSystem with both atoms "
+                "and topology arguments - they are mutually exclusive."
+            ),
+            AtomicSystemError,
+            AtomicSystem,
+            atoms=atoms,
+            topology=topology
+        )
 
         system = AtomicSystem(atoms=atoms)
         topology = Topology(atoms=atoms, residue_ids=np.array([0, 1]))

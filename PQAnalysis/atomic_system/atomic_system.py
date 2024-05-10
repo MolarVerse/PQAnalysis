@@ -15,6 +15,7 @@ from beartype.typing import Any, List
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -100,6 +101,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  atoms: Atoms | None = None,
                  pos: Np2DNumberArray | None = None,
@@ -158,9 +160,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         """
 
         if topology is not None and atoms is not None:
-            raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology "
-                "arguments - they are mutually exclusive."
+            self.logger.error(
+                (
+                    "Cannot initialize AtomicSystem with both atoms and topology "
+                    "arguments - they are mutually exclusive."
+                ),
+                exception=AtomicSystemError
             )
 
         if atoms is None and topology is None:
@@ -178,6 +183,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._stress = stress
         self._cell = cell
 
+    @runtime_type_checking
     def fit_atomic_system(self,
                           system: AtomicSystem,
                           number_of_additions: PositiveInt = 1,
@@ -373,6 +379,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         system.image()
         return system
 
+    # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> AtomicSystem:
         """
         Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
