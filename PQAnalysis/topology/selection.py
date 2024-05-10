@@ -8,7 +8,7 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
-from beartype.typing import List, TypeVar, Any, Union
+from beartype.typing import List, TypeVar, Any
 
 # local imports
 from PQAnalysis import __base_path__
