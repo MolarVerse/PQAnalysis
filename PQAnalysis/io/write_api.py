@@ -2,16 +2,26 @@
 A module containing API functions for writing different objects to a file.
 """
 
+import logging
+
 from beartype.typing import Any
 
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.exceptions import PQNotImplementedError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 
 from .box_writer import BoxWriter
 from .formats import FileWritingMode
 from .traj_file.api import write_trajectory
 
+logger = logging.getLogger(__package_name__).getChild("io.write_api")
+logger = setup_logger(logger)
 
+
+@runtime_type_checking
 def write(object_to_write: Any,
           filename: str | None = None,
           mode: FileWritingMode | str = FileWritingMode.WRITE,
@@ -30,31 +40,39 @@ def write(object_to_write: Any,
     Parameters
     ----------
     object_to_write : Any
-        _description_
+        The object to write to a file.
     filename : str | None, optional
-        _description_, by default None
+        The name of the file to write to. If None, the output is printed to stdout.
     mode : FileWritingMode | str, optional
-        _description_, by default FileWritingMode.WRITE
+        The writing mode. If a string is given, it is converted to a FileWritingMode enum.
     """
 
-    if isinstance(object_to_write, Trajectory):
-        write_trajectory(object_to_write, filename, format, type, mode)
-    elif isinstance(object_to_write, AtomicSystem):
-        write_trajectory(Trajectory(object_to_write),
-                         filename, format, type, mode)
+    if isinstance(object_to_write, (Trajectory, AtomicSystem)):
+
+        write_trajectory(  # TODO: still missing important kwargs
+            object_to_write,
+            filename,
+            mode=mode
+        )
+
     else:
-        raise NotImplementedError(
-            f"Writing object of type {type(object_to_write)} is not implemented yet.")
+
+        logger.error(
+            (
+                f"Writing object of type {type(object_to_write)} "
+                "is not implemented yet."
+            ),
+            exception=PQNotImplementedError
+        )
 
 
+@ runtime_type_checking
 def write_box(traj: Trajectory,
               filename: str | None = None,
               output_format: str | None = None
               ) -> None:
-    '''
+    """
     Writes the given trajectory to the file in a selected box file format.
-
-
 
     Parameters
     ----------
@@ -65,7 +83,7 @@ def write_box(traj: Trajectory,
     output_format : str, optional
         The format of the file. If None, the format is inferred as a data file format.
         (see BoxWriter.formats for available formats)
-    '''
+    """
 
     writer = BoxWriter(filename, output_format)
     writer.write(traj)
