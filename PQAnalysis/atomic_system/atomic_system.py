@@ -8,7 +8,10 @@ import sys
 import numpy as np
 
 from scipy.spatial.transform import Rotation
-from beartype.typing import Any, List  # pylint disable=unused-import
+from beartype.typing import Any
+
+# just for forwardref type hinting
+from beartype.typing import List  # pylint: disable=unused-import
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
