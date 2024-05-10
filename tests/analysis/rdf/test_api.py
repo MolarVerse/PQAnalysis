@@ -6,6 +6,7 @@ import pytest  # pylint: disable=unused-import
 
 from PQAnalysis.analysis.rdf.api import rdf
 from PQAnalysis.type_checking import get_type_error_message
+from PQAnalysis.exceptions import PQTypeError
 
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
@@ -20,7 +21,7 @@ class TestRDFAPI:
             message_to_test=get_type_error_message(
                 "input_file", 1, str,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=rdf,
             input_file=1,
         )
@@ -32,7 +33,7 @@ class TestRDFAPI:
             message_to_test=get_type_error_message(
                 "md_format", 1, "PQAnalysis.traj.formats.MDEngineFormat | str",
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=rdf,
             input_file="test",
             md_format=1,

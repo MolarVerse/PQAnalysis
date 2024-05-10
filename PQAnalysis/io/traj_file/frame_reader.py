@@ -245,10 +245,26 @@ class FrameReader:
 
         if topology is None:
             try:
-                topology = Topology(atoms=[Atom(atom) for atom in atoms])
-            except ElementNotFoundError:
+
                 topology = Topology(
-                    atoms=[Atom(atom, use_guess_element=False) for atom in atoms])
+                    atoms=[
+                        Atom(atom, disable_type_checking=True)
+                        for atom in atoms
+                    ]
+                )
+
+            except ElementNotFoundError:
+
+                topology = Topology(
+                    atoms=[
+                        Atom(
+                            atom,
+                            use_guess_element=False,
+                            disable_type_checking=True
+                        )
+                        for atom in atoms
+                    ]
+                )
 
         return topology
 

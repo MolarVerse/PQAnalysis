@@ -54,3 +54,9 @@ class ResidueWarning(PQWarning):
         """
         self.message = message
         super().__init__(self.message)
+
+
+class AtomError(PQException):
+    """
+    Exception raised for errors related to the Atom class
+    """

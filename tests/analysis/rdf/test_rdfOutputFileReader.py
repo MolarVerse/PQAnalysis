@@ -2,6 +2,7 @@ import pytest
 
 from PQAnalysis.analysis.rdf import RDFDataWriter, RDFLogWriter, RDF
 from PQAnalysis.type_checking import get_type_error_message
+from PQAnalysis.exceptions import PQTypeError
 
 # import topology marker
 from .. import pytestmark  # pylint: disable=unused-import
@@ -19,7 +20,7 @@ class TestRDFLogWriter:
                 1.0,
                 str | None
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDFLogWriter,
             filename=1.0,
         )
@@ -29,7 +30,7 @@ class TestRDFLogWriter:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message("rdf", 1.0, RDF),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDFLogWriter("test.out").write_before_run,
             rdf=1.0,
         )
@@ -39,7 +40,7 @@ class TestRDFLogWriter:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message("rdf", 1.0, RDF),
-            exception=TypeError,
+            exception=PQTypeError,
             function=RDFLogWriter("test.out").write_after_run,
             rdf=1.0,
         )

@@ -12,6 +12,7 @@ from PQAnalysis.core import Atom, Cell
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.types import PositiveInt, Np1DNumberArray
 from PQAnalysis.topology import SelectionCompatible
+from PQAnalysis.exceptions import PQTypeError
 
 from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception
@@ -28,7 +29,7 @@ class TestPositionsMixin:
                 -1,
                 PositiveInt,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
             n=-1
         )
@@ -42,7 +43,7 @@ class TestPositionsMixin:
                 AtomicSystem(),
                 SelectionCompatible,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
             selection=AtomicSystem()
         )
@@ -56,7 +57,7 @@ class TestPositionsMixin:
                 "2",
                 bool,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
             use_full_atom_info="2"
         )
@@ -157,7 +158,7 @@ class TestPositionsMixin:
                 "2",
                 Np1DNumberArray,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=AtomicSystem().center,
             position="2"
         )
@@ -171,7 +172,7 @@ class TestPositionsMixin:
                 "2",
                 bool,
             ),
-            exception=TypeError,
+            exception=PQTypeError,
             function=AtomicSystem().center,
             position=np.array([1, 0, 0]),
             image="2"

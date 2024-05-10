@@ -12,8 +12,8 @@ from contextlib import contextmanager
 from _pytest.logging import LogCaptureHandler, _remove_ansi_escape_sequences
 from beartype.roar import BeartypeCallHintParamViolation
 
-from PQAnalysis.utils.custom_logging import CustomLoggerException
 from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQException, PQTypeError
 
 from . import __beartype_level__
 
@@ -111,10 +111,10 @@ def assert_logging_with_exception(caplog,
         result = None
         try:
             result = function(*args, **kwargs)
-        except (CustomLoggerException, BeartypeCallHintParamViolation) as e:
-            if isinstance(e, BeartypeCallHintParamViolation) and exception is TypeError:
+        except (PQException, BeartypeCallHintParamViolation) as e:
+            if isinstance(e, BeartypeCallHintParamViolation) and exception is PQTypeError:
                 return result
-            if not isinstance(e, CustomLoggerException):
+            if not isinstance(e, PQException):
                 raise e
 
         record = caplog.records[0]

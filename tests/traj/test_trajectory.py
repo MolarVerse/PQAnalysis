@@ -12,6 +12,7 @@ from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.topology import Topology
+from PQAnalysis.exceptions import PQIndexError
 
 
 class TestTrajectory:
@@ -168,7 +169,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window size can not be less than 1 or greater than the length of the trajectory"
@@ -179,7 +180,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window size can not be less than 1 or greater than the length of the trajectory"
@@ -190,7 +191,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window gap can not be less than 1 or greater than the length of the trajectory"
@@ -201,7 +202,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window gap can not be less than 1 or greater than the length of the trajectory"
@@ -212,7 +213,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "start index is less than 0 or greater than the length of the trajectory"
@@ -223,7 +224,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "stop index is less than 0 or greater than the length of the trajectory"
@@ -234,7 +235,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "start index is greater than or equal to the stop index"),
@@ -244,7 +245,7 @@ class TestTrajectory:
         assert_logging_with_exception(
             caplog,
             Trajectory.__qualname__,
-            exception=IndexError,
+            exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
                 "window size is greater than the window_stop - window_start"

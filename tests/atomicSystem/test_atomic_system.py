@@ -8,6 +8,7 @@ import numpy as np
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell
 from PQAnalysis.topology import Topology
+from PQAnalysis.exceptions import PQTypeError
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemPositionsError,
@@ -307,7 +308,7 @@ class TestAtomicSystem:
                 np.array([0, 0, 0]),
                 Np2DNumberArray,
             ),
-            TypeError,
+            PQTypeError,
             f,
             system,
             np.array([0, 0, 0])
@@ -364,7 +365,7 @@ class TestAtomicSystem:
                 np.array([0, 0, 0]),
                 Np2DNumberArray,
             ),
-            TypeError,
+            PQTypeError,
             f,
             system,
             np.array([0, 0, 0])
@@ -428,7 +429,7 @@ class TestAtomicSystem:
                 np.array([0, 0, 0]),
                 Np2DNumberArray,
             ),
-            TypeError,
+            PQTypeError,
             f,
             system,
             np.array([0, 0, 0])
@@ -492,7 +493,7 @@ class TestAtomicSystem:
                 np.array([[0, 0, 0]]),
                 Np1DNumberArray,
             ),
-            TypeError,
+            PQTypeError,
             f,
             system,
             np.array([[0, 0, 0]])

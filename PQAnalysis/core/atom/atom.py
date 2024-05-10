@@ -25,6 +25,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.type_checking import runtime_type_checking
 
 from .element import Element
+from ..exceptions import AtomError
 
 #: A type hint for a list of atoms
 Atoms = TypeVar("Atoms", bound=List["PQAnalysis.core.Atom"])
@@ -82,7 +83,8 @@ class Atom():
     def __init__(self,
                  name: str | int,
                  element_id: int | str | None = None,
-                 use_guess_element: bool = True
+                 use_guess_element: bool = True,
+                 **kwargs
                  ) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
@@ -116,7 +118,7 @@ class Atom():
 
             self.logger.error(
                 "The name of the atom_type cannot be an integer if the id is given.",
-                exception=ValueError
+                exception=AtomError
             )
 
         if element_id is not None and isinstance(name, str):

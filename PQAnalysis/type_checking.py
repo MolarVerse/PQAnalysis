@@ -9,6 +9,7 @@ from beartype.door import is_bearable
 from beartype.typing import ForwardRef
 
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.exceptions import PQTypeError
 from .types import (
     Np1DIntArray,
     Np2DIntArray,
@@ -37,6 +38,13 @@ def runtime_type_checking_setter(func, self, value):
     # get var_name and type_hint from func.__annotations__
     var_name = list(type_hints.keys())[0]
 
+    if isinstance(type_hints[var_name], str):
+        type_hints[var_name] = ForwardRef(type_hints[var_name])._evaluate(
+            globals(),
+            locals(),
+            frozenset()
+        )
+
     if not is_bearable(value, type_hints[var_name]):
         logger.error(
             get_type_error_message(
@@ -44,7 +52,7 @@ def runtime_type_checking_setter(func, self, value):
                 value,
                 type_hints[var_name],
             ),
-            exception=TypeError,
+            exception=PQTypeError,
         )
 
     # Call the function
@@ -56,6 +64,11 @@ def runtime_type_checking(func, *args, **kwargs):
     """
     A decorator to check the type of the arguments passed to a function at runtime.
     """
+
+    if "disable_type_checking" in kwargs:
+        disable_type_checking = kwargs.pop("disable_type_checking")
+        if disable_type_checking:
+            return func(*args, **kwargs)
 
     # Get the type hints of the function
     type_hints = func.__annotations__
@@ -78,7 +91,7 @@ def runtime_type_checking(func, *args, **kwargs):
                         arg_value,
                         type_hints[arg_name],
                     ),
-                    exception=TypeError,
+                    exception=PQTypeError,
                 )
 
     # Check the type of each keyword argument
