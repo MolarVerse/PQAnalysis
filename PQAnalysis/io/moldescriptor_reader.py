@@ -12,6 +12,7 @@ from PQAnalysis.core import Residue, Residues, Element
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .exceptions import MoldescriptorReaderError
 
@@ -33,6 +34,7 @@ class MoldescriptorReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters
@@ -99,8 +101,12 @@ class MoldescriptorReader(BaseReader):
 
                     n_atoms = int(splitted_line[1])
 
-                    mol_types.append(self._read_mol_type(
-                        lines[counter:counter+n_atoms+1], len(mol_types) + 1))
+                    mol_types.append(
+                        self._read_mol_type(
+                            lines[counter:counter+n_atoms+1],
+                            len(mol_types) + 1
+                        )
+                    )
 
                     counter += n_atoms + 1
 
