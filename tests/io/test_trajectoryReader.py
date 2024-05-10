@@ -8,6 +8,7 @@ from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.io.traj_file.exceptions import TrajectoryReaderError
 
 
 class TestTrajectoryReader:
@@ -164,6 +165,29 @@ class TestTrajectoryReader:
             frame for frame in reader.frame_generator(trajectory_stop=3)]
         assert test_frames == [frame1, frame2, frame1]
 
+        # Check file change after setting the reader
+        file = open("tmp2.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        test_frames = [frame for frame in reader.frame_generator()]
+        assert test_frames == [frame1, frame2, frame1]
+
+        # revert to the original file
+        file = open("tmp2.xyz", "w")
+        print("2", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        file.close()
+
         # TODO: test topology set when const_topology and topology is None (Pylint)
 
         assert_logging_with_exception(
@@ -228,8 +252,6 @@ class TestTrajectoryReader:
             atoms=atoms, pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]), cell=cell
         )
 
-        # TODO: Check why the following test is not working
-
         test_frames = list(reader.window_generator(window_size=1))
         assert test_frames == [
             Trajectory([frame1]),
@@ -261,6 +283,45 @@ class TestTrajectoryReader:
             )
         )
         assert test_frames == [Trajectory([frame2, frame1])]
+
+
+        # Test file change after setting the reader
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        test_frames = list(reader.window_generator(1))
+        assert test_frames == [
+            Trajectory([frame1]),
+            Trajectory([frame2]),
+            Trajectory([frame1]),
+            Trajectory([frame1]),
+            Trajectory([frame2]),
+            Trajectory([frame1])
+        ]
+
+        # revert to the original file
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        file.close()
 
         assert_logging(
             caplog,
@@ -402,3 +463,96 @@ class TestTrajectoryReader:
         )
 
     # -------------------------------------------------------------------------------- #
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_calculate_number_of_frames(self, caplog):
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        file.close()
+
+        file = open("tmp2.xyz", "w")
+        file.close()
+
+        filenames = ["tmp.xyz", "tmp2.xyz"]
+        reader = TrajectoryReader(filenames)
+
+        assert reader.calculate_number_of_frames() == 2
+
+        file = open("tmp2.xyz", "w")
+        print("str 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader(filenames)
+
+        assert_logging_with_exception(
+            caplog,
+            TrajectoryReader.__qualname__,
+            exception=TrajectoryReaderError,
+            logging_level="ERROR",
+            message_to_test=(
+                "Invalid number of atoms in the first line of file tmp2.xyz."
+            ),
+            function=reader.calculate_number_of_frames,
+        )
+
+        file = open("tmp2.xyz", "w")
+        print("", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader(filenames)
+
+        assert_logging_with_exception(
+            caplog,
+            TrajectoryReader.__qualname__,
+            exception=TrajectoryReaderError,
+            logging_level="ERROR",
+            message_to_test=(
+                "Invalid number of atoms in the first line of file tmp2.xyz."
+            ),
+            function=reader.calculate_number_of_frames,
+        )
+
+        file = open("tmp2.xyz", "w")
+        print("2", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader(filenames)
+
+        assert_logging_with_exception(
+            caplog,
+            TrajectoryReader.__qualname__,
+            exception=TrajectoryReaderError,
+            logging_level="ERROR",
+            message_to_test=(
+                "The number of lines in the file is not divisible " 
+                "by the number of atoms 2 in the first line."
+            ),
+            function=reader.calculate_number_of_frames,
+        )
+       
