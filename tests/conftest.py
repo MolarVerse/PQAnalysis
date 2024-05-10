@@ -140,9 +140,9 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
 def assert_type_error_in_debug_mode(func, *args, **kwargs):
     if __beartype_level__ == "DEBUG":
         with pytest.raises(BeartypeCallHintParamViolation):
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
     else:
         try:
-            func(*args, **kwargs)
+            return func(*args, **kwargs)
         except:
             pytest.fail("Function raised an exception in non-debug mode")

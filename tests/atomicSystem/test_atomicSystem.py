@@ -207,7 +207,7 @@ class TestAtomicSystem:
 
         assert system[:] == system
 
-    def test_n_atoms(self):
+    def test_n_atoms(self, caplog):
         system = AtomicSystem()
         assert system.n_atoms == 0
 
@@ -221,10 +221,18 @@ class TestAtomicSystem:
         system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
                               atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
 
-        with pytest.raises(ValueError) as exception:
-            system.n_atoms
-        assert str(
-            exception.value) == "The number of atoms (or atoms in the topology), positions, velocities, forces and charges must be equal."
+        assert_logging_with_exception(
+            caplog,
+            AtomicSystem.__qualname__,
+            "ERROR",
+            (
+                "The number of atoms (or atoms in the topology), "
+                "positions, velocities, forces and charges must be equal."
+            ),
+            AtomicSystemError,
+            lambda system: system.n_atoms,
+            system
+        )
 
     def test__str__(self):
         pos = np.array([[0, 0, 0], [1, 1, 1]])
@@ -308,6 +316,32 @@ class TestAtomicSystem:
         system.vel = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.vel, np.array([[0, 0, 0], [1, 1, 1]]))
 
+        def f(system, vel):
+            system.vel = vel
+
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            get_type_error_message(
+                "vel",
+                np.array([0, 0, 0]),
+                Np2DNumberArray,
+            ),
+            TypeError,
+            f,
+            system,
+            np.array([0, 0, 0])
+        )
+
+        # should work without raising an exception
+        assert_type_error_in_debug_mode(
+            system.set_vel_no_checks,
+            np.array([0, 0, 0])
+        )
+
+        system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
+
         assert_logging_with_exception(
             caplog,
             AtomicSystem.__qualname__,
@@ -318,7 +352,7 @@ class TestAtomicSystem:
                 "in order to set the property."
             ),
             AtomicSystemError,
-            AtomicSystem.vel.__set__,
+            f,
             system,
             np.array([[0, 0, 0]])
         )
@@ -330,10 +364,39 @@ class TestAtomicSystem:
         system.vel = np.array([[0, 0, 0]])
         assert np.allclose(system.vel, np.array([[0, 0, 0]]))
 
+        system.set_vel_no_checks(np.array([[1, 1, 1]]))
+        assert np.allclose(system.vel, np.array([[1, 1, 1]]))
+
     def test_force_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.forces = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.forces, np.array([[0, 0, 0], [1, 1, 1]]))
+
+        def f(system, forces):
+            system.forces = forces
+
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            get_type_error_message(
+                "forces",
+                np.array([0, 0, 0]),
+                Np2DNumberArray,
+            ),
+            TypeError,
+            f,
+            system,
+            np.array([0, 0, 0])
+        )
+
+        # should work without raising an exception
+        assert_type_error_in_debug_mode(
+            system.set_forces_no_checks,
+            np.array([0, 0, 0])
+        )
+
+        system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
 
         assert_logging_with_exception(
             caplog,
@@ -345,7 +408,7 @@ class TestAtomicSystem:
                 "in order to set the property."
             ),
             AtomicSystemError,
-            AtomicSystem.forces.__set__,
+            f,
             system,
             np.array([[0, 0, 0]])
         )
@@ -357,10 +420,39 @@ class TestAtomicSystem:
         system.forces = np.array([[0, 0, 0]])
         assert np.allclose(system.forces, np.array([[0, 0, 0]]))
 
+        system.set_forces_no_checks(np.array([[1, 1, 1]]))
+        assert np.allclose(system.forces, np.array([[1, 1, 1]]))
+
     def test_charge_setter(self, caplog):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.charges = np.array([0, 1])
         assert np.allclose(system.charges, np.array([0, 1]))
+
+        def f(system, charges):
+            system.charges = charges
+
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            get_type_error_message(
+                "charges",
+                np.array([[0, 0, 0]]),
+                Np1DNumberArray,
+            ),
+            TypeError,
+            f,
+            system,
+            np.array([[0, 0, 0]])
+        )
+
+        # should work without raising an exception
+        assert_type_error_in_debug_mode(
+            system.set_charges_no_checks,
+            np.array([[0, 0, 0]])
+        )
+
+        system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
 
         assert_logging_with_exception(
             caplog,
@@ -372,9 +464,9 @@ class TestAtomicSystem:
                 "in order to set the property."
             ),
             AtomicSystemError,
-            AtomicSystem.charges.__set__,
+            f,
             system,
-            np.array([0])
+            np.array([0, 0, 0])
         )
 
         system = AtomicSystem(
@@ -383,6 +475,9 @@ class TestAtomicSystem:
         )
         system.charges = np.array([0])
         assert np.allclose(system.charges, np.array([0]))
+
+        system.set_charges_no_checks(np.array([1]))
+        assert np.allclose(system.charges, np.array([1]))
 
     def test_has_properties(self):
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
