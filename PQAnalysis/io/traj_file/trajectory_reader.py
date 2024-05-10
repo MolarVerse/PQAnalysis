@@ -435,7 +435,7 @@ class TrajectoryReader(BaseReader):
 
         return n_frames
 
-    @ property
+    @property
     def cells(self) -> list[Cell]:
         """
         Returns the cells of the trajectory.
