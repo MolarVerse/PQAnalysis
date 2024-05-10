@@ -1,7 +1,12 @@
-import pytest
+"""
+This module contains fixtures and helper functions for the tests.
+"""
+
 import os
 import shutil
 import logging
+
+import pytest
 
 from contextlib import contextmanager
 from _pytest.logging import LogCaptureHandler, _remove_ansi_escape_sequences
