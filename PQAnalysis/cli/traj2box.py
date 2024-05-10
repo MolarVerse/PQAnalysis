@@ -39,11 +39,27 @@ class Traj2BoxCLI(CLIBase):
     Command Line Tool for Converting Trajectory Files to Box Files
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'traj2box'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.parse_output_file()
 
         parser.add_argument(
@@ -63,6 +79,14 @@ class Traj2BoxCLI(CLIBase):
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The arguments parsed by the parser.
+        """
         traj2box(args.trajectory_file, args.vmd, args.output, args.mode)
 
 

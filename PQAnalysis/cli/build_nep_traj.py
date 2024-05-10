@@ -15,7 +15,7 @@ from ._cli_base import CLIBase
 
 __outputdoc__ = """
 
-This command line tool can be used to converts output of PQ of QMCFC simulations to training and test files for the Neuroevolution Potential (NEP) method. The output is written to a xyz file.
+This command line tool can be used to convert output of PQ of QMCFC simulations to training and test files for the Neuroevolution Potential (NEP) method. The output is written to a xyz file.
 """
 
 __epilog__ = "\n"
@@ -32,11 +32,27 @@ class BuildNEPTrajCLI(CLIBase):
     Command Line Tool for Building Neuroevolution Potential (NEP) training/test trajectories
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'build_nep_traj'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.add_argument(
             'file_prefixes',
             type=str,
@@ -122,6 +138,14 @@ class BuildNEPTrajCLI(CLIBase):
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the build_nep_traj function with the given arguments.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The parsed arguments.
+        """
         writer = NEPWriter(filename=args.output, mode=args.mode)
 
         writer.write_from_files(

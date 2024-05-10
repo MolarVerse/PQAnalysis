@@ -32,11 +32,27 @@ class XYZ2GENCLI(CLIBase):
     Command Line Tool for Converting XYZ Files to GEN Files
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'xyz2gen'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.add_argument(
             'xyz_file',
             type=str,
@@ -60,6 +76,14 @@ class XYZ2GENCLI(CLIBase):
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : _Namespace
+            The arguments from the command line.
+        """
         xyz2gen(
             xyz_file=args.xyz_file,
             output=args.output,

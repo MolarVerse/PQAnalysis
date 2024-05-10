@@ -41,16 +41,40 @@ class RDFCLI(CLIBase):
     Command Line Tool for RDF Analysis
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'rdf'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.parse_input_file()
         parser.parse_engine()
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The arguments parsed by the parser.
+        """
         rdf(args.input_file, args.engine)
 
 

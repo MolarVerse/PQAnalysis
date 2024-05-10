@@ -35,7 +35,6 @@ def main():
 
     subparsers = parser.add_subparsers(
         dest='cli_command',
-        required=True
     )
 
     sub_parser_dict = {
@@ -56,4 +55,7 @@ def main():
 
     args = parser.parse_args()
 
-    sub_parser_dict[args.cli_command].run(args)
+    if args.cli_command in sub_parser_dict:
+        sub_parser_dict[args.cli_command].run(args)
+    else:
+        parser.print_help()
