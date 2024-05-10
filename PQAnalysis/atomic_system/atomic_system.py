@@ -2,15 +2,13 @@
 A module containing the AtomicSystem class
 """
 
-from __future__ import annotations
-
 import itertools
 import logging
 import sys
 import numpy as np
 
 from scipy.spatial.transform import Rotation
-from beartype.typing import Any, List
+from beartype.typing import Any, List  # pylint disable=unused-import
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
@@ -185,13 +183,13 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     @runtime_type_checking
     def fit_atomic_system(self,
-                          system: AtomicSystem,
+                          system: "AtomicSystem",
                           number_of_additions: PositiveInt = 1,
                           max_iterations: PositiveInt = 100,
                           distance_cutoff: PositiveReal = 1.0,
                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                           rotation_angle_step: PositiveInt = 10,
-                          ) -> List[AtomicSystem] | AtomicSystem:
+                          ) -> "List[AtomicSystem] | AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
@@ -265,12 +263,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     def _fit_atomic_system(self,
                            positions_to_fit_into: Np2DNumberArray,
-                           system: AtomicSystem,
+                           system: "AtomicSystem",
                            max_iterations: PositiveInt = 100,
                            distance_cutoff: PositiveReal = 1.0,
                            max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                            rotation_angle_step: PositiveInt = 10,
-                           ) -> AtomicSystem:
+                           ) -> "AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
@@ -380,7 +378,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         return system
 
     # TODO: refactor or discard this method
-    def compute_com_atomic_system(self, group=None) -> AtomicSystem:
+    def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
         """
         Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
 
@@ -420,7 +418,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         return AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell)
 
-    def copy(self) -> AtomicSystem:
+    def copy(self) -> "AtomicSystem":
         """
         Returns a copy of the AtomicSystem.
 
@@ -478,7 +476,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         return True
 
-    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> AtomicSystem:
+    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> "AtomicSystem":
         """
         Returns a new AtomicSystem with the given key.
 
