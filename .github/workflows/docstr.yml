@@ -57,12 +57,12 @@ jobs:
         run: |
           echo "$BASE coverage was: $BASE_COV%"
           git checkout $HEAD
-          docstr-coverage --fail-under=$BASE_COV
+          docstr-coverage --fail-under=$BASE_COV PQAnalysis
 
       - name: Blame
         run: |
           git diff --name-only $(git merge-base $BASE $HEAD) | \
-          xargs docstr-coverage --accept-empty
+          xargs docstr-coverage --accept-empty PQAnalysis
         if: failure()
 
       - name: Get new coverage
