@@ -9,22 +9,28 @@ QMResidue
     A class for representing a QM residue.
 """
 
-from __future__ import annotations
+import logging
 
 # library imports
 from numbers import Real
-from typing import Annotated
 
 # 3rd party object imports
 import numpy as np
 
-from beartype.typing import Any, List
-from beartype.vale import Is
+from beartype.typing import Any, List, TypeVar
 
 # local imports
 from PQAnalysis.types import Np1DIntArray, Np1DNumberArray
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking_setter, runtime_type_checking
+
 from .atom import Elements, Element
 from .exceptions import ResidueError
+
+
+#: A type hint for a list of residues (mol types).
+Residues = TypeVar("Residues", bound=List["PQAnalysis.core.Residue"])
 
 
 class Residue:
@@ -36,6 +42,10 @@ class Residue:
     the moldescriptor file.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self,
                  name: str,
                  residue_id: int,
@@ -87,8 +97,10 @@ class Residue:
         self._partial_charges = np.atleast_1d(partial_charges)
 
         if not len(self.elements) == len(self.atom_types) == len(self.partial_charges):
-            raise ResidueError(
-                "The number of elements, atom_types and partial_charges must be the same.")
+            self.logger.error(
+                "The number of elements, atom_types and partial_charges must be the same.",
+                exception=ResidueError
+            )
 
     @property
     def n_atoms(self) -> int:
@@ -115,6 +127,7 @@ class Residue:
         return self._name
 
     @name.setter
+    @runtime_type_checking_setter
     def name(self, name: str) -> None:
         """
         Sets the name of the residue.
@@ -139,6 +152,7 @@ class Residue:
         return self._id
 
     @id.setter
+    @runtime_type_checking_setter
     def id(self, residue_id: int) -> None:
         """
         Sets the id of the residue.
@@ -163,6 +177,7 @@ class Residue:
         return self._total_charge
 
     @total_charge.setter
+    @runtime_type_checking_setter
     def total_charge(self, total_charge: Real) -> None:
         """
         Sets the total charge of the residue.
@@ -187,6 +202,7 @@ class Residue:
         return self._elements
 
     @elements.setter
+    @runtime_type_checking_setter
     def elements(self, elements: Elements) -> None:
         """
         Sets the elements of the residue.
@@ -202,8 +218,10 @@ class Residue:
             If the number of elements is not the same as the number of atoms.
         """
         if len(elements) != self.n_atoms:
-            raise ResidueError(
-                "The number of elements must be the same as the number of atoms.")
+            self.logger.error(
+                "The number of elements must be the same as the number of atoms.",
+                exception=ResidueError
+            )
 
         self._elements = elements
 
@@ -220,6 +238,7 @@ class Residue:
         return self._atom_types
 
     @atom_types.setter
+    @runtime_type_checking_setter
     def atom_types(self, atom_types: Np1DIntArray) -> None:
         """
         Sets the atom types of the residue.
@@ -235,8 +254,10 @@ class Residue:
             If the number of atom_types is not the same as the number of atoms.
         """
         if len(atom_types) != self.n_atoms:
-            raise ResidueError(
-                "The number of atom_types must be the same as the number of atoms.")
+            self.logger.error(
+                "The number of atom_types must be the same as the number of atoms.",
+                exception=ResidueError
+            )
 
         self._atom_types = atom_types
 
@@ -253,6 +274,7 @@ class Residue:
         return self._partial_charges
 
     @partial_charges.setter
+    @runtime_type_checking_setter
     def partial_charges(self, partial_charges: Np1DNumberArray) -> None:
         """
         Sets the partial charges of the residue.
@@ -268,8 +290,10 @@ class Residue:
             If the number of partial_charges is not the same as the number of atoms.
         """
         if len(partial_charges) != self.n_atoms:
-            raise ResidueError(
-                "The number of partial_charges must be the same as the number of atoms.")
+            self.logger.error(
+                "The number of partial_charges must be the same as the number of atoms.",
+                exception=ResidueError
+            )
 
         self._partial_charges = partial_charges
 
@@ -340,6 +364,7 @@ class QMResidue(Residue):
 
     """
 
+    @runtime_type_checking
     def __init__(self, element: Element | str) -> None:
         """
         Initializes the QMResidue with the given parameters.
@@ -360,11 +385,3 @@ class QMResidue(Residue):
             atom_types=np.array([0]),
             partial_charges=np.array([element.atomic_number])
         )
-
-
-#: A type hint for a list of residues (mol types).
-Residues = Annotated[
-    list, Is[
-        lambda list: all(isinstance(residue, Residue) for residue in list)
-    ]
-]
