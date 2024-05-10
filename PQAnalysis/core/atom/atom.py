@@ -22,6 +22,7 @@ from beartype.typing import Any, List, TypeVar
 
 from PQAnalysis import __package_name__
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .element import Element
 
@@ -77,6 +78,7 @@ class Atom():
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  name: str | int,
                  element_id: int | str | None = None,
@@ -103,6 +105,11 @@ class Atom():
         use_guess_element : bool, optional
             Whether to use the guess_element function to determine the element type of the atom_type 
             by its name, by default True
+
+        Raises
+        ------
+        ValueError
+            If the name of the atom_type is an integer and the id is given.
         """
 
         if element_id is not None and isinstance(name, int):
