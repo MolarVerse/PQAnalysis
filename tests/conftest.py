@@ -68,7 +68,7 @@ class CatchLogFixture:
         """Set the level for capturing of logs. After the end of the 'with' statement,
         the level is restored to its original value.
         """
-        self.handler = LogCaptureHandler()
+        self.handler = LogCaptureHandler()  # pylint: disable=attribute-defined-outside-init
         orig_level = logger.level
         orig_propagate = logger.propagate
         logger.setLevel(level)
@@ -97,7 +97,16 @@ def caplog_for_logger(caplog, logger_name, level):
     logger.removeHandler(caplog.handler)
 
 
-def assert_logging_with_exception(caplog, logging_name, logging_level, message_to_test, exception, function, *args, **kwargs):
+def assert_logging_with_exception(caplog,
+                                  logging_name,
+                                  logging_level,
+                                  message_to_test,
+                                  exception,
+                                  function,
+                                  *args,
+                                  **kwargs
+                                  ):
+
     with caplog_for_logger(caplog, __package_name__ + "." + logging_name, logging_level):
         result = None
         try:
@@ -129,7 +138,14 @@ def assert_logging_with_exception(caplog, logging_name, logging_level, message_t
         return result
 
 
-def assert_logging(caplog, logging_name, logging_level, message_to_test, function, *args, **kwargs):
+def assert_logging(caplog,
+                   logging_name,
+                   logging_level,
+                   message_to_test,
+                   function,
+                   *args,
+                   **kwargs
+                   ):
     return assert_logging_with_exception(
         caplog,
         logging_name,
@@ -143,11 +159,19 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
 
 
 def assert_type_error_in_debug_mode(func, *args, **kwargs):
+    """
+    Helper function to assert that a function raises a TypeError when called in debug mode.
+
+    Parameters
+    ----------
+    func : function
+        The function to test.
+    """
     if __beartype_level__ == "DEBUG":
         with pytest.raises(BeartypeCallHintParamViolation):
             return func(*args, **kwargs)
     else:
         try:
             return func(*args, **kwargs)
-        except:
+        except:  # pylint: disable=bare-except
             pytest.fail("Function raised an exception in non-debug mode")
