@@ -264,7 +264,7 @@ class Trajectory:
         # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError
         if window_size > trajectory_stop - trajectory_start:
             self.logger.error(
-                "window size is greater than the window_stop - window_start",
+                "window size is greater than the trajectory_stop - trajectory_start",
                 exception=PQIndexError,
             )
 
