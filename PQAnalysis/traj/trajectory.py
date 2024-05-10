@@ -2,8 +2,6 @@
 A module containing the Trajectory class.
 """
 
-from __future__ import annotations
-
 import logging
 import numpy as np
 
@@ -11,6 +9,7 @@ from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.exceptions import PQIndexError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -107,7 +106,7 @@ class Trajectory:
         """
         return len(self.frames)
 
-    def __getitem__(self, key: int | slice) -> AtomicSystem | Trajectory:
+    def __getitem__(self, key: int | slice) -> "AtomicSystem | Trajectory":
         """
         This method allows a frame or a trajectory to be retrieved from the trajectory.
 
@@ -154,7 +153,7 @@ class Trajectory:
         window_gap: int = 1,
         window_start: int = 0,
         window_stop: int | None = None,
-    ) -> Iterable[Trajectory]:
+    ) -> Iterable["Trajectory"]:
         """
         This method allows a window of the trajectory to be retrieved.
         Window is a sequence of frames from start to stop with a window size and a gap size.
@@ -173,7 +172,7 @@ class Trajectory:
 
         Raises
         ------
-        IndexError
+        PQIndexError
             If window_start is less than 0 or greater than the length of the trajectory.
             If window_stop is less than 0 or greater than the length of the trajectory.
             If window_size is less than 1 or greater than the length of the trajectory.
@@ -199,7 +198,7 @@ class Trajectory:
         if window_start < 0 or window_start > len(self):
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_stop is less than 0 or greater than the
@@ -207,7 +206,7 @@ class Trajectory:
         if window_stop < 0 or window_stop > len(self):
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_step is less than 1 or greater than
@@ -215,7 +214,7 @@ class Trajectory:
         if window_size < 1 or window_size > len(self):
             self.logger.error(
                 "window size can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_gap is less than 1 or greater than
@@ -223,21 +222,21 @@ class Trajectory:
         if window_gap < 1 or window_gap > len(self):
             self.logger.error(
                 "window gap can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_start is greater than or equal to window_stop, raise an IndexError
         if window_start >= window_stop:
             self.logger.error(
                 "start index is greater than or equal to the stop index",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_size is greater than window_stop - window_start, raise an IndexError
         if window_size > window_stop - window_start:
             self.logger.error(
                 "window size is greater than the window_stop - window_start",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # Check if all frames are included in the windows
@@ -267,7 +266,7 @@ class Trajectory:
         """
         return item in self.frames
 
-    def __add__(self, other: Trajectory) -> Trajectory:
+    def __add__(self, other: "Trajectory") -> "Trajectory":
         """
         This method allows two trajectories to be added together.
 

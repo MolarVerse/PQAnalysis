@@ -2,11 +2,17 @@
 A module containing the Element class.
 """
 
+import logging
+
 from typing import Annotated
 from numbers import Real
 
 from beartype.typing import Any, NewType
 from beartype.vale import Is
+
+from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 
 from ..exceptions import ElementNotFoundError
 
@@ -38,6 +44,10 @@ class Element:
 
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self, element_id: int | str | None = None) -> None:
         """
         Initializes the Element with the given parameters.
@@ -81,8 +91,11 @@ class Element:
 
                 self._mass = atomicMasses[self._symbol]
 
-        except KeyError as e:
-            raise ElementNotFoundError(element_id) from e
+        except KeyError:
+            self.logger.error(
+                ElementNotFoundError(element_id).message,
+                exception=ElementNotFoundError
+            )
 
     def __str__(self) -> str:
         """

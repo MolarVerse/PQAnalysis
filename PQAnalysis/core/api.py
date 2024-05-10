@@ -8,8 +8,10 @@ import numpy as np
 
 from PQAnalysis.core import cell as _cell
 from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray, PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
 
 
+@runtime_type_checking
 def distance(pos1: Np1DNumberArray | Np2DNumberArray,
              pos2: Np1DNumberArray | Np2DNumberArray,
              cell: _cell.Cell = _cell.Cell()

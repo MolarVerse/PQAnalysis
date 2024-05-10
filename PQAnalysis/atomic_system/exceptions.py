@@ -28,11 +28,16 @@ class AtomicSystemPositionsError(AtomicSystemError):
 
     message = "Atoms and positions must be of the same length."
 
-    def __init__(self) -> None:
+    def __init__(self, message: str | None = None) -> None:
         """
         Parameters
         ----------
+        message : str
+            The error message.
         """
+        if message is not None:
+            self.message = message
+
         super().__init__(self.message)
 
 
@@ -44,9 +49,15 @@ class AtomicSystemMassError(AtomicSystemError):
     message = "AtomicSystem contains atoms without mass information. "
     message += "Which is required for this operation."
 
-    def __init__(self) -> None:
+    def __init__(self, message: str | None = None) -> None:
         """
         Parameters
         ----------
+        message : str
+            The error message.
         """
+
+        if message is not None:
+            self.message = message
+
         super().__init__(self.message)

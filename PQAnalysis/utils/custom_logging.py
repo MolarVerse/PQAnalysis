@@ -17,27 +17,7 @@ from beartype.typing import Any
 
 from PQAnalysis.config import log_file_name, use_log_file
 from PQAnalysis.utils import print_header
-
-
-class CustomLoggerException(Exception):
-    """
-    A custom exception class for the CustomLogger class.
-
-    This class is a custom exception class for the CustomLogger class.
-    It is used to raise an exception with the message of the log message
-    if the log message has the level logging.ERROR or logging.CRITICAL.
-    """
-
-    def __init__(self, message: str):
-        """
-        Initializes the CustomLoggerException class.
-
-        Parameters
-        ----------
-        message : str
-            The message of the exception.
-        """
-        super().__init__(message)
+from PQAnalysis.exceptions import PQException
 
 
 def setup_logger(logger: logging.Logger) -> logging.Logger:
@@ -172,11 +152,11 @@ class CustomLogger(logging.Logger):
                 """
                 A custom exception hook that ignores the CustomLoggerException.
                 """
-                if exc_type != CustomLoggerException:
+                if exc_type != PQException:
                     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
             sys.excepthook = exception_hook
-            raise CustomLoggerException(msg)
+            raise exception(msg)
 
     def _original_log(self,
                       level: Any,
