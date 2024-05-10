@@ -1,3 +1,7 @@
+"""
+Tests for the AtomicSystem class.
+"""
+
 import pytest
 import numpy as np
 
@@ -10,14 +14,26 @@ from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemMassError,
     AtomicSystemError,
 )
-from PQAnalysis.types import Real, Np1DNumberArray, Np2DNumberArray, Np3x3NumberArray
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 
 from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception, assert_type_error_in_debug_mode
 
 
 class TestAtomicSystem:
+    """
+    Tests for the AtomicSystem class.
+    """
+
     def test__init__(self, caplog):
+        """
+        Test the __init__ method of the AtomicSystem class.
+
+        Parameters
+        ----------
+        caplog : _pytest.logging.LogCaptureFixture
+            The logging fixture.
+        """
         system = AtomicSystem()
         assert system.atoms == []
         assert system.pos.shape == (0, 3)
@@ -244,6 +260,9 @@ class TestAtomicSystem:
         )
 
     def test__str__(self):
+        """
+        Test the __str__ method of the AtomicSystem class.
+        """
         pos = np.array([[0, 0, 0], [1, 1, 1]])
         vel = np.array([[0, 0, 0], [2, 2, 2]])
         charges = np.array([0, 1])
@@ -263,6 +282,14 @@ class TestAtomicSystem:
         assert str(system) == repr(system)
 
     def test_pos_setter(self, caplog):
+        """
+        Test the pos setter of the AtomicSystem class.
+
+        Parameters
+        ----------
+        caplog : _pytest.logging.LogCaptureFixture
+            The logging fixture.
+        """
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.pos = np.array([[0, 0, 0], [1, 1, 1]])
@@ -377,6 +404,14 @@ class TestAtomicSystem:
         assert np.allclose(system.vel, np.array([[1, 1, 1]]))
 
     def test_force_setter(self, caplog):
+        """
+        Test the force setter of the AtomicSystem class.
+
+        Parameters
+        ----------
+        caplog : _pytest.logging.LogCaptureFixture
+            The logging fixture.
+        """
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.forces = np.array([[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.forces, np.array([[0, 0, 0], [1, 1, 1]]))
@@ -433,6 +468,14 @@ class TestAtomicSystem:
         assert np.allclose(system.forces, np.array([[1, 1, 1]]))
 
     def test_charge_setter(self, caplog):
+        """
+        Test the charge setter of the AtomicSystem class.
+
+        Parameters
+        ----------
+        caplog : _pytest.logging.LogCaptureFixture
+            The logging fixture.
+        """
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         system.charges = np.array([0, 1])
         assert np.allclose(system.charges, np.array([0, 1]))
@@ -489,6 +532,9 @@ class TestAtomicSystem:
         assert np.allclose(system.charges, np.array([1]))
 
     def test_has_properties(self):
+        """
+        Test the has_properties method of the AtomicSystem class.
+        """
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
         assert not system.has_pos
         assert not system.has_vel
@@ -532,6 +578,9 @@ class TestAtomicSystem:
         assert system.has_charges
 
     def test_energy(self):
+        """
+        Test the energy property of the AtomicSystem class.
+        """
         system = AtomicSystem(energy=1.0)
 
         assert np.isclose(system.energy, 1.0)
@@ -546,6 +595,9 @@ class TestAtomicSystem:
         assert system.energy is None
 
     def test_virial(self):
+        """
+        Test the virial property of the AtomicSystem class.
+        """
         system = AtomicSystem(virial=np.array(
             [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
 
@@ -563,6 +615,9 @@ class TestAtomicSystem:
         assert system.virial is None
 
     def test_stress(self):
+        """
+        Test the stress property of the AtomicSystem class.
+        """
         system = AtomicSystem(stress=np.array(
             [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
 
