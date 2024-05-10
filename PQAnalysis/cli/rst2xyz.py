@@ -11,6 +11,7 @@ Command Line Tool for Converting Restart Files to XYZ Files
 from PQAnalysis.io import rst2xyz
 from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
 
 
 __outputdoc__ = """
@@ -25,8 +26,47 @@ __epilog__ = "\n"
 __epilog__ += "For more information on required and optional input file keys please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.rst2xyz.html."
 __epilog__ += "\n"
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
+
+
+class Rst2XYZCLI(CLIBase):
+    """
+    Command Line Tool for Converting Restart Files to XYZ Files
+    """
+    @classmethod
+    def program_name(cls):
+        return 'rst2xyz'
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.parse_output_file()
+
+        parser.add_argument(
+            'restart_file',
+            type=str,
+            help='The restart file to be converted.'
+        )
+
+        parser.add_argument(
+            '--nobox',
+            action='store_true',
+            help='Do not print the box.'
+        )
+
+        parser.parse_engine()
+        parser.parse_mode()
+
+    @classmethod
+    def run(cls, args):
+        rst2xyz(
+            restart_file=args.restart_file,
+            output=args.output,
+            print_box=not args.nobox,
+            md_format=args.engine,
+            mode=args.mode,
+        )
 
 
 def main():
@@ -37,29 +77,8 @@ def main():
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    parser.parse_output_file()
-
-    parser.add_argument(
-        'restart_file',
-        type=str,
-        help='The restart file to be converted.'
-    )
-
-    parser.add_argument(
-        '--nobox',
-        action='store_true',
-        help='Do not print the box.'
-    )
-
-    parser.parse_engine()
-    parser.parse_mode()
+    Rst2XYZCLI.add_arguments(parser)
 
     args = parser.parse_args()
 
-    rst2xyz(
-        restart_file=args.restart_file,
-        output=args.output,
-        print_box=not args.nobox,
-        md_format=args.engine,
-        mode=args.mode,
-    )
+    Rst2XYZCLI.run(args)

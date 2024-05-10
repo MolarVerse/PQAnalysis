@@ -8,6 +8,8 @@ Command Line Tool for Extending MD Simulation Input Files
 from PQAnalysis.io import InputFileFormat, continue_input_file
 from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
+
 
 __outputdoc__ = """
 
@@ -23,6 +25,44 @@ __epilog__ = "\n"
 __epilog__ += "For more information on required and optional input file keys please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.continue_input.html."
 __epilog__ += "\n"
+__epilog__ += "\n"
+
+
+class ContinueInputCLI(CLIBase):
+    """
+    Command Line Tool for Extending PQ MD Simulation Input Files
+    """
+    @classmethod
+    def program_name(cls):
+        return 'continue_input'
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.parse_input_file()
+
+        parser.add_argument(
+            '-n', '--number',
+            type=int,
+            default=1,
+            help='The number of times the input file should be continued.'
+        )
+
+        parser.add_argument(
+            '--input-format',
+            type=str,
+            default='PQ',
+            help='The format of the input file. Default is PQ.'
+        )
+
+    @classmethod
+    def run(cls, args):
+        input_format = InputFileFormat(args.input_format)
+
+        continue_input_file(
+            args.input_file,
+            args.number,
+            input_format
+        )
 
 
 def main():
@@ -32,24 +72,9 @@ def main():
     the continue_input_file function please visit :py:func:`PQAnalysis.io.api.continue_input_file`.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
-    parser.parse_input_file()
 
-    parser.add_argument(
-        '-n', '--number',
-        type=int,
-        default=1,
-        help='The number of times the input file should be continued.'
-    )
-
-    parser.add_argument(
-        '--input-format',
-        type=str,
-        default='PQ',
-        help='The format of the input file. Default is PQ.'
-    )
+    ContinueInputCLI.add_arguments(parser)
 
     args = parser.parse_args()
 
-    input_format = InputFileFormat(args.input_format)
-
-    continue_input_file(args.input_file, args.number, input_format)
+    ContinueInputCLI.run(args)

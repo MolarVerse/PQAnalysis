@@ -34,6 +34,7 @@ def test_main(test_with_data_dir):
         output="test_box.dat",
         log_file=None,
         logging_level="INFO",
+        mode='w'
     )
 )
 def main_box_file(mock_args):
@@ -49,6 +50,7 @@ def main_box_file(mock_args):
         output="test_box.vmd.xyz",
         log_file=None,
         logging_level="INFO",
+        mode='w'
     )
 )
 def main_vmd(mock_args):
