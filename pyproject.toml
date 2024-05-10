@@ -31,6 +31,7 @@ dependencies = [
     "decorator",
     "argcomplete",
     "unum",
+    "rich-argparse",
 ]
 
 [project.optional-dependencies]
@@ -56,6 +57,7 @@ docs = [
 version_file = "PQAnalysis/_version.py"
 
 [project.scripts]
+pqanalysis = "PQAnalysis.cli.main:main"
 traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
