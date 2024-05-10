@@ -3,14 +3,15 @@ import numpy as np
 
 from multimethod import DispatchError
 
-from .. import pytestmark
-
 from PQAnalysis.core.atom import Atom, Element
 from PQAnalysis.core.exceptions import ElementNotFoundError
 
+from .. import pytestmark
+from ...conftest import assert_logging_with_exception
+
 
 class TestAtom:
-    def test__init__(self):
+    def test__init__(self, caplog):
         element = Atom('C')
         assert element.symbol == 'c'
         assert element.atomic_number == 6
@@ -51,10 +52,16 @@ class TestAtom:
         assert str(
             exception.value) == "Id -1 is not a valid element identifier."
 
-        with pytest.raises(ValueError) as exception:
-            Atom(1, 2)
-        assert str(
-            exception.value) == "The name of the atom_type cannot be an integer if the id is given."
+        assert_logging_with_exception(
+            caplog,
+            Atom.__qualname__,
+            "ERROR",
+            "The name of the atom_type cannot be an integer if the id is given.",
+            ValueError,
+            Atom,
+            1,
+            2
+        )
 
     def test__eq__(self):
         element1 = Atom('C')

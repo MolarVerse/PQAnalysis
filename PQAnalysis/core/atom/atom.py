@@ -14,13 +14,19 @@ number. The name is the symbol in lower case.
 
 from __future__ import annotations
 
-from typing import Annotated
+import logging
+
 from numbers import Real
 
-from beartype.typing import Any, NewType
-from beartype.vale import Is
+from beartype.typing import Any, List, TypeVar
+
+from PQAnalysis import __package_name__
+from PQAnalysis.utils.custom_logging import setup_logger
 
 from .element import Element
+
+#: A type hint for a list of atoms
+Atoms = TypeVar("Atoms", bound=List["PQAnalysis.core.Atom"])
 
 
 class Atom():
@@ -68,6 +74,9 @@ class Atom():
     ('C', Element(c, 6, 12.0107))
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
     def __init__(self,
                  name: str | int,
                  element_id: int | str | None = None,
@@ -98,8 +107,9 @@ class Atom():
 
         if element_id is not None and isinstance(name, int):
 
-            raise ValueError(
-                "The name of the atom_type cannot be an integer if the id is given."
+            self.logger.error(
+                "The name of the atom_type cannot be an integer if the id is given.",
+                exception=ValueError
             )
 
         if element_id is not None and isinstance(name, str):
@@ -203,13 +213,3 @@ class Atom():
     def element_name(self) -> str:
         """str: The name of the element (e.g. 'Carbon')"""
         return self._element.name
-
-
-#: A type hint for a list of atoms
-Atoms = NewType(
-    "Atoms", Annotated[
-        list, Is[
-            lambda list: all(isinstance(atom, Atom) for atom in list)
-        ]
-    ]
-)

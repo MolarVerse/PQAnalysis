@@ -6,6 +6,7 @@ import logging
 
 from decorator import decorator
 from beartype.door import is_bearable
+from beartype.typing import ForwardRef
 
 from PQAnalysis.utils.custom_logging import setup_logger
 from .types import (
