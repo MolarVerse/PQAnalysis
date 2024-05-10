@@ -13,8 +13,11 @@ import argcomplete
 
 
 from beartype.typing import Sequence
+from rich_argparse import ArgumentDefaultsRichHelpFormatter
 
 import PQAnalysis.config as config  # pylint: disable=consider-using-from-import # here needed to set the config attributes
+
+from PQAnalysis.utils.common import __header__
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis._version import __version__
@@ -46,7 +49,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         """
 
         super().__init__(
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+            formatter_class=ArgumentDefaultsRichHelpFormatter,
             *args,
             **kwargs
         )
@@ -55,7 +58,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         if 'prog' not in kwargs:
             kwargs['prog'] = self.prog.split(".")[0]
             super().__init__(
-                formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+                formatter_class=ArgumentDefaultsRichHelpFormatter,
                 *args,
                 **kwargs
             )
