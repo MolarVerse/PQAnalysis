@@ -240,8 +240,7 @@ class TrajectoryReader(BaseReader):
                         frame_lines = [line]
 
                 if frame_lines:
-                    frame = self._read_single_frame(
-                        "".join(frame_lines), self.topology)
+                    frame = self._read_single_frame("".join(frame_lines), self.topology)
 
                     if frame.cell.is_vacuum and last_cell is not None:
                         frame.cell = last_cell
@@ -384,9 +383,7 @@ class TrajectoryReader(BaseReader):
 
         # generate the rest of the windows up to trajectory_stop
         for _ in range(
-            trajectory_start + window_gap,
-            trajectory_stop - window_size + 1,
-            window_gap
+            trajectory_start + window_gap, trajectory_stop - window_size + 1, window_gap
         ):
 
             # pop the first frame and append the next frame for window_gap times to
@@ -434,7 +431,7 @@ class TrajectoryReader(BaseReader):
                             "Invalid number of atoms in the first line "
                             f"of file {filename}."
                         ),
-                        exception=TrajectoryReaderError
+                        exception=TrajectoryReaderError,
                     )
 
                 # +2 for the cell/atom_count + comment lines
@@ -447,7 +444,7 @@ class TrajectoryReader(BaseReader):
                             f"by the number of atoms {n_atoms} "
                             "in the first line."
                         ),
-                        exception=TrajectoryReaderError
+                        exception=TrajectoryReaderError,
                     )
 
                 n_frames += _n_frames
@@ -487,12 +484,14 @@ class TrajectoryReader(BaseReader):
             n_atoms = int(line.split()[0])
 
         for filename in self.filenames:
+            line_number = 0
             with open(filename, "r", encoding="utf-8") as f:
                 for line in f:
                     stripped_line = line.strip()
                     splitted_line = stripped_line.split()
+                    line_number += 1
 
-                    if len(splitted_line) == 1 and cell is None:
+                    if len(splitted_line) == 1:
                         cell = Cell()
 
                         if last_cell is not None:
@@ -525,10 +524,13 @@ class TrajectoryReader(BaseReader):
 
                     else:
 
-                        raise TrajectoryReaderError(
-                            "Invalid number of arguments for box: "
-                            f"{len(splitted_line)} encountered in file "
-                            f"{filename} {stripped_line}."
+                        self.logger.error(
+                            (
+                                "Invalid number of arguments for box:"
+                                f" {len(splitted_line)} encountered in file"
+                                f" {filename}:{line_number} = {stripped_line}"
+                            ),
+                            exception=TrajectoryReaderError,
                         )
 
                     last_cell = cell
