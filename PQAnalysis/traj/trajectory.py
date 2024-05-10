@@ -2,8 +2,6 @@
 A module containing the Trajectory class.
 """
 
-from __future__ import annotations
-
 import logging
 import numpy as np
 
@@ -11,6 +9,7 @@ from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.exceptions import PQIndexError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -113,7 +112,7 @@ class Trajectory:
 
         return self.frames.pop(index)
 
-    def copy(self) -> Trajectory:
+    def copy(self) -> "Trajectory":
         """
         Returns a copy of the trajectory.
 
@@ -136,7 +135,7 @@ class Trajectory:
         """
         return len(self.frames)
 
-    def __getitem__(self, key: int | slice) -> AtomicSystem | Trajectory:
+    def __getitem__(self, key: int | slice) -> "AtomicSystem | Trajectory":
         """
         This method allows a frame or a trajectory to be retrieved from the trajectory.
 
@@ -183,7 +182,7 @@ class Trajectory:
         window_gap: int = 1,
         trajectory_start: int = 0,
         trajectory_stop: int | None = None,
-    ) -> Iterable[Trajectory]:
+    ) -> Iterable["Trajectory"]:
         """
         This method allows a window of the trajectory to be retrieved.
         Window is a sequence of frames from start to stop with a window size and a gap size.
@@ -202,9 +201,9 @@ class Trajectory:
 
         Raises
         ------
-        IndexError
-            If trajectory_start is less than 0 or greater than the length of the trajectory.
-            If trajectory_stop is less than 0 or greater than the length of the trajectory.
+        PQIndexError
+            If window_start is less than 0 or greater than the length of the trajectory.
+            If window_stop is less than 0 or greater than the length of the trajectory.
             If window_size is less than 1 or greater than the length of the trajectory.
             If window_gap is less than 1 or greater than the length of the trajectory.
             If window_size is greater than trajectory_stop - trajectory_start.
@@ -228,7 +227,7 @@ class Trajectory:
         if trajectory_start < 0 or trajectory_start > len(self):
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_stop is less than 0 or greater than the
@@ -236,7 +235,7 @@ class Trajectory:
         if trajectory_stop < 0 or trajectory_stop > len(self):
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_step is less than 1 or greater than
@@ -244,7 +243,7 @@ class Trajectory:
         if window_size < 1 or window_size > len(self):
             self.logger.error(
                 "window size can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_gap is less than 1 or greater than
@@ -252,21 +251,21 @@ class Trajectory:
         if window_gap < 1 or window_gap > len(self):
             self.logger.error(
                 "window gap can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_start is greater than or equal to trajectory_stop, raise an IndexError
         if trajectory_start >= trajectory_stop:
             self.logger.error(
                 "start index is greater than or equal to the stop index",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError
         if window_size > trajectory_stop - trajectory_start:
             self.logger.error(
                 "window size is greater than the trajectory_stop - trajectory_start",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # Check if all frames are included in the windows
@@ -296,7 +295,7 @@ class Trajectory:
         """
         return item in self.frames
 
-    def __add__(self, other: Trajectory) -> Trajectory:
+    def __add__(self, other: "Trajectory") -> "Trajectory":
         """
         This method allows two trajectories to be added together.
 

@@ -2,20 +2,24 @@
 A module containing the AtomicSystem class
 """
 
-from __future__ import annotations
-
 import itertools
 import logging
 import sys
 import numpy as np
 
 from scipy.spatial.transform import Rotation
-from beartype.typing import Any, List
+from beartype.typing import Any
+
+# just for forwardref type hinting
+from beartype.typing import List  # pylint: disable=unused-import
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.utils.random import get_random_seed
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 from PQAnalysis.types import (
     Np2DNumberArray,
     Np1DNumberArray,
@@ -95,6 +99,10 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     fitting_logger.addHandler(handler)
     fitting_logger.propagate = False
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self,
                  atoms: Atoms | None = None,
                  pos: Np2DNumberArray | None = None,
@@ -153,9 +161,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         """
 
         if topology is not None and atoms is not None:
-            raise ValueError(
-                "Cannot initialize AtomicSystem with both atoms and topology "
-                "arguments - they are mutually exclusive."
+            self.logger.error(
+                (
+                    "Cannot initialize AtomicSystem with both atoms and topology "
+                    "arguments - they are mutually exclusive."
+                ),
+                exception=AtomicSystemError
             )
 
         if atoms is None and topology is None:
@@ -173,14 +184,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._stress = stress
         self._cell = cell
 
+    @runtime_type_checking
     def fit_atomic_system(self,
-                          system: AtomicSystem,
+                          system: "AtomicSystem",
                           number_of_additions: PositiveInt = 1,
                           max_iterations: PositiveInt = 100,
                           distance_cutoff: PositiveReal = 1.0,
                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                           rotation_angle_step: PositiveInt = 10,
-                          ) -> List[AtomicSystem] | AtomicSystem:
+                          ) -> "List[AtomicSystem] | AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
@@ -254,12 +266,12 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
     def _fit_atomic_system(self,
                            positions_to_fit_into: Np2DNumberArray,
-                           system: AtomicSystem,
+                           system: "AtomicSystem",
                            max_iterations: PositiveInt = 100,
                            distance_cutoff: PositiveReal = 1.0,
                            max_displacement: PositiveReal | Np1DNumberArray = 0.1,
                            rotation_angle_step: PositiveInt = 10,
-                           ) -> AtomicSystem:
+                           ) -> "AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
@@ -368,7 +380,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         system.image()
         return system
 
-    def compute_com_atomic_system(self, group=None) -> AtomicSystem:
+    # TODO: refactor or discard this method
+    def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
         """
         Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
 
@@ -408,7 +421,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         return AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell)
 
-    def copy(self) -> AtomicSystem:
+    def copy(self) -> "AtomicSystem":
         """
         Returns a copy of the AtomicSystem.
 
@@ -466,7 +479,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         return True
 
-    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> AtomicSystem:
+    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> "AtomicSystem":
         """
         Returns a new AtomicSystem with the given key.
 

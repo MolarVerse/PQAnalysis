@@ -7,7 +7,7 @@ traj2box
 .. currentmodule:: PQAnalysis.cli.traj2box
 
 .. automodule:: PQAnalysis.cli.traj2box
-    :members: main
+    :members: code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

@@ -17,8 +17,8 @@ io.restart_file
 
        PQAnalysis.io.restart_file.api
        PQAnalysis.io.restart_file.exceptions
-       PQAnalysis.io.restart_file.restartReader
-       PQAnalysis.io.restart_file.restartWriter
+       PQAnalysis.io.restart_file.restart_reader
+       PQAnalysis.io.restart_file.restart_writer
 
 
 

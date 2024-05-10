@@ -3,14 +3,17 @@ import numpy as np
 
 from multimethod import DispatchError
 
-from .. import pytestmark
-
 from PQAnalysis.core.atom import Atom, Element
-from PQAnalysis.core.exceptions import ElementNotFoundError
+from PQAnalysis.core.exceptions import ElementNotFoundError, AtomError
+from PQAnalysis.type_checking import get_type_error_message
+from PQAnalysis.exceptions import PQTypeError
+
+from .. import pytestmark
+from ...conftest import assert_logging_with_exception
 
 
 class TestAtom:
-    def test__init__(self):
+    def test__init__(self, caplog):
         element = Atom('C')
         assert element.symbol == 'c'
         assert element.atomic_number == 6
@@ -39,22 +42,50 @@ class TestAtom:
         assert element.atomic_number is None
         assert element.mass is None
 
-        with pytest.raises(ElementNotFoundError) as exception:
-            Atom('C1')
-        assert str(exception.value) == "Id C1 is not a valid element identifier."
+        assert_logging_with_exception(
+            caplog,
+            Element.__qualname__,
+            "ERROR",
+            "Id C1 is not a valid element identifier.",
+            ElementNotFoundError,
+            Atom,
+            'C1'
+        )
 
-        with pytest.raises(Exception) as exception:
-            Atom(1.2)
+        assert_logging_with_exception(
+            caplog,
+            "TypeChecking",
+            "ERROR",
+            get_type_error_message(
+                "name",
+                1.2,
+                str | int
+            ),
+            PQTypeError,
+            Atom,
+            1.2
+        )
 
-        with pytest.raises(ElementNotFoundError) as exception:
-            Atom(-1)
-        assert str(
-            exception.value) == "Id -1 is not a valid element identifier."
+        assert_logging_with_exception(
+            caplog,
+            Element.__qualname__,
+            "ERROR",
+            "Id -1 is not a valid element identifier.",
+            ElementNotFoundError,
+            Atom,
+            -1
+        )
 
-        with pytest.raises(ValueError) as exception:
-            Atom(1, 2)
-        assert str(
-            exception.value) == "The name of the atom_type cannot be an integer if the id is given."
+        assert_logging_with_exception(
+            caplog,
+            Atom.__qualname__,
+            "ERROR",
+            "The name of the atom_type cannot be an integer if the id is given.",
+            AtomError,
+            Atom,
+            1,
+            2
+        )
 
     def test__eq__(self):
         element1 = Atom('C')

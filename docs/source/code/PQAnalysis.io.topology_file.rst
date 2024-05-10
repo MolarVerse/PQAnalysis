@@ -17,8 +17,8 @@ io.topology_file
 
        PQAnalysis.io.topology_file.api
        PQAnalysis.io.topology_file.exceptions
-       PQAnalysis.io.topology_file.topologyFileReader
-       PQAnalysis.io.topology_file.topologyFileWriter
+       PQAnalysis.io.topology_file.topology_file_reader
+       PQAnalysis.io.topology_file.topology_file_writer
 
 
 

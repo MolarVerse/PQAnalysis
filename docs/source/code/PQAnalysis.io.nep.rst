@@ -15,7 +15,7 @@ io.nep
     .. toctree::
        :maxdepth: 1
 
-       PQAnalysis.io.nep.NEPWriter
+       PQAnalysis.io.nep.nep_writer
 
 
 

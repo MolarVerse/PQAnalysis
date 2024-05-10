@@ -213,9 +213,14 @@ class RDF:
                          r_max=r_max, r_min=self.r_min)
 
         self.reference_indices = self.reference_selection.select(
-            self.topology, self.use_full_atom_info)
+            self.topology,
+            self.use_full_atom_info
+        )
+
         self.target_indices = self.target_selection.select(
-            self.topology, self.use_full_atom_info)
+            self.topology,
+            self.use_full_atom_info
+        )
 
     def _setup_bins(self,
                     n_bins: PositiveInt | None = None,

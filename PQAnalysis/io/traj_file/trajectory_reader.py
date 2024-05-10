@@ -18,6 +18,7 @@ from PQAnalysis.topology import Topology
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQIndexError
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
@@ -146,7 +147,7 @@ class TrajectoryReader(BaseReader):
 
         Exceptions
         ----------
-        IndexError
+        PQIndexError
             If trajectory_start is less than 0 or greater than the length
             of the trajectory.
             If trajectory_stop is less than 0 or greater than the length
@@ -169,7 +170,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_start < 0 or trajectory_start > self.length_of_traj:
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_stop is less than 0 or greater than the
@@ -177,7 +178,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_stop < 0 or trajectory_stop > self.length_of_traj:
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_start is greater than or equal to trajectory_stop,
@@ -185,7 +186,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_start >= trajectory_stop:
             self.logger.error(
                 "start index is greater than or equal to the stop index",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # Track the number of frames that have been read
@@ -320,7 +321,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_start < 0 or trajectory_start > self.length_of_traj:
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_stop is less than 0 or greater than the
@@ -328,7 +329,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_stop < 0 or trajectory_stop > self.length_of_traj:
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If trajectory_start is greater than or equal to trajectory_stop,
@@ -336,7 +337,7 @@ class TrajectoryReader(BaseReader):
         if trajectory_start >= trajectory_stop:
             self.logger.error(
                 "start index is greater than or equal to the stop index",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_step is less than 1 or greater than
@@ -344,7 +345,7 @@ class TrajectoryReader(BaseReader):
         if window_size < 1 or window_size > self.length_of_traj:
             self.logger.error(
                 "window size can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_gap is less than 1 or greater than
@@ -352,14 +353,14 @@ class TrajectoryReader(BaseReader):
         if window_gap < 1 or window_gap > self.length_of_traj:
             self.logger.error(
                 "window gap can not be less than 1 or greater than the length of the trajectory",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError
         if window_size > trajectory_stop - trajectory_start:
             self.logger.error(
                 "window size is greater than the trajectory_stop - trajectory_start",
-                exception=IndexError,
+                exception=PQIndexError,
             )
 
         # Check if all frames are included in the windows

@@ -8,11 +8,14 @@ import numpy as np
 
 from PQAnalysis.core import cell as _cell
 from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray, PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
 
 
+@runtime_type_checking
 def distance(pos1: Np1DNumberArray | Np2DNumberArray,
              pos2: Np1DNumberArray | Np2DNumberArray,
-             cell: _cell.Cell = _cell.Cell()
+             cell: _cell.Cell = _cell.Cell(),
+             **kwargs
              ) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:
     """
     Returns the distances between all combinations of two position arrays.
@@ -60,6 +63,8 @@ def distance(pos1: Np1DNumberArray | Np2DNumberArray,
         The second position.
     cell : Cell, optional
         The unit cell of the system. Default is Cell().
+    **kwargs
+        Arbitrary keyword arguments.
 
     Returns
     -------

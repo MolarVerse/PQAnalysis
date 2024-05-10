@@ -7,6 +7,7 @@ from numbers import Real
 import numpy as np
 
 from PQAnalysis.types import Np1DNumberArray, Np3x3NumberArray
+from PQAnalysis.type_checking import runtime_type_checking_setter
 
 
 class _StandardPropertiesMixin:
@@ -24,6 +25,7 @@ class _StandardPropertiesMixin:
         return self._box_lengths
 
     @box_lengths.setter
+    @runtime_type_checking_setter
     def box_lengths(self, box_lengths: Np1DNumberArray) -> None:
         self._box_lengths = box_lengths
         self._box_matrix = self.setup_box_matrix()
@@ -38,6 +40,7 @@ class _StandardPropertiesMixin:
         return self._box_angles
 
     @box_angles.setter
+    @runtime_type_checking_setter
     def box_angles(self, box_angles: Np1DNumberArray) -> None:
         self._box_angles = box_angles
         self._box_matrix = self.setup_box_matrix()
@@ -90,6 +93,7 @@ class _StandardPropertiesMixin:
         return self.__box_matrix
 
     @_box_matrix.setter
+    @runtime_type_checking_setter
     def _box_matrix(self, box_matrix: Np3x3NumberArray) -> None:
         self.__box_matrix = box_matrix
         self._inverse_box_matrix = np.linalg.inv(box_matrix)

@@ -10,31 +10,23 @@ class PQException(Exception):
     Base class for exceptions in this package.
     """
 
-    def __init__(self, message: str) -> None:
-        """
-        Parameters
-        ----------
-        message : str
-            The error message.
-        """
-        self.message = message
-        super().__init__(self.message)
-
 
 class PQWarning(Warning):
     """
     Base class for warnings in this package.
     """
 
-    def __init__(self, message: str) -> None:
-        """
-        Parameters
-        ----------
-        message : str
-            The error message.
-        """
-        self.message = message
-        super().__init__(self.message)
+
+class PQIndexError(PQException):
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+
+class PQTypeError(PQException):
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
 
 
 class BaseEnumFormatError(PQException):

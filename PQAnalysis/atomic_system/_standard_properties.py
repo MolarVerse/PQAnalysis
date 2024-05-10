@@ -5,9 +5,11 @@ of an atomic system (i.e. standard getter and setter methods).
 
 from PQAnalysis.core import Atoms, Cell
 from PQAnalysis.topology import Topology
+from PQAnalysis.type_checking import runtime_type_checking_setter
 from PQAnalysis.types import (
     Np1DNumberArray,
     Np2DNumberArray,
+    Np3x3NumberArray,
     Real,
 )
 
@@ -35,6 +37,7 @@ class _StandardPropertiesMixin:
         return self._topology
 
     @topology.setter
+    @runtime_type_checking_setter
     def topology(self, topology: Topology) -> None:
         if topology.n_atoms != self.n_atoms:
             raise ValueError(
@@ -56,8 +59,20 @@ class _StandardPropertiesMixin:
         return self._pos
 
     @pos.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
     def pos(self, pos: Np2DNumberArray) -> None:
+        self._pos = pos
+
+    def set_pos_no_checks(self, pos: Np2DNumberArray) -> None:
+        """
+        Set the positions of the atoms in the system without any checks.
+
+        Parameters
+        ----------
+        pos : Np2DNumberArray
+            The positions of the atoms in the system.
+        """
         self._pos = pos
 
     @property
@@ -77,8 +92,20 @@ class _StandardPropertiesMixin:
         return self._vel
 
     @vel.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
     def vel(self, vel: Np2DNumberArray) -> None:
+        self._vel = vel
+
+    def set_vel_no_checks(self, vel: Np2DNumberArray) -> None:
+        """
+        Set the velocities of the atoms in the system without any checks.
+
+        Parameters
+        ----------
+        vel : Np2DNumberArray
+            The velocities of the atoms in the system.
+        """
         self._vel = vel
 
     @property
@@ -98,8 +125,20 @@ class _StandardPropertiesMixin:
         return self._forces
 
     @forces.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
     def forces(self, forces: Np2DNumberArray) -> None:
+        self._forces = forces
+
+    def set_forces_no_checks(self, forces: Np2DNumberArray) -> None:
+        """
+        Set the forces acting on the atoms in the system without any checks.
+
+        Parameters
+        ----------
+        forces : Np2DNumberArray
+            The forces acting on the atoms in the system.
+        """
         self._forces = forces
 
     @property
@@ -119,8 +158,20 @@ class _StandardPropertiesMixin:
         return self._charges
 
     @charges.setter
+    @runtime_type_checking_setter
     @check_atom_number_setters
     def charges(self, charges: Np1DNumberArray) -> None:
+        self._charges = charges
+
+    def set_charges_no_checks(self, charges: Np1DNumberArray) -> None:
+        """
+        Set the charges of the atoms in the system without any checks.
+
+        Parameters
+        ----------
+        charges : Np1DNumberArray
+            The charges of the atoms in the system.
+        """
         self._charges = charges
 
     @property
@@ -134,6 +185,7 @@ class _StandardPropertiesMixin:
         return self._cell
 
     @cell.setter
+    @runtime_type_checking_setter
     def cell(self, cell: Cell) -> None:
         self._cell = cell
 
@@ -143,6 +195,7 @@ class _StandardPropertiesMixin:
         return self._energy
 
     @energy.setter
+    @runtime_type_checking_setter
     def energy(self, energy: Real) -> None:
         self._energy = energy
 
@@ -152,12 +205,13 @@ class _StandardPropertiesMixin:
         return self._energy is not None
 
     @property
-    def stress(self) -> Np2DNumberArray | None:
+    def stress(self) -> Np3x3NumberArray | None:
         """Np2DNumberArray: The stress tensor of the system."""
         return self._stress
 
     @stress.setter
-    def stress(self, stress: Np2DNumberArray) -> None:
+    @runtime_type_checking_setter
+    def stress(self, stress: Np3x3NumberArray) -> None:
         self._stress = stress
 
     @property
@@ -166,12 +220,13 @@ class _StandardPropertiesMixin:
         return self._stress is not None
 
     @property
-    def virial(self) -> Np2DNumberArray | None:
+    def virial(self) -> Np3x3NumberArray | None:
         """Np2DNumberArray: The virial tensor of the system."""
         return self._virial
 
     @virial.setter
-    def virial(self, virial: Np2DNumberArray) -> None:
+    @runtime_type_checking_setter
+    def virial(self, virial: Np3x3NumberArray) -> None:
         self._virial = virial
 
     @property
