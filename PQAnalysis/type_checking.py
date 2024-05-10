@@ -11,6 +11,7 @@ from beartype.typing import ForwardRef
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.exceptions import PQTypeError
 from .types import (
+    Real,
     Np1DIntArray,
     Np2DIntArray,
     Np1DNumberArray,
