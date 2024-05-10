@@ -112,7 +112,7 @@ class Trajectory:
 
         return self.frames.pop(index)
 
-    def copy(self) -> Trajectory:
+    def copy(self) -> "Trajectory":
         """
         Returns a copy of the trajectory.
 
@@ -182,7 +182,7 @@ class Trajectory:
         window_gap: int = 1,
         trajectory_start: int = 0,
         trajectory_stop: int | None = None,
-    ) -> Iterable[Trajectory]:
+    ) -> Iterable["Trajectory"]:
         """
         This method allows a window of the trajectory to be retrieved.
         Window is a sequence of frames from start to stop with a window size and a gap size.
