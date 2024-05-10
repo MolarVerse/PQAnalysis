@@ -393,6 +393,12 @@ class TrajectoryReader(BaseReader):
         -------
         int
             The number of frames in the trajectory file.
+
+        Raises
+        ------
+        TrajectoryReaderError
+            If the number of atoms in the first line of the file is invalid.
+            If the number of lines in the file is not divisible by the number of atoms.
         """
 
         n_frames = 0
@@ -418,7 +424,7 @@ class TrajectoryReader(BaseReader):
                         exception=TrajectoryReaderError
                     )
 
-                # +2 for the cell and atom count lines
+                # +2 for the cell/atom_count + comment lines
                 _n_frames, remainder = divmod(n_lines, n_atoms + 2)
 
                 if remainder != 0:
