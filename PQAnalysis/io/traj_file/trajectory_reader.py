@@ -76,8 +76,8 @@ class TrajectoryReader(BaseReader):
         self.md_format = MDEngineFormat(md_format)
         self.frame_reader = FrameReader(md_format=self.md_format)
 
-        # Calculate the number of frames in the trajectory
-        self.length_of_traj = self.calculate_number_of_frames()
+        # The length of the trajectory
+        self.length_of_traj = 0
 
         # NOTE: Progress bar is disabled by default
         #       This way the frame_generator can be used in other functions
@@ -160,6 +160,9 @@ class TrajectoryReader(BaseReader):
             The frames of the trajectory.
         """
 
+        # Get the length of the trajectory
+        self.length_of_traj = self.calculate_number_of_frames()
+
         if trajectory_stop is None:
             trajectory_stop = self.length_of_traj
 
@@ -187,7 +190,7 @@ class TrajectoryReader(BaseReader):
                 exception=IndexError,
             )
 
-        # Track the number of frames that have been yielded
+        # Track the number of frames that have been read
         frame_index = 0
 
         last_cell = None
@@ -286,6 +289,10 @@ class TrajectoryReader(BaseReader):
         Raises
         ------
         IndexError
+            If trajectory_start is less than 0 or greater than the length of
+            the trajectory.
+            If trajectory_stop is less than 0 or greater than the length of
+            the trajectory.
             If window_size is less than 1 or greater than the length of
             the trajectory.
             If window_gap is less than 1 or greater than the length of
@@ -299,9 +306,12 @@ class TrajectoryReader(BaseReader):
         Yields
         ------
         Generator[Trajectory]
-            An generator over the windows of the trajectory with the specified
+            A generator over the windows of the trajectory with the specified
             window size and gap.
         """
+
+        # Get the length of the trajectory
+        self.length_of_traj = self.calculate_number_of_frames()
 
         # If trajectory_stop is not provided, set it to the length of the trajectory
         if trajectory_stop is None:
@@ -362,7 +372,8 @@ class TrajectoryReader(BaseReader):
             )
 
         generator = self.frame_generator(
-            trajectory_start=trajectory_start, trajectory_stop=trajectory_stop
+            trajectory_start=trajectory_start,
+            trajectory_stop=trajectory_stop
         )
 
         # reads first window and converts it to a queue
@@ -373,7 +384,9 @@ class TrajectoryReader(BaseReader):
 
         # generate the rest of the windows up to trajectory_stop
         for _ in range(
-            trajectory_start + window_gap, trajectory_stop - window_size + 1, window_gap
+            trajectory_start + window_gap,
+            trajectory_stop - window_size + 1,
+            window_gap
         ):
 
             # pop the first frame and append the next frame for window_gap times to
