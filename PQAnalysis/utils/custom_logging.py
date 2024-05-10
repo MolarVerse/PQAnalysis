@@ -135,7 +135,8 @@ class CustomLogger(logging.Logger):
         else:
             extra = None
 
-        del kwargs['extra']
+        if 'extra' in kwargs:
+            del kwargs['extra']
 
         self._original_log(
             level,
