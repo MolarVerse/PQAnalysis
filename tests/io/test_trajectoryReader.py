@@ -555,4 +555,101 @@ class TestTrajectoryReader:
             ),
             function=reader.calculate_number_of_frames,
         )
-       
+
+    # -------------------------------------------------------------------------------- #
+    @pytest.mark.usefixtures("tmpdir")
+    def test_cells(self, caplog):
+        file = open("tmp.xyz", "w")
+        print("2", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader("tmp.xyz")
+
+        cell = Cell()
+
+        test_cells = reader.cells
+        assert test_cells == [cell]
+
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        cell = Cell(1.0, 1.0, 1.0)
+
+        test_cells = reader.cells
+        assert test_cells == [cell]
+
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 1.0 1.0 0.0", file=file)
+        file.close()
+
+        cell = Cell(1.0, 1.0, 1.0)
+        
+        test_cells = reader.cells
+        assert test_cells == [cell, cell]
+
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2 2.0 2.0 2.0", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 1.0 1.0 0.0", file=file)
+        file.close()
+
+        cell1 = Cell(1.0, 1.0, 1.0)
+        cell2 = Cell(2.0, 2.0, 2.0)
+
+        test_cells = reader.cells
+        assert test_cells == [cell1, cell2]
+
+        reader = TrajectoryReader(["tmp.xyz", "tmp.xyz"])
+        test_cells = reader.cells
+        assert test_cells == [cell1, cell2, cell1, cell2]
+
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0 90.0 90.0 90.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader("tmp.xyz")
+
+        cell = Cell(1.0, 1.0, 1.0, 90.0, 90.0, 90.0)
+        test_cells = reader.cells
+        assert test_cells == [cell]
+
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0 90.0 90.0 90.0 0.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        assert_logging_with_exception(
+            caplog,
+            TrajectoryReader.__qualname__,
+            exception=TrajectoryReaderError,
+            logging_level="ERROR",
+            message_to_test=(
+                "Invalid number of arguments for box: 8 encountered "
+                "in file tmp.xyz:1 = 2 1.0 1.0 1.0 90.0 90.0 90.0 0.0"
+            ),
+            function=reader._cell_generator().__next__,
+        )
