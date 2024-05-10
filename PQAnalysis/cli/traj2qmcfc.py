@@ -9,6 +9,7 @@ Command Line Tool for Converting PQ to QMCFC Trajectory Files
 from PQAnalysis.config import code_base_url
 from PQAnalysis.io import traj2qmcfc
 from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
 
 
 __outputdoc__ = """
@@ -24,8 +25,34 @@ __epilog__ = "\n"
 __epilog__ += "For more information on required and optional input file keys please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.traj2qmcfc.html."
 __epilog__ += "\n"
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
+
+
+class Traj2QMCFCCLI(CLIBase):
+    """
+    Command Line Tool for Converting PQ to QMCFC Trajectory Files
+    """
+    @classmethod
+    def program_name(cls):
+        return 'traj2qmcfc'
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.parse_output_file()
+
+        parser.add_argument(
+            'trajectory_file',
+            type=str,
+            help='The trajectory file to be converted.'
+        )
+
+        parser.parse_mode()
+
+    @classmethod
+    def run(cls, args):
+        traj2qmcfc(args.trajectory_file, args.output)
 
 
 def main():
@@ -36,9 +63,8 @@ def main():
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    parser.parse_trajectory_file()
-    parser.parse_output_file()
+    Traj2QMCFCCLI.add_arguments(parser)
 
     args = parser.parse_args()
 
-    traj2qmcfc(args.trajectory_file, args.output)
+    Traj2QMCFCCLI.run(args)

@@ -10,6 +10,7 @@ Command Line Tool for Converting XYZ Files to GEN Files
 from PQAnalysis.config import code_base_url
 from PQAnalysis.io import xyz2gen
 from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
 
 
 __outputdoc__ = """
@@ -21,8 +22,51 @@ __epilog__ = '\n'
 __epilog__ += "For more information on required and optional input file keys please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.xyz2gen.html."
 __epilog__ += "\n"
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
+
+
+class XYZ2GENCLI(CLIBase):
+    """
+    Command Line Tool for Converting XYZ Files to GEN Files
+    """
+    @classmethod
+    def program_name(cls):
+        return 'xyz2gen'
+
+    @classmethod
+    def add_arguments(cls, parser):
+        parser.add_argument(
+            'xyz_file',
+            type=str,
+            help='The gen file to be converted.'
+        )
+
+        parser.parse_output_file()
+
+        parser.add_argument(
+            'periodic',
+            choices=[True, False, None],
+            default=None,
+            help=(
+                'If True, the box is printed. If False, the box is not printed. '
+                'If None, the box is printed if it is present in the xyz file.'
+            )
+        )
+
+        parser.parse_engine()
+        parser.parse_mode()
+
+    @classmethod
+    def run(cls, args):
+        xyz2gen(
+            xyz_file=args.xyz_file,
+            output=args.output,
+            periodic=args.periodic,
+            md_format=args.engine,
+            mode=args.mode,
+        )
 
 
 def main():
@@ -33,33 +77,8 @@ def main():
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    parser.add_argument(
-        'xyz_file',
-        type=str,
-        help='The gen file to be converted.'
-    )
-
-    parser.parse_output_file()
-
-    parser.add_argument(
-        'periodic',
-        choices=[True, False, None],
-        default=None,
-        help=(
-            'If True, the box is printed. If False, the box is not printed. '
-            'If None, the box is printed if it is present in the xyz file.'
-        )
-    )
-
-    parser.parse_engine()
-    parser.parse_mode()
+    XYZ2GENCLI.add_arguments(parser)
 
     args = parser.parse_args()
 
-    xyz2gen(
-        xyz_file=args.xyz_file,
-        output=args.output,
-        periodic=args.periodic,
-        md_format=args.engine,
-        mode=args.mode,
-    )
+    XYZ2GENCLI.run(args)

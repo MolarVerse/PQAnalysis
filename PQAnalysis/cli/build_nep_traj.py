@@ -22,11 +22,15 @@ __epilog__ = "\n"
 __epilog__ += "For more information on required and optional input file keys please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.build_nep_traj.html."
 __epilog__ += "\n"
+__epilog__ += "\n"
 
 __doc__ += __outputdoc__
 
 
 class BuildNEPTrajCLI(CLIBase):
+    """
+    Command Line Tool for Building Neuroevolution Potential (NEP) training/test trajectories
+    """
     @classmethod
     def program_name(cls):
         return 'build_nep_traj'

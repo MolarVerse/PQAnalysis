@@ -31,6 +31,7 @@ dependencies = [
     "decorator",
     "argcomplete",
     "unum",
+    "rich-argparse",
 ]
 
 [project.optional-dependencies]
