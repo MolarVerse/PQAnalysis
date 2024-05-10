@@ -7,7 +7,7 @@ continue_input
 .. currentmodule:: PQAnalysis.cli.continue_input
 
 .. automodule:: PQAnalysis.cli.continue_input
-    :members: main
+    :members: code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

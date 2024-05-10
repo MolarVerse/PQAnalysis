@@ -17,8 +17,8 @@ io.gen_file
 
        PQAnalysis.io.gen_file.api
        PQAnalysis.io.gen_file.exceptions
-       PQAnalysis.io.gen_file.genFileReader
-       PQAnalysis.io.gen_file.genFileWriter
+       PQAnalysis.io.gen_file.gen_file_reader
+       PQAnalysis.io.gen_file.gen_file_writer
 
 
 

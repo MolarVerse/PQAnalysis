@@ -7,7 +7,7 @@ rdf
 .. currentmodule:: PQAnalysis.analysis.rdf.rdf
 
 .. automodule:: PQAnalysis.analysis.rdf.rdf
-    :members: RDF
+    :members: RDF, with_progress_bar
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

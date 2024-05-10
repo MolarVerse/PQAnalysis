@@ -7,7 +7,7 @@ units
 .. currentmodule:: PQAnalysis.utils.units
 
 .. automodule:: PQAnalysis.utils.units
-    :members: mole
+    :members: J, J_per_mol, cal, eV, kcal, kcal_per_mol, mol
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

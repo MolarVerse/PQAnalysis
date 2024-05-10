@@ -18,7 +18,7 @@ topology
        PQAnalysis.topology.api
        PQAnalysis.topology.exceptions
        PQAnalysis.topology.selection
-       PQAnalysis.topology.shakeTopology
+       PQAnalysis.topology.shake_topology
        PQAnalysis.topology.topology
 
     Subpackages

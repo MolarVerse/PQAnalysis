@@ -7,13 +7,20 @@ custom_logging
 .. currentmodule:: PQAnalysis.utils.custom_logging
 
 .. automodule:: PQAnalysis.utils.custom_logging
-    :members: CustomColorFormatter, CustomFormatter, CustomLogger, setup_logger
+    :members: CustomColorFormatter, CustomFormatter, CustomLogger, CustomLoggerException, log_file_name, setup_logger, use_log_file
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Exceptions:
+
+    .. autosummary::
+        :nosignatures:
+
+        CustomLoggerException
 
     Classes:
 

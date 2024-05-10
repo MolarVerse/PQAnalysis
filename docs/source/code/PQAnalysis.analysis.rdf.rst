@@ -18,8 +18,8 @@ analysis.rdf
        PQAnalysis.analysis.rdf.api
        PQAnalysis.analysis.rdf.exceptions
        PQAnalysis.analysis.rdf.rdf
-       PQAnalysis.analysis.rdf.rdfInputFileReader
-       PQAnalysis.analysis.rdf.rdfOutputFileWriter
+       PQAnalysis.analysis.rdf.rdf_input_file_reader
+       PQAnalysis.analysis.rdf.rdf_output_file_writer
 
 
 
