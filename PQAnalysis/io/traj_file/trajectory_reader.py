@@ -33,6 +33,7 @@ class TrajectoryReader(BaseReader):
 
     # Set up the logger
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(
         self,
@@ -58,9 +59,6 @@ class TrajectoryReader(BaseReader):
             Whether the topology is constant over the trajectory or does change. Default is True.
         """
         super().__init__(filename)
-
-        # Set up the logger
-        self.logger = setup_logger(self.logger)
 
         if not self.multiple_files:
             self.filenames = [self.filename]
@@ -240,7 +238,8 @@ class TrajectoryReader(BaseReader):
                         frame_lines = [line]
 
                 if frame_lines:
-                    frame = self._read_single_frame("".join(frame_lines), self.topology)
+                    frame = self._read_single_frame(
+                        "".join(frame_lines), self.topology)
 
                     if frame.cell.is_vacuum and last_cell is not None:
                         frame.cell = last_cell
@@ -376,7 +375,11 @@ class TrajectoryReader(BaseReader):
         )
 
         # reads first window and converts it to a queue
-        window = Trajectory([next(generator) for _ in range(window_size)])
+        window = Trajectory(
+            [
+                next(generator) for _ in range(window_size)  # pylint: disable=stop-iteration-return
+            ]
+        )
 
         # yield the first window
         yield window.copy()
@@ -390,7 +393,9 @@ class TrajectoryReader(BaseReader):
             # get the next window
             for _ in range(window_gap):
                 window.pop(0)
-                window.append(next(generator))
+                window.append(
+                    next(generator)  # pylint: disable=stop-iteration-return
+                )
 
             # yield the next window
             yield window.copy()
