@@ -6,7 +6,6 @@ from __future__ import annotations
 
 # 3rd party modules
 import logging
-import os
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
@@ -238,7 +237,8 @@ class TrajectoryReader(BaseReader):
                         frame_lines = [line]
 
                 if frame_lines:
-                    frame = self._read_single_frame("".join(frame_lines), self.topology)
+                    frame = self._read_single_frame(
+                        "".join(frame_lines), self.topology)
 
                     if frame.cell.is_vacuum and last_cell is not None:
                         frame.cell = last_cell
@@ -398,22 +398,44 @@ class TrajectoryReader(BaseReader):
         n_frames = 0
 
         for filename in self.filenames:
-
-            # TODO: Add check to BaseReader to check if the file is empty
-            if os.path.getsize(filename) == 0:
-                continue
-
             with open(filename, "r", encoding="utf-8") as f:
 
-                # Read the lines
                 lines = f.readlines()
+                n_lines = len(lines)
 
-            # +2 for the cell and atom count lines
-            n_frames += int(len(lines) / (int(lines[0].split()[0]) + 2))
+                # If the file is empty, continue to the next file
+                if n_lines == 0:
+                    continue
+
+                try:
+                    n_atoms = int(lines[0].split()[0])
+                except (ValueError, IndexError):
+                    self.logger.error(
+                        (
+                            "Invalid number of atoms in the first line "
+                            f"of file {filename}."
+                        ),
+                        exception=TrajectoryReaderError
+                    )
+
+                # +2 for the cell and atom count lines
+                _n_frames, remainder = divmod(n_lines, n_atoms + 2)
+
+                if remainder != 0:
+                    self.logger.error(
+                        (
+                            "The number of lines in the file is not divisible "
+                            f"by the number of atoms {n_atoms} "
+                            "in the first line."
+                        ),
+                        exception=TrajectoryReaderError
+                    )
+
+                n_frames += _n_frames
 
         return n_frames
 
-    @property
+    @ property
     def cells(self) -> list[Cell]:
         """
         Returns the cells of the trajectory.

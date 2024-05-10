@@ -238,7 +238,8 @@ class TestTrajectory:
             logging_level="ERROR",
             message_to_test=(
                 "start index is greater than or equal to the stop index"),
-            function=traj.window(1, 1, trajectory_start=2, trajectory_stop=1).__next__,
+            function=traj.window(1, 1, trajectory_start=2,
+                                 trajectory_stop=1).__next__,
         )
 
         assert_logging_with_exception(
@@ -249,7 +250,8 @@ class TestTrajectory:
             message_to_test=(
                 "window size is greater than the trajectory_stop - trajectory_start"
             ),
-            function=traj.window(3, 1, trajectory_start=1, trajectory_stop=3).__next__,
+            function=traj.window(3, 1, trajectory_start=1,
+                                 trajectory_stop=3).__next__,
         )
 
     def test__iter__(self):
@@ -298,7 +300,7 @@ class TestTrajectory:
 
         assert traj.frames == [self.frame1]
 
-    def test_pop(self): 
+    def test_pop(self):
         traj = Trajectory(self.frames)
         assert traj.pop() == self.frame3
         assert traj.frames == [self.frame1, self.frame2]

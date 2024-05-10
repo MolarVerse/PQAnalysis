@@ -156,10 +156,12 @@ class TestTrajectoryReader:
         test_frames = [frame for frame in reader.frame_generator()]
         assert test_frames == [frame1, frame2, frame1, frame2]
 
-        test_frames = [frame for frame in reader.frame_generator(trajectory_start=1)]
+        test_frames = [
+            frame for frame in reader.frame_generator(trajectory_start=1)]
         assert test_frames == [frame2, frame1, frame2]
 
-        test_frames = [frame for frame in reader.frame_generator(trajectory_stop=3)]
+        test_frames = [
+            frame for frame in reader.frame_generator(trajectory_stop=3)]
         assert test_frames == [frame1, frame2, frame1]
 
         # TODO: test topology set when const_topology and topology is None (Pylint)
@@ -191,7 +193,8 @@ class TestTrajectoryReader:
             TrajectoryReader.__qualname__,
             exception=IndexError,
             logging_level="ERROR",
-            message_to_test=("start index is greater than or equal to the stop index"),
+            message_to_test=(
+                "start index is greater than or equal to the stop index"),
             function=reader.frame_generator(
                 trajectory_start=1, trajectory_stop=1
             ).__next__,
@@ -245,7 +248,8 @@ class TestTrajectoryReader:
         test_frames = list(reader.window_generator(window_size=4))
         assert test_frames == [Trajectory([frame1, frame2, frame1, frame2])]
 
-        test_frames = list(reader.window_generator(window_size=2, window_gap=2))
+        test_frames = list(reader.window_generator(
+            window_size=2, window_gap=2))
         assert test_frames == [
             Trajectory([frame1, frame2]),
             Trajectory([frame1, frame2]),
@@ -318,7 +322,8 @@ class TestTrajectoryReader:
             message_to_test=(
                 "start index is less than 0 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(1, 1, trajectory_start=-1).__next__,
+            function=reader.window_generator(
+                1, 1, trajectory_start=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -342,7 +347,8 @@ class TestTrajectoryReader:
             message_to_test=(
                 "stop index is less than 0 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(1, 1, trajectory_stop=-1).__next__,
+            function=reader.window_generator(
+                1, 1, trajectory_stop=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -363,7 +369,8 @@ class TestTrajectoryReader:
             TrajectoryReader.__qualname__,
             exception=IndexError,
             logging_level="ERROR",
-            message_to_test=("start index is greater than or equal to the stop index"),
+            message_to_test=(
+                "start index is greater than or equal to the stop index"),
             function=reader.window_generator(
                 1, 1, trajectory_start=1, trajectory_stop=0
             ).__next__,
@@ -374,7 +381,8 @@ class TestTrajectoryReader:
             TrajectoryReader.__qualname__,
             exception=IndexError,
             logging_level="ERROR",
-            message_to_test=("start index is greater than or equal to the stop index"),
+            message_to_test=(
+                "start index is greater than or equal to the stop index"),
             function=reader.window_generator(
                 1, 1, trajectory_start=1, trajectory_stop=1
             ).__next__,
