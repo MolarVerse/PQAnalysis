@@ -6,6 +6,7 @@ import logging
 
 from decorator import decorator
 from beartype.door import is_bearable
+from beartype.typing import ForwardRef
 
 from PQAnalysis.utils.custom_logging import setup_logger
 from .types import (
@@ -62,6 +63,14 @@ def runtime_type_checking(func, *args, **kwargs):
     # Check the type of each argument
     for arg_name, arg_value in zip(func.__code__.co_varnames, args):
         if arg_name in type_hints:
+
+            if isinstance(type_hints[arg_name], str):
+                type_hints[arg_name] = ForwardRef(type_hints[arg_name])._evaluate(
+                    globals(),
+                    locals(),
+                    frozenset()
+                )
+
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
                     get_type_error_message(
