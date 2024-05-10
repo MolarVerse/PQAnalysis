@@ -218,7 +218,7 @@ class TestTrajectory:
             message_to_test=(
                 "start index is less than 0 or greater than the length of the trajectory"
             ),
-            function=traj.window(1, 1, window_start=-1).__next__,
+            function=traj.window(1, 1, trajectory_start=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -229,7 +229,7 @@ class TestTrajectory:
             message_to_test=(
                 "stop index is less than 0 or greater than the length of the trajectory"
             ),
-            function=traj.window(1, 1, window_stop=-1).__next__,
+            function=traj.window(1, 1, trajectory_stop=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -239,7 +239,8 @@ class TestTrajectory:
             logging_level="ERROR",
             message_to_test=(
                 "start index is greater than or equal to the stop index"),
-            function=traj.window(1, 1, window_start=2, window_stop=1).__next__,
+            function=traj.window(1, 1, trajectory_start=2,
+                                 trajectory_stop=1).__next__,
         )
 
         assert_logging_with_exception(
@@ -248,9 +249,10 @@ class TestTrajectory:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-                "window size is greater than the window_stop - window_start"
+                "window size is greater than the trajectory_stop - trajectory_start"
             ),
-            function=traj.window(3, 1, window_start=1, window_stop=3).__next__,
+            function=traj.window(3, 1, trajectory_start=1,
+                                 trajectory_stop=3).__next__,
         )
 
     def test__iter__(self):
@@ -298,6 +300,18 @@ class TestTrajectory:
         print(len(traj))
 
         assert traj.frames == [self.frame1]
+
+    def test_pop(self):
+        traj = Trajectory(self.frames)
+        assert traj.pop() == self.frame3
+        assert traj.frames == [self.frame1, self.frame2]
+
+        assert traj.pop(0) == self.frame1
+        assert traj.frames == [self.frame2]
+
+        with pytest.raises(IndexError) as exception:
+            traj.pop(1)
+        assert str(exception.value) == "pop index out of range"
 
     def test_property_topology(self):
         frame1 = AtomicSystem()

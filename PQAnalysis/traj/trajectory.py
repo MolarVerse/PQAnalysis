@@ -95,6 +95,35 @@ class Trajectory:
 
         self.frames.append(frame)
 
+    def pop(self, index: int = -1) -> AtomicSystem:
+        """
+        Removes a frame from the trajectory at the specified index.
+
+        Parameters
+        ----------
+        index : int
+            The index of the frame to remove.
+
+        Returns
+        -------
+        AtomicSystem
+            The frame removed from the trajectory.
+        """
+
+        return self.frames.pop(index)
+
+    def copy(self) -> Trajectory:
+        """
+        Returns a copy of the trajectory.
+
+        Returns
+        -------
+        Trajectory
+            A copy of the trajectory.
+        """
+
+        return Trajectory(self.frames.copy())
+
     def __len__(self) -> int:
         """
         This method allows the length of a trajectory to be computed.
@@ -151,9 +180,9 @@ class Trajectory:
         self,
         window_size: int,
         window_gap: int = 1,
-        window_start: int = 0,
-        window_stop: int | None = None,
-    ) -> Iterable["Trajectory"]:
+        trajectory_start: int = 0,
+        trajectory_stop: int | None = None,
+    ) -> Iterable[Trajectory]:
         """
         This method allows a window of the trajectory to be retrieved.
         Window is a sequence of frames from start to stop with a window size and a gap size.
@@ -164,10 +193,10 @@ class Trajectory:
             The size of the window.
         window_gap : int, optional
             The gap size between two windows, by default 1
-        window_start : int, optional
+        trajectory_start : int, optional
             The start index of the first window, by default 0
-        window_stop : int | None, optional
-            The last index of the last window, by default None, which then
+        trajectory_stop : int | None, optional
+            Stop index of the window generator, by default None, which then
             set to the length of the trajectory.
 
         Raises
@@ -177,7 +206,7 @@ class Trajectory:
             If window_stop is less than 0 or greater than the length of the trajectory.
             If window_size is less than 1 or greater than the length of the trajectory.
             If window_gap is less than 1 or greater than the length of the trajectory.
-            If window_size is greater than window_stop - window_start.
+            If window_size is greater than trajectory_stop - trajectory_start.
 
         Warning
         -------
@@ -189,21 +218,21 @@ class Trajectory:
             An iterable over the windows of the trajectory with the specified window size and gap.
         """
 
-        # If window_stop is not provided, set it to the length of the trajectory
-        if window_stop is None:
-            window_stop = len(self)
+        # If trajectory_stop is not provided, set it to the length of the trajectory
+        if trajectory_stop is None:
+            trajectory_stop = len(self)
 
-        # If window_start is less than 0 or greater than the
+        # If trajectory_start is less than 0 or greater than the
         # length of the trajectory, raise an IndexError
-        if window_start < 0 or window_start > len(self):
+        if trajectory_start < 0 or trajectory_start > len(self):
             self.logger.error(
                 "start index is less than 0 or greater than the length of the trajectory",
                 exception=PQIndexError,
             )
 
-        # If window_stop is less than 0 or greater than the
+        # If trajectory_stop is less than 0 or greater than the
         # length of the trajectory, raise an IndexError
-        if window_stop < 0 or window_stop > len(self):
+        if trajectory_stop < 0 or trajectory_stop > len(self):
             self.logger.error(
                 "stop index is less than 0 or greater than the length of the trajectory",
                 exception=PQIndexError,
@@ -225,15 +254,15 @@ class Trajectory:
                 exception=PQIndexError,
             )
 
-        # If window_start is greater than or equal to window_stop, raise an IndexError
-        if window_start >= window_stop:
+        # If trajectory_start is greater than or equal to trajectory_stop, raise an IndexError
+        if trajectory_start >= trajectory_stop:
             self.logger.error(
                 "start index is greater than or equal to the stop index",
                 exception=PQIndexError,
             )
 
-        # If window_size is greater than window_stop - window_start, raise an IndexError
-        if window_size > window_stop - window_start:
+        # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError
+        if window_size > trajectory_stop - trajectory_start:
             self.logger.error(
                 "window size is greater than the window_stop - window_start",
                 exception=PQIndexError,
@@ -241,13 +270,13 @@ class Trajectory:
 
         # Check if all frames are included in the windows
         # Length of the trajectory - window_size should be divisible by window_gap
-        if ((window_stop - window_start) - window_size) % window_gap != 0:
+        if ((trajectory_stop - trajectory_start) - window_size) % window_gap != 0:
             self.logger.warning(
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
         # generate the window of the trajectory
-        for i in range(window_start, window_stop - window_size + 1, window_gap):
+        for i in range(trajectory_start, trajectory_stop - window_size + 1, window_gap):
             yield self[i: i + window_size]
 
     def __contains__(self, item: AtomicSystem) -> bool:
