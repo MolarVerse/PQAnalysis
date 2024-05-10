@@ -2,6 +2,7 @@
 Unit tests for the PQAnalysis package.
 """
 
-# import os
+import os
 
-# os.environ['PQANALYSIS_BEARTYPE_LEVEL'] = "RELEASE"
+__beartype_level__ = os.environ.get("PQANALYSIS_BEARTYPE_LEVEL", "DEBUG")
+__beartype_level__ = __beartype_level__.upper()

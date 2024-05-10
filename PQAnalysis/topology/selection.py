@@ -8,13 +8,38 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
-from beartype.typing import List, TypeVar, Any
+from beartype.typing import List, TypeVar, Any, Union
 
 # local imports
 from PQAnalysis import __base_path__
 from PQAnalysis.types import Np1DIntArray
 from PQAnalysis.core import Atom, Atoms, Element, Elements
 from .topology import Topology
+
+#: | A type variable for the Selection class.
+#: | It can be used to specify the type of the selection object.
+#: | The following types are supported:
+#: |     - str: the given string is parsed and the atoms selected by the selection are selected
+#: |     - Atom: the given atom is selected
+#: |     - Element: all atoms with the given element type are selected
+#: |     - Atoms: all atoms in the given list are selected
+#: |     - Elements: all atoms with the given element types are selected
+#: |     - Np1DIntArray: the atoms with the given indices are selected
+#: |     - List[str]: all atoms with the given atom type names are selected
+#: |     - Selection: the given selection is copied
+#: |     - None: all atoms are selected
+SelectionCompatible = TypeVar(
+    'SelectionCompatible',
+    str,
+    'PQAnalysis.core.Atom',
+    List['PQAnalysis.core.Atom'],
+    'PQAnalysis.core.Element',
+    List['PQAnalysis.core.Element'],
+    Np1DIntArray,
+    List[str],
+    'PQAnalysis.topology.Selection',
+    None
+)
 
 
 class Selection:
@@ -141,30 +166,6 @@ class Selection:
             The string representation of the selection object.
         """
         return str(self.selection_object)
-
-
-#: | A type variable for the Selection class.
-#: | It can be used to specify the type of the selection object.
-#: | The following types are supported:
-#: |     - str: the given string is parsed and the atoms selected by the selection are selected
-#: |     - Atom: the given atom is selected
-#: |     - Element: all atoms with the given element type are selected
-#: |     - Atoms: all atoms in the given list are selected
-#: |     - Elements: all atoms with the given element types are selected
-#: |     - Np1DIntArray: the atoms with the given indices are selected
-#: |     - List[str]: all atoms with the given atom type names are selected
-#: |     - Selection: the given selection is copied
-#: |     - None: all atoms are selected
-SelectionCompatible = TypeVar(
-    "SelectionCompatible",
-    str,
-    Atoms, Atom,
-    Element, Elements,
-    Np1DIntArray,
-    List[str],
-    Selection,
-    None
-)
 
 
 def _selection(atoms: SelectionCompatible,

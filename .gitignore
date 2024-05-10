@@ -21,3 +21,5 @@ env.bak/
 venv.bak/
 
 .examples
+.mypy_cache
+.pytest_cache
