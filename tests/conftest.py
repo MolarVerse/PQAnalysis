@@ -5,8 +5,12 @@ import logging
 
 from contextlib import contextmanager
 from _pytest.logging import LogCaptureHandler, _remove_ansi_escape_sequences
+from beartype.roar import BeartypeCallHintParamViolation
 
+from PQAnalysis.utils.custom_logging import CustomLoggerException
 from PQAnalysis import __package_name__
+
+from . import __beartype_level__
 
 
 @pytest.fixture(scope="function")
@@ -93,8 +97,11 @@ def assert_logging_with_exception(caplog, logging_name, logging_level, message_t
         result = None
         try:
             result = function(*args, **kwargs)
-        except as ex:
-            if ex is Bea
+        except (CustomLoggerException, BeartypeCallHintParamViolation) as e:
+            if isinstance(e, BeartypeCallHintParamViolation) and exception is TypeError:
+                return result
+            if not isinstance(e, CustomLoggerException):
+                raise e
 
         record = caplog.records[0]
 
@@ -128,3 +135,14 @@ def assert_logging(caplog, logging_name, logging_level, message_to_test, functio
         *args,
         **kwargs
     )
+
+
+def assert_type_error_in_debug_mode(func, *args, **kwargs):
+    if __beartype_level__ == "DEBUG":
+        with pytest.raises(BeartypeCallHintParamViolation):
+            func(*args, **kwargs)
+    else:
+        try:
+            func(*args, **kwargs)
+        except:
+            pytest.fail("Function raised an exception in non-debug mode")

@@ -13,7 +13,7 @@ from PQAnalysis.atomic_system.exceptions import (
 from PQAnalysis.types import Real, Np1DNumberArray, Np2DNumberArray, Np3x3NumberArray
 
 from . import pytestmark  # pylint: disable=unused-import
-from ..conftest import assert_logging_with_exception
+from ..conftest import assert_logging_with_exception, assert_type_error_in_debug_mode
 
 
 class TestAtomicSystem:
@@ -270,7 +270,11 @@ class TestAtomicSystem:
         )
 
         # should work without raising an exception
-        system.set_pos_no_checks(np.array([0, 0, 0]))
+        assert_type_error_in_debug_mode(
+            system.set_pos_no_checks,
+            np.array([0, 0, 0])
+        )
+
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
 
         assert_logging_with_exception(
