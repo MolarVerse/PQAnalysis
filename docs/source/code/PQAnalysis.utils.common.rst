@@ -7,7 +7,7 @@ common
 .. currentmodule:: PQAnalysis.utils.common
 
 .. automodule:: PQAnalysis.utils.common
-    :members: header, line, print_header
+    :members: print_header
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

@@ -7,7 +7,7 @@ decorators
 .. currentmodule:: PQAnalysis.utils.decorators
 
 .. automodule:: PQAnalysis.utils.decorators
-    :members: count_decorator, get_argvar_by_name
+    :members: count_decorator, get_arg_var_by_name
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,7 +21,7 @@ decorators
         :nosignatures:
 
         count_decorator
-        get_argvar_by_name
+        get_arg_var_by_name
 
 
 

@@ -20,6 +20,7 @@
        PQAnalysis.config
        PQAnalysis.exceptions
        PQAnalysis.formats
+       PQAnalysis.type_checking
        PQAnalysis.types
 
     Subpackages
@@ -29,11 +30,11 @@
        :maxdepth: 1
 
        PQAnalysis.analysis
-       PQAnalysis.atomicSystem
+       PQAnalysis.atomic_system
        PQAnalysis.cli
        PQAnalysis.core
        PQAnalysis.io
-       PQAnalysis.physicalData
+       PQAnalysis.physical_data
        PQAnalysis.tools
        PQAnalysis.topology
        PQAnalysis.traj
