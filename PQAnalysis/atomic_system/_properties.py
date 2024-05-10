@@ -11,6 +11,7 @@ from beartype.typing import List
 from PQAnalysis.core import Cell
 from PQAnalysis.types import Np1DNumberArray
 from ._decorators import check_atoms_has_mass, check_atoms_pos
+from .exceptions import AtomicSystemError
 
 
 class _PropertiesMixin:
@@ -29,7 +30,7 @@ class _PropertiesMixin:
 
         Raises
         ------
-        ValueError
+        AtomicSystemError
             If the number of atoms in the topology, positions, velocities, 
             forces and charges are not equal (if they are not 0).
 
@@ -47,9 +48,12 @@ class _PropertiesMixin:
             return 0
 
         if not np.all(n_atoms_list == n_atoms_list[0]):
-            raise ValueError(
-                "The number of atoms (or atoms in the topology), "
-                "positions, velocities, forces and charges must be equal."
+            self.logger.error(
+                (
+                    "The number of atoms (or atoms in the topology), "
+                    "positions, velocities, forces and charges must be equal."
+                ),
+                exception=AtomicSystemError
             )
 
         return int(n_atoms_list[0])
