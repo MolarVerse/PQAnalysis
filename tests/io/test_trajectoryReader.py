@@ -48,8 +48,9 @@ class TestTrajectoryReader:
 
         print(traj[0].topology.atoms)
         print(traj[1].topology.atoms)
-        print(traj[0].cell)
-        print(traj[1].cell)
+        # traj[] can also return an AtomicSystem
+        print(traj[0].cell)  # pylint: disable=no-member
+        print(traj[1].cell)  # pylint: disable=no-member
 
         frame1 = AtomicSystem(
             atoms=atoms, pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]), cell=cell
@@ -87,8 +88,8 @@ class TestTrajectoryReader:
 
         traj = reader.read()
 
-        print(traj[0].atoms[0].name.lower())
-        print(traj[1].atoms[0].name)
+        print(traj[0].atoms[0].name.lower())  # pylint: disable=no-member
+        print(traj[1].atoms[0].name)  # pylint: disable=no-member
         print(frame1.atoms[0].name)
         print(frame2.atoms[0].name)
 
@@ -283,7 +284,6 @@ class TestTrajectoryReader:
             )
         )
         assert test_frames == [Trajectory([frame2, frame1])]
-
 
         # Test file change after setting the reader
         file = open("tmp.xyz", "w")
@@ -550,7 +550,7 @@ class TestTrajectoryReader:
             exception=TrajectoryReaderError,
             logging_level="ERROR",
             message_to_test=(
-                "The number of lines in the file is not divisible " 
+                "The number of lines in the file is not divisible "
                 "by the number of atoms 2 in the first line."
             ),
             function=reader.calculate_number_of_frames,
@@ -597,7 +597,7 @@ class TestTrajectoryReader:
         file.close()
 
         cell = Cell(1.0, 1.0, 1.0)
-        
+
         test_cells = reader.cells
         assert test_cells == [cell, cell]
 
