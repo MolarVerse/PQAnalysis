@@ -35,11 +35,27 @@ class Traj2QMCFCCLI(CLIBase):
     Command Line Tool for Converting PQ to QMCFC Trajectory Files
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'traj2qmcfc'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.parse_output_file()
 
         parser.add_argument(
@@ -51,7 +67,15 @@ class Traj2QMCFCCLI(CLIBase):
         parser.parse_mode()
 
     @classmethod
-    def run(cls, args):
+    def run(cls, args) -> None:
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : _Namespace
+            The arguments from the command line.
+        """
         traj2qmcfc(args.trajectory_file, args.output)
 
 

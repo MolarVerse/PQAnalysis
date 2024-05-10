@@ -39,11 +39,28 @@ class AddMoleculesCLI(CLIBase):
     Command Line Tool for Adding Molecules to Restart Files
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'add_molecules'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
+
         parser.add_argument(
             'restart_file',
             type=str,
@@ -191,6 +208,14 @@ class AddMoleculesCLI(CLIBase):
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the add_molecules function.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The parsed arguments.
+        """
         add_molecule(
             args.restart_file,
             args.molecule_file,

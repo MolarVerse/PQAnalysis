@@ -36,11 +36,27 @@ class Rst2XYZCLI(CLIBase):
     Command Line Tool for Converting Restart Files to XYZ Files
     """
     @classmethod
-    def program_name(cls):
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
         return 'rst2xyz'
 
     @classmethod
-    def add_arguments(cls, parser):
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
         parser.parse_output_file()
 
         parser.add_argument(
@@ -60,6 +76,14 @@ class Rst2XYZCLI(CLIBase):
 
     @classmethod
     def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The arguments parsed by the parser.
+        """
         rst2xyz(
             restart_file=args.restart_file,
             output=args.output,
