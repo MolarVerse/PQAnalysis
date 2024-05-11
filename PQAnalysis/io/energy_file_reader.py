@@ -3,10 +3,14 @@ A module containing the EnergyFileReader class.
 """
 
 import os
+import logging
 import numpy as np
 
 from PQAnalysis.physical_data import Energy
 from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .base import BaseReader
 from .info_file_reader import InfoFileReader
 
@@ -82,8 +86,12 @@ class EnergyFileReader(BaseReader):
         info, units = None, None
 
         if self.with_info_file:
+
             reader = InfoFileReader(
-                self.info_filename, engine_format=self.format)
+                self.info_filename,
+                engine_format=self.format
+            )
+
             info, units = reader.read()
 
         with open(self.filename, "r", encoding='utf-8') as file:

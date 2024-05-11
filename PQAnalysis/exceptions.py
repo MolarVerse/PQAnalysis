@@ -35,6 +35,12 @@ class PQNotImplementedError(PQException):
     """
 
 
+class PQFileNotFoundError(PQException):
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+
 class BaseEnumFormatError(PQException):
     """
     Base class for enum exceptions if the given enum is not valid
