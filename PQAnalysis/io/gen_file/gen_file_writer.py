@@ -11,6 +11,7 @@ from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQValueError
 
 
 
@@ -61,14 +62,20 @@ class GenFileWriter(BaseWriter):
             The periodicity of the system. If True, the system is considered periodic. 
             If False, the system is considered non-periodic. If None, the periodicity 
             is inferred from the system, by default None.
+            
+        Raises
+        ------
+        PQValueError
+            If the system is non-periodic and periodic is set to True.
         """
 
         self.system = system
 
         if periodic is not None:
             if periodic and self.system.cell.is_vacuum:
-                raise ValueError(
-                    "Invalid periodicity. The system is non-periodic."
+                self.logger.error(
+                    "Invalid periodicity. The system is non-periodic.",
+                    exception=PQValueError,
                 )
 
             if periodic:
