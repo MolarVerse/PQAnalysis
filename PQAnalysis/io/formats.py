@@ -3,10 +3,22 @@ A module containing different formats related to the io subpackage.
 """
 from __future__ import annotations
 
+import logging
+
 from beartype.typing import Any, List
 
 from PQAnalysis.formats import BaseEnumFormat
-from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
+from .exceptions import (
+    BoxFileFormatError,
+    FileWritingModeError,
+    OutputFileFormatError
+)
+
+logger = logging.getLogger(__package_name__).getChild("OutputFileFormat")
+logger = setup_logger(logger)
 
 
 class OutputFileFormat(BaseEnumFormat):
@@ -73,9 +85,12 @@ class OutputFileFormat(BaseEnumFormat):
         output_file_format = super()._missing_(value, OutputFileFormatError)
 
         if output_file_format == cls.AUTO and filename is None:
-            raise OutputFileFormatError(
-                "The file format could not be inferred from "
-                "the file extension because no filename was given."
+            logger.error(
+                (
+                    "The file format could not be inferred from "
+                    "the file extension because no filename was given."
+                ),
+                exception=OutputFileFormatError
             )
 
         if output_file_format == cls.AUTO:
@@ -144,10 +159,13 @@ class OutputFileFormat(BaseEnumFormat):
         if file_extension in cls.file_extensions()[cls.RESTART]:
             return cls.RESTART
 
-        raise OutputFileFormatError(
-            "Could not infer the file format from the file extension of "
-            f"\"{file_path}\". Possible file formats are: "
-            f"{cls.__members__.values()}"
+        logger.error(
+            (
+                "Could not infer the file format from the file extension of "
+                f"\"{file_path}\". Possible file formats are: "
+                f"{cls.__members__.values()}"
+            ),
+            exception=OutputFileFormatError
         )
 
     @classmethod
@@ -198,8 +216,11 @@ class OutputFileFormat(BaseEnumFormat):
         if extension is not None:
             files = [file for file in file_path if file.endswith(extension)]
         else:
-            files = [file for file in file_path if file.endswith(
-                tuple(cls.get_file_extensions(output_file_format)))]
+            files = [
+                file
+                for file in file_path
+                if file.endswith(tuple(cls.get_file_extensions(output_file_format)))
+            ]
 
         return files
 
