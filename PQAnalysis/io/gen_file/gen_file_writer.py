@@ -12,6 +12,7 @@ from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
@@ -24,6 +25,7 @@ class GenFileWriter(BaseWriter):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(
         self,
         filename: str,
@@ -46,6 +48,7 @@ class GenFileWriter(BaseWriter):
         self.system = None
         self.periodic = None
 
+    @runtime_type_checking
     def write(
         self,
         system: AtomicSystem,
@@ -86,15 +89,15 @@ class GenFileWriter(BaseWriter):
             self.periodic = "C" if self.system.cell.is_vacuum else "S"
 
         self.open()
-        self.write_header(self.periodic)
-        self.write_coords()
+        self._write_header(self.periodic)
+        self._write_coords()
 
         if self.periodic == "S":
-            self.write_box_matrix()
+            self._write_box_matrix()
 
         self.close()
 
-    def write_header(self, periodicity: str) -> None:
+    def _write_header(self, periodicity: str) -> None:
         """
         Writes the header of the gen file.
 
@@ -108,7 +111,7 @@ class GenFileWriter(BaseWriter):
 
         print(" ".join(element_names), file=self.file)
 
-    def write_coords(self) -> None:
+    def _write_coords(self) -> None:
         """
         Writes the coordinates of the system.
 
@@ -134,7 +137,7 @@ class GenFileWriter(BaseWriter):
                 file=self.file
             )
 
-    def write_box_matrix(self) -> None:
+    def _write_box_matrix(self) -> None:
         """
         Writes the box matrix of the system.
 
