@@ -16,7 +16,9 @@ from .formats import FileWritingMode
 from .exceptions import FileWritingModeError
 
 
+
 class BaseWriter:
+
     """
     A base class for all writers.
 
@@ -45,10 +47,11 @@ class BaseWriter:
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
-    def __init__(self,
-                 filename: str | None = None,
-                 mode: str | FileWritingMode = 'w'
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str | None = None,
+        mode: str | FileWritingMode = 'w'
+    ) -> None:
         """
         Parameters
         ----------
@@ -141,16 +144,13 @@ class BaseWriter:
         """
         mode = FileWritingMode(mode)
 
-        if (
-            mode == FileWritingMode.WRITE and
-            self.filename is not None and
-            os.path.isfile(self.filename)
-        ):
+        if (mode == FileWritingMode.WRITE and self.filename is not None
+                and os.path.isfile(self.filename)):
             self.logger.error(
                 (
-                    f"File {self.filename} already exists. "
-                    "Use mode \'a\' to append to the file or mode "
-                    "\'o\' to overwrite the file."
+                f"File {self.filename} already exists. "
+                "Use mode \'a\' to append to the file or mode "
+                "\'o\' to overwrite the file."
                 ),
                 exception=FileWritingModeError
             )
@@ -161,7 +161,9 @@ class BaseWriter:
         self._mode = mode
 
 
+
 class BaseReader:
+
     """
     A base class for all readers.
 
@@ -209,8 +211,8 @@ class BaseReader:
                 if not os.path.isfile(_filename):
                     self.logger.error(
                         (
-                            "At least one of the given files does not exist. "
-                            f"File {_filename} not found."
+                        "At least one of the given files does not exist. "
+                        f"File {_filename} not found."
                         ),
                         exception=PQFileNotFoundError
                     )

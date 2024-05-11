@@ -18,11 +18,13 @@ logger = logging.getLogger(__package_name__).getChild("io.api")
 logger = setup_logger(logger)
 
 
+
 @runtime_type_checking
-def continue_input_file(input_file: str,
-                        n: PositiveReal = 1,
-                        input_format: InputFileFormat | str = InputFileFormat.PQ
-                        ) -> None:
+def continue_input_file(
+    input_file: str,
+    n: PositiveReal = 1,
+    input_format: InputFileFormat | str = InputFileFormat.PQ
+) -> None:
     """
     API function for continuing an input file.
 
@@ -50,8 +52,8 @@ def continue_input_file(input_file: str,
     if input_format != InputFileFormat.PQ:
         logger.error(
             (
-                f"Format {input_format} not implemented "
-                "yet for continuing input file."
+            f"Format {input_format} not implemented "
+            "yet for continuing input file."
             ),
             exception=PQNotImplementedError
         )
