@@ -5,7 +5,9 @@ This module contains the abstract base class for all the CLI classes.
 from abc import ABCMeta, abstractmethod
 
 
+
 class CLIBase(metaclass=ABCMeta):
+
     """
     Abstract base class for all the CLI classes.
     """

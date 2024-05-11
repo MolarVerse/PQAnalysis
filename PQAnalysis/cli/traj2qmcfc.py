@@ -11,7 +11,6 @@ from PQAnalysis.io import traj2qmcfc
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
-
 __outputdoc__ = """
 Converts a PQ trajectory to a QMCFC trajectory format output.
 
@@ -30,10 +29,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class Traj2QMCFCCLI(CLIBase):
+
     """
     Command Line Tool for Converting PQ to QMCFC Trajectory Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -77,6 +79,7 @@ class Traj2QMCFCCLI(CLIBase):
             The arguments from the command line.
         """
         traj2qmcfc(args.trajectory_file, args.output)
+
 
 
 def main():

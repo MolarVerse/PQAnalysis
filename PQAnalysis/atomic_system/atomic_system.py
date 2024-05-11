@@ -20,6 +20,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+
 from PQAnalysis.types import (
     Np2DNumberArray,
     Np1DNumberArray,
@@ -33,7 +34,11 @@ from ._positions import _PositionsMixin
 from .exceptions import AtomicSystemError
 
 
-class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
+
+class AtomicSystem(_PropertiesMixin,
+    _StandardPropertiesMixin,
+    _PositionsMixin):
+
     """
     A class for storing atomic systems.
 
@@ -103,18 +108,19 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 atoms: Atoms | None = None,
-                 pos: Np2DNumberArray | None = None,
-                 vel: Np2DNumberArray | None = None,
-                 forces: Np2DNumberArray | None = None,
-                 charges: Np1DNumberArray | None = None,
-                 topology: Topology | None = None,
-                 energy: float | None = None,
-                 virial: Np3x3NumberArray | None = None,
-                 stress: Np3x3NumberArray | None = None,
-                 cell: Cell = Cell()
-                 ) -> None:
+    def __init__(
+        self,
+        atoms: Atoms | None = None,
+        pos: Np2DNumberArray | None = None,
+        vel: Np2DNumberArray | None = None,
+        forces: Np2DNumberArray | None = None,
+        charges: Np1DNumberArray | None = None,
+        topology: Topology | None = None,
+        energy: float | None = None,
+        virial: Np3x3NumberArray | None = None,
+        stress: Np3x3NumberArray | None = None,
+        cell: Cell = Cell()
+    ) -> None:
         """
         For the initialization of an AtomicSystem all parameters are optional.
         If no value is given for a parameter, the default value is used which
@@ -163,8 +169,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         if topology is not None and atoms is not None:
             self.logger.error(
                 (
-                    "Cannot initialize AtomicSystem with both atoms and topology "
-                    "arguments - they are mutually exclusive."
+                "Cannot initialize AtomicSystem with both atoms and topology "
+                "arguments - they are mutually exclusive."
                 ),
                 exception=AtomicSystemError
             )
@@ -185,14 +191,15 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         self._cell = cell
 
     @runtime_type_checking
-    def fit_atomic_system(self,
-                          system: "AtomicSystem",
-                          number_of_additions: PositiveInt = 1,
-                          max_iterations: PositiveInt = 100,
-                          distance_cutoff: PositiveReal = 1.0,
-                          max_displacement: PositiveReal | Np1DNumberArray = 0.1,
-                          rotation_angle_step: PositiveInt = 10,
-                          ) -> "List[AtomicSystem] | AtomicSystem":
+    def fit_atomic_system(
+        self,
+        system: "AtomicSystem",
+        number_of_additions: PositiveInt = 1,
+        max_iterations: PositiveInt = 100,
+        distance_cutoff: PositiveReal = 1.0,
+        max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+        rotation_angle_step: PositiveInt = 10,
+    ) -> "List[AtomicSystem] | AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
@@ -216,14 +223,14 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         First a random center of mass is chosen and a random displacement
         is applied to the system. Then the system is rotated in all possible
-        ways and the distances between the atoms are checked. If the 
+        ways and the distances between the atoms are checked. If the
         distances are larger than the distance cutoff, the system is fitted.
 
         Returns
         -------
         List[AtomicSystem] | AtomicSystem
             The fitted AtomicSystem(s). If number_of_additions is 1,
-            a single AtomicSystem is returned, otherwise a list of 
+            a single AtomicSystem is returned, otherwise a list of
             AtomicSystems is returned.
 
         Raises
@@ -247,35 +254,38 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             )
 
             self.fitting_logger.info(
-                f"Performing fitting for {
-                    i + 1}/{number_of_additions} addition(s)."
+                (
+                f"Performing fitting for {i + 1}/{number_of_additions} "
+                "addition(s)."
+                )
             )
 
             systems.append(
                 self._fit_atomic_system(
-                    positions_to_fit_into=positions_to_fit_into,
-                    system=system,
-                    max_iterations=max_iterations,
-                    distance_cutoff=distance_cutoff,
-                    max_displacement=max_displacement,
-                    rotation_angle_step=rotation_angle_step
+                positions_to_fit_into=positions_to_fit_into,
+                system=system,
+                max_iterations=max_iterations,
+                distance_cutoff=distance_cutoff,
+                max_displacement=max_displacement,
+                rotation_angle_step=rotation_angle_step
                 )
             )
 
         return systems if number_of_additions > 1 else systems[0]
 
-    def _fit_atomic_system(self,
-                           positions_to_fit_into: Np2DNumberArray,
-                           system: "AtomicSystem",
-                           max_iterations: PositiveInt = 100,
-                           distance_cutoff: PositiveReal = 1.0,
-                           max_displacement: PositiveReal | Np1DNumberArray = 0.1,
-                           rotation_angle_step: PositiveInt = 10,
-                           ) -> "AtomicSystem":
+    def _fit_atomic_system(
+        self,
+        positions_to_fit_into: Np2DNumberArray,
+        system: "AtomicSystem",
+        max_iterations: PositiveInt = 100,
+        distance_cutoff: PositiveReal = 1.0,
+        max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+        rotation_angle_step: PositiveInt = 10,
+    ) -> "AtomicSystem":
         """
         Fit the positions of the system to the positions of another system.
 
-        First a random center of mass is chosen and a random displacement 
+        First a random center of mass is chosen and a random displacement
         is applied to the system. Then the system is rotated in all possible
         ways and the distances between the atoms are checked. If the
         distances are larger than the distance cutoff, the system is fitted.
@@ -308,7 +318,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         ValueError
             If the maximum displacement percentage is negative.
         AtomicSystemError
-            If the system could not be fitted into the positions 
+            If the system could not be fitted into the positions
             of the AtomicSystem within the maximum number of iterations.
         """
 
@@ -344,10 +354,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
             rotation = Rotation.random(random_state=rng)
 
             for x, y, z in itertools.product(range(0, 360, rotation_angle_step), repeat=3):
-                rotation_angles = rotation.as_euler(
-                    'xyz',
-                    degrees=True
-                )
+                rotation_angles = rotation.as_euler('xyz', degrees=True)
                 rotation_angles += np.array([x, y, z])
                 rotation = Rotation.from_euler(
                     'xyz',
@@ -383,7 +390,7 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
         """
-        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.  
+        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.
 
         Parameters
         ----------
@@ -405,14 +412,18 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         elif self.n_atoms % group != 0:
             raise AtomicSystemError(
-                'Number of atoms in selection is not a multiple of group.')
+                'Number of atoms in selection is not a multiple of group.'
+            )
 
         pos = []
         names = []
 
         for i in range(0, self.n_atoms, group):
             atomic_system = AtomicSystem(
-                atoms=self.atoms[i:i+group], pos=self.pos[i:i+group], cell=self.cell)
+                atoms=self.atoms[i:i + group],
+                pos=self.pos[i:i + group],
+                cell=self.cell
+            )
 
             pos.append(atomic_system.center_of_mass)
             names.append(atomic_system.combined_name)
@@ -479,7 +490,10 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
 
         return True
 
-    def __getitem__(self, key: Atom | int | slice | Np1DIntArray) -> "AtomicSystem":
+    def __getitem__(
+        self,
+        key: Atom | int | slice | Np1DIntArray
+    ) -> "AtomicSystem":
         """
         Returns a new AtomicSystem with the given key.
 
@@ -531,8 +545,8 @@ class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
         if isinstance(key, int):
             key = np.array([key])
 
-        keys = np.array(range(self.n_atoms))[key] if isinstance(
-            key, slice) else np.array(key)
+        keys = np.array(range(self.n_atoms))[key] if isinstance(key,
+            slice) else np.array(key)
 
         pos = self.pos[keys] if np.shape(self.pos)[0] > 0 else None
         vel = self.vel[keys] if np.shape(self.vel)[0] > 0 else None

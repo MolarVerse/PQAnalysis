@@ -27,15 +27,14 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 
+
 def main():
     """
     The main function of the PQAnalysis command line interface.
     """
     parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    subparsers = parser.add_subparsers(
-        dest='cli_command',
-    )
+    subparsers = parser.add_subparsers(dest='cli_command', )
 
     sub_parser_dict = {
         AddMoleculesCLI.program_name(): AddMoleculesCLI,

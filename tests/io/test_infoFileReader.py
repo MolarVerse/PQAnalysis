@@ -8,6 +8,7 @@ from PQAnalysis.exceptions import PQFileNotFoundError
 from . import pytestmark
 
 
+
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
 def test__init__(test_with_data_dir):
     with pytest.raises(PQFileNotFoundError) as exception:
@@ -15,8 +16,7 @@ def test__init__(test_with_data_dir):
     assert str(exception.value) == "File tmp not found."
 
     with pytest.raises(MDEngineFormatError) as exception:
-        InfoFileReader(
-            "md-01.info", engine_format="tmp")
+        InfoFileReader("md-01.info", engine_format="tmp")
     assert str(exception.value) == (
         "\n"
         "'tmp' is not a valid MDEngineFormat.\n"
@@ -32,6 +32,7 @@ def test__init__(test_with_data_dir):
     reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     assert reader.filename == "md-01.info"
     assert reader.format == MDEngineFormat.QMCFC
+
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
@@ -107,9 +108,12 @@ def test_read(test_with_data_dir):
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
     assert str(
-        exception.value) == "Info file md-01.qmcfc.info is not in PQ format."
+        exception.value
+    ) == "Info file md-01.qmcfc.info is not in PQ format."
 
     reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
-    assert str(exception.value) == "Info file md-01.info is not in qmcfc format."
+    assert str(
+        exception.value
+    ) == "Info file md-01.info is not in qmcfc format."

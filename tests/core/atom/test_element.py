@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 
-
 from PQAnalysis.core import Element, ElementNotFoundError
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.exceptions import PQTypeError
@@ -10,7 +9,9 @@ from .. import pytestmark
 from ...conftest import assert_logging_with_exception
 
 
+
 class TestElement:
+
     def test__init__(self, caplog):
         assert_logging_with_exception(
             caplog,
@@ -26,11 +27,9 @@ class TestElement:
             caplog,
             "TypeChecking",
             "ERROR",
-            get_type_error_message(
-                "element_id",
-                1.2,
-                int | str | None
-            ),
+            get_type_error_message("element_id",
+            1.2,
+            int | str | None),
             PQTypeError,
             Element,
             1.2

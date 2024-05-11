@@ -17,7 +17,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import TopologyFileError
 
 
+
 class TopologyFileReader(BaseReader):
+
     """
     A class to read a topology file for the bonded topology of the PQ or QMCFC 
     project and return a BondedTopology object. The topology file can have the 
@@ -215,10 +217,10 @@ class TopologyFileReader(BaseReader):
 
             bonds.append(
                 Bond(
-                    index1=int(index),
-                    index2=int(target_index),
-                    bond_type=int(bond_type),
-                    is_linker=is_linker,
+                index1=int(index),
+                index2=int(target_index),
+                bond_type=int(bond_type),
+                is_linker=is_linker,
                 )
             )
 
@@ -265,11 +267,11 @@ class TopologyFileReader(BaseReader):
 
             angles.append(
                 Angle(
-                    index1=int(index1),
-                    index2=int(index2),
-                    index3=int(index3),
-                    angle_type=int(angle_type),
-                    is_linker=is_linker,
+                index1=int(index1),
+                index2=int(index2),
+                index3=int(index3),
+                angle_type=int(angle_type),
+                is_linker=is_linker,
                 )
             )
 
@@ -316,12 +318,12 @@ class TopologyFileReader(BaseReader):
 
             dihedrals.append(
                 Dihedral(
-                    index1=int(index1),
-                    index2=int(index2),
-                    index3=int(index3),
-                    index4=int(index4),
-                    dihedral_type=int(dihedral_type),
-                    is_linker=is_linker,
+                index1=int(index1),
+                index2=int(index2),
+                index3=int(index3),
+                index4=int(index4),
+                dihedral_type=int(dihedral_type),
+                is_linker=is_linker,
                 )
             )
 
@@ -368,13 +370,13 @@ class TopologyFileReader(BaseReader):
 
             dihedrals.append(
                 Dihedral(
-                    index1=int(index1),
-                    index2=int(index2),
-                    index3=int(index3),
-                    index4=int(index4),
-                    dihedral_type=int(dihedral_type),
-                    is_linker=is_linker,
-                    is_improper=True,
+                index1=int(index1),
+                index2=int(index2),
+                index3=int(index3),
+                index4=int(index4),
+                dihedral_type=int(dihedral_type),
+                is_linker=is_linker,
+                is_improper=True,
                 )
             )
 
@@ -416,11 +418,11 @@ class TopologyFileReader(BaseReader):
 
             shake_bonds.append(
                 Bond(
-                    index1=int(index),
-                    index2=int(target_index),
-                    equilibrium_distance=float(distance),
-                    is_linker=is_linker,
-                    is_shake=True,
+                index1=int(index),
+                index2=int(target_index),
+                equilibrium_distance=float(distance),
+                is_linker=is_linker,
+                is_shake=True,
                 )
             )
 

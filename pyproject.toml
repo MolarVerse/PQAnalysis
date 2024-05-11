@@ -30,7 +30,6 @@ dependencies = [
     "tqdm",
     "decorator",
     "argcomplete",
-    "unum",
     "yapf",
     "rich-argparse",
 ]

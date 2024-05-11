@@ -10,11 +10,14 @@ from PQAnalysis.types import Np1DNumberArray, Np3x3NumberArray
 from PQAnalysis.type_checking import runtime_type_checking_setter
 
 
+
 class _StandardPropertiesMixin:
+
     """
     A mixin class containing the standard properties of a
     Cell class (i.e. standard getter and setter methods).
     """
+
     @property
     def box_lengths(self) -> Np1DNumberArray:
         """

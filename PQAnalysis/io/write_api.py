@@ -21,11 +21,13 @@ logger = logging.getLogger(__package_name__).getChild("io.write_api")
 logger = setup_logger(logger)
 
 
+
 @runtime_type_checking
-def write(object_to_write: Any,
-          filename: str | None = None,
-          mode: FileWritingMode | str = FileWritingMode.WRITE,
-          ) -> None:
+def write(
+    object_to_write: Any,
+    filename: str | None = None,
+    mode: FileWritingMode | str = FileWritingMode.WRITE,
+) -> None:
     """
     API write wrapper function for writing different objects to a file.
 
@@ -59,18 +61,20 @@ def write(object_to_write: Any,
 
         logger.error(
             (
-                f"Writing object of type {type(object_to_write)} "
-                "is not implemented yet."
+            f"Writing object of type {type(object_to_write)} "
+            "is not implemented yet."
             ),
             exception=PQNotImplementedError
         )
 
 
-@ runtime_type_checking
-def write_box(traj: Trajectory,
-              filename: str | None = None,
-              output_format: str | None = None
-              ) -> None:
+
+@runtime_type_checking
+def write_box(
+    traj: Trajectory,
+    filename: str | None = None,
+    output_format: str | None = None
+) -> None:
     """
     Writes the given trajectory to the file in a selected box file format.
 

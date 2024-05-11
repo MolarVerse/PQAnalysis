@@ -7,6 +7,7 @@ from PQAnalysis.topology import Selection, Topology
 from PQAnalysis.core import Atom, Element, Residue
 
 
+
 class TestSelection:
     topology = Topology([Atom("C1", 6), Atom("C2", 6), Atom("C1", 6)])
 
@@ -57,7 +58,8 @@ class TestSelection:
         with pytest.raises(ValueError) as exception:
             selection.select(self.topology, use_full_atom_info=True)
         assert str(
-            exception.value) == "The use_full_atom_info parameter is not supported for Element objects."
+            exception.value
+        ) == "The use_full_atom_info parameter is not supported for Element objects."
 
     def test_selection_lark_grammar(self):
 
@@ -149,10 +151,24 @@ class TestSelection:
 
         residue_ids = np.array([0, 1, 1, 0])
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('H')]
-        reference_residues = [Residue(name="ALA", residue_id=1, total_charge=0.0, elements=[Element(
-            "H"), Element("H")], atom_types=np.array([0, 1]), partial_charges=np.array([0.1, 0.1]))]
-        topology = Topology(atoms=atoms, residue_ids=residue_ids,
-                            reference_residues=reference_residues)
+        reference_residues = [
+            Residue(
+            name="ALA",
+            residue_id=1,
+            total_charge=0.0,
+            elements=[Element("H"),
+            Element("H")],
+            atom_types=np.array([0,
+            1]),
+            partial_charges=np.array([0.1,
+            0.1])
+            )
+        ]
+        topology = Topology(
+            atoms=atoms,
+            residue_ids=residue_ids,
+            reference_residues=reference_residues
+        )
         selection = Selection("res~1")
         indices = selection.select(topology)
         assert np.all(indices == np.array([1, 2]))

@@ -6,7 +6,9 @@ the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class
 from ...exceptions import PQException, PQWarning
 
 
+
 class RDFError(PQException):
+
     """
     Exception raised if something goes wrong during the RDF setup or calculation.
     """
@@ -22,7 +24,9 @@ class RDFError(PQException):
         super().__init__(self.message)
 
 
+
 class RDFWarning(PQWarning):
+
     """
     Warning raised if something goes wrong during the RDF setup or calculation.
     """

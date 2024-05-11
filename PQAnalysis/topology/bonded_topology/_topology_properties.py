@@ -10,10 +10,13 @@ from .angle import Angle
 from .dihedral import Dihedral
 
 
+
 class TopologyPropertiesMixin:
+
     """
     A mixin class to add the most common properties of a topology.
     """
+
     @property
     def unique_bond1_indices(self) -> Set[PositiveInt]:
         """Set[PositiveInt]: The unique indices of the first atoms in the bonds."""

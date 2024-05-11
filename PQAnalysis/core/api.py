@@ -11,12 +11,14 @@ from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray, PositiveReal
 from PQAnalysis.type_checking import runtime_type_checking
 
 
+
 @runtime_type_checking
-def distance(pos1: Np1DNumberArray | Np2DNumberArray,
-             pos2: Np1DNumberArray | Np2DNumberArray,
-             cell: _cell.Cell = _cell.Cell(),
-             **kwargs
-             ) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:
+def distance(
+    pos1: Np1DNumberArray | Np2DNumberArray,
+    pos2: Np1DNumberArray | Np2DNumberArray,
+    cell: _cell.Cell = _cell.Cell(),
+    **kwargs
+) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:
     """
     Returns the distances between all combinations of two position arrays.
 

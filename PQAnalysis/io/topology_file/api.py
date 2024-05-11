@@ -10,16 +10,19 @@ from .topology_file_writer import TopologyFileWriter
 from .topology_file_reader import TopologyFileReader
 
 
+
 @runtime_type_checking
-def write_topology_file(bonded_topology: Topology | BondedTopology,
-                        filename: str | None = None,
-                        mode: FileWritingMode | str = "w"
-                        ) -> None:
+def write_topology_file(
+    bonded_topology: Topology | BondedTopology,
+    filename: str | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Wrapper function to write a topology file.
     """
 
     TopologyFileWriter(filename, mode=mode).write(bonded_topology)
+
 
 
 @runtime_type_checking
