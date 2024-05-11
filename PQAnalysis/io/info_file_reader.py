@@ -2,9 +2,14 @@
 A module containing the InfoFileReader class.
 """
 
+import logging
+
 from beartype.typing import Tuple, Dict
 
 from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .base import BaseReader
 
 
@@ -23,6 +28,9 @@ class InfoFileReader(BaseReader):
     object. The values of the second dictionary are the corresponding units of the 
     information strings (None if no units are given).
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self,
                  filename: str,
@@ -71,8 +79,9 @@ class InfoFileReader(BaseReader):
             return self.read_qmcfc()
 
         # should never reach this point - if it does, it is a bug
-        raise MDEngineFormatError(
-            f"Info file {self.filename} is not in PQ or qmcfc format."
+        self.logger.error(
+            f"Info file {self.filename} is not in PQ or qmcfc format.",
+            exception=MDEngineFormatError
         )
 
     def read_pq(self) -> Tuple[Dict, Dict]:
@@ -114,8 +123,10 @@ class InfoFileReader(BaseReader):
                     units[line[4]] = line[6]
                     entry_counter += 1
                 else:
-                    raise MDEngineFormatError(
-                        f"Info file {self.filename} is not in PQ format.")
+                    self.logger.error(
+                        f"Info file {self.filename} is not in PQ format.",
+                        exception=MDEngineFormatError
+                    )
 
         return info, units
 
@@ -159,7 +170,9 @@ class InfoFileReader(BaseReader):
                     info[line[4]] = entry_counter
                     entry_counter += 1
                 else:
-                    raise MDEngineFormatError(
-                        f"Info file {self.filename} is not in qmcfc format.")
+                    self.logger.error(
+                        f"Info file {self.filename} is not in qmcfc format.",
+                        exception=MDEngineFormatError
+                    )
 
         return info, None
