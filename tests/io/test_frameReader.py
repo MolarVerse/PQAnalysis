@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.io import FrameReader
+from PQAnalysis.io import _FrameReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.traj.exceptions import TrajectoryFormatError
@@ -14,7 +14,7 @@ from . import pytestmark
 class TestFrameReader:
 
     def test__read_header_line(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         with pytest.raises(FrameReaderError) as exception:
             reader._read_header_line("1 2.0 3.0")
@@ -37,7 +37,7 @@ class TestFrameReader:
         assert cell == Cell()
 
     def test__read_xyz(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         with pytest.raises(FrameReaderError) as exception:
             reader._read_xyz(
@@ -51,7 +51,7 @@ class TestFrameReader:
         assert atoms == ["h", "o"]
 
     def test__read_scalar(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         with pytest.raises(FrameReaderError) as exception:
             reader._read_scalar(["", "", "h 1.0 2.0 3.0"], n_atoms=1)
@@ -63,7 +63,7 @@ class TestFrameReader:
         assert atoms == ["h"]
 
     def test_read(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         frame = reader.read(
             "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
@@ -109,7 +109,7 @@ class TestFrameReader:
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
     def test_read_invalid_format(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         with pytest.raises(TrajectoryFormatError) as exception:
             reader.read("", traj_format="invalid")
@@ -122,7 +122,7 @@ class TestFrameReader:
         )
 
     def test__get_topology(self):
-        reader = FrameReader()
+        reader = _FrameReader()
 
         topology = reader._get_topology(["h", "o"], None)
         assert topology.atoms == [Atom(atom) for atom in ["h", "o"]]

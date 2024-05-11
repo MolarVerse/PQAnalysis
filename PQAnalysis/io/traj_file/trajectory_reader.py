@@ -22,7 +22,7 @@ from PQAnalysis.exceptions import PQIndexError
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
-from .frame_reader import FrameReader
+from .frame_reader import _FrameReader
 
 
 class TrajectoryReader(BaseReader):
@@ -73,7 +73,7 @@ class TrajectoryReader(BaseReader):
         self.traj_format = TrajectoryFormat((traj_format, self.filenames[0]))
 
         self.md_format = MDEngineFormat(md_format)
-        self.frame_reader = FrameReader(md_format=self.md_format)
+        self.frame_reader = _FrameReader(md_format=self.md_format)
 
         # The length of the trajectory
         self.length_of_traj = 0
