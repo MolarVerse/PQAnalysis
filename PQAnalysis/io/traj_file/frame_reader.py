@@ -2,7 +2,7 @@
 A module containing classes for reading a frame from a string.
 """
 
-from __future__ import annotations
+import logging
 
 import numpy as np
 
@@ -13,10 +13,15 @@ from PQAnalysis.core import Atom, Cell, ElementNotFoundError
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.traj import TrajectoryFormat, MDEngineFormat
 from PQAnalysis.topology import Topology
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .exceptions import FrameReaderError
 
 
-class FrameReader:
+
+class _FrameReader:
+
     """
     This class provides methods for reading a frame from a string.
     The string can be a single frame or a whole trajectory.
@@ -30,7 +35,13 @@ class FrameReader:
     see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
     """
 
-    def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    def __init__(
+        self,
+        md_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         Parameters
         ----------
@@ -40,10 +51,12 @@ class FrameReader:
         self.md_format = MDEngineFormat(md_format)
         self.topology = None
 
-    def read(self, frame_string: str,
-             topology: Topology | None = None,
-             traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ
-             ) -> AtomicSystem:
+    def read(
+        self,
+        frame_string: str,
+        topology: Topology | None = None,
+        traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ
+    ) -> AtomicSystem:
         """
         Reads a frame from a string.
 
@@ -85,8 +98,9 @@ class FrameReader:
             return self.read_charges(frame_string)
 
         # This should never happen - only for safety
-        raise FrameReaderError(
-            f'Invalid TrajectoryFormat given.{traj_format=}'
+        self.logger.error(
+            f'Invalid TrajectoryFormat given.{traj_format=}',
+            exception=FrameReaderError
         )
 
     def read_positions(self, frame_string: str) -> AtomicSystem:
@@ -197,10 +211,12 @@ class FrameReader:
 
         return AtomicSystem(topology=topology, charges=charges, cell=cell)
 
-    def _check_qmcfc(self,
-                     atoms: List[str],
-                     value: Np1DNumberArray | Np2DNumberArray
-                     ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
+    def _check_qmcfc(
+        self,
+        atoms: List[str],
+        value: Np1DNumberArray | Np2DNumberArray
+    ) -> Tuple[Np1DNumberArray | Np2DNumberArray,
+        List[str]]:
         """
         Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
 
@@ -224,16 +240,23 @@ class FrameReader:
 
         if self.md_format == MDEngineFormat.QMCFC:
             if atoms[0].upper() != 'X':
-                raise FrameReaderError(
+                self.logger.error(
+                    (
                     'The first atom in one of the frames is not X. '
                     'Please use PQ (default) md engine instead'
+                    ),
+                    exception=FrameReaderError
                 )
             value = value[1:]
             atoms = atoms[1:]
 
         return value, atoms
 
-    def _get_topology(self, atoms: List[str], topology: Topology | None) -> Topology:
+    def _get_topology(
+        self,
+        atoms: List[str],
+        topology: Topology | None
+    ) -> Topology:
         """
         Returns the topology of the frame.
 
@@ -248,8 +271,8 @@ class FrameReader:
 
                 topology = Topology(
                     atoms=[
-                        Atom(atom, disable_type_checking=True)
-                        for atom in atoms
+                    Atom(atom,
+                    disable_type_checking=True) for atom in atoms
                     ]
                 )
 
@@ -257,12 +280,11 @@ class FrameReader:
 
                 topology = Topology(
                     atoms=[
-                        Atom(
-                            atom,
-                            use_guess_element=False,
-                            disable_type_checking=True
-                        )
-                        for atom in atoms
+                    Atom(
+                    atom,
+                    use_guess_element=False,
+                    disable_type_checking=True
+                    ) for atom in atoms
                     ]
                 )
 
@@ -309,15 +331,17 @@ class FrameReader:
             n_atoms = int(header_line[0])
             cell = Cell()
         else:
-            raise FrameReaderError(
-                'Invalid file format in header line of Frame.')
+            self.logger.error(
+                'Invalid file format in header line of Frame.',
+                exception=FrameReaderError
+            )
 
         return n_atoms, cell
 
     def _read_xyz(self,
-                  splitted_frame_string: List[str],
-                  n_atoms: int
-                  ) -> Tuple[Np2DNumberArray, List[str]]:
+        splitted_frame_string: List[str],
+        n_atoms: int) -> Tuple[Np2DNumberArray,
+        List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
@@ -346,21 +370,22 @@ class FrameReader:
             atoms = [None] * n_atoms
 
             # Fill xyz and atoms in a single loop
-            for i, line in enumerate(splitted_frame_string[2:2+n_atoms]):
+            for i, line in enumerate(splitted_frame_string[2:2 + n_atoms]):
                 split_line = line.split()
                 atoms[i] = split_line[0]
                 xyz[i] = split_line[1:4]
 
             return xyz, atoms
-        except ValueError as e:
-            raise FrameReaderError(
-                'Invalid file format in xyz coordinates of Frame.'
-            ) from e
+        except ValueError:
+            self.logger.error(
+                'Invalid file format in xyz coordinates of Frame.',
+                exception=FrameReaderError
+            )
 
     def _read_scalar(self,
-                     splitted_frame_string: List[str],
-                     n_atoms: int
-                     ) -> Tuple[Np1DNumberArray, List[str]]:
+        splitted_frame_string: List[str],
+        n_atoms: int) -> Tuple[Np1DNumberArray,
+        List[str]]:
         """
         Reads the scalar values and the atom names from the given string.
 
@@ -387,11 +412,13 @@ class FrameReader:
         scalar = np.zeros((n_atoms))
         atoms = []
         for i in range(n_atoms):
-            line = splitted_frame_string[2+i]
+            line = splitted_frame_string[2 + i]
 
             if len(line.split()) != 2:
-                raise FrameReaderError(
-                    'Invalid file format in scalar values of Frame.')
+                self.logger.error(
+                    'Invalid file format in scalar values of Frame.',
+                    exception=FrameReaderError
+                )
 
             scalar[i] = float(line.split()[1])
             atoms.append(line.split()[0])

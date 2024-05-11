@@ -12,8 +12,6 @@ of the atom. The name and symbol are automatically determined from the atomic
 number. The name is the symbol in lower case.
 """
 
-from __future__ import annotations
-
 import logging
 
 from numbers import Real
@@ -31,7 +29,9 @@ from ..exceptions import AtomError
 Atoms = TypeVar("Atoms", bound=List["PQAnalysis.core.Atom"])
 
 
+
 class Atom():
+
     """
     A class used to represent an atom in a molecule.
 
@@ -80,12 +80,13 @@ class Atom():
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 name: str | int,
-                 element_id: int | str | None = None,
-                 use_guess_element: bool = True,
-                 **kwargs
-                 ) -> None:
+    def __init__(
+        self,
+        name: str | int,
+        element_id: int | str | None = None,
+        use_guess_element: bool = True,
+        **kwargs
+    ) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
 
@@ -105,8 +106,9 @@ class Atom():
             If his parameter is not given, the name parameter is used to determine 
             the element type of the atom_type.
         use_guess_element : bool, optional
-            Whether to use the guess_element function to determine the element type of the atom_type 
-            by its name, by default True
+            Whether to use the guess_element function to determine
+            the element type of the atom_type by its name,
+            by default True
 
         Raises
         ------

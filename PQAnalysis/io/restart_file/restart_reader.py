@@ -2,6 +2,8 @@
 A module containing the RestartFileReader class
 """
 
+import logging
+
 import numpy as np
 
 from beartype.typing import List
@@ -12,11 +14,16 @@ from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.io.moldescriptor_reader import MoldescriptorReader
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .exceptions import RestartFileReaderError
 
 
+
 class RestartFileReader(BaseReader):
+
     """
     A class for reading restart files.
 
@@ -44,12 +51,17 @@ class RestartFileReader(BaseReader):
     `PQ <https://molarverse.github.io/PQ>`_ code.
     """
 
-    def __init__(self,
-                 filename: str,
-                 moldescriptor_filename: str | None = None,
-                 reference_residues: Residues | None = None,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                 ) -> None:
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
+    def __init__(
+        self,
+        filename: str,
+        moldescriptor_filename: str | None = None,
+        reference_residues: Residues | None = None,
+        md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         Parameters
         ----------
@@ -69,9 +81,12 @@ class RestartFileReader(BaseReader):
         super().__init__(filename)
 
         if moldescriptor_filename is not None and reference_residues is not None:
-            raise RestartFileReaderError(
+            self.logger.error(
+                (
                 "Both moldescriptor_filename and reference_residues "
                 "are given. They are mutually exclusive."
+                ),
+                exception=RestartFileReaderError
             )
 
         self.moldescriptor_filename = moldescriptor_filename
@@ -166,16 +181,18 @@ class RestartFileReader(BaseReader):
             box_angles = [float(a) for a in line[4:]]
             return Cell(*box_lengths, *box_angles)
 
-        raise RestartFileReaderError(
-            f"Invalid number of arguments for box: {len(line)}"
+        cls.logger.error(
+            f"Invalid number of arguments for box: {len(line)}",
+            exception=RestartFileReaderError
         )
 
     @classmethod
-    def _parse_atoms(cls,
-                     lines: List[str],
-                     cell: Cell = Cell(),
-                     reference_residues: Residues | None = None
-                     ) -> AtomicSystem:
+    def _parse_atoms(
+        cls,
+        lines: List[str],
+        cell: Cell = Cell(),
+        reference_residues: Residues | None = None
+    ) -> AtomicSystem:
         """
         Parses the atom lines of the restart file.
 
@@ -251,8 +268,10 @@ class RestartFileReader(BaseReader):
             line = line.strip().split()
 
             if len(line) != 12 and len(line) != 21:
-                raise RestartFileReaderError(
-                    f"Invalid number of arguments for atom: {len(line)}")
+                cls.logger.error(
+                    f"Invalid number of arguments for atom: {len(line)}",
+                    exception=RestartFileReaderError
+                )
 
             atoms.append(Atom(line[0], use_guess_element=False))
             residues.append(int(line[2]))
@@ -261,7 +280,10 @@ class RestartFileReader(BaseReader):
             forces.append(np.array([float(l) for l in line[9:12]]))
 
         if not atoms:
-            raise RestartFileReaderError("No atoms found in restart file.")
+            cls.logger.error(
+                "No atoms found in restart file.",
+                exception=RestartFileReaderError
+            )
 
         topology = Topology(
             atoms=atoms,
@@ -271,7 +293,8 @@ class RestartFileReader(BaseReader):
 
         return AtomicSystem(
             pos=np.array(positions),
-            vel=np.array(velocities), forces=np.array(forces),
+            vel=np.array(velocities),
+            forces=np.array(forces),
             cell=cell,
             topology=topology
         )

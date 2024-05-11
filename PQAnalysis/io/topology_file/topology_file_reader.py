@@ -4,10 +4,16 @@ and return a BondedTopology object. For more information please visit the
 documentation page of PQ https://molarverse.github.io/PQ/
 """
 
+import logging
+
 from beartype.typing import List
 
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .exceptions import TopologyFileError
 
 
@@ -25,6 +31,10 @@ class TopologyFileReader(BaseReader):
     For more information please visit the documentation page of PQ https://molarverse.github.io/PQ/
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters
@@ -46,10 +56,10 @@ class TopologyFileReader(BaseReader):
         BondedTopology
             A BondedTopology object.
         """
-        blocks = self.get_definitions()
-        return self.parse_blocks(blocks)
+        blocks = self._get_definitions()
+        return self._parse_blocks(blocks)
 
-    def get_definitions(self) -> dict[str, List[str]]:
+    def _get_definitions(self) -> dict[str, List[str]]:
         """
         Read the topology file and return a dictionary with the blocks.
 
@@ -79,8 +89,9 @@ class TopologyFileReader(BaseReader):
 
             # check if last line is END else raise error
             if lines[-1].strip() != "END":
-                raise TopologyFileError(
-                    "Something went wrong. Each block should end with 'END'"
+                self.logger.error(
+                    "Something went wrong. Each block should end with 'END'",
+                    exception=TopologyFileError,
                 )
 
             # split all lines into blocks where each block ends with END
@@ -104,7 +115,7 @@ class TopologyFileReader(BaseReader):
 
             return data
 
-    def parse_blocks(self, blocks: dict[str, List[str]]) -> BondedTopology:
+    def _parse_blocks(self, blocks: dict[str, List[str]]) -> BondedTopology:
         """
         Parse the blocks of the topology file and return a BondedTopology object.
 
@@ -139,17 +150,20 @@ class TopologyFileReader(BaseReader):
 
         for key, value in blocks.items():
             if key == "bonds":
-                bonds = self.parse_bonds(value)
+                bonds = self._parse_bonds(value)
             elif key == "shake":
-                shake_bonds = self.parse_shake(value)
+                shake_bonds = self._parse_shake(value)
             elif key == "angles":
-                angles = self.parse_angles(value)
+                angles = self._parse_angles(value)
             elif key == "dihedrals":
-                dihedrals = self.parse_dihedrals(value)
+                dihedrals = self._parse_dihedrals(value)
             elif key == "impropers":
-                impropers = self.parse_impropers(value)
+                impropers = self._parse_impropers(value)
             else:
-                raise TopologyFileError(f"Unknown block {key}")
+                self.logger.error(
+                    f"Unknown block {key}",
+                    exception=TopologyFileError
+                )
 
         return BondedTopology(
             bonds=bonds,
@@ -159,7 +173,7 @@ class TopologyFileReader(BaseReader):
             shake_bonds=shake_bonds
         )
 
-    def parse_bonds(self, block: List[str]) -> List[Bond]:
+    def _parse_bonds(self, block: List[str]) -> List[Bond]:
         """
         Parse the bonds block of the topology file and return a list of Bond objects.
 
@@ -194,8 +208,9 @@ class TopologyFileReader(BaseReader):
                 index, target_index, bond_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in bond block. Expected 3 or 4."
+                self.logger.error(
+                    "Invalid number of columns in bond block. Expected 3 or 4.",
+                    exception=TopologyFileError
                 )
 
             bonds.append(
@@ -209,7 +224,7 @@ class TopologyFileReader(BaseReader):
 
         return bonds
 
-    def parse_angles(self, block: List[str]) -> List[Angle]:
+    def _parse_angles(self, block: List[str]) -> List[Angle]:
         """
         Parse the angles block of the topology file and return a list of Angle objects.
 
@@ -243,8 +258,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, angle_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in angle block. Expected 4 or 5."
+                self.logger.error(
+                    "Invalid number of columns in angle block. Expected 4 or 5.",
+                    exception=TopologyFileError
                 )
 
             angles.append(
@@ -259,7 +275,7 @@ class TopologyFileReader(BaseReader):
 
         return angles
 
-    def parse_dihedrals(self, block: List[str]) -> List[Dihedral]:
+    def _parse_dihedrals(self, block: List[str]) -> List[Dihedral]:
         """
         Parse the dihedrals block of the topology file and return a list of Dihedral objects.
 
@@ -293,8 +309,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, index4, dihedral_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                self.logger.error(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6.",
+                    exception=TopologyFileError
                 )
 
             dihedrals.append(
@@ -310,7 +327,7 @@ class TopologyFileReader(BaseReader):
 
         return dihedrals
 
-    def parse_impropers(self, block: List[str]) -> List[Dihedral]:
+    def _parse_impropers(self, block: List[str]) -> List[Dihedral]:
         """
         Parse the impropers block of the topology file and return a list of Dihedral objects.
 
@@ -344,8 +361,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, index4, dihedral_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                self.logger.error(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6.",
+                    exception=TopologyFileError
                 )
 
             dihedrals.append(
@@ -362,7 +380,7 @@ class TopologyFileReader(BaseReader):
 
         return dihedrals
 
-    def parse_shake(self, block: List[str]) -> List[Bond]:
+    def _parse_shake(self, block: List[str]) -> List[Bond]:
         """
         Parse the shake block of the topology file and return a list of Bond objects.
 

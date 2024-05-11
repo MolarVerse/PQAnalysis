@@ -4,10 +4,14 @@ A module containing different functions to read and write .gen files.
 
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .gen_file_reader import GenFileReader
 from .gen_file_writer import GenFileWriter
 
 
+
+@runtime_type_checking
 def read_gen_file(filename: str) -> AtomicSystem:
     """
     Function to read a gen file.
@@ -26,11 +30,14 @@ def read_gen_file(filename: str) -> AtomicSystem:
     return GenFileReader(filename).read()
 
 
-def write_gen_file(filename: str,
-                   system: AtomicSystem,
-                   periodic: bool | None = None,
-                   mode: FileWritingMode | str = "w"
-                   ) -> None:
+
+@runtime_type_checking
+def write_gen_file(
+    filename: str,
+    system: AtomicSystem,
+    periodic: bool | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Function to write a gen file.
 

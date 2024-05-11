@@ -2,8 +2,14 @@
 A module containing the BoxWriter class and its associated methods.
 """
 
+import logging
+
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.utils import instance_function_count_decorator
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
+
 from .base import BaseWriter
 from .formats import BoxFileFormat, FileWritingMode
 from .exceptions import BoxWriterError
@@ -19,6 +25,10 @@ class BoxWriter(BaseWriter):
     :py:class:`~PQAnalysis.io.formats.BoxFileFormat`.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self,
                  filename: str | None = None,
                  output_format: str | BoxFileFormat = 'data',
@@ -45,6 +55,7 @@ class BoxWriter(BaseWriter):
         super().__init__(filename, FileWritingMode(mode))
         self.output_format = BoxFileFormat(output_format)
 
+    @runtime_type_checking
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
         """
         Wrapper to write the given trajectory to the file.
@@ -67,6 +78,7 @@ class BoxWriter(BaseWriter):
 
         self.close()
 
+    @runtime_type_checking
     def write_vmd(self, traj: Trajectory) -> None:
         """
         Writes the given trajectory to the file in VMD format.
@@ -96,7 +108,8 @@ class BoxWriter(BaseWriter):
             for edge in edges:
                 print(f"X   {edge[0]} {edge[1]} {edge[2]}", file=self.file)
 
-    @ instance_function_count_decorator
+    @instance_function_count_decorator
+    @runtime_type_checking
     def write_box_file(self,
                        traj: Trajectory,
                        reset_counter: bool = True  # pylint: disable=unused-argument # is needed for the decorator
@@ -153,14 +166,17 @@ class BoxWriter(BaseWriter):
         """
 
         if not traj.check_pbc():
-            raise BoxWriterError(
-                "At least on cell of the trajectory is None. Cannot write box file.")
+            self.logger.error(
+                "At least on cell of the trajectory is None. Cannot write box file.",
+                exception=BoxWriterError
+            )
 
-    @ property
+    @property
     def output_format(self) -> BoxFileFormat:
         """BoxFileFormat: The format of the file."""
         return self._output_format
 
-    @ output_format.setter
+    @output_format.setter
+    @runtime_type_checking_setter
     def output_format(self, output_format: str | BoxFileFormat) -> None:
         self._output_format = BoxFileFormat(output_format)

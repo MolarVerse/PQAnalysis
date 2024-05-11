@@ -6,6 +6,7 @@ import numpy as np
 
 from PQAnalysis.io import BaseReader
 from PQAnalysis.types import Np3x3NumberArray
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 class _BaseReader(BaseReader):
@@ -13,6 +14,7 @@ class _BaseReader(BaseReader):
     A base class for reading virial and stress files.
     """
 
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters

@@ -1,15 +1,27 @@
 """
 A module containing different formats related to the io subpackage.
 """
-from __future__ import annotations
+import logging
 
 from beartype.typing import Any, List
 
 from PQAnalysis.formats import BaseEnumFormat
-from .exceptions import BoxFileFormatError, FileWritingModeError, OutputFileFormatError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
+from .exceptions import (
+    BoxFileFormatError,
+    FileWritingModeError,
+    OutputFileFormatError
+)
+
+logger = logging.getLogger(__package_name__).getChild("OutputFileFormat")
+logger = setup_logger(logger)
+
 
 
 class OutputFileFormat(BaseEnumFormat):
+
     """
     An enumeration of the supported output file formats.
     """
@@ -73,9 +85,12 @@ class OutputFileFormat(BaseEnumFormat):
         output_file_format = super()._missing_(value, OutputFileFormatError)
 
         if output_file_format == cls.AUTO and filename is None:
-            raise OutputFileFormatError(
+            logger.error(
+                (
                 "The file format could not be inferred from "
                 "the file extension because no filename was given."
+                ),
+                exception=OutputFileFormatError
             )
 
         if output_file_format == cls.AUTO:
@@ -112,7 +127,7 @@ class OutputFileFormat(BaseEnumFormat):
         return file_extensions
 
     @classmethod
-    def infer_format_from_extension(cls, file_path: str) -> OutputFileFormat:
+    def infer_format_from_extension(cls, file_path: str) -> "OutputFileFormat":
         """
         Infer the file format from the file extension.
 
@@ -144,14 +159,20 @@ class OutputFileFormat(BaseEnumFormat):
         if file_extension in cls.file_extensions()[cls.RESTART]:
             return cls.RESTART
 
-        raise OutputFileFormatError(
+        logger.error(
+            (
             "Could not infer the file format from the file extension of "
             f"\"{file_path}\". Possible file formats are: "
             f"{cls.__members__.values()}"
+            ),
+            exception=OutputFileFormatError
         )
 
     @classmethod
-    def get_file_extensions(cls, file_format: OutputFileFormat | str) -> List[str]:
+    def get_file_extensions(
+        cls,
+        file_format: "OutputFileFormat | str"
+    ) -> List[str]:
         """
         Get the file extensions of the given file format.
 
@@ -171,11 +192,12 @@ class OutputFileFormat(BaseEnumFormat):
         return cls.file_extensions()[file_format.value]
 
     @classmethod
-    def find_matching_files(cls,
-                            file_path: List[str],
-                            output_file_format: OutputFileFormat | str,
-                            extension: str | None = None
-                            ) -> List[str]:
+    def find_matching_files(
+        cls,
+        file_path: List[str],
+        output_file_format: "OutputFileFormat | str",
+        extension: str | None = None
+    ) -> List[str]:
         """
         Find the files that match the given file format.
 
@@ -198,8 +220,10 @@ class OutputFileFormat(BaseEnumFormat):
         if extension is not None:
             files = [file for file in file_path if file.endswith(extension)]
         else:
-            files = [file for file in file_path if file.endswith(
-                tuple(cls.get_file_extensions(output_file_format)))]
+            files = [
+                file for file in file_path if file.
+                endswith(tuple(cls.get_file_extensions(output_file_format)))
+            ]
 
         return files
 
@@ -232,7 +256,9 @@ class OutputFileFormat(BaseEnumFormat):
         return super().__eq__(other) or self.value == str(other)
 
 
+
 class FileWritingMode(BaseEnumFormat):
+
     """
     An enumeration of the supported file write modes.
 
@@ -247,7 +273,7 @@ class FileWritingMode(BaseEnumFormat):
     #: The write mode for writing to a file
     WRITE = "w"
 
-    @ classmethod
+    @classmethod
     def _missing_(cls, value: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.
@@ -266,7 +292,9 @@ class FileWritingMode(BaseEnumFormat):
         return super()._missing_(value, FileWritingModeError)
 
 
+
 class BoxFileFormat(BaseEnumFormat):
+
     """
     An enumeration of the supported box file formats.
 
@@ -306,7 +334,7 @@ class BoxFileFormat(BaseEnumFormat):
     # the fifth to seventh column represent the box angles.
     DATA = "data"
 
-    @ classmethod
+    @classmethod
     def _missing_(cls, value: Any) -> Any:  # pylint: disable=arguments-differ
         """
         This method returns the missing value of the enumeration.

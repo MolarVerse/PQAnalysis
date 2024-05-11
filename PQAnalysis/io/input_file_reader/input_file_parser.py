@@ -2,20 +2,25 @@
 A module containing the input file parser.
 """
 
-from __future__ import annotations
+import logging
 
 from glob import glob
 from numbers import Real
 from lark import Visitor, Transformer, Lark, Tree
 from beartype.typing import Any, List, Tuple
 
-from PQAnalysis import __base_path__
+from PQAnalysis import __base_path__, __package_name__
 from PQAnalysis.types import Range
 from PQAnalysis.io.base import BaseReader
+from PQAnalysis.exceptions import PQKeyError, PQTypeError
+from PQAnalysis.utils.custom_logging import setup_logger
+
 from .formats import InputFileFormat
 
 
+
 class InputFileParser(BaseReader):
+
     """
     Class to parse input files.
 
@@ -35,10 +40,11 @@ class InputFileParser(BaseReader):
         BaseReader class from PQAnalysis.io
     """
 
-    def __init__(self,
-                 filename: str,
-                 input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str,
+        input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS
+    ) -> None:
         """
         Parameters
         ----------
@@ -59,7 +65,7 @@ class InputFileParser(BaseReader):
         self.transformed_tree = None
         self.input_dictionary = None
 
-    def parse(self) -> InputDictionary:
+    def parse(self) -> "InputDictionary":
         """
         Parse the input file.
 
@@ -80,18 +86,21 @@ class InputFileParser(BaseReader):
 
         grammar_path = __base_path__ / "grammar"
 
-        parser = Lark.open(grammar_path / grammar_file,
-                           propagate_positions=True)
+        parser = Lark.open(
+            grammar_path / grammar_file,
+            propagate_positions=True
+        )
 
         with open(self.filename, "r", encoding="utf-8") as file:
             self.raw_input_file = file.read()
 
         self.tree = parser.parse(self.raw_input_file)
 
-        self.transformed_tree = PrimitiveTransformer(
-            visit_tokens=True).transform(self.tree)
+        self.transformed_tree = PrimitiveTransformer(visit_tokens=True
+                                                     ).transform(self.tree)
         self.transformed_tree = ComposedDatatypesTransformer(
-            visit_tokens=True).transform(self.transformed_tree)
+            visit_tokens=True
+        ).transform(self.transformed_tree)
 
         visitor = InputFileVisitor()
         self.input_dictionary = visitor.visit(self.transformed_tree)
@@ -99,7 +108,9 @@ class InputFileParser(BaseReader):
         return self.input_dictionary
 
 
+
 class InputDictionary:
+
     """
     Input file dictionary.
 
@@ -108,6 +119,9 @@ class InputDictionary:
     equivalent. It also stores the type of the value and the line where the key
     was defined in the input file.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self) -> None:
         """
@@ -131,13 +145,15 @@ class InputDictionary:
 
         Raises
         ------
-        KeyError
+        PQKeyError
             If the key is not defined in the input file.
         """
 
         if (key := key.lower()) not in self.dict:
-            raise KeyError(
-                f"Input file key \"{key}\" not defined in input file.")
+            self.logger.error(
+                f"Input file key \"{key}\" not defined in input file.",
+                exception=PQKeyError
+            )
 
         return self.dict[key]
 
@@ -155,13 +171,15 @@ class InputDictionary:
 
         Raises
         ------
-        KeyError
+        PQKeyError
             If the key is already defined in the input file.
         """
 
         if (key := key.lower()) in self.dict:
-            raise KeyError(
-                f"Input file key \"{key}\" defined multiple times in input file.")
+            self.logger.error(
+                f"Input file key \"{key}\" defined multiple times in input file.",
+                exception=PQKeyError
+            )
 
         self.dict[key] = value
 
@@ -244,7 +262,9 @@ class InputDictionary:
         return self.dict == __value.dict
 
 
+
 class PrimitiveTransformer(Transformer):
+
     """
     Transformer for primitive datatypes.
 
@@ -338,7 +358,9 @@ class PrimitiveTransformer(Transformer):
         return bool(items[0]), "bool", str(items[0].end_line)
 
 
+
 class ComposedDatatypesTransformer(Transformer):
+
     """
     Transformer for composed datatypes.
 
@@ -385,8 +407,9 @@ class ComposedDatatypesTransformer(Transformer):
             return "str"
 
         if "bool" in types and not all(item == "bool" for item in types):
-            raise TypeError(
-                f"Bool cannot be used with other types. Found {types}"
+            InputDictionary.logger.error(
+                f"Bool cannot be used with other types. Found {types}",
+                exception=PQTypeError
             )
         if "bool" in types:
             return "bool"
@@ -395,7 +418,10 @@ class ComposedDatatypesTransformer(Transformer):
         if "int" in types:
             return "int"
 
-        raise TypeError(f"Could not infer most general type from {types}")
+        InputDictionary.logger.error(
+            f"Could not infer most general type from {types}",
+            exception=PQTypeError
+        )
 
     def array(self, items) -> Tuple[List[Any], str, str]:
         """
@@ -424,14 +450,18 @@ class ComposedDatatypesTransformer(Transformer):
             if the list of items contains a non-primitive type
         """
         not_primitive_types = [
-            item[1] for item in items if item[1] not in self.primitive_types]
+            item[1] for item in items if item[1] not in self.primitive_types
+        ]
 
         if len(not_primitive_types) > 0:
-            raise TypeError(
-                f"Array elements must be primitive types. Found {not_primitive_types}")
+            InputDictionary.logger.error(
+                f"Array elements must be primitive types. Found {not_primitive_types}",
+                exception=PQTypeError
+            )
 
         most_general_type = self._infer_most_general_type(
-            [item[1] for item in items])
+            [item[1] for item in items]
+        )
 
         if most_general_type == "str":
             items = [(str(item[0]), item[1], item[2]) for item in items]
@@ -461,14 +491,12 @@ class ComposedDatatypesTransformer(Transformer):
             and the line where the token was defined.
         """
 
-        return_range = range(
-            items[0][0],
-            items[1][0]
-        ) if len(items) == 2 else range(
+        return_range = range(items[0][0],
+            items[1][0]) if len(items) == 2 else range(
             items[0][0],
             items[2][0],
             items[1][0]
-        )
+            )
 
         return return_range, "range", str(items[0][2])
 
@@ -523,7 +551,9 @@ class ComposedDatatypesTransformer(Transformer):
         return items[0]
 
 
+
 class InputFileVisitor(Visitor):
+
     """
     Visitor for input files.
 
