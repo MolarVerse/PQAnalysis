@@ -12,7 +12,9 @@ from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 
+
 class RDFInputFileReader(Reader):
+
     """
     A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
     """
@@ -75,17 +77,12 @@ class RDFInputFileReader(Reader):
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
 
-        if (
-            self.no_intra_molecular is not None and
-            (
-                self.restart_file is None or
-                self.moldescriptor_file is None
-            )
-        ):
+        if (self.no_intra_molecular is not None and
+            (self.restart_file is None or self.moldescriptor_file is None)):
             self.logger.error(
                 (
-                    "The no_intra_molecular key can only be used "
-                    "if both a restart file and a moldescriptor file are given."
+                "The no_intra_molecular key can only be used "
+                "if both a restart file and a moldescriptor file are given."
                 ),
                 exception=InputFileError,
             )
@@ -93,11 +90,12 @@ class RDFInputFileReader(Reader):
         if self.moldescriptor_file is not None and self.restart_file is None:
             self.logger.error(
                 (
-                    "The moldescriptor_file key can only be "
-                    "used in a meaningful way if a restart file is given."
+                "The moldescriptor_file key can only be "
+                "used in a meaningful way if a restart file is given."
                 ),
                 exception=InputFileError,
             )
+
 
 
 input_keys_documentation = f"""
