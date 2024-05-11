@@ -2,7 +2,7 @@
 A module containing classes for reading a frame from a string.
 """
 
-from __future__ import annotations
+import logging
 
 import numpy as np
 
@@ -13,6 +13,9 @@ from PQAnalysis.core import Atom, Cell, ElementNotFoundError
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.traj import TrajectoryFormat, MDEngineFormat
 from PQAnalysis.topology import Topology
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .exceptions import FrameReaderError
 
 
@@ -29,6 +32,9 @@ class _FrameReader:
     For more information about the format of the string,
     see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
         """
@@ -85,8 +91,9 @@ class _FrameReader:
             return self.read_charges(frame_string)
 
         # This should never happen - only for safety
-        raise FrameReaderError(
-            f'Invalid TrajectoryFormat given.{traj_format=}'
+        self.logger.error(
+            f'Invalid TrajectoryFormat given.{traj_format=}',
+            exception=FrameReaderError
         )
 
     def read_positions(self, frame_string: str) -> AtomicSystem:
@@ -224,9 +231,12 @@ class _FrameReader:
 
         if self.md_format == MDEngineFormat.QMCFC:
             if atoms[0].upper() != 'X':
-                raise FrameReaderError(
-                    'The first atom in one of the frames is not X. '
-                    'Please use PQ (default) md engine instead'
+                self.logger.error(
+                    (
+                        'The first atom in one of the frames is not X. '
+                        'Please use PQ (default) md engine instead'
+                    ),
+                    exception=FrameReaderError
                 )
             value = value[1:]
             atoms = atoms[1:]
@@ -309,8 +319,10 @@ class _FrameReader:
             n_atoms = int(header_line[0])
             cell = Cell()
         else:
-            raise FrameReaderError(
-                'Invalid file format in header line of Frame.')
+            self.logger.error(
+                'Invalid file format in header line of Frame.',
+                exception=FrameReaderError
+            )
 
         return n_atoms, cell
 
@@ -353,9 +365,10 @@ class _FrameReader:
 
             return xyz, atoms
         except ValueError as e:
-            raise FrameReaderError(
-                'Invalid file format in xyz coordinates of Frame.'
-            ) from e
+            self.logger.error(
+                'Invalid file format in xyz coordinates of Frame.',
+                exception=FrameReaderError
+            )
 
     def _read_scalar(self,
                      splitted_frame_string: List[str],
@@ -390,8 +403,10 @@ class _FrameReader:
             line = splitted_frame_string[2+i]
 
             if len(line.split()) != 2:
-                raise FrameReaderError(
-                    'Invalid file format in scalar values of Frame.')
+                self.logger.error(
+                    'Invalid file format in scalar values of Frame.',
+                    exception=FrameReaderError
+                )
 
             scalar[i] = float(line.split()[1])
             atoms.append(line.split()[0])
