@@ -1,6 +1,9 @@
 """
 A module containing functions to parse the input file.
 """
+
+import logging
+
 from numbers import Real
 from beartype.typing import List
 
@@ -8,6 +11,12 @@ from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.io.input_file_reader.input_file_parser import InputDictionary
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis.exceptions import PQKeyError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
+logger = logging.getLogger(__package_name__
+                           ).getChild("PQAnalysisInputFileReader")
+logger = setup_logger(logger)
 
 
 
@@ -42,8 +51,9 @@ def _parse_positive_real(
         return None
 
     if value < 0:
-        raise InputFileError(
-            f"The \"{key}\" value has to be a positive real number - It actually is {value}!"
+        logger.error(
+            f"The \"{key}\" value has to be a positive real number - It actually is {value}!",
+            exception=InputFileError
         )
 
     return value
@@ -78,8 +88,9 @@ def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
         return None
 
     if data[1] not in ["float", "int"]:
-        raise InputFileError(
-            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}"
+        logger.error(
+            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}",
+            exception=InputFileError
         )
 
     return data[0]
@@ -122,10 +133,13 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
     if data_type in {"glob", "list(str)"}:
         return data[0]
 
-    raise InputFileError(
+    logger.error(
+        (
         f"The \"{key}\" value has to be either a "
         "string, glob or a list of strings - actually "
         f"it is parsed as a {data_type}"
+        ),
+        exception=InputFileError
     )
 
 
@@ -157,8 +171,9 @@ def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
         return None
 
     if data[1] != "int":
-        raise InputFileError(
-            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}"
+        logger.error(
+            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}",
+            exception=InputFileError
         )
 
     return data[0]
@@ -195,8 +210,9 @@ def _parse_positive_int(
         return None
 
     if value < 1:
-        raise InputFileError(
-            f"The \"{key}\" value has to be a positive integer - It actually is {value}!"
+        logger.error(
+            f"The \"{key}\" value has to be a positive integer - It actually is {value}!",
+            exception=InputFileError
         )
 
     return value
@@ -230,9 +246,12 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
         return None
 
     if data[1] != "str":
-        raise InputFileError(
+        logger.error(
+            (
             f"The \"{key}\" value has to be of "
             f"string type - actually it is parsed as a {data[1]}"
+            ),
+            exception=InputFileError
         )
 
     return data[0]
@@ -266,8 +285,9 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
         return None
 
     if data[1] != "bool":
-        raise InputFileError(
-            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}"
+        logger.error(
+            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}",
+            exception=InputFileError
         )
 
     return data[0]
