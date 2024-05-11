@@ -17,7 +17,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import MoldescriptorReaderError
 
 
+
 class MoldescriptorReader(BaseReader):
+
     """
     This is a class to read moldescriptor files. Moldescriptor files
     are used by the PQ and QMCFC MD engines to store the mol types of
@@ -92,9 +94,9 @@ class MoldescriptorReader(BaseReader):
                         line = line.replace('\n', '')
                         self.logger.error(
                             (
-                                "The number of columns in the header of a mol "
-                                f"type must be 3.\nGot {len(splitted_line)} "
-                                f"columns instead in text: '{line}'\n"
+                            "The number of columns in the header of a mol "
+                            f"type must be 3.\nGot {len(splitted_line)} "
+                            f"columns instead in text: '{line}'\n"
                             ),
                             exception=MoldescriptorReaderError
                         )
@@ -103,8 +105,8 @@ class MoldescriptorReader(BaseReader):
 
                     mol_types.append(
                         self._read_mol_type(
-                            lines[counter:counter+n_atoms+1],
-                            len(mol_types) + 1
+                        lines[counter:counter + n_atoms + 1],
+                        len(mol_types) + 1
                         )
                     )
 
@@ -150,9 +152,9 @@ class MoldescriptorReader(BaseReader):
                 line = line.replace('\n', '')
                 cls.logger.error(
                     (
-                        "The number of columns in the body of a mol "
-                        f"type must be 3 or 4.\nGot {len(splitted_line)} "
-                        f"columns instead in text: '{line}'\n"
+                    "The number of columns in the body of a mol "
+                    f"type must be 3 or 4.\nGot {len(splitted_line)} "
+                    f"columns instead in text: '{line}'\n"
                     ),
                     exception=MoldescriptorReaderError
                 )

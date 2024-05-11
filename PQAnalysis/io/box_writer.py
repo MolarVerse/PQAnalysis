@@ -15,7 +15,9 @@ from .formats import BoxFileFormat, FileWritingMode
 from .exceptions import BoxWriterError
 
 
+
 class BoxWriter(BaseWriter):
+
     """
     A class for writing a trajectory to a box file.
     Inherits from BaseWriter
@@ -29,10 +31,12 @@ class BoxWriter(BaseWriter):
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 filename: str | None = None,
-                 output_format: str | BoxFileFormat = 'data',
-                 mode: str | FileWritingMode = 'w') -> None:
+    def __init__(
+        self,
+        filename: str | None = None,
+        output_format: str | BoxFileFormat = 'data',
+        mode: str | FileWritingMode = 'w'
+    ) -> None:
         """
         Parameters
         ----------
@@ -96,9 +100,9 @@ class BoxWriter(BaseWriter):
             print("8", file=self.file)
             print(
                 (
-                    f"Box   "
-                    f"{cell.x} {cell.y} {cell.z}    "
-                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                f"Box   "
+                f"{cell.x} {cell.y} {cell.z}    "
+                f"{cell.alpha} {cell.beta} {cell.gamma}"
                 ),
                 file=self.file
             )
@@ -110,10 +114,11 @@ class BoxWriter(BaseWriter):
 
     @instance_function_count_decorator
     @runtime_type_checking
-    def write_box_file(self,
-                       traj: Trajectory,
-                       reset_counter: bool = True  # pylint: disable=unused-argument # is needed for the decorator
-                       ) -> None:
+    def write_box_file(
+        self,
+        traj: Trajectory,
+        reset_counter: bool = True  # pylint: disable=unused-argument # is needed for the decorator
+    ) -> None:
         """
         Writes the given trajectory to the file in data file format.
 
@@ -137,15 +142,15 @@ class BoxWriter(BaseWriter):
         self.__check_pbc__(traj)
 
         counter = self.counter[BoxWriter.write_box_file.__name__]  # pylint: disable=no-member # is added via decorator
-        counter = len(traj)*(counter - 1)
+        counter = len(traj) * (counter - 1)
 
         for i, frame in enumerate(traj):
             cell = frame.cell
             print(
                 (
-                    f"{counter + i+1} "
-                    f"{cell.x} {cell.y} {cell.z} "
-                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                f"{counter + i+1} "
+                f"{cell.x} {cell.y} {cell.z} "
+                f"{cell.alpha} {cell.beta} {cell.gamma}"
                 ),
                 file=self.file
             )

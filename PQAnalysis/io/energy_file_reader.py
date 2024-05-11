@@ -17,7 +17,9 @@ from .base import BaseReader
 from .info_file_reader import InfoFileReader
 
 
+
 class EnergyFileReader(BaseReader):
+
     """
     A class to read energy files from molecular dynamics simulations.
     """
@@ -26,12 +28,13 @@ class EnergyFileReader(BaseReader):
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 filename: str,
-                 info_filename: str | None = None,
-                 use_info_file: bool = True,
-                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str,
+        info_filename: str | None = None,
+        use_info_file: bool = True,
+        engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         For the initialization of the EnergyFileReader, the filename of the energy
         file has to be given. The info_filename can be given as well. If no

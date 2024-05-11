@@ -9,7 +9,9 @@ from PQAnalysis.types import Np3x3NumberArray
 from PQAnalysis.type_checking import runtime_type_checking
 
 
+
 class _BaseReader(BaseReader):
+
     """
     A base class for reading virial and stress files.
     """
@@ -56,13 +58,17 @@ class _BaseReader(BaseReader):
             return data
 
 
+
 class VirialFileReader(_BaseReader):
+
     """
     A class to read virial files.
     """
 
 
+
 class StressFileReader(_BaseReader):
+
     """
     A class to read stress files.
     """

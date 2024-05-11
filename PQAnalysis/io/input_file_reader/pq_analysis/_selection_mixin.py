@@ -6,7 +6,9 @@ related keywords from the input dictionary
 from ._parse import _parse_bool, _parse_string
 
 
+
 class _SelectionMixin:
+
     """
     A mixin class to read all selection related keywords from the input dictionary.
 
@@ -16,6 +18,7 @@ class _SelectionMixin:
         - target_selection
         - use_full_atom_info
     """
+
     @property
     def selection(self) -> str | None:
         """str | None: The selection of the simulation."""

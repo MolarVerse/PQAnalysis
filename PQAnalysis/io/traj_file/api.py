@@ -21,13 +21,15 @@ from PQAnalysis.traj import (
 )
 
 
+
 @runtime_type_checking
-def write_trajectory(traj: Trajectory | AtomicSystem,
-                     filename: str | None = None,
-                     engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                     traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
-                     mode: FileWritingMode | str = FileWritingMode.WRITE,
-                     ) -> None:
+def write_trajectory(
+    traj: Trajectory | AtomicSystem,
+    filename: str | None = None,
+    engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ,
+    mode: FileWritingMode | str = FileWritingMode.WRITE,
+) -> None:
     """Wrapper for TrajectoryWriter to write a trajectory to a file.
 
     if format is None, the default PQ format is used
@@ -57,13 +59,15 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
     writer.write(traj, traj_type=traj_type)
 
 
+
 @runtime_type_checking
-def read_trajectory(filename: str,
-                    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                    traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
-                    topology: Topology | None = None,
-                    constant_topology: bool = True
-                    ) -> Trajectory:
+def read_trajectory(
+    filename: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
+    topology: Topology | None = None,
+    constant_topology: bool = True
+) -> Trajectory:
     """
     API function for reading a trajectory from a file.
 
@@ -98,6 +102,7 @@ def read_trajectory(filename: str,
     return reader.read()
 
 
+
 @runtime_type_checking
 def calculate_frames_of_trajectory_file(filename: str):
     """
@@ -117,13 +122,15 @@ def calculate_frames_of_trajectory_file(filename: str):
     return reader.calculate_number_of_frames()
 
 
+
 @runtime_type_checking
-def read_trajectory_generator(filename: str,
-                              md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                              traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
-                              topology: Topology | None = None,
-                              constant_topology: bool = True
-                              ) -> Generator[AtomicSystem]:
+def read_trajectory_generator(
+    filename: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
+    topology: Topology | None = None,
+    constant_topology: bool = True
+) -> Generator[AtomicSystem]:
     """
     API function for building a frame generator from a trajectory file.
 

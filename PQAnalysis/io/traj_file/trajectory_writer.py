@@ -13,7 +13,9 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 
 
+
 class TrajectoryWriter(BaseWriter):
+
     """
     A class for writing a trajectory to a file.
     Inherits from BaseWriter. See BaseWriter for more information.
@@ -22,11 +24,12 @@ class TrajectoryWriter(BaseWriter):
     """
 
     @runtime_type_checking
-    def __init__(self,
-                 filename: str | None = None,
-                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                 mode: str | FileWritingMode = 'w'
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str | None = None,
+        engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+        mode: str | FileWritingMode = 'w'
+    ) -> None:
         """
         Parameters
         ----------
@@ -44,10 +47,11 @@ class TrajectoryWriter(BaseWriter):
         self.format = MDEngineFormat(engine_format)
 
     @runtime_type_checking
-    def write(self,
-              trajectory: Trajectory | AtomicSystem,
-              traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ
-              ) -> None:
+    def write(
+        self,
+        trajectory: Trajectory | AtomicSystem,
+        traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ
+    ) -> None:
         """
         Writes the trajectory to the file.
 
@@ -156,9 +160,9 @@ class TrajectoryWriter(BaseWriter):
         if cell != Cell():
             print(
                 (
-                    f"{n_atoms} "
-                    f"{cell.x} {cell.y} {cell.z} "
-                    f"{cell.alpha} {cell.beta} {cell.gamma}"
+                f"{n_atoms} "
+                f"{cell.x} {cell.y} {cell.z} "
+                f"{cell.alpha} {cell.beta} {cell.gamma}"
                 ),
                 file=self.file
             )
@@ -179,8 +183,8 @@ class TrajectoryWriter(BaseWriter):
             sum_forces = sum(frame.forces)
             print(
                 (
-                    f"sum of forces: {sum_forces[0]:e} "
-                    f"{sum_forces[1]:e} {sum_forces[2]:e}"
+                f"sum of forces: {sum_forces[0]:e} "
+                f"{sum_forces[1]:e} {sum_forces[2]:e}"
                 ),
                 file=self.file
             )
@@ -208,21 +212,25 @@ class TrajectoryWriter(BaseWriter):
             if self.type == TrajectoryFormat.VEL:
                 print(
                     (
-                        f"{atom.name} {xyz[i][0]:16.12e} "
-                        f"{xyz[i][1]:16.12e} {xyz[i][2]:16.12e}"
+                    f"{atom.name} {xyz[i][0]:16.12e} "
+                    f"{xyz[i][1]:16.12e} {xyz[i][2]:16.12e}"
                     ),
                     file=self.file
                 )
             else:
                 print(
                     (
-                        f"{atom.name} {xyz[i][0]:16.10f} "
-                        f"{xyz[i][1]:16.10f} {xyz[i][2]:16.10f}"
+                    f"{atom.name} {xyz[i][0]:16.10f} "
+                    f"{xyz[i][1]:16.10f} {xyz[i][2]:16.10f}"
                     ),
                     file=self.file
                 )
 
-    def _write_scalar(self, scalar: Np1DNumberArray, atoms: List[Atom]) -> None:
+    def _write_scalar(
+        self,
+        scalar: Np1DNumberArray,
+        atoms: List[Atom]
+    ) -> None:
         """
         Writes the charges of the frame to the file.
 
@@ -235,9 +243,7 @@ class TrajectoryWriter(BaseWriter):
         """
 
         for i, atom in enumerate(atoms):
-            print(
-                f"{atom.name} {scalar[i]}", file=self.file
-            )
+            print(f"{atom.name} {scalar[i]}", file=self.file)
 
     @property
     def format(self) -> MDEngineFormat:
