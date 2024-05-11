@@ -3,8 +3,6 @@ A module containing custom logging classes and functions,
 that are used in the PQAnalysis package.
 """
 
-from __future__ import annotations
-
 import logging
 
 import textwrap
@@ -18,6 +16,7 @@ from beartype.typing import Any
 from PQAnalysis.config import log_file_name, use_log_file
 from PQAnalysis.utils import print_header
 from PQAnalysis.exceptions import PQException
+
 
 
 def setup_logger(logger: logging.Logger) -> logging.Logger:
@@ -61,7 +60,9 @@ def setup_logger(logger: logging.Logger) -> logging.Logger:
     return logger
 
 
+
 class CustomLogger(logging.Logger):
+
     """
     A custom logger class that extends the logging.Logger class.
 
@@ -118,13 +119,7 @@ class CustomLogger(logging.Logger):
         if 'extra' in kwargs:
             del kwargs['extra']
 
-        self._original_log(
-            level,
-            msg,
-            args,
-            extra,
-            **kwargs
-        )
+        self._original_log(level, msg, args, extra, **kwargs)
 
         if level in [logging.CRITICAL, logging.ERROR]:
 
@@ -158,12 +153,14 @@ class CustomLogger(logging.Logger):
             sys.excepthook = exception_hook
             raise exception(msg)
 
-    def _original_log(self,
-                      level: Any,
-                      msg: Any,
-                      args: Any,
-                      extra=None,
-                      **kwargs) -> None:
+    def _original_log(
+        self,
+        level: Any,
+        msg: Any,
+        args: Any,
+        extra=None,
+        **kwargs
+    ) -> None:
         """
         The original _log method of the logging.Logger class.
 
@@ -186,12 +183,13 @@ class CustomLogger(logging.Logger):
 
         super()._log(level, msg, args, extra=extra, **kwargs)
 
-    def error(self,
-              msg: Any,
-              *args,
-              exception: Exception | None = None,
-              **kwargs
-              ) -> None:
+    def error(
+        self,
+        msg: Any,
+        *args,
+        exception: Exception | None = None,
+        **kwargs
+    ) -> None:
         """
         This method logs the message with the logging.ERROR level and raises
         an exception if the logger is enabled for logging.DEBUG. If the logger
@@ -235,12 +233,13 @@ class CustomLogger(logging.Logger):
         if self.isEnabledFor(logging.ERROR):
             self._original_log(logging.ERROR, msg, args, **kwargs)
 
-    def critical(self,
-                 msg: Any,
-                 *args,
-                 exception: Exception | None = None,
-                 **kwargs
-                 ) -> None:
+    def critical(
+        self,
+        msg: Any,
+        *args,
+        exception: Exception | None = None,
+        **kwargs
+    ) -> None:
         """
         This method logs the message with the logging.CRITICAL level and
         raises an exception if the logger is enabled for logging.DEBUG. 
@@ -287,7 +286,9 @@ class CustomLogger(logging.Logger):
             self._original_log(logging.CRITICAL, msg, args, **kwargs)
 
 
+
 class CustomFormatter(logging.Formatter):
+
     """
     A custom formatter class that extends the logging.Formatter class.
 
@@ -354,19 +355,22 @@ class CustomFormatter(logging.Formatter):
 
         messages = message.split('\n')
         wrapper = textwrap.TextWrapper(
-            width=shutil.get_terminal_size(
-                fallback=(80, 100)).columns - len(level),
+            width=shutil.get_terminal_size(fallback=(80,
+            100)).columns - len(level),
             initial_indent=' ' * (len(longest_level_key) + 2),
             subsequent_indent=' ' * (len(longest_level_key) + 2),
         )
-        msg = '\n'.join(['\n'.join(wrapper.wrap(message))
-                        for message in messages])
+        msg = '\n'.join(
+            ['\n'.join(wrapper.wrap(message)) for message in messages]
+        )
 
         record.msg = msg
         return '\n' + header + msg
 
 
+
 class CustomColorFormatter(CustomFormatter):
+
     """
     A custom color formatter class that extends the CustomFormatter class.
 

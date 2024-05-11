@@ -21,7 +21,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RestartFileReaderError
 
 
+
 class RestartFileReader(BaseReader):
+
     """
     A class for reading restart files.
 
@@ -53,12 +55,13 @@ class RestartFileReader(BaseReader):
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 filename: str,
-                 moldescriptor_filename: str | None = None,
-                 reference_residues: Residues | None = None,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str,
+        moldescriptor_filename: str | None = None,
+        reference_residues: Residues | None = None,
+        md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         Parameters
         ----------
@@ -80,8 +83,8 @@ class RestartFileReader(BaseReader):
         if moldescriptor_filename is not None and reference_residues is not None:
             self.logger.error(
                 (
-                    "Both moldescriptor_filename and reference_residues "
-                    "are given. They are mutually exclusive."
+                "Both moldescriptor_filename and reference_residues "
+                "are given. They are mutually exclusive."
                 ),
                 exception=RestartFileReaderError
             )
@@ -184,11 +187,12 @@ class RestartFileReader(BaseReader):
         )
 
     @classmethod
-    def _parse_atoms(cls,
-                     lines: List[str],
-                     cell: Cell = Cell(),
-                     reference_residues: Residues | None = None
-                     ) -> AtomicSystem:
+    def _parse_atoms(
+        cls,
+        lines: List[str],
+        cell: Cell = Cell(),
+        reference_residues: Residues | None = None
+    ) -> AtomicSystem:
         """
         Parses the atom lines of the restart file.
 
@@ -289,7 +293,8 @@ class RestartFileReader(BaseReader):
 
         return AtomicSystem(
             pos=np.array(positions),
-            vel=np.array(velocities), forces=np.array(forces),
+            vel=np.array(velocities),
+            forces=np.array(forces),
             cell=cell,
             topology=topology
         )

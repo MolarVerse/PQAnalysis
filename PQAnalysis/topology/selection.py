@@ -1,8 +1,6 @@
 """
 A module containing the Selection class and related functions/classes.
 """
-from __future__ import annotations
-
 # library imports
 import numpy as np
 
@@ -42,7 +40,9 @@ SelectionCompatible = TypeVar(
 )
 
 
+
 class Selection:
+
     """
     A class for representing a selection.
 
@@ -118,7 +118,11 @@ class Selection:
         else:
             self.selection_object = selection_object
 
-    def select(self, topology: Topology, use_full_atom_info: bool = False) -> Np1DIntArray:
+    def select(
+        self,
+        topology: Topology,
+        use_full_atom_info: bool = False
+    ) -> Np1DIntArray:
         """
         Returns the indices of the atoms selected by the selection object.
 
@@ -143,7 +147,11 @@ class Selection:
         if self.selection_object is None:
             return np.arange(topology.n_atoms)
 
-        return np.unique(_selection(self.selection_object, topology, use_full_atom_info))
+        return np.unique(
+            _selection(self.selection_object,
+            topology,
+            use_full_atom_info)
+        )
 
     def __str__(self) -> str:
         """
@@ -168,10 +176,12 @@ class Selection:
         return str(self.selection_object)
 
 
-def _selection(atoms: SelectionCompatible,
-               topology: Topology,
-               use_full_atom_info: bool
-               ) -> Np1DIntArray:
+
+def _selection(
+    atoms: SelectionCompatible,
+    topology: Topology,
+    use_full_atom_info: bool
+) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based
     on a list of atoms/elements or a single atom/element.
@@ -194,11 +204,10 @@ def _selection(atoms: SelectionCompatible,
     if isinstance(atoms, (Atom, Element)):
         return _selection_of_atoms(atoms, topology, use_full_atom_info)
 
-    if (
-        isinstance(atoms, List) and
-        len(atoms) > 0 and
-        isinstance(atoms[0], (Atom, Element))
-    ):
+    if (isinstance(atoms,
+        List) and len(atoms) > 0 and isinstance(atoms[0],
+        (Atom,
+        Element))):
         return _selection_of_atoms(atoms[0], topology, use_full_atom_info)
 
     if isinstance(atoms, List):
@@ -210,10 +219,12 @@ def _selection(atoms: SelectionCompatible,
     return atoms
 
 
-def _selection_of_atoms(atoms: Atoms | Atom | Element | Elements,
-                        topology: Topology,
-                        use_full_atom_info: bool
-                        ) -> Np1DIntArray:
+
+def _selection_of_atoms(
+    atoms: Atoms | Atom | Element | Elements,
+    topology: Topology,
+    use_full_atom_info: bool
+) -> Np1DIntArray:
     """
     Returns the indices of the atoms selected by the selection object.
 
@@ -258,7 +269,11 @@ def _selection_of_atoms(atoms: Atoms | Atom | Element | Elements,
     return np.sort(np.concatenate(indices))
 
 
-def _selection_of_atomtypes(atomtype_names: List[str], topology: Topology) -> Np1DIntArray:
+
+def _selection_of_atomtypes(
+    atomtype_names: List[str],
+    topology: Topology
+) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a list of atom type names.
 
@@ -282,7 +297,12 @@ def _selection_of_atomtypes(atomtype_names: List[str], topology: Topology) -> Np
     return np.sort(np.concatenate(indices))
 
 
-def _selection_of_string(string: str, topology: Topology, use_full_atom_info: bool) -> Np1DIntArray:
+
+def _selection_of_string(
+    string: str,
+    topology: Topology,
+    use_full_atom_info: bool
+) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a string.
 
@@ -305,18 +325,22 @@ def _selection_of_string(string: str, topology: Topology, use_full_atom_info: bo
     grammar_file = "selection.lark"
     grammar_path = __base_path__ / "grammar"
 
-    parser = Lark.open(grammar_path / grammar_file,
-                       propagate_positions=True)
+    parser = Lark.open(grammar_path / grammar_file, propagate_positions=True)
 
     tree = parser.parse(string)
     transformed_tree = SelectionTransformer(
-        topology=topology, visit_tokens=True, use_full_atom_info=use_full_atom_info).transform(tree)
+        topology=topology,
+        visit_tokens=True,
+        use_full_atom_info=use_full_atom_info
+    ).transform(tree)
     visitor = SelectionVisitor()
 
     return np.sort(visitor.visit(transformed_tree))
 
 
+
 class SelectionTransformer(Transformer):
+
     """
     A class for transforming a Lark parse tree.
 
@@ -326,7 +350,12 @@ class SelectionTransformer(Transformer):
         The type of the Transformer class to inherit from.
     """
 
-    def __init__(self, topology=Topology(), visit_tokens=False, use_full_atom_info=False):
+    def __init__(
+        self,
+        topology=Topology(),
+        visit_tokens=False,
+        use_full_atom_info=False
+    ):
         """
         Parameters
         ----------
@@ -512,7 +541,9 @@ class SelectionTransformer(Transformer):
         Np1DIntArray
             The indices of the given residue name.
         """
-        return np.array(self.topology.get_atom_indices_from_residue_names(items[0]))
+        return np.array(
+            self.topology.get_atom_indices_from_residue_names(items[0])
+        )
 
     def residue_number(self, items: Any) -> Np1DIntArray:
         """
@@ -529,7 +560,9 @@ class SelectionTransformer(Transformer):
             The indices of the given residue number.
         """
 
-        return np.array(self.topology.get_atom_indices_from_residue_numbers(items[0]))
+        return np.array(
+            self.topology.get_atom_indices_from_residue_numbers(items[0])
+        )
 
     def index(self, items: List[int]) -> Np1DIntArray:
         """
@@ -658,7 +691,9 @@ class SelectionTransformer(Transformer):
         return union
 
 
+
 class SelectionVisitor(Visitor):
+
     """
     A class for visiting a Lark parse tree and returning the indices of parsed selection.
 
@@ -717,6 +752,7 @@ class SelectionVisitor(Visitor):
         return np.array(self.selection)
 
 
+
 def _indices_by_atom_type_name(name: str, topology: Topology) -> Np1DIntArray:
     """
     Returns the indices of the atoms with the given atom type name.
@@ -735,11 +771,13 @@ def _indices_by_atom_type_name(name: str, topology: Topology) -> Np1DIntArray:
     """
 
     bool_array = np.array(
-        [topology_name == name for topology_name in topology.atomtype_names])
+        [topology_name == name for topology_name in topology.atomtype_names]
+    )
 
     indices = np.argwhere(bool_array).flatten()
 
     return indices
+
 
 
 def _indices_by_atom(atom: Atom, topology: Topology) -> Np1DIntArray:
@@ -764,9 +802,11 @@ def _indices_by_atom(atom: Atom, topology: Topology) -> Np1DIntArray:
     return indices
 
 
-def _indices_by_element_types(atom: Atom | Element,
-                              topology: Topology
-                              ) -> Np1DIntArray:
+
+def _indices_by_element_types(
+    atom: Atom | Element,
+    topology: Topology
+) -> Np1DIntArray:
     """
     Returns the indices of the given element type.
 
@@ -791,7 +831,8 @@ def _indices_by_element_types(atom: Atom | Element,
         element = atom
 
     bool_indices = np.array(
-        [topology_atom.element == element for topology_atom in topology.atoms])
+        [topology_atom.element == element for topology_atom in topology.atoms]
+    )
 
     indices = np.argwhere(bool_indices).flatten()
 

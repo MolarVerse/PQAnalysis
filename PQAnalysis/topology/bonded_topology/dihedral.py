@@ -2,26 +2,27 @@
 A module containing the Dihedral class.
 """
 
-from __future__ import annotations
-
 from PQAnalysis.types import PositiveInt, PositiveReal
 
 
+
 class Dihedral:
+
     """
     A class to represent a dihedral in a molecular topology.
     """
 
-    def __init__(self,
-                 index1: PositiveInt,
-                 index2: PositiveInt,
-                 index3: PositiveInt,
-                 index4: PositiveInt,
-                 equilibrium_angle: PositiveReal | None = None,
-                 dihedral_type: int | None = None,
-                 is_linker: bool = False,
-                 is_improper: bool = False,
-                 ) -> None:
+    def __init__(
+        self,
+        index1: PositiveInt,
+        index2: PositiveInt,
+        index3: PositiveInt,
+        index4: PositiveInt,
+        equilibrium_angle: PositiveReal | None = None,
+        dihedral_type: int | None = None,
+        is_linker: bool = False,
+        is_improper: bool = False,
+    ) -> None:
         """
         Parameters
         ----------
@@ -52,7 +53,7 @@ class Dihedral:
         self.is_linker = is_linker
         self.is_improper = is_improper
 
-    def copy(self) -> Dihedral:
+    def copy(self) -> "Dihedral":
         """
         A method to create a copy of the dihedral.
 
@@ -91,12 +92,10 @@ class Dihedral:
             return False
 
         return (
-            self.index1 == value.index1 and
-            self.index2 == value.index2 and
-            self.index3 == value.index3 and
-            self.index4 == value.index4 and
-            self.equilibrium_angle == value.equilibrium_angle and
-            self.dihedral_type == value.dihedral_type and
-            self.is_linker == value.is_linker and
-            self.is_improper == value.is_improper
+            self.index1 == value.index1 and self.index2 == value.index2
+            and self.index3 == value.index3 and self.index4 == value.index4
+            and self.equilibrium_angle == value.equilibrium_angle
+            and self.dihedral_type == value.dihedral_type
+            and self.is_linker == value.is_linker
+            and self.is_improper == value.is_improper
         )
