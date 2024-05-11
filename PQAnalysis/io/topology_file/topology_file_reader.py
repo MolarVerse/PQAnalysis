@@ -4,10 +4,15 @@ and return a BondedTopology object. For more information please visit the
 documentation page of PQ https://molarverse.github.io/PQ/
 """
 
+import logging
+
 from beartype.typing import List
 
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .exceptions import TopologyFileError
 
 
@@ -24,6 +29,9 @@ class TopologyFileReader(BaseReader):
 
     For more information please visit the documentation page of PQ https://molarverse.github.io/PQ/
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self, filename: str) -> None:
         """
@@ -79,8 +87,9 @@ class TopologyFileReader(BaseReader):
 
             # check if last line is END else raise error
             if lines[-1].strip() != "END":
-                raise TopologyFileError(
-                    "Something went wrong. Each block should end with 'END'"
+                self.logger.error(
+                    "Something went wrong. Each block should end with 'END'",
+                    exception=TopologyFileError,
                 )
 
             # split all lines into blocks where each block ends with END
@@ -149,7 +158,10 @@ class TopologyFileReader(BaseReader):
             elif key == "impropers":
                 impropers = self.parse_impropers(value)
             else:
-                raise TopologyFileError(f"Unknown block {key}")
+                self.logger.error(
+                    f"Unknown block {key}",
+                    exception=TopologyFileError
+                )
 
         return BondedTopology(
             bonds=bonds,
@@ -194,8 +206,9 @@ class TopologyFileReader(BaseReader):
                 index, target_index, bond_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in bond block. Expected 3 or 4."
+                self.logger.error(
+                    "Invalid number of columns in bond block. Expected 3 or 4.",
+                    exception=TopologyFileError
                 )
 
             bonds.append(
@@ -243,8 +256,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, angle_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in angle block. Expected 4 or 5."
+                self.logger.error(
+                    "Invalid number of columns in angle block. Expected 4 or 5.",
+                    exception=TopologyFileError
                 )
 
             angles.append(
@@ -293,8 +307,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, index4, dihedral_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                self.logger.error(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6.",
+                    exception=TopologyFileError
                 )
 
             dihedrals.append(
@@ -344,8 +359,9 @@ class TopologyFileReader(BaseReader):
                 index1, index2, index3, index4, dihedral_type = line.split()
                 is_linker = False
             else:
-                raise TopologyFileError(
-                    "Invalid number of columns in dihedral block. Expected 5 or 6."
+                self.logger.error(
+                    "Invalid number of columns in dihedral block. Expected 5 or 6.",
+                    exception=TopologyFileError
                 )
 
             dihedrals.append(
