@@ -10,6 +10,7 @@ import numpy as np
 from beartype.typing import List
 
 
+
 def find_files_with_prefix(file_prefixes: List[str] | str) -> List[str]:
     """
     Finds files with a given prefix.
@@ -32,9 +33,7 @@ def find_files_with_prefix(file_prefixes: List[str] | str) -> List[str]:
     file_prefixes = [glob.glob(prefix + "*") for prefix in file_prefixes]
 
     files = [
-        file
-        for sublist in file_prefixes
-        for file in sublist
+        file for sublist in file_prefixes for file in sublist
         if Path(file).is_file()
     ]
 
