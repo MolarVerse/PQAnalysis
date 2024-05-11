@@ -30,6 +30,7 @@ from .exceptions import (
 )
 
 
+
 @decorator
 def check_atom_number_setters(func, self, arg_to_set: Any) -> None:
     """
@@ -61,14 +62,15 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> None:
         print("test")
         self.logger.error(
             (
-                "The number of atoms in the AtomicSystem object have "
-                "to be equal to the number of atoms in the new array "
-                "in order to set the property."
+            "The number of atoms in the AtomicSystem object have "
+            "to be equal to the number of atoms in the new array "
+            "in order to set the property."
             ),
             exception=AtomicSystemError
         )
 
     return func(self, arg_to_set)
+
 
 
 @decorator
@@ -100,6 +102,7 @@ def check_atoms_pos(func, *args, **kwargs):
         )
 
     return func(*args, **kwargs)
+
 
 
 @decorator

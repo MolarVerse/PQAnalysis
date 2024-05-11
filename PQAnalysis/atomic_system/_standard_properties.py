@@ -16,11 +16,14 @@ from PQAnalysis.types import (
 from ._decorators import check_atom_number_setters
 
 
+
 class _StandardPropertiesMixin:
+
     """
     A mixin class containing the standard properties of an atomic 
     system (i.e. standard getter and setter methods).
     """
+
     @property
     def atoms(self) -> Atoms:
         """Atoms: The atoms in the system."""
