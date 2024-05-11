@@ -9,3 +9,9 @@ class RestartFileReaderError(PQException):
     """
     Exception raised for errors related to the RestartFileReader class
     """
+
+
+class RestartFileWriterError(PQException):
+    """
+    Exception raised for errors related to the RestartFileWriter class
+    """

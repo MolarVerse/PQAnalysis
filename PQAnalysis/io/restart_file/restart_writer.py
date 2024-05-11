@@ -1,6 +1,7 @@
 """
 A module for writing restart files.
 """
+import logging
 
 import numpy as np
 
@@ -12,6 +13,10 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
+from .exceptions import RestartFileWriterError
 
 
 class RestartFileWriter(BaseWriter):
@@ -44,6 +49,9 @@ class RestartFileWriter(BaseWriter):
     is structured, see the corresponding documentation of the
     `PQ <https://molarverse.github.io/PQ>`_ code.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self,
                  filename: str | None = None,
@@ -84,11 +92,11 @@ class RestartFileWriter(BaseWriter):
             of atoms in the frame.
         """
 
-        lines = self.get_lines(frame, atom_counter)
+        lines = self._get_lines(frame, atom_counter)
 
-        self.write_lines_to_file(lines)
+        self._write_lines_to_file(lines)
 
-    def write_lines_to_file(self, lines: List[str]) -> None:
+    def _write_lines_to_file(self, lines: List[str]) -> None:
         """
         Writes the lines to the file.
 
@@ -105,10 +113,10 @@ class RestartFileWriter(BaseWriter):
 
         self.close()
 
-    def get_lines(self,
-                  frame: AtomicSystem,
-                  atom_counter: int | Np1DNumberArray | None = None,
-                  ) -> List[str]:
+    def _get_lines(self,
+                   frame: AtomicSystem,
+                   atom_counter: int | Np1DNumberArray | None = None,
+                   ) -> List[str]:
         """
         Collects the lines to write to the file.
 
@@ -125,7 +133,7 @@ class RestartFileWriter(BaseWriter):
 
         lines = []
         lines.append(self._get_box_line(frame.cell))
-        lines += self.get_atom_lines(
+        lines += self._get_atom_lines(
             frame,
             atom_counter,
             self.md_engine_format
@@ -145,11 +153,11 @@ class RestartFileWriter(BaseWriter):
         return f"Box  {cell.x} {cell.y} {cell.z}  {cell.alpha} {cell.beta} {cell.gamma}"
 
     @classmethod
-    def get_atom_lines(cls,
-                       frame: AtomicSystem,
-                       atom_counter: int | Np1DNumberArray | None = None,
-                       md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                       ) -> List[str]:
+    def _get_atom_lines(cls,
+                        frame: AtomicSystem,
+                        atom_counter: int | Np1DNumberArray | None = None,
+                        md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+                        ) -> List[str]:
         """
         Writes the atoms to the file.
 
@@ -168,9 +176,12 @@ class RestartFileWriter(BaseWriter):
 
         if atom_counter is not None and not isinstance(atom_counter, int):
             if len(atom_counter) != frame.n_atoms:
-                raise ValueError(
-                    "The atom counter has to have the same length as "
-                    "the number of atoms in the frame if it is given as an array."
+                cls.logger.error(
+                    (
+                        "The atom counter has to have the same length as "
+                        "the number of atoms in the frame if it is given as an array."
+                    ),
+                    exception=RestartFileWriterError
                 )
         elif isinstance(atom_counter, int):
             atom_counter = [atom_counter] * frame.n_atoms
