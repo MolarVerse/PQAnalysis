@@ -7,6 +7,7 @@ from beartype.typing import List
 from PQAnalysis.core import Cell
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .traj_file import (
     TrajectoryWriter,
@@ -22,6 +23,7 @@ from .restart_file.api import read_restart_file
 from .traj_file.api import write_trajectory
 
 
+@runtime_type_checking
 def gen2xyz(gen_file: str,
             output: str | None = None,
             md_format: MDEngineFormat | str = MDEngineFormat.PQ,
@@ -56,6 +58,7 @@ def gen2xyz(gen_file: str,
                      traj_type="xyz", mode=mode)
 
 
+@runtime_type_checking
 def xyz2gen(xyz_file: str,
             output: str | None = None,
             periodic: bool | None = None,
@@ -93,6 +96,7 @@ def xyz2gen(xyz_file: str,
     write_gen_file(output, system, periodic, mode)
 
 
+@runtime_type_checking
 def rst2xyz(restart_file: str,
             output: str | None = None,
             print_box: bool = True,
@@ -131,6 +135,7 @@ def rst2xyz(restart_file: str,
                      traj_type="xyz", mode=mode)
 
 
+@runtime_type_checking
 def traj2box(trajectory_files: List[str],
              vmd: bool,
              output: str | None = None,
@@ -176,6 +181,7 @@ def traj2box(trajectory_files: List[str],
         writer.write(trajectory, reset_counter=False)
 
 
+@runtime_type_checking
 def traj2qmcfc(trajectory_files: List[str],
                output: str | None = None,
                mode: FileWritingMode | str = "w"
