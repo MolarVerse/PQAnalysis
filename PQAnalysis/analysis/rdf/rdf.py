@@ -15,7 +15,6 @@ import numpy as np
 from beartype.typing import Tuple
 from tqdm.auto import tqdm
 
-
 # local absolute imports
 from PQAnalysis.config import with_progress_bar
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
@@ -32,7 +31,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RDFError
 
 
+
 class RDF:
+
     """
     A class for calculating the radial distribution of a 
     reference selection to a target selection. The radial
@@ -69,17 +70,18 @@ class RDF:
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 traj: Trajectory | TrajectoryReader,
-                 reference_species: SelectionCompatible,
-                 target_species: SelectionCompatible,
-                 use_full_atom_info: bool = False,
-                 no_intra_molecular: bool = False,
-                 n_bins: PositiveInt | None = None,
-                 delta_r: PositiveReal | None = None,
-                 r_max: PositiveReal | None = None,
-                 r_min: PositiveReal | None = 0.0,
-                 ):
+    def __init__(
+        self,
+        traj: Trajectory | TrajectoryReader,
+        reference_species: SelectionCompatible,
+        target_species: SelectionCompatible,
+        use_full_atom_info: bool = False,
+        no_intra_molecular: bool = False,
+        n_bins: PositiveInt | None = None,
+        delta_r: PositiveReal | None = None,
+        r_max: PositiveReal | None = None,
+        r_min: PositiveReal | None = 0.0,
+    ):
         """
         Parameters
         ----------
@@ -209,8 +211,12 @@ class RDF:
         self.first_frame = next(self.frame_generator)
         self.topology = traj.topology
 
-        self._setup_bins(n_bins=n_bins, delta_r=delta_r,
-                         r_max=r_max, r_min=self.r_min)
+        self._setup_bins(
+            n_bins=n_bins,
+            delta_r=delta_r,
+            r_max=r_max,
+            r_min=self.r_min
+        )
 
         self.reference_indices = self.reference_selection.select(
             self.topology,
@@ -222,12 +228,13 @@ class RDF:
             self.use_full_atom_info
         )
 
-    def _setup_bins(self,
-                    n_bins: PositiveInt | None = None,
-                    delta_r: PositiveReal | None = None,
-                    r_max: PositiveReal | None = None,
-                    r_min: PositiveReal = 0.0
-                    ):
+    def _setup_bins(
+        self,
+        n_bins: PositiveInt | None = None,
+        delta_r: PositiveReal | None = None,
+        r_max: PositiveReal | None = None,
+        r_min: PositiveReal = 0.0
+    ):
         """
         Sets up the bins of the RDF analysis.
 
@@ -279,9 +286,9 @@ class RDF:
         elif all([n_bins, delta_r, r_max]):
             self.logger.error(
                 (
-                    "It is not possible to specify all of n_bins, "
-                    "delta_r and r_max in the same RDF analysis "
-                    "as this would lead to ambiguous results."
+                "It is not possible to specify all of n_bins, "
+                "delta_r and r_max in the same RDF analysis "
+                "as this would lead to ambiguous results."
                 ),
                 exception=RDFError
             )
@@ -348,13 +355,14 @@ class RDF:
             Meaning that some frames are in vacuum and others are periodic.
         """
 
-        if not check_trajectory_pbc(self.cells) and not check_trajectory_vacuum(self.cells):
+        if not check_trajectory_pbc(
+                self.cells) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
                 (
-                    "The provided trajectory is not fully periodic or "
-                    "in vacuum, meaning that some frames are in vacuum "
-                    "and others are periodic. This is not supported by "
-                    "the RDF analysis."
+                "The provided trajectory is not fully periodic or "
+                "in vacuum, meaning that some frames are in vacuum "
+                "and others are periodic. This is not supported by "
+                "the RDF analysis."
                 ),
                 exception=RDFError
             )
@@ -365,13 +373,13 @@ class RDF:
         return np.mean([cell.volume for cell in self.cells])
 
     @timeit_in_class
-    def run(self) -> Tuple[
+    def run(
+        self
+    ) -> Tuple[Np1DNumberArray,
         Np1DNumberArray,
         Np1DNumberArray,
         Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray
-    ]:
+        Np1DNumberArray]:
         """
         Runs the RDF analysis.
 
@@ -442,9 +450,12 @@ class RDF:
 
         if self.no_intra_molecular:
             for reference_index in self.reference_indices:
-                residue_indices = self.topology.residue_atom_indices[reference_index]
+                residue_indices = self.topology.residue_atom_indices[
+                    reference_index]
                 self.target_index_combinations.append(
-                    np.setdiff1d(self.target_indices, residue_indices))
+                    np.setdiff1d(self.target_indices,
+                    residue_indices)
+                )
 
     def _calculate_bins(self):
         """
@@ -458,11 +469,9 @@ class RDF:
         calculated from these distances.
         """
 
-        for frame in tqdm(
-            self.frame_generator,
+        for frame in tqdm(self.frame_generator,
             total=self.n_frames,
-            disable=not with_progress_bar
-        ):
+            disable=not with_progress_bar):
             for i, reference_index in enumerate(self.reference_indices):
 
                 if self.no_intra_molecular:
@@ -486,13 +495,13 @@ class RDF:
                     self.n_bins
                 )
 
-    def _finalize_run(self) -> Tuple[
+    def _finalize_run(
+        self
+    ) -> Tuple[Np1DNumberArray,
         Np1DNumberArray,
         Np1DNumberArray,
         Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray
-    ]:
+        Np1DNumberArray]:
         """
         Finalizes the RDF analysis after running.
 
@@ -562,12 +571,13 @@ class RDF:
         return self.topology.n_atoms
 
     @classmethod
-    def _add_to_bins(cls,
-                     distances: Np1DNumberArray,
-                     r_min: PositiveReal,
-                     delta_r: PositiveReal,
-                     n_bins: PositiveInt
-                     ) -> Np1DNumberArray:
+    def _add_to_bins(
+        cls,
+        distances: Np1DNumberArray,
+        r_min: PositiveReal,
+        delta_r: PositiveReal,
+        n_bins: PositiveInt
+    ) -> Np1DNumberArray:
         """
         Returns the bins of the RDF analysis based on the provided distances.
 
@@ -588,22 +598,20 @@ class RDF:
             The bins of the RDF analysis.
         """
 
-        distances = np.floor_divide(
-            distances - r_min,
-            delta_r
-        ).astype(int)
+        distances = np.floor_divide(distances - r_min, delta_r).astype(int)
 
         distances = distances[(distances < n_bins) & (distances >= 0)]
 
         return np.bincount(distances, minlength=n_bins)
 
     @classmethod
-    def _setup_bin_middle_points(cls,
-                                 n_bins: PositiveInt,
-                                 r_min: PositiveReal,
-                                 r_max: PositiveReal,
-                                 delta_r: PositiveReal
-                                 ) -> Np1DNumberArray:
+    def _setup_bin_middle_points(
+        cls,
+        n_bins: PositiveInt,
+        r_min: PositiveReal,
+        r_max: PositiveReal,
+        delta_r: PositiveReal
+    ) -> Np1DNumberArray:
         """
         Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.
 
@@ -631,12 +639,13 @@ class RDF:
         return bin_middle_points
 
     @classmethod
-    def _calculate_r_max(cls,
-                         n_bins: PositiveInt,
-                         delta_r: PositiveReal,
-                         r_min: PositiveReal,
-                         cells: Cells
-                         ) -> PositiveReal:
+    def _calculate_r_max(
+        cls,
+        n_bins: PositiveInt,
+        delta_r: PositiveReal,
+        r_min: PositiveReal,
+        cells: Cells
+    ) -> PositiveReal:
         """
         Calculates the maximum radius of the RDF analysis from the provided parameters.
 
@@ -664,10 +673,7 @@ class RDF:
         return r_max
 
     @classmethod
-    def _check_r_max(cls,
-                     r_max: PositiveReal,
-                     cells: Cells
-                     ) -> PositiveReal:
+    def _check_r_max(cls, r_max: PositiveReal, cells: Cells) -> PositiveReal:
         """
         Checks if the provided maximum radius is larger than the 
         maximum allowed radius according to the box vectors of the trajectory.
@@ -698,11 +704,11 @@ class RDF:
         if check_trajectory_pbc(cells) and r_max > cls._infer_r_max(cells):
             cls.logger.warning(
                 (
-                    f"The calculated r_max {r_max} is larger "
-                    "than the maximum allowed radius according "
-                    "to the box vectors of the trajectory "
-                    f"{cls._infer_r_max(cells)}. r_max will be "
-                    "set to the maximum allowed radius."
+                f"The calculated r_max {r_max} is larger "
+                "than the maximum allowed radius according "
+                "to the box vectors of the trajectory "
+                f"{cls._infer_r_max(cells)}. r_max will be "
+                "set to the maximum allowed radius."
                 ),
             )
 
@@ -711,11 +717,13 @@ class RDF:
         return r_max
 
     @classmethod
-    def _calculate_n_bins(cls,
-                          delta_r: PositiveReal,
-                          r_max: PositiveReal,
-                          r_min: PositiveReal
-                          ) -> Tuple[PositiveInt, PositiveReal]:
+    def _calculate_n_bins(
+        cls,
+        delta_r: PositiveReal,
+        r_max: PositiveReal,
+        r_min: PositiveReal
+    ) -> Tuple[PositiveInt,
+        PositiveReal]:
         """
         Calculates the number of bins of the RDF analysis from the provided parameters.
 
@@ -775,10 +783,10 @@ class RDF:
         if not check_trajectory_pbc(cells):
             cls.logger.error(
                 (
-                    "To infer r_max of the RDF analysis, "
-                    "the trajectory cannot be a vacuum trajectory. "
-                    "Please specify r_max manually or use the "
-                    "combination n_bins and delta_r."
+                "To infer r_max of the RDF analysis, "
+                "the trajectory cannot be a vacuum trajectory. "
+                "Please specify r_max manually or use the "
+                "combination n_bins and delta_r."
                 ),
                 exception=RDFError
             )
@@ -786,13 +794,14 @@ class RDF:
         return np.min([cell.box_lengths for cell in cells]) / 2.0
 
     @classmethod
-    def _norm(cls,
-              n_bins: int,
-              delta_r: PositiveReal,
-              target_density: PositiveReal,
-              n_reference_indices: int,
-              n_frames: int
-              ) -> Np1DNumberArray:
+    def _norm(
+        cls,
+        n_bins: int,
+        delta_r: PositiveReal,
+        target_density: PositiveReal,
+        n_reference_indices: int,
+        n_frames: int
+    ) -> Np1DNumberArray:
         """
         Calculates the normalization of the RDF analysis 
         based on a spherical shell model.
@@ -822,17 +831,18 @@ class RDF:
         large_radius_range = np.arange(1, n_bins + 1)
         delta_radius_range = large_radius_range**3 - small_radius_range**3
 
-        delta_volume = delta_r ** 3 * delta_radius_range
+        delta_volume = delta_r**3 * delta_radius_range
         volume = surface_prefactor * delta_volume
 
         return volume * target_density * n_reference_indices * n_frames
 
     @classmethod
-    def _integration(cls,
-                     bins: Np1DNumberArray,
-                     n_reference_indices: int,
-                     n_frames: int
-                     ) -> Np1DNumberArray:
+    def _integration(
+        cls,
+        bins: Np1DNumberArray,
+        n_reference_indices: int,
+        n_frames: int
+    ) -> Np1DNumberArray:
         """
         Calculates the integrated RDF analysis. 
         The integral is calculated using a cumulative sum.
