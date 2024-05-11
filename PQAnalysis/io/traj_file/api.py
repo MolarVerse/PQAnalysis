@@ -6,11 +6,14 @@ from beartype.typing import Generator
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.type_checking import runtime_type_checking
+
 from PQAnalysis.io.traj_file import (
     TrajectoryWriter,
     TrajectoryReader,
 )
-from PQAnalysis.io.formats import FileWritingMode
+
 from PQAnalysis.traj import (
     Trajectory,
     MDEngineFormat,
@@ -18,6 +21,7 @@ from PQAnalysis.traj import (
 )
 
 
+@runtime_type_checking
 def write_trajectory(traj: Trajectory | AtomicSystem,
                      filename: str | None = None,
                      engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
@@ -53,6 +57,7 @@ def write_trajectory(traj: Trajectory | AtomicSystem,
     writer.write(traj, traj_type=traj_type)
 
 
+@runtime_type_checking
 def read_trajectory(filename: str,
                     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                     traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
@@ -93,6 +98,7 @@ def read_trajectory(filename: str,
     return reader.read()
 
 
+@runtime_type_checking
 def calculate_frames_of_trajectory_file(filename: str):
     """
     Calculate the number of frames in a trajectory file.
@@ -111,6 +117,7 @@ def calculate_frames_of_trajectory_file(filename: str):
     return reader.calculate_number_of_frames()
 
 
+@runtime_type_checking
 def read_trajectory_generator(filename: str,
                               md_format: MDEngineFormat | str = MDEngineFormat.PQ,
                               traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,

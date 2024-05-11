@@ -6,6 +6,7 @@ from . import pytestmark
 from PQAnalysis.io import MoldescriptorReader
 from PQAnalysis.io.exceptions import MoldescriptorReaderError
 from PQAnalysis.core import Element
+from PQAnalysis.exceptions import PQFileNotFoundError
 
 
 class TestMoldescriptorReader:
@@ -14,7 +15,7 @@ class TestMoldescriptorReader:
         reader = MoldescriptorReader("moldescriptor.dat")
         assert reader.filename == "moldescriptor.dat"
 
-        with pytest.raises(FileNotFoundError) as exception:
+        with pytest.raises(PQFileNotFoundError) as exception:
             MoldescriptorReader("tmp")
         assert str(exception.value) == "File tmp not found."
 

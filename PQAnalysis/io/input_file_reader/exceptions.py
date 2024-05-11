@@ -5,7 +5,9 @@ A module containing exceptions related to input file errors
 from PQAnalysis.exceptions import BaseEnumFormatError, PQException, PQWarning
 
 
+
 class InputFileFormatError(BaseEnumFormatError):
+
     """
     Exception raised if the given enum is not valid
     """
@@ -24,7 +26,9 @@ class InputFileFormatError(BaseEnumFormatError):
         super().__init__(value, enum)
 
 
+
 class InputFileError(PQException):
+
     """
     Exception raised if something is wrong with the input file
     """
@@ -40,7 +44,9 @@ class InputFileError(PQException):
         super().__init__(message)
 
 
+
 class InputFileWarning(PQWarning):
+
     """
     Warning raised if something is wrong with the input file
     """

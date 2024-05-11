@@ -1,19 +1,24 @@
 """
 A module for reading the input file for the PQAnalysis.
 """
-import warnings
+import logging
 
 from beartype.typing import List
 
-from PQAnalysis.io.input_file_reader.exceptions import InputFileError, InputFileWarning
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis.io.input_file_reader.input_file_parser import InputFileParser
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
 
 
+
 class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
+
     """
     A class to read the input file for the PQAnalysis. 
     It inherits from _FileMixin, _SelectionMixin and _PositionsMixin.
@@ -31,6 +36,9 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         keywords is given, so that they can be used accordingly in
         the implementing subclasses.
     """
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
     known_keys = []
 
     # fmt: off
@@ -91,9 +99,12 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
             if not all required keys are set in the input file
         """
         if not all(key in self.dictionary.keys() for key in required_keys):
-            raise InputFileError(
+            self.logger.error(
+                (
                 "Not all required keys were set in "
                 f"the input file! The required keys are: {required_keys}."
+                ),
+                exception=InputFileError
             )
 
     def check_known_keys(self, known_keys: List[str] | None = None):
@@ -114,8 +125,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
             known_keys = self.known_keys
 
         if not all(key in known_keys for key in self.dictionary.keys()):
-            warnings.warn(
+            self.logger.warning(
                 "Unknown keys were set in the input file! "
-                f"The known keys are: {known_keys}. They will be ignored!",
-                InputFileWarning
+                f"The known keys are: {known_keys}. They will be ignored!"
             )

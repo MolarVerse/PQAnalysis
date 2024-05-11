@@ -2,12 +2,23 @@
 This module provides API functions for input/output 
 handling of molecular dynamics simulations.
 """
+
+import logging
+
 from PQAnalysis.types import PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQNotImplementedError
 
 from .input_file_reader import PQInputFileReader as Reader
 from .input_file_reader.formats import InputFileFormat
 
+logger = logging.getLogger(__package_name__).getChild("io.api")
+logger = setup_logger(logger)
 
+
+@runtime_type_checking
 def continue_input_file(input_file: str,
                         n: PositiveReal = 1,
                         input_format: InputFileFormat | str = InputFileFormat.PQ
@@ -37,9 +48,12 @@ def continue_input_file(input_file: str,
     input_format = InputFileFormat(input_format)
 
     if input_format != InputFileFormat.PQ:
-        raise NotImplementedError(
-            f"Format {input_format} not implemented "
-            "yet for continuing input file."
+        logger.error(
+            (
+                f"Format {input_format} not implemented "
+                "yet for continuing input file."
+            ),
+            exception=PQNotImplementedError
         )
 
     reader = Reader(input_file)

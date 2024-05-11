@@ -2,9 +2,15 @@
 A module containing the InfoFileReader class.
 """
 
+import logging
+
 from beartype.typing import Tuple, Dict
 
 from PQAnalysis.traj import MDEngineFormat, MDEngineFormatError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .base import BaseReader
 
 
@@ -24,6 +30,10 @@ class InfoFileReader(BaseReader):
     information strings (None if no units are given).
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self,
                  filename: str,
                  engine_format: MDEngineFormat | str = MDEngineFormat.PQ
@@ -65,17 +75,18 @@ class InfoFileReader(BaseReader):
             If the info file is not in PQ or qmcfc format.
         """
         if self.format == MDEngineFormat.PQ:
-            return self.read_pq()
+            return self._read_pq()
 
         if self.format == MDEngineFormat.QMCFC:
-            return self.read_qmcfc()
+            return self._read_qmcfc()
 
         # should never reach this point - if it does, it is a bug
-        raise MDEngineFormatError(
-            f"Info file {self.filename} is not in PQ or qmcfc format."
+        self.logger.error(
+            f"Info file {self.filename} is not in PQ or qmcfc format.",
+            exception=MDEngineFormatError
         )
 
-    def read_pq(self) -> Tuple[Dict, Dict]:
+    def _read_pq(self) -> Tuple[Dict, Dict]:
         """
         Reads the info file in PQ format.
 
@@ -107,19 +118,25 @@ class InfoFileReader(BaseReader):
                 line = line.split()
 
                 if len(line) == 8:
+
                     info[line[1]] = entry_counter
                     units[line[1]] = line[3]
                     entry_counter += 1
+
                     info[line[4]] = entry_counter
                     units[line[4]] = line[6]
                     entry_counter += 1
+
                 else:
-                    raise MDEngineFormatError(
-                        f"Info file {self.filename} is not in PQ format.")
+
+                    self.logger.error(
+                        f"Info file {self.filename} is not in PQ format.",
+                        exception=MDEngineFormatError
+                    )
 
         return info, units
 
-    def read_qmcfc(self) -> Tuple[Dict, None]:
+    def _read_qmcfc(self) -> Tuple[Dict, None]:
         """
         Reads the info file in qmcfc format.
 
@@ -149,17 +166,24 @@ class InfoFileReader(BaseReader):
                 line = line.split()
 
                 if len(line) == 6:
+
                     info[line[1]] = entry_counter
                     entry_counter += 1
                     info[line[3]] = entry_counter
                     entry_counter += 1
+
                 elif len(line) == 7:
+
                     info[' '.join(line[1:3])] = entry_counter
                     entry_counter += 1
                     info[line[4]] = entry_counter
                     entry_counter += 1
+
                 else:
-                    raise MDEngineFormatError(
-                        f"Info file {self.filename} is not in qmcfc format.")
+
+                    self.logger.error(
+                        f"Info file {self.filename} is not in qmcfc format.",
+                        exception=MDEngineFormatError
+                    )
 
         return info, None

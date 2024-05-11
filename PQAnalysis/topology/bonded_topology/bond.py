@@ -2,24 +2,25 @@
 A module containing the Bond class.
 """
 
-from __future__ import annotations
-
 from PQAnalysis.types import PositiveInt, PositiveReal
 
 
+
 class Bond:
+
     """
     A class to represent a bond in a molecular topology.
     """
 
-    def __init__(self,
-                 index1: PositiveInt,
-                 index2: PositiveInt,
-                 equilibrium_distance: PositiveReal | None = None,
-                 bond_type: PositiveInt | None = None,
-                 is_linker: bool = False,
-                 is_shake: bool = False,
-                 ) -> None:
+    def __init__(
+        self,
+        index1: PositiveInt,
+        index2: PositiveInt,
+        equilibrium_distance: PositiveReal | None = None,
+        bond_type: PositiveInt | None = None,
+        is_linker: bool = False,
+        is_shake: bool = False,
+    ) -> None:
         """
         Parameters
         ----------
@@ -44,7 +45,7 @@ class Bond:
         self.is_linker = is_linker
         self.is_shake = is_shake
 
-    def copy(self) -> Bond:
+    def copy(self) -> "Bond":
         """
         A method to create a copy of the bond.
 
@@ -81,8 +82,7 @@ class Bond:
             return False
 
         return (
-            self.index1 == value.index1
-            and self.index2 == value.index2
+            self.index1 == value.index1 and self.index2 == value.index2
             and self.equilibrium_distance == value.equilibrium_distance
             and self.bond_type == value.bond_type
             and self.is_linker == value.is_linker

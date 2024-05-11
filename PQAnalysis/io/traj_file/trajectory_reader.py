@@ -2,8 +2,6 @@
 A module containing classes for reading a trajectory from a file.
 """
 
-from __future__ import annotations
-
 # 3rd party modules
 import logging
 from beartype.typing import List, Generator
@@ -19,13 +17,16 @@ from PQAnalysis.io.base import BaseReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.exceptions import PQIndexError
+from PQAnalysis.type_checking import runtime_type_checking
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
-from .frame_reader import FrameReader
+from .frame_reader import _FrameReader
+
 
 
 class TrajectoryReader(BaseReader):
+
     """
     A class for reading a trajectory from a file.
 
@@ -36,6 +37,7 @@ class TrajectoryReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(
         self,
         filename: str | List[str],
@@ -73,7 +75,7 @@ class TrajectoryReader(BaseReader):
         self.traj_format = TrajectoryFormat((traj_format, self.filenames[0]))
 
         self.md_format = MDEngineFormat(md_format)
-        self.frame_reader = FrameReader(md_format=self.md_format)
+        self.frame_reader = _FrameReader(md_format=self.md_format)
 
         # The length of the trajectory
         self.length_of_traj = 0
@@ -84,6 +86,7 @@ class TrajectoryReader(BaseReader):
         #       The global config.with_progress_bar is only set in the read function
         self.with_progress_bar = False
 
+    @runtime_type_checking
     def read(self, topology: Topology | None = None) -> Trajectory:
         """
         Reads the trajectory from the file.
@@ -119,6 +122,7 @@ class TrajectoryReader(BaseReader):
 
         return traj
 
+    @runtime_type_checking
     def frame_generator(
         self,
         trajectory_start: int = 0,
@@ -205,16 +209,17 @@ class TrajectoryReader(BaseReader):
                 frame_lines = []
 
                 # Read the lines of the file using tqdm for progress bar
-                for line in tqdm(
-                    self.file, total=sum_lines, disable=not self.with_progress_bar
-                ):
+                for line in tqdm(self.file,
+                    total=sum_lines,
+                    disable=not self.with_progress_bar):
                     stripped_line = line.strip()
                     if stripped_line == "" or not stripped_line[0].isdigit():
                         frame_lines.append(line)
                     else:
                         if frame_lines:
                             frame = self._read_single_frame(
-                                "".join(frame_lines), self.topology
+                                "".join(frame_lines),
+                                self.topology
                             )
                             if frame.cell.is_vacuum and last_cell is not None:
                                 frame.cell = last_cell
@@ -224,10 +229,8 @@ class TrajectoryReader(BaseReader):
                             # more efficiently
                             # Check if the number of frames yielded is equal to the
                             # total number of frames
-                            if not (
-                                frame_index < trajectory_start
-                                or frame_index >= trajectory_stop
-                            ):
+                            if not (frame_index < trajectory_start
+                                or frame_index >= trajectory_stop):
                                 yield frame  # only yield the frame if it is within the range
 
                             # then increment the frame index
@@ -240,7 +243,9 @@ class TrajectoryReader(BaseReader):
 
                 if frame_lines:
                     frame = self._read_single_frame(
-                        "".join(frame_lines), self.topology)
+                        "".join(frame_lines),
+                        self.topology
+                    )
 
                     if frame.cell.is_vacuum and last_cell is not None:
                         frame.cell = last_cell
@@ -249,9 +254,8 @@ class TrajectoryReader(BaseReader):
 
                     # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                     # Check if the number of frames yielded is equal to the total number of frames
-                    if not (
-                        frame_index < trajectory_start or frame_index >= trajectory_stop
-                    ):
+                    if not (frame_index < trajectory_start
+                        or frame_index >= trajectory_stop):
                         yield frame  # only yield the frame if it is within the range
 
                     # then increment the frame index
@@ -260,6 +264,7 @@ class TrajectoryReader(BaseReader):
                 if self.constant_topology and self.topology is not None:
                     self.topology = frame.topology
 
+    @runtime_type_checking
     def window_generator(
         self,
         window_size: int,
@@ -365,7 +370,8 @@ class TrajectoryReader(BaseReader):
 
         # Check if all frames are included in the windows
         # Length of the trajectory - window_size should be divisible by window_gap
-        if ((trajectory_stop - trajectory_start) - window_size) % window_gap != 0:
+        if ((trajectory_stop - trajectory_start) -
+                window_size) % window_gap != 0:
             self.logger.warning(
                 "Not all frames are included in the windows. Check the window size and gap."
             )
@@ -378,7 +384,7 @@ class TrajectoryReader(BaseReader):
         # reads first window and converts it to a queue
         window = Trajectory(
             [
-                next(generator) for _ in range(window_size)  # pylint: disable=stop-iteration-return
+            next(generator) for _ in range(window_size)  # pylint: disable=stop-iteration-return
             ]
         )
 
@@ -386,9 +392,9 @@ class TrajectoryReader(BaseReader):
         yield window.copy()
 
         # generate the rest of the windows up to trajectory_stop
-        for _ in range(
-            trajectory_start + window_gap, trajectory_stop - window_size + 1, window_gap
-        ):
+        for _ in range(trajectory_start + window_gap,
+            trajectory_stop - window_size + 1,
+            window_gap):
 
             # pop the first frame and append the next frame for window_gap times to
             # get the next window
@@ -434,8 +440,8 @@ class TrajectoryReader(BaseReader):
                 except (ValueError, IndexError):
                     self.logger.error(
                         (
-                            "Invalid number of atoms in the first line "
-                            f"of file {filename}."
+                        "Invalid number of atoms in the first line "
+                        f"of file {filename}."
                         ),
                         exception=TrajectoryReaderError,
                     )
@@ -446,9 +452,9 @@ class TrajectoryReader(BaseReader):
                 if remainder != 0:
                     self.logger.error(
                         (
-                            "The number of lines in the file is not divisible "
-                            f"by the number of atoms {n_atoms} "
-                            "in the first line."
+                        "The number of lines in the file is not divisible "
+                        f"by the number of atoms {n_atoms} "
+                        "in the first line."
                         ),
                         exception=TrajectoryReaderError,
                     )
@@ -532,9 +538,9 @@ class TrajectoryReader(BaseReader):
 
                         self.logger.error(
                             (
-                                "Invalid number of arguments for box:"
-                                f" {len(splitted_line)} encountered in file"
-                                f" {filename}:{line_number} = {stripped_line}"
+                            "Invalid number of arguments for box:"
+                            f" {len(splitted_line)} encountered in file"
+                            f" {filename}:{line_number} = {stripped_line}"
                             ),
                             exception=TrajectoryReaderError,
                         )
@@ -545,7 +551,9 @@ class TrajectoryReader(BaseReader):
                         next(f, None)  # Skip the next n_atoms+1 lines
 
     def _read_single_frame(
-        self, frame_string: str, topology: Topology | None = None
+        self,
+        frame_string: str,
+        topology: Topology | None = None
     ) -> AtomicSystem:
         """
         Reads a single frame from the given string.
@@ -568,5 +576,7 @@ class TrajectoryReader(BaseReader):
             If the first atom in the frame is not X for QMCFC.
         """
         return self.frame_reader.read(
-            frame_string, traj_format=self.traj_format, topology=topology
+            frame_string,
+            traj_format=self.traj_format,
+            topology=topology
         )

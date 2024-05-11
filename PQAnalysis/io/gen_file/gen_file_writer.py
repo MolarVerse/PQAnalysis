@@ -2,22 +2,35 @@
 A module containing the GenFileWriter class
 """
 
+import logging
+
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.type_checking import runtime_type_checking
+
 
 
 class GenFileWriter(BaseWriter):
+
     """
     A class for writing gen files.
     """
 
-    def __init__(self,
-                 filename: str,
-                 mode: FileWritingMode | str = "w",
-                 ) -> None:
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
+    def __init__(
+        self,
+        filename: str,
+        mode: FileWritingMode | str = "w",
+    ) -> None:
         """
         Parameters
         ----------
@@ -35,10 +48,12 @@ class GenFileWriter(BaseWriter):
         self.system = None
         self.periodic = None
 
-    def write(self,
-              system: AtomicSystem,
-              periodic: bool | None = None,
-              ) -> None:
+    @runtime_type_checking
+    def write(
+        self,
+        system: AtomicSystem,
+        periodic: bool | None = None,
+    ) -> None:
         """
         Writes the system to the file.
 
@@ -50,14 +65,21 @@ class GenFileWriter(BaseWriter):
             The periodicity of the system. If True, the system is considered periodic. 
             If False, the system is considered non-periodic. If None, the periodicity 
             is inferred from the system, by default None.
+            
+        Raises
+        ------
+        PQValueError
+            If the system is non-periodic and periodic is set to True.
         """
 
         self.system = system
 
         if periodic is not None:
             if periodic and self.system.cell.is_vacuum:
-                raise ValueError(
-                    "Invalid periodicity. The system is non-periodic.")
+                self.logger.error(
+                    "Invalid periodicity. The system is non-periodic.",
+                    exception=PQValueError,
+                )
 
             if periodic:
                 self.periodic = "S"
@@ -67,15 +89,15 @@ class GenFileWriter(BaseWriter):
             self.periodic = "C" if self.system.cell.is_vacuum else "S"
 
         self.open()
-        self.write_header(self.periodic)
-        self.write_coords()
+        self._write_header(self.periodic)
+        self._write_coords()
 
         if self.periodic == "S":
-            self.write_box_matrix()
+            self._write_box_matrix()
 
         self.close()
 
-    def write_header(self, periodicity: str) -> None:
+    def _write_header(self, periodicity: str) -> None:
         """
         Writes the header of the gen file.
 
@@ -89,7 +111,7 @@ class GenFileWriter(BaseWriter):
 
         print(" ".join(element_names), file=self.file)
 
-    def write_coords(self) -> None:
+    def _write_coords(self) -> None:
         """
         Writes the coordinates of the system.
 
@@ -106,13 +128,16 @@ class GenFileWriter(BaseWriter):
                 "\t",
                 i + 1,
                 element_names.index(self.system.atoms[i].element_name) + 1,
-                self.system.pos[i, 0],
-                self.system.pos[i, 1],
-                self.system.pos[i, 2],
+                self.system.pos[i,
+                0],
+                self.system.pos[i,
+                1],
+                self.system.pos[i,
+                2],
                 file=self.file
             )
 
-    def write_box_matrix(self) -> None:
+    def _write_box_matrix(self) -> None:
         """
         Writes the box matrix of the system.
 
@@ -125,16 +150,14 @@ class GenFileWriter(BaseWriter):
         """
         box_matrix = np.transpose(self.system.cell.box_matrix)
 
-        print(
-            0.0,
-            0.0,
-            0.0,
-            file=self.file
-        )
+        print(0.0, 0.0, 0.0, file=self.file)
         for i in range(3):
             print(
-                box_matrix[i, 0],
-                box_matrix[i, 1],
-                box_matrix[i, 2],
+                box_matrix[i,
+                0],
+                box_matrix[i,
+                1],
+                box_matrix[i,
+                2],
                 file=self.file
             )

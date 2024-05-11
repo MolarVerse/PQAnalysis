@@ -20,7 +20,7 @@ from .restart_file.api import read_restart_file
 # import the classes from the traj_file subpackage
 from .traj_file.trajectory_reader import TrajectoryReader
 from .traj_file.trajectory_writer import TrajectoryWriter
-from .traj_file.frame_reader import FrameReader
+from .traj_file.frame_reader import _FrameReader
 from .traj_file.api import (
     read_trajectory,
     write_trajectory,

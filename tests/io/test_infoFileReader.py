@@ -3,13 +3,14 @@ import pytest
 from PQAnalysis.io import InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
+from PQAnalysis.exceptions import PQFileNotFoundError
 
 from . import pytestmark
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
 def test__init__(test_with_data_dir):
-    with pytest.raises(FileNotFoundError) as exception:
+    with pytest.raises(PQFileNotFoundError) as exception:
         InfoFileReader("tmp")
     assert str(exception.value) == "File tmp not found."
 

@@ -7,12 +7,13 @@ from PQAnalysis.io import RestartFileReader
 from PQAnalysis.io.restart_file.exceptions import RestartFileReaderError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Atom, Cell, Residue, Element
+from PQAnalysis.exceptions import PQFileNotFoundError
 
 
 class Test_RestartFileReader:
     @pytest.mark.parametrize("example_dir", ["readRestartFile"], indirect=False)
     def test__init__(self, test_with_data_dir):
-        with pytest.raises(FileNotFoundError) as exception:
+        with pytest.raises(PQFileNotFoundError) as exception:
             RestartFileReader("tmp")
         assert str(exception.value) == "File tmp not found."
 

@@ -2,8 +2,6 @@
 A module containing the Cell class.
 """
 
-from __future__ import annotations
-
 import sys
 import warnings
 
@@ -20,20 +18,23 @@ from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
 from ._standard_properties import _StandardPropertiesMixin
 
 
+
 class Cell(_StandardPropertiesMixin):
+
     """
     Class for storing unit cell parameters.
     """
 
     @runtime_type_checking
-    def __init__(self,
-                 x: Real = sys.float_info.max,
-                 y: Real = sys.float_info.max,
-                 z: Real = sys.float_info.max,
-                 alpha: Real = 90,
-                 beta: Real = 90,
-                 gamma: Real = 90
-                 ) -> None:
+    def __init__(
+        self,
+        x: Real = sys.float_info.max,
+        y: Real = sys.float_info.max,
+        z: Real = sys.float_info.max,
+        alpha: Real = 90,
+        beta: Real = 90,
+        gamma: Real = 90
+    ) -> None:
         """
         A cell object can be initialized with the following parameters:
 
@@ -84,8 +85,9 @@ class Cell(_StandardPropertiesMixin):
         matrix[0][2] = z * cos_beta
         matrix[1][1] = y * sin_gamma
         matrix[1][2] = z * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
-        matrix[2][2] = z * np.sqrt(sin_beta**2 -
-                                   (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2)
+        matrix[2][2] = z * np.sqrt(
+            sin_beta**2 - (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2
+        )
 
         return matrix
 
@@ -209,7 +211,7 @@ class Cell(_StandardPropertiesMixin):
 
     @classmethod
     @runtime_type_checking
-    def init_from_box_matrix(cls, box_matrix: Np3x3NumberArray) -> Cell:
+    def init_from_box_matrix(cls, box_matrix: Np3x3NumberArray) -> "Cell":
         """
         Initializes a Cell object from a box matrix.
 
@@ -230,21 +232,30 @@ class Cell(_StandardPropertiesMixin):
         gamma = np.arccos(box_matrix[0][1] / y)
         beta = np.arccos(box_matrix[0][2] / z)
         alpha = np.arccos(
-            (box_matrix[0][1] * box_matrix[0][2] +
-             box_matrix[1][1] * box_matrix[1][2]) / (y * z)
+            (
+            box_matrix[0][1] * box_matrix[0][2] +
+            box_matrix[1][1] * box_matrix[1][2]
+            ) / (y * z)
         )
 
         print(alpha, beta, gamma)
         print(np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
 
-        return cls(x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
+        return cls(
+            x,
+            y,
+            z,
+            np.rad2deg(alpha),
+            np.rad2deg(beta),
+            np.rad2deg(gamma)
+        )
+
 
 
 #: A type hint for a list of cells
 Cells = NewType(
-    "Cells", Annotated[
-        list, Is[
-            lambda list: all(isinstance(atom, Cell) for atom in list)
-        ]
-    ]
+    "Cells",
+    Annotated[list,
+    Is[lambda list: all(isinstance(atom,
+    Cell) for atom in list)]]
 )

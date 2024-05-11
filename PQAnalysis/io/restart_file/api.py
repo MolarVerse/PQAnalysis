@@ -5,9 +5,12 @@ A module containing different API functions for reading and writing restart file
 from PQAnalysis.core import Residues
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .restart_reader import RestartFileReader
 
 
+@runtime_type_checking
 def read_restart_file(filename: str,
                       moldescriptor_filename: str | None = None,
                       reference_residues: Residues | None = None,

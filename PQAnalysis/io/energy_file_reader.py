@@ -3,10 +3,16 @@ A module containing the EnergyFileReader class.
 """
 
 import os
+import logging
 import numpy as np
 
 from PQAnalysis.physical_data import Energy
 from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQFileNotFoundError
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .base import BaseReader
 from .info_file_reader import InfoFileReader
 
@@ -16,6 +22,10 @@ class EnergyFileReader(BaseReader):
     A class to read energy files from molecular dynamics simulations.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self,
                  filename: str,
                  info_filename: str | None = None,
@@ -82,8 +92,12 @@ class EnergyFileReader(BaseReader):
         info, units = None, None
 
         if self.with_info_file:
+
             reader = InfoFileReader(
-                self.info_filename, engine_format=self.format)
+                self.info_filename,
+                engine_format=self.format
+            )
+
             info, units = reader.read()
 
         with open(self.filename, "r", encoding='utf-8') as file:
@@ -121,16 +135,20 @@ class EnergyFileReader(BaseReader):
         if self.info_filename is None:
 
             self.info_filename = os.path.splitext(self.filename)[0] + ".info"
+
             try:
                 BaseReader(self.info_filename)
-            except FileNotFoundError:
+            except PQFileNotFoundError:
                 self.info_filename = None
+
         else:
+
             try:
                 BaseReader(self.info_filename)
-            except FileNotFoundError as e:
-                raise FileNotFoundError(
-                    f"Info File {self.info_filename} not found."
-                ) from e
+            except PQFileNotFoundError:
+                self.logger.error(
+                    f"Info File {self.info_filename} not found.",
+                    exception=PQFileNotFoundError
+                )
 
         return self.info_filename is not None

@@ -8,7 +8,9 @@ from beartype.typing import List
 from ._parse import _parse_files, _parse_string
 
 
+
 class _FileMixin:
+
     """
     A mixin class to read all file related
     keywords from the input dictionary.
@@ -18,6 +20,7 @@ class _FileMixin:
         - out_file
         - log_file
     """
+
     @property
     def traj_files(self) -> List[str] | None:
         """List[str] | None: The trajectory files of the simulation."""

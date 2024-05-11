@@ -31,6 +31,7 @@ dependencies = [
     "decorator",
     "argcomplete",
     "unum",
+    "yapf",
     "rich-argparse",
 ]
 
