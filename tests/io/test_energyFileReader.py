@@ -8,12 +8,13 @@ from collections import defaultdict
 from PQAnalysis.io import EnergyFileReader, InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
+from PQAnalysis.exceptions import PQFileNotFoundError
 
 
 class TestEnergyReader:
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test__init__(self, test_with_data_dir):
-        with pytest.raises(FileNotFoundError) as exception:
+        with pytest.raises(PQFileNotFoundError) as exception:
             EnergyFileReader("tmp")
         assert str(exception.value) == "File tmp not found."
 
@@ -35,7 +36,7 @@ class TestEnergyReader:
         assert reader.with_info_file == False
         assert reader.format == MDEngineFormat.PQ
 
-        with pytest.raises(FileNotFoundError) as exception:
+        with pytest.raises(PQFileNotFoundError) as exception:
             EnergyFileReader(
                 "md-01_noinfo.en", info_filename="md-01_noinfo.info", use_info_file=True)
         assert str(
@@ -76,7 +77,7 @@ class TestEnergyReader:
             "md-01_noinfo.en", info_filename="md-01.info")
         assert reader.__info_file_found__() == True
 
-        with pytest.raises(FileNotFoundError) as exception:
+        with pytest.raises(PQFileNotFoundError) as exception:
             EnergyFileReader(
                 "md-01_noinfo.en", info_filename="md-01_noinfo.info", use_info_file=True)
         assert str(exception.value) == "Info File md-01_noinfo.info not found."
