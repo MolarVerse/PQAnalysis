@@ -14,6 +14,7 @@ from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .exceptions import GenFileReaderError
 
@@ -28,6 +29,7 @@ class GenFileReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
         Parameters
@@ -39,6 +41,7 @@ class GenFileReader(BaseReader):
 
         self.n_atoms = 0
 
+    @runtime_type_checking
     def read(self) -> AtomicSystem:
         """
         Reads the gen file and returns a Frame object.
@@ -51,11 +54,11 @@ class GenFileReader(BaseReader):
         with open(self.filename, 'r', encoding='utf-8') as file:
             lines = file.read_lines()
 
-            self.n_atoms, is_periodic, atom_names = self.read_header(lines[:2])
+            self.n_atoms, is_periodic, atom_names = self._read_header(lines[:2])
 
-            coords, ids = self.read_coords(lines[2:2 + self.n_atoms])
+            coords, ids = self._read_coords(lines[2:2 + self.n_atoms])
 
-            cell = self.read_cell(
+            cell = self._read_cell(
                 lines[2 + self.n_atoms:2 + self.n_atoms + 3]
             ) if is_periodic else Cell()
 
@@ -63,7 +66,7 @@ class GenFileReader(BaseReader):
 
             return AtomicSystem(atoms=atoms, pos=coords, cell=cell)
 
-    def read_header(self,
+    def _read_header(self,
         header: List[str]) -> Tuple[PositiveInt,
         bool,
         List[str]]:
@@ -107,7 +110,7 @@ class GenFileReader(BaseReader):
 
         return n_atoms, is_periodic, atom_names
 
-    def read_coords(self,
+    def _read_coords(self,
         lines: List[str]) -> Tuple[Np2DNumberArray,
         Np1DIntArray]:
         """
@@ -135,7 +138,7 @@ class GenFileReader(BaseReader):
 
         return coords, ids
 
-    def read_cell(self, lines: List[str]) -> Cell:
+    def _read_cell(self, lines: List[str]) -> Cell:
         """
         Reads the cell block of the gen file.
 
