@@ -28,12 +28,13 @@ from PQAnalysis.type_checking import runtime_type_checking_setter, runtime_type_
 from .atom import Elements, Element
 from .exceptions import ResidueError
 
-
 #: A type hint for a list of residues (mol types).
 Residues = TypeVar("Residues", bound=List["PQAnalysis.core.Residue"])
 
 
+
 class Residue:
+
     """
     A class for representing a residue type (mol type).
 
@@ -46,14 +47,15 @@ class Residue:
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 name: str,
-                 residue_id: int,
-                 total_charge: Real,
-                 elements: Element | Elements | str | List[str],
-                 atom_types: int | Np1DIntArray,
-                 partial_charges: Real | Np1DNumberArray,
-                 ) -> None:
+    def __init__(
+        self,
+        name: str,
+        residue_id: int,
+        total_charge: Real,
+        elements: Element | Elements | str | List[str],
+        atom_types: int | Np1DIntArray,
+        partial_charges: Real | Np1DNumberArray,
+    ) -> None:
         """
         Initializes the Residue with the given parameters.
 
@@ -88,7 +90,9 @@ class Residue:
             self._elements = [elements]
         elif isinstance(elements, str):
             self._elements = [Element(elements)]
-        elif isinstance(elements, list) and len(elements) > 0 and isinstance(elements[0], Element):
+        elif isinstance(elements,
+            list) and len(elements) > 0 and isinstance(elements[0],
+            Element):
             self._elements = elements
         else:
             self._elements = [Element(element) for element in elements]
@@ -96,7 +100,8 @@ class Residue:
         self._atom_types = np.atleast_1d(atom_types)
         self._partial_charges = np.atleast_1d(partial_charges)
 
-        if not len(self.elements) == len(self.atom_types) == len(self.partial_charges):
+        if not len(self.elements) == len(self.atom_types) == len(
+                self.partial_charges):
             self.logger.error(
                 "The number of elements, atom_types and partial_charges must be the same.",
                 exception=ResidueError
@@ -349,7 +354,9 @@ class Residue:
         return is_equal
 
 
+
 class QMResidue(Residue):
+
     """
     A class for representing a QM residue type (mol type).
 
