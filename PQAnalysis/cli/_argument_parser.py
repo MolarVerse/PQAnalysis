@@ -11,7 +11,6 @@ import logging
 import argparse
 import argcomplete
 
-
 from beartype.typing import Sequence
 from rich_argparse import ArgumentDefaultsRichHelpFormatter
 
@@ -23,7 +22,9 @@ from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis._version import __version__
 
 
+
 class _ArgumentParser(argparse.ArgumentParser):
+
     """
     The _ArgumentParser class is a subclass of the argparse.ArgumentParser class.
     It provides a set of methods that are used in many cli scripts of this package.
@@ -63,10 +64,11 @@ class _ArgumentParser(argparse.ArgumentParser):
                 **kwargs
             )
 
-    def parse_args(self,
-                   args: Sequence[str] | None = None,
-                   namespace: None = None
-                   ) -> argparse.Namespace:
+    def parse_args(
+        self,
+        args: Sequence[str] | None = None,
+        namespace: None = None
+    ) -> argparse.Namespace:
         """
         The parse_args method is the same as the parse_args method of the
         argparse.ArgumentParser class. The only difference is that the progress
@@ -103,11 +105,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         The parse_input_file method adds the input_file argument to the parser.
         The input_file argument is a positional argument and is required.
         """
-        super().add_argument(
-            'input_file',
-            type=str,
-            help='The input file.'
-        )
+        super().add_argument('input_file', type=str, help='The input file.')
 
     def parse_trajectory_file(self):
         """
@@ -127,10 +125,12 @@ class _ArgumentParser(argparse.ArgumentParser):
         The output_file argument is an optional argument and defaults to None.
         """
         super().add_argument(
-            '-o', '--output',
+            '-o',
+            '--output',
             type=str,
             default=None,
-            help='The output file. If not specified, the output is printed to stdout.'
+            help=
+            'The output file. If not specified, the output is printed to stdout.'
         )
 
     def parse_engine(self):
@@ -158,9 +158,9 @@ class _ArgumentParser(argparse.ArgumentParser):
             type=FileWritingMode,
             default=FileWritingMode("w"),
             help=(
-                'The writing mode. The following modes '
-                'are available: "w": write, "a": append, '
-                '"o": overwrite.'
+            'The writing mode. The following modes '
+            'are available: "w": write, "a": append, '
+            '"o": overwrite.'
             )
         )
 
@@ -200,14 +200,14 @@ class _ArgumentParser(argparse.ArgumentParser):
             const="__LOG_DEFINED_BY_TIMESTAMP__",
             nargs='?',
             help=(
-                "This options can be used to set wether "
-                "a log file should be used or not. "
-                "If the option is given without a value, "
-                "the log will be printed to an "
-                "automatically generated file. If the option "
-                "is not given, the log will be only printed "
-                "to stderr. If the option is given with a "
-                "value, the log will be printed to the given file."
+            "This options can be used to set wether "
+            "a log file should be used or not. "
+            "If the option is given without a value, "
+            "the log will be printed to an "
+            "automatically generated file. If the option "
+            "is not given, the log will be only printed "
+            "to stderr. If the option is given with a "
+            "value, the log will be printed to the given file."
             )
         )
 

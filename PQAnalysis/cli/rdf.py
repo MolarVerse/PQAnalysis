@@ -36,10 +36,13 @@ __doc__ += "and :py:mod:`PQAnalysis.analysis.rdf.rdf_input_file_reader`\n"
 __doc__ += input_keys_documentation
 
 
+
 class RDFCLI(CLIBase):
+
     """
     Command Line Tool for RDF Analysis
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -76,6 +79,7 @@ class RDFCLI(CLIBase):
             The arguments parsed by the parser.
         """
         rdf(args.input_file, args.engine)
+
 
 
 def main():

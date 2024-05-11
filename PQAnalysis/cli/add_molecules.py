@@ -14,7 +14,6 @@ from PQAnalysis.io.formats import OutputFileFormat
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
-
 __outputdoc__ = """
 
 This command line tool can be used to add molecules to a restart file.
@@ -34,10 +33,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class AddMoleculesCLI(CLIBase):
+
     """
     Command Line Tool for Adding Molecules to Restart Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -71,9 +73,9 @@ class AddMoleculesCLI(CLIBase):
             'molecule_file',
             type=str,
             help=(
-                "The molecule file that contains the coordinates "
-                "of the molecule that should be added. Can be in "
-                "any format that is supported by the PQAnalysis library."
+            "The molecule file that contains the coordinates "
+            "of the molecule that should be added. Can be in "
+            "any format that is supported by the PQAnalysis library."
             )
         )
 
@@ -87,9 +89,9 @@ class AddMoleculesCLI(CLIBase):
             default=OutputFileFormat.AUTO,
             choices=OutputFileFormat.__members__.values(),
             help=(
-                'The file format of the molecule file. '
-                'If not specified, the file format will '
-                'be inferred from the file extension.'
+            'The file format of the molecule file. '
+            'If not specified, the file format will '
+            'be inferred from the file extension.'
             )
         )
 
@@ -98,9 +100,9 @@ class AddMoleculesCLI(CLIBase):
             dest='rst_mol_desc_file',
             type=str,
             help=(
-                "The moldescriptor file that is associated with the "
-                "restart file. If not specified, the moldescriptor "
-                "file will not be used."
+            "The moldescriptor file that is associated with the "
+            "restart file. If not specified, the moldescriptor "
+            "file will not be used."
             ),
             default=None
         )
@@ -110,10 +112,10 @@ class AddMoleculesCLI(CLIBase):
             dest='molecule_mol_desc_file',
             type=str,
             help=(
-                "The moldescriptor file that is associated with "
-                "the molecule file. If not specified, the moldescriptor "
-                "file will not be used. Can only be used if the "
-                "molecule file is a restart file type."
+            "The moldescriptor file that is associated with "
+            "the molecule file. If not specified, the moldescriptor "
+            "file will not be used. Can only be used if the "
+            "molecule file is a restart file type."
             ),
             default=None
         )
@@ -123,7 +125,8 @@ class AddMoleculesCLI(CLIBase):
             dest='n_molecules',
             type=int,
             default=1,
-            help="The number of molecules that should be added to the restart file."
+            help=
+            "The number of molecules that should be added to the restart file."
         )
 
         parser.add_argument(
@@ -132,75 +135,82 @@ class AddMoleculesCLI(CLIBase):
             type=int,
             default=100,
             help=(
-                "The maximum number of iterations that should "
-                "be used to fit the molecule to the restart file."
+            "The maximum number of iterations that should "
+            "be used to fit the molecule to the restart file."
             )
         )
 
         parser.add_argument(
-            "-c", "--cut",
+            "-c",
+            "--cut",
             dest='cut',
             type=float,
             default=1.0,
             help=(
-                "The distance cutoff that should be used "
-                "to fit the molecule to the restart file in Angstrom."
+            "The distance cutoff that should be used "
+            "to fit the molecule to the restart file in Angstrom."
             )
         )
 
         parser.add_argument(
-            "--max-disp", "--max-displacement",
+            "--max-disp",
+            "--max-displacement",
             dest='max_disp',
             type=float,
             default=0.1,
             help=(
-                "The maximum displacement that should be applied "
-                "to the given molecule geometry relative to "
-                "its center of mass in percentage."
+            "The maximum displacement that should be applied "
+            "to the given molecule geometry relative to "
+            "its center of mass in percentage."
             )
         )
 
         parser.add_argument(
-            "--rot", "--rotation-angle-step",
+            "--rot",
+            "--rotation-angle-step",
             dest='rot',
             type=int,
             default=10,
             help=(
-                "If the randomly placed molecule does not "
-                "fit into the restart file, the molecule "
-                "is rotated by the given angle step in degrees."
+            "If the randomly placed molecule does not "
+            "fit into the restart file, the molecule "
+            "is rotated by the given angle step in degrees."
             )
         )
 
         parser.add_argument(
-            "--topology-file", "--top-file",
+            "--topology-file",
+            "--top-file",
             dest='top_file',
             type=str,
             help=(
-                "The topology file that is associated with "
-                "the restart file. If not specified, "
-                "the topology file will not be used."
+            "The topology file that is associated with "
+            "the restart file. If not specified, "
+            "the topology file will not be used."
             ),
             default=None
         )
 
         parser.add_argument(
-            "--added-topology-file", "--added-top-file",
+            "--added-topology-file",
+            "--added-top-file",
             dest='added_top_file',
             type=str,
             help=(
-                "The topology file that is associated with "
-                "the molecule file. If not specified, the "
-                "topology file will not be used."
+            "The topology file that is associated with "
+            "the molecule file. If not specified, the "
+            "topology file will not be used."
             ),
             default=None
         )
 
         parser.add_argument(
-            "--output-topology-file", "--output-top-file",
+            "--output-topology-file",
+            "--output-top-file",
             dest='output_top_file',
             type=str,
-            help="The output topology file. If not specified, the output is printed to stdout.",
+            help=
+            "The output topology file. If not specified, the output is printed to stdout.",
             default=None
         )
 
@@ -234,6 +244,7 @@ class AddMoleculesCLI(CLIBase):
             topology_file_to_add=args.added_top_file,
             topology_file_output=args.output_top_file
         )
+
 
 
 def main():

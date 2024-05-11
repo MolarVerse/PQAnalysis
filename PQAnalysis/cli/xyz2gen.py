@@ -12,7 +12,6 @@ from PQAnalysis.io import xyz2gen
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
-
 __outputdoc__ = """
 
 This command line tool can be used to convert xyz files to gen files.
@@ -27,10 +26,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class XYZ2GENCLI(CLIBase):
+
     """
     Command Line Tool for Converting XYZ Files to GEN Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -63,11 +65,13 @@ class XYZ2GENCLI(CLIBase):
 
         parser.add_argument(
             'periodic',
-            choices=[True, False, None],
+            choices=[True,
+            False,
+            None],
             default=None,
             help=(
-                'If True, the box is printed. If False, the box is not printed. '
-                'If None, the box is printed if it is present in the xyz file.'
+            'If True, the box is printed. If False, the box is not printed. '
+            'If None, the box is printed if it is present in the xyz file.'
             )
         )
 
@@ -91,6 +95,7 @@ class XYZ2GENCLI(CLIBase):
             md_format=args.engine,
             mode=args.mode,
         )
+
 
 
 def main():
