@@ -16,7 +16,7 @@ from PQAnalysis.topology import Topology
 from .exceptions import FrameReaderError
 
 
-class FrameReader:
+class _FrameReader:
     """
     This class provides methods for reading a frame from a string.
     The string can be a single frame or a whole trajectory.
