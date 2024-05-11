@@ -20,17 +20,21 @@ from PQAnalysis.types import (
 from ._decorators import check_atoms_pos
 
 
+
 class _PositionsMixin:
+
     """
     A mixin class containing methods for related 
     information to the positions of an atomic system.
     """
 
     @check_atoms_pos
-    def _nearest_neighbours(self,
-                            n: PositiveInt = 1,
-                            indices: Np1DIntArray | None = None
-                            ) -> Tuple[Np2DIntArray, Np2DNumberArray]:
+    def _nearest_neighbours(
+        self,
+        n: PositiveInt = 1,
+        indices: Np1DIntArray | None = None
+    ) -> Tuple[Np2DIntArray,
+        Np2DNumberArray]:
         """
         Returns the 'n' nearest neighbours of selected atoms in the system.
 
@@ -60,7 +64,7 @@ class _PositionsMixin:
 
         distances = distance(self.pos[indices], self.pos, self.cell)
 
-        nearest_neighbours = np.argsort(distances, axis=-1)[:, 1:n+1]
+        nearest_neighbours = np.argsort(distances, axis=-1)[:, 1:n + 1]
         nearest_neighbours_distances = np.take_along_axis(
             distances,
             nearest_neighbours,
@@ -70,11 +74,13 @@ class _PositionsMixin:
         return nearest_neighbours, nearest_neighbours_distances
 
     @runtime_type_checking
-    def nearest_neighbours(self,
-                           n: PositiveInt = 1,
-                           selection: SelectionCompatible = None,
-                           use_full_atom_info: bool = False
-                           ) -> Tuple[Np2DIntArray, Np2DNumberArray]:
+    def nearest_neighbours(
+        self,
+        n: PositiveInt = 1,
+        selection: SelectionCompatible = None,
+        use_full_atom_info: bool = False
+    ) -> Tuple[Np2DIntArray,
+        Np2DNumberArray]:
         """
         Returns the n nearest neighbours of the given atoms in the system.
 
@@ -127,10 +133,9 @@ class _PositionsMixin:
             to the nearest neighbours.
         """
 
-        indices = Selection(selection).select(
-            self.topology,
-            use_full_atom_info
-        )
+        indices = Selection(selection
+                            ).select(self.topology,
+            use_full_atom_info)
 
         return self._nearest_neighbours(n=n, indices=indices)
 
