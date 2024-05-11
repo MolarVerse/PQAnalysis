@@ -16,6 +16,7 @@ from PQAnalysis.io.base import BaseReader
 from PQAnalysis.io.moldescriptor_reader import MoldescriptorReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .exceptions import RestartFileReaderError
 
@@ -51,6 +52,7 @@ class RestartFileReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  filename: str,
                  moldescriptor_filename: str | None = None,
