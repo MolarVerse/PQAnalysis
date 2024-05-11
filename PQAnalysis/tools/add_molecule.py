@@ -316,12 +316,12 @@ class AddMolecule:
         fitted_systems = self.add_molecules()
 
         self.restart_system.image()
-        lines = writer.get_lines(self.restart_system, atom_counter=0)
+        lines = writer._get_lines(self.restart_system, atom_counter=0)
         for i, system in enumerate(fitted_systems):
             system.image()
-            lines += writer.get_atom_lines(system, atom_counter=i+1)
+            lines += writer._get_atom_lines(system, atom_counter=i+1)
 
-        writer.write_lines_to_file(lines)
+        writer._write_lines_to_file(lines)
 
     def extend_topology_file(self,
                              original_shake_file: str,
