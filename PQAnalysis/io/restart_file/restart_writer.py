@@ -15,6 +15,7 @@ from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .exceptions import RestartFileWriterError
 
@@ -53,6 +54,7 @@ class RestartFileWriter(BaseWriter):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  filename: str | None = None,
                  md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
@@ -74,6 +76,7 @@ class RestartFileWriter(BaseWriter):
 
         self.md_engine_format = MDEngineFormat(md_engine_format)
 
+    @runtime_type_checking
     def write(self,
               frame: AtomicSystem,
               atom_counter: int | Np1DNumberArray | None = None,
