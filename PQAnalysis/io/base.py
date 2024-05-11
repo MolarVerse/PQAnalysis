@@ -7,7 +7,9 @@ import os
 
 from beartype.typing import List
 
-from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.exceptions import PQFileNotFoundError
+
+from .formats import FileWritingMode
 
 
 class BaseWriter:
@@ -181,7 +183,7 @@ class BaseReader:
 
         if isinstance(filename, str):
             if not os.path.isfile(filename):
-                raise FileNotFoundError(f"File {filename} not found.")
+                raise PQFileNotFoundError(f"File {filename} not found.")
 
             self.filename = filename
             self.multiple_files = False
@@ -189,7 +191,7 @@ class BaseReader:
             filenames = filename
             for _filename in filenames:
                 if not os.path.isfile(_filename):
-                    raise FileNotFoundError(
+                    raise PQFileNotFoundError(
                         "At least one of the given files does not exist. "
                         f"File {_filename} not found."
                     )
