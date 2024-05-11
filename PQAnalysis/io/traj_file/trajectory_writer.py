@@ -10,6 +10,7 @@ from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 
 
 class TrajectoryWriter(BaseWriter):
@@ -20,6 +21,7 @@ class TrajectoryWriter(BaseWriter):
     It can write a trajectory to a file in either a PQ format or a QMCFC format.
     """
 
+    @runtime_type_checking
     def __init__(self,
                  filename: str | None = None,
                  engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
@@ -41,6 +43,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.format = MDEngineFormat(engine_format)
 
+    @runtime_type_checking
     def write(self,
               trajectory: Trajectory | AtomicSystem,
               traj_type: TrajectoryFormat | str = TrajectoryFormat.XYZ
@@ -62,15 +65,15 @@ class TrajectoryWriter(BaseWriter):
             trajectory = Trajectory([trajectory])
 
         if self.type == TrajectoryFormat.XYZ:
-            self.write_positions(trajectory)
+            self._write_positions(trajectory)
         elif self.type == TrajectoryFormat.VEL:
-            self.write_velocities(trajectory)
+            self._write_velocities(trajectory)
         elif self.type == TrajectoryFormat.FORCE:
-            self.write_forces(trajectory)
+            self._write_forces(trajectory)
         elif self.type == TrajectoryFormat.CHARGE:
-            self.write_charges(trajectory)
+            self._write_charges(trajectory)
 
-    def write_positions(self, trajectory: Trajectory) -> None:
+    def _write_positions(self, trajectory: Trajectory) -> None:
         """
         Writes the positions of the trajectory to the file.
 
@@ -87,7 +90,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def write_velocities(self, trajectory: Trajectory) -> None:
+    def _write_velocities(self, trajectory: Trajectory) -> None:
         """
         Writes the velocities of the trajectory to the file.
 
@@ -104,7 +107,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def write_forces(self, trajectory: Trajectory) -> None:
+    def _write_forces(self, trajectory: Trajectory) -> None:
         """
         Writes the forces of the trajectory to the file.
 
@@ -121,7 +124,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def write_charges(self, trajectory: Trajectory) -> None:
+    def _write_charges(self, trajectory: Trajectory) -> None:
         """
         Writes the charges of the trajectory to the file.
 
@@ -242,6 +245,7 @@ class TrajectoryWriter(BaseWriter):
         return self._format
 
     @format.setter
+    @runtime_type_checking_setter
     def format(self, engine_format: MDEngineFormat | str) -> None:
         self._format = MDEngineFormat(engine_format)
 
@@ -251,5 +255,6 @@ class TrajectoryWriter(BaseWriter):
         return self._type
 
     @type.setter
+    @runtime_type_checking_setter
     def type(self, traj_type: TrajectoryFormat | str) -> None:
         self._type = TrajectoryFormat(traj_type)
