@@ -2,6 +2,8 @@
 A module containing the GenFileReader class
 """
 
+import logging
+
 import numpy as np
 
 from beartype.typing import List, Tuple
@@ -10,13 +12,21 @@ from PQAnalysis.io.base import BaseReader
 from PQAnalysis.types import PositiveInt, Np2DNumberArray, Np1DIntArray
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .exceptions import GenFileReaderError
 
 
+
 class GenFileReader(BaseReader):
+
     """
     A class for reading gen files.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self, filename: str) -> None:
         """
@@ -43,10 +53,10 @@ class GenFileReader(BaseReader):
 
             self.n_atoms, is_periodic, atom_names = self.read_header(lines[:2])
 
-            coords, ids = self.read_coords(lines[2:2+self.n_atoms])
+            coords, ids = self.read_coords(lines[2:2 + self.n_atoms])
 
             cell = self.read_cell(
-                lines[2+self.n_atoms:2+self.n_atoms+3]
+                lines[2 + self.n_atoms:2 + self.n_atoms + 3]
             ) if is_periodic else Cell()
 
             atoms = [Atom(atom_names[id - 1]) for id in ids]
@@ -54,8 +64,9 @@ class GenFileReader(BaseReader):
             return AtomicSystem(atoms=atoms, pos=coords, cell=cell)
 
     def read_header(self,
-                    header: List[str]
-                    ) -> Tuple[PositiveInt, bool, List[str]]:
+        header: List[str]) -> Tuple[PositiveInt,
+        bool,
+        List[str]]:
         """
         Reads the header of the gen file.
 
@@ -87,15 +98,18 @@ class GenFileReader(BaseReader):
         elif periodicity.lower() == "s":
             is_periodic = True
         else:
-            raise GenFileReaderError(
-                f"Unknown periodicity: {periodicity} in line {header[0:-1]}"
+            self.logger.error(
+                f"Unknown periodicity: {periodicity} in line {header[0:-1]}",
+                exception=GenFileReaderError
             )
 
         atom_names = [name.lower() for name in header[1].split()]
 
         return n_atoms, is_periodic, atom_names
 
-    def read_coords(self, lines: List[str]) -> Tuple[Np2DNumberArray, Np1DIntArray]:
+    def read_coords(self,
+        lines: List[str]) -> Tuple[Np2DNumberArray,
+        Np1DIntArray]:
         """
         Reads the coordinates block of the gen file.
 
