@@ -151,7 +151,7 @@ class CustomLogger(logging.Logger):
                     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
             sys.excepthook = exception_hook
-            raise exception(msg)
+            raise exception(msg)  # pylint: disable=broad-exception-raised
 
     def _original_log(
         self,

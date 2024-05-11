@@ -15,7 +15,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .rdf import RDF
 
 
+
 class RDFDataWriter(BaseWriter):
+
     """
     Class for writing the data of an 
     :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
@@ -34,14 +36,14 @@ class RDFDataWriter(BaseWriter):
         super().__init__(filename)
 
     @runtime_type_checking
-    def write(self,
-              data: Tuple[Np1DNumberArray,
-                          Np1DNumberArray,
-                          Np1DNumberArray,
-                          Np1DNumberArray,
-                          Np1DNumberArray
-                          ]
-              ):
+    def write(
+        self,
+        data: Tuple[Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray,
+        Np1DNumberArray]
+    ):
         """
         Writes the data to the file.
 
@@ -55,12 +57,19 @@ class RDFDataWriter(BaseWriter):
 
         for i in range(len(data[0])):
             print(
-                f"{data[0][i]} {data[1][i]} {data[2][i]} {data[3][i]} {data[4][i]}", file=self.file)
+                (
+                f"{data[0][i]} {data[1][i]} {data[2][i]} "
+                f"{data[3][i]} {data[4][i]}"
+                ),
+                file=self.file
+            )
 
         super().close()
 
 
+
 class RDFLogWriter(BaseWriter):
+
     """
     Class for writing the log (setup parameters) of an 
     :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis

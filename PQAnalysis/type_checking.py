@@ -11,7 +11,6 @@ from beartype.typing import ForwardRef
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.exceptions import PQTypeError
 from .types import (
-    Real,
     Np1DIntArray,
     Np2DIntArray,
     Np1DNumberArray,
@@ -28,6 +27,7 @@ else:
     logger = logging.getLogger(__logger_name__)
 
 
+
 @decorator
 def runtime_type_checking_setter(func, self, value):
     """
@@ -40,24 +40,25 @@ def runtime_type_checking_setter(func, self, value):
     var_name = list(type_hints.keys())[0]
 
     if isinstance(type_hints[var_name], str):
-        type_hints[var_name] = ForwardRef(type_hints[var_name])._evaluate(
-            globals(),
+        type_hints[var_name] = ForwardRef(  # pylint: disable=protected-access
+            type_hints[var_name]
+        )._evaluate(globals(),
             locals(),
-            frozenset()
-        )
+            frozenset())
 
     if not is_bearable(value, type_hints[var_name]):
         logger.error(
             get_type_error_message(
-                var_name,
-                value,
-                type_hints[var_name],
+            var_name,
+            value,
+            type_hints[var_name],
             ),
             exception=PQTypeError,
         )
 
     # Call the function
     return func(self, value)
+
 
 
 @decorator
@@ -79,18 +80,18 @@ def runtime_type_checking(func, *args, **kwargs):
         if arg_name in type_hints:
 
             if isinstance(type_hints[arg_name], str):
-                type_hints[arg_name] = ForwardRef(type_hints[arg_name])._evaluate(
-                    globals(),
+                type_hints[arg_name] = ForwardRef(  # pylint: disable=protected-access
+                    type_hints[arg_name]
+                )._evaluate(globals(),
                     locals(),
-                    frozenset()
-                )
+                    frozenset())
 
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
                     get_type_error_message(
-                        arg_name,
-                        arg_value,
-                        type_hints[arg_name],
+                    arg_name,
+                    arg_value,
+                    type_hints[arg_name],
                     ),
                     exception=PQTypeError,
                 )
@@ -101,15 +102,16 @@ def runtime_type_checking(func, *args, **kwargs):
             if not is_bearable(kwarg_value, type_hints[kwarg_name]):
                 logger.error(
                     get_type_error_message(
-                        kwarg_name,
-                        kwarg_value,
-                        type_hints[kwarg_name],
+                    kwarg_name,
+                    kwarg_value,
+                    type_hints[kwarg_name],
                     ),
                     exception=TypeError,
                 )
 
     # Call the function
     return func(*args, **kwargs)
+
 
 
 def get_type_error_message(arg_name, value, expected_type):

@@ -6,7 +6,9 @@ from enum import Enum
 from beartype.typing import Any, List
 
 
+
 class BaseEnumFormat(Enum):
+
     """
     An enumeration super class of the various supported trajectory formats.
     """
@@ -27,7 +29,8 @@ class BaseEnumFormat(Enum):
     @classmethod
     def value_repr(cls) -> str:
         """
-        This method returns a string representation of the values of the members of the enumeration.
+        This method returns a string representation of
+        the values of the members of the enumeration.
 
         Returns
         -------

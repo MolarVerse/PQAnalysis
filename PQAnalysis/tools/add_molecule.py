@@ -24,23 +24,25 @@ from PQAnalysis.io import (
 )
 
 
-def add_molecule(restart_file: str,
-                 molecule_file: str,
-                 output_file: str | None = None,
-                 mode: FileWritingMode | str = "w",
-                 molecule_file_type: OutputFileFormat | str = OutputFileFormat.AUTO,
-                 restart_moldescriptor_file: str | None = None,
-                 molecule_moldescriptor_file: str | None = None,
-                 number_of_additions: PositiveInt = 1,
-                 max_iterations: PositiveInt = 100,
-                 distance_cutoff: PositiveReal = 1.0,
-                 max_displacement: PositiveReal | Np1DNumberArray = 0.1,
-                 rotation_angle_step: PositiveInt = 10,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                 topology_file: str | None = None,
-                 topology_file_to_add: str | None = None,
-                 topology_file_output: str | None = None,
-                 ) -> None:
+
+def add_molecule(
+    restart_file: str,
+    molecule_file: str,
+    output_file: str | None = None,
+    mode: FileWritingMode | str = "w",
+    molecule_file_type: OutputFileFormat | str = OutputFileFormat.AUTO,
+    restart_moldescriptor_file: str | None = None,
+    molecule_moldescriptor_file: str | None = None,
+    number_of_additions: PositiveInt = 1,
+    max_iterations: PositiveInt = 100,
+    distance_cutoff: PositiveReal = 1.0,
+    max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+    rotation_angle_step: PositiveInt = 10,
+    md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    topology_file: str | None = None,
+    topology_file_to_add: str | None = None,
+    topology_file_output: str | None = None,
+) -> None:
     """
     Add a molecule to a restart file.
 
@@ -101,8 +103,11 @@ def add_molecule(restart_file: str,
         If the molecule file type is not RESTART and a moldescriptor file is specified.
     """
 
-    check_topology_args(topology_file, topology_file_to_add,
-                        topology_file_output)
+    check_topology_args(
+        topology_file,
+        topology_file_to_add,
+        topology_file_output
+    )
 
     _add_molecule = AddMolecule(
         restart_file=restart_file,
@@ -130,10 +135,12 @@ def add_molecule(restart_file: str,
         )
 
 
-def check_topology_args(topology_file: str | None,
-                        topology_file_to_add: str | None,
-                        topology_file_output: str | None
-                        ) -> None:
+
+def check_topology_args(
+    topology_file: str | None,
+    topology_file_to_add: str | None,
+    topology_file_output: str | None
+) -> None:
     """
     Check the arguments for the topology files.
 
@@ -166,8 +173,8 @@ def check_topology_args(topology_file: str | None,
         if topology_file_output is not None:
             warnings.warn(
                 (
-                    "The output topology file is specified, but no topology "
-                    "files are given to add. The output topology file will be ignored."
+                "The output topology file is specified, but no topology "
+                "files are given to add. The output topology file will be ignored."
                 )
             )
 
@@ -191,7 +198,9 @@ def check_topology_args(topology_file: str | None,
         )
 
 
+
 class AddMolecule:
+
     """
     A class for adding a molecule to a restart file.
 
@@ -205,21 +214,22 @@ class AddMolecule:
     to keep track of the fitting.
     """
 
-    def __init__(self,
-                 restart_file: str,
-                 molecule_file: str,
-                 output_file: str | None = None,
-                 mode: FileWritingMode | str = "w",
-                 molecule_file_type: OutputFileFormat | str = OutputFileFormat.AUTO,
-                 restart_moldescriptor_file: str | None = None,
-                 molecule_moldescriptor_file: str | None = None,
-                 number_of_additions: PositiveInt = 1,
-                 max_iterations: PositiveInt = 100,
-                 distance_cutoff: PositiveReal = 1.0,
-                 max_displacement: PositiveReal | Np1DNumberArray = 0.1,
-                 rotation_angle_step: PositiveInt = 10,
-                 md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
-                 ) -> None:
+    def __init__(
+        self,
+        restart_file: str,
+        molecule_file: str,
+        output_file: str | None = None,
+        mode: FileWritingMode | str = "w",
+        molecule_file_type: OutputFileFormat | str = OutputFileFormat.AUTO,
+        restart_moldescriptor_file: str | None = None,
+        molecule_moldescriptor_file: str | None = None,
+        number_of_additions: PositiveInt = 1,
+        max_iterations: PositiveInt = 100,
+        distance_cutoff: PositiveReal = 1.0,
+        max_displacement: PositiveReal | Np1DNumberArray = 0.1,
+        rotation_angle_step: PositiveInt = 10,
+        md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    ) -> None:
         """
         Parameters
         ----------
@@ -284,21 +294,18 @@ class AddMolecule:
         self.restart_system = None
 
         self.molecule_file_type = OutputFileFormat(
-            (
-                molecule_file_type,
-                self.molecule_file
-            )
+            (molecule_file_type,
+            self.molecule_file)
         )
 
-        if (
-            self.molecule_file_type != OutputFileFormat.RESTART and
-            self.molecule_moldescriptor_file is not None
-        ):
+        if (self.molecule_file_type != OutputFileFormat.RESTART
+                and self.molecule_moldescriptor_file is not None):
             raise ValueError(
                 "A moldescriptor file can only be specified for restart files."
             )
 
-        if self.molecule_file_type not in [OutputFileFormat.RESTART, OutputFileFormat.XYZ]:
+        if self.molecule_file_type not in [OutputFileFormat.RESTART,
+            OutputFileFormat.XYZ]:
             raise ValueError(
                 "The molecule file type must be either RESTART or XYZ."
             )
@@ -316,18 +323,19 @@ class AddMolecule:
         fitted_systems = self.add_molecules()
 
         self.restart_system.image()
-        lines = writer._get_lines(self.restart_system, atom_counter=0)
+        lines = writer._get_lines(self.restart_system, atom_counter=0)  # pylint: disable=protected-access
         for i, system in enumerate(fitted_systems):
             system.image()
-            lines += writer._get_atom_lines(system, atom_counter=i+1)
+            lines += writer._get_atom_lines(system, atom_counter=i + 1)  # pylint: disable=protected-access
 
-        writer._write_lines_to_file(lines)
+        writer._write_lines_to_file(lines)  # pylint: disable=protected-access
 
-    def extend_topology_file(self,
-                             original_shake_file: str,
-                             extension_shake_file: str,
-                             output: str | None = None,
-                             ) -> None:
+    def extend_topology_file(
+        self,
+        original_shake_file: str,
+        extension_shake_file: str,
+        output: str | None = None,
+    ) -> None:
         """
         Extend the topology file with the shake bonds of the extension topology file.
 
@@ -348,8 +356,8 @@ class AddMolecule:
 
         warnings.warn(
             (
-                "Extension of the topology file is only implemented for shake bonds. "
-                "The extension of general bonded topologies is not implemented yet."
+            "Extension of the topology file is only implemented for shake bonds. "
+            "The extension of general bonded topologies is not implemented yet."
             ),
             UserWarning
         )
@@ -426,9 +434,8 @@ class AddMolecule:
 
         else:
 
-            frame_generator = TrajectoryReader(
-                self.molecule_file,
-            ).frame_generator()
+            frame_generator = TrajectoryReader(self.molecule_file,
+                                               ).frame_generator()
 
             molecule = next(frame_generator)
 

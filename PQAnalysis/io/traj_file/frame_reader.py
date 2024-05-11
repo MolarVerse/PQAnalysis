@@ -19,7 +19,9 @@ from PQAnalysis import __package_name__
 from .exceptions import FrameReaderError
 
 
+
 class _FrameReader:
+
     """
     This class provides methods for reading a frame from a string.
     The string can be a single frame or a whole trajectory.
@@ -36,7 +38,10 @@ class _FrameReader:
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
-    def __init__(self, md_format: MDEngineFormat | str = MDEngineFormat.PQ) -> None:
+    def __init__(
+        self,
+        md_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         Parameters
         ----------
@@ -46,10 +51,12 @@ class _FrameReader:
         self.md_format = MDEngineFormat(md_format)
         self.topology = None
 
-    def read(self, frame_string: str,
-             topology: Topology | None = None,
-             traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ
-             ) -> AtomicSystem:
+    def read(
+        self,
+        frame_string: str,
+        topology: Topology | None = None,
+        traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ
+    ) -> AtomicSystem:
         """
         Reads a frame from a string.
 
@@ -204,10 +211,12 @@ class _FrameReader:
 
         return AtomicSystem(topology=topology, charges=charges, cell=cell)
 
-    def _check_qmcfc(self,
-                     atoms: List[str],
-                     value: Np1DNumberArray | Np2DNumberArray
-                     ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
+    def _check_qmcfc(
+        self,
+        atoms: List[str],
+        value: Np1DNumberArray | Np2DNumberArray
+    ) -> Tuple[Np1DNumberArray | Np2DNumberArray,
+        List[str]]:
         """
         Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
 
@@ -233,8 +242,8 @@ class _FrameReader:
             if atoms[0].upper() != 'X':
                 self.logger.error(
                     (
-                        'The first atom in one of the frames is not X. '
-                        'Please use PQ (default) md engine instead'
+                    'The first atom in one of the frames is not X. '
+                    'Please use PQ (default) md engine instead'
                     ),
                     exception=FrameReaderError
                 )
@@ -243,7 +252,11 @@ class _FrameReader:
 
         return value, atoms
 
-    def _get_topology(self, atoms: List[str], topology: Topology | None) -> Topology:
+    def _get_topology(
+        self,
+        atoms: List[str],
+        topology: Topology | None
+    ) -> Topology:
         """
         Returns the topology of the frame.
 
@@ -258,8 +271,8 @@ class _FrameReader:
 
                 topology = Topology(
                     atoms=[
-                        Atom(atom, disable_type_checking=True)
-                        for atom in atoms
+                    Atom(atom,
+                    disable_type_checking=True) for atom in atoms
                     ]
                 )
 
@@ -267,12 +280,11 @@ class _FrameReader:
 
                 topology = Topology(
                     atoms=[
-                        Atom(
-                            atom,
-                            use_guess_element=False,
-                            disable_type_checking=True
-                        )
-                        for atom in atoms
+                    Atom(
+                    atom,
+                    use_guess_element=False,
+                    disable_type_checking=True
+                    ) for atom in atoms
                     ]
                 )
 
@@ -327,9 +339,9 @@ class _FrameReader:
         return n_atoms, cell
 
     def _read_xyz(self,
-                  splitted_frame_string: List[str],
-                  n_atoms: int
-                  ) -> Tuple[Np2DNumberArray, List[str]]:
+        splitted_frame_string: List[str],
+        n_atoms: int) -> Tuple[Np2DNumberArray,
+        List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
@@ -358,22 +370,22 @@ class _FrameReader:
             atoms = [None] * n_atoms
 
             # Fill xyz and atoms in a single loop
-            for i, line in enumerate(splitted_frame_string[2:2+n_atoms]):
+            for i, line in enumerate(splitted_frame_string[2:2 + n_atoms]):
                 split_line = line.split()
                 atoms[i] = split_line[0]
                 xyz[i] = split_line[1:4]
 
             return xyz, atoms
-        except ValueError as e:
+        except ValueError:
             self.logger.error(
                 'Invalid file format in xyz coordinates of Frame.',
                 exception=FrameReaderError
             )
 
     def _read_scalar(self,
-                     splitted_frame_string: List[str],
-                     n_atoms: int
-                     ) -> Tuple[Np1DNumberArray, List[str]]:
+        splitted_frame_string: List[str],
+        n_atoms: int) -> Tuple[Np1DNumberArray,
+        List[str]]:
         """
         Reads the scalar values and the atom names from the given string.
 
@@ -400,7 +412,7 @@ class _FrameReader:
         scalar = np.zeros((n_atoms))
         atoms = []
         for i in range(n_atoms):
-            line = splitted_frame_string[2+i]
+            line = splitted_frame_string[2 + i]
 
             if len(line.split()) != 2:
                 self.logger.error(

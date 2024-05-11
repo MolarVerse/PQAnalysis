@@ -5,14 +5,15 @@ import logging
 
 from beartype.typing import List
 
-from PQAnalysis.io.input_file_reader.exceptions import InputFileError, InputFileWarning
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis.io.input_file_reader.input_file_parser import InputFileParser
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
-from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis import __package_name__
 
 
 
