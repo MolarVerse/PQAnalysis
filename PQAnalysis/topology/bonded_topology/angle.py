@@ -2,24 +2,25 @@
 A module containing the Angle class.
 """
 
-from __future__ import annotations
-
 from PQAnalysis.types import PositiveInt, PositiveReal
 
 
+
 class Angle:
+
     """
     A class to represent an angle in a molecular topology.
     """
 
-    def __init__(self,
-                 index1: PositiveInt,
-                 index2: PositiveInt,
-                 index3: PositiveInt,
-                 equilibrium_angle: PositiveReal | None = None,
-                 angle_type: PositiveInt | None = None,
-                 is_linker: bool = False,
-                 ) -> None:
+    def __init__(
+        self,
+        index1: PositiveInt,
+        index2: PositiveInt,
+        index3: PositiveInt,
+        equilibrium_angle: PositiveReal | None = None,
+        angle_type: PositiveInt | None = None,
+        is_linker: bool = False,
+    ) -> None:
         """
         Parameters
         ----------
@@ -44,7 +45,7 @@ class Angle:
         self.angle_type = angle_type
         self.is_linker = is_linker
 
-    def copy(self) -> Angle:
+    def copy(self) -> "Angle":
         """
         A method to create a copy of the angle.
 
@@ -81,10 +82,9 @@ class Angle:
             return False
 
         return (
-            self.index1 == value.index1 and
-            self.index2 == value.index2 and
-            self.index3 == value.index3 and
-            self.equilibrium_angle == value.equilibrium_angle and
-            self.angle_type == value.angle_type and
-            self.is_linker == value.is_linker
+            self.index1 == value.index1 and self.index2 == value.index2
+            and self.index3 == value.index3
+            and self.equilibrium_angle == value.equilibrium_angle
+            and self.angle_type == value.angle_type
+            and self.is_linker == value.is_linker
         )

@@ -2,8 +2,6 @@
 A module containing the input file parser.
 """
 
-from __future__ import annotations
-
 import logging
 
 from glob import glob
@@ -67,7 +65,7 @@ class InputFileParser(BaseReader):
         self.transformed_tree = None
         self.input_dictionary = None
 
-    def parse(self) -> InputDictionary:
+    def parse(self) -> "InputDictionary":
         """
         Parse the input file.
 

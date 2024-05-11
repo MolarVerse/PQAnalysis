@@ -23,13 +23,15 @@ from .restart_file.api import read_restart_file
 from .traj_file.api import write_trajectory
 
 
+
 @runtime_type_checking
-def gen2xyz(gen_file: str,
-            output: str | None = None,
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            print_box: bool = True,
-            mode: FileWritingMode | str = "w"
-            ) -> None:
+def gen2xyz(
+    gen_file: str,
+    output: str | None = None,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    print_box: bool = True,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts a gen file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -54,17 +56,24 @@ def gen2xyz(gen_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, engine_format=md_format,
-                     traj_type="xyz", mode=mode)
+    write_trajectory(
+        system,
+        output,
+        engine_format=md_format,
+        traj_type="xyz",
+        mode=mode
+    )
+
 
 
 @runtime_type_checking
-def xyz2gen(xyz_file: str,
-            output: str | None = None,
-            periodic: bool | None = None,
-            mode: FileWritingMode | str = "w",
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            ) -> None:
+def xyz2gen(
+    xyz_file: str,
+    output: str | None = None,
+    periodic: bool | None = None,
+    mode: FileWritingMode | str = "w",
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+) -> None:
     """
     Converts a xyz file to a gen file and prints it to stdout or writes it to a file.
 
@@ -96,13 +105,15 @@ def xyz2gen(xyz_file: str,
     write_gen_file(output, system, periodic, mode)
 
 
+
 @runtime_type_checking
-def rst2xyz(restart_file: str,
-            output: str | None = None,
-            print_box: bool = True,
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            mode: FileWritingMode | str = "w"
-            ) -> None:
+def rst2xyz(
+    restart_file: str,
+    output: str | None = None,
+    print_box: bool = True,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -131,16 +142,23 @@ def rst2xyz(restart_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, engine_format=md_format,
-                     traj_type="xyz", mode=mode)
+    write_trajectory(
+        system,
+        output,
+        engine_format=md_format,
+        traj_type="xyz",
+        mode=mode
+    )
+
 
 
 @runtime_type_checking
-def traj2box(trajectory_files: List[str],
-             vmd: bool,
-             output: str | None = None,
-             mode: FileWritingMode | str = "w"
-             ) -> None:
+def traj2box(
+    trajectory_files: List[str],
+    vmd: bool,
+    output: str | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts multiple trajectory files to a box file and prints it to stdout or writes it to a file.
 
@@ -181,11 +199,13 @@ def traj2box(trajectory_files: List[str],
         writer.write(trajectory, reset_counter=False)
 
 
+
 @runtime_type_checking
-def traj2qmcfc(trajectory_files: List[str],
-               output: str | None = None,
-               mode: FileWritingMode | str = "w"
-               ) -> None:
+def traj2qmcfc(
+    trajectory_files: List[str],
+    output: str | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts multiple trajectory files from a PQ format to a 
     QMCFC format and prints it to stdout or writes it to a file.
@@ -204,7 +224,10 @@ def traj2qmcfc(trajectory_files: List[str],
     """
 
     writer = TrajectoryWriter(
-        filename=output, engine_format="qmcfc", mode=mode)
+        filename=output,
+        engine_format="qmcfc",
+        mode=mode
+    )
 
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)

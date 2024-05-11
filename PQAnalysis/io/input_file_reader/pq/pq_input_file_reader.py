@@ -2,8 +2,6 @@
 A module containing the PQ_InputFileReader class.
 """
 
-from __future__ import annotations
-
 import logging
 import re
 
