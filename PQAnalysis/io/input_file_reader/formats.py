@@ -8,7 +8,9 @@ from PQAnalysis.formats import BaseEnumFormat
 from .exceptions import InputFileFormatError
 
 
+
 class InputFileFormat(BaseEnumFormat):
+
     """
     An enumeration of the supported input formats.
     """
