@@ -6,6 +6,7 @@ import secrets
 import os
 
 
+
 def get_random_seed() -> int:
     """
     Get a random seed for the simulation.
