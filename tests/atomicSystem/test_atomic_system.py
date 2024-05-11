@@ -21,7 +21,9 @@ from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception, assert_type_error_in_debug_mode
 
 
+
 class TestAtomicSystem:
+
     """
     Tests for the AtomicSystem class.
     """
@@ -40,11 +42,11 @@ class TestAtomicSystem:
         assert system.pos.shape == (0, 3)
         assert system.vel.shape == (0, 3)
         assert system.forces.shape == (0, 3)
-        assert system.charges.shape == (0,)
+        assert system.charges.shape == (0, )
         assert system.cell == Cell()
         assert system.pbc is False
         assert system.n_atoms == 0
-        assert system.atomic_masses.shape == (0,)
+        assert system.atomic_masses.shape == (0, )
         assert np.isclose(system.mass, 0.0)
         assert np.allclose(system.center_of_mass, np.zeros(3))
         assert system.combined_name == ''
@@ -54,13 +56,13 @@ class TestAtomicSystem:
         assert system.pos.shape == (2, 3)
         assert system.vel.shape == (0, 3)
         assert system.forces.shape == (0, 3)
-        assert system.charges.shape == (0,)
+        assert system.charges.shape == (0, )
         assert system.cell == Cell()
         assert system.pbc is False
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
 
-        assert system.atomic_masses.shape == (0,)
+        assert system.atomic_masses.shape == (0, )
         assert system.mass == 0
 
         assert_logging_with_exception(
@@ -75,33 +77,63 @@ class TestAtomicSystem:
 
         assert system.combined_name == ''
 
-        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                              atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
         assert system.atoms == [Atom('C'), Atom('H')]
         assert system.pos.shape == (2, 3)
         assert system.vel.shape == (0, 3)
         assert system.forces.shape == (0, 3)
-        assert system.charges.shape == (0,)
+        assert system.charges.shape == (0, )
         assert system.cell == Cell(0.75, 0.75, 0.75)
         assert system.pbc is True
         assert system.n_atoms == 2
         assert np.allclose(system.pos, [[0, 0, 0], [1, 1, 1]])
         assert np.allclose(system.atomic_masses, [12.0107, 1.00794])
         assert np.isclose(system.mass, 13.01864)
-        assert np.allclose(system.center_of_mass, [
-                           0.01935571, 0.01935571, 0.01935571])
+        assert np.allclose(
+            system.center_of_mass,
+            [0.01935571,
+            0.01935571,
+            0.01935571]
+        )
         assert system.combined_name == 'CH'
 
-        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                              atoms=[Atom('C'), Atom('H')])
+        system = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')]
+        )
 
-        assert np.allclose(system.center_of_mass, np.array(
-            [0.07742283, 0.07742283, 0.07742283]))
+        assert np.allclose(
+            system.center_of_mass,
+            np.array([0.07742283,
+            0.07742283,
+            0.07742283])
+        )
 
         system = AtomicSystem(
-            atoms=[Atom('C', use_guess_element=False)],
-            pos=np.array([[0, 0, 0]])
+            atoms=[Atom('C',
+            use_guess_element=False)],
+            pos=np.array([[0,
+            0,
+            0]])
         )
 
         assert system.atoms == [Atom('C', use_guess_element=False)]
@@ -144,8 +176,8 @@ class TestAtomicSystem:
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "Cannot initialize AtomicSystem with both atoms "
-                "and topology arguments - they are mutually exclusive."
+            "Cannot initialize AtomicSystem with both atoms "
+            "and topology arguments - they are mutually exclusive."
             ),
             AtomicSystemError,
             AtomicSystem,
@@ -164,17 +196,45 @@ class TestAtomicSystem:
         with pytest.raises(ValueError) as exception:
             system.topology = topology
         assert str(
-            exception.value) == "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology"
+            exception.value
+        ) == "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology"
 
     def test__eq__(self):
         system1 = AtomicSystem()
         system2 = AtomicSystem()
-        system3 = AtomicSystem(pos=np.array(
-            [[0, 0, 0], [1, 1, 1]]), atoms=[Atom('C'), Atom('H')])
-        system4 = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                               atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
-        system5 = AtomicSystem(pos=np.array(
-            [[0, 0, 0], [1, 1, 1]]), atoms=[Atom('C'), Atom('D')])
+        system3 = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')]
+        )
+        system4 = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
+        system5 = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('D')]
+        )
 
         assert system1 == system2
         assert system1 != system3
@@ -205,31 +265,122 @@ class TestAtomicSystem:
         assert system3 != system5
 
     def test__getitem__(self):
-        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                              atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
-        assert system[0] == AtomicSystem(pos=np.array([[0, 0, 0]]),
-                                         atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
-        assert system[1] == AtomicSystem(pos=np.array([[1, 1, 1]]),
-                                         atoms=[Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        assert system[0] == AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0]]),
+            atoms=[Atom('C')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
+        assert system[1] == AtomicSystem(
+            pos=np.array([[1,
+            1,
+            1]]),
+            atoms=[Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
         with pytest.raises(IndexError):
             system[2]
 
-        assert system[-1] == AtomicSystem(pos=np.array([[1, 1, 1]]),
-                                          atoms=[Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        assert system[-1] == AtomicSystem(
+            pos=np.array([[1,
+            1,
+            1]]),
+            atoms=[Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
-        system = AtomicSystem(vel=np.array([[0, 0, 0], [1, 1, 1]]), forces=np.array([[0, 0, 0], [1, 1, 1]]), charges=np.array([0, 0]),
-                              atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            vel=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            forces=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            charges=np.array([0,
+            0]),
+            atoms=[Atom('C'),
+            Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
-        assert system[0] == AtomicSystem(vel=np.array([[0, 0, 0]]), forces=np.array([[0, 0, 0]]), charges=np.array([0]),
-                                         atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
+        assert system[0] == AtomicSystem(
+            vel=np.array([[0,
+            0,
+            0]]),
+            forces=np.array([[0,
+            0,
+            0]]),
+            charges=np.array([0]),
+            atoms=[Atom('C')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
-        assert system[Atom(6)] == AtomicSystem(vel=np.array([[0, 0, 0]]), forces=np.array([[0, 0, 0]]), charges=np.array([0]),
-                                               atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
+        assert system[Atom(6)] == AtomicSystem(
+            vel=np.array([[0,
+            0,
+            0]]),
+            forces=np.array([[0,
+            0,
+            0]]),
+            charges=np.array([0]),
+            atoms=[Atom('C')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
-        system = AtomicSystem(vel=np.array([[0, 0, 0], [1, 1, 1]]), forces=np.array([[0, 0, 0], [1, 1, 1]]), charges=np.array([0, 0]),
-                              atoms=None, cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            vel=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            forces=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            charges=np.array([0,
+            0]),
+            atoms=None,
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
         assert system[:] == system
 
@@ -240,20 +391,41 @@ class TestAtomicSystem:
         system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]))
         assert system.n_atoms == 2
 
-        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                              atoms=[Atom('C'), Atom('H')], cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C'),
+            Atom('H')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
         assert system.n_atoms == 2
 
-        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]),
-                              atoms=[Atom('C')], cell=Cell(0.75, 0.75, 0.75))
+        system = AtomicSystem(
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]]),
+            atoms=[Atom('C')],
+            cell=Cell(0.75,
+            0.75,
+            0.75)
+        )
 
         assert_logging_with_exception(
             caplog,
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "The number of atoms (or atoms in the topology), "
-                "positions, velocities, forces and charges must be equal."
+            "The number of atoms (or atoms in the topology), "
+            "positions, velocities, forces and charges must be equal."
             ),
             AtomicSystemError,
             lambda system: system.n_atoms,
@@ -273,13 +445,21 @@ class TestAtomicSystem:
 
         system = AtomicSystem()
         assert str(
-            system) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
+            system
+        ) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
         assert str(system) == repr(system)
 
-        system = AtomicSystem(atoms=atoms, pos=pos, cell=cell,
-                              vel=vel, charges=charges, forces=forces)
+        system = AtomicSystem(
+            atoms=atoms,
+            pos=pos,
+            cell=cell,
+            vel=vel,
+            charges=charges,
+            forces=forces
+        )
         assert str(
-            system) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
+            system
+        ) == f"AtomicSystem(topology=({system.topology}), cell=({system.cell}))"
         assert str(system) == repr(system)
 
     def test_pos_setter(self, caplog):
@@ -304,20 +484,26 @@ class TestAtomicSystem:
             "TypeChecking",
             "ERROR",
             get_type_error_message(
-                "pos",
-                np.array([0, 0, 0]),
-                Np2DNumberArray,
+            "pos",
+            np.array([0,
+            0,
+            0]),
+            Np2DNumberArray,
             ),
             PQTypeError,
             f,
             system,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         # should work without raising an exception
         assert_type_error_in_debug_mode(
             system.set_pos_no_checks,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
@@ -327,20 +513,19 @@ class TestAtomicSystem:
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "The number of atoms in the AtomicSystem object have "
-                "to be equal to the number of atoms in the new array "
-                "in order to set the property."
+            "The number of atoms in the AtomicSystem object have "
+            "to be equal to the number of atoms in the new array "
+            "in order to set the property."
             ),
             AtomicSystemError,
             f,
             system,
-            np.array([[0, 0, 0]])
+            np.array([[0,
+            0,
+            0]])
         )
 
-        system = AtomicSystem(
-            atoms=[Atom('C')],
-            pos=np.array([[1, 1, 1]])
-        )
+        system = AtomicSystem(atoms=[Atom('C')], pos=np.array([[1, 1, 1]]))
 
         system.pos = np.array([[0, 0, 0]])
         assert np.allclose(system.pos, np.array([[0, 0, 0]]))
@@ -361,20 +546,26 @@ class TestAtomicSystem:
             "TypeChecking",
             "ERROR",
             get_type_error_message(
-                "vel",
-                np.array([0, 0, 0]),
-                Np2DNumberArray,
+            "vel",
+            np.array([0,
+            0,
+            0]),
+            Np2DNumberArray,
             ),
             PQTypeError,
             f,
             system,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         # should work without raising an exception
         assert_type_error_in_debug_mode(
             system.set_vel_no_checks,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
@@ -384,20 +575,19 @@ class TestAtomicSystem:
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "The number of atoms in the AtomicSystem object have "
-                "to be equal to the number of atoms in the new array "
-                "in order to set the property."
+            "The number of atoms in the AtomicSystem object have "
+            "to be equal to the number of atoms in the new array "
+            "in order to set the property."
             ),
             AtomicSystemError,
             f,
             system,
-            np.array([[0, 0, 0]])
+            np.array([[0,
+            0,
+            0]])
         )
 
-        system = AtomicSystem(
-            atoms=[Atom('C')],
-            vel=np.array([[1, 1, 1]])
-        )
+        system = AtomicSystem(atoms=[Atom('C')], vel=np.array([[1, 1, 1]]))
         system.vel = np.array([[0, 0, 0]])
         assert np.allclose(system.vel, np.array([[0, 0, 0]]))
 
@@ -425,20 +615,26 @@ class TestAtomicSystem:
             "TypeChecking",
             "ERROR",
             get_type_error_message(
-                "forces",
-                np.array([0, 0, 0]),
-                Np2DNumberArray,
+            "forces",
+            np.array([0,
+            0,
+            0]),
+            Np2DNumberArray,
             ),
             PQTypeError,
             f,
             system,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         # should work without raising an exception
         assert_type_error_in_debug_mode(
             system.set_forces_no_checks,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
@@ -448,20 +644,19 @@ class TestAtomicSystem:
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "The number of atoms in the AtomicSystem object have "
-                "to be equal to the number of atoms in the new array "
-                "in order to set the property."
+            "The number of atoms in the AtomicSystem object have "
+            "to be equal to the number of atoms in the new array "
+            "in order to set the property."
             ),
             AtomicSystemError,
             f,
             system,
-            np.array([[0, 0, 0]])
+            np.array([[0,
+            0,
+            0]])
         )
 
-        system = AtomicSystem(
-            atoms=[Atom('C')],
-            forces=np.array([[1, 1, 1]])
-        )
+        system = AtomicSystem(atoms=[Atom('C')], forces=np.array([[1, 1, 1]]))
         system.forces = np.array([[0, 0, 0]])
         assert np.allclose(system.forces, np.array([[0, 0, 0]]))
 
@@ -489,20 +684,26 @@ class TestAtomicSystem:
             "TypeChecking",
             "ERROR",
             get_type_error_message(
-                "charges",
-                np.array([[0, 0, 0]]),
-                Np1DNumberArray,
+            "charges",
+            np.array([[0,
+            0,
+            0]]),
+            Np1DNumberArray,
             ),
             PQTypeError,
             f,
             system,
-            np.array([[0, 0, 0]])
+            np.array([[0,
+            0,
+            0]])
         )
 
         # should work without raising an exception
         assert_type_error_in_debug_mode(
             system.set_charges_no_checks,
-            np.array([[0, 0, 0]])
+            np.array([[0,
+            0,
+            0]])
         )
 
         system = AtomicSystem(atoms=[Atom('C'), Atom('H')])
@@ -512,20 +713,19 @@ class TestAtomicSystem:
             AtomicSystem.__qualname__,
             "ERROR",
             (
-                "The number of atoms in the AtomicSystem object have "
-                "to be equal to the number of atoms in the new array "
-                "in order to set the property."
+            "The number of atoms in the AtomicSystem object have "
+            "to be equal to the number of atoms in the new array "
+            "in order to set the property."
             ),
             AtomicSystemError,
             f,
             system,
-            np.array([0, 0, 0])
+            np.array([0,
+            0,
+            0])
         )
 
-        system = AtomicSystem(
-            atoms=[Atom('C')],
-            charges=np.array([1])
-        )
+        system = AtomicSystem(atoms=[Atom('C')], charges=np.array([1]))
         system.charges = np.array([0])
         assert np.allclose(system.charges, np.array([0]))
 
@@ -543,8 +743,14 @@ class TestAtomicSystem:
         assert not system.has_charges
 
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            pos=np.array([[0, 0, 0], [1, 1, 1]])
+            atoms=[Atom('C'),
+            Atom('H')],
+            pos=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]])
         )
         assert system.has_pos
         assert not system.has_vel
@@ -552,8 +758,14 @@ class TestAtomicSystem:
         assert not system.has_charges
 
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            vel=np.array([[0, 0, 0], [1, 1, 1]])
+            atoms=[Atom('C'),
+            Atom('H')],
+            vel=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]])
         )
         assert not system.has_pos
         assert system.has_vel
@@ -561,8 +773,14 @@ class TestAtomicSystem:
         assert not system.has_charges
 
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            forces=np.array([[0, 0, 0], [1, 1, 1]])
+            atoms=[Atom('C'),
+            Atom('H')],
+            forces=np.array([[0,
+            0,
+            0],
+            [1,
+            1,
+            1]])
         )
         assert not system.has_pos
         assert not system.has_vel
@@ -570,8 +788,10 @@ class TestAtomicSystem:
         assert not system.has_charges
 
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            charges=np.array([0, 1])
+            atoms=[Atom('C'),
+            Atom('H')],
+            charges=np.array([0,
+            1])
         )
         assert not system.has_pos
         assert not system.has_vel
@@ -599,16 +819,45 @@ class TestAtomicSystem:
         """
         Test the virial property of the AtomicSystem class.
         """
-        system = AtomicSystem(virial=np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        system = AtomicSystem(
+            virial=np.array([[1,
+            0,
+            0],
+            [0,
+            1,
+            0],
+            [0,
+            0,
+            1]])
+        )
 
-        assert np.allclose(system.virial, np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        assert np.allclose(
+            system.virial,
+            np.array([[1,
+            0,
+            0],
+            [0,
+            1,
+            0],
+            [0,
+            0,
+            1]])
+        )
         assert system.has_virial
 
         system.virial = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
-        assert np.allclose(system.virial, np.array(
-            [[2, 0, 0], [0, 2, 0], [0, 0, 2]]))
+        assert np.allclose(
+            system.virial,
+            np.array([[2,
+            0,
+            0],
+            [0,
+            2,
+            0],
+            [0,
+            0,
+            2]])
+        )
         assert system.has_virial
 
         system = AtomicSystem()
@@ -619,16 +868,45 @@ class TestAtomicSystem:
         """
         Test the stress property of the AtomicSystem class.
         """
-        system = AtomicSystem(stress=np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        system = AtomicSystem(
+            stress=np.array([[1,
+            0,
+            0],
+            [0,
+            1,
+            0],
+            [0,
+            0,
+            1]])
+        )
 
-        assert np.allclose(system.stress, np.array(
-            [[1, 0, 0], [0, 1, 0], [0, 0, 1]]))
+        assert np.allclose(
+            system.stress,
+            np.array([[1,
+            0,
+            0],
+            [0,
+            1,
+            0],
+            [0,
+            0,
+            1]])
+        )
         assert system.has_stress
 
         system.stress = np.array([[2, 0, 0], [0, 2, 0], [0, 0, 2]])
-        assert np.allclose(system.stress, np.array(
-            [[2, 0, 0], [0, 2, 0], [0, 0, 2]]))
+        assert np.allclose(
+            system.stress,
+            np.array([[2,
+            0,
+            0],
+            [0,
+            2,
+            0],
+            [0,
+            0,
+            2]])
+        )
         assert system.has_stress
 
         system = AtomicSystem()

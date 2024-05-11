@@ -18,6 +18,7 @@ from PQAnalysis.exceptions import PQException, PQTypeError
 from . import __beartype_level__
 
 
+
 @pytest.fixture(scope="function")
 def tmpdir():
 
@@ -33,6 +34,7 @@ def tmpdir():
 
     os.chdir("..")
     shutil.rmtree(tmpdir)
+
 
 
 @pytest.fixture(scope="function")
@@ -53,7 +55,9 @@ def test_with_data_dir(example_dir):
     shutil.rmtree(tmpdir)
 
 
+
 class CatchLogFixture:
+
     """
     Fixture to capture logs regardless of the Propagate flag. See
     https://github.com/pytest-dev/pytest/issues/3697 for details.
@@ -64,7 +68,11 @@ class CatchLogFixture:
         return _remove_ansi_escape_sequences(self.handler.stream.getvalue())
 
     @contextmanager
-    def catch_logs(self, level: int, logger: logging.Logger) -> LogCaptureHandler:
+    def catch_logs(
+        self,
+        level: int,
+        logger: logging.Logger
+    ) -> LogCaptureHandler:
         """Set the level for capturing of logs. After the end of the 'with' statement,
         the level is restored to its original value.
         """
@@ -82,9 +90,11 @@ class CatchLogFixture:
             logger.propagate = orig_propagate
 
 
+
 @pytest.fixture
 def capture_log():
     return CatchLogFixture().catch_logs
+
 
 
 @contextmanager
@@ -97,22 +107,27 @@ def caplog_for_logger(caplog, logger_name, level):
     logger.removeHandler(caplog.handler)
 
 
-def assert_logging_with_exception(caplog,
-                                  logging_name,
-                                  logging_level,
-                                  message_to_test,
-                                  exception,
-                                  function,
-                                  *args,
-                                  **kwargs
-                                  ):
 
-    with caplog_for_logger(caplog, __package_name__ + "." + logging_name, logging_level):
+def assert_logging_with_exception(
+    caplog,
+    logging_name,
+    logging_level,
+    message_to_test,
+    exception,
+    function,
+    *args,
+    **kwargs
+):
+
+    with caplog_for_logger(caplog,
+        __package_name__ + "." + logging_name,
+        logging_level):
         result = None
         try:
             result = function(*args, **kwargs)
         except (PQException, BeartypeCallHintParamViolation) as e:
-            if isinstance(e, BeartypeCallHintParamViolation) and exception is PQTypeError:
+            if isinstance(e,
+                BeartypeCallHintParamViolation) and exception is PQTypeError:
                 return result
             if not isinstance(e, PQException):
                 raise e
@@ -121,9 +136,7 @@ def assert_logging_with_exception(caplog,
 
         assert record.name == __package_name__ + \
             "." + logging_name
-        assert record.levelno == logging.getLevelName(
-            logging_level
-        )
+        assert record.levelno == logging.getLevelName(logging_level)
 
         if exception is not None:
             assert record.custom_exception == exception
@@ -138,14 +151,16 @@ def assert_logging_with_exception(caplog,
         return result
 
 
-def assert_logging(caplog,
-                   logging_name,
-                   logging_level,
-                   message_to_test,
-                   function,
-                   *args,
-                   **kwargs
-                   ):
+
+def assert_logging(
+    caplog,
+    logging_name,
+    logging_level,
+    message_to_test,
+    function,
+    *args,
+    **kwargs
+):
     return assert_logging_with_exception(
         caplog,
         logging_name,
@@ -156,6 +171,7 @@ def assert_logging(caplog,
         *args,
         **kwargs
     )
+
 
 
 def assert_type_error_in_debug_mode(func, *args, **kwargs):
