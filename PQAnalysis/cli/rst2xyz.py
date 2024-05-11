@@ -7,12 +7,10 @@ Command Line Tool for Converting Restart Files to XYZ Files
 
 """
 
-
 from PQAnalysis.io import rst2xyz
 from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
-
 
 __outputdoc__ = """
 
@@ -31,10 +29,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class Rst2XYZCLI(CLIBase):
+
     """
     Command Line Tool for Converting Restart Files to XYZ Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -91,6 +92,7 @@ class Rst2XYZCLI(CLIBase):
             md_format=args.engine,
             mode=args.mode,
         )
+
 
 
 def main():
