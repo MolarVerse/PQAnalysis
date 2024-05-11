@@ -16,7 +16,9 @@ from .dihedral import Dihedral
 from ._topology_properties import TopologyPropertiesMixin
 
 
+
 class BondedTopology(TopologyPropertiesMixin):
+
     """
     A class to represent a bonded topology in a molecular topology.
 
@@ -24,14 +26,15 @@ class BondedTopology(TopologyPropertiesMixin):
     A mixin class to add the most common properties of a topology.
     """
 
-    def __init__(self,
-                 bonds: List[Bond] | None = None,
-                 angles: List[Angle] | None = None,
-                 dihedrals: List[Dihedral] | None = None,
-                 impropers: List[Dihedral] | None = None,
-                 shake_bonds: List[Bond] | None = None,
-                 ordering_keys: List[str] | None = None
-                 ) -> None:
+    def __init__(
+        self,
+        bonds: List[Bond] | None = None,
+        angles: List[Angle] | None = None,
+        dihedrals: List[Dihedral] | None = None,
+        impropers: List[Dihedral] | None = None,
+        shake_bonds: List[Bond] | None = None,
+        ordering_keys: List[str] | None = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -58,12 +61,13 @@ class BondedTopology(TopologyPropertiesMixin):
 
         self.ordering_keys = ordering_keys
 
-    def extend_shake_bonds(self,
-                           shake_bonds: List[Bond],
-                           n_atoms: PositiveInt,
-                           n_extensions: PositiveInt = 1,
-                           n_atoms_per_extension: PositiveInt | None = None
-                           ) -> None:
+    def extend_shake_bonds(
+        self,
+        shake_bonds: List[Bond],
+        n_atoms: PositiveInt,
+        n_extensions: PositiveInt = 1,
+        n_atoms_per_extension: PositiveInt | None = None
+    ) -> None:
         """
         Extend the shake bonds in the bonded topology.
 
@@ -95,8 +99,8 @@ class BondedTopology(TopologyPropertiesMixin):
             )
 
         max_index_shake_bonds = max(
-            [bond.index1 for bond in shake_bonds] +
-            [bond.index2 for bond in shake_bonds]
+            [bond.index1
+            for bond in shake_bonds] + [bond.index2 for bond in shake_bonds]
         )
 
         if n_atoms_per_extension is None:
