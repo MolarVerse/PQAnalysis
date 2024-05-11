@@ -12,15 +12,18 @@ from PQAnalysis.io import BaseWriter, FileWritingMode
 from .selection import SelectionCompatible, Selection
 
 
+
 class ShakeTopologyGenerator:
+
     """
     A class for generating the shake topology for a given trajectory
     """
 
-    def __init__(self,
-                 selection: SelectionCompatible = None,
-                 use_full_atom_info: bool = False
-                 ) -> None:
+    def __init__(
+        self,
+        selection: SelectionCompatible = None,
+        use_full_atom_info: bool = False
+    ) -> None:
         """
         Parameters
         ----------
@@ -62,7 +65,9 @@ class ShakeTopologyGenerator:
         self._topology = trajectory.topology
 
         indices = self.selection.select(
-            self._topology, self._use_full_atom_info)
+            self._topology,
+            self._use_full_atom_info
+        )
 
         target_indices, distances = atomic_system.nearest_neighbours(
             n=1, selection=indices, use_full_atom_info=self._use_full_atom_info)
@@ -84,7 +89,10 @@ class ShakeTopologyGenerator:
         self.target_indices = target_indices
         self.distances = np.mean(np.array(distances), axis=0)
 
-    def average_equivalents(self, indices: List[Np1DIntArray] | Np2DIntArray) -> None:
+    def average_equivalents(
+        self,
+        indices: List[Np1DIntArray] | Np2DIntArray
+    ) -> None:
         """
         Averages the distances for equivalent atoms.
 
@@ -105,10 +113,11 @@ class ShakeTopologyGenerator:
 
             self.distances[_indices] = mean_distance
 
-    def write_topology(self,
-                       filename: str | None = None,
-                       mode: FileWritingMode | str = "w"
-                       ) -> None:
+    def write_topology(
+        self,
+        filename: str | None = None,
+        mode: FileWritingMode | str = "w"
+    ) -> None:
         """
         Writes the topology to a file.
 
@@ -132,8 +141,8 @@ class ShakeTopologyGenerator:
 
         print(
             (
-                f"SHAKE {len(self.indices)}  "
-                f"{len(np.unique(self.target_indices))}  0"
+            f"SHAKE {len(self.indices)}  "
+            f"{len(np.unique(self.target_indices))}  0"
             ),
             file=writer.file
         )

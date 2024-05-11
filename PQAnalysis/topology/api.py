@@ -11,12 +11,14 @@ from .selection import SelectionCompatible, Selection
 from .shake_topology import ShakeTopologyGenerator
 
 
-def generate_shake_topology_file(trajectory: Trajectory,
-                                 selection: SelectionCompatible = None,
-                                 output: str | None = None,
-                                 mode: FileWritingMode | str = "w",
-                                 use_full_atom_info: bool = False,
-                                 ) -> None:
+
+def generate_shake_topology_file(
+    trajectory: Trajectory,
+    selection: SelectionCompatible = None,
+    output: str | None = None,
+    mode: FileWritingMode | str = "w",
+    use_full_atom_info: bool = False,
+) -> None:
     """
     Wrapper function to generate a shake topology file for a given trajectory.
 
@@ -45,11 +47,13 @@ def generate_shake_topology_file(trajectory: Trajectory,
     generator.write_topology(output, mode)
 
 
-def select_from_restart_file(selection: SelectionCompatible,
-                             restart_file: str,
-                             moldescriptor_file: str | None = None,
-                             use_full_atom_info: bool = False,
-                             ) -> Np1DIntArray:
+
+def select_from_restart_file(
+    selection: SelectionCompatible,
+    restart_file: str,
+    moldescriptor_file: str | None = None,
+    use_full_atom_info: bool = False,
+) -> Np1DIntArray:
     """
     Selects atoms from a restart file and writes them to a new file.
 
@@ -72,14 +76,19 @@ def select_from_restart_file(selection: SelectionCompatible,
 
     selection = Selection(selection)
 
-    return selection.select(system.topology, use_full_atom_info=use_full_atom_info)
+    return selection.select(
+        system.topology,
+        use_full_atom_info=use_full_atom_info
+    )
 
 
-def selection_from_restart_file_as_list(selection: SelectionCompatible,
-                                        restart_file: str,
-                                        moldescriptor_file: str | None = None,
-                                        use_full_atom_info: bool = False,
-                                        ) -> List[int]:
+
+def selection_from_restart_file_as_list(
+    selection: SelectionCompatible,
+    restart_file: str,
+    moldescriptor_file: str | None = None,
+    use_full_atom_info: bool = False,
+) -> List[int]:
     """
     Selects atoms from a restart file and writes them to a new file.
 
@@ -100,9 +109,9 @@ def selection_from_restart_file_as_list(selection: SelectionCompatible,
 
     return list(
         select_from_restart_file(
-            selection,
-            restart_file,
-            moldescriptor_file,
-            use_full_atom_info
+        selection,
+        restart_file,
+        moldescriptor_file,
+        use_full_atom_info
         )
     )
