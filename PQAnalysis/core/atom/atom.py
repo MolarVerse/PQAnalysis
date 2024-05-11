@@ -106,8 +106,9 @@ class Atom():
             If his parameter is not given, the name parameter is used to determine 
             the element type of the atom_type.
         use_guess_element : bool, optional
-            Whether to use the guess_element function to determine the element type of the atom_type 
-            by its name, by default True
+            Whether to use the guess_element function to determine
+            the element type of the atom_type by its name,
+            by default True
 
         Raises
         ------

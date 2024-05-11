@@ -160,7 +160,8 @@ def traj2box(
     mode: FileWritingMode | str = "w"
 ) -> None:
     """
-    Converts multiple trajectory files to a box file and prints it to stdout or writes it to a file.
+    Converts multiple trajectory files to a box file and 
+    prints it to stdout or writes it to a file.
 
     Without the vmd option the output is printed in a data file format.
     The first column represents the step starting from 1, the second to fourth column

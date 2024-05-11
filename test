@@ -1,0 +1,306 @@
+************* Module PQAnalysis
+PQAnalysis/__init__.py:24:1: W0511: TODO: change the default level to "RELEASE" after all changes are implemented (fixme)
+************* Module PQAnalysis.analysis.rdf.rdf
+PQAnalysis/analysis/rdf/rdf.py:35:0: R0902: Too many instance attributes (25/7) (too-many-instance-attributes)
+PQAnalysis/analysis/rdf/rdf.py:72:4: R0913: Too many arguments (10/5) (too-many-arguments)
+PQAnalysis/analysis/rdf/rdf.py:789:4: R0913: Too many arguments (6/5) (too-many-arguments)
+************* Module PQAnalysis.tools.traj_to_com_traj
+PQAnalysis/tools/traj_to_com_traj.py:8:1: W0511: TODO: add atom to element mapper if atom name not element names (fixme)
+PQAnalysis/tools/traj_to_com_traj.py:9:1: W0511: TODO rethink concept of selection/getitem/slices (fixme)
+************* Module PQAnalysis.tools.add_molecule
+PQAnalysis/tools/add_molecule.py:28:0: R0913: Too many arguments (16/5) (too-many-arguments)
+PQAnalysis/tools/add_molecule.py:28:0: R0914: Too many local variables (17/15) (too-many-locals)
+PQAnalysis/tools/add_molecule.py:202:0: R0902: Too many instance attributes (15/7) (too-many-instance-attributes)
+PQAnalysis/tools/add_molecule.py:217:4: R0913: Too many arguments (14/5) (too-many-arguments)
+************* Module PQAnalysis.atomic_system.atomic_system
+PQAnalysis/atomic_system/atomic_system.py:383:5: W0511: TODO: refactor or discard this method (fixme)
+PQAnalysis/atomic_system/atomic_system.py:36:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+PQAnalysis/atomic_system/atomic_system.py:106:4: R0913: Too many arguments (11/5) (too-many-arguments)
+PQAnalysis/atomic_system/atomic_system.py:188:4: R0913: Too many arguments (7/5) (too-many-arguments)
+PQAnalysis/atomic_system/atomic_system.py:267:4: R0913: Too many arguments (7/5) (too-many-arguments)
+PQAnalysis/atomic_system/atomic_system.py:267:4: R0914: Too many local variables (21/15) (too-many-locals)
+PQAnalysis/atomic_system/atomic_system.py:442:4: R0911: Too many return statements (9/6) (too-many-return-statements)
+************* Module PQAnalysis.atomic_system._standard_properties
+PQAnalysis/atomic_system/_standard_properties.py:19:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+PQAnalysis/atomic_system/_standard_properties.py:19:0: R0904: Too many public methods (21/20) (too-many-public-methods)
+************* Module PQAnalysis.core.api
+PQAnalysis/core/api.py:15:0: W0613: Unused argument 'kwargs' (unused-argument)
+************* Module PQAnalysis.core.residue
+PQAnalysis/core/residue.py:36:0: R0902: Too many instance attributes (9/7) (too-many-instance-attributes)
+PQAnalysis/core/residue.py:49:4: R0913: Too many arguments (7/5) (too-many-arguments)
+************* Module PQAnalysis.core.atom.atom
+PQAnalysis/core/atom/atom.py:109:0: C0301: Line too long (100/99) (line-too-long)
+PQAnalysis/core/atom/atom.py:84:0: W0613: Unused argument 'kwargs' (unused-argument)
+************* Module PQAnalysis.core.cell.cell
+PQAnalysis/core/cell/cell.py:29:4: R0913: Too many arguments (7/5) (too-many-arguments)
+************* Module PQAnalysis.topology.topology
+PQAnalysis/topology/topology.py:27:0: R0902: Too many instance attributes (10/7) (too-many-instance-attributes)
+PQAnalysis/topology/topology.py:54:4: R0913: Too many arguments (6/5) (too-many-arguments)
+************* Module PQAnalysis.topology.__init__
+PQAnalysis/topology/__init__.py:14:1: W0511: TODO: partially circular --- from .api import generate_shake_topology_file (fixme)
+PQAnalysis/topology/__init__.py:15:1: W0511: TODO: partially circular --- from .shakeTopology import ShakeTopologyGenerator (fixme)
+************* Module PQAnalysis.topology.bonded_topology.dihedral
+PQAnalysis/topology/bonded_topology/dihedral.py:9:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
+PQAnalysis/topology/bonded_topology/dihedral.py:15:4: R0913: Too many arguments (9/5) (too-many-arguments)
+************* Module PQAnalysis.topology.bonded_topology.bond
+PQAnalysis/topology/bonded_topology/bond.py:15:4: R0913: Too many arguments (7/5) (too-many-arguments)
+************* Module PQAnalysis.topology.bonded_topology.bonded_topology
+PQAnalysis/topology/bonded_topology/bonded_topology.py:27:4: R0913: Too many arguments (7/5) (too-many-arguments)
+************* Module PQAnalysis.topology.bonded_topology.angle
+PQAnalysis/topology/bonded_topology/angle.py:15:4: R0913: Too many arguments (7/5) (too-many-arguments)
+************* Module PQAnalysis.io.formats
+PQAnalysis/io/formats.py:130:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.conversion_api
+PQAnalysis/io/conversion_api.py:163:0: C0301: Line too long (100/99) (line-too-long)
+************* Module PQAnalysis.io.info_file_reader
+PQAnalysis/io/info_file_reader.py:53:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.write_api
+PQAnalysis/io/write_api.py:52:28: W0511: TODO: still missing important kwargs (fixme)
+************* Module PQAnalysis.io.moldescriptor_reader
+PQAnalysis/io/moldescriptor_reader.py:85:21: W0511: TODO: water_type = int(splitted_line[1]) (fixme)
+PQAnalysis/io/moldescriptor_reader.py:88:21: W0511: TODO: ammonia_type = int(splitted_line[1]) (fixme)
+************* Module PQAnalysis.io.traj_file.frame_reader
+PQAnalysis/io/traj_file/frame_reader.py:54:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+PQAnalysis/io/traj_file/frame_reader.py:341:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.traj_file.trajectory_reader
+PQAnalysis/io/traj_file/trajectory_reader.py:228:29: W0511: TODO: Implement the trajectory_start and trajectory_stop (fixme)
+PQAnalysis/io/traj_file/trajectory_reader.py:255:21: W0511: TODO: Implement the trajectory_start and trajectory_stop more efficiently (fixme)
+PQAnalysis/io/traj_file/trajectory_reader.py:126:4: R1260: 'frame_generator' is too complex. The McCabe rating is 16 (too-complex)
+PQAnalysis/io/traj_file/trajectory_reader.py:268:4: R1260: 'window_generator' is too complex. The McCabe rating is 11 (too-complex)
+PQAnalysis/io/traj_file/trajectory_reader.py:28:0: R0902: Too many instance attributes (10/7) (too-many-instance-attributes)
+PQAnalysis/io/traj_file/trajectory_reader.py:41:4: R0913: Too many arguments (6/5) (too-many-arguments)
+PQAnalysis/io/traj_file/trajectory_reader.py:126:4: R0912: Too many branches (16/12) (too-many-branches)
+************* Module PQAnalysis.io.restart_file.restart_reader
+PQAnalysis/io/restart_file/restart_reader.py:148:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.input_file_reader.input_file_parser
+PQAnalysis/io/input_file_reader/input_file_parser.py:387:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.input_file_reader.pq_analysis._parse
+PQAnalysis/io/input_file_reader/pq_analysis/_parse.py:100:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+************* Module PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader
+PQAnalysis/io/input_file_reader/pq_analysis/pqanalysis_input_file_reader.py:8:0: W0611: Unused InputFileWarning imported from PQAnalysis.io.input_file_reader.exceptions (unused-import)
+************* Module PQAnalysis.io.input_file_reader.pq.pq_input_file_reader
+PQAnalysis/io/input_file_reader/pq/pq_input_file_reader.py:19:0: R0902: Too many instance attributes (8/7) (too-many-instance-attributes)
+************* Module PQAnalysis.io.nep.nep_writer
+PQAnalysis/io/nep/nep_writer.py:1:0: C0302: Too many lines in module (1053/1000) (too-many-lines)
+PQAnalysis/io/nep/nep_writer.py:97:4: R1260: 'write_from_files' is too complex. The McCabe rating is 13 (too-complex)
+PQAnalysis/io/nep/nep_writer.py:36:0: R0902: Too many instance attributes (24/7) (too-many-instance-attributes)
+PQAnalysis/io/nep/nep_writer.py:97:4: R0913: Too many arguments (13/5) (too-many-arguments)
+PQAnalysis/io/nep/nep_writer.py:97:4: R0914: Too many local variables (43/15) (too-many-locals)
+PQAnalysis/io/nep/nep_writer.py:97:4: R0912: Too many branches (13/12) (too-many-branches)
+PQAnalysis/io/nep/nep_writer.py:97:4: R0915: Too many statements (70/50) (too-many-statements)
+PQAnalysis/io/nep/nep_writer.py:831:4: R0913: Too many arguments (6/5) (too-many-arguments)
+PQAnalysis/io/nep/nep_writer.py:939:4: R0913: Too many arguments (6/5) (too-many-arguments)
+PQAnalysis/io/nep/nep_writer.py:1:0: R0801: Similar lines in 2 files
+==PQAnalysis.io.traj_file.trajectory_reader:[360:372]
+==PQAnalysis.traj.trajectory:[260:272]
+                exception=PQIndexError,
+            )
+
+        # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError
+        if window_size > trajectory_stop - trajectory_start:
+            self.logger.error(
+                "window size is greater than the trajectory_stop - trajectory_start",
+                exception=PQIndexError,
+            )
+
+        # Check if all frames are included in the windows
+        # Length of the trajectory - window_size should be divisible by window_gap (duplicate-code)
+PQAnalysis/io/nep/nep_writer.py:1:0: R0801: Similar lines in 2 files
+==PQAnalysis.io.traj_file.trajectory_reader:[184:196]
+==PQAnalysis.traj.trajectory:[253:264]
+                exception=PQIndexError,
+            )
+
+        # If trajectory_start is greater than or equal to trajectory_stop, raise an IndexError
+        if trajectory_start >= trajectory_stop:
+            self.logger.error(
+                "start index is greater than or equal to the stop index",
+                exception=PQIndexError,
+            )
+
+        # If window_size is greater than trajectory_stop - trajectory_start, raise an IndexError (duplicate-code)
+PQAnalysis/io/nep/nep_writer.py:1:0: R0801: Similar lines in 2 files
+==PQAnalysis.io.formats:[77:84]
+==PQAnalysis.traj.formats:[49:56]
+        if isinstance(values, tuple):
+            value = values[0]
+            filename = values[1]
+        else:
+            value = values
+            filename = None
+ (duplicate-code)
+
+
+Report
+======
+4427 statements analysed.
+
+Statistics by type
+------------------
+
++---------+-------+-----------+-----------+------------+---------+
+|type     |number |old number |difference |%documented |%badname |
++=========+=======+===========+===========+============+=========+
+|module   |124    |124        |=          |100.00      |0.81     |
++---------+-------+-----------+-----------+------------+---------+
+|class    |116    |116        |=          |100.00      |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|method   |518    |518        |=          |100.00      |0.39     |
++---------+-------+-----------+-----------+------------+---------+
+|function |75     |75         |=          |100.00      |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+
+
+
+External dependencies
+---------------------
+::
+
+    PQAnalysis (PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_input_file_reader,PQAnalysis.atomic_system.atomic_system,PQAnalysis.core.atom.atom,PQAnalysis.core.atom.element,PQAnalysis.core.residue,PQAnalysis.io.api,PQAnalysis.io.base,PQAnalysis.io.box_writer,PQAnalysis.io.energy_file_reader,PQAnalysis.io.formats,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.info_file_reader,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.write_api,PQAnalysis.topology.selection,PQAnalysis.topology.topology,PQAnalysis.traj.trajectory)
+      \-_version (PQAnalysis.cli._argument_parser,PQAnalysis.utils.common)
+      \-analysis 
+      | \-rdf 
+      |   \-rdf (PQAnalysis.cli.rdf)
+      |   \-rdf_input_file_reader (PQAnalysis.cli.rdf)
+      \-atomic_system (PQAnalysis.io.gen_file.api,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.api,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.io.write_api,PQAnalysis.tools.add_molecule,PQAnalysis.traj.trajectory)
+      \-config (PQAnalysis.analysis.rdf.rdf,PQAnalysis.cli._argument_parser,PQAnalysis.cli.add_molecules,PQAnalysis.cli.build_nep_traj,PQAnalysis.cli.continue_input,PQAnalysis.cli.gen2xyz,PQAnalysis.cli.main,PQAnalysis.cli.rdf,PQAnalysis.cli.rst2xyz,PQAnalysis.cli.traj2box,PQAnalysis.cli.traj2qmcfc,PQAnalysis.cli.xyz2gen,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.utils.custom_logging)
+      \-core (PQAnalysis.analysis.rdf.rdf,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._properties,PQAnalysis.atomic_system._standard_properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.io.conversion_api,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.restart_file.api,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.topology.selection,PQAnalysis.topology.topology,PQAnalysis.traj.api,PQAnalysis.traj.trajectory)
+      | \-exceptions (PQAnalysis.core.atom.atom,PQAnalysis.core.atom.element,PQAnalysis.topology.topology)
+      \-exceptions (PQAnalysis.analysis.rdf.exceptions,PQAnalysis.atomic_system.exceptions,PQAnalysis.core.exceptions,PQAnalysis.io.api,PQAnalysis.io.base,PQAnalysis.io.energy_file_reader,PQAnalysis.io.exceptions,PQAnalysis.io.gen_file.exceptions,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.input_file_reader.exceptions,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.input_file_reader.pq.output_files,PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.nep.exceptions,PQAnalysis.io.restart_file.exceptions,PQAnalysis.io.topology_file.exceptions,PQAnalysis.io.traj_file.exceptions,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.write_api,PQAnalysis.physical_data.exceptions,PQAnalysis.topology.exceptions,PQAnalysis.traj.exceptions,PQAnalysis.traj.trajectory,PQAnalysis.utils.custom_logging)
+      \-formats (PQAnalysis.io.formats,PQAnalysis.io.input_file_reader.formats,PQAnalysis.traj.formats)
+      \-io (PQAnalysis.analysis.rdf.api,PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_input_file_reader,PQAnalysis.analysis.rdf.rdf_output_file_writer,PQAnalysis.cli.continue_input,PQAnalysis.cli.gen2xyz,PQAnalysis.cli.rst2xyz,PQAnalysis.cli.traj2box,PQAnalysis.cli.traj2qmcfc,PQAnalysis.cli.xyz2gen,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.virial.virial_reader,PQAnalysis.tools.add_molecule,PQAnalysis.topology.api,PQAnalysis.topology.shake_topology)
+      | \-base (PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer)
+      | \-formats (PQAnalysis.cli._argument_parser,PQAnalysis.cli.add_molecules,PQAnalysis.io.gen_file.api,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.api,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.tools.add_molecule)
+      | \-input_file_reader 
+      | | \-exceptions (PQAnalysis.analysis.rdf.rdf_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader)
+      | | \-formats (PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader)
+      | | \-input_file_parser (PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader)
+      | \-moldescriptor_reader (PQAnalysis.io.restart_file.restart_reader)
+      | \-nep 
+      | | \-nep_writer (PQAnalysis.cli.build_nep_traj)
+      | \-virial 
+      |   \-api (PQAnalysis.io.nep.nep_writer)
+      \-physical_data (PQAnalysis.io.energy_file_reader)
+      \-tools 
+      | \-add_molecule (PQAnalysis.cli.add_molecules)
+      \-topology (PQAnalysis.analysis.rdf.api,PQAnalysis.analysis.rdf.rdf,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._standard_properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.topology_file.api,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.traj.trajectory)
+      \-traj (PQAnalysis.analysis.rdf.api,PQAnalysis.analysis.rdf.rdf,PQAnalysis.cli._argument_parser,PQAnalysis.io.box_writer,PQAnalysis.io.conversion_api,PQAnalysis.io.energy_file_reader,PQAnalysis.io.info_file_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.api,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.io.write_api,PQAnalysis.tools.add_molecule,PQAnalysis.tools.traj_to_com_traj,PQAnalysis.topology.api,PQAnalysis.topology.shake_topology)
+      \-type_checking (PQAnalysis.analysis.rdf.api,PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_input_file_reader,PQAnalysis.analysis.rdf.rdf_output_file_writer,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._standard_properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.core.api,PQAnalysis.core.atom.atom,PQAnalysis.core.atom.element,PQAnalysis.core.cell._standard_properties,PQAnalysis.core.cell.cell,PQAnalysis.core.residue,PQAnalysis.io.api,PQAnalysis.io.box_writer,PQAnalysis.io.conversion_api,PQAnalysis.io.energy_file_reader,PQAnalysis.io.gen_file.api,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.info_file_reader,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.api,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.api,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.io.virial.api,PQAnalysis.io.virial.virial_reader,PQAnalysis.io.write_api)
+      \-types (PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_output_file_writer,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._properties,PQAnalysis.atomic_system._standard_properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.core.api,PQAnalysis.core.cell._standard_properties,PQAnalysis.core.cell.cell,PQAnalysis.core.residue,PQAnalysis.io.api,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis._positions_mixin,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.io.virial.virial_reader,PQAnalysis.physical_data.energy,PQAnalysis.tools.add_molecule,PQAnalysis.topology.api,PQAnalysis.topology.bonded_topology._topology_properties,PQAnalysis.topology.bonded_topology.angle,PQAnalysis.topology.bonded_topology.bond,PQAnalysis.topology.bonded_topology.bonded_topology,PQAnalysis.topology.bonded_topology.dihedral,PQAnalysis.topology.selection,PQAnalysis.topology.shake_topology,PQAnalysis.topology.topology,PQAnalysis.traj.trajectory)
+      \-utils (PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_output_file_writer,PQAnalysis.cli,PQAnalysis.io.box_writer)
+        \-common (PQAnalysis.cli._argument_parser)
+        \-custom_logging (PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_input_file_reader,PQAnalysis.atomic_system.atomic_system,PQAnalysis.core.atom.atom,PQAnalysis.core.atom.element,PQAnalysis.core.residue,PQAnalysis.io.api,PQAnalysis.io.base,PQAnalysis.io.box_writer,PQAnalysis.io.energy_file_reader,PQAnalysis.io.formats,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.info_file_reader,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.input_file_reader.pq.pq_input_file_reader,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.write_api,PQAnalysis.topology.topology,PQAnalysis.traj.trajectory)
+        \-files (PQAnalysis.io.nep.nep_writer)
+        \-random (PQAnalysis.atomic_system.atomic_system,PQAnalysis.io.nep.nep_writer)
+        \-units (PQAnalysis.io.nep.nep_writer)
+    argcomplete (PQAnalysis.cli._argument_parser)
+    beartype 
+      \-claw (PQAnalysis)
+      \-door (PQAnalysis.type_checking)
+      \-typing (PQAnalysis.analysis.rdf.rdf,PQAnalysis.analysis.rdf.rdf_output_file_writer,PQAnalysis.atomic_system._decorators,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.cli._argument_parser,PQAnalysis.core.atom.atom,PQAnalysis.core.atom.element,PQAnalysis.core.cell.cell,PQAnalysis.core.exceptions,PQAnalysis.core.residue,PQAnalysis.formats,PQAnalysis.io.base,PQAnalysis.io.conversion_api,PQAnalysis.io.formats,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.info_file_reader,PQAnalysis.io.input_file_reader.formats,PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.io.input_file_reader.pq_analysis._file_mixin,PQAnalysis.io.input_file_reader.pq_analysis._parse,PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.topology_file.topology_file_reader,PQAnalysis.io.topology_file.topology_file_writer,PQAnalysis.io.traj_file.api,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.traj_file.trajectory_reader,PQAnalysis.io.traj_file.trajectory_writer,PQAnalysis.io.virial.api,PQAnalysis.io.write_api,PQAnalysis.physical_data.energy,PQAnalysis.tools.add_molecule,PQAnalysis.topology.api,PQAnalysis.topology.bonded_topology._topology_properties,PQAnalysis.topology.bonded_topology.bonded_topology,PQAnalysis.topology.selection,PQAnalysis.topology.shake_topology,PQAnalysis.topology.topology,PQAnalysis.traj.formats,PQAnalysis.traj.trajectory,PQAnalysis.type_checking,PQAnalysis.types,PQAnalysis.utils.custom_logging,PQAnalysis.utils.decorators,PQAnalysis.utils.files)
+      \-vale (PQAnalysis.core.atom.element,PQAnalysis.core.cell.cell,PQAnalysis.types)
+    decorator (PQAnalysis.atomic_system._decorators,PQAnalysis.type_checking,PQAnalysis.utils.decorators)
+    lark (PQAnalysis.io.input_file_reader.input_file_parser,PQAnalysis.topology.selection)
+    multimethod (PQAnalysis.exceptions)
+    numpy (PQAnalysis.analysis.rdf.rdf,PQAnalysis.atomic_system._decorators,PQAnalysis.atomic_system._positions,PQAnalysis.atomic_system._properties,PQAnalysis.atomic_system.atomic_system,PQAnalysis.core.api,PQAnalysis.core.cell._standard_properties,PQAnalysis.core.cell.cell,PQAnalysis.core.residue,PQAnalysis.io.energy_file_reader,PQAnalysis.io.gen_file.gen_file_reader,PQAnalysis.io.gen_file.gen_file_writer,PQAnalysis.io.moldescriptor_reader,PQAnalysis.io.nep.nep_writer,PQAnalysis.io.restart_file.restart_reader,PQAnalysis.io.restart_file.restart_writer,PQAnalysis.io.traj_file.frame_reader,PQAnalysis.io.virial.virial_reader,PQAnalysis.physical_data.energy,PQAnalysis.tools.add_molecule,PQAnalysis.topology.selection,PQAnalysis.topology.shake_topology,PQAnalysis.topology.topology,PQAnalysis.traj.trajectory,PQAnalysis.types,PQAnalysis.utils.files)
+    rich_argparse (PQAnalysis.cli._argument_parser)
+    scipy 
+      \-spatial 
+        \-transform (PQAnalysis.atomic_system.atomic_system)
+    tqdm 
+      \-auto (PQAnalysis.analysis.rdf.rdf,PQAnalysis.io.traj_file.trajectory_reader)
+
+
+
+18606 lines have been analyzed
+
+Raw metrics
+-----------
+
++----------+-------+------+---------+-----------+
+|type      |number |%     |previous |difference |
++==========+=======+======+=========+===========+
+|code      |7472   |40.16 |7472     |=          |
++----------+-------+------+---------+-----------+
+|docstring |8256   |44.37 |8256     |=          |
++----------+-------+------+---------+-----------+
+|comment   |265    |1.42  |265      |=          |
++----------+-------+------+---------+-----------+
+|empty     |2613   |14.04 |2613     |=          |
++----------+-------+------+---------+-----------+
+
+
+
+Duplication
+-----------
+
++-------------------------+------+---------+-----------+
+|                         |now   |previous |difference |
++=========================+======+=========+===========+
+|nb duplicated lines      |0     |0        |0          |
++-------------------------+------+---------+-----------+
+|percent duplicated lines |0.000 |0.000    |=          |
++-------------------------+------+---------+-----------+
+
+
+
+Messages by category
+--------------------
+
++-----------+-------+---------+-----------+
+|type       |number |previous |difference |
++===========+=======+=========+===========+
+|convention |3      |3        |3          |
++-----------+-------+---------+-----------+
+|refactor   |49     |49       |49         |
++-----------+-------+---------+-----------+
+|warning    |14     |14       |14         |
++-----------+-------+---------+-----------+
+|error      |0      |0        |0          |
++-----------+-------+---------+-----------+
+
+
+
+Messages
+--------
+
++-------------------------------+------------+
+|message id                     |occurrences |
++===============================+============+
+|too-many-arguments             |18          |
++-------------------------------+------------+
+|fixme                          |11          |
++-------------------------------+------------+
+|too-many-instance-attributes   |10          |
++-------------------------------+------------+
+|inconsistent-return-statements |7           |
++-------------------------------+------------+
+|too-many-locals                |3           |
++-------------------------------+------------+
+|too-complex                    |3           |
++-------------------------------+------------+
+|duplicate-code                 |3           |
++-------------------------------+------------+
+|unused-argument                |2           |
++-------------------------------+------------+
+|too-many-branches              |2           |
++-------------------------------+------------+
+|line-too-long                  |2           |
++-------------------------------+------------+
+|unused-import                  |1           |
++-------------------------------+------------+
+|too-many-statements            |1           |
++-------------------------------+------------+
+|too-many-return-statements     |1           |
++-------------------------------+------------+
+|too-many-public-methods        |1           |
++-------------------------------+------------+
+|too-many-lines                 |1           |
++-------------------------------+------------+
+
+
+
+
+------------------------------------------------------------------
+Your code has been rated at 9.85/10 (previous run: 9.85/10, +0.00)
+
