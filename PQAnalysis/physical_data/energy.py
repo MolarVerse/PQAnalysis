@@ -12,7 +12,9 @@ from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from .exceptions import EnergyError
 
 
+
 class Energy():
+
     """
     A class to store the data of an energy file.
 
@@ -22,11 +24,12 @@ class Energy():
     was found.
     """
 
-    def __init__(self,
-                 data: Np1DNumberArray | Np2DNumberArray,
-                 info: Dict | None = None,
-                 units: Dict | None = None
-                 ) -> None:
+    def __init__(
+        self,
+        data: Np1DNumberArray | Np2DNumberArray,
+        info: Dict | None = None,
+        units: Dict | None = None
+    ) -> None:
         """
         Parameters
         ----------
@@ -76,10 +79,11 @@ class Energy():
 
         self._make_attributes()
 
-    def _setup_info_dictionary(self,
-                               info: Dict | None = None,
-                               units: Dict | None = None
-                               ) -> None:
+    def _setup_info_dictionary(
+        self,
+        info: Dict | None = None,
+        units: Dict | None = None
+    ) -> None:
         """
         Sets up the info dictionary.
 
@@ -118,7 +122,8 @@ class Energy():
             self.info_given = True
             if len(info) != len(self.data):
                 raise EnergyError(
-                    "The length of info dictionary has to be equal to the length of data.")
+                    "The length of info dictionary has to be equal to the length of data."
+                )
 
         if units is None:
             self.units_given = False
@@ -127,14 +132,17 @@ class Energy():
             self.units_given = True
             if len(units) != len(self.data):
                 raise EnergyError(
-                    "The length of units dictionary has to be equal to the length of data.")
+                    "The length of units dictionary has to be equal to the length of data."
+                )
 
         self.info = info
         self.units = units
 
-        if self.info_given and self.units_given and units.keys() != info.keys():
+        if self.info_given and self.units_given and units.keys() != info.keys(
+        ):
             raise EnergyError(
-                "The keys of the info and units dictionary do not match.")
+                "The keys of the info and units dictionary do not match."
+            )
 
     def _make_attributes(self) -> None:
         """
@@ -162,23 +170,13 @@ class Energy():
         for attribute, value in self.__data_attributes__.items():
             info_string = attribute
             if info_string in self.info or info_string in self.units:
-                setattr(
-                    self,
-                    value,
-                    self.data[self.info[attribute]]
-                )
-                setattr(
-                    self,
-                    value + "_unit",
-                    self.units[attribute]
-                )
+                setattr(self, value, self.data[self.info[attribute]])
+                setattr(self, value + "_unit", self.units[attribute])
                 setattr(
                     self,
                     value + "_with_unit",
-                    (
-                        self.data[self.info[attribute]],
-                        self.units[attribute]
-                    )
+                    (self.data[self.info[attribute]],
+                    self.units[attribute])
                 )
 
     ################################################
