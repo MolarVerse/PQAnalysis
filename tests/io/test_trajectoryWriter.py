@@ -11,20 +11,13 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 
 
+
 def test_write_trajectory(capsys):
     atoms = [Atom(atom) for atom in ['h', 'o']]
     coordinates1 = np.array([[0, 0, 0], [0, 0, 1]])
     coordinates2 = np.array([[0, 0, 0], [0, 0, 1]])
-    frame1 = AtomicSystem(
-        atoms=atoms,
-        pos=coordinates1,
-        cell=Cell(10, 10, 10)
-    )
-    frame2 = AtomicSystem(
-        atoms=atoms,
-        pos=coordinates2,
-        cell=Cell(11, 10, 10)
-    )
+    frame1 = AtomicSystem(atoms=atoms, pos=coordinates1, cell=Cell(10, 10, 10))
+    frame2 = AtomicSystem(atoms=atoms, pos=coordinates2, cell=Cell(11, 10, 10))
     traj = Trajectory([frame1, frame2])
 
     print()
@@ -43,7 +36,9 @@ o     0.0000000000     0.0000000000     1.0000000000
 """
 
 
+
 class TestTrajectoryWriter:
+
     def test__init__(self):
 
         with pytest.raises(MDEngineFormatError) as exception:
@@ -87,8 +82,11 @@ class TestTrajectoryWriter:
         writer.type = TrajectoryFormat.XYZ
         writer._write_comment(
             AtomicSystem(
-                atoms=[Atom(atom) for atom in ["h", "o"]],
-                cell=Cell(10, 10, 10)
+            atoms=[Atom(atom) for atom in ["h",
+            "o"]],
+            cell=Cell(10,
+            10,
+            10)
             )
         )
 
@@ -99,9 +97,12 @@ class TestTrajectoryWriter:
         writer.type = TrajectoryFormat.FORCE
         writer._write_comment(
             AtomicSystem(
-                atoms=[Atom(atom) for atom in ["h", "o"]],
-                cell=Cell(10, 10, 10),
-                forces=forces
+            atoms=[Atom(atom) for atom in ["h",
+            "o"]],
+            cell=Cell(10,
+            10,
+            10),
+            forces=forces
             )
         )
 
@@ -115,7 +116,15 @@ class TestTrajectoryWriter:
 
         print()
         writer._write_xyz(
-            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
+            atoms=[Atom(atom) for atom in ["h",
+            "o"]],
+            xyz=np.array([[0,
+            0,
+            0],
+            [0,
+            0,
+            1]])
+        )
 
         captured = capsys.readouterr()
         assert captured.out == """
@@ -127,7 +136,15 @@ o     0.0000000000     0.0000000000     1.0000000000
 
         print()
         writer._write_xyz(
-            atoms=[Atom(atom) for atom in ["h", "o"]], xyz=np.array([[0, 0, 0], [0, 0, 1]]))
+            atoms=[Atom(atom) for atom in ["h",
+            "o"]],
+            xyz=np.array([[0,
+            0,
+            0],
+            [0,
+            0,
+            1]])
+        )
 
         captured = capsys.readouterr()
         assert captured.out == """
@@ -140,7 +157,11 @@ o     0.0000000000     0.0000000000     1.0000000000
 
         writer = TrajectoryWriter()
         writer._write_scalar(
-            atoms=[Atom(atom) for atom in ["h", "o"]], scalar=np.array([1, 2]))
+            atoms=[Atom(atom) for atom in ["h",
+            "o"]],
+            scalar=np.array([1,
+            2])
+        )
 
         captured = capsys.readouterr()
         assert captured.out == "h 1\no 2\n"
@@ -154,12 +175,16 @@ o     0.0000000000     0.0000000000     1.0000000000
         frame1 = AtomicSystem(
             atoms=atoms,
             pos=coordinates1,
-            cell=Cell(10, 10, 10)
+            cell=Cell(10,
+            10,
+            10)
         )
         frame2 = AtomicSystem(
             atoms=atoms,
             pos=coordinates2,
-            cell=Cell(11, 10, 10)
+            cell=Cell(11,
+            10,
+            10)
         )
 
         traj = Trajectory([frame1, frame2])
@@ -197,12 +222,16 @@ o     0.0000000000     0.0000000000     1.0000000000
         frame1 = AtomicSystem(
             atoms=atoms,
             vel=coordinates1,
-            cell=Cell(10, 10, 10)
+            cell=Cell(10,
+            10,
+            10)
         )
         frame2 = AtomicSystem(
             atoms=atoms,
             vel=coordinates2,
-            cell=Cell(11, 10, 10)
+            cell=Cell(11,
+            10,
+            10)
         )
 
         traj = Trajectory([frame1, frame2])
@@ -226,12 +255,16 @@ o 0.000000000000e+00 0.000000000000e+00 1.000000000000e+00
         frame1 = AtomicSystem(
             atoms=atoms,
             forces=coordinates1,
-            cell=Cell(10, 10, 10)
+            cell=Cell(10,
+            10,
+            10)
         )
         frame2 = AtomicSystem(
             atoms=atoms,
             forces=coordinates2,
-            cell=Cell(11, 10, 10)
+            cell=Cell(11,
+            10,
+            10)
         )
 
         traj = Trajectory([frame1, frame2])
@@ -258,12 +291,16 @@ o     0.0000000000     0.0000000000     1.0000000000
         frame1 = AtomicSystem(
             atoms=atoms,
             charges=charges1,
-            cell=Cell(10, 10, 10)
+            cell=Cell(10,
+            10,
+            10)
         )
         frame2 = AtomicSystem(
             atoms=atoms,
             charges=charges2,
-            cell=Cell(11, 10, 10)
+            cell=Cell(11,
+            10,
+            10)
         )
 
         traj = Trajectory([frame1, frame2])

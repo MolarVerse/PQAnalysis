@@ -10,16 +10,18 @@ from . import pytestmark
 from ..conftest import assert_logging_with_exception
 
 
+
 class TestWriteAPI:
+
     def test_write_type_checking(self, caplog):
         assert_logging_with_exception(
             caplog=caplog,
             logging_level="ERROR",
             logging_name="TypeChecking",
             message_to_test=get_type_error_message(
-                "filename",
-                1,
-                "str | None"
+            "filename",
+            1,
+            "str | None"
             ),
             exception=PQTypeError,
             function=write,
@@ -32,9 +34,9 @@ class TestWriteAPI:
             logging_level="ERROR",
             logging_name="TypeChecking",
             message_to_test=get_type_error_message(
-                "mode",
-                1,
-                FileWritingMode | str
+            "mode",
+            1,
+            FileWritingMode | str
             ),
             exception=PQTypeError,
             function=write,
@@ -49,7 +51,7 @@ class TestWriteAPI:
             logging_level="ERROR",
             logging_name="io.write_api",
             message_to_test=(
-                "Writing object of type <class 'int'> is not implemented yet."
+            "Writing object of type <class 'int'> is not implemented yet."
             ),
             exception=PQNotImplementedError,
             function=write,
@@ -62,11 +64,9 @@ class TestWriteAPI:
             caplog=caplog,
             logging_level="ERROR",
             logging_name="TypeChecking",
-            message_to_test=get_type_error_message(
-                "traj",
-                None,
-                Trajectory
-            ),
+            message_to_test=get_type_error_message("traj",
+            None,
+            Trajectory),
             exception=PQTypeError,
             function=write_box,
             traj=None
@@ -77,9 +77,9 @@ class TestWriteAPI:
             logging_level="ERROR",
             logging_name="TypeChecking",
             message_to_test=get_type_error_message(
-                "filename",
-                1,
-                "str | None"
+            "filename",
+            1,
+            "str | None"
             ),
             exception=PQTypeError,
             function=write_box,
@@ -92,9 +92,9 @@ class TestWriteAPI:
             logging_level="ERROR",
             logging_name="TypeChecking",
             message_to_test=get_type_error_message(
-                "output_format",
-                1,
-                "str | None"
+            "output_format",
+            1,
+            "str | None"
             ),
             exception=PQTypeError,
             function=write_box,

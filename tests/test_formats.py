@@ -2,7 +2,9 @@ from beartype.typing import Any
 from PQAnalysis.formats import BaseEnumFormat
 
 
+
 def test_BaseEnumFormat():
+
     class TestEnum(BaseEnumFormat):
         A = "a"
         B = "b"

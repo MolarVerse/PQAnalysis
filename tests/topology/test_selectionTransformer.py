@@ -5,7 +5,9 @@ from PQAnalysis.topology.selection import SelectionTransformer
 from . import pytestmark
 
 
+
 class TestSelectionTransformer:
+
     def test__init__(self):
         transformer = SelectionTransformer()
         assert transformer.__visit_tokens__ == False

@@ -11,7 +11,9 @@ from PQAnalysis.topology import (
 )
 
 
+
 class TestBondedTopology:
+
     def test__init__(self):
         bonded_topology = BondedTopology()
         assert bonded_topology.bonds == []
@@ -31,8 +33,13 @@ class TestBondedTopology:
             dihedrals=[dihedral],
             impropers=[dihedral],
             shake_bonds=[bond],
-            ordering_keys=["bonds", "angles",
-                           "dihedrals", "impropers", "shake_bonds"]
+            ordering_keys=[
+            "bonds",
+            "angles",
+            "dihedrals",
+            "impropers",
+            "shake_bonds"
+            ]
         )
         assert bonded_topology.bonds == [bond]
         assert bonded_topology.angles == [angle]
@@ -40,7 +47,12 @@ class TestBondedTopology:
         assert bonded_topology.impropers == [dihedral]
         assert bonded_topology.shake_bonds == [bond]
         assert bonded_topology.ordering_keys == [
-            "bonds", "angles", "dihedrals", "impropers", "shake_bonds"]
+            "bonds",
+            "angles",
+            "dihedrals",
+            "impropers",
+            "shake_bonds"
+        ]
 
     def test_extend_shake_bonds(self):
         bond = Bond(index1=1, index2=2)
@@ -51,8 +63,10 @@ class TestBondedTopology:
 
         assert all(
             [
-                a == b
-                for a, b in zip(bonded_topology.shake_bonds, [Bond(index1=5, index2=6)])
+            a == b for a,
+            b in zip(bonded_topology.shake_bonds,
+            [Bond(index1=5,
+            index2=6)])
             ]
         )
 
@@ -60,26 +74,42 @@ class TestBondedTopology:
 
         with pytest.raises(ValueError) as exception:
             bonded_topology.extend_shake_bonds(
-                shake_bonds=[shake_bond], n_atoms=3, n_extensions=2
+                shake_bonds=[shake_bond],
+                n_atoms=3,
+                n_extensions=2
             )
         assert str(
-            exception.value) == "n_atoms_per_extension must be provided if n_extensions is not 1."
+            exception.value
+        ) == "n_atoms_per_extension must be provided if n_extensions is not 1."
 
         with pytest.raises(ValueError) as exception:
             bonded_topology.extend_shake_bonds(
-                shake_bonds=[shake_bond], n_atoms=3, n_extensions=2, n_atoms_per_extension=1
+                shake_bonds=[shake_bond],
+                n_atoms=3,
+                n_extensions=2,
+                n_atoms_per_extension=1
             )
         assert str(
-            exception.value) == "n_atoms_per_extension must be greater or equal than the highest index in the provided shake bonds."
+            exception.value
+        ) == "n_atoms_per_extension must be greater or equal than the highest index in the provided shake bonds."
 
         bonded_topology.extend_shake_bonds(
-            shake_bonds=[shake_bond], n_atoms=3, n_extensions=2, n_atoms_per_extension=3
+            shake_bonds=[shake_bond],
+            n_atoms=3,
+            n_extensions=2,
+            n_atoms_per_extension=3
         )
 
         assert all(
             [
-                a == b
-                for a, b in zip(bonded_topology.shake_bonds, [Bond(index1=5, index2=6), Bond(index1=8, index2=9)])
+            a == b for a,
+            b in zip(
+            bonded_topology.shake_bonds,
+            [Bond(index1=5,
+            index2=6),
+            Bond(index1=8,
+            index2=9)]
+            )
             ]
         )
 
@@ -150,8 +180,13 @@ class TestBondedTopology:
         assert bonded_topology.unique_dihedral4_indices == {4}
 
     def test_dihedral_linkers(self):
-        dihedral = Dihedral(index1=1, index2=2, index3=3,
-                            index4=4, is_linker=True)
+        dihedral = Dihedral(
+            index1=1,
+            index2=2,
+            index3=3,
+            index4=4,
+            is_linker=True
+        )
         bonded_topology = BondedTopology(dihedrals=[dihedral, dihedral])
 
         assert bonded_topology.dihedral_linkers == [dihedral, dihedral]
@@ -181,8 +216,13 @@ class TestBondedTopology:
         assert bonded_topology.unique_improper4_indices == {4}
 
     def test_improper_linkers(self):
-        dihedral = Dihedral(index1=1, index2=2, index3=3,
-                            index4=4, is_linker=True)
+        dihedral = Dihedral(
+            index1=1,
+            index2=2,
+            index3=3,
+            index4=4,
+            is_linker=True
+        )
         bonded_topology = BondedTopology(impropers=[dihedral, dihedral])
 
         assert bonded_topology.improper_linkers == [dihedral, dihedral]

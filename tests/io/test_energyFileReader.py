@@ -11,7 +11,9 @@ from PQAnalysis.traj.exceptions import MDEngineFormatError
 from PQAnalysis.exceptions import PQFileNotFoundError
 
 
+
 class TestEnergyReader:
+
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test__init__(self, test_with_data_dir):
         with pytest.raises(PQFileNotFoundError) as exception:
@@ -38,12 +40,16 @@ class TestEnergyReader:
 
         with pytest.raises(PQFileNotFoundError) as exception:
             EnergyFileReader(
-                "md-01_noinfo.en", info_filename="md-01_noinfo.info", use_info_file=True)
-        assert str(
-            exception.value) == "Info File md-01_noinfo.info not found."
+                "md-01_noinfo.en",
+                info_filename="md-01_noinfo.info",
+                use_info_file=True
+            )
+        assert str(exception.value) == "Info File md-01_noinfo.info not found."
 
         reader = EnergyFileReader(
-            "md-01_noinfo.en", info_filename="md-01.info")
+            "md-01_noinfo.en",
+            info_filename="md-01.info"
+        )
         assert reader.filename == "md-01_noinfo.en"
         assert reader.info_filename == "md-01.info"
         assert reader.with_info_file == True
@@ -74,30 +80,49 @@ class TestEnergyReader:
         assert reader.__info_file_found__() == False
 
         reader = EnergyFileReader(
-            "md-01_noinfo.en", info_filename="md-01.info")
+            "md-01_noinfo.en",
+            info_filename="md-01.info"
+        )
         assert reader.__info_file_found__() == True
 
         with pytest.raises(PQFileNotFoundError) as exception:
             EnergyFileReader(
-                "md-01_noinfo.en", info_filename="md-01_noinfo.info", use_info_file=True)
+                "md-01_noinfo.en",
+                info_filename="md-01_noinfo.info",
+                use_info_file=True
+            )
         assert str(exception.value) == "Info File md-01_noinfo.info not found."
 
     @pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
     def test_read(self, test_with_data_dir):
-        data_ref = np.array([[1.00000000e+00,  2.00000000e+00],
-                             [2.98066020e+02,  2.98442926e+02],
-                             [2.32566666e+04,  2.39839997e+04],
-                             [-1.85898221e+05, -
-                              1.85719252e+05],
-                             [-1.85903822e+05, -
-                              1.86024132e+05],
-                             [0.00000000e+00,  0.00000000e+00],
-                             [5.60049937e+00,  3.04879280e+02],
-                             [0.00000000e+00,  0.00000000e+00],
-                             [3.72913867e+03,  3.72146189e+03],
-                             [8.34545285e-01,  8.34545285e-01],
-                             [1.12687000e-16,  5.63381000e-17],
-                             [1.07571000e+00,  9.97330000e-01]])
+        data_ref = np.array(
+            [
+            [1.00000000e+00,
+            2.00000000e+00],
+            [2.98066020e+02,
+            2.98442926e+02],
+            [2.32566666e+04,
+            2.39839997e+04],
+            [-1.85898221e+05,
+            -1.85719252e+05],
+            [-1.85903822e+05,
+            -1.86024132e+05],
+            [0.00000000e+00,
+            0.00000000e+00],
+            [5.60049937e+00,
+            3.04879280e+02],
+            [0.00000000e+00,
+            0.00000000e+00],
+            [3.72913867e+03,
+            3.72146189e+03],
+            [8.34545285e-01,
+            8.34545285e-01],
+            [1.12687000e-16,
+            5.63381000e-17],
+            [1.07571000e+00,
+            9.97330000e-01]
+            ]
+        )
 
         infoFileReader = InfoFileReader("md-01.info")
         info, units = infoFileReader.read()

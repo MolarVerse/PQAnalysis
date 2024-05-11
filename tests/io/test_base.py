@@ -9,6 +9,7 @@ from PQAnalysis.io.exceptions import FileWritingModeError
 from PQAnalysis.exceptions import PQFileNotFoundError
 
 
+
 class TestBaseWriter:
 
     @pytest.mark.usefixtures("tmpdir")
@@ -19,7 +20,8 @@ class TestBaseWriter:
         with pytest.raises(FileWritingModeError) as exception:
             BaseWriter(filename, "r")
             assert str(
-                exception.value) == """"
+                exception.value
+            ) == """"
 'r' is not a valid FileWritingMode.
 Possible values are: FileWritingMode.OVERWRITE, FileWritingMode.APPEND, FileWritingMode.WRITE
 or their case insensitive string representation: o, a, w"""
@@ -29,7 +31,8 @@ or their case insensitive string representation: o, a, w"""
         with pytest.raises(FileWritingModeError) as exception:
             BaseWriter(filename, "w")
         assert str(
-            exception.value) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file."
+            exception.value
+        ) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file."
 
         writer = BaseWriter(filename, "o")
         assert writer.file is None
@@ -92,7 +95,9 @@ or their case insensitive string representation: o, a, w"""
         assert writer.file is None
 
 
+
 class TestBaseReader:
+
     @pytest.mark.usefixtures("tmpdir")
     def test__init__(self):
         with pytest.raises(PQFileNotFoundError) as exception:
@@ -111,7 +116,8 @@ class TestBaseReader:
         with pytest.raises(PQFileNotFoundError) as exception:
             BaseReader([filename, "tmp2"])
         assert str(
-            exception.value) == "At least one of the given files does not exist. File tmp2 not found."
+            exception.value
+        ) == "At least one of the given files does not exist. File tmp2 not found."
 
         filename2 = "tmp2"
         file = open(filename2, "w")

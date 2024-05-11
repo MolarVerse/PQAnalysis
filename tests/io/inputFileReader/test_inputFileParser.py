@@ -7,13 +7,18 @@ from PQAnalysis.io.input_file_reader.formats import InputFileFormat, InputFileFo
 from PQAnalysis.exceptions import PQFileNotFoundError
 
 
+
 class TestInputFileParser:
-    @pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
+
+    @pytest.mark.parametrize(
+        "example_dir",
+        ["inputFileReader"],
+        indirect=False
+    )
     def test__init__(self, test_with_data_dir):
         with pytest.raises(PQFileNotFoundError) as exception:
             InputFileParser("non-existent-file")
-        assert str(
-            exception.value) == "File non-existent-file not found."
+        assert str(exception.value) == "File non-existent-file not found."
 
         input_file = "input.in"
 
@@ -43,7 +48,11 @@ class TestInputFileParser:
             "PQANALYSIS, PQ, QMCFC"
         )
 
-    @ pytest.mark.parametrize("example_dir", ["inputFileReader"], indirect=False)
+    @pytest.mark.parametrize(
+        "example_dir",
+        ["inputFileReader"],
+        indirect=False
+    )
     def test_parse(self, test_with_data_dir):
         input_file_parser = InputFileParser("input.in")
         input_dictionary = input_file_parser.parse()
