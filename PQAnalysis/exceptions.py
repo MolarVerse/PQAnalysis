@@ -5,43 +5,65 @@ A module containing different exceptions which could be useful.
 from multimethod import multimethod
 
 
+
 class PQException(Exception):
+
     """
     Base class for exceptions in this package.
     """
 
 
+
 class PQWarning(Warning):
+
     """
     Base class for warnings in this package.
     """
 
 
+
 class PQIndexError(PQException):
+
     """
     Exception raised for errors related to the AtomicSystem class
     """
+
 
 
 class PQTypeError(PQException):
+
     """
     Exception raised for errors related to the AtomicSystem class
     """
+
 
 
 class PQNotImplementedError(PQException):
+
     """
     Exception raised for errors related to the AtomicSystem class
     """
+
 
 
 class PQFileNotFoundError(PQException):
+
     """
     Exception raised for errors related to the AtomicSystem class
     """
 
 
+
+class PQKeyError(PQException):
+
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+
+
 class BaseEnumFormatError(PQException):
+
     """
     Base class for enum exceptions if the given enum is not valid
     """

@@ -3,9 +3,12 @@ import pytest
 from .. import pytestmark
 
 from PQAnalysis.io.input_file_reader.input_file_parser import InputDictionary
+from PQAnalysis.exceptions import PQKeyError
+
 
 
 class TestInputFileDictionary:
+
     def test__init__(self):
         dictionary = InputDictionary()
         assert dictionary.dict == {}
@@ -15,20 +18,22 @@ class TestInputFileDictionary:
         dictionary["KeY"] = ("value", "type", "line")
         assert dictionary.dict == {"key": ("value", "type", "line")}
 
-        with pytest.raises(KeyError) as exception:
+        with pytest.raises(PQKeyError) as exception:
             dictionary["KeY"] = ("value", "type", "line")
         assert str(
-            exception.value) == "\'Input file key \"key\" defined multiple times in input file.\'"
+            exception.value
+        ) == "Input file key \"key\" defined multiple times in input file."
 
     def test__getitem__(self):
         dictionary = InputDictionary()
         dictionary["key"] = ("value", "type", "line")
         assert dictionary["KeY"] == ("value", "type", "line")
 
-        with pytest.raises(KeyError) as exception:
+        with pytest.raises(PQKeyError) as exception:
             dictionary["non-existent-key"]
         assert str(
-            exception.value) == "\'Input file key \"non-existent-key\" not defined in input file.\'"
+            exception.value
+        ) == "Input file key \"non-existent-key\" not defined in input file."
 
     def test_get_value(self):
         dictionary = InputDictionary()

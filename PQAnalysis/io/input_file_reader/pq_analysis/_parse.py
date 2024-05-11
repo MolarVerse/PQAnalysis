@@ -7,9 +7,14 @@ from beartype.typing import List
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.io.input_file_reader.input_file_parser import InputDictionary
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
+from PQAnalysis.exceptions import PQKeyError
 
 
-def _parse_positive_real(input_dict: InputDictionary, key: str) -> PositiveReal | None:
+
+def _parse_positive_real(
+    input_dict: InputDictionary,
+    key: str
+) -> PositiveReal | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive real number.
     If the key is not in the dictionary, None is returned.
@@ -38,9 +43,11 @@ def _parse_positive_real(input_dict: InputDictionary, key: str) -> PositiveReal 
 
     if value < 0:
         raise InputFileError(
-            f"The \"{key}\" value has to be a positive real number - It actually is {value}!")
+            f"The \"{key}\" value has to be a positive real number - It actually is {value}!"
+        )
 
     return value
+
 
 
 def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
@@ -67,14 +74,16 @@ def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
     """
     try:
         data = input_dict[key]
-    except KeyError:
+    except PQKeyError:
         return None
 
     if data[1] not in ["float", "int"]:
         raise InputFileError(
-            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}")
+            f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}"
+        )
 
     return data[0]
+
 
 
 def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
@@ -102,7 +111,7 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
     """
     try:
         data = input_dict[key]
-    except KeyError:
+    except PQKeyError:
         return None
 
     data_type = data[1]
@@ -118,6 +127,7 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
         "string, glob or a list of strings - actually "
         f"it is parsed as a {data_type}"
     )
+
 
 
 def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
@@ -143,17 +153,22 @@ def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
     """
     try:
         data = input_dict[key]
-    except KeyError:
+    except PQKeyError:
         return None
 
     if data[1] != "int":
         raise InputFileError(
-            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}")
+            f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}"
+        )
 
     return data[0]
 
 
-def _parse_positive_int(input_dict: InputDictionary, key: str) -> PositiveInt | None:
+
+def _parse_positive_int(
+    input_dict: InputDictionary,
+    key: str
+) -> PositiveInt | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive integer.
 
@@ -181,9 +196,11 @@ def _parse_positive_int(input_dict: InputDictionary, key: str) -> PositiveInt | 
 
     if value < 1:
         raise InputFileError(
-            f"The \"{key}\" value has to be a positive integer - It actually is {value}!")
+            f"The \"{key}\" value has to be a positive integer - It actually is {value}!"
+        )
 
     return value
+
 
 
 def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
@@ -209,7 +226,7 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
     """
     try:
         data = input_dict[key]
-    except KeyError:
+    except PQKeyError:
         return None
 
     if data[1] != "str":
@@ -219,6 +236,7 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
         )
 
     return data[0]
+
 
 
 def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
@@ -244,11 +262,12 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     """
     try:
         data = input_dict[key]
-    except KeyError:
+    except PQKeyError:
         return None
 
     if data[1] != "bool":
         raise InputFileError(
-            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}")
+            f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}"
+        )
 
     return data[0]

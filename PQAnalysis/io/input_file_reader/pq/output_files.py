@@ -2,8 +2,12 @@
 A module containing a Mixin class for output files of a PQ input file.
 """
 
+from PQAnalysis.exceptions import PQKeyError
+
+
 
 class _OutputFileMixin:
+
     """
     Mixin class for output files of a PQ input file.
     """
@@ -39,7 +43,7 @@ class _OutputFileMixin:
         try:
             _ = self.start_file
             return True
-        except KeyError:
+        except PQKeyError:
             return False
 
     @property
@@ -53,7 +57,7 @@ class _OutputFileMixin:
         try:
             _ = self.rpmd_start_file
             return True
-        except KeyError:
+        except PQKeyError:
             return False
 
     @property
