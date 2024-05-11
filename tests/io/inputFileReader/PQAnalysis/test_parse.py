@@ -9,6 +9,7 @@ from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 from PQAnalysis.traj import MDEngineFormat
 
 
+
 def test_parse_real():
     input_dict = InputDictionary()
     input_dict["a"] = (2.0, "float", "1")
@@ -25,7 +26,9 @@ def test_parse_real():
     with pytest.raises(InputFileError) as exception:
         parse._parse_real(input_dict, "c")
     assert str(
-        exception.value) == "The \"c\" value has to be of float type - actually it is parsed as a str"
+        exception.value
+    ) == "The \"c\" value has to be of float type - actually it is parsed as a str"
+
 
 
 def test_parse_positive_real():
@@ -44,14 +47,17 @@ def test_parse_positive_real():
     with pytest.raises(InputFileError) as exception:
         parse._parse_positive_real(input_dict, "c")
     assert str(
-        exception.value) == "The \"c\" value has to be of float type - actually it is parsed as a str"
+        exception.value
+    ) == "The \"c\" value has to be of float type - actually it is parsed as a str"
 
     input_dict["d"] = (-2.0, "float", "1")
 
     with pytest.raises(InputFileError) as exception:
         parse._parse_positive_real(input_dict, "d")
     assert str(
-        exception.value) == "The \"d\" value has to be a positive real number - It actually is -2.0!"
+        exception.value
+    ) == "The \"d\" value has to be a positive real number - It actually is -2.0!"
+
 
 
 def test_parse_files():
@@ -73,7 +79,10 @@ def test_parse_files():
 
     with pytest.raises(InputFileError) as exception:
         parse._parse_files(input_dict, "d")
-    assert str(exception.value) == "The \"d\" value has to be either a string, glob or a list of strings - actually it is parsed as a int"
+    assert str(
+        exception.value
+    ) == "The \"d\" value has to be either a string, glob or a list of strings - actually it is parsed as a int"
+
 
 
 def test_parse_int():
@@ -88,7 +97,9 @@ def test_parse_int():
     with pytest.raises(InputFileError) as exception:
         parse._parse_int(input_dict, "d")
     assert str(
-        exception.value) == "The \"d\" value has to be of int type - actually it is parsed as a str"
+        exception.value
+    ) == "The \"d\" value has to be of int type - actually it is parsed as a str"
+
 
 
 def test_parse_positive_int():
@@ -103,7 +114,9 @@ def test_parse_positive_int():
     with pytest.raises(InputFileError) as exception:
         parse._parse_positive_int(input_dict, "b")
     assert str(
-        exception.value) == "The \"b\" value has to be a positive integer - It actually is -2!"
+        exception.value
+    ) == "The \"b\" value has to be a positive integer - It actually is -2!"
+
 
 
 def test_parse_string():
@@ -118,7 +131,9 @@ def test_parse_string():
     with pytest.raises(InputFileError) as exception:
         parse._parse_string(input_dict, "b")
     assert str(
-        exception.value) == "The \"b\" value has to be of string type - actually it is parsed as a int"
+        exception.value
+    ) == "The \"b\" value has to be of string type - actually it is parsed as a int"
+
 
 
 def test_parse_bool():
@@ -137,4 +152,5 @@ def test_parse_bool():
     with pytest.raises(InputFileError) as exception:
         parse._parse_bool(input_dict, "c")
     assert str(
-        exception.value) == "The \"c\" value has to be of bool type - actually it is parsed as a int"
+        exception.value
+    ) == "The \"c\" value has to be of bool type - actually it is parsed as a int"

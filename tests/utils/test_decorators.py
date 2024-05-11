@@ -1,7 +1,9 @@
 from PQAnalysis.utils import count_decorator, instance_function_count_decorator
 
 
+
 def test_count_decorator():
+
     @count_decorator
     def test_func(reset_counter=False):
         pass
@@ -16,8 +18,11 @@ def test_count_decorator():
     assert test_func.counter == 2
 
 
+
 def test_instance_function_count_decorator():
+
     class Class:
+
         def __init__(self):
             self.instance_counter = 0
 

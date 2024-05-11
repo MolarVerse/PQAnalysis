@@ -5,7 +5,6 @@ A module containing tests for the methods of the _PositionsMixin class.
 import numpy as np
 import pytest
 
-
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system.exceptions import AtomicSystemPositionsError
 from PQAnalysis.core import Atom, Cell
@@ -18,16 +17,18 @@ from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception
 
 
+
 class TestPositionsMixin:
+
     def test_nearest_neighbours_type_checking(self, caplog):
         assert_logging_with_exception(
             caplog=caplog,
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-                "n",
-                -1,
-                PositiveInt,
+            "n",
+            -1,
+            PositiveInt,
             ),
             exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
@@ -39,9 +40,9 @@ class TestPositionsMixin:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-                "selection",
-                AtomicSystem(),
-                SelectionCompatible,
+            "selection",
+            AtomicSystem(),
+            SelectionCompatible,
             ),
             exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
@@ -53,9 +54,9 @@ class TestPositionsMixin:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-                "use_full_atom_info",
-                "2",
-                bool,
+            "use_full_atom_info",
+            "2",
+            bool,
             ),
             exception=PQTypeError,
             function=AtomicSystem().nearest_neighbours,
@@ -71,18 +72,21 @@ class TestPositionsMixin:
         indices, distances = system.nearest_neighbours()
         assert np.allclose(indices, [[3], [2], [3], [0]])
         assert np.allclose(
-            distances, [[1.0], [np.sqrt(8*8+1*1)], [np.sqrt(2)], [1.0]])
+            distances,
+            [[1.0],
+            [np.sqrt(8 * 8 + 1 * 1)],
+            [np.sqrt(2)],
+            [1.0]]
+        )
 
         indices, distances = system._nearest_neighbours()
         assert np.allclose(indices, [[3], [2], [3], [0]])
         assert np.allclose(
             distances,
-            [
-                [1.0],
-                [np.sqrt(8*8+1*1)],
-                [np.sqrt(2)],
-                [1.0]
-            ]
+            [[1.0],
+            [np.sqrt(8 * 8 + 1 * 1)],
+            [np.sqrt(2)],
+            [1.0]]
         )
 
         indices, distances = system.nearest_neighbours(n=2)
@@ -90,10 +94,14 @@ class TestPositionsMixin:
         assert np.allclose(
             distances,
             [
-                [1.0, np.sqrt(5)],
-                [np.sqrt(8*8+1), np.sqrt(9*9)],
-                [np.sqrt(2), np.sqrt(5)],
-                [1.0, np.sqrt(2)]
+            [1.0,
+            np.sqrt(5)],
+            [np.sqrt(8 * 8 + 1),
+            np.sqrt(9 * 9)],
+            [np.sqrt(2),
+            np.sqrt(5)],
+            [1.0,
+            np.sqrt(2)]
             ]
         )
 
@@ -105,10 +113,7 @@ class TestPositionsMixin:
         assert np.allclose(indices, [[2], [0]])
         assert np.allclose(distances, [[np.sqrt(65)], [1.0]])
 
-        indices, distances = system.nearest_neighbours(
-            n=1,
-            selection=['H1']
-        )
+        indices, distances = system.nearest_neighbours(n=1, selection=['H1'])
         assert np.allclose(indices, [[2], [0]])
         assert np.allclose(distances, [[np.sqrt(65)], [1.0]])
 
@@ -140,9 +145,18 @@ class TestPositionsMixin:
 
     def test_image(self):
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H1', 1)],
-            pos=np.array([[0, 0, 0], [10, 0, 0]]),
-            cell=Cell(8, 8, 8)
+            atoms=[Atom('C'),
+            Atom('H1',
+            1)],
+            pos=np.array([[0,
+            0,
+            0],
+            [10,
+            0,
+            0]]),
+            cell=Cell(8,
+            8,
+            8)
         )
         system.image()
 
@@ -154,9 +168,9 @@ class TestPositionsMixin:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-                "position",
-                "2",
-                Np1DNumberArray,
+            "position",
+            "2",
+            Np1DNumberArray,
             ),
             exception=PQTypeError,
             function=AtomicSystem().center,
@@ -168,21 +182,32 @@ class TestPositionsMixin:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-                "image",
-                "2",
-                bool,
+            "image",
+            "2",
+            bool,
             ),
             exception=PQTypeError,
             function=AtomicSystem().center,
-            position=np.array([1, 0, 0]),
+            position=np.array([1,
+            0,
+            0]),
             image="2"
         )
 
     def test_center(self):
         system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H1', 1)],
-            pos=np.array([[0, 0, 0], [10, 0, 0]]),
-            cell=Cell(8, 8, 8)
+            atoms=[Atom('C'),
+            Atom('H1',
+            1)],
+            pos=np.array([[0,
+            0,
+            0],
+            [10,
+            0,
+            0]]),
+            cell=Cell(8,
+            8,
+            8)
         )
         system.center(np.array([1, 0, 0]), image=False)
 

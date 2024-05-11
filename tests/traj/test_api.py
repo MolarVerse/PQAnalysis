@@ -6,6 +6,7 @@ from PQAnalysis.core import Cell
 from PQAnalysis.traj import check_trajectory_pbc, check_trajectory_vacuum
 
 
+
 def test_check_trajectory_PBC():
     cells = [Cell(10, 10, 10), Cell(10, 10, 10)]
 
@@ -18,6 +19,7 @@ def test_check_trajectory_PBC():
     cells = []
 
     assert check_trajectory_pbc(cells) == False
+
 
 
 def test_check_trajectory_vacuum():

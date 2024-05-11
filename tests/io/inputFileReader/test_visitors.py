@@ -5,7 +5,9 @@ from .. import pytestmark
 from PQAnalysis.io.input_file_reader.input_file_parser import InputFileVisitor, InputDictionary
 
 
+
 class TestInputFileVisitor:
+
     def test__init__(self):
         visitor = InputFileVisitor()
         assert visitor.dict == InputDictionary()
@@ -25,8 +27,17 @@ class TestInputFileVisitor:
         token.end_line = 4
         key_token = Token("WORD", "key")
         key_token.end_line = 1
-        tree = Tree("multiline_statement", [
-                    key_token, ("1", "float", "1"), ("4", "int", "4"), token])
+        tree = Tree(
+            "multiline_statement",
+            [key_token,
+            ("1",
+            "float",
+            "1"),
+            ("4",
+            "int",
+            "4"),
+            token]
+        )
 
         return_tree = visitor.multiline_statement(tree)
 
@@ -35,8 +46,14 @@ class TestInputFileVisitor:
 
     def test_visit(self):
         visitor = InputFileVisitor()
-        tree = Tree("input_file", [
-                    Tree("assign", ["key", ("value", "word", "1")])])
+        tree = Tree(
+            "input_file",
+            [Tree("assign",
+            ["key",
+            ("value",
+            "word",
+            "1")])]
+        )
 
         return_dict = visitor.visit(tree)
 

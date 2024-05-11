@@ -7,6 +7,7 @@ from . import ArgparseNamespace
 from PQAnalysis.cli.rst2xyz import rst2xyz, main
 
 
+
 @pytest.mark.parametrize("example_dir", ["rst2xyz"], indirect=False)
 def test_rst2xyz(test_with_data_dir, capsys):
     print()
@@ -34,6 +35,7 @@ H     2.0000000000     2.1000000000     2.2000000000
 N     3.0000000000     3.1000000000     3.2000000000
 N     4.0000000000     4.1000000000     4.2000000000
 """
+
 
 
 @pytest.mark.parametrize("example_dir", ["rst2xyz"], indirect=False)
@@ -64,16 +66,17 @@ N     4.0000000000     4.1000000000     4.2000000000
 """
 
 
+
 @mock.patch(
     'argparse.ArgumentParser.parse_args',
     return_value=ArgparseNamespace(
-        restart_file="md-01.rst",
-        output=None,
-        nobox=False,
-        engine="PQ",
-        mode="w",
-        log_file=None,
-        logging_level="INFO",
+    restart_file="md-01.rst",
+    output=None,
+    nobox=False,
+    engine="PQ",
+    mode="w",
+    log_file=None,
+    logging_level="INFO",
     )
 )
 def main_rst2xyz(mock_args):
@@ -81,16 +84,17 @@ def main_rst2xyz(mock_args):
     main()
 
 
+
 @mock.patch(
     'argparse.ArgumentParser.parse_args',
     return_value=ArgparseNamespace(
-        restart_file="md-01.rst",
-        output=None,
-        nobox=False,
-        engine="qmcfc",
-        mode="w",
-        log_file=None,
-        logging_level="INFO",
+    restart_file="md-01.rst",
+    output=None,
+    nobox=False,
+    engine="qmcfc",
+    mode="w",
+    log_file=None,
+    logging_level="INFO",
     )
 )
 def main_rst2xyz_qmcfc(mock_args):

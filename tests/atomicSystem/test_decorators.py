@@ -10,6 +10,7 @@ from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception
 
 
+
 def test_check_atom_number_setter(caplog):
     system = AtomicSystem()
 
@@ -18,14 +19,16 @@ def test_check_atom_number_setter(caplog):
         AtomicSystem.__qualname__,
         "ERROR",
         (
-            "The number of atoms in the AtomicSystem object "
-            "have to be equal to the number of atoms "
-            "in the new array in order to set the property."
+        "The number of atoms in the AtomicSystem object "
+        "have to be equal to the number of atoms "
+        "in the new array in order to set the property."
         ),
         AtomicSystemError,
         AtomicSystem.pos.__set__,
         system,
-        np.array([[0, 0, 0]])
+        np.array([[0,
+        0,
+        0]])
     )
 
     system = AtomicSystem(atoms=[Atom('C'), Atom('H')])

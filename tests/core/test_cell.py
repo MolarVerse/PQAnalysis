@@ -6,7 +6,9 @@ from . import pytestmark
 from PQAnalysis.core import Cell
 
 
+
 class TestCell:
+
     def test__init__(self):
         cell = Cell(1, 2, 3)
         assert cell.x == 1
@@ -15,8 +17,18 @@ class TestCell:
         assert cell.alpha == 90
         assert cell.beta == 90
         assert cell.gamma == 90
-        assert np.allclose(cell.box_matrix, np.array(
-            [[1, 0, 0], [0, 2, 0], [0, 0, 3]]))
+        assert np.allclose(
+            cell.box_matrix,
+            np.array([[1,
+            0,
+            0],
+            [0,
+            2,
+            0],
+            [0,
+            0,
+            3]])
+        )
 
         cell = Cell(1, 2, 3, 60, 90, 120)
         assert cell.x == 1
@@ -25,8 +37,20 @@ class TestCell:
         assert cell.alpha == 60
         assert cell.beta == 90
         assert cell.gamma == 120
-        assert np.allclose(cell.box_matrix, np.array(
-            [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]))
+        assert np.allclose(
+            cell.box_matrix,
+            np.array(
+            [[1,
+            -1,
+            0],
+            [0,
+            1.73205081,
+            1.73205081],
+            [0,
+            0,
+            2.44948974]]
+            )
+        )
 
     def test_box_lengths(self):
         cell = Cell(1, 2, 3)
@@ -36,8 +60,18 @@ class TestCell:
         cell = Cell(1, 2, 3)
         cell.box_lengths = np.array([2, 3, 4])
         assert np.allclose(cell.box_lengths, np.array([2, 3, 4]))
-        assert np.allclose(cell.box_matrix, np.array(
-            [[2, 0, 0], [0, 3, 0], [0, 0, 4]]))
+        assert np.allclose(
+            cell.box_matrix,
+            np.array([[2,
+            0,
+            0],
+            [0,
+            3,
+            0],
+            [0,
+            0,
+            4]])
+        )
 
     def test_box_angles(self):
         cell = Cell(1, 2, 3)
@@ -47,14 +81,30 @@ class TestCell:
         cell = Cell(1, 2, 3)
         cell.box_angles = np.array([60, 90, 120])
         assert np.allclose(cell.box_angles, np.array([60, 90, 120]))
-        assert np.allclose(cell.box_matrix, np.array(
-            [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]))
+        assert np.allclose(
+            cell.box_matrix,
+            np.array(
+            [[1,
+            -1,
+            0],
+            [0,
+            1.73205081,
+            1.73205081],
+            [0,
+            0,
+            2.44948974]]
+            )
+        )
 
     def test_volume(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
         box_angles = np.deg2rad(cell.box_angles)
-        assert np.isclose(cell.volume, np.prod(cell.box_lengths)*np.sqrt(1 -
-                                                                         sum(np.cos(box_angles)**2) + 2 * np.prod(np.cos(box_angles))))
+        assert np.isclose(
+            cell.volume,
+            np.prod(cell.box_lengths) * np.sqrt(
+            1 - sum(np.cos(box_angles)**2) + 2 * np.prod(np.cos(box_angles))
+            )
+        )
 
     def test_bounding_edges(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
@@ -82,14 +132,38 @@ class TestCell:
 
     def test_image(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
-        assert np.allclose(cell.image(
-            np.array([0, 0, 0])), np.array([0, 0, 0]))
-        assert np.allclose(cell.image(
-            np.array([0.75, 0.5, 0.5])), np.array([-0.25, 0.5, 0.5]))
-        assert np.allclose(cell.image(
-            np.array([1, 2, 3])), np.array([0., 0.267949192, 0.550510257]))
-        assert np.allclose(cell.image(
-            np.array([-1, -2, -3])), np.array([0., -0.267949192, -0.550510257]))
+        assert np.allclose(
+            cell.image(np.array([0,
+            0,
+            0])),
+            np.array([0,
+            0,
+            0])
+        )
+        assert np.allclose(
+            cell.image(np.array([0.75,
+            0.5,
+            0.5])),
+            np.array([-0.25,
+            0.5,
+            0.5])
+        )
+        assert np.allclose(
+            cell.image(np.array([1,
+            2,
+            3])),
+            np.array([0.,
+            0.267949192,
+            0.550510257])
+        )
+        assert np.allclose(
+            cell.image(np.array([-1,
+            -2,
+            -3])),
+            np.array([0.,
+            -0.267949192,
+            -0.550510257])
+        )
 
     def test__str__(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
@@ -115,11 +189,15 @@ class TestCell:
         assert np.isclose(cell.volume, 6)
 
         box_matrix = np.array(
-            [
-                [1, -1, 0],
-                [0, 1.73205081, 1.73205081],
-                [0, 0, 2.44948974]
-            ]
+            [[1,
+            -1,
+            0],
+            [0,
+            1.73205081,
+            1.73205081],
+            [0,
+            0,
+            2.44948974]]
         )
         cell = Cell.init_from_box_matrix(box_matrix)
         assert np.isclose(cell.x, 1)

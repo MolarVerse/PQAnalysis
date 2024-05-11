@@ -7,6 +7,7 @@ from PQAnalysis.core import Atom
 from PQAnalysis.atomic_system import AtomicSystem
 
 
+
 def test_traj_to_com_traj():
     traj = Trajectory()
 
@@ -56,9 +57,17 @@ def test_traj_to_com_traj():
 
     assert np.allclose(traj_output[0].pos, [[0.5, 0.5, 1.5], [2.5, 2.5, 3.5]])
     assert traj_output[0].atoms == [
-        Atom('CC', use_guess_element=False), Atom('HH', use_guess_element=False)]
+        Atom('CC',
+        use_guess_element=False),
+        Atom('HH',
+        use_guess_element=False)
+    ]
     assert traj_output[0].combined_name == 'CCHH'
     assert np.allclose(traj_output[1].pos, [[0.5, 1.5, 1.5], [2.5, 3.5, 3.5]])
     assert traj_output[1].atoms == [
-        Atom('CC', use_guess_element=False), Atom('HH', use_guess_element=False)]
+        Atom('CC',
+        use_guess_element=False),
+        Atom('HH',
+        use_guess_element=False)
+    ]
     assert traj_output[1].combined_name == 'CCHH'

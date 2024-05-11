@@ -12,6 +12,7 @@ from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 
 
+
 class TestBoxWriter:
 
     def test__init__(self):
@@ -49,7 +50,10 @@ class TestBoxWriter:
 
     def test__check_PBC__(self):
         system1 = AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=self.cell1)
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=self.cell1
+        )
         system2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1)
 
         frame1 = system1
@@ -68,7 +72,8 @@ class TestBoxWriter:
         with pytest.raises(BoxWriterError) as exception:
             writer.__check_pbc__(traj2)
         assert str(
-            exception.value) == "At least on cell of the trajectory is None. Cannot write box file."
+            exception.value
+        ) == "At least on cell of the trajectory is None. Cannot write box file."
 
     def test_write_box_file(self, capsys: CaptureFixture):
         writer = BoxWriter()
@@ -76,16 +81,8 @@ class TestBoxWriter:
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 120)
 
-        frame1 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell1
-        )
-        frame2 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell2
-        )
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
@@ -100,16 +97,8 @@ class TestBoxWriter:
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell1
-        )
-        frame2 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell2
-        )
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
@@ -146,16 +135,8 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell1
-        )
-        frame2 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell2
-        )
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
@@ -198,16 +179,8 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell1
-        )
-        frame2 = AtomicSystem(
-            atoms=self.atoms1,
-            pos=self.pos1,
-            cell=cell2
-        )
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 

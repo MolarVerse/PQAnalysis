@@ -12,7 +12,9 @@ from .. import pytestmark
 from ...conftest import assert_logging_with_exception
 
 
+
 class TestAtom:
+
     def test__init__(self, caplog):
         element = Atom('C')
         assert element.symbol == 'c'
@@ -56,11 +58,9 @@ class TestAtom:
             caplog,
             "TypeChecking",
             "ERROR",
-            get_type_error_message(
-                "name",
-                1.2,
-                str | int
-            ),
+            get_type_error_message("name",
+            1.2,
+            str | int),
             PQTypeError,
             Atom,
             1.2

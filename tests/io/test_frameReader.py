@@ -11,6 +11,7 @@ from PQAnalysis.topology import Topology
 from . import pytestmark
 
 
+
 class TestFrameReader:
 
     def test__read_header_line(self):
@@ -19,10 +20,10 @@ class TestFrameReader:
         with pytest.raises(FrameReaderError) as exception:
             reader._read_header_line("1 2.0 3.0")
         assert str(
-            exception.value) == "Invalid file format in header line of Frame."
+            exception.value
+        ) == "Invalid file format in header line of Frame."
 
-        n_atoms, cell = reader._read_header_line(
-            "1 2.0 3.0 4.0 5.0 6.0 7.0")
+        n_atoms, cell = reader._read_header_line("1 2.0 3.0 4.0 5.0 6.0 7.0")
         assert n_atoms == 1
         assert np.allclose(cell.box_lengths, [2.0, 3.0, 4.0])
         assert np.allclose(cell.box_angles, [5.0, 6.0, 7.0])
@@ -40,10 +41,10 @@ class TestFrameReader:
         reader = _FrameReader()
 
         with pytest.raises(FrameReaderError) as exception:
-            reader._read_xyz(
-                ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0"], n_atoms=2)
+            reader._read_xyz(["", "", "h 1.0 2.0 3.0", "o 2.0 2.0"], n_atoms=2)
         assert str(
-            exception.value) == "Invalid file format in xyz coordinates of Frame."
+            exception.value
+        ) == "Invalid file format in xyz coordinates of Frame."
 
         xyz, atoms = reader._read_xyz(
             ["", "", "h 1.0 2.0 3.0", "o 2.0 2.0 2.0"], n_atoms=2)
@@ -56,7 +57,8 @@ class TestFrameReader:
         with pytest.raises(FrameReaderError) as exception:
             reader._read_scalar(["", "", "h 1.0 2.0 3.0"], n_atoms=1)
         assert str(
-            exception.value) == "Invalid file format in scalar values of Frame."
+            exception.value
+        ) == "Invalid file format in scalar values of Frame."
 
         scalar, atoms = reader._read_scalar(["", "", "h 1.0"], n_atoms=1)
         assert np.allclose(scalar, [1.0])
@@ -66,45 +68,61 @@ class TestFrameReader:
         reader = _FrameReader()
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no 2.0 2.0 2.0"
+        )
         assert frame.n_atoms == 2
         assert frame.atoms == [Atom(atom) for atom in ["h", "o"]]
-        assert np.allclose(frame.pos, [
-                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert np.allclose(frame.pos, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0"
+        )
         assert frame.n_atoms == 2
-        assert frame.atoms == [Atom(atom, use_guess_element=False)
-                               for atom in ["h", "o1"]]
-        assert np.allclose(frame.pos, [
-                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.atoms == [
+            Atom(atom,
+            use_guess_element=False) for atom in ["h",
+            "o1"]
+        ]
+        assert np.allclose(frame.pos, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", traj_format="vel")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0",
+            traj_format="vel"
+        )
         assert frame.n_atoms == 2
-        assert frame.atoms == [Atom(atom, use_guess_element=False)
-                               for atom in ["h", "o1"]]
-        assert np.allclose(frame.vel, [
-                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.atoms == [
+            Atom(atom,
+            use_guess_element=False) for atom in ["h",
+            "o1"]
+        ]
+        assert np.allclose(frame.vel, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0", traj_format="force")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0 2.0 3.0\no1 2.0 2.0 2.0",
+            traj_format="force"
+        )
         assert frame.n_atoms == 2
-        assert frame.atoms == [Atom(atom, use_guess_element=False)
-                               for atom in ["h", "o1"]]
-        assert np.allclose(frame.forces, [
-                           [1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
+        assert frame.atoms == [
+            Atom(atom,
+            use_guess_element=False) for atom in ["h",
+            "o1"]
+        ]
+        assert np.allclose(frame.forces, [[1.0, 2.0, 3.0], [2.0, 2.0, 2.0]])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
         frame = reader.read(
-            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0\no1 2.0", traj_format="charge")
+            "2 2.0 3.0 4.0 5.0 6.0 7.0\n\nh 1.0\no1 2.0",
+            traj_format="charge"
+        )
         assert frame.n_atoms == 2
-        assert frame.atoms == [Atom(atom, use_guess_element=False)
-                               for atom in ["h", "o1"]]
+        assert frame.atoms == [
+            Atom(atom,
+            use_guess_element=False) for atom in ["h",
+            "o1"]
+        ]
         assert np.allclose(frame.charges, [1.0, 2.0])
         assert frame.cell == Cell(2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
 
