@@ -4,6 +4,8 @@ QMCFC MD software packages. For more information about the topology file structu
 please visit the documentation page of PQ https://molarverse.github.io/PQ/.
 """
 
+import logging
+
 from _io import TextIOWrapper as File  # type: ignore
 
 from beartype.typing import List
@@ -11,6 +13,10 @@ from beartype.typing import List
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.topology import BondedTopology, Topology
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
+from .exceptions import TopologyFileError
 
 
 class TopologyFileWriter(BaseWriter):
@@ -19,6 +25,9 @@ class TopologyFileWriter(BaseWriter):
     QMCFC MD software packages. For more information about the topology file 
     structure please visit the documentation page of PQ https://molarverse.github.io/PQ/.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self,
                  filename: str,
@@ -67,7 +76,10 @@ class TopologyFileWriter(BaseWriter):
         if isinstance(bonded_topology, Topology) and bonded_topology.bonded_topology is not None:
             bonded_topology = bonded_topology.bonded_topology
         elif not isinstance(bonded_topology, BondedTopology):
-            raise ValueError("Invalid bonded topology.")
+            self.logger.error(
+                "Invalid bonded topology.",
+                exception=TopologyFileError
+            )
 
         self.open()
 
