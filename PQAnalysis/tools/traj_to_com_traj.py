@@ -5,9 +5,14 @@ A module containing the tool to compute a center of mass trajectory for a given 
 from PQAnalysis.traj import Trajectory
 
 
+
 # TODO: add atom to element mapper if atom name not element names
 # TODO rethink concept of selection/getitem/slices
-def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Trajectory:
+def traj_to_com_traj(
+    trajectory: Trajectory,
+    selection=None,
+    group=None
+) -> Trajectory:
     """
     Function that computes the center of mass trajectory for a given selection.
 
