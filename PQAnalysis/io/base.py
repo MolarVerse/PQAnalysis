@@ -4,12 +4,16 @@ A module containing the base class for all writers and readers.
 
 import sys
 import os
+import logging
 
 from beartype.typing import List
 
 from PQAnalysis.exceptions import PQFileNotFoundError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 
 from .formats import FileWritingMode
+from .exceptions import FileWritingModeError
 
 
 class BaseWriter:
@@ -37,6 +41,9 @@ class BaseWriter:
     overwriting the file by accident. 
 
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(self,
                  filename: str | None = None,
@@ -139,10 +146,13 @@ class BaseWriter:
             self.filename is not None and
             os.path.isfile(self.filename)
         ):
-            raise ValueError(
-                f"File {self.filename} already exists. "
-                "Use mode \'a\' to append to the file or mode "
-                "\'o\' to overwrite the file."
+            self.logger.error(
+                (
+                    f"File {self.filename} already exists. "
+                    "Use mode \'a\' to append to the file or mode "
+                    "\'o\' to overwrite the file."
+                ),
+                exception=FileWritingModeError
             )
 
         if mode == 'o':
@@ -166,6 +176,9 @@ class BaseReader:
     the reader reads from a single file or multiple files.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
     def __init__(self, filename: str | List[str]) -> None:
         """
         Initializes the BaseReader with the given filename.
@@ -183,7 +196,10 @@ class BaseReader:
 
         if isinstance(filename, str):
             if not os.path.isfile(filename):
-                raise PQFileNotFoundError(f"File {filename} not found.")
+                self.logger.error(
+                    f"File {filename} not found.",
+                    exception=PQFileNotFoundError
+                )
 
             self.filename = filename
             self.multiple_files = False
@@ -191,9 +207,12 @@ class BaseReader:
             filenames = filename
             for _filename in filenames:
                 if not os.path.isfile(_filename):
-                    raise PQFileNotFoundError(
-                        "At least one of the given files does not exist. "
-                        f"File {_filename} not found."
+                    self.logger.error(
+                        (
+                            "At least one of the given files does not exist. "
+                            f"File {_filename} not found."
+                        ),
+                        exception=PQFileNotFoundError
                     )
 
             self.filenames = filenames

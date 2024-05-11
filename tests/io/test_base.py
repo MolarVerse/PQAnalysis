@@ -26,7 +26,7 @@ or their case insensitive string representation: o, a, w"""
 
         open(filename, "w")
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(FileWritingModeError) as exception:
             BaseWriter(filename, "w")
         assert str(
             exception.value) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file."
