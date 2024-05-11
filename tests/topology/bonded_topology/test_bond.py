@@ -5,7 +5,9 @@ from .. import pytestmark
 from PQAnalysis.topology import Bond
 
 
+
 class TestBond:
+
     def test__init__(self):
         bond = Bond(index1=1, index2=2)
         assert bond.index1 == 1

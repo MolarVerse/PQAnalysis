@@ -10,12 +10,14 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .restart_reader import RestartFileReader
 
 
+
 @runtime_type_checking
-def read_restart_file(filename: str,
-                      moldescriptor_filename: str | None = None,
-                      reference_residues: Residues | None = None,
-                      md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                      ) -> AtomicSystem:
+def read_restart_file(
+    filename: str,
+    moldescriptor_filename: str | None = None,
+    reference_residues: Residues | None = None,
+    md_engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+) -> AtomicSystem:
     """
     API function for reading a restart file.
 

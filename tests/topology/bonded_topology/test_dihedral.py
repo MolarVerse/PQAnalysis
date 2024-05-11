@@ -5,7 +5,9 @@ from .. import pytestmark
 from PQAnalysis.topology import Dihedral
 
 
+
 class TestDihedral:
+
     def test__init__(self):
         dihedral = Dihedral(index1=1, index2=2, index3=3, index4=4)
         assert dihedral.index1 == 1

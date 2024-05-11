@@ -11,7 +11,6 @@ from PQAnalysis.io import traj2box
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
-
 __outputdoc__ = """
 
 Converts multiple trajectory files to a box file.
@@ -34,10 +33,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class Traj2BoxCLI(CLIBase):
+
     """
     Command Line Tool for Converting Trajectory Files to Box Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -88,6 +90,7 @@ class Traj2BoxCLI(CLIBase):
             The arguments parsed by the parser.
         """
         traj2box(args.trajectory_file, args.vmd, args.output, args.mode)
+
 
 
 def main():

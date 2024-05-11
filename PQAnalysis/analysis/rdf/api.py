@@ -12,6 +12,7 @@ from .rdf_input_file_reader import RDFInputFileReader
 from .rdf_output_file_writer import RDFDataWriter, RDFLogWriter
 
 
+
 @runtime_type_checking
 def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     """
@@ -49,17 +50,24 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
 
     if input_reader.moldescriptor_file is not None:
         moldescriptor_reader = MoldescriptorReader(
-            input_reader.moldescriptor_file)
+            input_reader.moldescriptor_file
+        )
         reference_residues = moldescriptor_reader.read()
     else:
         reference_residues = None
 
     if topology is not None:
-        topology = Topology(atoms=topology.atoms, residue_ids=topology.residue_ids,
-                            reference_residues=reference_residues)
+        topology = Topology(
+            atoms=topology.atoms,
+            residue_ids=topology.residue_ids,
+            reference_residues=reference_residues
+        )
 
     traj_reader = TrajectoryReader(
-        input_reader.traj_files, md_format=md_format, topology=topology)
+        input_reader.traj_files,
+        md_format=md_format,
+        topology=topology
+    )
 
     _rdf = RDF(
         traj=traj_reader,

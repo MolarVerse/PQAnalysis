@@ -7,7 +7,9 @@ from PQAnalysis.types import PositiveInt, PositiveReal
 from ._parse import _parse_positive_int, _parse_positive_real
 
 
+
 class _PositionsMixin:
+
     """
     A mixin class to read all position related keywords from the input dictionary.
 
@@ -17,6 +19,7 @@ class _PositionsMixin:
         - delta_r
         - n_bins
     """
+
     @property
     def r_max(self) -> PositiveReal | None:
         """PositiveReal | None: The maximum radius of the PQAnalysis."""

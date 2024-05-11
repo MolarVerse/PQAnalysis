@@ -5,7 +5,9 @@ A module containing different exceptions related to the topology subpackage.
 from PQAnalysis.exceptions import PQException
 
 
+
 class TopologyError(PQException):
+
     """
     Exception raised for errors related to the Topology class
     """

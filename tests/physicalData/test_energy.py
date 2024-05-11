@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 
 import pytest
@@ -7,7 +6,9 @@ import numpy as np
 from PQAnalysis.physical_data import Energy, EnergyError
 
 
+
 class TestEnergy:
+
     def test__init__(self):
         data = np.array([1, 2, 3])
         energy = Energy(data)
@@ -36,14 +37,17 @@ class TestEnergy:
         with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0})
         assert str(
-            exception.value) == "The length of info dictionary has to be equal to the length of data."
+            exception.value
+        ) == "The length of info dictionary has to be equal to the length of data."
 
         with pytest.raises(EnergyError) as exception:
             Energy(data, units={1: 0})
         assert str(
-            exception.value) == "The length of units dictionary has to be equal to the length of data."
+            exception.value
+        ) == "The length of units dictionary has to be equal to the length of data."
 
         with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0, 2: 0}, units={1: 0, 3: 0})
         assert str(
-            exception.value) == "The keys of the info and units dictionary do not match."
+            exception.value
+        ) == "The keys of the info and units dictionary do not match."

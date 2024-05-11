@@ -12,7 +12,6 @@ from PQAnalysis.config import code_base_url
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
-
 __outputdoc__ = """
 
 This command line tool can be used to convert gen files to xyz files. 
@@ -30,10 +29,13 @@ __epilog__ += "\n"
 __doc__ += __outputdoc__
 
 
+
 class GEN2XYZCLI(CLIBase):
+
     """
     Command Line Tool for Converting GEN Files to XYZ Files
     """
+
     @classmethod
     def program_name(cls) -> str:
         """
@@ -90,6 +92,7 @@ class GEN2XYZCLI(CLIBase):
             md_format=args.engine,
             mode=args.mode,
         )
+
 
 
 def main():

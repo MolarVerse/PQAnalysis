@@ -5,7 +5,9 @@ from .. import pytestmark
 from PQAnalysis.topology import Angle
 
 
+
 class TestAngle:
+
     def test__init__(self):
         angle = Angle(index1=1, index2=2, index3=3)
         assert angle.index1 == 1

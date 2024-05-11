@@ -14,7 +14,9 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .base import BaseReader
 
 
+
 class InfoFileReader(BaseReader):
+
     """
     This is a class to read info files from molecular dynamics simulations. The info file
     is a specific output file related to the energy file of PQ and QMCFC simulations.
@@ -34,10 +36,11 @@ class InfoFileReader(BaseReader):
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self,
-                 filename: str,
-                 engine_format: MDEngineFormat | str = MDEngineFormat.PQ
-                 ) -> None:
+    def __init__(
+        self,
+        filename: str,
+        engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+    ) -> None:
         """
         Parameters
         ----------

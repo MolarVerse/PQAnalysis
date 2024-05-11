@@ -5,19 +5,25 @@ A module containing different exceptions related to the traj subpackage.
 from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
+
 class TrajectoryFormatError(BaseEnumFormatError):
+
     """
     Exception raised if the given enum is not valid
     """
+
 
 
 class MDEngineFormatError(BaseEnumFormatError):
+
     """
     Exception raised if the given enum is not valid
     """
 
 
+
 class TrajectoryError(PQException):
+
     """
     Exception raised for errors related to the Trajectory class
     """

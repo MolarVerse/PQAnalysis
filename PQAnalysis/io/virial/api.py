@@ -9,6 +9,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .virial_reader import VirialFileReader, StressFileReader
 
 
+
 @runtime_type_checking
 def read_virial_file(filename: str) -> List:
     """
@@ -26,6 +27,7 @@ def read_virial_file(filename: str) -> List:
     """
     reader = VirialFileReader(filename)
     return reader.read()
+
 
 
 @runtime_type_checking

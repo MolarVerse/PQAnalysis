@@ -8,7 +8,9 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory
 
 
+
 class TestShakeTopologyGenerator:
+
     def test__init__(self):
         generator = ShakeTopologyGenerator()
         assert generator.selection_object is None
@@ -28,10 +30,40 @@ class TestShakeTopologyGenerator:
 
     def test_generate_topology(self):
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('O'), Atom('H')]
-        pos = np.array([[0.1, 0, 0], [1, 0, 0], [2.1, 0, 0],
-                        [3, 0, 0], [4, 0, 0]])
-        pos2 = np.array([[0.5, 0, 0], [1, 0.5, 0], [2.5, 0, 0],
-                         [3, 0.5, 0], [4.5, 0, 0]])
+        pos = np.array(
+            [[0.1,
+            0,
+            0],
+            [1,
+            0,
+            0],
+            [2.1,
+            0,
+            0],
+            [3,
+            0,
+            0],
+            [4,
+            0,
+            0]]
+        )
+        pos2 = np.array(
+            [[0.5,
+            0,
+            0],
+            [1,
+            0.5,
+            0],
+            [2.5,
+            0,
+            0],
+            [3,
+            0.5,
+            0],
+            [4.5,
+            0,
+            0]]
+        )
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)
 
@@ -47,11 +79,41 @@ class TestShakeTopologyGenerator:
 
     def test_average_equivalents(self):
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('O'), Atom('H')]
-        pos = np.array([[0.1, 0, 0], [1, 0, 0], [2.1, 0, 0],
-                        [3, 0, 0], [4, 0, 0]])
+        pos = np.array(
+            [[0.1,
+            0,
+            0],
+            [1,
+            0,
+            0],
+            [2.1,
+            0,
+            0],
+            [3,
+            0,
+            0],
+            [4,
+            0,
+            0]]
+        )
 
-        pos2 = np.array([[0.5, 0, 0], [1, 0.5, 0], [2.5, 0, 0],
-                         [3, 0.5, 0], [4.5, 0, 0]])
+        pos2 = np.array(
+            [[0.5,
+            0,
+            0],
+            [1,
+            0.5,
+            0],
+            [2.5,
+            0,
+            0],
+            [3,
+            0.5,
+            0],
+            [4.5,
+            0,
+            0]]
+        )
 
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)
@@ -70,11 +132,41 @@ class TestShakeTopologyGenerator:
 
     def test_write_topology(self, capsys):
         atoms = [Atom('C'), Atom('H'), Atom('H'), Atom('O'), Atom('H')]
-        pos = np.array([[0.1, 0, 0], [1, 0, 0], [2.1, 0, 0],
-                        [3, 0, 0], [4, 0, 0]])
+        pos = np.array(
+            [[0.1,
+            0,
+            0],
+            [1,
+            0,
+            0],
+            [2.1,
+            0,
+            0],
+            [3,
+            0,
+            0],
+            [4,
+            0,
+            0]]
+        )
 
-        pos2 = np.array([[0.5, 0, 0], [1, 0.5, 0], [2.5, 0, 0],
-                         [3, 0.5, 0], [4.5, 0, 0]])
+        pos2 = np.array(
+            [[0.5,
+            0,
+            0],
+            [1,
+            0.5,
+            0],
+            [2.5,
+            0,
+            0],
+            [3,
+            0.5,
+            0],
+            [4.5,
+            0,
+            0]]
+        )
 
         system = AtomicSystem(pos=pos, atoms=atoms)
         system2 = AtomicSystem(pos=pos2, atoms=atoms)

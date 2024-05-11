@@ -14,10 +14,13 @@ from ._decorators import check_atoms_has_mass, check_atoms_pos
 from .exceptions import AtomicSystemError
 
 
+
 class _PropertiesMixin:
+
     """
     A mixin class containing properties derived from the standard properties of an atomic system.
     """
+
     @property
     def pbc(self) -> bool:
         """bool: Whether the system has periodic boundary conditions."""
@@ -50,8 +53,8 @@ class _PropertiesMixin:
         if not np.all(n_atoms_list == n_atoms_list[0]):
             self.logger.error(
                 (
-                    "The number of atoms (or atoms in the topology), "
-                    "positions, velocities, forces and charges must be equal."
+                "The number of atoms (or atoms in the topology), "
+                "positions, velocities, forces and charges must be equal."
                 ),
                 exception=AtomicSystemError
             )
@@ -80,7 +83,10 @@ class _PropertiesMixin:
         relative_pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
 
         weighted_average_pos = np.sum(
-            relative_pos * self.atomic_masses[:, None], axis=0) / self.mass
+            relative_pos * self.atomic_masses[:,
+            None],
+            axis=0
+        ) / self.mass
 
         center_of_mass = self.cell.image(weighted_average_pos)
 

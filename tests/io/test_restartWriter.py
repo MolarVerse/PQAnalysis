@@ -12,7 +12,9 @@ from PQAnalysis.topology import Topology
 from PQAnalysis.io.restart_file.exceptions import RestartFileWriterError
 
 
+
 class TestRestartWriter:
+
     def test__init__(self):
         writer = RestartFileWriter("restart.dat")
         assert writer.filename == "restart.dat"
@@ -28,15 +30,23 @@ class TestRestartWriter:
     def test__get_atom_lines(self, capsys):
         writer = RestartFileWriter()
         atoms = [Atom("C"), Atom("H"), Atom("H")]
-        positions = np.array([[0.0, 0.0, 0.0],
-                              [1.0, 1.0, 1.0],
-                              [2.0, 2.0, 2.0]])
+        positions = np.array(
+            [[0.0,
+            0.0,
+            0.0],
+            [1.0,
+            1.0,
+            1.0],
+            [2.0,
+            2.0,
+            2.0]]
+        )
 
         frame = AtomicSystem(
-            topology=Topology(
-                atoms=atoms,
-                residue_ids=np.array([1, 2, 3])
-            ),
+            topology=Topology(atoms=atoms,
+            residue_ids=np.array([1,
+            2,
+            3])),
             pos=positions
         )
 
@@ -52,10 +62,18 @@ class TestRestartWriter:
         ]
 
         system = AtomicSystem(
-            atoms=[Atom("C"), Atom("H"), Atom("H")],
-            pos=np.array([[0.0, 0.0, 0.0],
-                          [1.0, 1.0, 1.0],
-                          [2.0, 2.0, 2.0]]),
+            atoms=[Atom("C"),
+            Atom("H"),
+            Atom("H")],
+            pos=np.array([[0.0,
+            0.0,
+            0.0],
+            [1.0,
+            1.0,
+            1.0],
+            [2.0,
+            2.0,
+            2.0]]),
         )
 
         atom_counter = np.array([0, 1])
@@ -68,28 +86,52 @@ class TestRestartWriter:
         )
 
         atom_lines = RestartFileWriter._get_atom_lines(system, 0)
-        assert atom_lines[0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
-        assert atom_lines[1] == "H    0    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
-        assert atom_lines[2] == "H    0    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[
+            0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[
+            1] == "H    0    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[
+            2] == "H    0    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
 
         atom_lines = RestartFileWriter._get_atom_lines(
-            system, np.array([0, 1, 2]))
-        assert atom_lines[0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
-        assert atom_lines[1] == "H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
-        assert atom_lines[2] == "H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
+            system,
+            np.array([0,
+            1,
+            2])
+        )
+        assert atom_lines[
+            0] == "C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[
+            1] == "H    1    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0"
+        assert atom_lines[
+            2] == "H    2    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0"
 
     def test_write(self, capsys):
         writer = RestartFileWriter()
         atoms = [Atom("C"), Atom("H"), Atom("H")]
-        positions = np.array([[0.0, 0.0, 0.0],
-                             [1.0, 1.0, 1.0],
-                             [2.0, 2.0, 2.0]])
-        velocities = np.array([[0.0, 0.0, 0.0],
-                              [1.0, 1.0, 1.0],
-                              [2.0, 2.0, 2.0]])
-        forces = np.array([[0.0, 0.0, 0.0],
-                          [1.0, 1.0, 1.0],
-                          [2.0, 2.0, 2.0]])
+        positions = np.array(
+            [[0.0,
+            0.0,
+            0.0],
+            [1.0,
+            1.0,
+            1.0],
+            [2.0,
+            2.0,
+            2.0]]
+        )
+        velocities = np.array(
+            [[0.0,
+            0.0,
+            0.0],
+            [1.0,
+            1.0,
+            1.0],
+            [2.0,
+            2.0,
+            2.0]]
+        )
+        forces = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]])
         cell = Cell(10.0, 10.0, 10.0)
         frame = AtomicSystem(
             atoms,

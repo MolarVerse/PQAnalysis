@@ -11,6 +11,7 @@ from decorator import decorator
 from beartype.typing import Any
 
 
+
 def count_decorator(func, *args, **kwargs) -> Any:  # pylint: disable=unused-argument, missing-function-docstring
     """
     Decorator which counts the number of times a function is called.
@@ -24,6 +25,7 @@ def count_decorator(func, *args, **kwargs) -> Any:  # pylint: disable=unused-arg
     kwargs : 
         The keyword arguments of the function.
     """
+
     def wrapper(*args, **kwargs):
         """
         A wrapper function to count the number of times a function is called.
@@ -38,6 +40,7 @@ def count_decorator(func, *args, **kwargs) -> Any:  # pylint: disable=unused-arg
     wrapper.counter = 0
 
     return wrapper
+
 
 
 @decorator
@@ -57,12 +60,14 @@ def instance_function_count_decorator(func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
+
 @decorator
 def timeit_in_class(func, *args, **kwargs) -> Any:
     """
     Decorator which measures the time a function of a class takes to execute
     and sets elapsed time as an attribute of the class.
     """
+
     def wrapper(*args, **kwargs) -> Any:
         """
         A wrapper function to measure the time a function takes to execute.
@@ -74,6 +79,7 @@ def timeit_in_class(func, *args, **kwargs) -> Any:
         return result
 
     return wrapper(*args, **kwargs)
+
 
 
 def get_arg_var_by_name(func, args, arg_name):

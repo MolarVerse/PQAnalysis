@@ -5,6 +5,7 @@ A module containing api functions to handle trajectories and frame objects.
 from PQAnalysis.core import Cells
 
 
+
 def check_trajectory_pbc(cells: Cells) -> bool:
     """
     Checks no cell in the trajectory is Cell() i.e. 
@@ -25,6 +26,7 @@ def check_trajectory_pbc(cells: Cells) -> bool:
         return False
 
     return all(not cell.is_vacuum for cell in cells)
+
 
 
 def check_trajectory_vacuum(cells: Cells) -> bool:
