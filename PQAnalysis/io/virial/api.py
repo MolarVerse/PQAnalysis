@@ -4,9 +4,12 @@ A module containing the API for reading virial and stress files.
 
 from beartype.typing import List
 
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .virial_reader import VirialFileReader, StressFileReader
 
 
+@runtime_type_checking
 def read_virial_file(filename: str) -> List:
     """
     Read a virial file.
@@ -25,6 +28,7 @@ def read_virial_file(filename: str) -> List:
     return reader.read()
 
 
+@runtime_type_checking
 def read_stress_file(filename: str) -> List:
     """
     Read a stress file.
