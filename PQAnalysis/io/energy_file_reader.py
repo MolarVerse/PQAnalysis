@@ -11,6 +11,7 @@ from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.exceptions import PQFileNotFoundError
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .base import BaseReader
 from .info_file_reader import InfoFileReader
@@ -24,6 +25,7 @@ class EnergyFileReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self,
                  filename: str,
                  info_filename: str | None = None,
