@@ -62,6 +62,14 @@ class PQKeyError(PQException):
 
 
 
+class PQValueError(PQException):
+
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+
+
 class BaseEnumFormatError(PQException):
 
     """

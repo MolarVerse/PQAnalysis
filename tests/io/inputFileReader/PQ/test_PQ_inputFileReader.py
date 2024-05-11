@@ -7,7 +7,7 @@ from ... import pytestmark
 from PQAnalysis.io.input_file_reader.pq.pq_input_file_reader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.input_file_reader import PQInputFileReader as InputFileReader
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
-from PQAnalysis.exceptions import PQKeyError
+from PQAnalysis.exceptions import PQValueError
 
 
 
@@ -33,7 +33,7 @@ class TestPQ_inputFileReader:
         assert _increase_digit_string(digit_string) == "0010"
 
         digit_string = "00.09"
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             _increase_digit_string(digit_string)
         assert str(
             exception.value
@@ -44,7 +44,7 @@ class TestPQ_inputFileReader:
 
     def test__get_digit_string_from_filename(self):
         filename = "input.in"
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             _get_digit_string_from_filename(filename)
         assert str(
             exception.value
@@ -120,7 +120,7 @@ class TestPQ_inputFileReader:
         # testing if ValueError is raised if no start file is defined
         input_file_reader = InputFileReader("no_start_file.in")
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader.read()
         assert str(
             exception.value
@@ -145,7 +145,7 @@ class TestPQ_inputFileReader:
         input_file_reader = InputFileReader("n_not_matching.in")
         input_file_reader.read()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader._parse_start_n()
         assert str(
             exception.value
@@ -172,7 +172,7 @@ class TestPQ_inputFileReader:
         input_file_reader = InputFileReader("n_not_matching.in")
         input_file_reader.read()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader._parse_actual_n()
         assert str(
             exception.value
@@ -183,7 +183,7 @@ class TestPQ_inputFileReader:
         input_file_reader = InputFileReader("no_output_files.in")
         input_file_reader.read()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader._parse_actual_n()
         assert str(
             exception.value
@@ -201,7 +201,7 @@ class TestPQ_inputFileReader:
         )
         input_file_reader.read()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader.continue_input_file(2)
         assert str(
             exception.value
@@ -213,7 +213,7 @@ class TestPQ_inputFileReader:
         )
         input_file_reader.read()
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             input_file_reader.continue_input_file(2)
         assert str(
             exception.value
