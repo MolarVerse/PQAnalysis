@@ -2,22 +2,32 @@
 A module containing the GenFileWriter class
 """
 
+import logging
+
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.io.base import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 
 
 class GenFileWriter(BaseWriter):
+
     """
     A class for writing gen files.
     """
 
-    def __init__(self,
-                 filename: str,
-                 mode: FileWritingMode | str = "w",
-                 ) -> None:
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    def __init__(
+        self,
+        filename: str,
+        mode: FileWritingMode | str = "w",
+    ) -> None:
         """
         Parameters
         ----------
@@ -35,10 +45,11 @@ class GenFileWriter(BaseWriter):
         self.system = None
         self.periodic = None
 
-    def write(self,
-              system: AtomicSystem,
-              periodic: bool | None = None,
-              ) -> None:
+    def write(
+        self,
+        system: AtomicSystem,
+        periodic: bool | None = None,
+    ) -> None:
         """
         Writes the system to the file.
 
@@ -57,7 +68,8 @@ class GenFileWriter(BaseWriter):
         if periodic is not None:
             if periodic and self.system.cell.is_vacuum:
                 raise ValueError(
-                    "Invalid periodicity. The system is non-periodic.")
+                    "Invalid periodicity. The system is non-periodic."
+                )
 
             if periodic:
                 self.periodic = "S"
@@ -106,9 +118,12 @@ class GenFileWriter(BaseWriter):
                 "\t",
                 i + 1,
                 element_names.index(self.system.atoms[i].element_name) + 1,
-                self.system.pos[i, 0],
-                self.system.pos[i, 1],
-                self.system.pos[i, 2],
+                self.system.pos[i,
+                0],
+                self.system.pos[i,
+                1],
+                self.system.pos[i,
+                2],
                 file=self.file
             )
 
@@ -125,16 +140,14 @@ class GenFileWriter(BaseWriter):
         """
         box_matrix = np.transpose(self.system.cell.box_matrix)
 
-        print(
-            0.0,
-            0.0,
-            0.0,
-            file=self.file
-        )
+        print(0.0, 0.0, 0.0, file=self.file)
         for i in range(3):
             print(
-                box_matrix[i, 0],
-                box_matrix[i, 1],
-                box_matrix[i, 2],
+                box_matrix[i,
+                0],
+                box_matrix[i,
+                1],
+                box_matrix[i,
+                2],
                 file=self.file
             )
