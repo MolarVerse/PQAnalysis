@@ -1,10 +1,11 @@
 import numpy as np
 import pytest
 
-from . import pytestmark
-
 from PQAnalysis.topology import Selection, Topology
 from PQAnalysis.core import Atom, Element, Residue
+from PQAnalysis.exceptions import PQValueError
+
+from . import pytestmark
 
 
 
@@ -55,7 +56,7 @@ class TestSelection:
         assert np.all(indices == np.array([]))
 
         selection = Selection([Element(7), Element('h')])
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             selection.select(self.topology, use_full_atom_info=True)
         assert str(
             exception.value
