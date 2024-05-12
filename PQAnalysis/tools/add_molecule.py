@@ -2,7 +2,7 @@
 A module containing functions and classes to add a molecule/AtomicSystem to a restart file.
 """
 
-import warnings
+import logging
 import numpy as np
 
 from beartype.typing import List
@@ -10,6 +10,10 @@ from beartype.typing import List
 from PQAnalysis.io.formats import OutputFileFormat, FileWritingMode
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.exceptions import PQValueError
+
 from PQAnalysis.types import (
     PositiveInt,
     PositiveReal,
@@ -99,11 +103,11 @@ def add_molecule(
 
     Raises
     ------
-    ValueError
+    PQValueError
         If the molecule file type is not RESTART and a moldescriptor file is specified.
     """
 
-    check_topology_args(
+    _check_topology_args(
         topology_file,
         topology_file_to_add,
         topology_file_output
@@ -136,7 +140,7 @@ def add_molecule(
 
 
 
-def check_topology_args(
+def _check_topology_args(
     topology_file: str | None,
     topology_file_to_add: str | None,
     topology_file_output: str | None
@@ -146,9 +150,9 @@ def check_topology_args(
 
     If the topology_file is None and the topology_file_to_add is None,
     the output topology file will be ignored. If the topology_file is 
-    None and the topology_file_to_add is not None, a ValueError is raised.
+    None and the topology_file_to_add is not None, a PQValueError is raised.
     If the topology_file is not None and the topology_file_to_add is None,
-    a ValueError is raised. If the output topology file is None, a ValueError is raised.
+    a PQValueError is raised. If the output topology file is None, a PQValueError is raised.
 
     Parameters
     ----------
@@ -161,17 +165,17 @@ def check_topology_args(
 
     Raises
     ------
-    ValueError
+    PQValueError
         If the topology_file is None and the topology_file_to_add is not None.
-    ValueError
+    PQValueError
         If the topology_file is not None and the topology_file_to_add is None.
-    ValueError
+    PQValueError
         If the output topology file is None.
     """
 
     if topology_file is None and topology_file_to_add is None:
         if topology_file_output is not None:
-            warnings.warn(
+            AddMolecule.logger.warning(
                 (
                 "The output topology file is specified, but no topology "
                 "files are given to add. The output topology file will be ignored."
@@ -181,20 +185,25 @@ def check_topology_args(
         return
 
     if topology_file is None and topology_file_to_add is not None:
-        raise ValueError(
-            "The topology file must be specified if a topology file to add is given."
+        AddMolecule.logger.error(
+            "The topology file must be specified if a topology file to add is given.",
+            exception=PQValueError
         )
 
     if topology_file is not None and topology_file_to_add is None:
-        raise ValueError(
-            "The topology file to add must be specified if a topology file is given."
+        AddMolecule.logger.error(
+            "The topology file to add must be specified if a topology file is given.",
+            exception=PQValueError
         )
 
     if topology_file_output is None:
-        raise ValueError(
+        AddMolecule.logger.error(
+            (
             "The output topology file must be specified if topology files are "
             "given to add. This is a special case where None cannot be treated "
             "as stdout as it is already used for the restart file."
+            ),
+            exception=PQValueError
         )
 
 
@@ -213,6 +222,9 @@ class AddMolecule:
     The class can also add a moldescriptor file to the restart file
     to keep track of the fitting.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def __init__(
         self,
@@ -271,9 +283,9 @@ class AddMolecule:
 
         Raises
         ------
-        ValueError
+        PQValueError
             If the molecule file type is not RESTART and a moldescriptor file is specified.
-        ValueError
+        PQValueError
             If the molecule file type is not RESTART or XYZ.
         """
         self.restart_file = restart_file
@@ -298,16 +310,18 @@ class AddMolecule:
             self.molecule_file)
         )
 
-        if (self.molecule_file_type != OutputFileFormat.RESTART
-                and self.molecule_moldescriptor_file is not None):
-            raise ValueError(
-                "A moldescriptor file can only be specified for restart files."
+        if (self.molecule_file_type != OutputFileFormat.RESTART and
+                self.molecule_moldescriptor_file is not None):
+            self.logger.error(
+                "A moldescriptor file can only be specified for restart files.",
+                exception=PQValueError
             )
 
         if self.molecule_file_type not in [OutputFileFormat.RESTART,
             OutputFileFormat.XYZ]:
-            raise ValueError(
-                "The molecule file type must be either RESTART or XYZ."
+            self.logger.error(
+                "The molecule file type must be either RESTART or XYZ.",
+                exception=PQValueError
             )
 
     def write_restart_file(self) -> None:
@@ -350,26 +364,28 @@ class AddMolecule:
 
         Raises
         ------
-        ValueError
+        PQValueError
             If the restart system or the molecule is not read before extending the topology file.
         """
 
-        warnings.warn(
+        self.logger.warning(
             (
             "Extension of the topology file is only implemented for shake bonds. "
             "The extension of general bonded topologies is not implemented yet."
-            ),
-            UserWarning
+            )
         )
 
         original_topology = read_topology_file(original_shake_file)
         new_topology = read_topology_file(extension_shake_file)
 
         if self.restart_system is None or self.molecule is None:
-            raise ValueError(
+            self.logger.error(
+                (
                 "The restart frame and the molecule must be read "
                 "before extending the topology file. Either call "
                 "the read_files method or the add_molecules method first."
+                ),
+                exception=PQValueError
             )
 
         original_topology.extend_shake_bonds(
