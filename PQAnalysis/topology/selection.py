@@ -263,7 +263,7 @@ def _selection_of_atoms(
     if isinstance(atoms[0], Element):
         if use_full_atom_info:
             Selection.logger.error(
-                "The use_full_atom_info parameter is not supported for Element objects.",,
+                "The use_full_atom_info parameter is not supported for Element objects.",
                 exception=PQValueError
             )
 
@@ -625,7 +625,10 @@ class SelectionTransformer(Transformer):
             return np.arange(items[0], items[2] + 1, items[1])
 
         # should never be reached
-        Selection.logger.error("The indices Token must have 2 or 3 items.", exception=PQValueError)
+        Selection.logger.error(
+            "The indices Token must have 2 or 3 items.",
+            exception=PQValueError
+        )
 
     def all(self, _) -> Np1DIntArray:
         """
