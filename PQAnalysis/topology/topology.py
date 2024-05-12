@@ -15,12 +15,10 @@ from PQAnalysis.core import Residues, Residue, QMResidue, Atoms, Element
 from PQAnalysis.types import Np1DIntArray
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 
 from .exceptions import TopologyError
 from .bonded_topology.bonded_topology import BondedTopology
-
-module_logger = logging.getLogger(__package_name__).getChild(__name__)
-module_logger = setup_logger(module_logger)
 
 
 
@@ -50,7 +48,9 @@ class Topology:
     """
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(
         self,
         atoms: Atoms | None = None,
@@ -96,12 +96,6 @@ class Topology:
             that the bonded topology is compatible with the topology!
         """
 
-        #################
-        # Set up logger #
-        #################
-
-        self.logger = setup_logger(self.logger)
-
         self._check_residues = check_residues
 
         if atoms is None:
@@ -119,8 +113,9 @@ class Topology:
         if residue_ids is None:
             residue_ids = np.zeros(len(self.atoms), dtype=int)
         if len(self.atoms) != len(residue_ids):
-            raise TopologyError(
-                "The number of atoms does not match the number of residue ids."
+            self.logger.error(
+                "The number of atoms does not match the number of residue ids.",
+                exception=TopologyError
             )
 
         self.setup_residues(residue_ids)
@@ -426,10 +421,13 @@ please set 'check_residues' to False"""
         return self._check_residues
 
     @check_residues.setter
+    @runtime_type_checking_setter
     def check_residues(self, value: bool) -> None:
         self._check_residues = value
         self._residues, self._atoms = self._setup_residues(
-            self.residue_ids, self.atoms)
+            self.residue_ids,
+            self.atoms
+        )
 
     @property
     def reference_residue_ids(self) -> Np1DIntArray:
@@ -442,6 +440,7 @@ please set 'check_residues' to False"""
         return self._reference_residues
 
     @reference_residues.setter
+    @runtime_type_checking_setter
     def reference_residues(self, value: Residues):
         self._reference_residues = value
 
@@ -537,13 +536,13 @@ def _find_residue_by_id(res_id: Integral, residues: Residues) -> Residue:
     residue = residues[np.argwhere(bool_array)].flatten()
 
     if len(residue) > 1:
-        module_logger.error(
+        Topology.logger.error(
             f"The residue id {res_id} is not unique.",
             exception=ResidueError
         )
 
     if len(residue) == 0:
-        module_logger.error(
+        Topology.logger.error(
             f"The residue id {res_id} was not found.",
             exception=ResidueError
         )

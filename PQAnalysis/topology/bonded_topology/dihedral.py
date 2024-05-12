@@ -3,6 +3,7 @@ A module containing the Dihedral class.
 """
 
 from PQAnalysis.types import PositiveInt, PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
@@ -12,6 +13,7 @@ class Dihedral:
     A class to represent a dihedral in a molecular topology.
     """
 
+    @runtime_type_checking
     def __init__(
         self,
         index1: PositiveInt,
@@ -92,10 +94,10 @@ class Dihedral:
             return False
 
         return (
-            self.index1 == value.index1 and self.index2 == value.index2
-            and self.index3 == value.index3 and self.index4 == value.index4
-            and self.equilibrium_angle == value.equilibrium_angle
-            and self.dihedral_type == value.dihedral_type
-            and self.is_linker == value.is_linker
-            and self.is_improper == value.is_improper
+            self.index1 == value.index1 and self.index2 == value.index2 and
+            self.index3 == value.index3 and self.index4 == value.index4 and
+            self.equilibrium_angle == value.equilibrium_angle and
+            self.dihedral_type == value.dihedral_type and
+            self.is_linker == value.is_linker and
+            self.is_improper == value.is_improper
         )
