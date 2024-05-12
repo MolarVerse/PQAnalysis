@@ -2,10 +2,18 @@
 A module containing different format types of the trajectory.
 """
 
+import logging
+
 from beartype.typing import Any
 
 from PQAnalysis.formats import BaseEnumFormat
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+
 from .exceptions import TrajectoryFormatError, MDEngineFormatError
+
+logger = logging.getLogger(__package_name__).getChild("TrajectoryFormat")
+logger = setup_logger(logger)
 
 
 
@@ -57,8 +65,9 @@ class TrajectoryFormat(BaseEnumFormat):
         traj_format = super()._missing_(value, TrajectoryFormatError)
 
         if traj_format == cls.AUTO and filename is None:
-            raise TrajectoryFormatError(
-                "The trajectory format could not be inferred from the file extension."
+            logger.error(
+                "The trajectory format could not be inferred from the file extension.",
+                exception=TrajectoryFormatError
             )
 
         if traj_format == cls.AUTO:
@@ -87,16 +96,19 @@ class TrajectoryFormat(BaseEnumFormat):
         if (file_path.endswith(".vel") or file_path.endswith(".velocs")):
             return cls.VEL
 
-        if (file_path.endswith(".force") or file_path.endswith(".forces")
-                or file_path.endswith(".frc")):
+        if (file_path.endswith(".force") or file_path.endswith(".forces") or
+                file_path.endswith(".frc")):
             return cls.FORCE
 
         if (file_path.endswith(".charge") or file_path.endswith(".chrg")):
             return cls.CHARGE
 
-        raise TrajectoryFormatError(
+        logger.error(
+            (
             "Could not infer the trajectory format from the file "
             f"extension of the file {file_path}."
+            ),
+            exception=TrajectoryFormatError
         )
 
     def lower(self) -> str:

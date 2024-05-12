@@ -6,9 +6,15 @@ topology and is used to store the bonds, angles, dihedrals,
 impropers, and shake bonds of a molecular system along with their properties.
 """
 
+import logging
+
 from beartype.typing import List
 
 from PQAnalysis.types import PositiveInt
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .bond import Bond
 from .angle import Angle
@@ -26,6 +32,10 @@ class BondedTopology(TopologyPropertiesMixin):
     A mixin class to add the most common properties of a topology.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(
         self,
         bonds: List[Bond] | None = None,
@@ -61,6 +71,7 @@ class BondedTopology(TopologyPropertiesMixin):
 
         self.ordering_keys = ordering_keys
 
+    @runtime_type_checking
     def extend_shake_bonds(
         self,
         shake_bonds: List[Bond],
@@ -87,15 +98,16 @@ class BondedTopology(TopologyPropertiesMixin):
 
         Raises
         ------
-        ValueError
+        PQValueError
             If n_atoms_per_extension is not provided and n_extensions is not 1.
-        ValueError
+        PQValueError
             If n_atoms_per_extension is less than the highest index in the provided shake bonds.
         """
 
         if n_extensions != 1 and n_atoms_per_extension is None:
-            raise ValueError(
-                "n_atoms_per_extension must be provided if n_extensions is not 1."
+            self.logger.error(
+                "n_atoms_per_extension must be provided if n_extensions is not 1.",
+                exception=PQValueError
             )
 
         max_index_shake_bonds = max(
@@ -106,9 +118,12 @@ class BondedTopology(TopologyPropertiesMixin):
         if n_atoms_per_extension is None:
             n_atoms_per_extension = 0
         elif n_atoms_per_extension < max_index_shake_bonds:
-            raise ValueError(
+            self.logger.error(
+                (
                 "n_atoms_per_extension must be greater or equal "
                 "than the highest index in the provided shake bonds."
+                ),
+                exception=PQValueError
             )
 
         for i in range(n_extensions):

@@ -2,6 +2,8 @@
 A module containing the Energy class.
 """
 
+import logging
+
 from collections import defaultdict
 
 import numpy as np
@@ -9,6 +11,10 @@ import numpy as np
 from beartype.typing import Dict
 
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .exceptions import EnergyError
 
 
@@ -24,6 +30,10 @@ class Energy():
     was found.
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(
         self,
         data: Np1DNumberArray | Np2DNumberArray,
@@ -121,8 +131,9 @@ class Energy():
         else:
             self.info_given = True
             if len(info) != len(self.data):
-                raise EnergyError(
-                    "The length of info dictionary has to be equal to the length of data."
+                self.logger.error(
+                    "The length of info dictionary has to be equal to the length of data.",
+                    exception=EnergyError
                 )
 
         if units is None:
@@ -131,8 +142,9 @@ class Energy():
         else:
             self.units_given = True
             if len(units) != len(self.data):
-                raise EnergyError(
-                    "The length of units dictionary has to be equal to the length of data."
+                self.logger.error(
+                    "The length of units dictionary has to be equal to the length of data.",
+                    exception=EnergyError
                 )
 
         self.info = info
@@ -140,8 +152,9 @@ class Energy():
 
         if self.info_given and self.units_given and units.keys() != info.keys(
         ):
-            raise EnergyError(
-                "The keys of the info and units dictionary do not match."
+            self.logger.error(
+                "The keys of the info and units dictionary do not match.",
+                exception=EnergyError
             )
 
     def _make_attributes(self) -> None:

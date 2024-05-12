@@ -3,6 +3,7 @@ A module containing the Angle class.
 """
 
 from PQAnalysis.types import PositiveInt, PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
@@ -12,6 +13,7 @@ class Angle:
     A class to represent an angle in a molecular topology.
     """
 
+    @runtime_type_checking
     def __init__(
         self,
         index1: PositiveInt,
@@ -82,9 +84,9 @@ class Angle:
             return False
 
         return (
-            self.index1 == value.index1 and self.index2 == value.index2
-            and self.index3 == value.index3
-            and self.equilibrium_angle == value.equilibrium_angle
-            and self.angle_type == value.angle_type
-            and self.is_linker == value.is_linker
+            self.index1 == value.index1 and self.index2 == value.index2 and
+            self.index3 == value.index3 and
+            self.equilibrium_angle == value.equilibrium_angle and
+            self.angle_type == value.angle_type and
+            self.is_linker == value.is_linker
         )

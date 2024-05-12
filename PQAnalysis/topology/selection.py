@@ -2,6 +2,7 @@
 A module containing the Selection class and related functions/classes.
 """
 # library imports
+import logging
 import numpy as np
 
 # 3rd party object imports
@@ -9,9 +10,13 @@ from lark import Visitor, Tree, Lark, Transformer, Token
 from beartype.typing import List, TypeVar, Any
 
 # local imports
-from PQAnalysis import __base_path__
+from PQAnalysis import __base_path__, __package_name__
 from PQAnalysis.types import Np1DIntArray
 from PQAnalysis.core import Atom, Atoms, Element, Elements
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .topology import Topology
 
 #: | A type variable for the Selection class.
@@ -106,6 +111,10 @@ class Selection:
     The atom counting always starts with 0!
     """
 
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
+
+    @runtime_type_checking
     def __init__(self, selection_object: SelectionCompatible = None):
         """
         Parameters
@@ -118,6 +127,7 @@ class Selection:
         else:
             self.selection_object = selection_object
 
+    @runtime_type_checking
     def select(
         self,
         topology: Topology,
@@ -244,7 +254,7 @@ def _selection_of_atoms(
 
     Raises
     ------
-    ValueError
+    PQValueError
         If the use_full_atom_info parameter is True and the atoms parameter is an Element object.
     """
     if isinstance(atoms, (Atom, Element)):
@@ -252,8 +262,9 @@ def _selection_of_atoms(
 
     if isinstance(atoms[0], Element):
         if use_full_atom_info:
-            raise ValueError(
-                "The use_full_atom_info parameter is not supported for Element objects."
+            Selection.logger.error(
+                "The use_full_atom_info parameter is not supported for Element objects.",
+                exception=PQValueError
             )
 
         atoms = [Atom(element.symbol, element.symbol) for element in atoms]
@@ -600,6 +611,11 @@ class SelectionTransformer(Transformer):
         -------
         Np1DIntArray
             The indices of the indices Token.
+            
+        Raises
+        ------
+        PQValueError
+            If the indices Token has more than 3 items. Should never be reached.
         """
 
         if len(items) == 2:
@@ -609,7 +625,10 @@ class SelectionTransformer(Transformer):
             return np.arange(items[0], items[2] + 1, items[1])
 
         # should never be reached
-        raise ValueError("The indices Token must have 2 or 3 items.")
+        Selection.logger.error(
+            "The indices Token must have 2 or 3 items.",
+            exception=PQValueError
+        )
 
     def all(self, _) -> Np1DIntArray:
         """

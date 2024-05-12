@@ -3,11 +3,13 @@ A module containing the tool to compute a center of mass trajectory for a given 
 """
 
 from PQAnalysis.traj import Trajectory
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
 # TODO: add atom to element mapper if atom name not element names
 # TODO rethink concept of selection/getitem/slices
+@runtime_type_checking
 def traj_to_com_traj(
     trajectory: Trajectory,
     selection=None,

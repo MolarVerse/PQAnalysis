@@ -85,7 +85,7 @@ class Atom():
         name: str | int,
         element_id: int | str | None = None,
         use_guess_element: bool = True,
-        **kwargs
+        **_kwargs
     ) -> None:
         """
         Constructs all the necessary attributes for the Atom object.
@@ -109,6 +109,9 @@ class Atom():
             Whether to use the guess_element function to determine
             the element type of the atom_type by its name,
             by default True
+        **_kwargs
+            Additional keyword arguments that are not used by the function but 
+            by the runtime type checker.
 
         Raises
         ------

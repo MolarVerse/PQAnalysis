@@ -7,11 +7,14 @@ from beartype.typing import List
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.io import FileWritingMode, read_restart_file
 from PQAnalysis.types import Np1DIntArray
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .selection import SelectionCompatible, Selection
 from .shake_topology import ShakeTopologyGenerator
 
 
 
+@runtime_type_checking
 def generate_shake_topology_file(
     trajectory: Trajectory,
     selection: SelectionCompatible = None,
@@ -48,6 +51,7 @@ def generate_shake_topology_file(
 
 
 
+@runtime_type_checking
 def select_from_restart_file(
     selection: SelectionCompatible,
     restart_file: str,

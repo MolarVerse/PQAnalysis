@@ -9,6 +9,8 @@ from beartype.typing import List
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.types import Np1DIntArray, Np2DIntArray
 from PQAnalysis.io import BaseWriter, FileWritingMode
+from PQAnalysis.type_checking import runtime_type_checking
+
 from .selection import SelectionCompatible, Selection
 
 
@@ -19,6 +21,7 @@ class ShakeTopologyGenerator:
     A class for generating the shake topology for a given trajectory
     """
 
+    @runtime_type_checking
     def __init__(
         self,
         selection: SelectionCompatible = None,
@@ -44,6 +47,7 @@ class ShakeTopologyGenerator:
         self.distances = None
         self._topology = None
 
+    @runtime_type_checking
     def generate_topology(self, trajectory: Trajectory) -> None:
         """
         Generates a tuple of indices, target_indices, and distances for the given trajectory.
@@ -89,6 +93,7 @@ class ShakeTopologyGenerator:
         self.target_indices = target_indices
         self.distances = np.mean(np.array(distances), axis=0)
 
+    @runtime_type_checking
     def average_equivalents(
         self,
         indices: List[Np1DIntArray] | Np2DIntArray
@@ -113,6 +118,7 @@ class ShakeTopologyGenerator:
 
             self.distances[_indices] = mean_distance
 
+    @runtime_type_checking
     def write_topology(
         self,
         filename: str | None = None,
