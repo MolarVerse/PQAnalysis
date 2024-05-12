@@ -13,6 +13,7 @@ from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.type_checking import runtime_type_checking
 
 from PQAnalysis.types import (
     PositiveInt,
@@ -29,6 +30,7 @@ from PQAnalysis.io import (
 
 
 
+@runtime_type_checking
 def add_molecule(
     restart_file: str,
     molecule_file: str,
@@ -226,6 +228,7 @@ class AddMolecule:
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(
         self,
         restart_file: str,
@@ -324,6 +327,7 @@ class AddMolecule:
                 exception=PQValueError
             )
 
+    @runtime_type_checking
     def write_restart_file(self) -> None:
         """
         Write the restart file with the added molecule.
@@ -344,6 +348,7 @@ class AddMolecule:
 
         writer._write_lines_to_file(lines)  # pylint: disable=protected-access
 
+    @runtime_type_checking
     def extend_topology_file(
         self,
         original_shake_file: str,
@@ -406,7 +411,7 @@ class AddMolecule:
         List[AtomicSystem]
             The fitted atomic systems.
         """
-        self.read_files()
+        self._read_files()
 
         fitted_systems = self.restart_system.fit_atomic_system(
             system=self.molecule,
@@ -419,7 +424,7 @@ class AddMolecule:
 
         return list(np.atleast_1d(fitted_systems))
 
-    def read_files(self):
+    def _read_files(self):
         """
         Read the restart and molecule files.
         """
@@ -429,9 +434,9 @@ class AddMolecule:
             md_engine_format=self.md_engine_format
         )
 
-        self.molecule = self.read_molecule_file()
+        self.molecule = self._read_molecule_file()
 
-    def read_molecule_file(self) -> AtomicSystem:
+    def _read_molecule_file(self) -> AtomicSystem:
         """
         Read the molecule file.
 
