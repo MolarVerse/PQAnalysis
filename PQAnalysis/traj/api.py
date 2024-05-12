@@ -3,9 +3,11 @@ A module containing api functions to handle trajectories and frame objects.
 """
 
 from PQAnalysis.core import Cells
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
+@runtime_type_checking
 def check_trajectory_pbc(cells: Cells) -> bool:
     """
     Checks no cell in the trajectory is Cell() i.e. 
@@ -29,6 +31,7 @@ def check_trajectory_pbc(cells: Cells) -> bool:
 
 
 
+@runtime_type_checking
 def check_trajectory_vacuum(cells: Cells) -> bool:
     """
     Checks if all cells of the trajectory are in vacuum i.e. cell = Cell().
