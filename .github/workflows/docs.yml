@@ -51,10 +51,11 @@ jobs:
           cd docs
           make clean
           rm source/code/*
-          sphinx-apidoc -o source/code/ ../PQAnalysis
+          bash autodoc.sh
           make html
           cd build/html
           touch .nojekyll
+        shell: bash
 
       # Deployment job
       - name: deploy
