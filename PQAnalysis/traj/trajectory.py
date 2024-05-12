@@ -14,6 +14,7 @@ from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 
 
 
@@ -32,6 +33,7 @@ class Trajectory:
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
 
+    @runtime_type_checking
     def __init__(
         self,
         frames: List[AtomicSystem] | AtomicSystem | None = None
@@ -88,6 +90,7 @@ class Trajectory:
 
         return not any(frame.pbc for frame in self.frames)
 
+    @runtime_type_checking
     def append(self, frame: AtomicSystem) -> None:
         """
         Appends a frame to the trajectory.
@@ -100,6 +103,7 @@ class Trajectory:
 
         self.frames.append(frame)
 
+    @runtime_type_checking
     def pop(self, index: int = -1) -> AtomicSystem:
         """
         Removes a frame from the trajectory at the specified index.
@@ -181,6 +185,7 @@ class Trajectory:
             frame.topology = self.topology
             yield frame
 
+    @runtime_type_checking
     def window(
         self,
         window_size: int,
@@ -287,6 +292,7 @@ class Trajectory:
             window_gap):
             yield self[i:i + window_size]
 
+    @runtime_type_checking
     def __contains__(self, item: AtomicSystem) -> bool:
         """
         This method allows a frame to be checked for membership in a trajectory.
@@ -303,6 +309,7 @@ class Trajectory:
         """
         return item in self.frames
 
+    @runtime_type_checking
     def __add__(self, other: "Trajectory") -> "Trajectory":
         """
         This method allows two trajectories to be added together.
@@ -361,6 +368,7 @@ class Trajectory:
         return self._frames
 
     @frames.setter
+    @runtime_type_checking_setter
     def frames(self, frames: List[AtomicSystem]) -> None:
         self._frames = frames
 
@@ -376,6 +384,7 @@ class Trajectory:
         return topology
 
     @topology.setter
+    @runtime_type_checking_setter
     def topology(self, topology: Topology) -> None:
         if len(self.frames) != 0:
             self.frames[0].topology = topology
