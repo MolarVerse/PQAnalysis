@@ -14,6 +14,7 @@ from PQAnalysis.types import PositiveInt
 from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .bond import Bond
 from .angle import Angle
@@ -34,6 +35,7 @@ class BondedTopology(TopologyPropertiesMixin):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(
         self,
         bonds: List[Bond] | None = None,
@@ -69,6 +71,7 @@ class BondedTopology(TopologyPropertiesMixin):
 
         self.ordering_keys = ordering_keys
 
+    @runtime_type_checking
     def extend_shake_bonds(
         self,
         shake_bonds: List[Bond],
