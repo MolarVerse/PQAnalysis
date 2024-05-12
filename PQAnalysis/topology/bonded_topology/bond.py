@@ -3,6 +3,7 @@ A module containing the Bond class.
 """
 
 from PQAnalysis.types import PositiveInt, PositiveReal
+from PQAnalysis.type_checking import runtime_type_checking
 
 
 
@@ -12,6 +13,7 @@ class Bond:
     A class to represent a bond in a molecular topology.
     """
 
+    @runtime_type_checking
     def __init__(
         self,
         index1: PositiveInt,
@@ -82,9 +84,9 @@ class Bond:
             return False
 
         return (
-            self.index1 == value.index1 and self.index2 == value.index2
-            and self.equilibrium_distance == value.equilibrium_distance
-            and self.bond_type == value.bond_type
-            and self.is_linker == value.is_linker
-            and self.is_shake == value.is_shake
+            self.index1 == value.index1 and self.index2 == value.index2 and
+            self.equilibrium_distance == value.equilibrium_distance and
+            self.bond_type == value.bond_type and
+            self.is_linker == value.is_linker and
+            self.is_shake == value.is_shake
         )
