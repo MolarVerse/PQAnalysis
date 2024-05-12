@@ -1,0 +1,54 @@
+start: expression
+
+expression: statement NEWLINE*
+
+or_statement: statement ((",") statement)*
+
+?and_statement.2: statement (("&") statement)*
+
+?without_statement.3: statement (("|") statement)*
+
+?statement: atomic_expression
+          | and_statement
+          | without_statement
+          | or_statement
+          | ("(") statement (")")
+
+?atomic_expression: atomtype 
+                 | atom
+                 | element
+                 | residue
+                 | residue_number
+                 | index 
+                 | indices
+                 | all
+
+atomtype: word
+
+atom: "atom("i word "," (letters | unsigned_integer+) ")"
+
+element: "elem("i (letters | unsigned_integer+) ")"
+
+residue: "res("i (letters | unsigned_integer+) ")"
+
+residue_number: "res~"i (index | indices)
+
+index.2: integer
+
+indices.2: integer ("-"|"..") integer (".." integer)?
+
+all.3: "all" | "*"
+
+?word.2: (LETTER|DIGIT)+
+?letters.2: LETTER+
+?integer.2: INT
+?unsigned_integer: UNSIGNED_INT
+
+%import .terminals.DIGIT
+%import .terminals.NEWLINE
+%import .terminals.LETTER
+%import .terminals.SIGNED_INT -> INT
+%import .terminals.INT -> UNSIGNED_INT
+%import .terminals.WS
+
+%ignore WS

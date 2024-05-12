@@ -1,0 +1,19 @@
+INT: DIGIT+
+SIGNED_INT: ["+"|"-"] INT
+            
+_EXP: ("e"|"E") SIGNED_INT
+DECIMAL: SIGNED_INT "." INT
+FLOAT: SIGNED_INT _EXP | DECIMAL _EXP?
+            
+BOOL: "true"i | "false"i
+
+COMMENT: /#.*/ NEWLINE
+
+WORD: ("_"|"-"|"."|LETTER|DIGIT)+
+
+%import common.NEWLINE
+%import common.WS
+%import common.WS_INLINE
+%import common.LETTER
+%import common.DIGIT
+%import common.LETTER

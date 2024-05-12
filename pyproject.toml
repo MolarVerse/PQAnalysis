@@ -12,8 +12,8 @@ authors = [
   { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
   { name="Clarissa A. Seidler", email="clarissa.seidler@gmail.com" },
 ]
-description = "PQAnalysis is a python package for the analysis of PIMD-QMCF simulations."
-requires-python = ">=3.10"
+description = "PQAnalysis is a python package for the analysis of PQ simulations."
+requires-python = ">=3.12"
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -23,31 +23,50 @@ classifiers = [
 
 dependencies = [
     "numpy",
+    "scipy",
     "beartype",
     "multimethod",
+    "lark",
+    "tqdm",
+    "decorator",
+    "argcomplete",
+    "yapf",
+    "rich-argparse",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
     "coverage",
-    "pytest-cov"
+    "pytest-cov",
+    "pylint",
+    "pylint-django",
+    "docstr-coverage",
 ]
 docs = [
     "sphinx",
     "sphinx-sitemap",
     "myst-parser",
-    "sphinx-rtd-theme"
+    "sphinx-rtd-theme",
+    "better-apidoc",
+    "six",
+    "docstr-coverage",
 ]
 
 [tool.setuptools_scm]
 version_file = "PQAnalysis/_version.py"
 
 [project.scripts]
+pqanalysis = "PQAnalysis.cli.main:main"
 traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
+continue_input = "PQAnalysis.cli.continue_input:main"
+rdf = "PQAnalysis.cli.rdf:main"
+add_molecules = "PQAnalysis.cli.add_molecules:main"
+activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
+build_nep_traj = "PQAnalysis.cli.build_nep_traj:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
-"PIMD-QMCF" = "https://github.com/MolarVerse/pimd_qmcf"
+"PQ" = "https://github.com/MolarVerse/PQ"

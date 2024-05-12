@@ -1,39 +1,48 @@
 import pytest
 import numpy as np
 
+from . import pytestmark
+
 from _pytest.capture import CaptureFixture
 
-from PQAnalysis.io.boxWriter import BoxWriter, write_box
-from PQAnalysis.io.exceptions import BoxWriterError
-from PQAnalysis.traj import Trajectory, Frame
-from PQAnalysis.core import Cell, Atom, AtomicSystem
+from PQAnalysis.io import BoxWriter, write_box, BoxFileFormat, FileWritingMode
+from PQAnalysis.io.exceptions import BoxWriterError, BoxFileFormatError
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.atomic_system import AtomicSystem
+
 
 
 class TestBoxWriter:
 
     def test__init__(self):
-        with pytest.raises(ValueError) as exception:
-            BoxWriter(filename="tmp", format="r")
-        assert str(
-            exception.value) == "Invalid format. Has to be either \'vmd\', \'data\' or \'None\'."
+        with pytest.raises(BoxFileFormatError) as exception:
+            BoxWriter(filename="tmp", output_format="r")
+        assert str(exception.value) == (
+            "\n"
+            "'r' is not a valid BoxFileFormat.\n"
+            "Possible values are: BoxFileFormat.VMD, BoxFileFormat.DATA "
+            "or their case insensitive string representation: "
+            "vmd, data"
+        )
 
-        writer = BoxWriter(filename="tmp", format="vmd")
+        writer = BoxWriter(filename="tmp", output_format="vmd")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "vmd"
+        assert writer.output_format == BoxFileFormat.VMD
 
-        writer = BoxWriter(filename="tmp", format="data")
+        writer = BoxWriter(filename="tmp", output_format="data")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
         writer = BoxWriter(filename="tmp")
         assert writer.file is None
-        assert writer.mode == "a"
+        assert writer.mode == FileWritingMode.WRITE
         assert writer.filename == "tmp"
-        assert writer.format == "data"
+        assert writer.output_format == BoxFileFormat.DATA
 
     atoms1 = [Atom("H")]
     pos1 = np.array([[0, 1, 2]])
@@ -41,11 +50,14 @@ class TestBoxWriter:
 
     def test__check_PBC__(self):
         system1 = AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=self.cell1)
+            atoms=self.atoms1,
+            pos=self.pos1,
+            cell=self.cell1
+        )
         system2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1)
 
-        frame1 = Frame(system1)
-        frame2 = Frame(system2)
+        frame1 = system1
+        frame2 = system2
 
         traj1 = Trajectory([frame1, frame1])
         traj2 = Trajectory([frame1, frame2])
@@ -53,14 +65,15 @@ class TestBoxWriter:
         writer = BoxWriter()
 
         try:
-            writer.__check_PBC__(traj1)
+            writer.__check_pbc__(traj1)
         except:
             assert False
 
         with pytest.raises(BoxWriterError) as exception:
-            writer.__check_PBC__(traj2)
+            writer.__check_pbc__(traj2)
         assert str(
-            exception.value) == "At least on cell of the trajectory is None. Cannot write box file."
+            exception.value
+        ) == "At least on cell of the trajectory is None. Cannot write box file."
 
     def test_write_box_file(self, capsys: CaptureFixture):
         writer = BoxWriter()
@@ -68,10 +81,8 @@ class TestBoxWriter:
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 120)
 
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
@@ -86,10 +97,8 @@ class TestBoxWriter:
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
@@ -126,18 +135,16 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
         print("")
-        writer.format = "data"
+        writer.output_format = "data"
         writer.write(traj)
         print("")
-        writer.format = "vmd"
+        writer.output_format = "vmd"
         writer.write(traj)
 
         captured = capsys.readouterr()
@@ -172,17 +179,15 @@ X   5.0 5.0 5.5
 
         cell1 = Cell(10, 10, 10, 90, 90, 90)
         cell2 = Cell(10, 10, 11, 90, 90, 90)
-        frame1 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell1))
-        frame2 = Frame(AtomicSystem(
-            atoms=self.atoms1, pos=self.pos1, cell=cell2))
+        frame1 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell1)
+        frame2 = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell2)
 
         traj = Trajectory([frame1, frame2])
 
         print("")
-        write_box(traj, format="data")
+        write_box(traj, output_format="data")
         print("")
-        write_box(traj, format="vmd")
+        write_box(traj, output_format="vmd")
 
         captured = capsys.readouterr()
 

@@ -2,12 +2,19 @@
 A module containing the tool to compute a center of mass trajectory for a given selection.
 """
 
-from ..traj import Trajectory
+from PQAnalysis.traj import Trajectory
+from PQAnalysis.type_checking import runtime_type_checking
 
 
-# TODO: add atom to element mapper if atomname not element names
+
+# TODO: add atom to element mapper if atom name not element names
 # TODO rethink concept of selection/getitem/slices
-def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Trajectory:
+@runtime_type_checking
+def traj_to_com_traj(
+    trajectory: Trajectory,
+    selection=None,
+    group=None
+) -> Trajectory:
     """
     Function that computes the center of mass trajectory for a given selection.
 
@@ -20,9 +27,11 @@ def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Traj
     trajectory : Trajectory
         The trajectory to compute the center of mass trajectory for.
     selection : Selection, optional
-        The selection to compute the center of mass trajectory for. If None, the selection is all atoms.
+        The selection to compute the center of mass trajectory for. 
+        If None, the selection is all atoms.
     group : int, optional
-        The group to compute the center of mass trajectory for. If None, the group is all atoms.
+        The group to compute the center of mass trajectory for.
+        If None, the group is all atoms.
     """
 
     if len(trajectory) == 0:
@@ -35,6 +44,6 @@ def traj_to_com_traj(trajectory: Trajectory, selection=None, group=None) -> Traj
             selection = slice(0, frame.n_atoms)
 
         frame = frame[selection]
-        com_traj.append(frame.compute_com_frame(group=group))
+        com_traj.append(frame.compute_com_atomic_system(group=group))
 
     return com_traj

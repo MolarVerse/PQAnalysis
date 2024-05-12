@@ -1,38 +1,38 @@
 import pytest
 
-from beartype.roar import BeartypeException
-
 from PQAnalysis.io import InfoFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
+from PQAnalysis.exceptions import PQFileNotFoundError
+
+from . import pytestmark
+
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
 def test__init__(test_with_data_dir):
-    with pytest.raises(FileNotFoundError) as exception:
+    with pytest.raises(PQFileNotFoundError) as exception:
         InfoFileReader("tmp")
     assert str(exception.value) == "File tmp not found."
 
-    with pytest.raises(BeartypeException) as exception:
-        InfoFileReader(
-            "md-01.info", format=None)
-
     with pytest.raises(MDEngineFormatError) as exception:
-        InfoFileReader(
-            "md-01.info", format="tmp")
-    assert str(
-        exception.value) == f"""
-'tmp' is not a valid MDEngineFormat.
-Possible values are: {MDEngineFormat.member_repr()}
-or their case insensitive string representation: {MDEngineFormat.value_repr()}"""
+        InfoFileReader("md-01.info", engine_format="tmp")
+    assert str(exception.value) == (
+        "\n"
+        "'tmp' is not a valid MDEngineFormat.\n"
+        f"Possible values are: {MDEngineFormat.member_repr()} "
+        "or their case insensitive string representation: "
+        f"{MDEngineFormat.value_repr()}"
+    )
 
     reader = InfoFileReader("md-01.info")
     assert reader.filename == "md-01.info"
-    assert reader.format == MDEngineFormat.PIMD_QMCF
+    assert reader.format == MDEngineFormat.PQ
 
-    reader = InfoFileReader("md-01.info", format="qmcfc")
+    reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     assert reader.filename == "md-01.info"
     assert reader.format == MDEngineFormat.QMCFC
+
 
 
 @pytest.mark.parametrize("example_dir", ["readInfoFile"], indirect=False)
@@ -76,7 +76,7 @@ def test_read(test_with_data_dir):
     assert info["LOOPTIME"] == 11
     assert units["LOOPTIME"] == "s"
 
-    reader = InfoFileReader("md-01.qmcfc.info", format="qmcfc")
+    reader = InfoFileReader("md-01.qmcfc.info", engine_format="qmcfc")
     info, units = reader.read()
 
     assert info["SIMULATION TIME"] == 0
@@ -108,9 +108,12 @@ def test_read(test_with_data_dir):
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
     assert str(
-        exception.value) == "Info file md-01.qmcfc.info is not in pimd-qmcf format."
+        exception.value
+    ) == "Info file md-01.qmcfc.info is not in PQ format."
 
-    reader = InfoFileReader("md-01.info", format="qmcfc")
+    reader = InfoFileReader("md-01.info", engine_format="qmcfc")
     with pytest.raises(MDEngineFormatError) as exception:
         reader.read()
-    assert str(exception.value) == "Info file md-01.info is not in qmcfc format."
+    assert str(
+        exception.value
+    ) == "Info file md-01.info is not in qmcfc format."

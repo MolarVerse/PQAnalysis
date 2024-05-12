@@ -6,18 +6,8 @@ import sys
 
 from .._version import __version__
 
-
-def print_header() -> None:
-    """
-    A function to print the header of the program.
-
-    This header is printed to stderr so that it can be used
-    by all cli scripts without interfering with the output.
-    """
-
-    line = "                                              *"
-
-    header = f"""
+__line__ = "                                              *"
+__header__ = r"""
 **************************************************************
 *                                                            *
 *      ____  ____    ___                __           _       *
@@ -27,10 +17,26 @@ def print_header() -> None:
 *  /_/    \___\_\/_/  |_/_/ /_/\__,_/_/\__, /____/_/____/    *
 *                                     /____/                 *
 *                                                            *
-*                                                            *
+*                                                            *"""
+
+__header__ += f"""
 *  authors:    Jakob Gamper, Josef M. Gallmetzer             *
-*  version:    {__version__}{line[len(__version__):]}
+*  version:    {__version__}{__line__[len(__version__):]}
 *                                                            *
 **************************************************************
 """
-    print(header, file=sys.stderr)
+
+
+
+def print_header(file: str = None) -> None:
+    """
+    A function to print the header of the program.
+
+    This header is printed to stderr so that it can be used
+    by all cli scripts without interfering with the output.
+    """
+
+    if file is None:
+        print(__header__, file=sys.stderr)
+    else:
+        print(__header__, file=file)

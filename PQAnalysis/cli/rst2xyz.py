@@ -1,51 +1,110 @@
 """
-Converts a restart file to a xyz file.
+.. _cli.rst2xyz:
+
+Command Line Tool for Converting Restart Files to XYZ Files
+-----------------------------------------------------------
+
+
+"""
+
+from PQAnalysis.io import rst2xyz
+from PQAnalysis.config import code_base_url
+from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
+
+__outputdoc__ = """
+
+This command line tool can be used to convert restart files to xyz files. 
 
 If the box information from the restart file should not be included in the xyz file, 
 please use the --nobox option.
 """
 
-import argparse
+__epilog__ = "\n"
+__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.cli.rst2xyz.html."
+__epilog__ += "\n"
+__epilog__ += "\n"
 
-from ..io import RestartFileReader, TrajectoryWriter
-from ..core import Cell
+__doc__ += __outputdoc__
+
+
+
+class Rst2XYZCLI(CLIBase):
+
+    """
+    Command Line Tool for Converting Restart Files to XYZ Files
+    """
+
+    @classmethod
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
+        return 'rst2xyz'
+
+    @classmethod
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
+        parser.parse_output_file()
+
+        parser.add_argument(
+            'restart_file',
+            type=str,
+            help='The restart file to be converted.'
+        )
+
+        parser.add_argument(
+            '--nobox',
+            action='store_true',
+            help='Do not print the box.'
+        )
+
+        parser.parse_engine()
+        parser.parse_mode()
+
+    @classmethod
+    def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The arguments parsed by the parser.
+        """
+        rst2xyz(
+            restart_file=args.restart_file,
+            output=args.output,
+            print_box=not args.nobox,
+            md_format=args.engine,
+            mode=args.mode,
+        )
+
 
 
 def main():
     """
-    Wrapper for the command line interface of rst2xyz.
+    Main function of the rst2xyz command line tool, which is basically just a wrapper 
+    for the rst2xyz function. For more information on the rst2xyz function 
+    please visit :py:func:`PQAnalysis.io.api.rst2xyz`.
     """
+    parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
 
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('restart_file', type=str,
-                        help='The restart file to be converted.')
-    parser.add_argument('-o', '--output', type=str, default=None,
-                        help='The output file. If not specified, the output is printed to stdout.')
-    parser.add_argument('--nobox', action='store_true',
-                        help='Do not print the box.')
+    Rst2XYZCLI.add_arguments(parser)
+
     args = parser.parse_args()
 
-    rst2xyz(args.restart_file, args.output, not args.nobox)
-
-
-def rst2xyz(restart_file: str, output: str | None = None, print_box: bool = True):
-    """
-    Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
-
-    Parameters
-    ----------
-    restart_file : str
-        The restart file to be converted.
-    output : str | None
-        The output file. If not specified, the output is printed to stdout.
-    print_box : bool
-        If True, the box is printed. If False, the box is not printed. Default is True.
-    """
-    reader = RestartFileReader(restart_file)
-    frame = reader.read()
-
-    if not print_box:
-        frame.cell = Cell()
-
-    writer = TrajectoryWriter(filename=output)
-    writer.write(frame, type="xyz")
+    Rst2XYZCLI.run(args)
