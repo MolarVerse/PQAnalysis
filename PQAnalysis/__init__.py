@@ -22,9 +22,10 @@ __package_name__ = __name__
 ##################
 
 # TODO: change the default level to "RELEASE" after all changes are implemented
-__beartype_default_level__ = "DEBUG"
+__beartype_default_level__ = "RELEASE"
 __beartype_level__ = os.getenv(
-    "PQANALYSIS_BEARTYPE_LEVEL", __beartype_default_level__
+    "PQANALYSIS_BEARTYPE_LEVEL",
+    __beartype_default_level__
 )
 
 if __beartype_level__.upper() == "DEBUG":
@@ -38,11 +39,12 @@ logging_env_var = os.getenv("PQANALYSIS_LOGGING_LEVEL")
 
 if logging_env_var and logging_env_var not in logging.getLevelNamesMapping():
     raise ValueError(
-        f"Invalid logging level: {logging_env_var}. Valid logging levels are: {
-            logging.getLevelNamesMapping()}"
+        f"Invalid logging level: {logging_env_var}. Valid logging "
+        f"levels are: {logging.getLevelNamesMapping()}"
     )
 
-if 'execution_start_time' not in vars() and 'execution_start_time' not in globals():
+if 'execution_start_time' not in vars(
+) and 'execution_start_time' not in globals():
     execution_start_time = time.strftime('%Y-%m-%d_%H-%M-%S', time.localtime())
 
 logging.setLoggerClass(CustomLogger)
