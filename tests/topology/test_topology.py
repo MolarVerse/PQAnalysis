@@ -5,9 +5,6 @@ import pytest
 import numpy as np
 
 # Local Imports
-import PQAnalysis.topology.topology as topology_module
-
-# Local Imports
 from PQAnalysis.topology.topology import _find_residue_by_id, _unique_residues_
 from PQAnalysis.topology import Topology, TopologyError, BondedTopology
 from PQAnalysis.core import (
@@ -53,7 +50,7 @@ def test_find_residue_by_id(caplog):
 
     assert_logging(
         caplog=caplog,
-        logging_name=topology_module.__name__,
+        logging_name=Topology.__qualname__,
         logging_level="ERROR",
         message_to_test=("The residue id 2 was not found."),
         function=_find_residue_by_id,
@@ -65,7 +62,7 @@ def test_find_residue_by_id(caplog):
 
     assert_logging(
         caplog=caplog,
-        logging_name=topology_module.__name__,
+        logging_name=Topology.__qualname__,
         logging_level="ERROR",
         message_to_test=("The residue id 0 is not unique."),
         function=_find_residue_by_id,
