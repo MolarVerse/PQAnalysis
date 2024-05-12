@@ -9,7 +9,7 @@ from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
-from PQAnalysis.exceptions import PQIndexError
+from PQAnalysis.exceptions import PQIndexError, PQTypeError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -309,7 +309,6 @@ class Trajectory:
         """
         return item in self.frames
 
-    @runtime_type_checking
     def __add__(self, other: "Trajectory") -> "Trajectory":
         """
         This method allows two trajectories to be added together.
@@ -319,6 +318,12 @@ class Trajectory:
         other : Trajectory
             The other trajectory to add.
         """
+
+        if not isinstance(other, Trajectory):
+            self.logger.error(
+                "Only Trajectory objects can be added to a Trajectory.",
+                exception=PQTypeError,
+            )
 
         return Trajectory(self.frames + other.frames)
 
