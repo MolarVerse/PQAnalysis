@@ -36,6 +36,14 @@ jobs:
           && pip3 install myst-parser
           && pip3 install beartype
           && pip3 install decorator
+          && pip3 install numpy
+          && pip3 install scipy
+          && pip3 install multimethod
+          && pip3 install lark
+          && pip3 install tqdm
+          && pip3 install argcomplete
+          && pip3 install yapf
+          && pip3 install rich-argparse
           && pip3 install .
 
       - name: Build
