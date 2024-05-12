@@ -1,7 +1,7 @@
-import numpy as np
 import pytest
+import numpy as np
 
-from .. import pytestmark
+from PQAnalysis.exceptions import PQValueError
 
 from PQAnalysis.topology import (
     BondedTopology,
@@ -9,6 +9,8 @@ from PQAnalysis.topology import (
     Angle,
     Dihedral,
 )
+
+from .. import pytestmark
 
 
 
@@ -72,7 +74,7 @@ class TestBondedTopology:
 
         bonded_topology = BondedTopology(bonds=[bond])
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             bonded_topology.extend_shake_bonds(
                 shake_bonds=[shake_bond],
                 n_atoms=3,
@@ -82,7 +84,7 @@ class TestBondedTopology:
             exception.value
         ) == "n_atoms_per_extension must be provided if n_extensions is not 1."
 
-        with pytest.raises(ValueError) as exception:
+        with pytest.raises(PQValueError) as exception:
             bonded_topology.extend_shake_bonds(
                 shake_bonds=[shake_bond],
                 n_atoms=3,
