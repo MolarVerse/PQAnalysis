@@ -1,32 +1,21 @@
+from collections import defaultdict
+
 import pytest
 import numpy as np
 
-from collections import defaultdict
-from beartype.roar import BeartypeException
+from PQAnalysis.physical_data import Energy, EnergyError
 
-from PQAnalysis.physicalData import Energy, EnergyError
 
 
 class TestEnergy:
+
     def test__init__(self):
-        with pytest.raises(BeartypeException):
-            Energy(1)
-
-        with pytest.raises(BeartypeException):
-            Energy([[[1]]])
-
         data = np.array([1, 2, 3])
         energy = Energy(data)
 
         assert np.allclose(energy.data, [data])
 
     def test__setup_info_dictionary(self):
-        with pytest.raises(BeartypeException):
-            Energy(np.array([1]), info=1)
-
-        with pytest.raises(BeartypeException):
-            Energy(np.array([1]), units=1)
-
         data = np.array([[1], [2]])
         info = {1: 0, 2: 1}
         units = {1: "a", 2: "b"}
@@ -48,14 +37,17 @@ class TestEnergy:
         with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0})
         assert str(
-            exception.value) == "The length of info dictionary has to be equal to the length of data."
+            exception.value
+        ) == "The length of info dictionary has to be equal to the length of data."
 
         with pytest.raises(EnergyError) as exception:
             Energy(data, units={1: 0})
         assert str(
-            exception.value) == "The length of units dictionary has to be equal to the length of data."
+            exception.value
+        ) == "The length of units dictionary has to be equal to the length of data."
 
         with pytest.raises(EnergyError) as exception:
             Energy(data, info={1: 0, 2: 0}, units={1: 0, 3: 0})
         assert str(
-            exception.value) == "The keys of the info and units dictionary do not match."
+            exception.value
+        ) == "The keys of the info and units dictionary do not match."

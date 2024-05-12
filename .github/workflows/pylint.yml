@@ -1,0 +1,116 @@
+name: Pylint
+
+on:
+  push:
+    branches: 
+      - main
+      - dev
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pylint:
+
+    runs-on: ubuntu-latest
+
+    permissions:                # Job-level permissions configuration starts here
+      contents: write           # 'write' access to repository contents
+      pull-requests: write      # 'write' access to pull requests
+
+    steps:
+    - uses: actions/checkout@master
+      with:
+        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
+        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: build PQAnalysis
+      run: |
+        pip install pylint
+        pip install pylint-django
+        pip install .
+
+    - name: Lint with pylint
+      id: run_pylint
+      run: |
+        mkdir -p .github/.pylint_cache
+        export PYLINTHOME=$(pwd)/.github/.pylint_cache
+        if ${{ github.event_name == 'pull_request' }}; then
+          pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
+          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        elif ${{ github.event_name == 'push' }}; then
+          pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
+          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+        fi
+
+
+    #check if the first line of comment.txt rates higher than 9.75 with following format
+    #Your code has been rated at 9.86/10 (previous run: 7.63/10, +2.22)
+    - name: Check if pylint score is higher than 9.75
+      id: check_pylint_score
+      run: |
+        head -n3 comment.txt | tail -n 1
+        head -n3 comment.txt | tail -n 1 | awk '{print $7}'
+        head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1
+        score=$(head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1)
+        if (( $(echo "$score > 9.75" | bc -l) )); then
+          echo "Pylint score is higher than 9.75 and is $score"
+        else
+          echo "Pylint score is lower than 9.75 and is $score"
+          exit 1
+        fi
+      shell: bash
+
+    #check if previous scor is not empty
+    #if it is not empty then fail if change is lower than -0.05
+    - name: Check if previous score is not empty
+      id: check_previous_score
+      run: |
+        previous_score=$(head -n3 comment.txt | tail -n 1 | awk '{print $11}' | cut -d ')' -f 1)
+        if [ -z "$previous_score" ]; then
+          echo "Previous score is empty"
+        else
+          echo "Previous score is $previous_score"
+          if (( $(echo "$previous_score < -0.05" | bc -l) )); then
+            echo "Changes score is lower than -0.05"
+            exit 1
+          fi
+        fi
+      shell: bash
+
+    - uses: marocchino/sticky-pull-request-comment@v2
+      if: (success() || failure()) && github.event.pull_request
+      with:
+        recreate: true
+        path: comment.txt
+    - if: (success() || failure()) && !github.event.pull_request
+      run: |
+        cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
+
+    #add changes of .github/.pylint_cache to the commit if it is based on push event
+    - name: Add .github/.pylint_cache to the commit
+      if: github.event_name == 'push'
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+
+        git add .github/.pylint_cache
+        git commit -m "Add .github/.pylint_cache on push event"
+
+    - name: Push changes
+      if: github.event_name == 'push'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+

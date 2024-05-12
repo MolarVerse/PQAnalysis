@@ -1,0 +1,25 @@
+start:  expression
+            
+expression: assign+
+            
+?assign.5:   key "=" value ";"
+        |  key "=" value ";" assign
+            
+%import .rules.key
+%import .rules.value
+%import .rules.primitive
+%import .rules.range
+%import .rules.array
+
+// just for namespace reasons
+%import .rules.glob
+%import .rules.word
+%import .rules.integer
+%import .rules.float
+%import .rules.boolean
+
+%import .terminals.WS
+%import .terminals.COMMENT -> COMMENT
+
+%ignore COMMENT
+%ignore WS

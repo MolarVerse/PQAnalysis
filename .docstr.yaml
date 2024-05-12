@@ -1,0 +1,11 @@
+paths:
+    - PQAnalysis
+exclude: ./tests # regex
+verbose: 2 # int (0-3)
+skip_magic: False
+skip_file_doc: True
+skip_init: False
+skip_class_def: False
+skip_private: False
+follow_links: True
+percentage_only: False

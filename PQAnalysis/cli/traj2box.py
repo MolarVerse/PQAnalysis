@@ -1,4 +1,18 @@
 """
+.. _cli.traj2box:
+
+Command Line Tool for Converting Trajectory Files to Box Files
+--------------------------------------------------------------
+
+"""
+
+from PQAnalysis.config import code_base_url
+from PQAnalysis.io import traj2box
+from ._argument_parser import _ArgumentParser
+from ._cli_base import CLIBase
+
+__outputdoc__ = """
+
 Converts multiple trajectory files to a box file.
 
 Without the --vmd option the output is printed in a data file format.
@@ -10,59 +24,85 @@ in xyz format with 8 particle entries representing the vertices of the box. The 
 line contains the information about the box dimensions a, b and c and the box angles.
 """
 
-import argparse
+__epilog__ = "\n"
+__epilog__ += "For more information on the VMD file format please visit "
+__epilog__ += f"{code_base_url}PQAnalysis.io.formats.html#PQAnalysis.io.formats.VMDFileFormat."
+__epilog__ += "\n"
+__epilog__ += "\n"
 
-from beartype.typing import List
+__doc__ += __outputdoc__
 
-from ..io import BoxWriter, TrajectoryReader
+
+
+class Traj2BoxCLI(CLIBase):
+
+    """
+    Command Line Tool for Converting Trajectory Files to Box Files
+    """
+
+    @classmethod
+    def program_name(cls) -> str:
+        """
+        Returns the name of the program.
+
+        Returns
+        -------
+        str
+            The name of the program.
+        """
+        return 'traj2box'
+
+    @classmethod
+    def add_arguments(cls, parser: _ArgumentParser) -> None:
+        """
+        Adds the arguments to the parser.
+
+        Parameters
+        ----------
+        parser : _ArgumentParser
+            The parser to which the arguments should be added.
+        """
+        parser.parse_output_file()
+
+        parser.add_argument(
+            'trajectory_file',
+            type=str,
+            nargs='+',
+            help='The trajectory file(s) to be converted.'
+        )
+
+        parser.add_argument(
+            '--vmd',
+            action='store_true',
+            help='Output in VMD format.'
+        )
+
+        parser.parse_mode()
+
+    @classmethod
+    def run(cls, args):
+        """
+        Runs the command line tool.
+
+        Parameters
+        ----------
+        args : argparse.Namespace
+            The arguments parsed by the parser.
+        """
+        traj2box(args.trajectory_file, args.vmd, args.output, args.mode)
+
 
 
 def main():
     """
-    Wrapper for the command line interface of traj2box.
+    Main function of the traj2box command line tool, which is basically just a 
+    wrapper for the traj2box function. For more information on the traj2box
+    function please visit :py:func:`PQAnalysis.io.api.traj2box`.
     """
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('trajectory_file', type=str, nargs='+',
-                        help='The trajectory file(s) to be converted.')
-    parser.add_argument('-v', '--vmd', action='store_true',
-                        help='Output in VMD format.')
-    parser.add_argument('-o', '--output', type=str, default=None,
-                        help='The output file. If not specified, the output is printed to stdout.')
+    parser = _ArgumentParser(description=__outputdoc__, epilog=__epilog__)
+
+    Traj2BoxCLI.add_arguments(parser)
+
     args = parser.parse_args()
 
-    traj2box(args.trajectory_file, args.vmd, args.output)
-
-
-def traj2box(trajectory_files: List[str], vmd: bool, output: str | None = None) -> None:
-    """
-    Converts multiple trajectory files to a box file.
-
-    Without the --vmd option the output is printed in a data file format.
-    The first column represents the step starting from 1, the second to fourth column
-    represent the box vectors a, b, c, the fifth to seventh column represent the box angles.
-
-    With the --vmd option the output is printed in a VMD file format. Meaning the output is
-    in xyz format with 8 particle entries representing the vertices of the box. The comment
-    line contains the information about the box dimensions a, b and c and the box angles.
-
-    Parameters
-    ----------
-    trajectory_file : list of str
-        The trajectory file(s) to be converted.
-    vmd : bool
-        Output in VMD format.
-    output : str, optional
-        The output file. If not specified, the output is printed to stdout.
-    """
-
-    if vmd:
-        output_format = "vmd"
-    else:
-        output_format = None
-
-    writer = BoxWriter(filename=output, format=output_format)
-    for filename in trajectory_files:
-        reader = TrajectoryReader(filename)
-        trajectory = reader.read()
-
-        writer.write(trajectory, reset_counter=False)
+    Traj2BoxCLI.run(args)
