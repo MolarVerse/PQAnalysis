@@ -114,6 +114,7 @@ class Selection:
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    @runtime_type_checking
     def __init__(self, selection_object: SelectionCompatible = None):
         """
         Parameters
@@ -126,6 +127,7 @@ class Selection:
         else:
             self.selection_object = selection_object
 
+    @runtime_type_checking
     def select(
         self,
         topology: Topology,
