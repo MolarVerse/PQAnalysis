@@ -74,6 +74,7 @@ class Traj2BoxCLI(CLIBase):
         parser.add_argument(
             '--vmd',
             action='store_true',
+            default=False,
             help='Output in VMD format.'
         )
 
