@@ -200,18 +200,17 @@ class TrajectoryReader(BaseReader):
 
         for filename in self.filenames:
 
-            # Read the number of lines in the file
-            with open(filename, "r", encoding="utf-8") as self.file:
-                sum_lines = sum(1 for _ in self.file)
-
             # Read the file again to get the frames
             with open(filename, "r", encoding="utf-8") as self.file:
                 frame_lines = []
 
+                progress_bar = tqdm(
+                    total=self.length_of_traj,
+                    disable=not self.with_progress_bar
+                )
+
                 # Read the lines of the file using tqdm for progress bar
-                for line in tqdm(self.file,
-                    total=sum_lines,
-                    disable=not self.with_progress_bar):
+                for line in self.file:
                     stripped_line = line.strip()
                     if stripped_line == "" or not stripped_line[0].isdigit():
                         frame_lines.append(line)
@@ -229,9 +228,12 @@ class TrajectoryReader(BaseReader):
                             # more efficiently
                             # Check if the number of frames yielded is equal to the
                             # total number of frames
-                            if not (frame_index < trajectory_start
-                                or frame_index >= trajectory_stop):
+                            if not (frame_index < trajectory_start or
+                                frame_index >= trajectory_stop):
                                 yield frame  # only yield the frame if it is within the range
+                                progress_bar.update(
+                                    1
+                                )  # update the progress bar
 
                             # then increment the frame index
                             frame_index += 1
@@ -254,9 +256,10 @@ class TrajectoryReader(BaseReader):
 
                     # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                     # Check if the number of frames yielded is equal to the total number of frames
-                    if not (frame_index < trajectory_start
-                        or frame_index >= trajectory_stop):
+                    if not (frame_index < trajectory_start or
+                        frame_index >= trajectory_stop):
                         yield frame  # only yield the frame if it is within the range
+                        progress_bar.update(1)  # update the progress bar
 
                     # then increment the frame index
                     frame_index += 1
