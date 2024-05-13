@@ -69,6 +69,7 @@ class Rst2XYZCLI(CLIBase):
         parser.add_argument(
             '--nobox',
             action='store_true',
+            default=False,
             help='Do not print the box.'
         )
 
