@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bonded_topology &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dihedral" href="PQAnalysis.topology.bonded_topology.dihedral.html" />
+    <link rel="prev" title="bond" href="PQAnalysis.topology.bonded_topology.bond.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.topology.html">topology</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.selection.html">selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.shake_topology.html">shake_topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.topology.html">topology</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.html">topology.bonded_topology</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.angle.html">angle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html">bond</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">bonded_topology</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html">dihedral</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.topology.html">topology</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.topology.bonded_topology.html">topology.bonded_topology</a></li>
+      <li class="breadcrumb-item active">bonded_topology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.topology.bonded_topology.bonded_topology.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.topology.bonded_topology.bonded_topology">
+<span id="bonded-topology"></span><h1>bonded_topology<a class="headerlink" href="#module-PQAnalysis.topology.bonded_topology.bonded_topology" title="Link to this heading"></a></h1>
+<p>A module containing the BondedTopology class.</p>
+<p>The BondedTopology class represents a bonded topology in a molecular
+topology and is used to store the bonds, angles, dihedrals,
+impropers, and shake bonds of a molecular system along with their properties.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology" title="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BondedTopology</span></code></a></p></td>
+<td><p>A class to represent a bonded topology in a molecular topology.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BondedTopology</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">bonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><span class="pre">Bond</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.angle.html#PQAnalysis.topology.bonded_topology.angle.Angle" title="PQAnalysis.topology.bonded_topology.angle.Angle"><span class="pre">Angle</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">dihedrals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><span class="pre">Dihedral</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">impropers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><span class="pre">Dihedral</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">shake_bonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><span class="pre">Bond</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">ordering_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/topology/bonded_topology/bonded_topology.html#BondedTopology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TopologyPropertiesMixin</span></code></p>
+<p>A class to represent a bonded topology in a molecular topology.</p>
+<p>It inherits from TopologyPropertiesMixin.
+A mixin class to add the most common properties of a topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bonds</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><em>Bond</em></a><em>]</em><em>, </em><em>optional</em>) – A list of bonds in the bonded topology, by default None.</p></li>
+<li><p><strong>angles</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.angle.html#PQAnalysis.topology.bonded_topology.angle.Angle" title="PQAnalysis.topology.bonded_topology.angle.Angle"><em>Angle</em></a><em>]</em><em>, </em><em>optional</em>) – A list of angles in the bonded topology, by default None.</p></li>
+<li><p><strong>dihedrals</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><em>Dihedral</em></a><em>]</em><em>, </em><em>optional</em>) – A list of dihedrals in the bonded topology, by default None.</p></li>
+<li><p><strong>impropers</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><em>Dihedral</em></a><em>]</em><em>, </em><em>optional</em>) – A list of impropers in the bonded topology, by default None.</p></li>
+<li><p><strong>shake_bonds</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><em>Bond</em></a><em>]</em><em>, </em><em>optional</em>) – A list of shake bonds in the bonded topology, by default None.</p></li>
+<li><p><strong>ordering_keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – A list of keys to order the blocks of the bonded topology,
+when initializing from a file, by default None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.extend_shake_bonds">
+<span class="sig-name descname"><span class="pre">extend_shake_bonds</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">shake_bonds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><span class="pre">Bond</span></a><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">n_extensions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">n_atoms_per_extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/bonded_topology/bonded_topology.html#BondedTopology.extend_shake_bonds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.extend_shake_bonds" title="Link to this definition"></a></dt>
+<dd><p>Extend the shake bonds in the bonded topology.</p>
+<p>This function is useful when two or more atomic systems are merged,
+and the shake bonds need to be extended to the new atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>shake_bonds</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><em>Bond</em></a><em>]</em>) – A list of shake bonds to extend.</p></li>
+<li><p><strong>n_atoms</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a>) – The number of atoms in the system before the extension.</p></li>
+<li><p><strong>n_extensions</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The number of extensions to perform, by default 1.</p></li>
+<li><p><strong>n_atoms_per_extension</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The number of atoms in the system after each extension, by default None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If n_atoms_per_extension is not provided and n_extensions is not 1.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If n_atoms_per_extension is less than the highest index in the provided shake bonds.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.angle_linkers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">angle_linkers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.angle.html#PQAnalysis.topology.bonded_topology.angle.Angle" title="PQAnalysis.topology.bonded_topology.angle.Angle"><span class="pre">Angle</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.angle_linkers" title="Link to this definition"></a></dt>
+<dd><p>The angles that are linkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.topology.bonded_topology.angle.html#PQAnalysis.topology.bonded_topology.angle.Angle" title="PQAnalysis.topology.bonded_topology.angle.Angle">Angle</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.bond_linkers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bond_linkers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><span class="pre">Bond</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.bond_linkers" title="Link to this definition"></a></dt>
+<dd><p>The bonds that are linkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond">Bond</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.dihedral_linkers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dihedral_linkers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><span class="pre">Dihedral</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.dihedral_linkers" title="Link to this definition"></a></dt>
+<dd><p>The dihedrals that are linkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral">Dihedral</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.improper_linkers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">improper_linkers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral"><span class="pre">Dihedral</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.improper_linkers" title="Link to this definition"></a></dt>
+<dd><p>The impropers that are linkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral" title="PQAnalysis.topology.bonded_topology.dihedral.Dihedral">Dihedral</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.BondedTopology</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.shake_linkers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shake_linkers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond"><span class="pre">Bond</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.shake_linkers" title="Link to this definition"></a></dt>
+<dd><p>The shake bonds that are linkers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.topology.bonded_topology.bond.html#PQAnalysis.topology.bonded_topology.bond.Bond" title="PQAnalysis.topology.bonded_topology.bond.Bond">Bond</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle1_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_angle1_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle1_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the first atoms in the angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle2_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_angle2_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle2_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the second atoms in the angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle3_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_angle3_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_angle3_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the third atoms in the angles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_bond1_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_bond1_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_bond1_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the first atoms in the bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_bond2_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_bond2_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_bond2_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the second atoms in the bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral1_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_dihedral1_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral1_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the first atoms in the dihedrals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral2_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_dihedral2_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral2_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the second atoms in the dihedrals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral3_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_dihedral3_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral3_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the third atoms in the dihedrals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral4_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_dihedral4_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_dihedral4_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the fourth atoms in the dihedrals.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper1_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_improper1_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper1_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the first atoms in the impropers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper2_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_improper2_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper2_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the second atoms in the impropers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper3_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_improper3_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper3_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the third atoms in the impropers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper4_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_improper4_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_improper4_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the fourth atoms in the impropers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_shake_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_shake_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_shake_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the atoms in the shake bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_shake_target_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_shake_target_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">set</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology.unique_shake_target_indices" title="Link to this definition"></a></dt>
+<dd><p>The unique indices of the target atoms in the shake bonds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt">PositiveInt</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.topology.bonded_topology.bond.html" class="btn btn-neutral float-left" title="bond" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.topology.bonded_topology.dihedral.html" class="btn btn-neutral float-right" title="dihedral" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

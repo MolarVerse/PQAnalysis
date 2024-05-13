@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>topology &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="topology.bonded_topology" href="PQAnalysis.topology.bonded_topology.html" />
+    <link rel="prev" title="shake_topology" href="PQAnalysis.topology.shake_topology.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.topology.html">topology</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.selection.html">selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.shake_topology.html">shake_topology</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.html">topology.bonded_topology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.topology.html">topology</a></li>
+      <li class="breadcrumb-item active">topology</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.topology.topology.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.topology.topology">
+<span id="topology"></span><h1>topology<a class="headerlink" href="#module-PQAnalysis.topology.topology" title="Link to this heading"></a></h1>
+<p>A module containing the Topology class and related functions.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Topology</span></code></a></p></td>
+<td><p>A class for representing a topology.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Topology</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><span class="pre">Atoms</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">residue_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">reference_residues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues"><span class="pre">Residues</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">check_residues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">bonded_topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.bonded_topology.html#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology" title="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology"><span class="pre">BondedTopology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for representing a topology.</p>
+<p>A topology is a collection of atoms, residues and residue ids.
+It is used to represent the topology of a system.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">warnings</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Residue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;O&quot;</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">residue_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">residue1</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="s2">&quot;HO&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;O&quot;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">residue2</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="s2">&quot;H2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">residues</span> <span class="o">=</span> <span class="p">[</span><span class="n">residue1</span><span class="p">,</span> <span class="n">residue2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">residue_ids</span><span class="o">=</span><span class="n">residue_ids</span><span class="p">,</span> <span class="n">reference_residues</span><span class="o">=</span><span class="n">residues</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>All of the parameters are optional, if they are not given,
+they are initialized with empty values. It checks if the
+residue ids are compatible and contiguous regarding the given
+residues if the list is not empty.</p>
+<p>It is also possible to initialize a Topology object with
+residues that are not referenced within the residue_ids. This
+means that it is possible to have a Topology object with
+residues that are not used in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><em>Atoms</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – a list of atoms, by default None (empty list)</p></li>
+<li><p><strong>residue_ids</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – a list of residue ids, by default None (empty list)</p></li>
+<li><p><strong>reference_residues</strong> (<a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues"><em>Residues</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – a list of residues, by default None (empty list)</p></li>
+<li><p><strong>check_residues</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the residues should be checked, by default True</p></li>
+<li><p><strong>bonded_topology</strong> (<a class="reference internal" href="PQAnalysis.topology.bonded_topology.bonded_topology.html#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology" title="PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology"><em>BondedTopology</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – Contains the bonded topology information, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.topology.exceptions.html#PQAnalysis.topology.exceptions.TopologyError" title="PQAnalysis.topology.exceptions.TopologyError"><strong>TopologyError</strong></a> – If the number of atoms does not match the number of residue ids.</p>
+</dd>
+<dt class="field-odd">Warns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>UserWarning</strong> – If the bonded topology is not None. There is no check yet if the
+bonded topology is compatible with the topology. Please make sure
+that the bonded topology is compatible with the topology!</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the Topology is equal to another Topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a>) – The other Topology to compare to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether the Topology is equal to the other Topology.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Returns a new Topology with the given indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>indices</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em> | </em><em>int</em>) – The indices of the atoms to return.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new Topology with the given indices.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology">Topology</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the Topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the Topology.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the Topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the Topology.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_names">
+<span class="sig-name descname"><span class="pre">get_atom_indices_from_residue_names</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">residue_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.get_atom_indices_from_residue_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_names" title="Link to this definition"></a></dt>
+<dd><p>Returns the atom indices for the given residue name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>residue_name</strong> (<em>str</em>) – The name of the residue to get the atom indices for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The atom indices for the given residue name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_numbers">
+<span class="sig-name descname"><span class="pre">get_atom_indices_from_residue_numbers</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">residue_numbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.get_atom_indices_from_residue_numbers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_numbers" title="Link to this definition"></a></dt>
+<dd><p>Returns the atom indices for the given residue numbers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>residue_numbers</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a>) – The residue numbers to get the atom indices for.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The atom indices for the given residue numbers.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.setup_residues">
+<span class="sig-name descname"><span class="pre">setup_residues</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">residue_ids</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/topology.html#Topology.setup_residues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.setup_residues" title="Link to this definition"></a></dt>
+<dd><p>A method to set up the residues of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>residue_ids</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a>) – The residue ids of the topology.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.ResidueError" title="PQAnalysis.core.exceptions.ResidueError"><strong>ResidueError</strong></a> – If the residue ids are not contiguous.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.ResidueError" title="PQAnalysis.core.exceptions.ResidueError"><strong>ResidueError</strong></a> – If the reference residues are not empty and residue_ids
+    with 0 don’t have any element information. This problem
+    can be avoided by setting ‘check_residues’ to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><span class="pre">Atoms</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.atoms" title="Link to this definition"></a></dt>
+<dd><p>The atoms of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms">Atoms</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.atomtype_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomtype_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.atomtype_names" title="Link to this definition"></a></dt>
+<dd><p>The atomtype names of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.check_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.check_residues" title="Link to this definition"></a></dt>
+<dd><p>Whether the residues should be checked.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Topology</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.n_atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.n_atoms" title="Link to this definition"></a></dt>
+<dd><p>The number of atoms in the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.n_mm_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_mm_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.n_mm_residues" title="Link to this definition"></a></dt>
+<dd><p>The number of MM residues in the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.n_qm_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_qm_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.n_qm_residues" title="Link to this definition"></a></dt>
+<dd><p>The number of QM residues in the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.n_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.n_residues" title="Link to this definition"></a></dt>
+<dd><p>The number of residues in the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.n_unique_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_unique_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.n_unique_residues" title="Link to this definition"></a></dt>
+<dd><p>The number of unique residues in the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.reference_residue_ids">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reference_residue_ids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.reference_residue_ids" title="Link to this definition"></a></dt>
+<dd><p>The residue ids of the reference residues.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.reference_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reference_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues"><span class="pre">Residues</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.reference_residues" title="Link to this definition"></a></dt>
+<dd><p>The reference residues of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues">Residues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.residue_atom_indices">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">residue_atom_indices</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.residue_atom_indices" title="Link to this definition"></a></dt>
+<dd><p>The residue atom indices of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.residue_ids">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">residue_ids</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.residue_ids" title="Link to this definition"></a></dt>
+<dd><p>The residue ids of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.residue_numbers">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">residue_numbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.residue_numbers" title="Link to this definition"></a></dt>
+<dd><p>The residue numbers of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.topology.topology.Topology.residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues"><span class="pre">Residues</span></a></em><a class="headerlink" href="#PQAnalysis.topology.topology.Topology.residues" title="Link to this definition"></a></dt>
+<dd><p>The residues of the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues">Residues</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.topology.shake_topology.html" class="btn btn-neutral float-left" title="shake_topology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.topology.bonded_topology.html" class="btn btn-neutral float-right" title="topology.bonded_topology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

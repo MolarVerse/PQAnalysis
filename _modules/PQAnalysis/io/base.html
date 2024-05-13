@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.io.base &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.io.base</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.io.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the base class for all writers and readers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQFileNotFoundError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+
+<span class="kn">from</span> <span class="nn">.formats</span> <span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">FileWritingModeError</span>
+
+
+
+<div class="viewcode-block" id="BaseWriter">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseWriter</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A base class for all writers.</span>
+
+<span class="sd">    This class can be used as a base class for all writers. It provides the</span>
+<span class="sd">    functionality to write to a file or stdout. Meaning, if the filename is</span>
+<span class="sd">    None, the output is printed to stdout. Otherwise, the output is written</span>
+<span class="sd">    to the given file. The mode of the file can be either &#39;w&#39; for write or </span>
+<span class="sd">    &#39;a&#39; for append. If the mode is &#39;w&#39; and the file already exists, a </span>
+<span class="sd">    ValueError is raised. If the mode is &#39;a&#39; and the file does not exist, </span>
+<span class="sd">    it is created. If the mode is &#39;o&#39; and the file already exists, it is </span>
+<span class="sd">    overwritten.</span>
+
+<span class="sd">    Attention</span>
+<span class="sd">    ---------</span>
+
+<span class="sd">    Please be aware that after the initialization of the BaseWriter, the </span>
+<span class="sd">    file is not opened yet. To open the file, the open() method has to be</span>
+<span class="sd">    called. To close the file, the close() method has to be called. After</span>
+<span class="sd">    calling the open() method of a file that already exists, the mode is </span>
+<span class="sd">    automatically set to &#39;a&#39;. This means that for all subsequent calls of</span>
+<span class="sd">    the open() method, the mode is &#39;a&#39; and not &#39;w&#39;. This is to prevent </span>
+<span class="sd">    overwriting the file by accident. </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str or None, optional</span>
+<span class="sd">            The name of the file to write to. If None, the output is printed to stdout.</span>
+<span class="sd">        mode : FileWritingMode or str, optional</span>
+<span class="sd">            The mode of the file. Use one of the modes in FileWritingMode or </span>
+<span class="sd">            &#39;w&#39; for write, &#39;a&#39; for append or &#39;o&#39; for overwrite.</span>
+<span class="sd">            The default is &#39;w&#39;.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the given mode is not in .</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the given filename already exists and the mode is &#39;w&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseWriter.open">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter.open">[docs]</a>
+    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens the file to write to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span>  <span class="c1"># pylint: disable=consider-using-with</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">APPEND</span></div>
+
+
+<div class="viewcode-block" id="BaseWriter.close">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter.close">[docs]</a>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the file to write to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FileWritingMode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        FileWritingMode: The mode of the file.</span>
+
+<span class="sd">        The setter checks if the given mode is in BaseWriter.modes. </span>
+<span class="sd">        Furthermore, if the mode is &#39;w&#39; and the file already exists,</span>
+<span class="sd">        a ValueError is raised. If the mode is &#39;a&#39; and the file does</span>
+<span class="sd">        not exist, it is created. If the mode is &#39;o&#39; and the file</span>
+<span class="sd">        already exists, it is overwritten.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span>
+
+    <span class="nd">@mode</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets the mode of the file.</span>
+
+<span class="sd">        It can be either a string or a FileWritingMode. If it is a</span>
+<span class="sd">        string, it has to be one of the modes defined in the Enum </span>
+<span class="sd">        class :py:class:`~PQAnalysis.io.formats.FileWritingMode`. </span>
+<span class="sd">        Furthermore, if the mode is &#39;w&#39; and the file already exists,</span>
+<span class="sd">        a ValueError is raised. If the mode is &#39;a&#39; and the file</span>
+<span class="sd">        does not exist, it is created. If the mode is &#39;o&#39; and the</span>
+<span class="sd">        file already exists, it is overwritten.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mode : str | FileWritingMode</span>
+<span class="sd">            The mode of the file. It can be either a string or a </span>
+<span class="sd">            FileWritingMode. If it is a string, it has to be one </span>
+<span class="sd">            of the modes defined in the Enum class </span>
+<span class="sd">            :py:class:`~PQAnalysis.io.formats.FileWritingMode`.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the given mode is &#39;w&#39; and the file already exists.</span>
+<span class="sd">            This is to prevent overwriting the file by accident.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">WRITE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. &quot;</span>
+                <span class="s2">&quot;Use mode </span><span class="se">\&#39;</span><span class="s2">a</span><span class="se">\&#39;</span><span class="s2"> to append to the file or mode &quot;</span>
+                <span class="s2">&quot;</span><span class="se">\&#39;</span><span class="s2">o</span><span class="se">\&#39;</span><span class="s2"> to overwrite the file.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FileWritingModeError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;o&#39;</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mode</span> <span class="o">=</span> <span class="n">mode</span></div>
+
+
+
+
+<div class="viewcode-block" id="BaseReader">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.base.html#PQAnalysis.io.base.BaseReader">[docs]</a>
+<span class="k">class</span> <span class="nc">BaseReader</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A base class for all readers.</span>
+
+<span class="sd">    This class can be used as a base class for all Readers implemented </span>
+<span class="sd">    in the PQAnalysis package. It provides the functionality to read </span>
+<span class="sd">    from a file or multiple files. If the filename is a string, the file</span>
+<span class="sd">    is read from. The basic idea is just to ease the handling of </span>
+<span class="sd">    multiple files and to provide a common interface for all readers.</span>
+<span class="sd">    The actual reading is done in the methods of the subclasses. </span>
+<span class="sd">    This wrapper only sets the filename/filenames and checks if the </span>
+<span class="sd">    file/files exist. Furthermore, a boolean is set to indicate if </span>
+<span class="sd">    the reader reads from a single file or multiple files.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the BaseReader with the given filename.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str or list of str</span>
+<span class="sd">            The name of the file to read from or a list of filenames to read from.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If the given file does not exist.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">PQFileNotFoundError</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multiple_files</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filenames</span> <span class="o">=</span> <span class="n">filename</span>
+            <span class="k">for</span> <span class="n">_filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_filename</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="p">(</span>
+                        <span class="s2">&quot;At least one of the given files does not exist. &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">_filename</span><span class="si">}</span><span class="s2"> not found.&quot;</span>
+                        <span class="p">),</span>
+                        <span class="n">exception</span><span class="o">=</span><span class="n">PQFileNotFoundError</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span> <span class="o">=</span> <span class="n">filenames</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">multiple_files</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

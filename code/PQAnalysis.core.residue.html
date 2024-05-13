@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>residue &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="core.atom" href="PQAnalysis.core.atom.html" />
+    <link rel="prev" title="exceptions" href="PQAnalysis.core.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.core.html">core</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.exceptions.html">exceptions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">residue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.atom.html">core.atom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.cell.html">core.cell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.core.html">core</a></li>
+      <li class="breadcrumb-item active">residue</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.core.residue.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.core.residue">
+<span id="residue"></span><h1>residue<a class="headerlink" href="#module-PQAnalysis.core.residue" title="Link to this heading"></a></h1>
+<p>A module containing the Residue class</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt>Residue</dt><dd><p>A class for representing a residue.</p>
+</dd>
+<dt>QMResidue</dt><dd><p>A class for representing a QM residue.</p>
+</dd>
+</dl>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.core.residue.QMResidue" title="PQAnalysis.core.residue.QMResidue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">QMResidue</span></code></a></p></td>
+<td><p>A class for representing a QM residue type (mol type).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.core.residue.Residue" title="PQAnalysis.core.residue.Residue"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Residue</span></code></a></p></td>
+<td><p>A class for representing a residue type (mol type).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.QMResidue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">QMResidue</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><span class="pre">Element</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/core/residue.html#QMResidue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.residue.QMResidue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PQAnalysis.core.residue.Residue" title="PQAnalysis.core.residue.Residue"><code class="xref py py-class docutils literal notranslate"><span class="pre">Residue</span></code></a></p>
+<p>A class for representing a QM residue type (mol type).</p>
+<p>It is a subclass of Residue and is used to represent any atoms that are
+represented solely by via QM methods during a simulation, meaning that
+they cannot leave the QM zone and do not have any MM-like properties.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">QMResidue</span><span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">))</span>
+<span class="go">Residue(name=&#39;QM&#39;, id=0, total_charge=0.0, n_atoms=1)</span>
+</pre></div>
+</div>
+</div>
+<p>Initializes the QMResidue with the given parameters.</p>
+<p>For the initialization only the element of the QM residue is required.
+One QMResidue can only contain one element.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>element</strong> (<a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><em>Element</em></a>) – The element of the QM residue.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Residue</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">residue_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">total_charge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><span class="pre">Element</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Elements" title="PQAnalysis.core.atom.element.Elements"><span class="pre">Elements</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">partial_charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/core/residue.html#Residue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.residue.Residue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for representing a residue type (mol type).</p>
+<p>In general residues are used to represent the different molecules in a system.
+In case a QMCF based simulation is performed, the residues are defined via
+the moldescriptor file.</p>
+<p>Initializes the Residue with the given parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – The name of the residue.</p></li>
+<li><p><strong>residue_id</strong> (<em>int</em>) – The id of the residue.</p></li>
+<li><p><strong>total_charge</strong> (<em>Real</em>) – The total charge of the residue.</p></li>
+<li><p><strong>elements</strong> (<a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><em>Element</em></a><em> | </em><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Elements" title="PQAnalysis.core.atom.element.Elements"><em>Elements</em></a><em> | </em><em>str</em><em> | </em><em>List</em><em>[</em><em>str</em><em>]</em>) – The elements of the residue.</p></li>
+<li><p><strong>atom_types</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a>) – The atom types of the residue.</p></li>
+<li><p><strong>partial_charges</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a>) – The partial charges of the residue.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>MolTypeError</strong> – If the number of elements, atom_types and partial_charges are not the same.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/residue.html#Residue.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.residue.Residue.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the Residue is equal to another Residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>Any</em>) – The other Residue to compare to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Residue is equal to the other Residue, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/residue.html#Residue.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.residue.Residue.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the Residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the Residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/residue.html#Residue.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.residue.Residue.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the Residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the Residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.atom_types">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atom_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.atom_types" title="Link to this definition"></a></dt>
+<dd><p>Returns the atom types of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The atom types of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.elements">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">elements</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Elements" title="PQAnalysis.core.atom.element.Elements"><span class="pre">Elements</span></a></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.elements" title="Link to this definition"></a></dt>
+<dd><p>Returns the elements of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The elements of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Elements" title="PQAnalysis.core.atom.element.Elements">Elements</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.id" title="Link to this definition"></a></dt>
+<dd><p>Returns the id of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The id of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Residue</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.n_atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.n_atoms" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of atoms in the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of atoms in the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.name" title="Link to this definition"></a></dt>
+<dd><p>Returns the name of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.partial_charges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">partial_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.partial_charges" title="Link to this definition"></a></dt>
+<dd><p>Returns the partial charges of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The partial charges of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residue.total_charge">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">total_charge</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.residue.Residue.total_charge" title="Link to this definition"></a></dt>
+<dd><p>Returns the total charge of the residue.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The total charge of the residue.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.residue.Residues">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Residues</span></span><a class="headerlink" href="#PQAnalysis.core.residue.Residues" title="Link to this definition"></a></dt>
+<dd><p>A type hint for a list of residues (mol types).</p>
+<p>alias of TypeVar(‘Residues’, bound=<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[PQAnalysis.core.Residue])</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.core.exceptions.html" class="btn btn-neutral float-left" title="exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.core.atom.html" class="btn btn-neutral float-right" title="core.atom" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

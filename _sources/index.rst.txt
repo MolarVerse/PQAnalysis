@@ -9,10 +9,15 @@ PQAnalysis
 
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: -1
    
+   userGuide/userGuide
    developerGuide/developerGuide
-   code/modules.rst
+   code/PQAnalysis.rst
 
+Welcome to PQAnalysis's documentation!
+======================================
+
+:ref:`userGuide`
 
 :ref:`developerGuide`

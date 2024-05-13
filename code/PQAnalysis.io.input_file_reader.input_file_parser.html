@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>input_file_parser &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="io.input_file_reader.pq" href="PQAnalysis.io.input_file_reader.pq.html" />
+    <link rel="prev" title="formats" href="PQAnalysis.io.input_file_reader.formats.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.formats.html">formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.info_file_reader.html">info_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.moldescriptor_reader.html">moldescriptor_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.write_api.html">write_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.gen_file.html">io.gen_file</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.input_file_reader.exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.input_file_reader.formats.html">formats</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">input_file_parser</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.input_file_reader.pq.html">io.input_file_reader.pq</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.input_file_reader.pq_analysis.html">io.input_file_reader.pq_analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.nep.html">io.nep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.restart_file.html">io.restart_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.topology_file.html">io.topology_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.traj_file.html">io.traj_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.virial.html">io.virial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.html">io</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a></li>
+      <li class="breadcrumb-item active">input_file_parser</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.io.input_file_reader.input_file_parser.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.io.input_file_reader.input_file_parser">
+<span id="input-file-parser"></span><h1>input_file_parser<a class="headerlink" href="#module-PQAnalysis.io.input_file_reader.input_file_parser" title="Link to this heading"></a></h1>
+<p>A module containing the input file parser.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer" title="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ComposedDatatypesTransformer</span></code></a></p></td>
+<td><p>Transformer for composed datatypes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputDictionary</span></code></a></p></td>
+<td><p>Input file dictionary.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser" title="PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputFileParser</span></code></a></p></td>
+<td><p>Class to parse input files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor" title="PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InputFileVisitor</span></code></a></p></td>
+<td><p>Visitor for input files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer" title="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PrimitiveTransformer</span></code></a></p></td>
+<td><p>Transformer for primitive datatypes.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ComposedDatatypesTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visit_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></p>
+<p>Transformer for composed datatypes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Transformer</strong> (<em>Transformer</em>) – Transformer class from lark.</p>
+</dd>
+</dl>
+<p>initialize the transformer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visit_tokens</strong> (<em>bool</em><em>, </em><em>optional</em>) – boolean to visit tokens, by default False</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.array">
+<span class="sig-name descname"><span class="pre">array</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.array" title="Link to this definition"></a></dt>
+<dd><p>Method to transform array values</p>
+<p>It transforms a list of items into a list of values, the string
+“{most_general_type}”, and the line where the token was defined.
+The most general type is inferred from the list of items.
+If the list contains a bool and another type, a TypeError is raised.
+The list of items must contain only primitive types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – items containing the array value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the array value, the string “{most_general_type}”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[List[Any], str, str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if the list of items contains a non-primitive type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.glob">
+<span class="sig-name descname"><span class="pre">glob</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.glob"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.glob" title="Link to this definition"></a></dt>
+<dd><p>Method to transform glob values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – items containing the glob value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the glob value, the string “glob”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[List[str], str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.key">
+<span class="sig-name descname"><span class="pre">key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.key" title="Link to this definition"></a></dt>
+<dd><p>Method to transform key values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – items containing the key value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>key value</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.range">
+<span class="sig-name descname"><span class="pre">range</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Range" title="PQAnalysis.types.Range"><span class="pre">Range</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.range" title="Link to this definition"></a></dt>
+<dd><p>Method to transform range values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – items containing the range value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the range value, the string “range”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Range" title="PQAnalysis.types.Range">Range</a>, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.value">
+<span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.value" title="Link to this definition"></a></dt>
+<dd><p>Method to transform value values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – items containing the value value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the value value, the string “value”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Any, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.primitive_types">
+<span class="sig-name descname"><span class="pre">primitive_types</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['float',</span> <span class="pre">'int',</span> <span class="pre">'str',</span> <span class="pre">'bool']</span></em><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.primitive_types" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InputDictionary</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Input file dictionary.</p>
+<p>This is a dictionary-like object that stores the input file keys and values.
+It is case-insensitive, so that the keys “key”, “Key” and “KEY” are all
+equivalent. It also stores the type of the value and the line where the key
+was defined in the input file.</p>
+<p>THe InputDictionary is initialized as an empty dictionary.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">_InputDictionary__value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Compare two InputDictionary objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>__value</strong> (<em>object</em>) – The object to compare to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the objects are equal, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Get the value of a key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to get the value of. It is case-insensitive.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQKeyError" title="PQAnalysis.exceptions.PQKeyError"><strong>PQKeyError</strong></a> – If the key is not defined in the input file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__setitem__">
+<span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.__setitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__setitem__" title="Link to this definition"></a></dt>
+<dd><p>Set the value of a key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em>) – The key to set the value of. It is case-insensitive.</p></li>
+<li><p><strong>value</strong> (<em>Tuple</em><em>[</em><em>Any</em><em>, </em><em>str</em><em>, </em><em>str</em><em>]</em>) – The value to set. It is a tuple containing the value, the type of
+the value and the line where the key was defined in the input file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQKeyError" title="PQAnalysis.exceptions.PQKeyError"><strong>PQKeyError</strong></a> – If the key is already defined in the input file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_line">
+<span class="sig-name descname"><span class="pre">get_line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.get_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_line" title="Link to this definition"></a></dt>
+<dd><p>Get the line where the key was defined in the input file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to get the line of. It is case-insensitive.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The line where the key was defined in the input file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_type">
+<span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.get_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_type" title="Link to this definition"></a></dt>
+<dd><p>Get the type of the value of a key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to get the type of. It is case-insensitive.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The type of the value of the key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_value" title="Link to this definition"></a></dt>
+<dd><p>Get the value of a key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – The key to get the value of. It is case-insensitive.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value of the key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputDictionary.keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.keys" title="Link to this definition"></a></dt>
+<dd><p>Get the keys of the dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The keys of the dictionary in a list.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.InputDictionary</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InputFileParser</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">input_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.input_file_reader.formats.html#PQAnalysis.io.input_file_reader.formats.InputFileFormat" title="PQAnalysis.io.input_file_reader.formats.InputFileFormat"><span class="pre">InputFileFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">InputFileFormat.PQANALYSIS</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileParser"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseReader" title="PQAnalysis.io.base.BaseReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReader</span></code></a></p>
+<p>Class to parse input files.</p>
+<p>This parser is based on a lark grammar. It uses the lark parser to parse
+the input file. For more information have a look at the
+<a class="reference external" href="https://lark-parser.readthedocs.io/en/latest/">lark documentation</a>.
+This input file parser is used for parsing all kind of input files.
+By selecting the input_format the automatically invokes the corresponding
+grammar. The input_format can be either PQANALYSIS, PQ or QMCFC.
+The PQANALYSIS format is used for parsing the input files of the
+PQAnalysis code. The PQ and QMCFC formats are used for parsing the input
+files of the PQ and QMCFC codes, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BaseReader</strong> (<a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseReader" title="PQAnalysis.io.base.BaseReader"><em>BaseReader</em></a>) – BaseReader class from PQAnalysis.io</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – The name of the input file.</p></li>
+<li><p><strong>input_format</strong> (<a class="reference internal" href="PQAnalysis.io.input_file_reader.formats.html#PQAnalysis.io.input_file_reader.formats.InputFileFormat" title="PQAnalysis.io.input_file_reader.formats.InputFileFormat"><em>InputFileFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the input file, by default InputFileFormat.PQANALYSIS</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary"><span class="pre">InputDictionary</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileParser.parse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser.parse" title="Link to this definition"></a></dt>
+<dd><p>Parse the input file.</p>
+<p>It uses the lark parser to parse the input file. It then uses the
+PrimitiveTransformer and ComposedDatatypesTransformer to transform the
+tree. Finally, it uses the InputFileVisitor to visit the tree and
+return the dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>InputDictionary</strong> – The parsed input file dictionary.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary">InputDictionary</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">InputFileVisitor</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileVisitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Visitor</span></code></p>
+<p>Visitor for input files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Visitor</strong> – Visitor class from lark.</p>
+</dd>
+</dl>
+<p>Initialize the visitor.</p>
+<p>It initializes the dictionary and the composed datatypes transformer.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.assign">
+<span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tree</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileVisitor.assign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.assign" title="Link to this definition"></a></dt>
+<dd><p>Parse an assign statement. The assign statement is of the form:</p>
+<p>key = value;</p>
+<p>where key is a string, and the value is a tuple containing the value,
+the type of the value and the line where the key was defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Tree</em>) – The assign statement.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The assign statement.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tree</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.multiline_statement">
+<span class="sig-name descname"><span class="pre">multiline_statement</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tree</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileVisitor.multiline_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.multiline_statement" title="Link to this definition"></a></dt>
+<dd><p>Parse a multiline statement. The multiline statement is of the form:</p>
+<p>key
+value1
+value2
+…
+END</p>
+<p>where key is a string, and the values are a tuple containing the value,
+the type of the value and the line where the key was defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Tree</em>) – The multiline statement.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The multiline statement.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tree</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.visit">
+<span class="sig-name descname"><span class="pre">visit</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary"><span class="pre">InputDictionary</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#InputFileVisitor.visit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.visit" title="Link to this definition"></a></dt>
+<dd><p>Visit the tree and return the dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tree</strong> (<em>Tree</em>) – The tree to visit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The parsed input file dictionary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary" title="PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary">InputDictionary</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PrimitiveTransformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visit_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#PrimitiveTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></p>
+<p>Transformer for primitive datatypes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Transformer</strong> (<em>Transformer</em>) – Transformer class from lark.</p>
+</dd>
+</dl>
+<p>initialize the transformer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>visit_tokens</strong> (<em>bool</em><em>, </em><em>optional</em>) – boolean to visit tokens, by default False</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.boolean">
+<span class="sig-name descname"><span class="pre">boolean</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#PrimitiveTransformer.boolean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.boolean" title="Link to this definition"></a></dt>
+<dd><p>Method to transform bool values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – items containing the bool value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the bool value, the string “bool”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[bool, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.float">
+<span class="sig-name descname"><span class="pre">float</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Real</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#PrimitiveTransformer.float"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.float" title="Link to this definition"></a></dt>
+<dd><p>Method to transform float values</p>
+<p>A “float” token is transformed into a float value,
+the string “float”, and the line where the token was defined.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – items containing the float value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the float value, the string “float”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Real, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.integer">
+<span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#PrimitiveTransformer.integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.integer" title="Link to this definition"></a></dt>
+<dd><p>Method to transform int values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – items containing the int value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the int value, the string “int”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[Integral, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.word">
+<span class="sig-name descname"><span class="pre">word</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#PrimitiveTransformer.word"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.word" title="Link to this definition"></a></dt>
+<dd><p>Method to transform word values</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – items containing the word value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the word value, the string “str”,
+and the line where the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[str, str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.io.input_file_reader.formats.html" class="btn btn-neutral float-left" title="formats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.input_file_reader.pq.html" class="btn btn-neutral float-right" title="io.input_file_reader.pq" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

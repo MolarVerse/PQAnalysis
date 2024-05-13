@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rdf &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="rst2xyz" href="PQAnalysis.cli.rst2xyz.html" />
+    <link rel="prev" title="main" href="PQAnalysis.cli.main.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.cli.html">cli</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.add_molecules.html">add_molecules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.build_nep_traj.html">build_nep_traj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.continue_input.html">continue_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.gen2xyz.html">gen2xyz</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.main.html">main</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">rdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.rst2xyz.html">rst2xyz</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.traj2box.html">traj2box</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.traj2qmcfc.html">traj2qmcfc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.xyz2gen.html">xyz2gen</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.cli.html">cli</a></li>
+      <li class="breadcrumb-item active">rdf</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.cli.rdf.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.cli.rdf">
+<span id="rdf"></span><h1>rdf<a class="headerlink" href="#module-PQAnalysis.cli.rdf" title="Link to this heading"></a></h1>
+<section id="command-line-tool-for-rdf-analysis">
+<span id="cli-rdf"></span><h2>Command Line Tool for RDF Analysis<a class="headerlink" href="#command-line-tool-for-rdf-analysis" title="Link to this heading"></a></h2>
+<p>This command line tool can be used to calculate the
+radial distribution function (RDF) of given
+trajectory file(s). This is an input file based tool,
+so that the input file can be used to specify the
+parameters of the RDF calculation.
+For more information on the general the RDF analysis and its input file options please visit <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQAnalysis.analysis.rdf.rdf.RDF</span></code></a> and <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf_input_file_reader.html#module-PQAnalysis.analysis.rdf.rdf_input_file_reader" title="PQAnalysis.analysis.rdf.rdf_input_file_reader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PQAnalysis.analysis.rdf.rdf_input_file_reader</span></code></a></p>
+<p>For the RDF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see <a class="reference internal" href="../userGuide/inputFile.html#inputfile"><span class="std std-ref">Input File</span></a>.</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Required keys</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key
+- Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>traj_files
+- The trajectory files to read. This can be a single file or a list of files.</p></td>
+</tr>
+<tr class="row-odd"><td><p>reference_selection
+- The selection string to select the reference atoms. For more details see <a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection" title="PQAnalysis.topology.selection.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p>target_selection
+- The selection string to select the target atoms. For more details see <a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection" title="PQAnalysis.topology.selection.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>out_file
+- The output file to write the RDF data to.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Optional keys</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Key
+- Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>r_max
+- The maximum radius to calculate the RDF for.</p></td>
+</tr>
+<tr class="row-odd"><td><p>r_min
+- The minimum radius to calculate the RDF for.</p></td>
+</tr>
+<tr class="row-even"><td><p>delta_r
+- The delta radius to calculate the RDF for.</p></td>
+</tr>
+<tr class="row-odd"><td><p>n_bins
+- The number of bins to calculate the RDF for.</p></td>
+</tr>
+<tr class="row-even"><td><p>log_file
+- The log file to write the log information to.</p></td>
+</tr>
+<tr class="row-odd"><td><p>use_full_atom_info
+- Whether to use full atom information for the selections.</p></td>
+</tr>
+<tr class="row-even"><td><p>no_intra_molecular
+- Whether to exclude intra molecular pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p>restart_file
+- The restart file to read the topology from.</p></td>
+</tr>
+<tr class="row-even"><td><p>moldescriptor_file
+- The moldescriptor file to read the reference residues from.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Optional keys does not mean that they are optional for the analysis.
+They are optional in the input file, but they might be required for
+the analysis. This means that if an optional keyword is specified
+other keywords might be required. For example:</p>
+<ul class="simple">
+<li><p>If the <code class="code docutils literal notranslate"><span class="pre">no_intra_molecular</span></code> key is specified,</p></li>
+</ul>
+<p>the <code class="code docutils literal notranslate"><span class="pre">restart_file</span></code> and
+<code class="code docutils literal notranslate"><span class="pre">moldescriptor_file</span></code> keys
+are required in order to exclude intra molecular pairs.
+- If the <code class="code docutils literal notranslate"><span class="pre">moldescriptor_file</span></code> key is specified,
+the <code class="code docutils literal notranslate"><span class="pre">restart_file</span></code> key is required in order
+use the reference residues in any meaningful way.
+- In general, the <code class="code docutils literal notranslate"><span class="pre">r_max</span></code>,
+<code class="code docutils literal notranslate"><span class="pre">n_bins</span></code> and <code class="code docutils literal notranslate"><span class="pre">delta_r</span></code>
+are mutual exclusive, meaning that they can’t be specified at
+the same time. Furthermore, at least one of
+<code class="code docutils literal notranslate"><span class="pre">&lt;property</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f7594c245e0&gt;'</span> <span class="pre">or</span> <span class="pre">:code:`&lt;property</span> <span class="pre">object</span> <span class="pre">at</span> <span class="pre">0x7f7594c24540&gt;</span></code> is required
+(for more information see <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a>).</p>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.cli.rdf.RDFCLI" title="PQAnalysis.cli.rdf.RDFCLI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RDFCLI</span></code></a></p></td>
+<td><p>Command Line Tool for RDF Analysis</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.cli.rdf.main" title="PQAnalysis.cli.rdf.main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></a></p></td>
+<td><p>The main function of the RDF analysis command line tool, which is basically just a wrapper for the rdf function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.cli.rdf.RDFCLI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RDFCLI</span></span><a class="reference internal" href="../_modules/PQAnalysis/cli/rdf.html#RDFCLI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.cli.rdf.RDFCLI" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">CLIBase</span></code></p>
+<p>Command Line Tool for RDF Analysis</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.cli.rdf.RDFCLI.add_arguments">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_arguments</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">parser</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">_ArgumentParser</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/cli/rdf.html#RDFCLI.add_arguments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.cli.rdf.RDFCLI.add_arguments" title="Link to this definition"></a></dt>
+<dd><p>Adds the arguments to the parser.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>parser</strong> (<em>_ArgumentParser</em>) – The parser to which the arguments should be added.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.cli.rdf.RDFCLI.program_name">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">program_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/cli/rdf.html#RDFCLI.program_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.cli.rdf.RDFCLI.program_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the name of the program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The name of the program.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.cli.rdf.RDFCLI.run">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/cli/rdf.html#RDFCLI.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.cli.rdf.RDFCLI.run" title="Link to this definition"></a></dt>
+<dd><p>Runs the command line tool.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>argparse.Namespace</em>) – The arguments parsed by the parser.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.cli.rdf.main">
+<span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/cli/rdf.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.cli.rdf.main" title="Link to this definition"></a></dt>
+<dd><p>The main function of the RDF analysis command line tool,
+which is basically just a wrapper for the rdf function.
+For more information on the rdf function please
+visit <a class="reference internal" href="PQAnalysis.analysis.rdf.api.html#PQAnalysis.analysis.rdf.api.rdf" title="PQAnalysis.analysis.rdf.api.rdf"><code class="xref py py-func docutils literal notranslate"><span class="pre">PQAnalysis.analysis.rdf.api.rdf()</span></code></a>.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.cli.main.html" class="btn btn-neutral float-left" title="main" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.cli.rst2xyz.html" class="btn btn-neutral float-right" title="rst2xyz" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

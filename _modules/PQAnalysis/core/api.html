@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.core.api &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.core.api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.core.api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing all api functions for the PQAnalysis.core package.</span>
+
+<span class="sd">All of this functions are provided within the namespace of the PQAnalysis.core package.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">cell</span> <span class="k">as</span> <span class="n">_cell</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">PositiveReal</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+
+
+<div class="viewcode-block" id="distance">
+<a class="viewcode-back" href="../../../code/PQAnalysis.core.api.html#PQAnalysis.core.api.distance">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">distance</span><span class="p">(</span>
+    <span class="n">pos1</span><span class="p">:</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="n">pos2</span><span class="p">:</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="n">cell</span><span class="p">:</span> <span class="n">_cell</span><span class="o">.</span><span class="n">Cell</span> <span class="o">=</span> <span class="n">_cell</span><span class="o">.</span><span class="n">Cell</span><span class="p">(),</span>
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the distances between all combinations of two position arrays.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    In more detail this function returns the distances between all combinations</span>
+<span class="sd">    of two positions in the position arrays &#39;pos1&#39; and &#39;pos2&#39;. If pos1 and pos2</span>
+<span class="sd">    are both 1D arrays, the distance between the two positions is returned. </span>
+<span class="sd">    If pos1 is a 1D array and pos2 is a 2D array, the distances between the </span>
+<span class="sd">    position in pos1 and all positions in pos2 are returned. If pos1 and pos2</span>
+<span class="sd">    are both 2D arrays, the distances between all combinations of positions in</span>
+<span class="sd">    pos1 and pos2 are returned.</span>
+
+<span class="sd">    The only requirement for the position arrays is that the last dimension has</span>
+<span class="sd">    to be 3, which represents the x, y and z coordinates of the position(s).</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+
+<span class="sd">    &gt;&gt;&gt; from PQAnalysis.core import distance, Cell</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+
+<span class="sd">    &gt;&gt;&gt; pos1 = np.array([0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; pos2 = np.array([1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; distance(pos1, pos2)</span>
+<span class="sd">    array([[1.73205081]])</span>
+
+<span class="sd">    &gt;&gt;&gt; pos1 = np.array([0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; pos2 = np.array([[1, 1, 1], [0.5, 0.5, 0.5]])</span>
+<span class="sd">    &gt;&gt;&gt; distance(pos1, pos2)</span>
+<span class="sd">    array([[1.73205081, 0.8660254 ]])</span>
+
+<span class="sd">    &gt;&gt;&gt; pos1 = np.array([0, 0, 0])</span>
+<span class="sd">    &gt;&gt;&gt; pos2 = np.array([[1, 1, 1], [0.5, 0.5, 0.5]])</span>
+<span class="sd">    &gt;&gt;&gt; distance(pos1, pos2, cell=Cell(0.7, 0.7, 0.7))</span>
+<span class="sd">    array([[0.519615, 0.3464102]])</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pos1 : Np1DNumberArray | Np2DNumberArray</span>
+<span class="sd">        The first position.</span>
+<span class="sd">    pos2 : Np1DNumberArray | Np2DNumberArray</span>
+<span class="sd">        The second position.</span>
+<span class="sd">    cell : Cell, optional</span>
+<span class="sd">        The unit cell of the system. Default is Cell().</span>
+<span class="sd">    **kwargs</span>
+<span class="sd">        Arbitrary keyword arguments.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    PositiveReal | Np1DNumberArray | Np2DNumberArray</span>
+<span class="sd">        The distance(s) between the two position(s) (arrays).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">pos1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">pos1</span><span class="p">)</span>
+
+    <span class="n">delta_pos</span> <span class="o">=</span> <span class="n">pos2</span> <span class="o">-</span> <span class="n">pos1</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">delta_pos</span> <span class="o">=</span> <span class="n">cell</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">delta_pos</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_pos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

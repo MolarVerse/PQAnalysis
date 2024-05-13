@@ -4,9 +4,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PQAnalysis.core package &mdash; PQAnalysis  documentation</title>
+  <title>core &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
 
   
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="PQAnalysis.core.atomicSystem package" href="PQAnalysis.core.atomicSystem.html" />
-    <link rel="prev" title="PQAnalysis.cli package" href="PQAnalysis.cli.html" /> 
+    <link rel="next" title="api" href="PQAnalysis.core.api.html" />
+    <link rel="prev" title="xyz2gen" href="PQAnalysis.cli.xyz2gen.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,28 +47,31 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PQAnalysis</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.html">PQAnalysis package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.cli.html">PQAnalysis.cli package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">PQAnalysis.core package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.html">PQAnalysis.io package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.physicalData.html">PQAnalysis.physicalData package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.tools.html">PQAnalysis.tools package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.topology.html">PQAnalysis.topology package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.traj.html">PQAnalysis.traj package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.utils.html">PQAnalysis.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">core</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.residue.html">residue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.atom.html">core.atom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.cell.html">core.cell</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#pqanalysis-exceptions-module">PQAnalysis.exceptions module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#pqanalysis-types-module">PQAnalysis.types module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
 </ul>
 
         </div>
@@ -85,9 +88,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">PQAnalysis</a></li>
-          <li class="breadcrumb-item"><a href="PQAnalysis.html">PQAnalysis package</a></li>
-      <li class="breadcrumb-item active">PQAnalysis.core package</li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+      <li class="breadcrumb-item active">core</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/code/PQAnalysis.core.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -97,35 +99,31 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pqanalysis-core-package">
-<h1>PQAnalysis.core package<a class="headerlink" href="#pqanalysis-core-package" title="Link to this heading"></a></h1>
+  <section id="module-PQAnalysis.core">
+<span id="core"></span><h1>core<a class="headerlink" href="#module-PQAnalysis.core" title="Link to this heading"></a></h1>
+<p>This is the core package of PQAnalysis.</p>
+<p>It consists of all classes and functions that are used to handle
+atomic systems, atoms, elements and cells. Additionally it contains
+some functions that are used to compute properties of atomic systems
+within the api module, but can be used directly from the core package.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.api.html">api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.residue.html">residue</a></li>
+</ul>
+</div>
+</section>
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.atomicSystem.html">PQAnalysis.core.atomicSystem package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.atomicSystem.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.atomicSystem.html#pqanalysis-core-atomicsystem-atomicsystem-module">PQAnalysis.core.atomicSystem.atomicSystem module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.atomicSystem.html#module-contents">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.atom.html">core.atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.core.cell.html">core.cell</a></li>
 </ul>
 </div>
-</section>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
-</section>
-<section id="pqanalysis-core-atom-module">
-<h2>PQAnalysis.core.atom module<a class="headerlink" href="#pqanalysis-core-atom-module" title="Link to this heading"></a></h2>
-</section>
-<section id="pqanalysis-core-cell-module">
-<h2>PQAnalysis.core.cell module<a class="headerlink" href="#pqanalysis-core-cell-module" title="Link to this heading"></a></h2>
-</section>
-<section id="pqanalysis-core-exceptions-module">
-<h2>PQAnalysis.core.exceptions module<a class="headerlink" href="#pqanalysis-core-exceptions-module" title="Link to this heading"></a></h2>
-</section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 
@@ -133,8 +131,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PQAnalysis.cli.html" class="btn btn-neutral float-left" title="PQAnalysis.cli package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="PQAnalysis.core.atomicSystem.html" class="btn btn-neutral float-right" title="PQAnalysis.core.atomicSystem package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PQAnalysis.cli.xyz2gen.html" class="btn btn-neutral float-left" title="xyz2gen" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.core.api.html" class="btn btn-neutral float-right" title="api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

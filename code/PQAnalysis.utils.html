@@ -4,9 +4,9 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PQAnalysis.utils package &mdash; PQAnalysis  documentation</title>
+  <title>utils &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
 
   
@@ -22,7 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="PQAnalysis.traj package" href="PQAnalysis.traj.html" /> 
+    <link rel="next" title="common" href="PQAnalysis.utils.common.html" />
+    <link rel="prev" title="trajectory" href="PQAnalysis.traj.trajectory.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,28 +47,32 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PQAnalysis</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.html">PQAnalysis package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.cli.html">PQAnalysis.cli package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.core.html">PQAnalysis.core package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.html">PQAnalysis.io package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.physicalData.html">PQAnalysis.physicalData package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.tools.html">PQAnalysis.tools package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.topology.html">PQAnalysis.topology package</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.traj.html">PQAnalysis.traj package</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">PQAnalysis.utils package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.common.html">common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.custom_logging.html">custom_logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.decorators.html">decorators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.files.html">files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.random.html">random</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.units.html">units</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#pqanalysis-exceptions-module">PQAnalysis.exceptions module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#pqanalysis-types-module">PQAnalysis.types module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.html#module-contents">Module contents</a></li>
 </ul>
 </li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
 </ul>
 
         </div>
@@ -84,9 +89,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="modules.html">PQAnalysis</a></li>
-          <li class="breadcrumb-item"><a href="PQAnalysis.html">PQAnalysis package</a></li>
-      <li class="breadcrumb-item active">PQAnalysis.utils package</li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+      <li class="breadcrumb-item active">utils</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/code/PQAnalysis.utils.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -96,19 +100,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pqanalysis-utils-package">
-<h1>PQAnalysis.utils package<a class="headerlink" href="#pqanalysis-utils-package" title="Link to this heading"></a></h1>
+  <section id="module-PQAnalysis.utils">
+<span id="utils"></span><h1>utils<a class="headerlink" href="#module-PQAnalysis.utils" title="Link to this heading"></a></h1>
+<p>A package containing classes and functions with common use.</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
-</section>
-<section id="pqanalysis-utils-common-module">
-<h2>PQAnalysis.utils.common module<a class="headerlink" href="#pqanalysis-utils-common-module" title="Link to this heading"></a></h2>
-</section>
-<section id="pqanalysis-utils-decorators-module">
-<h2>PQAnalysis.utils.decorators module<a class="headerlink" href="#pqanalysis-utils-decorators-module" title="Link to this heading"></a></h2>
-</section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.common.html">common</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.custom_logging.html">custom_logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.decorators.html">decorators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.files.html">files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.random.html">random</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.utils.units.html">units</a></li>
+</ul>
+</div>
 </section>
 </section>
 
@@ -116,7 +122,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PQAnalysis.traj.html" class="btn btn-neutral float-left" title="PQAnalysis.traj package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.traj.trajectory.html" class="btn btn-neutral float-left" title="trajectory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.utils.common.html" class="btn btn-neutral float-right" title="common" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

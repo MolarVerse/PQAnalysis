@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.utils.custom_logging &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.utils.custom_logging</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.utils.custom_logging</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing custom logging classes and functions,</span>
+<span class="sd">that are used in the PQAnalysis package.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">types</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.config</span> <span class="kn">import</span> <span class="n">log_file_name</span><span class="p">,</span> <span class="n">use_log_file</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils</span> <span class="kn">import</span> <span class="n">print_header</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQException</span>
+
+
+
+<div class="viewcode-block" id="setup_logger">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.setup_logger">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    general setup for the logger</span>
+
+<span class="sd">    This function can be used to setup a generic logger for functions/classes...</span>
+<span class="sd">    of the PQAnalysis package. It automatically adds a stream handler to the logger</span>
+<span class="sd">    and if the use_log_file is set to True, it also adds a file handler to</span>
+<span class="sd">    the logger. The file handler writes the log messages to the file specified in</span>
+<span class="sd">    the config log_file_name.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    logger : logging.Logger</span>
+<span class="sd">        The logger to setup.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    logging.Logger</span>
+<span class="sd">        The logger that was setup.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">handlers</span> <span class="o">==</span> <span class="p">[]:</span>
+        <span class="n">stream_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">__stderr__</span><span class="p">)</span>
+        <span class="n">stream_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">CustomColorFormatter</span><span class="p">())</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">stream_handler</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_log_file</span><span class="p">:</span>
+            <span class="n">file_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)</span>
+            <span class="n">file_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">CustomFormatter</span><span class="p">())</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">file_handler</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">log_file_name</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                    <span class="n">print_header</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="n">logger</span></div>
+
+
+
+
+<div class="viewcode-block" id="CustomLogger">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomLogger">[docs]</a>
+<span class="k">class</span> <span class="nc">CustomLogger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom logger class that extends the logging.Logger class.</span>
+
+<span class="sd">    This class extends the logging.Logger class and is set as the</span>
+<span class="sd">    default logger class for the PQAnalysis package. It re-implements</span>
+<span class="sd">    the _log method of the logging.Logger class in conjunction with</span>
+<span class="sd">    the error and critical methods. For more details see the</span>
+<span class="sd">    documentation of the _log, error and critical methods.</span>
+
+<span class="sd">    To return to the original logging.Logger class, the original_error</span>
+<span class="sd">    and original_critical methods can be used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>   <span class="c1"># pylint: disable=arguments-differ</span>
+             <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+             <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+             <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+             <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+             <span class="o">**</span><span class="n">kwargs</span>
+             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is a wrapper method for the original _log method of the logging.Logger class.</span>
+
+<span class="sd">        It logs the message with the given level and raises an exception if the level </span>
+<span class="sd">        is logging.ERROR or logging.CRITICAL and the logger is enabled for logging.DEBUG.</span>
+<span class="sd">        If the logger is not enabled for logging.DEBUG, the program exits with code 1.</span>
+
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        level : Any</span>
+<span class="sd">            The level of the log message.</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        exception : Exception, optional</span>
+<span class="sd">            The exception to raise, by default None.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        exception</span>
+<span class="sd">            if the level is logging.ERROR or logging.CRITICAL and the logger</span>
+<span class="sd">            is enabled for logging.DEBUG.</span>
+<span class="sd">        Exception</span>
+<span class="sd">            if the level is logging.ERROR or logging.CRITICAL and the logger</span>
+<span class="sd">            is not enabled for logging.DEBUG.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">exception</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;custom_exception&#39;</span><span class="p">:</span> <span class="n">exception</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">extra</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="s1">&#39;extra&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">del</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;extra&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_original_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">extra</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">in</span> <span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">]:</span>
+
+            <span class="n">exception</span> <span class="o">=</span> <span class="n">exception</span> <span class="ow">or</span> <span class="ne">Exception</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+                <span class="n">back_tb</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">exception</span>  <span class="c1"># pylint: disable=broad-exception-raised</span>
+                <span class="k">except</span> <span class="n">exception</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-except</span>
+                    <span class="n">traceback</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">back_frame</span> <span class="o">=</span> <span class="n">traceback</span><span class="o">.</span><span class="n">tb_frame</span><span class="o">.</span><span class="n">f_back</span>
+
+                    <span class="n">back_tb</span> <span class="o">=</span> <span class="n">types</span><span class="o">.</span><span class="n">TracebackType</span><span class="p">(</span>
+                        <span class="n">tb_next</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">tb_frame</span><span class="o">=</span><span class="n">back_frame</span><span class="p">,</span>
+                        <span class="n">tb_lasti</span><span class="o">=</span><span class="n">back_frame</span><span class="o">.</span><span class="n">f_lasti</span><span class="p">,</span>
+                        <span class="n">tb_lineno</span><span class="o">=</span><span class="n">back_frame</span><span class="o">.</span><span class="n">f_lineno</span>
+                    <span class="p">)</span>
+
+                <span class="k">raise</span> <span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="n">back_tb</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">exception_hook</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">):</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">                A custom exception hook that ignores the CustomLoggerException.</span>
+<span class="sd">                &quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">exc_type</span> <span class="o">!=</span> <span class="n">PQException</span><span class="p">:</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">__excepthook__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">)</span>
+
+            <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">exception_hook</span>
+            <span class="k">raise</span> <span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># pylint: disable=broad-exception-raised</span>
+
+    <span class="k">def</span> <span class="nf">_original_log</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The original _log method of the logging.Logger class.</span>
+
+<span class="sd">        This method logs the message with the given level and</span>
+<span class="sd">        the given arguments and keyword arguments.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        level : Any</span>
+<span class="sd">            The level of the log message.</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        extra : Any, optional</span>
+<span class="sd">            Additional information to log, by default None.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            The keyword arguments of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">level</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="n">extra</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CustomLogger.error">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomLogger.error">[docs]</a>
+    <span class="k">def</span> <span class="nf">error</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method logs the message with the logging.ERROR level and raises</span>
+<span class="sd">        an exception if the logger is enabled for logging.DEBUG. If the logger</span>
+<span class="sd">        is not enabled for logging.DEBUG, the program exits with code 1. If </span>
+<span class="sd">        an exception is given, it is raised with the message of the log message</span>
+<span class="sd">        otherwise a generic Exception is raised.</span>
+
+<span class="sd">        In order to return to the original logging.Logger class, the original_error</span>
+<span class="sd">        method can be used.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        exception : Exception, optional</span>
+<span class="sd">            The exception to raise, by default None. If None, a generic Exception is raised.</span>
+<span class="sd">        *args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            The keyword arguments of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">exception</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CustomLogger.original_error">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomLogger.original_error">[docs]</a>
+    <span class="k">def</span> <span class="nf">original_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method logs the message with the logging.ERROR level.</span>
+
+<span class="sd">        It corresponds to the original error method of the logging.Logger class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        *args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            The keyword arguments of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_original_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CustomLogger.critical">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomLogger.critical">[docs]</a>
+    <span class="k">def</span> <span class="nf">critical</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method logs the message with the logging.CRITICAL level and</span>
+<span class="sd">        raises an exception if the logger is enabled for logging.DEBUG. </span>
+<span class="sd">        If the logger is not enabled for logging.DEBUG, the program exits</span>
+<span class="sd">        with code 1. If an exception is given, it is raised with the </span>
+<span class="sd">        message of the log message otherwise a generic Exception is raised.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        exception : Exception, optional</span>
+<span class="sd">            The exception to raise, by default None. If None, a generic Exception is raised.</span>
+<span class="sd">        *args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            The keyword arguments of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span>
+                <span class="n">msg</span><span class="p">,</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">exception</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CustomLogger.original_critical">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomLogger.original_critical">[docs]</a>
+    <span class="k">def</span> <span class="nf">original_critical</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method logs the message with the logging.CRITICAL level.</span>
+
+<span class="sd">        It corresponds to the original critical method of the logging.Logger class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        msg : Any</span>
+<span class="sd">            The message to log.</span>
+<span class="sd">        *args : Any</span>
+<span class="sd">            The arguments of the log message.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            The keyword arguments of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_original_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="CustomFormatter">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomFormatter">[docs]</a>
+<span class="k">class</span> <span class="nc">CustomFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom formatter class that extends the logging.Formatter class.</span>
+
+<span class="sd">    This class extends the logging.Formatter class and is used to format</span>
+<span class="sd">    the log messages of the PQAnalysis package. It re-implements the </span>
+<span class="sd">    format method of the logging.Formatter class to format the log </span>
+<span class="sd">    messages in a custom way. The format method is used to format the log</span>
+<span class="sd">    messages of the logger.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">level_keys</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelNamesMapping</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="n">longest_level</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">level_keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CustomFormatter.format_level">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomFormatter.format_level">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats the level of the log message.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        record : logging.LogRecord</span>
+<span class="sd">            The log record to format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The formatted level of the log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+        <span class="n">additional_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">longest_level</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">level</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">additional_spaces</span></div>
+
+
+<div class="viewcode-block" id="CustomFormatter.format">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomFormatter.format">[docs]</a>
+    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats the log message.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        record : logging.LogRecord</span>
+<span class="sd">            The log record to format.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The formatted log message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">message</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">msg</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span>
+        <span class="n">record</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+        <span class="n">level</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">levelname</span>
+        <span class="n">formatted_level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_level</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+
+        <span class="n">level_keys</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelNamesMapping</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="n">longest_level_key</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">level_keys</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="nb">len</span><span class="p">)</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="n">record</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="s1">&#39;custom_exception&#39;</span><span class="p">):</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">formatted_level</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1"> - &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">record</span><span class="o">.</span><span class="n">custom_exception</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">header</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">formatted_level</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+
+        <span class="n">messages</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">wrapper</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">TextWrapper</span><span class="p">(</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">shutil</span><span class="o">.</span><span class="n">get_terminal_size</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span>
+            <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="n">columns</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
+            <span class="n">initial_indent</span><span class="o">=</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">longest_level_key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span>
+            <span class="n">subsequent_indent</span><span class="o">=</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">longest_level_key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">wrapper</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">message</span><span class="p">))</span> <span class="k">for</span> <span class="n">message</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">record</span><span class="o">.</span><span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">msg</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="CustomColorFormatter">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomColorFormatter">[docs]</a>
+<span class="k">class</span> <span class="nc">CustomColorFormatter</span><span class="p">(</span><span class="n">CustomFormatter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom color formatter class that extends the CustomFormatter class.</span>
+
+<span class="sd">    This class extends the CustomFormatter class, so that for each log level</span>
+<span class="sd">    a different color is used. The colors are defined in the FORMATS dictionary.</span>
+<span class="sd">    The color is set to the log level of the log message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">bold_yellow</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[33;1m&quot;</span>
+    <span class="n">bold_green</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[32;1m&quot;</span>
+    <span class="n">bold_orange</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[33;1m&quot;</span>
+    <span class="n">red</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[31;20m&quot;</span>
+    <span class="n">bold_red</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[31;1m&quot;</span>
+    <span class="n">reset</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[0m&quot;</span>
+    <span class="n">bold_cyan</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\x1b</span><span class="s2">[36;1m&quot;</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%(levelname)s</span><span class="s2">:&quot;</span>
+
+    <span class="n">FORMATS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">:</span> <span class="n">bold_yellow</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">:</span> <span class="n">bold_green</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">:</span> <span class="n">bold_orange</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">:</span> <span class="n">red</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span><span class="p">,</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">:</span> <span class="n">bold_red</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span><span class="p">,</span>
+        <span class="s2">&quot;CUSTOM&quot;</span><span class="p">:</span> <span class="n">bold_cyan</span> <span class="o">+</span> <span class="n">header</span> <span class="o">+</span> <span class="n">reset</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="CustomColorFormatter.format_level">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.custom_logging.html#PQAnalysis.utils.custom_logging.CustomColorFormatter.format_level">[docs]</a>
+    <span class="k">def</span> <span class="nf">format_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">record</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">LogRecord</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats the level of the log message.</span>
+
+<span class="sd">        It formats the level of the log message with the color of the log level.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        record : logging.LogRecord</span>
+<span class="sd">            the log record to format</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            the formatted level of the log message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">log_fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORMATS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelno</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">FORMATS</span><span class="p">[</span><span class="s2">&quot;CUSTOM&quot;</span><span class="p">])</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">log_fmt</span><span class="p">)</span>
+        <span class="n">additional_spaces</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">longest_level</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">levelname</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">formatter</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="n">additional_spaces</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

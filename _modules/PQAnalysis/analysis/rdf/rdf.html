@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.rdf.rdf &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.rdf.rdf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.rdf.rdf</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the RDF class. The RDF class is used</span>
+<span class="sd">to calculate the radial distribution of a reference</span>
+<span class="sd">selection to a target selection. The radial distribution</span>
+<span class="sd">function (RDF) is a measure of the probability density </span>
+<span class="sd">of finding a particle at a distance r from another particle. </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># 3rd party imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># 3rd party imports</span>
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="c1"># local absolute imports</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.config</span> <span class="kn">import</span> <span class="n">with_progress_bar</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">distance</span><span class="p">,</span> <span class="n">Cells</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.traj</span> <span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">check_trajectory_pbc</span><span class="p">,</span> <span class="n">check_trajectory_vacuum</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils</span> <span class="kn">import</span> <span class="n">timeit_in_class</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="n">TrajectoryReader</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="c1"># local relative imports</span>
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">RDFError</span>
+
+
+
+<div class="viewcode-block" id="RDF">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF">[docs]</a>
+<span class="k">class</span> <span class="nc">RDF</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for calculating the radial distribution of a </span>
+<span class="sd">    reference selection to a target selection. The radial</span>
+<span class="sd">    distribution function (RDF) is a measure of the </span>
+<span class="sd">    probability density of finding a particle at a </span>
+<span class="sd">    distance r from another particle. </span>
+
+<span class="sd">    The RDF analysis is initialized with the provided </span>
+<span class="sd">    parameters. The RDF analysis can be run by calling</span>
+<span class="sd">    the run method. The run method returns the middle </span>
+<span class="sd">    points of the bins of the RDF analysis, the normalized</span>
+<span class="sd">    bins of the RDF analysis based on the spherical shell</span>
+<span class="sd">    model, the integrated bins of the RDF analysis, the</span>
+<span class="sd">    normalized bins of the RDF analysis based on the</span>
+<span class="sd">    number of atoms in the system and the differential </span>
+<span class="sd">    bins of the RDF analysis based on the spherical </span>
+<span class="sd">    shell model.</span>
+
+<span class="sd">    The RDF class can be initialized with either a </span>
+<span class="sd">    trajectory object or via a TrajectoryReader object.</span>
+<span class="sd">    If a trajectory object is given, it is assumed to </span>
+<span class="sd">    have a constant topology over all frames! The main </span>
+<span class="sd">    difference between the two is that the </span>
+<span class="sd">    TrajectoryReader object allows for lazy loading of</span>
+<span class="sd">    the trajectory, meaning that the trajectory is only</span>
+<span class="sd">    loaded frame by frame when needed. This can be useful</span>
+<span class="sd">    for large trajectories that do not fit into memory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_use_full_atom_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_no_intra_molecular_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_r_min_default</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">,</span>
+        <span class="n">reference_species</span><span class="p">:</span> <span class="n">SelectionCompatible</span><span class="p">,</span>
+        <span class="n">target_species</span><span class="p">:</span> <span class="n">SelectionCompatible</span><span class="p">,</span>
+        <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">no_intra_molecular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        traj : Trajectory | TrajectoryReader</span>
+<span class="sd">            The trajectory to analyze. If a TrajectoryReader is provided,</span>
+<span class="sd">            the trajectory frame by frame via a frame_generator</span>
+<span class="sd">        reference_species : SelectionCompatible</span>
+<span class="sd">            The reference species of the RDF analysis.</span>
+<span class="sd">        target_species : SelectionCompatible</span>
+<span class="sd">            The target species of the RDF analysis.</span>
+<span class="sd">        use_full_atom_info : bool, optional</span>
+<span class="sd">            Whether to use the full atom information of the trajectory</span>
+<span class="sd">            or not, by default None (False).</span>
+<span class="sd">        no_intra_molecular : bool, optional</span>
+<span class="sd">            Whether to exclude intra-molecular distances or not, by default None (False).</span>
+<span class="sd">        n_bins : PositiveInt | None, optional</span>
+<span class="sd">            number of bins, by default None</span>
+<span class="sd">        delta_r : PositiveReal | None, optional</span>
+<span class="sd">            delta r between bins, by default None</span>
+<span class="sd">        r_max : PositiveReal | None, optional</span>
+<span class="sd">            maximum radius from reference species of the RDF analysis,</span>
+<span class="sd">            by default None</span>
+<span class="sd">        r_min : PositiveReal, optional</span>
+<span class="sd">            minimum (starting) radius from reference species of the </span>
+<span class="sd">            RDF analysis, by default 0.0 (equals to None)</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If the trajectory is not fully periodic or fully in vacuum.</span>
+<span class="sd">            Meaning that some frames are in vacuum and others are periodic.</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If the trajectory is empty.</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If n_bins and delta_r are both not specified.</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If n_bins, delta_r and r_max are all specified.</span>
+<span class="sd">            This would lead to ambiguous results.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----        </span>
+<span class="sd">        Furthermore, to initialize the RDF analysis object at least</span>
+<span class="sd">        one of the parameters n_bins or delta_r must be specified. </span>
+<span class="sd">        If n_bins and delta_r are both specified, r_max is calculated</span>
+<span class="sd">        from these parameters. If n_bins and r_max are both specified,</span>
+<span class="sd">        delta_r is calculated from these parameters. If delta_r and </span>
+<span class="sd">        r_max are both specified, n_bins is calculated from </span>
+<span class="sd">        these parameters.</span>
+
+<span class="sd">        It is not possible to specify all of n_bins, delta_r and r_max</span>
+<span class="sd">        in the same RDF analysis as this would lead to ambiguous results.</span>
+
+<span class="sd">        It is also possible to initialize a non-vacuum trajectory by</span>
+<span class="sd">        only using n_bins or delta_r. In this case, r_max is calculated</span>
+<span class="sd">        from the provided parameters and the box vectors of the </span>
+<span class="sd">        trajectory. If the trajectory is in vacuum, an RDFError is</span>
+<span class="sd">        raised as the maximum radius cannot be inferred from the </span>
+<span class="sd">        box vectors.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :py:class:`~PQAnalysis.traj.trajectory.Trajectory`</span>
+<span class="sd">        :py:class:`~PQAnalysis.topology.selection.Selection`</span>
+<span class="sd">        :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`</span>
+<span class="sd">        :py:class:`~PQAnalysis.traj.trajectory.Trajectory`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">##############</span>
+        <span class="c1"># dummy init #</span>
+        <span class="c1">##############</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_density</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_index_combinations</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrated_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">differential_bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+
+        <span class="c1">#####################################################</span>
+        <span class="c1"># Initialize parameters with default values if None #</span>
+        <span class="c1">#####################################################</span>
+
+        <span class="k">if</span> <span class="n">use_full_atom_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="n">use_full_atom_info</span>
+
+        <span class="k">if</span> <span class="n">no_intra_molecular</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_no_intra_molecular_default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="o">=</span> <span class="n">no_intra_molecular</span>
+
+        <span class="k">if</span> <span class="n">r_min</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_r_min_default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span> <span class="o">=</span> <span class="n">r_min</span>
+
+        <span class="c1">################################</span>
+        <span class="c1"># Initialize Selection objects #</span>
+        <span class="c1">################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_species</span> <span class="o">=</span> <span class="n">reference_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_species</span> <span class="o">=</span> <span class="n">target_species</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">reference_species</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">target_species</span><span class="p">)</span>
+
+        <span class="c1">############################################</span>
+        <span class="c1"># Initialize Trajectory iterator/generator #</span>
+        <span class="c1">############################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">cells</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
+            <span class="c1"># lazy loading of trajectory from file(s)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># use trajectory object as iterator</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_bins</span><span class="p">(</span>
+            <span class="n">n_bins</span><span class="o">=</span><span class="n">n_bins</span><span class="p">,</span>
+            <span class="n">delta_r</span><span class="o">=</span><span class="n">delta_r</span><span class="p">,</span>
+            <span class="n">r_max</span><span class="o">=</span><span class="n">r_max</span><span class="p">,</span>
+            <span class="n">r_min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">r_min</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_bins</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the bins of the RDF analysis.</span>
+
+<span class="sd">        This method is called by the __init__ method of the </span>
+<span class="sd">        RDF class, but can also be called manually to </span>
+<span class="sd">        re-initialize the bins of the RDF analysis. It sets</span>
+<span class="sd">        up the bins of the RDF analysis based on the</span>
+<span class="sd">        provided parameters. If n_bins and delta_r are both</span>
+<span class="sd">        specified, r_max is calculated from these parameters.</span>
+<span class="sd">        If n_bins and r_max are both specified, delta_r is</span>
+<span class="sd">        calculated from these parameters. If delta_r and </span>
+<span class="sd">        r_max are both specified, n_bins is calculated from</span>
+<span class="sd">        these parameters.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bins : PositiveInt | None, optional</span>
+<span class="sd">            number of bins, by default None</span>
+<span class="sd">        delta_r : PositiveReal | None, optional</span>
+<span class="sd">            delta r between bins, by default None</span>
+<span class="sd">        r_max : PositiveReal | None, optional</span>
+<span class="sd">            maximum radius of the RDF analysis, by default None</span>
+<span class="sd">        r_min : PositiveReal, optional</span>
+<span class="sd">            minimum (starting) radius of the RDF analysis, by default 0.0</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If the trajectory is not fully periodic or fully in vacuum.</span>
+<span class="sd">            Meaning that some frames are in vacuum and others are periodic.</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If n_bins and delta_r are both not specified.</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If n_bins, delta_r and r_max are all specified. This would lead to ambiguous results.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span> <span class="o">=</span> <span class="n">r_min</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_trajectory_conditions</span><span class="p">()</span>
+
+        <span class="c1"># check if n_bins and delta_r are both not specified</span>
+        <span class="k">if</span> <span class="n">n_bins</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">delta_r</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Either n_bins or delta_r must be specified.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+            <span class="p">)</span>
+
+        <span class="c1"># check if n_bins, delta_r and r_max are all specified</span>
+        <span class="k">elif</span> <span class="nb">all</span><span class="p">([</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">delta_r</span><span class="p">,</span> <span class="n">r_max</span><span class="p">]):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;It is not possible to specify all of n_bins, &quot;</span>
+                <span class="s2">&quot;delta_r and r_max in the same RDF analysis &quot;</span>
+                <span class="s2">&quot;as this would lead to ambiguous results.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+            <span class="p">)</span>
+
+        <span class="c1"># set r_max based on the provided parameters n_bins and delta_r</span>
+        <span class="k">if</span> <span class="n">n_bins</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">delta_r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="o">=</span> <span class="n">n_bins</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span> <span class="o">=</span> <span class="n">delta_r</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_r_max</span><span class="p">(</span>
+                <span class="n">n_bins</span><span class="p">,</span>
+                <span class="n">delta_r</span><span class="p">,</span>
+                <span class="n">r_min</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_n_bins</span><span class="p">(</span>
+                <span class="n">delta_r</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span>
+                <span class="n">r_min</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="n">r_max</span> <span class="k">if</span> <span class="n">r_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infer_r_max</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_r_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">n_bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span> <span class="o">=</span> <span class="n">delta_r</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_n_bins</span><span class="p">(</span>
+                    <span class="n">delta_r</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span>
+                    <span class="n">r_min</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span> <span class="o">=</span> <span class="n">n_bins</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_middle_points</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_bin_middle_points</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_trajectory_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the trajectory is fully periodic or fully in vacuum.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If the trajectory is not fully periodic or fully in vacuum.</span>
+<span class="sd">            Meaning that some frames are in vacuum and others are periodic.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_trajectory_pbc</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_trajectory_vacuum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;The provided trajectory is not fully periodic or &quot;</span>
+                <span class="s2">&quot;in vacuum, meaning that some frames are in vacuum &quot;</span>
+                <span class="s2">&quot;and others are periodic. This is not supported by &quot;</span>
+                <span class="s2">&quot;the RDF analysis.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">average_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;PositiveReal: The average volume of the trajectory.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">cell</span><span class="o">.</span><span class="n">volume</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">])</span>
+
+<div class="viewcode-block" id="RDF.run">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF.run">[docs]</a>
+    <span class="nd">@timeit_in_class</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the RDF analysis.</span>
+
+<span class="sd">        This method runs the RDF analysis and returns the </span>
+<span class="sd">        middle points of the bins of the RDF analysis, the</span>
+<span class="sd">        normalized bins of the RDF analysis based on the </span>
+<span class="sd">        spherical shell model, the integrated bins of the</span>
+<span class="sd">        RDF analysis, the normalized bins of the RDF </span>
+<span class="sd">        analysis based on the number of atoms in the </span>
+<span class="sd">        system and the differential bins of the RDF </span>
+<span class="sd">        analysis based on the spherical shell model.</span>
+
+<span class="sd">        This method will display a progress bar by default.</span>
+<span class="sd">        This can be disabled by setting with_progress_bar to False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bin_middle_points : Np1DNumberArray</span>
+<span class="sd">            The middle points of the bins of the RDF analysis.</span>
+<span class="sd">        normalized_bins : Np1DNumberArray</span>
+<span class="sd">            The normalized bins of the RDF analysis based </span>
+<span class="sd">            on the spherical shell model.</span>
+<span class="sd">        integrated_bins : Np1DNumberArray</span>
+<span class="sd">            The integrated bins of the RDF analysis.</span>
+<span class="sd">        normalized_bins2 : Np1DNumberArray</span>
+<span class="sd">            The normalized bins of the RDF analysis based</span>
+<span class="sd">            on the number of atoms in the system.</span>
+<span class="sd">        differential_bins : Np1DNumberArray</span>
+<span class="sd">            The differential bins of the RDF analysis based</span>
+<span class="sd">            on the spherical shell model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_run</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_bins</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_run</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_initialize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the RDF analysis for running.</span>
+
+<span class="sd">        This method is called by the run method of the RDF class.</span>
+<span class="sd">        It initializes the RDF analysis for running by calculating</span>
+<span class="sd">        the average volume of the trajectory, the reference </span>
+<span class="sd">        density of the RDF analysis and the target index </span>
+<span class="sd">        combinations of the RDF analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_volume</span>
+
+        <span class="n">_ref_indices_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reference_density</span> <span class="o">=</span> <span class="n">_ref_indices_len</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_target_index_combinations</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_initialize_target_index_combinations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the target index combinations of the RDF analysis.</span>
+
+<span class="sd">        This method is called by the _initialize_run method of </span>
+<span class="sd">        the RDF class. It initializes the target index combinations</span>
+<span class="sd">        of the RDF analysis by calculating the target index </span>
+<span class="sd">        combinations of the RDF analysis based on the </span>
+<span class="sd">        no_intra_molecular parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_index_combinations</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">reference_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">:</span>
+                <span class="n">residue_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">[</span>
+                    <span class="n">reference_index</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">target_index_combinations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">,</span>
+                    <span class="n">residue_indices</span><span class="p">)</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_calculate_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the bins of the RDF analysis.</span>
+
+<span class="sd">        This method is called by the run method of the RDF class.</span>
+<span class="sd">        It calculates the bins of the RDF analysis by iterating </span>
+<span class="sd">        over the frames of the trajectory and calculating the </span>
+<span class="sd">        distances between the reference and target indices of the</span>
+<span class="sd">        RDF analysis. The bins of the RDF analysis are then </span>
+<span class="sd">        calculated from these distances.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">,</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">with_progress_bar</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">reference_index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">):</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span><span class="p">:</span>
+                    <span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_index_combinations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span>
+
+                <span class="n">reference_position</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">reference_index</span><span class="p">]</span>
+                <span class="n">target_positions</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">target_indices</span><span class="p">]</span>
+
+                <span class="n">distances</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span>
+                    <span class="n">reference_position</span><span class="p">,</span>
+                    <span class="n">target_positions</span><span class="p">,</span>
+                    <span class="n">frame</span><span class="o">.</span><span class="n">cell</span>
+                <span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_add_to_bins</span><span class="p">(</span>
+                    <span class="n">distances</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_finalize_run</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalizes the RDF analysis after running.</span>
+
+<span class="sd">        This method is called by the run method of the RDF class.</span>
+<span class="sd">        It finalizes the RDF analysis after running by calculating</span>
+<span class="sd">        the normalized bins of the RDF analysis based on the </span>
+<span class="sd">        spherical shell model, the integrated bins of the RDF </span>
+<span class="sd">        analysis, the normalized bins of the RDF analysis based</span>
+<span class="sd">        on the number of atoms in the system and the differential</span>
+<span class="sd">        bins of the RDF analysis based on the spherical shell model.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bin_middle_points : Np1DNumberArray</span>
+<span class="sd">            The middle points of the bins of the RDF analysis.</span>
+<span class="sd">        normalized_bins : Np1DNumberArray</span>
+<span class="sd">            The normalized bins of the RDF analysis based on the spherical shell model.</span>
+<span class="sd">        integrated_bins : Np1DNumberArray</span>
+<span class="sd">            The integrated bins of the RDF analysis.</span>
+<span class="sd">        normalized_bins2 : Np1DNumberArray</span>
+<span class="sd">            The normalized bins of the RDF analysis based on the number of atoms in the system.</span>
+<span class="sd">        differential_bins : Np1DNumberArray</span>
+<span class="sd">            The differential bins of the RDF analysis based on the spherical shell model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">target_density</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_index_combinations</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">target_density</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span>
+
+        <span class="n">norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span><span class="p">,</span>
+            <span class="n">target_density</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">/</span> <span class="n">norm</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">integrated_bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_integration</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bins</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">/</span> <span class="n">target_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins2</span> <span class="o">/=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins2</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">differential_bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">-</span> <span class="n">norm</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bin_middle_points</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">integrated_bins</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins2</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">differential_bins</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of frames of the RDF analysis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of atoms of the RDF analysis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_add_to_bins</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">distances</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the bins of the RDF analysis based on the provided distances.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        distances : Np1DNumberArray</span>
+<span class="sd">            The distances to add to the bins of the RDF analysis.</span>
+<span class="sd">        r_min : PositiveReal</span>
+<span class="sd">            minimum (starting) radius of the RDF analysis</span>
+<span class="sd">        delta_r : PositiveReal</span>
+<span class="sd">            spacing between bins</span>
+<span class="sd">        n_bins : PositiveInt</span>
+<span class="sd">            number of bins</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The bins of the RDF analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor_divide</span><span class="p">(</span><span class="n">distances</span> <span class="o">-</span> <span class="n">r_min</span><span class="p">,</span> <span class="n">delta_r</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">distances</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[(</span><span class="n">distances</span> <span class="o">&lt;</span> <span class="n">n_bins</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">distances</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_setup_bin_middle_points</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the middle points of the bins of the RDF analysis for outputting the RDF analysis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bins : PositiveInt</span>
+<span class="sd">            number of bins</span>
+<span class="sd">        r_min : PositiveReal</span>
+<span class="sd">            minimum (starting) radius of the RDF analysis</span>
+<span class="sd">        r_max : PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis</span>
+<span class="sd">        delta_r : PositiveReal</span>
+<span class="sd">            spacing between bins</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The middle points of the bins of the RDF analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">bin_middle_points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">r_min</span> <span class="o">+</span> <span class="n">delta_r</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">r_max</span><span class="p">,</span> <span class="n">delta_r</span><span class="p">)</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">bin_middle_points</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_bins</span>
+
+        <span class="k">return</span> <span class="n">bin_middle_points</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_calculate_r_max</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the maximum radius of the RDF analysis from the provided parameters.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bins : PositiveInt</span>
+<span class="sd">            number of bins</span>
+<span class="sd">        delta_r : PositiveReal</span>
+<span class="sd">            spacing between bins</span>
+<span class="sd">        r_min : PositiveReal</span>
+<span class="sd">            minimum (starting) radius of the RDF analysis</span>
+<span class="sd">        cells : Cells</span>
+<span class="sd">            The cells of the trajectory to calculate the</span>
+<span class="sd">            maximum radius of the RDF analysis from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">r_max</span> <span class="o">=</span> <span class="n">delta_r</span> <span class="o">*</span> <span class="n">n_bins</span> <span class="o">+</span> <span class="n">r_min</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_r_max</span><span class="p">(</span><span class="n">r_max</span><span class="p">,</span> <span class="n">cells</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">r_max</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_check_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if the provided maximum radius is larger than the </span>
+<span class="sd">        maximum allowed radius according to the box vectors of the trajectory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        r_max : PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis</span>
+<span class="sd">        cells : Cells</span>
+<span class="sd">            The cells of the trajectory to check the</span>
+<span class="sd">            maximum radius of the RDF analysis against.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis if it is smaller</span>
+<span class="sd">            than the maximum allowed radius according to the box</span>
+<span class="sd">            vectors of the trajectory, than the maximum allowed </span>
+<span class="sd">            radius according to the box vectors of the trajectory.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFWarning</span>
+<span class="sd">            If the calculated r_max is larger than the maximum</span>
+<span class="sd">            allowed radius according to the box vectors of the trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">check_trajectory_pbc</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span> <span class="ow">and</span> <span class="n">r_max</span> <span class="o">&gt;</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_infer_r_max</span><span class="p">(</span><span class="n">cells</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;The calculated r_max </span><span class="si">{</span><span class="n">r_max</span><span class="si">}</span><span class="s2"> is larger &quot;</span>
+                <span class="s2">&quot;than the maximum allowed radius according &quot;</span>
+                <span class="s2">&quot;to the box vectors of the trajectory &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">_infer_r_max</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span><span class="si">}</span><span class="s2">. r_max will be &quot;</span>
+                <span class="s2">&quot;set to the maximum allowed radius.&quot;</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">r_max</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_infer_r_max</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">r_max</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_calculate_n_bins</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">,</span>
+        <span class="n">PositiveReal</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the number of bins of the RDF analysis from the provided parameters.</span>
+
+<span class="sd">        The number of bins is calculated as the number of bins that </span>
+<span class="sd">        fit in the range between r_min and r_max. The maximum radius</span>
+<span class="sd">        is re-calculated from the number of bins and delta_r to ensure</span>
+<span class="sd">        that the maximum radius is a multiple of delta_r.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        delta_r : PositiveReal</span>
+<span class="sd">            spacing between bins</span>
+<span class="sd">        r_max : PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis</span>
+<span class="sd">        r_min : PositiveReal</span>
+<span class="sd">            minimum (starting) radius of the RDF analysis</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PositiveInt</span>
+<span class="sd">            number of bins of the RDF analysis</span>
+<span class="sd">        PositiveReal</span>
+<span class="sd">            maximum radius of the RDF analysis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_bins</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">r_max</span> <span class="o">-</span> <span class="n">r_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">delta_r</span><span class="p">)</span>
+        <span class="n">r_max</span> <span class="o">=</span> <span class="n">delta_r</span> <span class="o">*</span> <span class="n">n_bins</span> <span class="o">+</span> <span class="n">r_min</span>
+
+        <span class="k">return</span> <span class="n">n_bins</span><span class="p">,</span> <span class="n">r_max</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_infer_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Infers the maximum radius of the RDF analysis from </span>
+<span class="sd">        the box vectors of the trajectory.</span>
+
+<span class="sd">        If the trajectory is in vacuum, an RDFError is raised as</span>
+<span class="sd">        the maximum radius cannot be inferred from the box vectors.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cells : Cells</span>
+<span class="sd">            The cells of the trajectory to infer the maximum</span>
+<span class="sd">            radius of the RDF analysis from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        r_max: PositiveReal</span>
+<span class="sd">            The maximum radius of the RDF analysis.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If the trajectory is in vacuum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_trajectory_pbc</span><span class="p">(</span><span class="n">cells</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;To infer r_max of the RDF analysis, &quot;</span>
+                <span class="s2">&quot;the trajectory cannot be a vacuum trajectory. &quot;</span>
+                <span class="s2">&quot;Please specify r_max manually or use the &quot;</span>
+                <span class="s2">&quot;combination n_bins and delta_r.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">cell</span><span class="o">.</span><span class="n">box_lengths</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_norm</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">n_bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">target_density</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">n_reference_indices</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the normalization of the RDF analysis </span>
+<span class="sd">        based on a spherical shell model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bins : int</span>
+<span class="sd">            The number of bins of the RDF analysis.</span>
+<span class="sd">        delta_r : PositiveReal</span>
+<span class="sd">            The spacing between bins of the RDF analysis.</span>
+<span class="sd">        target_density : PositiveReal</span>
+<span class="sd">            The target density of the RDF analysis.</span>
+<span class="sd">        n_reference_indices : int</span>
+<span class="sd">            The number of reference indices of the RDF analysis.</span>
+<span class="sd">        n_frames : int</span>
+<span class="sd">            The number of frames of the RDF analysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The normalization of the RDF analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">surface_prefactor</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">/</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+
+        <span class="n">small_radius_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">)</span>
+        <span class="n">large_radius_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">delta_radius_range</span> <span class="o">=</span> <span class="n">large_radius_range</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">small_radius_range</span><span class="o">**</span><span class="mi">3</span>
+
+        <span class="n">delta_volume</span> <span class="o">=</span> <span class="n">delta_r</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">delta_radius_range</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="n">surface_prefactor</span> <span class="o">*</span> <span class="n">delta_volume</span>
+
+        <span class="k">return</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">target_density</span> <span class="o">*</span> <span class="n">n_reference_indices</span> <span class="o">*</span> <span class="n">n_frames</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_integration</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">n_reference_indices</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the integrated RDF analysis. </span>
+<span class="sd">        The integral is calculated using a cumulative sum.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bins : Np1DNumberArray</span>
+<span class="sd">            The bins of the RDF analysis.</span>
+<span class="sd">        n_reference_indices : int</span>
+<span class="sd">            The number of reference indices of the RDF analysis.</span>
+<span class="sd">        n_frames : int</span>
+<span class="sd">            The number of frames of the RDF analysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The integrated RDF analysis.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_reference_indices</span> <span class="o">*</span> <span class="n">n_frames</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

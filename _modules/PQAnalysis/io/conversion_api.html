@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.io.conversion_api &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.io.conversion_api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.io.conversion_api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing API functions to convert between different file formats.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Cell</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.traj</span> <span class="kn">import</span> <span class="n">MDEngineFormat</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.formats</span> <span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="kn">from</span> <span class="nn">.traj_file</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TrajectoryWriter</span><span class="p">,</span>
+    <span class="n">TrajectoryReader</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.box_writer</span> <span class="kn">import</span> <span class="n">BoxWriter</span>
+<span class="kn">from</span> <span class="nn">.formats</span> <span class="kn">import</span> <span class="n">BoxFileFormat</span>
+<span class="kn">from</span> <span class="nn">.gen_file</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">write_gen_file</span><span class="p">,</span>
+    <span class="n">read_gen_file</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.restart_file.api</span> <span class="kn">import</span> <span class="n">read_restart_file</span>
+<span class="kn">from</span> <span class="nn">.traj_file.api</span> <span class="kn">import</span> <span class="n">write_trajectory</span>
+
+
+
+<div class="viewcode-block" id="gen2xyz">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.gen2xyz">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">gen2xyz</span><span class="p">(</span>
+    <span class="n">gen_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">print_box</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a gen file to a xyz file and prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    gen_file : str</span>
+<span class="sd">        The gen file to be converted.</span>
+<span class="sd">    output : str | None</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the md engine for the output file. The default is MDEngineFormat.PQ.</span>
+<span class="sd">    print_box : bool, optional</span>
+<span class="sd">        If True, the box is not printed. If False, the box is printed. Default is False.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">read_gen_file</span><span class="p">(</span><span class="n">gen_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">print_box</span><span class="p">:</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+
+    <span class="n">write_trajectory</span><span class="p">(</span>
+        <span class="n">system</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+        <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="xyz2gen">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.xyz2gen">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">xyz2gen</span><span class="p">(</span>
+    <span class="n">xyz_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a xyz file to a gen file and prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xyz_file : str</span>
+<span class="sd">        The xyz file to be converted.</span>
+<span class="sd">    output : str | None</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    periodic : bool | None, optional</span>
+<span class="sd">        The periodicity of the system. If True, the system is considered periodic.</span>
+<span class="sd">        If False, the system is considered non-periodic. If None, the periodicity </span>
+<span class="sd">        is inferred from the system, by default None.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the md engine for the output file. The default is MDEngineFormat.PQ.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">system</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
+        <span class="n">xyz_file</span><span class="p">,</span>
+        <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+        <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="n">write_gen_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">periodic</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="rst2xyz">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.rst2xyz">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">rst2xyz</span><span class="p">(</span>
+    <span class="n">restart_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">print_box</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a restart file to a xyz file and prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    When the print_box flag is set to True, the box is printed as well.</span>
+<span class="sd">    This means that after the number of atoms the box is printed in the</span>
+<span class="sd">    same line in the format a b c alpha beta gamma.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    restart_file : str</span>
+<span class="sd">        The restart file to be converted.</span>
+<span class="sd">    output : str | None</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    print_box : bool</span>
+<span class="sd">        If True, the box is printed. If False, the box is not printed. Default is True.</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the md engine for the output file. The default is MDEngineFormat.PQ.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">system</span> <span class="o">=</span> <span class="n">read_restart_file</span><span class="p">(</span><span class="n">restart_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">print_box</span><span class="p">:</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+
+    <span class="n">write_trajectory</span><span class="p">(</span>
+        <span class="n">system</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+        <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="traj2box">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.traj2box">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">traj2box</span><span class="p">(</span>
+    <span class="n">trajectory_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">vmd</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts multiple trajectory files to a box file and </span>
+<span class="sd">    prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    Without the vmd option the output is printed in a data file format.</span>
+<span class="sd">    The first column represents the step starting from 1, the second to fourth column</span>
+<span class="sd">    represent the box vectors a, b, c, the fifth to seventh column represent the box angles.</span>
+
+<span class="sd">    With the vmd option the output is printed in a VMD file format. Meaning the output is</span>
+<span class="sd">    in xyz format with 8 particle entries representing the vertices of the box. The comment</span>
+<span class="sd">    line contains the information about the box dimensions a, b and c and the box angles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectory_files : list of str</span>
+<span class="sd">        The trajectory file(s) to be converted.</span>
+<span class="sd">    vmd : bool</span>
+<span class="sd">        Output in VMD format.</span>
+<span class="sd">    output : str | None, optional</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout. Default is None.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">vmd</span><span class="p">:</span>
+        <span class="n">output_format</span> <span class="o">=</span> <span class="n">BoxFileFormat</span><span class="o">.</span><span class="n">VMD</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">output_format</span> <span class="o">=</span> <span class="n">BoxFileFormat</span><span class="o">.</span><span class="n">DATA</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">BoxWriter</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="n">output_format</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">trajectory_files</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="traj2qmcfc">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.traj2qmcfc">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">traj2qmcfc</span><span class="p">(</span>
+    <span class="n">trajectory_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts multiple trajectory files from a PQ format to a </span>
+<span class="sd">    QMCFC format and prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectory_files : list of str</span>
+<span class="sd">        The trajectory file(s) to be converted.</span>
+<span class="sd">    output : str, optional</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">TrajectoryWriter</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">engine_format</span><span class="o">=</span><span class="s2">&quot;qmcfc&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">trajectory_files</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trajectory &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="utils" href="PQAnalysis.utils.html" />
+    <link rel="prev" title="formats" href="PQAnalysis.traj.formats.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.traj.html">traj</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.traj.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.traj.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.traj.formats.html">formats</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">trajectory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.traj.html">traj</a></li>
+      <li class="breadcrumb-item active">trajectory</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.traj.trajectory.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.traj.trajectory">
+<span id="trajectory"></span><h1>trajectory<a class="headerlink" href="#module-PQAnalysis.traj.trajectory" title="Link to this heading"></a></h1>
+<p>A module containing the Trajectory class.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Trajectory</span></code></a></p></td>
+<td><p>A trajectory object is a sequence of frames.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Trajectory</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A trajectory object is a sequence of frames.</p>
+<p>It can be indexed, iterated over, and added to another trajectory.
+The length of a trajectory is the number of frames in the trajectory.
+A frame can be checked for membership in a trajectory.</p>
+<p>This trajectory class can only handle constant topologies
+i.e. all frames in the trajectory must have the same topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frames</strong> (<a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The list of atomic systems in the trajectory.
+If frames is an AtomicSystem, it is first converted to list of frames.
+If frames is None, an empty list is created, by default None</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__add__">
+<span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__add__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__add__" title="Link to this definition"></a></dt>
+<dd><p>This method allows two trajectories to be added together.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><em>Trajectory</em></a>) – The other trajectory to add.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__contains__">
+<span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__contains__" title="Link to this definition"></a></dt>
+<dd><p>This method allows a frame to be checked for membership in a trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item</strong> (<em>Frame</em>) – The frame to check for membership in the trajectory.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether the frame is in the trajectory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__eq__" title="Link to this definition"></a></dt>
+<dd><p>This method allows two trajectories to be compared for equality.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><em>Trajectory</em></a>) – The other trajectory to compare.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>This method allows a frame or a trajectory to be retrieved from the trajectory.</p>
+<p>For example, if traj is a trajectory, then traj[0] is the first frame
+of the trajectory. If traj is a trajectory, then traj[0:2] is a trajectory
+containing the first two frames of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em><em> | </em><em>slice</em>) – The index or slice to retrieve the frame or trajectory from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame or trajectory retrieved from the trajectory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a> | <a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory">Trajectory</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__iter__">
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__iter__" title="Link to this definition"></a></dt>
+<dd><p>This method allows a trajectory to be iterated over.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>An Iterable over the frames in the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Iterable[Frame]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__len__">
+<span class="sig-name descname"><span class="pre">__len__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__len__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__len__" title="Link to this definition"></a></dt>
+<dd><p>This method allows the length of a trajectory to be computed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of frames in the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__repr__" title="Link to this definition"></a></dt>
+<dd><p>This method allows the string representation of a trajectory to be retrieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.__str__" title="Link to this definition"></a></dt>
+<dd><p>This method allows the string representation of a trajectory to be retrieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.append">
+<span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.append"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.append" title="Link to this definition"></a></dt>
+<dd><p>Appends a frame to the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame</strong> (<a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a>) – The frame to append.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.check_pbc">
+<span class="sig-name descname"><span class="pre">check_pbc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.check_pbc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.check_pbc" title="Link to this definition"></a></dt>
+<dd><p>Checks if one cell of the trajectory is Cell().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>False if one cell of the trajectory is Cell(), True otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.check_vacuum">
+<span class="sig-name descname"><span class="pre">check_vacuum</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.check_vacuum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.check_vacuum" title="Link to this definition"></a></dt>
+<dd><p>Checks if all frames of the trajectory are in vacuum i.e. cell = Cell().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if all frames of the trajectory are in vacuum, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.copy" title="Link to this definition"></a></dt>
+<dd><p>Returns a copy of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A copy of the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory">Trajectory</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.pop"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.pop" title="Link to this definition"></a></dt>
+<dd><p>Removes a frame from the trajectory at the specified index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>index</strong> (<em>int</em>) – The index of the frame to remove.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame removed from the trajectory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.window">
+<span class="sig-name descname"><span class="pre">window</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">window_gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/traj/trajectory.html#Trajectory.window"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.window" title="Link to this definition"></a></dt>
+<dd><p>This method allows a window of the trajectory to be retrieved.
+Window is a sequence of frames from start to stop with a window size and a gap size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window_size</strong> (<em>int</em>) – The size of the window.</p></li>
+<li><p><strong>window_gap</strong> (<em>int</em><em>, </em><em>optional</em>) – The gap size between two windows, by default 1</p></li>
+<li><p><strong>trajectory_start</strong> (<em>int</em><em>, </em><em>optional</em>) – The start index of the first window, by default 0</p></li>
+<li><p><strong>trajectory_stop</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Stop index of the window generator, by default None, which then
+set to the length of the trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQIndexError" title="PQAnalysis.exceptions.PQIndexError"><strong>PQIndexError</strong></a> – If window_start is less than 0 or greater than the length of the trajectory.
+    If window_stop is less than 0 or greater than the length of the trajectory.
+    If window_size is less than 1 or greater than the length of the trajectory.
+    If window_gap is less than 1 or greater than the length of the trajectory.
+    If window_size is greater than trajectory_stop - trajectory_start.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If not all frames are included in the windows, a warning is issued.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Iterable[Trajectory]</em> – An iterable over the windows of the trajectory with the specified window size and gap.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.box_lengths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.box_lengths" title="Link to this definition"></a></dt>
+<dd><p>The box lengths of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.box_volumes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_volumes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.box_volumes" title="Link to this definition"></a></dt>
+<dd><p>The box volumes of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.cells">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cells</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.cells" title="Link to this definition"></a></dt>
+<dd><p>The cells of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.frames">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">frames</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.frames" title="Link to this definition"></a></dt>
+<dd><p>The frames in the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Trajectory</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.traj.trajectory.Trajectory.topology">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">topology</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a></em><a class="headerlink" href="#PQAnalysis.traj.trajectory.Trajectory.topology" title="Link to this definition"></a></dt>
+<dd><p>The topology of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology">Topology</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.traj.formats.html" class="btn btn-neutral float-left" title="formats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.utils.html" class="btn btn-neutral float-right" title="utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

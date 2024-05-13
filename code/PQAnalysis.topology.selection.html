@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>selection &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="shake_topology" href="PQAnalysis.topology.shake_topology.html" />
+    <link rel="prev" title="exceptions" href="PQAnalysis.topology.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.topology.html">topology</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.exceptions.html">exceptions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.shake_topology.html">shake_topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.topology.html">topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.html">topology.bonded_topology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.topology.html">topology</a></li>
+      <li class="breadcrumb-item active">selection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.topology.selection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.topology.selection">
+<span id="selection"></span><h1>selection<a class="headerlink" href="#module-PQAnalysis.topology.selection" title="Link to this heading"></a></h1>
+<p>A module containing the Selection class and related functions/classes.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.selection.Selection" title="PQAnalysis.topology.selection.Selection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Selection</span></code></a></p></td>
+<td><p>A class for representing a selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.topology.selection.SelectionTransformer" title="PQAnalysis.topology.selection.SelectionTransformer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelectionTransformer</span></code></a></p></td>
+<td><p>A class for transforming a Lark parse tree.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.selection.SelectionVisitor" title="PQAnalysis.topology.selection.SelectionVisitor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SelectionVisitor</span></code></a></p></td>
+<td><p>A class for visiting a Lark parse tree and returning the indices of parsed selection.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.Selection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Selection</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">selection_object</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#Selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.Selection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for representing a selection.</p>
+<p>If the selection object is a Selection object, the selection is copied.</p>
+<dl>
+<dt>There are several ways to create a selection:</dt><dd><ul class="simple">
+<li><p>None: all atoms are selected</p></li>
+<li><p>Atom: the given atom is selected</p></li>
+<li><p>Element: all atoms with the given element type are selected</p></li>
+<li><p>Atoms: all atoms in the given list are selected</p></li>
+<li><p>Elements: all atoms with the given element types are selected</p></li>
+<li><p>Np1DIntArray: the atoms with the given indices are selected</p></li>
+<li><p>List[str]: all atoms with the given atom type names are selected</p></li>
+<li><p>str: the given string is parsed and the atoms selected by the</p></li>
+</ul>
+<p>selection are selected</p>
+<blockquote>
+<div><p>This string will be parsed based on a Lark grammar. Which is
+defined as follows:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>simple word containing only letters and numbers: the</p></li>
+</ul>
+<p>atom type with the given name is selected
+- &lt;integer&gt;: the atom with the given index is selected
+- &lt;integer1&gt;..&lt;integer2&gt;: the indices from integer1 to integer2
+are selected
+- &lt;integer1&gt;-&lt;integer2&gt;: the indices from integer1 to integer2
+are selected
+- &lt;integer1&gt;..&lt;integer2&gt;..&lt;integer3&gt;: the indices from integer1 to
+integer3 with a step size of integer3 are selected
+- atom(&lt;atomtype&gt;, &lt;atomic_number&gt;): the atom with the given atom
+type and atomic number is selected
+- atom(&lt;atomtype&gt;, &lt;element_symbol&gt;): the atom with the given atom
+type and element symbol is selected
+- elem(&lt;atomic_number&gt;): all atoms with the given element type
+are selected
+- elem(&lt;element_symbol&gt;): all atoms with the given element type
+are selected
+- <cite>*</cite>: all atoms are selected (same as ‘all’), useful if only
+few atoms should be excluded</p>
+</div></blockquote>
+<p>All of the above statements can be combined with the following operators:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>‘,’: the union of the two statements is selected, meaning that</p></li>
+</ul>
+<p>the atoms selected by the first statement and the atoms selected
+by the second statement are selected
+- ‘&amp;’: the intersection of the two statements is selected, meaning
+that only the atoms selected by both statements are selected
+- ‘|’: the set difference of the two statements is selected,
+meaning that only the atoms selected by the first statement are
+selected, which are not selected by the second statement</p>
+</div></blockquote>
+<p>The operators are evaluated in the following order: ‘|’ -&gt; ‘&amp;’ -&gt; ‘,’
+This means that the ‘,’ operator has the lowest precedence and the ‘|’
+operator has the highest precedence and therefore binds the strongest.</p>
+<p>Additionally, parentheses can be used to group statements and change
+the order of evaluation.</p>
+</div></blockquote>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>The atom counting always starts with 0!</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>selection_object</strong> (<a class="reference internal" href="#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a><em>, </em><em>optional</em>) – The object to create the selection from.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.Selection.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#Selection.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.Selection.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the selection object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the selection object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.Selection.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#Selection.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.Selection.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the selection object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the selection object.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.Selection.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#Selection.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.Selection.select" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the atoms selected by the selection object.</p>
+<p>If the selection_object is None all atoms are selected. With the
+parameter use_full_atom_info the selection can be performed based
+on the full atom information (i.e. atom type names and element type
+information). If use_full_atom_info is False, the selection is
+performed based on the element type information only.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a>) – The topology to get the indices from.</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use the full atom information, by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the atoms selected by the selection object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.Selection.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Selection</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.topology.selection.Selection.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionCompatible">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SelectionCompatible</span></span><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionCompatible" title="Link to this definition"></a></dt>
+<dd><div class="line-block">
+<div class="line">A type variable for the Selection class.</div>
+<div class="line">It can be used to specify the type of the selection object.</div>
+<div class="line">The following types are supported:</div>
+<div class="line-block">
+<div class="line">- str: the given string is parsed and the atoms selected by the selection are selected</div>
+<div class="line">- Atom: the given atom is selected</div>
+<div class="line">- Element: all atoms with the given element type are selected</div>
+<div class="line">- Atoms: all atoms in the given list are selected</div>
+<div class="line">- Elements: all atoms with the given element types are selected</div>
+<div class="line">- Np1DIntArray: the atoms with the given indices are selected</div>
+<div class="line">- List[str]: all atoms with the given atom type names are selected</div>
+<div class="line">- Selection: the given selection is copied</div>
+<div class="line">- None: all atoms are selected</div>
+</div>
+</div>
+<p>alias of TypeVar(‘SelectionCompatible’, str, PQAnalysis.core.Atom, list[PQAnalysis.core.Atom], PQAnalysis.core.Element, list[PQAnalysis.core.Element], ~PQAnalysis.types.Np1DIntArray, list[str], PQAnalysis.topology.Selection, None)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SelectionTransformer</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology=Topology</span> <span class="pre">with</span> <span class="pre">0</span> <span class="pre">atoms</span> <span class="pre">and</span> <span class="pre">0</span> <span class="pre">residues</span> <span class="pre">and</span> <span class="pre">0</span> <span class="pre">unique</span> <span class="pre">residues.</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">visit_tokens=False</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info=False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Transformer</span></code></p>
+<p>A class for transforming a Lark parse tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Transformer</strong> (<em>Transformer</em>) – The type of the Transformer class to inherit from.</p></li>
+<li><p><strong>visit_tokens</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to visit the tokens, by default False</p></li>
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a>) – The topology to get the indices from.</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use the full atom information, by default False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.INT">
+<span class="sig-name descname"><span class="pre">INT</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Token</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.INT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.INT" title="Link to this definition"></a></dt>
+<dd><p>Returns the integer of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>] </em><em>| </em><em>Token</em>) – The token to get the integer of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The integer of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.UNSIGNED_INT">
+<span class="sig-name descname"><span class="pre">UNSIGNED_INT</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Token</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.UNSIGNED_INT"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.UNSIGNED_INT" title="Link to this definition"></a></dt>
+<dd><p>Returns the unsigned integer of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>] </em><em>| </em><em>Token</em>) – The token to get the unsigned integer of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unsigned integer of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.all">
+<span class="sig-name descname"><span class="pre">all</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">_</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.all" title="Link to this definition"></a></dt>
+<dd><p>Returns all indices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The indices of the all Token.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.and_statement">
+<span class="sig-name descname"><span class="pre">and_statement</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.and_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.and_statement" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the and_statement Token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em>]</em>) – The indices to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the and_statement Token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.atom">
+<span class="sig-name descname"><span class="pre">atom</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.atom" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the given atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Any</em>) – The atom to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the given atom.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.atomtype">
+<span class="sig-name descname"><span class="pre">atomtype</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.atomtype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.atomtype" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the atoms with the given atom type name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Any</em>) – The atom type name to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the atoms with the given atom type name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.element">
+<span class="sig-name descname"><span class="pre">element</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.element"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.element" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the given element type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Any</em>) – The element type to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the given element type.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.index">
+<span class="sig-name descname"><span class="pre">index</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.index" title="Link to this definition"></a></dt>
+<dd><p>Returns the given index as an array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The index to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the index Token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.indices">
+<span class="sig-name descname"><span class="pre">indices</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.indices" title="Link to this definition"></a></dt>
+<dd><p>Returns a range of indices based on the given indices.</p>
+<p>if two indices are given, a range from the first index to
+the second index is returned.
+if three indices are given, a range from the first index to
+the third index with a step size of the second index is returned.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The indices to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the indices Token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the indices Token has more than 3 items. Should never be reached.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.integer">
+<span class="sig-name descname"><span class="pre">integer</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.integer" title="Link to this definition"></a></dt>
+<dd><p>Returns the integer of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – The token to get the integer of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The integer of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.letters">
+<span class="sig-name descname"><span class="pre">letters</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.letters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.letters" title="Link to this definition"></a></dt>
+<dd><p>Returns the letters of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – The token to get the letters of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The letters of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.or_statement">
+<span class="sig-name descname"><span class="pre">or_statement</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.or_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.or_statement" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the or_statement Token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em>]</em>) – The indices to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the or_statement Token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.residue">
+<span class="sig-name descname"><span class="pre">residue</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.residue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.residue" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the given residue name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Any</em>) – The residue name to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the given residue name.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.residue_number">
+<span class="sig-name descname"><span class="pre">residue_number</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.residue_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.residue_number" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the given residue number.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>Any</em>) – The residue number to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the given residue number.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.unsigned_integer">
+<span class="sig-name descname"><span class="pre">unsigned_integer</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.unsigned_integer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.unsigned_integer" title="Link to this definition"></a></dt>
+<dd><p>Returns the unsigned integer of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – The token to get the unsigned integer of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The unsigned integer of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.without_statement">
+<span class="sig-name descname"><span class="pre">without_statement</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.without_statement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.without_statement" title="Link to this definition"></a></dt>
+<dd><p>Returns the indices of the the first item
+without the indices of all other items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em>]</em>) – The indices to get the indices of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the given without statement Token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionTransformer.word">
+<span class="sig-name descname"><span class="pre">word</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Token</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionTransformer.word"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionTransformer.word" title="Link to this definition"></a></dt>
+<dd><p>Returns the word of the given token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Token</em><em>]</em>) – The token to get the word of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The word of the given token.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionVisitor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">SelectionVisitor</span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionVisitor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionVisitor" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Visitor</span></code></p>
+<p>A class for visiting a Lark parse tree and returning the indices of parsed selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Visitor</strong> (<em>Visitor</em>) – The type of the Visitor class to inherit from.</p></li>
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a>) – The topology to get the indices from.</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use the full atom information, by default False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionVisitor.expression">
+<span class="sig-name descname"><span class="pre">expression</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionVisitor.expression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionVisitor.expression" title="Link to this definition"></a></dt>
+<dd><p>Visits the given tree and returns the indices of the parsed selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tree</strong> (<em>Tree</em>) – The tree to visit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the parsed selection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.selection.SelectionVisitor.visit">
+<span class="sig-name descname"><span class="pre">visit</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">tree</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tree</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/selection.html#SelectionVisitor.visit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.selection.SelectionVisitor.visit" title="Link to this definition"></a></dt>
+<dd><p>Visits the given tree and returns the indices of the parsed selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tree</strong> (<em>Tree</em>) – The tree to visit.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The indices of the parsed selection.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray">Np1DIntArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.topology.exceptions.html" class="btn btn-neutral float-left" title="exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.topology.shake_topology.html" class="btn btn-neutral float-right" title="shake_topology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

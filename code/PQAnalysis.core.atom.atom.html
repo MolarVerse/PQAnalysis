@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>atom &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="element" href="PQAnalysis.core.atom.element.html" />
+    <link rel="prev" title="core.atom" href="PQAnalysis.core.atom.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.core.html">core</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.residue.html">residue</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.core.atom.html">core.atom</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">atom</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.core.atom.element.html">element</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.cell.html">core.cell</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.core.html">core</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.core.atom.html">core.atom</a></li>
+      <li class="breadcrumb-item active">atom</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.core.atom.atom.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.core.atom.atom">
+<span id="atom"></span><h1>atom<a class="headerlink" href="#module-PQAnalysis.core.atom.atom" title="Link to this heading"></a></h1>
+<p>A module containing the Atom class and some associated functions.</p>
+<p>The Atom class is used to represent an atom in a molecule. It contains the
+following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>name: the name of the atom (e.g. ‘C’)</p></li>
+<li><p>element: the element of the atom (e.g. ‘C’)</p></li>
+</ul>
+</div></blockquote>
+<p>The atomic number and mass are automatically determined from the name or symbol
+of the atom. The name and symbol are automatically determined from the atomic
+number. The name is the symbol in lower case.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Atom</span></code></a></p></td>
+<td><p>A class used to represent an atom in a molecule.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Atom</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_guess_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/core/atom/atom.html#Atom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class used to represent an atom in a molecule.</p>
+<p>There are three ways to initialize an Atom object:</p>
+<ol class="arabic simple">
+<li><p>By giving the name of the atom_type (e.g. ‘C1’)
+If use_guess_element is True (default), the atom_type name has to be
+a valid element symbol (e.g. ‘C’). If use_guess_element is False, the
+atom_type name can be anything and an empty element is created.</p></li>
+<li><p>By giving the name of the atom_type (e.g. ‘C1’) and the id of the atom_type
+(e.g. 6). The id can be either an integer (atomic number) or a string (element symbol).</p></li>
+<li><p>By giving the id of the atom_type (e.g. 6). The id can be either an integer (atomic number)
+or a string (element symbol).</p></li>
+</ol>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">)</span> <span class="c1"># use_guess_element is True by default</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">ElementNotFoundError</span>: <span class="n">Id C1 is not a valid element identifier.</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
+<span class="go">(&#39;C1&#39;, Element(None, None, None))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
+<span class="go">(&#39;C1&#39;, Element(c, 6, 12.0107))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
+<span class="go">(&#39;C1&#39;, Element(c, 6, 12.0107))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
+<span class="go">(&#39;c&#39;, Element(c, 6, 12.0107))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span><span class="p">)</span>
+<span class="go">(&#39;C&#39;, Element(c, 6, 12.0107))</span>
+</pre></div>
+</div>
+</div>
+<p>Constructs all the necessary attributes for the Atom object.</p>
+<p>If use_guess_element is True, the symbol, atomic number and mass are
+determined from the name of the atom_type. If use_guess_element is
+False, the symbol, atomic number and mass are set to None, meaning that
+an empty element is created (Element()).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>int</em>) – The name of the atom_type (e.g. ‘C1’)
+If this parameter is an integer, it is interpreted as the atomic number of the
+element symbol and cannot be used together with the id parameter.</p></li>
+<li><p><strong>element_id</strong> (<em>int</em><em> | </em><em>str</em><em>, </em><em>optional</em>) – The atomic number or element symbol of the atom_type (e.g. 6 or ‘C’)
+If his parameter is not given, the name parameter is used to determine
+the element type of the atom_type.</p></li>
+<li><p><strong>use_guess_element</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use the guess_element function to determine
+the element type of the atom_type by its name,
+by default True</p></li>
+<li><p><strong>**_kwargs</strong> – Additional keyword arguments that are not used by the function but
+by the runtime type checker.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the name of the atom_type is an integer and the id is given.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/atom/atom.html#Atom.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the Atom is equal to another Atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<em>Any</em>) – The other Atom to compare to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Atom is equal to the other Atom, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/atom/atom.html#Atom.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a representation of the Atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A representation of the Atom.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/atom/atom.html#Atom.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the Atom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representation of the Atom.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.atomic_number">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomic_number</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.atomic_number" title="Link to this definition"></a></dt>
+<dd><p>The atomic number of the element (e.g. 6)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.element">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><span class="pre">Element</span></a></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.element" title="Link to this definition"></a></dt>
+<dd><p>The element type of the atom</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element">Element</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.element_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">element_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.element_name" title="Link to this definition"></a></dt>
+<dd><p>The name of the element (e.g. ‘Carbon’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Atom</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.mass" title="Link to this definition"></a></dt>
+<dd><p>The mass of the element (e.g. 12.011)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.name" title="Link to this definition"></a></dt>
+<dd><p>The name of the atom_type (e.g. ‘C1’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atom.symbol">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">symbol</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atom.symbol" title="Link to this definition"></a></dt>
+<dd><p>The symbol of the element (e.g. ‘c’)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.atom.atom.Atoms">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Atoms</span></span><a class="headerlink" href="#PQAnalysis.core.atom.atom.Atoms" title="Link to this definition"></a></dt>
+<dd><p>A type hint for a list of atoms</p>
+<p>alias of TypeVar(‘Atoms’, bound=<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[PQAnalysis.core.Atom])</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.core.atom.html" class="btn btn-neutral float-left" title="core.atom" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.core.atom.element.html" class="btn btn-neutral float-right" title="element" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.physical_data.energy &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.physical_data.energy</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.physical_data.energy</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the Energy class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">EnergyError</span>
+
+
+
+<div class="viewcode-block" id="Energy">
+<a class="viewcode-back" href="../../../code/PQAnalysis.physical_data.energy.html#PQAnalysis.physical_data.energy.Energy">[docs]</a>
+<span class="k">class</span> <span class="nc">Energy</span><span class="p">():</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to store the data of an energy file.</span>
+
+<span class="sd">    The data array is stored in a way that each column corresponds to a physical</span>
+<span class="sd">    quantity. The order of the columns is the same as in the info file. The info</span>
+<span class="sd">    and units of the info file are stored in the Energy object, if an info file</span>
+<span class="sd">    was found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Np1DNumberArray | Np2DNumberArray</span>
+<span class="sd">            The data of the energy file as a np.array with shape (n, m), where n is the</span>
+<span class="sd">            number of data entries and m is the number of physical properties. If the data</span>
+<span class="sd">            is a 1D array, it is converted to a 2D array with shape (1, n).</span>
+<span class="sd">        info : dict, optional</span>
+<span class="sd">            the info dictionary, by default None</span>
+<span class="sd">        units : dict, optional</span>
+<span class="sd">            the units dictionary, by default None</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If no info dictionary is given, a default dictionary is created,</span>
+<span class="sd">        where the keys are the indices of the data array and the values </span>
+<span class="sd">        are the indices of the data array. Furthermore a units dictionary</span>
+<span class="sd">        can be given, where the keys have to match the keys of the info</span>
+<span class="sd">        dictionary and the values are the units of the physical properties.</span>
+<span class="sd">        If no units dictionary is given, the units are set to None.</span>
+
+<span class="sd">        The attributes of any Energy object are created for each physical</span>
+<span class="sd">        property found in the info file. The attribute names can be found </span>
+<span class="sd">        in the __data_attributes__ dictionary. The attribute names are the</span>
+<span class="sd">        keys of the dictionary and the values are the names of the physical </span>
+<span class="sd">        properties found in the info file. The attributes are created</span>
+<span class="sd">        as follows:</span>
+
+<span class="sd">        - The attribute name is the key of the __data_attributes__ dictionary.</span>
+<span class="sd">        - The attribute value is the corresponding data entry (column in energy file).</span>
+<span class="sd">        - The attribute name + &quot;_unit&quot; is the corresponding unit.</span>
+<span class="sd">        - The attribute name + &quot;_with_unit&quot; is a tuple of the corresponding data entry</span>
+<span class="sd">          and the corresponding unit.</span>
+
+<span class="sd">        For example, the attribute &quot;simulation_time&quot; is created for the physical property</span>
+<span class="sd">        &quot;SIMULATION-TIME&quot; found in the info file. The attribute &quot;simulation_time&quot; is the</span>
+<span class="sd">        corresponding data entry (column in energy file). The attribute &quot;simulation_time_unit&quot;</span>
+<span class="sd">        is the corresponding unit. The attribute &quot;simulation_time_with_unit&quot; is a tuple of</span>
+<span class="sd">        the corresponding data entry and the corresponding unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">data</span><span class="p">))</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_info_dictionary</span><span class="p">(</span><span class="n">info</span><span class="p">,</span> <span class="n">units</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_attributes</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_setup_info_dictionary</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">units</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the info dictionary.</span>
+
+<span class="sd">        If no info dictionary is given, a default dictionary is created, where</span>
+<span class="sd">        the keys are the indices of the data array and the values are the indices</span>
+<span class="sd">        of the data array. Furthermore a units dictionary can be given, where the</span>
+<span class="sd">        where the keys have to match the keys of the info dictionary and the values</span>
+<span class="sd">        are the units of the physical properties. If no units dictionary is given,</span>
+<span class="sd">        the units are set to None.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        info : dict</span>
+<span class="sd">            A dictionary with the same length as the data array. The keys are either the</span>
+<span class="sd">            indices of the data array or the names of the physical properties found in the </span>
+<span class="sd">            info file. The values are the indices of the data array.</span>
+<span class="sd">        units : dict</span>
+<span class="sd">            A dictionary with the same length as the data array. The keys are either the</span>
+<span class="sd">            indices of the data array or the names of the physical properties found in the </span>
+<span class="sd">            info file. The values are the units of the physical properties.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        EnergyError</span>
+<span class="sd">            If the length of info is not equal to the length of data.</span>
+<span class="sd">        EnergyError</span>
+<span class="sd">            If the length of units is not equal to the length of data.</span>
+<span class="sd">        EnergyError</span>
+<span class="sd">            If the keys of the info and units dictionary do not match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info_given</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">info</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info_given</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">info</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;The length of info dictionary has to be equal to the length of data.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">EnergyError</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units_given</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">units_given</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;The length of units dictionary has to be equal to the length of data.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">EnergyError</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_given</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">units_given</span> <span class="ow">and</span> <span class="n">units</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">!=</span> <span class="n">info</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span>
+        <span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The keys of the info and units dictionary do not match.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">EnergyError</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_make_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates attributes for the physical properties of the Energy object.</span>
+
+<span class="sd">        The attributes are created for each physical property found in the info file.</span>
+<span class="sd">        The attribute names can be found in the __data_attributes__ dictionary. The</span>
+<span class="sd">        attribute names are the keys of the dictionary and the values are the names</span>
+<span class="sd">        of the physical properties found in the info file. The attributes are created</span>
+<span class="sd">        as follows:</span>
+
+<span class="sd">        - The attribute name is the key of the __data_attributes__ dictionary.</span>
+<span class="sd">        - The attribute value is the corresponding data entry (column in energy file).</span>
+<span class="sd">        - The attribute name + &quot;_unit&quot; is the corresponding unit.</span>
+<span class="sd">        - The attribute name + &quot;_with_unit&quot; is a tuple of the corresponding data entry</span>
+<span class="sd">          and the corresponding unit.</span>
+
+<span class="sd">        For example, the attribute &quot;simulation_time&quot; is created for the physical property</span>
+<span class="sd">        &quot;SIMULATION-TIME&quot; found in the info file. The attribute &quot;simulation_time&quot; is the</span>
+<span class="sd">        corresponding data entry (column in energy file). The attribute &quot;simulation_time_unit&quot;</span>
+<span class="sd">        is the corresponding unit. The attribute &quot;simulation_time_with_unit&quot; is a tuple of</span>
+<span class="sd">        the corresponding data entry and the corresponding unit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">attribute</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data_attributes__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">info_string</span> <span class="o">=</span> <span class="n">attribute</span>
+            <span class="k">if</span> <span class="n">info_string</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="ow">or</span> <span class="n">info_string</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">:</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">attribute</span><span class="p">]])</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span> <span class="o">+</span> <span class="s2">&quot;_unit&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+                <span class="nb">setattr</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">value</span> <span class="o">+</span> <span class="s2">&quot;_with_unit&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">attribute</span><span class="p">]],</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">[</span><span class="n">attribute</span><span class="p">])</span>
+                <span class="p">)</span>
+
+    <span class="c1">################################################</span>
+    <span class="c1">#                                              #</span>
+    <span class="c1"># from here all attributes possible are listed #</span>
+    <span class="c1">#                                              #</span>
+    <span class="c1">################################################</span>
+
+    <span class="n">__data_attributes__</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;SIMULATION-TIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simulation_time&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;SIMULATION TIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;simulation_time&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;TEMPERATURE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;temperature&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;PRESSURE&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pressure&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(TOT)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;total_energy&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(QM)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;qm_energy&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(MM)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;mm_energy&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;N(QM-ATOMS)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number_of_qm_atoms&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;QM_MOLECULES&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;number_of_qm_molecules&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(KIN)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;kinetic_energy&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(INTRA)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;intramolecular_energy&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(BOND)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bond_energy&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(ANGLE)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;angle_energy&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(DIHEDRAL)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;dihedral_energy&quot;</span>
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;E(IMPROPER)&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;improper_energy&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;VOLUME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;volume&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;DENSITY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;density&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;MOMENTUM&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;momentum&quot;</span>
+
+    <span class="n">__data_attributes__</span><span class="p">[</span><span class="s2">&quot;LOOPTIME&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;looptime&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

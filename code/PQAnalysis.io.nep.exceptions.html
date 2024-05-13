@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>exceptions &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="nep_writer" href="PQAnalysis.io.nep.nep_writer.html" />
+    <link rel="prev" title="io.nep" href="PQAnalysis.io.nep.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.formats.html">formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.info_file_reader.html">info_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.moldescriptor_reader.html">moldescriptor_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.write_api.html">write_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.gen_file.html">io.gen_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.io.nep.html">io.nep</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.nep.nep_writer.html">nep_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.restart_file.html">io.restart_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.topology_file.html">io.topology_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.traj_file.html">io.traj_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.virial.html">io.virial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.html">io</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.nep.html">io.nep</a></li>
+      <li class="breadcrumb-item active">exceptions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.io.nep.exceptions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.io.nep.exceptions">
+<span id="exceptions"></span><h1>exceptions<a class="headerlink" href="#module-PQAnalysis.io.nep.exceptions" title="Link to this heading"></a></h1>
+<p>A module containing different exceptions related to the nep subpackage.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Exceptions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.nep.exceptions.NEPError" title="PQAnalysis.io.nep.exceptions.NEPError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NEPError</span></code></a></p></td>
+<td><p>A base class for NEP-related exceptions.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="PQAnalysis.io.nep.exceptions.NEPError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NEPError</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/nep/exceptions.html#NEPError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.nep.exceptions.NEPError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
+<p>A base class for NEP-related exceptions.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.io.nep.html" class="btn btn-neutral float-left" title="io.nep" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.nep.nep_writer.html" class="btn btn-neutral float-right" title="nep_writer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

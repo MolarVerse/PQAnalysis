@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cell &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="io" href="PQAnalysis.io.html" />
+    <link rel="prev" title="core.cell" href="PQAnalysis.core.cell.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.core.html">core</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.residue.html">residue</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.core.atom.html">core.atom</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.core.cell.html">core.cell</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">cell</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.core.html">core</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.core.cell.html">core.cell</a></li>
+      <li class="breadcrumb-item active">cell</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.core.cell.cell.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.core.cell.cell">
+<span id="cell"></span><h1>cell<a class="headerlink" href="#module-PQAnalysis.core.cell.cell" title="Link to this heading"></a></h1>
+<p>A module containing the Cell class.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Cell</span></code></a></p></td>
+<td><p>Class for storing unit cell parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cell</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.7976931348623157e+308</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.7976931348623157e+308</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.7976931348623157e+308</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">90</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">90</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">90</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_StandardPropertiesMixin</span></code></p>
+<p>Class for storing unit cell parameters.</p>
+<p>A cell object can be initialized with the following parameters:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>Real</em>) – The length of the first box vector.</p></li>
+<li><p><strong>y</strong> (<em>Real</em>) – The length of the second box vector.</p></li>
+<li><p><strong>z</strong> (<em>Real</em>) – The length of the third box vector.</p></li>
+<li><p><strong>alpha</strong> (<em>Real</em><em>, </em><em>optional</em>) – The angle between the second and third box vector.</p></li>
+<li><p><strong>beta</strong> (<em>Real</em><em>, </em><em>optional</em>) – The angle between the first and third box vector.</p></li>
+<li><p><strong>gamma</strong> (<em>Real</em><em>, </em><em>optional</em>) – The angle between the first and second box vector.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>A vacuum cell can be created by calling Cell(), which is equivalent to
+Cell(x=sys.float_info.max, y=sys.float_info.max, z=sys.float_info.max,
+alpha=90, beta=90, gamma=90).</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Checks if the Cell is equal to another Cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><em>Cell</em></a>) – The Cell to compare with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the Cells are equal, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the Cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representation of the Cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns a string representation of the Cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A string representation of the Cell.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.image">
+<span class="sig-name descname"><span class="pre">image</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.NpnDNumberArray" title="PQAnalysis.types.NpnDNumberArray"><span class="pre">NpnDNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.NpnDNumberArray" title="PQAnalysis.types.NpnDNumberArray"><span class="pre">NpnDNumberArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.image" title="Link to this definition"></a></dt>
+<dd><p>Images the given position(s) into the unit cell.</p>
+<p>This class can be used to image positions of arbitrary shape into the unit cell.
+The shape of the input is preserved. The only requirement is that the last
+dimension of the input is 3, representing the x, y and z coordinates of the position(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.NpnDNumberArray" title="PQAnalysis.types.NpnDNumberArray"><em>NpnDNumberArray</em></a>) – The position to get the image of.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>imaged_positions</strong> – The image of the position(s) in the unit cell.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.NpnDNumberArray" title="PQAnalysis.types.NpnDNumberArray">NpnDNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.init_from_box_matrix">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_box_matrix</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">box_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Np2x2NumberArray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.init_from_box_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.init_from_box_matrix" title="Link to this definition"></a></dt>
+<dd><p>Initializes a Cell object from a box matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>box_matrix</strong> (<em>Np3x3NumberArray</em>) – The box matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Cell object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.setup_box_matrix">
+<span class="sig-name descname"><span class="pre">setup_box_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Np2x2NumberArray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.setup_box_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.setup_box_matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculates the box matrix from the given parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>box matrix</strong> – The box matrix.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Np3x3NumberArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.alpha">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.alpha" title="Link to this definition"></a></dt>
+<dd><p>The angle between the second and third box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.beta">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.beta" title="Link to this definition"></a></dt>
+<dd><p>The angle between the first and third box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.bounding_edges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounding_edges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.bounding_edges" title="Link to this definition"></a></dt>
+<dd><p>The 8 corners of the bounding box of the unit cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_angles">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_angles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_angles" title="Link to this definition"></a></dt>
+<dd><p>The angles between the box vectors.</p>
+<p>When setting the box angles, the box matrix is recalculated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_lengths">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_lengths" title="Link to this definition"></a></dt>
+<dd><p>The lengths of the box vectors.</p>
+<p>When setting the box lengths, the box matrix is recalculated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_matrix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_matrix" title="Link to this definition"></a></dt>
+<dd><p>The box matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Np3x3NumberArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.gamma">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gamma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.gamma" title="Link to this definition"></a></dt>
+<dd><p>The angle between the first and second box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.inverse_box_matrix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inverse_box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.inverse_box_matrix" title="Link to this definition"></a></dt>
+<dd><p>The inverse box matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Np3x3NumberArray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.is_vacuum">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_vacuum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.is_vacuum" title="Link to this definition"></a></dt>
+<dd><p>Returns whether the unit cell is a vacuum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.volume">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.volume" title="Link to this definition"></a></dt>
+<dd><p>The volume of the unit cell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>volume</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.x" title="Link to this definition"></a></dt>
+<dd><p>The length of the first box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.y" title="Link to this definition"></a></dt>
+<dd><p>The length of the second box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.z">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.z" title="Link to this definition"></a></dt>
+<dd><p>The length of the third box vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cells">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cells</span></span><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cells" title="Link to this definition"></a></dt>
+<dd><p>A type hint for a list of cells</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.core.cell.html" class="btn btn-neutral float-left" title="core.cell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.html" class="btn btn-neutral float-right" title="io" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

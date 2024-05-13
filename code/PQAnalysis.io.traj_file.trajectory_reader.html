@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trajectory_reader &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="trajectory_writer" href="PQAnalysis.io.traj_file.trajectory_writer.html" />
+    <link rel="prev" title="frame_reader" href="PQAnalysis.io.traj_file.frame_reader.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.formats.html">formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.info_file_reader.html">info_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.moldescriptor_reader.html">moldescriptor_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.write_api.html">write_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.gen_file.html">io.gen_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.nep.html">io.nep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.restart_file.html">io.restart_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.topology_file.html">io.topology_file</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.io.traj_file.html">io.traj_file</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.frame_reader.html">frame_reader</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">trajectory_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_writer.html">trajectory_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.virial.html">io.virial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.html">io</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.traj_file.html">io.traj_file</a></li>
+      <li class="breadcrumb-item active">trajectory_reader</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.io.traj_file.trajectory_reader.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.io.traj_file.trajectory_reader">
+<span id="trajectory-reader"></span><h1>trajectory_reader<a class="headerlink" href="#module-PQAnalysis.io.traj_file.trajectory_reader" title="Link to this heading"></a></h1>
+<p>A module containing classes for reading a trajectory from a file.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TrajectoryReader</span></code></a></p></td>
+<td><p>A class for reading a trajectory from a file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">TrajectoryReader</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TrajectoryFormat.AUTO</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">constant_topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_reader.html#TrajectoryReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseReader" title="PQAnalysis.io.base.BaseReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReader</span></code></a></p>
+<p>A class for reading a trajectory from a file.</p>
+<p>Inherited from BaseReader.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – The name of the file to read from or a list of filenames to read from.</p></li>
+<li><p><strong>traj_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><em>TrajectoryFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the trajectory. Default is TrajectoryFormat.AUTO.
+The format is inferred from the file extension.</p></li>
+<li><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the trajectory. Default is MDEngineFormat.PQ.</p></li>
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a><em>, </em><em>optional</em>) – The topology of the trajectory. Default is None.</p></li>
+<li><p><strong>constant_topology</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the topology is constant over the trajectory or does change. Default is True.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.calculate_number_of_frames">
+<span class="sig-name descname"><span class="pre">calculate_number_of_frames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_reader.html#TrajectoryReader.calculate_number_of_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.calculate_number_of_frames" title="Link to this definition"></a></dt>
+<dd><p>Calculates the number of frames in the trajectory file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of frames in the trajectory file.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html#PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError" title="PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError"><strong>TrajectoryReaderError</strong></a> – If the number of atoms in the first line of the file is invalid.
+    If the number of lines in the file is not divisible by the number of atoms.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator">
+<span class="sig-name descname"><span class="pre">frame_generator</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_reader.html#TrajectoryReader.frame_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator" title="Link to this definition"></a></dt>
+<dd><p>A generator that yields the frames of the trajectory.</p>
+<p>The difference to the read method is that the read method returns the whole
+trajectory at once, while the frame_generator yields the frames one after
+another. This is useful if the trajectory is very large and cannot be stored
+in memory.</p>
+<p>This method is used to read the trajectory from the file. It reads the
+trajectory from the file and concatenates the lines of the same frame.
+The frame information is then read from the concatenated string with the
+FrameReader class and a Frame object is created.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectory_start</strong> (<em>int</em><em>, </em><em>optional</em>) – The start index of the trajectory, by default 0.</p></li>
+<li><p><strong>trajectory_stop</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The last index of the trajectory, by default None, which then
+set to the length of the trajectory.</p></li>
+<li><p><strong>Exceptions</strong></p></li>
+<li><p><strong>----------</strong></p></li>
+<li><p><strong>PQIndexError</strong> – If trajectory_start is less than 0 or greater than the length
+of the trajectory.
+If trajectory_stop is less than 0 or greater than the length
+of the trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>Generator[AtomicSystem]</em> – The frames of the trajectory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_reader.html#TrajectoryReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads the trajectory from the file.</p>
+<p>It reads the trajectory from the file and concatenates the lines of the
+same frame. The frame information is then read from the concatenated
+string with the FrameReader class and a Frame object is created.</p>
+<p>In order to read the cell information given in the file, the cell
+information of the last frame is used for all following frames that
+do not have cell information.</p>
+<p>If the trajectory is split into multiple files, the files are read one
+after another and the frames are concatenated into a single trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a><em>, </em><em>optional</em>) – The topology of the trajectory. Default is None.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The trajectory read from the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory">Trajectory</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.window_generator">
+<span class="sig-name descname"><span class="pre">window_generator</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">window_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">window_gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_reader.html#TrajectoryReader.window_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.window_generator" title="Link to this definition"></a></dt>
+<dd><p>A generator that yields the windows of the trajectory using the specified
+window size and gap. The windows are generated by sliding a window of the
+specified size over the trajectory with the specified gap. It uses the
+frame_generator method to read the frames of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>window_size</strong> (<em>int</em>) – The size of the window.</p></li>
+<li><p><strong>window_gap</strong> (<em>int</em><em>, </em><em>optional</em>) – The gap size between two windows, by default 1</p></li>
+<li><p><strong>trajectory_start</strong> (<em>int</em><em>, </em><em>optional</em>) – The start index of the first window, by default 0</p></li>
+<li><p><strong>trajectory_stop</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Stop index of the window generator, by default None, which then
+set to the length of the trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>IndexError</strong> – If trajectory_start is less than 0 or greater than the length of
+    the trajectory.
+    If trajectory_stop is less than 0 or greater than the length of
+    the trajectory.
+    If window_size is less than 1 or greater than the length of
+    the trajectory.
+    If window_gap is less than 1 or greater than the length of
+    the trajectory.
+    If window_size is greater than trajectory_stop - trajectory_start.</p>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If not all frames are included in the windows, a warning is issued.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Yields<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Generator[Trajectory]</em> – A generator over the windows of the trajectory with the specified
+window size and gap.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.cells">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cells</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.cells" title="Link to this definition"></a></dt>
+<dd><p>Returns the cells of the trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The list of cells of the trajectory.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.TrajectoryReader</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.io.traj_file.frame_reader.html" class="btn btn-neutral float-left" title="frame_reader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.traj_file.trajectory_writer.html" class="btn btn-neutral float-right" title="trajectory_writer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

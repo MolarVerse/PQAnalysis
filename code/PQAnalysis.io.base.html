@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>base &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="box_writer" href="PQAnalysis.io.box_writer.html" />
+    <link rel="prev" title="api" href="PQAnalysis.io.api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.formats.html">formats</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.info_file_reader.html">info_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.moldescriptor_reader.html">moldescriptor_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.write_api.html">write_api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.gen_file.html">io.gen_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.nep.html">io.nep</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.restart_file.html">io.restart_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.topology_file.html">io.topology_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.traj_file.html">io.traj_file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.virial.html">io.virial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.html">io</a></li>
+      <li class="breadcrumb-item active">base</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.io.base.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.io.base">
+<span id="base"></span><h1>base<a class="headerlink" href="#module-PQAnalysis.io.base" title="Link to this heading"></a></h1>
+<p>A module containing the base class for all writers and readers.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.base.BaseReader" title="PQAnalysis.io.base.BaseReader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseReader</span></code></a></p></td>
+<td><p>A base class for all readers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p></td>
+<td><p>A base class for all writers.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseReader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseReader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/base.html#BaseReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.base.BaseReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A base class for all readers.</p>
+<p>This class can be used as a base class for all Readers implemented
+in the PQAnalysis package. It provides the functionality to read
+from a file or multiple files. If the filename is a string, the file
+is read from. The basic idea is just to ease the handling of
+multiple files and to provide a common interface for all readers.
+The actual reading is done in the methods of the subclasses.
+This wrapper only sets the filename/filenames and checks if the
+file/files exist. Furthermore, a boolean is set to indicate if
+the reader reads from a single file or multiple files.</p>
+<p>Initializes the BaseReader with the given filename.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – The name of the file to read from or a list of filenames to read from.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>FileNotFoundError</strong> – If the given file does not exist.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseReader.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.BaseReader</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.base.BaseReader.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseWriter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/base.html#BaseWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.base.BaseWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A base class for all writers.</p>
+<p>This class can be used as a base class for all writers. It provides the
+functionality to write to a file or stdout. Meaning, if the filename is
+None, the output is printed to stdout. Otherwise, the output is written
+to the given file. The mode of the file can be either ‘w’ for write or
+‘a’ for append. If the mode is ‘w’ and the file already exists, a
+ValueError is raised. If the mode is ‘a’ and the file does not exist,
+it is created. If the mode is ‘o’ and the file already exists, it is
+overwritten.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Please be aware that after the initialization of the BaseWriter, the
+file is not opened yet. To open the file, the open() method has to be
+called. To close the file, the close() method has to be called. After
+calling the open() method of a file that already exists, the mode is
+automatically set to ‘a’. This means that for all subsequent calls of
+the open() method, the mode is ‘a’ and not ‘w’. This is to prevent
+overwriting the file by accident.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>None</em><em>, </em><em>optional</em>) – The name of the file to write to. If None, the output is printed to stdout.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> or </em><em>str</em><em>, </em><em>optional</em>) – The mode of the file. Use one of the modes in FileWritingMode or
+‘w’ for write, ‘a’ for append or ‘o’ for overwrite.
+The default is ‘w’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the given mode is not in .</p></li>
+<li><p><strong>ValueError</strong> – If the given filename already exists and the mode is ‘w’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseWriter.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/base.html#BaseWriter.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.base.BaseWriter.close" title="Link to this definition"></a></dt>
+<dd><p>Closes the file to write to.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseWriter.open">
+<span class="sig-name descname"><span class="pre">open</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/base.html#BaseWriter.open"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.base.BaseWriter.open" title="Link to this definition"></a></dt>
+<dd><p>Opens the file to write to.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseWriter.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.BaseWriter</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.base.BaseWriter.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.io.base.BaseWriter.mode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></em><a class="headerlink" href="#PQAnalysis.io.base.BaseWriter.mode" title="Link to this definition"></a></dt>
+<dd><p>The mode of the file.</p>
+<p>The setter checks if the given mode is in BaseWriter.modes.
+Furthermore, if the mode is ‘w’ and the file already exists,
+a ValueError is raised. If the mode is ‘a’ and the file does
+not exist, it is created. If the mode is ‘o’ and the file
+already exists, it is overwritten.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode">FileWritingMode</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.io.api.html" class="btn btn-neutral float-left" title="api" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.box_writer.html" class="btn btn-neutral float-right" title="box_writer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

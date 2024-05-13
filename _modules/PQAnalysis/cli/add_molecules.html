@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.cli.add_molecules &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.cli.add_molecules</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.cli.add_molecules</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. _cli.add_molecules:</span>
+
+<span class="sd">Command Line Tool for Converting Restart Files to XYZ Files</span>
+<span class="sd">-----------------------------------------------------------</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.config</span> <span class="kn">import</span> <span class="n">code_base_url</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.tools.add_molecule</span> <span class="kn">import</span> <span class="n">add_molecule</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.formats</span> <span class="kn">import</span> <span class="n">OutputFileFormat</span>
+
+<span class="kn">from</span> <span class="nn">._argument_parser</span> <span class="kn">import</span> <span class="n">_ArgumentParser</span>
+<span class="kn">from</span> <span class="nn">._cli_base</span> <span class="kn">import</span> <span class="n">CLIBase</span>
+
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">This command line tool can be used to add molecules to a restart file.</span>
+
+<span class="s2">The molecules are added by fitting the molecule to the restart file. The fitting is done randomly by rotating the molecule and translating it to a random position. After the fitting, the molecule is added to the restart file. The class can add multiple molecules to the restart file.</span>
+
+<span class="s2">This tool provides also the possibility of not only extending the restart file with the molecule but also the topology file. Therefore, the topology file of the restart file and the topology file of the molecule file have to be provided as well as the desired output topology file.</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input &quot;</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;file keys please visit &quot;</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.add_molecules.html.&quot;</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
+
+
+
+<div class="viewcode-block" id="AddMoleculesCLI">
+<a class="viewcode-back" href="../../../code/PQAnalysis.cli.add_molecules.html#PQAnalysis.cli.add_molecules.AddMoleculesCLI">[docs]</a>
+<span class="k">class</span> <span class="nc">AddMoleculesCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command Line Tool for Adding Molecules to Restart Files</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AddMoleculesCLI.program_name">
+<a class="viewcode-back" href="../../../code/PQAnalysis.cli.add_molecules.html#PQAnalysis.cli.add_molecules.AddMoleculesCLI.program_name">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the name of the program.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The name of the program.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;add_molecules&#39;</span></div>
+
+
+<div class="viewcode-block" id="AddMoleculesCLI.add_arguments">
+<a class="viewcode-back" href="../../../code/PQAnalysis.cli.add_molecules.html#PQAnalysis.cli.add_molecules.AddMoleculesCLI.add_arguments">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds the arguments to the parser.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parser : _ArgumentParser</span>
+<span class="sd">            The parser to which the arguments should be added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;restart_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The restart file where the molecules should be added.&#39;</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;molecule_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The molecule file that contains the coordinates &quot;</span>
+            <span class="s2">&quot;of the molecule that should be added. Can be in &quot;</span>
+            <span class="s2">&quot;any format that is supported by the PQAnalysis library.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_mode</span><span class="p">()</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--mol-file-type&#39;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;mol_file_type&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">OutputFileFormat</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
+            <span class="n">choices</span><span class="o">=</span><span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s1">&#39;The file format of the molecule file. &#39;</span>
+            <span class="s1">&#39;If not specified, the file format will &#39;</span>
+            <span class="s1">&#39;be inferred from the file extension.&#39;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--rst-mol-desc-file&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rst_mol_desc_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The moldescriptor file that is associated with the &quot;</span>
+            <span class="s2">&quot;restart file. If not specified, the moldescriptor &quot;</span>
+            <span class="s2">&quot;file will not be used.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--molecule-mol-desc-file&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;molecule_mol_desc_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The moldescriptor file that is associated with &quot;</span>
+            <span class="s2">&quot;the molecule file. If not specified, the moldescriptor &quot;</span>
+            <span class="s2">&quot;file will not be used. Can only be used if the &quot;</span>
+            <span class="s2">&quot;molecule file is a restart file type.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;-n, --n-molecules&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;n_molecules&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span>
+            <span class="s2">&quot;The number of molecules that should be added to the restart file.&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--max-iter&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;max_iter&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The maximum number of iterations that should &quot;</span>
+            <span class="s2">&quot;be used to fit the molecule to the restart file.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;-c&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--cut&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;cut&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The distance cutoff that should be used &quot;</span>
+            <span class="s2">&quot;to fit the molecule to the restart file in Angstrom.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--max-disp&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--max-displacement&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;max_disp&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The maximum displacement that should be applied &quot;</span>
+            <span class="s2">&quot;to the given molecule geometry relative to &quot;</span>
+            <span class="s2">&quot;its center of mass in percentage.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--rot&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--rotation-angle-step&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;rot&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;If the randomly placed molecule does not &quot;</span>
+            <span class="s2">&quot;fit into the restart file, the molecule &quot;</span>
+            <span class="s2">&quot;is rotated by the given angle step in degrees.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--topology-file&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--top-file&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;top_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The topology file that is associated with &quot;</span>
+            <span class="s2">&quot;the restart file. If not specified, &quot;</span>
+            <span class="s2">&quot;the topology file will not be used.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--added-topology-file&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--added-top-file&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;added_top_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;The topology file that is associated with &quot;</span>
+            <span class="s2">&quot;the molecule file. If not specified, the &quot;</span>
+            <span class="s2">&quot;topology file will not be used.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s2">&quot;--output-topology-file&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;--output-top-file&quot;</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;output_top_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span>
+            <span class="s2">&quot;The output topology file. If not specified, the output is printed to stdout.&quot;</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AddMoleculesCLI.run">
+<a class="viewcode-back" href="../../../code/PQAnalysis.cli.add_molecules.html#PQAnalysis.cli.add_molecules.AddMoleculesCLI.run">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the add_molecules function.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        args : argparse.Namespace</span>
+<span class="sd">            The parsed arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">add_molecule</span><span class="p">(</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">restart_file</span><span class="p">,</span>
+            <span class="n">args</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">,</span>
+            <span class="n">output_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+            <span class="n">molecule_file_type</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mol_file_type</span><span class="p">,</span>
+            <span class="n">restart_moldescriptor_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">rst_mol_desc_file</span><span class="p">,</span>
+            <span class="n">molecule_moldescriptor_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">molecule_mol_desc_file</span><span class="p">,</span>
+            <span class="n">number_of_additions</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n_molecules</span><span class="p">,</span>
+            <span class="n">max_iterations</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_iter</span><span class="p">,</span>
+            <span class="n">distance_cutoff</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">cut</span><span class="p">,</span>
+            <span class="n">max_displacement</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_disp</span><span class="p">,</span>
+            <span class="n">rotation_angle_step</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">rot</span><span class="p">,</span>
+            <span class="n">md_engine_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+            <span class="n">topology_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">top_file</span><span class="p">,</span>
+            <span class="n">topology_file_to_add</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">added_top_file</span><span class="p">,</span>
+            <span class="n">topology_file_output</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_top_file</span>
+        <span class="p">)</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../../../code/PQAnalysis.cli.add_molecules.html#PQAnalysis.cli.add_molecules.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function of the add_molecules command line tool,</span>
+<span class="sd">    which is basically just a wrapper for the add_molecules</span>
+<span class="sd">    function. For more information on the add_molecules</span>
+<span class="sd">    function please visit :py:func:`PQAnalysis.tools.add_molecule`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
+
+    <span class="n">AddMoleculesCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
+
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="n">AddMoleculesCLI</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">args</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

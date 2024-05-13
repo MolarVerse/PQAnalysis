@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.topology.shake_topology &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.topology.shake_topology</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.topology.shake_topology</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the ShakeTopologyGenerator class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.traj</span> <span class="kn">import</span> <span class="n">Trajectory</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DIntArray</span><span class="p">,</span> <span class="n">Np2DIntArray</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="n">BaseWriter</span><span class="p">,</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">SelectionCompatible</span><span class="p">,</span> <span class="n">Selection</span>
+
+
+
+<div class="viewcode-block" id="ShakeTopologyGenerator">
+<a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator">[docs]</a>
+<span class="k">class</span> <span class="nc">ShakeTopologyGenerator</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for generating the shake topology for a given trajectory</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">selection</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        selection : SelectionCompatible, optional</span>
+<span class="sd">            Selection is either a selection object or any object that can be</span>
+<span class="sd">            initialized via &#39;Selection(selection)&#39;. default None (all atoms)</span>
+<span class="sd">        use_full_atom_info : bool, optional</span>
+<span class="sd">            If True, the full atom information (name, index, mass) is used</span>
+<span class="sd">            for the selection, by default False</span>
+<span class="sd">            Is always ignored if atoms is not a list of atom objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span> <span class="o">=</span> <span class="n">use_full_atom_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ShakeTopologyGenerator.generate_topology">
+<a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.generate_topology">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">generate_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n">Trajectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a tuple of indices, target_indices, and distances for the given trajectory.</span>
+
+<span class="sd">        The generated numpy arrays represent all important information about the shake</span>
+<span class="sd">        topology for the given trajectory.</span>
+
+<span class="sd">            - indices: The indices of the atoms to use for the topology.</span>
+<span class="sd">            - target_indices: The indices of the target atoms for the shaked atoms.</span>
+<span class="sd">            - distances: The average distances between the shaked atoms and the target atoms.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        trajectory : Trajectory</span>
+<span class="sd">            The trajectory to generate the shake topology for.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">atomic_system</span> <span class="o">=</span> <span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">topology</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span>
+        <span class="p">)</span>
+
+        <span class="n">target_indices</span><span class="p">,</span> <span class="n">distances</span> <span class="o">=</span> <span class="n">atomic_system</span><span class="o">.</span><span class="n">nearest_neighbours</span><span class="p">(</span>
+            <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">selection</span><span class="o">=</span><span class="n">indices</span><span class="p">,</span> <span class="n">use_full_atom_info</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span><span class="p">)</span>
+
+        <span class="n">target_indices</span> <span class="o">=</span> <span class="n">target_indices</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">distances</span> <span class="o">=</span> <span class="p">[</span><span class="n">distances</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+            <span class="n">target_pos</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">target_indices</span><span class="p">]</span>
+
+            <span class="n">delta_pos</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">-</span> <span class="n">target_pos</span>
+
+            <span class="n">delta_pos</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">image</span><span class="p">(</span><span class="n">delta_pos</span><span class="p">)</span>
+
+            <span class="n">distances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">delta_pos</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="n">target_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">distances</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ShakeTopologyGenerator.average_equivalents">
+<a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.average_equivalents">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">average_equivalents</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Np1DIntArray</span><span class="p">]</span> <span class="o">|</span> <span class="n">Np2DIntArray</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Averages the distances for equivalent atoms.</span>
+
+<span class="sd">        The parameter indices is a numpy 2d array of equivalent atom indices.</span>
+<span class="sd">        Each row of the array contains the indices of equivalent atoms.</span>
+<span class="sd">        All of the equivalent atoms will be averaged to a single distance.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        indices : List[Np1DIntArray] | Np2DIntArray</span>
+<span class="sd">            The indices of the equivalent atoms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">equivalent_indices</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
+            <span class="n">_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">equivalent_indices</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">mean_distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">_indices</span><span class="p">])</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_distance</span></div>
+
+
+<div class="viewcode-block" id="ShakeTopologyGenerator.write_topology">
+<a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.write_topology">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">write_topology</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the topology to a file.</span>
+
+<span class="sd">        The topology is written to a file with the given filename.</span>
+<span class="sd">        The file will contain the indices, target_indices, and distances of the topology.</span>
+<span class="sd">        If no filename is given, the topology will be written to stdout.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            The filename to write the topology to.</span>
+<span class="sd">        mode : FileWritingMode | str, optional</span>
+<span class="sd">            The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">            - &quot;w&quot;: write</span>
+<span class="sd">            - &quot;a&quot;: append</span>
+<span class="sd">            - &quot;o&quot;: overwrite</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">BaseWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;SHAKE </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2">  &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">))</span><span class="si">}</span><span class="s2">  0&quot;</span>
+            <span class="p">),</span>
+            <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">):</span>
+            <span class="n">target_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">distance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span></div>
+
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">selection_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SelectionCompatible</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;SelectionCompatible: The selection object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">selection_object</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

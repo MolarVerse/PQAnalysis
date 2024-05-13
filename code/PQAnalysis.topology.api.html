@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="exceptions" href="PQAnalysis.topology.exceptions.html" />
+    <link rel="prev" title="topology" href="PQAnalysis.topology.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.topology.html">topology</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">api</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.selection.html">selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.shake_topology.html">shake_topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.topology.html">topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.topology.bonded_topology.html">topology.bonded_topology</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.topology.html">topology</a></li>
+      <li class="breadcrumb-item active">api</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.topology.api.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.topology.api">
+<span id="api"></span><h1>api<a class="headerlink" href="#module-PQAnalysis.topology.api" title="Link to this heading"></a></h1>
+<p>A module including the API for the topology subpackage.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.api.generate_shake_topology_file" title="PQAnalysis.topology.api.generate_shake_topology_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_shake_topology_file</span></code></a></p></td>
+<td><p>Wrapper function to generate a shake topology file for a given trajectory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.topology.api.select_from_restart_file" title="PQAnalysis.topology.api.select_from_restart_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_from_restart_file</span></code></a></p></td>
+<td><p>Selects atoms from a restart file and writes them to a new file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.topology.api.selection_from_restart_file_as_list" title="PQAnalysis.topology.api.selection_from_restart_file_as_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">selection_from_restart_file_as_list</span></code></a></p></td>
+<td><p>Selects atoms from a restart file and writes them to a new file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.topology.api.generate_shake_topology_file">
+<span class="sig-name descname"><span class="pre">generate_shake_topology_file</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/api.html#generate_shake_topology_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.api.generate_shake_topology_file" title="Link to this definition"></a></dt>
+<dd><p>Wrapper function to generate a shake topology file for a given trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectory</strong> (<a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><em>Trajectory</em></a>) – The trajectory to generate the shake topology for.</p></li>
+<li><p><strong>selection</strong> (<a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a><em>, </em><em>optional</em>) – Selection is either a selection object or any object that can be
+initialized via ‘Selection(selection)’. default None (all atoms)</p></li>
+<li><p><strong>output</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The output file. If not specified, the output is printed to stdout.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The writing mode, by default “w”. The following modes are available:
+- “w”: write
+- “a”: append
+- “o”: overwrite</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the full atom information (name, index, mass) is used
+for the selection, by default False
+Is always ignored if atoms is not a list of atom objects.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.topology.api.select_from_restart_file">
+<span class="sig-name descname"><span class="pre">select_from_restart_file</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/api.html#select_from_restart_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.api.select_from_restart_file" title="Link to this definition"></a></dt>
+<dd><p>Selects atoms from a restart file and writes them to a new file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selection</strong> (<a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a>) – Selection is either a selection object or any object that can be
+initialized via ‘Selection(selection)’.</p></li>
+<li><p><strong>restart_file</strong> (<em>str</em>) – The restart file to read the atoms from.</p></li>
+<li><p><strong>moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The moldescriptor file to read the atom types from, by default None</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the full atom information (name, index, mass) is used
+for the selection, by default False
+Is always ignored if atoms is not a list of atom objects.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.topology.api.selection_from_restart_file_as_list">
+<span class="sig-name descname"><span class="pre">selection_from_restart_file_as_list</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/api.html#selection_from_restart_file_as_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.api.selection_from_restart_file_as_list" title="Link to this definition"></a></dt>
+<dd><p>Selects atoms from a restart file and writes them to a new file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>selection</strong> (<a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a>) – Selection is either a selection object or any object that can be
+initialized via ‘Selection(selection)’.</p></li>
+<li><p><strong>restart_file</strong> (<em>str</em>) – The restart file to read the atoms from.</p></li>
+<li><p><strong>moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The moldescriptor file to read the atom types from, by default None</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the full atom information (name, index, mass) is used
+for the selection, by default False
+Is always ignored if atoms is not a list of atom objects.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.topology.html" class="btn btn-neutral float-left" title="topology" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.topology.exceptions.html" class="btn btn-neutral float-right" title="exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

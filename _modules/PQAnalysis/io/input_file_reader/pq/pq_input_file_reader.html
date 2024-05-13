@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.io.input_file_reader.pq.pq_input_file_reader &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.io.input_file_reader.pq.pq_input_file_reader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.io.input_file_reader.pq.pq_input_file_reader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the PQ_InputFileReader class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">PositiveInt</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.formats</span> <span class="kn">import</span> <span class="n">InputFileFormat</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.input_file_parser</span> <span class="kn">import</span> <span class="n">InputFileParser</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQValueError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+
+<span class="kn">from</span> <span class="nn">.output_files</span> <span class="kn">import</span> <span class="n">_OutputFileMixin</span>
+
+
+
+<div class="viewcode-block" id="PQInputFileReader">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.html#PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.PQInputFileReader">[docs]</a>
+<span class="k">class</span> <span class="nc">PQInputFileReader</span><span class="p">(</span><span class="n">_OutputFileMixin</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Reads a PQ input file and parses it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    _OutputFileMixin : class</span>
+<span class="sd">        mixin class containing all output and start file keys</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the PQ_InputFileReader class.</span>
+
+<span class="sd">        self.format is set to InputFileFormat.PQ.</span>
+<span class="sd">        A parser is created using the InputFileParser class.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            filename of the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">########################</span>
+        <span class="c1"># dummy initialization #</span>
+        <span class="c1">########################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQ</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">InputFileParser</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">format</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PQInputFileReader.read">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.html#PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.PQInputFileReader.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the input file and parses it.</span>
+
+<span class="sd">        The dictionary is set to the dictionary returned by the parser.</span>
+<span class="sd">        The raw_input_file is set to the raw_input_file returned by the parser.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if no start file is defined in the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">raw_input_file</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_start_file_defined</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;No start file defined in input file </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PQInputFileReader.continue_input_file">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.html#PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.PQInputFileReader.continue_input_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">continue_input_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates n new input files by increasing the number in the </span>
+<span class="sd">        filename by one. All other numbers in the start- and</span>
+<span class="sd">        output-files within the input file are increased by one as well.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n : int</span>
+<span class="sd">            number of new input files to be created</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if the n parsed from the output files defined in the input file does</span>
+<span class="sd">            not match the n parsed from the input file name</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if the n parsed from the start file does not match the n parsed from the output files</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span> <span class="o">=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_start_n</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_actual_n</span><span class="p">()</span>
+
+        <span class="c1"># check if n from input file name matches n from output files</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Actual n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="si">}</span><span class="s2">) and input file n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span><span class="si">}</span><span class="s2">) do not match.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="c1"># check if n from start file matches n from output files</span>
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Old n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="si">}</span><span class="s2">) has to be one less than actual n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="n">old_input_file_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span>
+        <span class="n">old_start_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span>
+        <span class="n">old_actual_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span>
+
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">new_input_file_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_input_file_n</span><span class="p">)</span>
+            <span class="n">new_start_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_start_n</span><span class="p">)</span>
+            <span class="n">new_actual_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_actual_n</span><span class="p">)</span>
+
+            <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span>
+
+            <span class="c1"># replace digit strings in start files</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_file_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                    <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">,</span>
+                        <span class="n">new_actual_n</span>
+                    <span class="p">)</span>
+
+                    <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="n">new_raw_input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">new_filename</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># replace digit strings in output files</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_file_keys</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+
+                    <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">,</span>
+                        <span class="n">new_start_n</span>
+                    <span class="p">)</span>
+
+                    <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="n">new_raw_input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                        <span class="n">new_filename</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># create new input file and write new_raw_input_file to it</span>
+            <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span><span class="p">,</span>
+                <span class="n">new_input_file_n</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">new_raw_input_file</span><span class="p">)</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="n">old_input_file_n</span> <span class="o">=</span> <span class="n">new_input_file_n</span>
+            <span class="n">old_start_n</span> <span class="o">=</span> <span class="n">new_start_n</span>
+            <span class="n">old_actual_n</span> <span class="o">=</span> <span class="n">new_actual_n</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_parse_start_n</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses the n from the start file.</span>
+
+<span class="sd">        If the rpmd_start_file is defined, the n from the start_file and </span>
+<span class="sd">        the rpmd_start_file are compared. If they do not match,</span>
+<span class="sd">        a PQValueError is raised.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            n parsed from the start file as a digit string</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if the n from the start file and the rpmd_start_file do not match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_rpmd_start_file_defined</span><span class="p">:</span>
+            <span class="c1"># add &quot;.&quot; to match also files without extension</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">_n</span> <span class="o">:=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpmd_start_file</span> <span class="o">+</span>
+                <span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;N from start_file (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">) and rpmd_start_file (</span><span class="si">{</span><span class="n">_n</span><span class="si">}</span><span class="s2">) do not match.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n</span>
+
+    <span class="k">def</span> <span class="nf">_parse_actual_n</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses the n from the output files.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            n parsed from the output files as a digit string</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if no output file is defined</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if the n parsed from the output files is not consistent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_file_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># add &quot;.&quot; to match also files without extension</span>
+                <span class="n">_n</span> <span class="o">=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">_n</span> <span class="o">!=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">_n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;Actual n in output files is not consistent.&quot;</span><span class="p">,</span>
+                        <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+                    <span class="p">)</span>
+
+                <span class="n">n</span> <span class="o">=</span> <span class="n">_n</span>
+
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;No output file found to determine actual n.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n</span></div>
+
+
+
+
+<span class="k">def</span> <span class="nf">_increase_digit_string</span><span class="p">(</span><span class="n">digit_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    increases a string containing only digits by one</span>
+
+<span class="sd">    If the string contains leading zeros, they are preserved.</span>
+<span class="sd">    The total length of the string is preserved, if there are leading zeros.</span>
+
+<span class="sd">    For example:</span>
+<span class="sd">    &quot;0001&quot; -&gt; &quot;0002&quot;</span>
+<span class="sd">    &quot;001&quot; -&gt; &quot;002&quot;</span>
+<span class="sd">    &quot;099&quot; -&gt; &quot;100&quot;</span>
+<span class="sd">    &quot;999&quot; -&gt; &quot;1000&quot;</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    digit_string : str</span>
+<span class="sd">        string containing only digits to be increased</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        increased string by one</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        if digit_string contains non-digit characters</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">char</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">digit_string</span><span class="p">):</span>
+        <span class="n">PQInputFileReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;digit_string </span><span class="si">{</span><span class="n">digit_string</span><span class="si">}</span><span class="s2"> contains non-digit characters.&quot;</span><span class="p">,</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">without_leading_zeros</span> <span class="o">:=</span> <span class="n">digit_string</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">))</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">without_leading_zeros</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+
+    <span class="n">without_leading_zeros</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">without_leading_zeros</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">number_leading_zeros</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">digit_string</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">without_leading_zeros</span><span class="p">)</span>
+    <span class="n">leading_zeros</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span> <span class="o">*</span> <span class="n">number_leading_zeros</span>
+
+    <span class="k">return</span> <span class="n">leading_zeros</span> <span class="o">+</span> <span class="n">without_leading_zeros</span>
+
+
+
+<span class="k">def</span> <span class="nf">_get_digit_string_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    extracts a string containing only digits from a filename</span>
+
+<span class="sd">    The string has to be of the form &quot;...&lt;number&gt;.&lt;extension&gt;&quot;.</span>
+<span class="sd">    The string is extracted from the number part of the filename.</span>
+
+<span class="sd">    For example:</span>
+<span class="sd">    &quot;filename_0001.extension&quot; -&gt; &quot;0001&quot;</span>
+<span class="sd">    &quot;filename_001.extension&quot; -&gt; &quot;001&quot;</span>
+<span class="sd">    &quot;filename_099.extension&quot; -&gt; &quot;099&quot;</span>
+<span class="sd">    &quot;filename_100.extension&quot; -&gt; &quot;100&quot;</span>
+<span class="sd">    &quot;filename.extension&quot; -&gt; PQValueError</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        filename to be parsed</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        string containing only digits</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        if filename does not contain a number to be parsed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">regex</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">PQInputFileReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Filename </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> does not contain a number to be &quot;</span>
+            <span class="s2">&quot;continued from. It has to be of the form </span><span class="se">\&quot;</span><span class="s2">...&lt;number&gt;.&lt;extension&gt;</span><span class="se">\&quot;</span><span class="s2">.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">regex</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

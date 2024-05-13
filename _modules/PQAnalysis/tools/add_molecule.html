@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.tools.add_molecule &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.tools.add_molecule</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.tools.add_molecule</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing functions and classes to add a molecule/AtomicSystem to a restart file.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.formats</span> <span class="kn">import</span> <span class="n">OutputFileFormat</span><span class="p">,</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.traj</span> <span class="kn">import</span> <span class="n">MDEngineFormat</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQValueError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PositiveInt</span><span class="p">,</span>
+    <span class="n">PositiveReal</span><span class="p">,</span>
+    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">read_restart_file</span><span class="p">,</span>
+    <span class="n">TrajectoryReader</span><span class="p">,</span>
+    <span class="n">RestartFileWriter</span><span class="p">,</span>
+    <span class="n">read_topology_file</span><span class="p">,</span>
+    <span class="n">write_topology_file</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="add_molecule">
+<a class="viewcode-back" href="../../../code/PQAnalysis.tools.add_molecule.html#PQAnalysis.tools.add_molecule.add_molecule">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span> <span class="nf">add_molecule</span><span class="p">(</span>
+    <span class="n">restart_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">molecule_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">molecule_file_type</span><span class="p">:</span> <span class="n">OutputFileFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
+    <span class="n">restart_moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">molecule_moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">number_of_additions</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">max_iterations</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">distance_cutoff</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">max_displacement</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+    <span class="n">rotation_angle_step</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="n">md_engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">topology_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">topology_file_to_add</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">topology_file_output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add a molecule to a restart file.</span>
+
+<span class="sd">    The function reads a restart file and a molecule file and adds the</span>
+<span class="sd">    molecule to the restart file. The molecule is added by fitting </span>
+<span class="sd">    the molecule to the restart file. The fitting is done randomly </span>
+<span class="sd">    by rotating the molecule and translating it to a random position. </span>
+<span class="sd">    After the fitting, the molecule is added to the restart file.</span>
+<span class="sd">    The function can add multiple molecules to the restart file. </span>
+<span class="sd">    The function can also add a moldescriptor file to the restart</span>
+<span class="sd">    file to keep track of the fitting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    restart_file : str</span>
+<span class="sd">        The filename of the restart file.</span>
+<span class="sd">    molecule_file : str</span>
+<span class="sd">        The filename of the molecule file.</span>
+<span class="sd">    output_file : str | None, optional</span>
+<span class="sd">        The filename of the output file, by default None</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot; The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    molecule_file_type : OutputFileFormat | str, optional</span>
+<span class="sd">        The type of the molecule file, by default OutputFileFormat.AUTO. </span>
+<span class="sd">        If the type is AUTO, the type will be inferred from the file extension.</span>
+<span class="sd">        If the type is RESTART, a moldescriptor file can be specified.</span>
+<span class="sd">    restart_moldescriptor_file : str | None, optional</span>
+<span class="sd">        The filename of the moldescriptor file of the restart file, by default None.</span>
+<span class="sd">    molecule_moldescriptor_file : str | None, optional</span>
+<span class="sd">        The filename of the moldescriptor file of the molecule file, by default None.</span>
+<span class="sd">        A moldescriptor file can only be specified for restart file types.</span>
+<span class="sd">    number_of_additions : PositiveInt, optional</span>
+<span class="sd">        The number of times the molecule should be added to the restart file, by default 1</span>
+<span class="sd">    max_iterations : PositiveInt, optional</span>
+<span class="sd">        The maximum number of iterations to try to fit the molecule</span>
+<span class="sd">        into the restart file, by default 100</span>
+<span class="sd">    distance_cutoff : PositiveReal, optional</span>
+<span class="sd">        The distance cutoff for the fitting, by default 1.0</span>
+<span class="sd">    max_displacement : PositiveReal | Np1DNumberArray, optional</span>
+<span class="sd">        The maximum displacement for the fitting, by default 0.1</span>
+<span class="sd">    rotation_angle_step : PositiveInt, optional</span>
+<span class="sd">        The angle step for the fitting, by default 10</span>
+<span class="sd">    md_engine_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the restart file, by default MDEngineFormat.PQ</span>
+<span class="sd">    topology_file : str | None, optional</span>
+<span class="sd">        The filename of the topology file, by default None</span>
+<span class="sd">    topology_file_to_add : str | None, optional</span>
+<span class="sd">        The filename of the topology file to add, by default None</span>
+<span class="sd">    topology_file_output : str | None, optional</span>
+<span class="sd">        The filename of the output topology file, by default None</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        If the molecule file type is not RESTART and a moldescriptor file is specified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_check_topology_args</span><span class="p">(</span>
+        <span class="n">topology_file</span><span class="p">,</span>
+        <span class="n">topology_file_to_add</span><span class="p">,</span>
+        <span class="n">topology_file_output</span>
+    <span class="p">)</span>
+
+    <span class="n">_add_molecule</span> <span class="o">=</span> <span class="n">AddMolecule</span><span class="p">(</span>
+        <span class="n">restart_file</span><span class="o">=</span><span class="n">restart_file</span><span class="p">,</span>
+        <span class="n">molecule_file</span><span class="o">=</span><span class="n">molecule_file</span><span class="p">,</span>
+        <span class="n">output_file</span><span class="o">=</span><span class="n">output_file</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">molecule_file_type</span><span class="o">=</span><span class="n">molecule_file_type</span><span class="p">,</span>
+        <span class="n">restart_moldescriptor_file</span><span class="o">=</span><span class="n">restart_moldescriptor_file</span><span class="p">,</span>
+        <span class="n">molecule_moldescriptor_file</span><span class="o">=</span><span class="n">molecule_moldescriptor_file</span><span class="p">,</span>
+        <span class="n">number_of_additions</span><span class="o">=</span><span class="n">number_of_additions</span><span class="p">,</span>
+        <span class="n">max_iterations</span><span class="o">=</span><span class="n">max_iterations</span><span class="p">,</span>
+        <span class="n">distance_cutoff</span><span class="o">=</span><span class="n">distance_cutoff</span><span class="p">,</span>
+        <span class="n">max_displacement</span><span class="o">=</span><span class="n">max_displacement</span><span class="p">,</span>
+        <span class="n">rotation_angle_step</span><span class="o">=</span><span class="n">rotation_angle_step</span><span class="p">,</span>
+        <span class="n">md_engine_format</span><span class="o">=</span><span class="n">md_engine_format</span>
+    <span class="p">)</span>
+
+    <span class="n">_add_molecule</span><span class="o">.</span><span class="n">write_restart_file</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">topology_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_add_molecule</span><span class="o">.</span><span class="n">extend_topology_file</span><span class="p">(</span>
+            <span class="n">original_shake_file</span><span class="o">=</span><span class="n">topology_file</span><span class="p">,</span>
+            <span class="n">extension_shake_file</span><span class="o">=</span><span class="n">topology_file_to_add</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="n">topology_file_output</span>
+        <span class="p">)</span></div>
+
+
+
+
+<span class="k">def</span> <span class="nf">_check_topology_args</span><span class="p">(</span>
+    <span class="n">topology_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">topology_file_to_add</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">topology_file_output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check the arguments for the topology files.</span>
+
+<span class="sd">    If the topology_file is None and the topology_file_to_add is None,</span>
+<span class="sd">    the output topology file will be ignored. If the topology_file is </span>
+<span class="sd">    None and the topology_file_to_add is not None, a PQValueError is raised.</span>
+<span class="sd">    If the topology_file is not None and the topology_file_to_add is None,</span>
+<span class="sd">    a PQValueError is raised. If the output topology file is None, a PQValueError is raised.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    topology_file : str | None</span>
+<span class="sd">        The filename of the topology file.</span>
+<span class="sd">    topology_file_to_add : str | None</span>
+<span class="sd">        The filename of the topology file to add.</span>
+<span class="sd">    topology_file_output : str | None</span>
+<span class="sd">        The filename of the output topology file.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        If the topology_file is None and the topology_file_to_add is not None.</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        If the topology_file is not None and the topology_file_to_add is None.</span>
+<span class="sd">    PQValueError</span>
+<span class="sd">        If the output topology file is None.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">topology_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">topology_file_to_add</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">topology_file_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;The output topology file is specified, but no topology &quot;</span>
+                <span class="s2">&quot;files are given to add. The output topology file will be ignored.&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span>
+
+    <span class="k">if</span> <span class="n">topology_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">topology_file_to_add</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;The topology file must be specified if a topology file to add is given.&quot;</span><span class="p">,</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">topology_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">topology_file_to_add</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;The topology file to add must be specified if a topology file is given.&quot;</span><span class="p">,</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">topology_file_output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="p">(</span>
+            <span class="s2">&quot;The output topology file must be specified if topology files are &quot;</span>
+            <span class="s2">&quot;given to add. This is a special case where None cannot be treated &quot;</span>
+            <span class="s2">&quot;as stdout as it is already used for the restart file.&quot;</span>
+            <span class="p">),</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+        <span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="AddMolecule">
+<a class="viewcode-back" href="../../../code/PQAnalysis.tools.add_molecule.html#PQAnalysis.tools.add_molecule.AddMolecule">[docs]</a>
+<span class="k">class</span> <span class="nc">AddMolecule</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for adding a molecule to a restart file.</span>
+
+<span class="sd">    The class reads a restart file and a molecule file and adds the </span>
+<span class="sd">    molecule to the restart file. The molecule is added by fitting t</span>
+<span class="sd">    he molecule to the restart file. The fitting is done randomly by </span>
+<span class="sd">    rotating the molecule and translating it to a random position. </span>
+<span class="sd">    After the fitting, the molecule is added to the restart file. </span>
+<span class="sd">    The class can add multiple molecules to the restart file. </span>
+<span class="sd">    The class can also add a moldescriptor file to the restart file</span>
+<span class="sd">    to keep track of the fitting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">restart_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">molecule_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">output_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">molecule_file_type</span><span class="p">:</span> <span class="n">OutputFileFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
+        <span class="n">restart_moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">molecule_moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">number_of_additions</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">max_iterations</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">distance_cutoff</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">max_displacement</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">rotation_angle_step</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">md_engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        restart_file : str</span>
+<span class="sd">            The filename of the restart file.</span>
+<span class="sd">        molecule_file : str</span>
+<span class="sd">            The filename of the molecule file.</span>
+<span class="sd">        output_file : str | None, optional</span>
+<span class="sd">            The filename of the output file, by default None</span>
+<span class="sd">        mode : FileWritingMode | str, optional</span>
+<span class="sd">            The writing mode, by default &quot;w&quot; The following modes are available:</span>
+<span class="sd">            - &quot;w&quot;: write</span>
+<span class="sd">            - &quot;a&quot;: append</span>
+<span class="sd">            - &quot;o&quot;: overwrite</span>
+<span class="sd">        molecule_file_type : OutputFileFormat | str, optional</span>
+<span class="sd">            The type of the molecule file, by default OutputFileFormat.AUTO.</span>
+<span class="sd">            If the type is AUTO, the type will be inferred from the file extension.</span>
+<span class="sd">            If the type is RESTART, a moldescriptor file can be specified.</span>
+<span class="sd">        restart_moldescriptor_file : str | None, optional</span>
+<span class="sd">            The filename of the moldescriptor file of the restart file,</span>
+<span class="sd">            by default None.</span>
+<span class="sd">        molecule_moldescriptor_file : str | None, optional</span>
+<span class="sd">            The filename of the moldescriptor file of the molecule file,</span>
+<span class="sd">            by default None.</span>
+<span class="sd">            A moldescriptor file can only be specified for restart file types.</span>
+<span class="sd">        number_of_additions : PositiveInt, optional</span>
+<span class="sd">            The number of times the molecule should be added to the restart file, by default 1</span>
+<span class="sd">        max_iterations : PositiveInt, optional</span>
+<span class="sd">            The maximum number of iterations to try to fit</span>
+<span class="sd">            the molecule into the restart file, by default 100</span>
+<span class="sd">        distance_cutoff : PositiveReal, optional</span>
+<span class="sd">            The distance cutoff for the fitting, by default 1.0</span>
+<span class="sd">        max_displacement : PositiveReal | Np1DNumberArray, optional</span>
+<span class="sd">            The maximum displacement for the fitting, by default 0.1</span>
+<span class="sd">        rotation_angle_step : PositiveInt, optional</span>
+<span class="sd">            The angle step for the fitting, by default 10</span>
+<span class="sd">        md_engine_format : MDEngineFormat | str, optional</span>
+<span class="sd">            The format of the restart file, by default MDEngineFormat.PQ</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            If the molecule file type is not RESTART and a moldescriptor file is specified.</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            If the molecule file type is not RESTART or XYZ.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="o">=</span> <span class="n">restart_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span> <span class="o">=</span> <span class="n">molecule_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span> <span class="o">=</span> <span class="n">output_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_moldescriptor_file</span> <span class="o">=</span> <span class="n">restart_moldescriptor_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule_moldescriptor_file</span> <span class="o">=</span> <span class="n">molecule_moldescriptor_file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md_engine_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_engine_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_additions</span> <span class="o">=</span> <span class="n">number_of_additions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span> <span class="o">=</span> <span class="n">max_iterations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">distance_cutoff</span> <span class="o">=</span> <span class="n">distance_cutoff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span> <span class="o">=</span> <span class="n">max_displacement</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotation_angle_step</span> <span class="o">=</span> <span class="n">rotation_angle_step</span>
+
+        <span class="c1"># Initialize the variables, just to make sure they are defined</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">=</span> <span class="n">OutputFileFormat</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">molecule_file_type</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">!=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span> <span class="ow">and</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">molecule_moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;A moldescriptor file can only be specified for restart files.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span><span class="p">,</span>
+            <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">XYZ</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The molecule file type must be either RESTART or XYZ.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="AddMolecule.write_restart_file">
+<a class="viewcode-back" href="../../../code/PQAnalysis.tools.add_molecule.html#PQAnalysis.tools.add_molecule.AddMolecule.write_restart_file">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">write_restart_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the restart file with the added molecule.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">RestartFileWriter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_file</span><span class="p">,</span>
+            <span class="n">md_engine_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md_engine_format</span><span class="p">,</span>
+            <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span>
+        <span class="p">)</span>
+
+        <span class="n">fitted_systems</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_molecules</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span><span class="o">.</span><span class="n">image</span><span class="p">()</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">writer</span><span class="o">.</span><span class="n">_get_lines</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span><span class="p">,</span> <span class="n">atom_counter</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">system</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fitted_systems</span><span class="p">):</span>
+            <span class="n">system</span><span class="o">.</span><span class="n">image</span><span class="p">()</span>
+            <span class="n">lines</span> <span class="o">+=</span> <span class="n">writer</span><span class="o">.</span><span class="n">_get_atom_lines</span><span class="p">(</span><span class="n">system</span><span class="p">,</span> <span class="n">atom_counter</span><span class="o">=</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="n">_write_lines_to_file</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span></div>
+
+
+<div class="viewcode-block" id="AddMolecule.extend_topology_file">
+<a class="viewcode-back" href="../../../code/PQAnalysis.tools.add_molecule.html#PQAnalysis.tools.add_molecule.AddMolecule.extend_topology_file">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">extend_topology_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_shake_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">extension_shake_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extend the topology file with the shake bonds of the extension topology file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        original_shake_file : str</span>
+<span class="sd">            The filename of the original topology file.</span>
+<span class="sd">        extension_shake_file : str</span>
+<span class="sd">            The filename of the extension topology file.</span>
+<span class="sd">        output : str | None, optional</span>
+<span class="sd">            The filename of the output topology file, by default None (stdout).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            If the restart system or the molecule is not read before extending the topology file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="p">(</span>
+            <span class="s2">&quot;Extension of the topology file is only implemented for shake bonds. &quot;</span>
+            <span class="s2">&quot;The extension of general bonded topologies is not implemented yet.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">original_topology</span> <span class="o">=</span> <span class="n">read_topology_file</span><span class="p">(</span><span class="n">original_shake_file</span><span class="p">)</span>
+        <span class="n">new_topology</span> <span class="o">=</span> <span class="n">read_topology_file</span><span class="p">(</span><span class="n">extension_shake_file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;The restart frame and the molecule must be read &quot;</span>
+                <span class="s2">&quot;before extending the topology file. Either call &quot;</span>
+                <span class="s2">&quot;the read_files method or the add_molecules method first.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="n">original_topology</span><span class="o">.</span><span class="n">extend_shake_bonds</span><span class="p">(</span>
+            <span class="n">new_topology</span><span class="o">.</span><span class="n">shake_bonds</span><span class="p">,</span>
+            <span class="n">n_atoms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span>
+            <span class="n">n_extensions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_additions</span><span class="p">,</span>
+            <span class="n">n_atoms_per_extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="o">.</span><span class="n">n_atoms</span>
+        <span class="p">)</span>
+
+        <span class="n">write_topology_file</span><span class="p">(</span><span class="n">original_topology</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AddMolecule.add_molecules">
+<a class="viewcode-back" href="../../../code/PQAnalysis.tools.add_molecule.html#PQAnalysis.tools.add_molecule.AddMolecule.add_molecules">[docs]</a>
+    <span class="k">def</span> <span class="nf">add_molecules</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">AtomicSystem</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates all newly fitted atomic systems</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[AtomicSystem]</span>
+<span class="sd">            The fitted atomic systems.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read_files</span><span class="p">()</span>
+
+        <span class="n">fitted_systems</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span><span class="o">.</span><span class="n">fit_atomic_system</span><span class="p">(</span>
+            <span class="n">system</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule</span><span class="p">,</span>
+            <span class="n">number_of_additions</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_additions</span><span class="p">,</span>
+            <span class="n">max_iterations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_iterations</span><span class="p">,</span>
+            <span class="n">distance_cutoff</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">distance_cutoff</span><span class="p">,</span>
+            <span class="n">max_displacement</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_displacement</span><span class="p">,</span>
+            <span class="n">rotation_angle_step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">rotation_angle_step</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">fitted_systems</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_read_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the restart and molecule files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span> <span class="o">=</span> <span class="n">read_restart_file</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_moldescriptor_file</span><span class="p">,</span>
+            <span class="n">md_engine_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md_engine_format</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_molecule_file</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_read_molecule_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Read the molecule file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The AtomicSystem of the molecule file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">==</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span><span class="p">:</span>
+
+            <span class="n">molecule</span> <span class="o">=</span> <span class="n">read_restart_file</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">molecule_moldescriptor_file</span><span class="p">,</span>
+                <span class="n">md_engine_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">md_engine_format</span>
+            <span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">frame_generator</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">,</span>
+                                               <span class="p">)</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+
+            <span class="n">molecule</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">frame_generator</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">molecule</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.rdf.rdf_input_file_reader &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.rdf.rdf_input_file_reader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.rdf.rdf_input_file_reader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing a class to read input files to setup the </span>
+<span class="sd">:py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># local imports</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="n">PQAnalysisInputFileReader</span> <span class="k">as</span> <span class="n">Reader</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.exceptions</span> <span class="kn">import</span> <span class="n">InputFileError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+
+
+<div class="viewcode-block" id="RDFInputFileReader">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf_input_file_reader.html#PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader">[docs]</a>
+<span class="k">class</span> <span class="nc">RDFInputFileReader</span><span class="p">(</span><span class="n">Reader</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="c1">#: List[str]: The required keys of the input file</span>
+    <span class="n">required_keys</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">traj_files_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">reference_selection_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">target_selection_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">out_file_key</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="c1">#: List[str]: The optional keys of the input file</span>
+    <span class="n">optional_keys</span> <span class="o">=</span> <span class="n">required_keys</span> <span class="o">+</span> <span class="p">[</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">r_max_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">r_min_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">log_file_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">use_full_atom_info_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="p">,</span>
+        <span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            the filename of the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="RDFInputFileReader.read">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf_input_file_reader.html#PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the input file and parses it.</span>
+<span class="sd">        It also sets the raw_input_file and the dictionary.</span>
+<span class="sd">        It checks if all required keys are set and if all keys are known.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        InputFileError</span>
+<span class="sd">            if not all required keys are set in the input file</span>
+<span class="sd">        InputFileWarning</span>
+<span class="sd">            if unknown keys are set in the input file</span>
+<span class="sd">        InputFileError</span>
+<span class="sd">            if the no_intra_molecular key is used without a restart file</span>
+<span class="sd">        InputFileError</span>
+<span class="sd">            if the no_intra_molecular key is used without a moldescriptor file</span>
+<span class="sd">        InputFileError</span>
+<span class="sd">            if the moldescriptor_file key is used without a restart file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;The no_intra_molecular key can only be used &quot;</span>
+                <span class="s2">&quot;if both a restart file and a moldescriptor file are given.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;The moldescriptor_file key can only be &quot;</span>
+                <span class="s2">&quot;used in a meaningful way if a restart file is given.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+
+<span class="n">input_keys_documentation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+
+<span class="s2">For the RDF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.</span>
+
+<span class="s2">.. list-table:: Required keys</span>
+<span class="s2">    :header-rows: 1</span>
+
+<span class="s2">    * - Key</span>
+<span class="s2">        - Value</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">traj_files_key</span><span class="si">}</span>
+<span class="s2">        - The trajectory files to read. This can be a single file or a list of files.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">reference_selection_key</span><span class="si">}</span>
+<span class="s2">        - The selection string to select the reference atoms. For more details see :py:class:`~PQAnalysis.topology.selection.Selection`.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">target_selection_key</span><span class="si">}</span>
+<span class="s2">        - The selection string to select the target atoms. For more details see :py:class:`~PQAnalysis.topology.selection.Selection`.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">out_file_key</span><span class="si">}</span>
+<span class="s2">        - The output file to write the RDF data to.</span>
+
+<span class="s2">.. list-table:: Optional keys</span>
+<span class="s2">    :header-rows: 1</span>
+
+<span class="s2">    * - Key</span>
+<span class="s2">        - Value</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">r_max_key</span><span class="si">}</span>
+<span class="s2">        - The maximum radius to calculate the RDF for.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">r_min_key</span><span class="si">}</span>
+<span class="s2">        - The minimum radius to calculate the RDF for.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="si">}</span>
+<span class="s2">        - The delta radius to calculate the RDF for.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="si">}</span>
+<span class="s2">        - The number of bins to calculate the RDF for.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">log_file_key</span><span class="si">}</span>
+<span class="s2">        - The log file to write the log information to.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">use_full_atom_info_key</span><span class="si">}</span>
+<span class="s2">        - Whether to use full atom information for the selections.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span>
+<span class="s2">        - Whether to exclude intra molecular pairs.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span>
+<span class="s2">        - The restart file to read the topology from.</span>
+<span class="s2">    * - </span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span>
+<span class="s2">        - The moldescriptor file to read the reference residues from.</span>
+
+<span class="s2">Note</span>
+<span class="s2">----</span>
+<span class="s2">Optional keys does not mean that they are optional for the analysis.</span>
+<span class="s2">They are optional in the input file, but they might be required for</span>
+<span class="s2">the analysis. This means that if an optional keyword is specified</span>
+<span class="s2">other keywords might be required. For example:</span>
+
+<span class="s2">- If the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span><span class="s2">` key is specified,</span>
+<span class="s2">the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` and</span>
+<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` keys</span>
+<span class="s2">are required in order to exclude intra molecular pairs.</span>
+<span class="s2">- If the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` key is specified,</span>
+<span class="s2">the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` key is required in order</span>
+<span class="s2">use the reference residues in any meaningful way.</span>
+<span class="s2">- In general, the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">r_max_key</span><span class="si">}</span><span class="s2">`,</span>
+<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="si">}</span><span class="s2">` and :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="si">}</span><span class="s2">`</span>
+<span class="s2">are mutual exclusive, meaning that they can&#39;t be specified at</span>
+<span class="s2">the same time. Furthermore, at least one of</span>
+<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins</span><span class="si">}</span><span class="s2">&#39; or :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r</span><span class="si">}</span><span class="s2">` is required</span>
+<span class="s2">(for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">RDFInputFileReader</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

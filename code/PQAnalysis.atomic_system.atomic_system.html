@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>atomic_system &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="exceptions" href="PQAnalysis.atomic_system.exceptions.html" />
+    <link rel="prev" title="atomic_system" href="PQAnalysis.atomic_system.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">atomic_system</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.atomic_system.exceptions.html">exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+      <li class="breadcrumb-item active">atomic_system</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.atomic_system.atomic_system.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.atomic_system.atomic_system">
+<span id="atomic-system"></span><h1>atomic_system<a class="headerlink" href="#module-PQAnalysis.atomic_system.atomic_system" title="Link to this heading"></a></h1>
+<p>A module containing the AtomicSystem class</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AtomicSystem</span></code></a></p></td>
+<td><p>A class for storing atomic systems.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AtomicSystem</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><span class="pre">Atoms</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">forces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">energy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">virial</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Np2x2NumberArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">stress</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Np2x2NumberArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">cell</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">Cell()</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">_PropertiesMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_StandardPropertiesMixin</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_PositionsMixin</span></code></p>
+<p>A class for storing atomic systems.</p>
+<p>It contains the standard properties of an atomic system
+(i.e. positions, velocities, forces, charges, topology and cell).
+The AtomicSystem class can be used as a container for the
+standard properties of any molecular/atomic system.</p>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<p>An atomic system does not have to containing any positions,
+velocities, forces and so forth. The only requirement is that
+the number of atoms in the topology is equal to the number of
+entries in the positions, velocities, forces and charges
+arrays. If e.g. only a system containing information of the
+velocities is needed, the positions, forces and charges arrays
+can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)).
+The same goes for the other properties. An empty cell can be
+created with Cell() and represents a system without periodic
+boundary conditions. (For more information see the
+documentation of <a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell</span></code></a>).
+As the topology is can be really and complex and most of the
+cases really specific to the system, here no further
+information is given. (For more information see the
+documentation of <a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><code class="xref py py-class docutils literal notranslate"><span class="pre">Topology</span></code></a>).
+Furthermore for this reason if no specialization of the topology
+is needed, the atomic system can be initialized with only a list
+of atoms (see examples, and the documentation of
+<a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Atom</span></code></a>).</p>
+</div>
+<p>Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin,
+_IndexingMixin, _PositionsMixin</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>The _StandardPropertiesMixin contains the standard properties of an atomic</p></li>
+</ul>
+<p>system (i.e. standard getter and setter methods).
+- The _PropertiesMixin contains special properties derived from the standard properties
+- The _PositionsMixin contains methods for computing properties based
+on the positions of the atoms</p>
+</div></blockquote>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C1&#39;</span><span class="p">,</span> <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C2&#39;</span><span class="p">,</span> <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]))</span>
+<span class="go">AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">AtomicSystem</span><span class="p">()</span>
+<span class="go">AtomicSystem(topology=(Topology with 0 atoms...), cell=(Cell()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">AtomicSystem</span><span class="p">(</span><span class="n">topology</span><span class="o">=</span><span class="n">Topology</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)]))</span>
+<span class="go">AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
+</pre></div>
+</div>
+</div>
+<p>For the initialization of an AtomicSystem all parameters are optional.
+If no value is given for a parameter, the default value is used which
+is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces
+and charges, a Topology() object for topology and a Cell() object for cell.</p>
+<p>If the shapes or lengths of the given parameters are not consistent, this will
+only raise an error when a property or method is called that requires the
+given parameter. This is done to allow for the creation of an AtomicSystem
+with only a subset of the properties.</p>
+<p>One important restriction is that atoms and topology are mutually exclusive,
+i.e. if atoms is given, topology cannot be given and vice versa (this is
+because the topology is derived from the atoms - if given).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atoms</strong> (<a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><em>Atoms</em></a><em>, </em><em>optional</em>) – A list of Atom objects, by default []</p></li>
+<li><p><strong>pos</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a><em>, </em><em>optional</em>) – A 2d numpy.ndarray containing the positions of the atoms, by default np.zeros((0, 3)).</p></li>
+<li><p><strong>vel</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a><em>, </em><em>optional</em>) – A 2d numpy.ndarray containing the velocities of the atoms, by default np.zeros((0, 3)).</p></li>
+<li><p><strong>forces</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a><em>, </em><em>optional</em>) – A 2d numpy.ndarray containing the forces on the atoms, by default np.zeros((0, 3)).</p></li>
+<li><p><strong>charges</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>, </em><em>optional</em>) – A 1d numpy.ndarray containing the charges of the atoms, by default np.zeros(0).</p></li>
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a><em>, </em><em>optional</em>) – The topology of the system, by default Topology()</p></li>
+<li><p><strong>energy</strong> (<em>float</em><em>, </em><em>optional</em>) – The energy of the system, by default None</p></li>
+<li><p><strong>virial</strong> (<em>Np3x3NumberArray</em><em>, </em><em>optional</em>) – The virial of the system, by default None</p></li>
+<li><p><strong>stress</strong> (<em>Np3x3NumberArray</em><em>, </em><em>optional</em>) – The stress of the system, by default None</p></li>
+<li><p><strong>cell</strong> (<a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><em>Cell</em></a><em>, </em><em>optional</em>) – The unit cell of the system. Defaults to a Cell with no periodic
+boundary conditions, by default Cell()</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If both atoms and topology are given.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.__eq__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Checks whether the AtomicSystem is equal to another AtomicSystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>other</strong> (<a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a>) – The other AtomicSystem to compare to.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether the AtomicSystem is equal to the other AtomicSystem.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.__getitem__">
+<span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><span class="pre">Atom</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">slice</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.__getitem__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__getitem__" title="Link to this definition"></a></dt>
+<dd><p>Returns a new AtomicSystem with the given key.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Residue</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">AtomicSystem(topology=(Topology with 1 atoms...), cell=(Cell()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)],</span> <span class="n">pos</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span>
+<span class="go">AtomicSystem(topology=(Topology with 2 atoms ...), cell=(Cell()))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> <span class="o">==</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>key</strong> (<a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><em>Atom</em></a><em> | </em><em>int</em><em> | </em><em>slice</em><em> | </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a>) – The key to get the new AtomicSystem with.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The new AtomicSystem with the given key.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.__repr__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__repr__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the AtomicSystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the AtomicSystem.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__str__" title="Link to this definition"></a></dt>
+<dd><p>Returns the string representation of the AtomicSystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The string representation of the AtomicSystem.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.center">
+<span class="sig-name descname"><span class="pre">center</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.center" title="Link to this definition"></a></dt>
+<dd><p>Center the positions of the system to a given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>position</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a>) – The position to recenter the system to.</p></li>
+<li><p><strong>image</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the system should be imaged back into the cell, by default True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.compute_com_atomic_system">
+<span class="sig-name descname"><span class="pre">compute_com_atomic_system</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">group</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.compute_com_atomic_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.compute_com_atomic_system" title="Link to this definition"></a></dt>
+<dd><p>Computes a new AtomicSystem with the center of mass of the system or groups of atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>group</strong> (<em>int</em><em>, </em><em>optional</em>) – group of atoms to compute the center of mass of, by default None (all atoms)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new AtomicSystem with the center of mass of the system or groups of atoms.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemError" title="PQAnalysis.atomic_system.exceptions.AtomicSystemError"><strong>AtomicSystemError</strong></a> – If the number of atoms in the selection is not a multiple of group.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.copy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.copy" title="Link to this definition"></a></dt>
+<dd><p>Returns a copy of the AtomicSystem.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A copy of the AtomicSystem.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.fit_atomic_system">
+<span class="sig-name descname"><span class="pre">fit_atomic_system</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">number_of_additions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">distance_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_displacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">rotation_angle_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/atomic_system/atomic_system.html#AtomicSystem.fit_atomic_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.fit_atomic_system" title="Link to this definition"></a></dt>
+<dd><p>Fit the positions of the system to the positions of another system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>system</strong> (<a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a>) – The system that should be fitted into the positions of the AtomicSystem.</p></li>
+<li><p><strong>number_of_additions</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The number of times the system should be fitted into the
+positions of the AtomicSystem, by default 1</p></li>
+<li><p><strong>max_iterations</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The maximum number of iterations to try to fit the system
+into the positions of the AtomicSystem, by default 100</p></li>
+<li><p><strong>distance_cutoff</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – The distance cutoff for the fitting, by default 1.0</p></li>
+<li><p><strong>max_displacement</strong> (<em>PositiveReal</em><em> | </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>, </em><em>optional</em>) – The maximum displacement percentage for the fitting, by default 0.1</p></li>
+<li><p><strong>rotation_angle_step</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The angle step for the rotation of the system,
+by default 10</p></li>
+<li><p><strong>displacement</strong> (<em>First a random center</em><em> of </em><em>mass is chosen and a random</em>)</p></li>
+<li><p><strong>possible</strong> (<em>is applied to the system. Then the system is rotated in all</em>)</p></li>
+<li><p><strong>the</strong> (<em>ways and the distances between the atoms are checked. If</em>)</p></li>
+<li><p><strong>cutoff</strong> (<em>distances are larger than the distance</em>)</p></li>
+<li><p><strong>fitted.</strong> (<em>the system is</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The fitted AtomicSystem(s). If number_of_additions is 1,
+a single AtomicSystem is returned, otherwise a list of
+AtomicSystems is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[<a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a>] | <a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemError" title="PQAnalysis.atomic_system.exceptions.AtomicSystemError"><strong>AtomicSystemError</strong></a> – If the AtomicSystem has a vacuum cell.</p></li>
+<li><p><strong>ValueError</strong> – If the maximum displacement percentage is negative.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemError" title="PQAnalysis.atomic_system.exceptions.AtomicSystemError"><strong>AtomicSystemError</strong></a> – If the system could not be fitted into the positions
+    of the AtomicSystem within the maximum number of iterations.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.image">
+<span class="sig-name descname"><span class="pre">image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.image" title="Link to this definition"></a></dt>
+<dd><p>Images the positions of the system back into the cell.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.nearest_neighbours">
+<span class="sig-name descname"><span class="pre">nearest_neighbours</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">selection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DIntArray" title="PQAnalysis.types.Np2DIntArray"><span class="pre">Np2DIntArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.nearest_neighbours" title="Link to this definition"></a></dt>
+<dd><p>Returns the n nearest neighbours of the given atoms in the system.</p>
+<p>If no selection of target atoms is given, the n nearest neighbours
+of all atoms are returned. With the parameter ‘n’ the number of
+nearest neighbours can be specified.</p>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">),</span> <span class="n">Atom</span><span class="p">(</span><span class="s1">&#39;H&#39;</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">system</span> <span class="o">=</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nearest_neighbours</span><span class="p">()</span>
+<span class="go">(array([[1], [0], [1]]), array([[0.8660254], [0.8660254], [0.8660254]]))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nearest_neighbours</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">(array([[1, 2],</span>
+<span class="go">       [0, 2],</span>
+<span class="go">       [1, 0]]), array([[0.8660254 , 1.73205081],</span>
+<span class="go">       [0.8660254 , 0.8660254 ],</span>
+<span class="go">       [0.8660254 , 1.73205081]]))</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">system</span><span class="o">.</span><span class="n">nearest_neighbours</span><span class="p">(</span><span class="n">selection</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]))</span>
+<span class="go">(array([[1]]), array([[0.8660254]]))</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The number of nearest neighbours to return, by default 1</p></li>
+<li><p><strong>selection</strong> (<a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a><em>, </em><em>optional</em>) – Selection is either a selection object or any object that can
+be initialized via ‘Selection(selection)’,
+default None (all atoms)</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em>, </em><em>optional</em>) – If the full atom object should be used to match the
+atoms or only the element type,
+by default False</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The n nearest neighbours of the given atoms in the system.
+The first array contains the indices of the nearest
+neighbours and the second array contains the distances
+to the nearest neighbours.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DIntArray" title="PQAnalysis.types.Np2DIntArray">Np2DIntArray</a>, <a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_charges_no_checks">
+<span class="sig-name descname"><span class="pre">set_charges_no_checks</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_charges_no_checks" title="Link to this definition"></a></dt>
+<dd><p>Set the charges of the atoms in the system without any checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>charges</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a>) – The charges of the atoms in the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_forces_no_checks">
+<span class="sig-name descname"><span class="pre">set_forces_no_checks</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">forces</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_forces_no_checks" title="Link to this definition"></a></dt>
+<dd><p>Set the forces acting on the atoms in the system without any checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>forces</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a>) – The forces acting on the atoms in the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_pos_no_checks">
+<span class="sig-name descname"><span class="pre">set_pos_no_checks</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_pos_no_checks" title="Link to this definition"></a></dt>
+<dd><p>Set the positions of the atoms in the system without any checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pos</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a>) – The positions of the atoms in the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_vel_no_checks">
+<span class="sig-name descname"><span class="pre">set_vel_no_checks</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">vel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.set_vel_no_checks" title="Link to this definition"></a></dt>
+<dd><p>Set the velocities of the atoms in the system without any checks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>vel</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><em>Np2DNumberArray</em></a>) – The velocities of the atoms in the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.atomic_masses">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atomic_masses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.atomic_masses" title="Link to this definition"></a></dt>
+<dd><p>The atomic masses of the atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><span class="pre">Atoms</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.atoms" title="Link to this definition"></a></dt>
+<dd><p>The atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms">Atoms</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.cell">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.cell" title="Link to this definition"></a></dt>
+<dd><p>The unit cell of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.center_of_mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center_of_mass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.center_of_mass" title="Link to this definition"></a></dt>
+<dd><p>The center of mass of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.charges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.charges" title="Link to this definition"></a></dt>
+<dd><p>The charges of the atoms in the system.</p>
+<p>In order to set the charges of the atoms in the system,
+the number of atoms in the system has to be equal to the
+number of charges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.combined_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">combined_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.combined_name" title="Link to this definition"></a></dt>
+<dd><p>The combined name of the atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.energy" title="Link to this definition"></a></dt>
+<dd><p>The energy of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.fitting_logger">
+<span class="sig-name descname"><span class="pre">fitting_logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.atomic_system.atomic_system.fit_atomic_system</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.fitting_logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.forces">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forces</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.forces" title="Link to this definition"></a></dt>
+<dd><p>The forces acting on the atoms in the system.</p>
+<p>In order to set the forces acting on the atoms in the system,
+the number of atoms in the system has to be equal to the number
+of forces.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.handler">
+<span class="sig-name descname"><span class="pre">handler</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;StreamHandler</span> <span class="pre">&lt;stderr&gt;</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.handler" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_charges">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_charges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_charges" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has charges for all atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_energy">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_energy</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_energy" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has an energy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_forces">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_forces</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_forces" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has forces for all atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_pos" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has positions for all atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_stress">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_stress</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_stress" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has a stress tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_vel">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_vel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_vel" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has velocities for all atoms.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_virial">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_virial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.has_virial" title="Link to this definition"></a></dt>
+<dd><p>A boolean indicating if the system has a virial tensor.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.AtomicSystem</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.mass">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mass</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.mass" title="Link to this definition"></a></dt>
+<dd><p>The total mass of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Real</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.n_atoms">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.n_atoms" title="Link to this definition"></a></dt>
+<dd><p>The number of atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemError" title="PQAnalysis.atomic_system.exceptions.AtomicSystemError"><strong>AtomicSystemError</strong></a> – If the number of atoms in the topology, positions, velocities,
+    forces and charges are not equal (if they are not 0).</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.pbc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pbc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.pbc" title="Link to this definition"></a></dt>
+<dd><p>Whether the system has periodic boundary conditions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.pos">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.pos" title="Link to this definition"></a></dt>
+<dd><p>The positions of the atoms in the system.</p>
+<p>In order to set the positions of the atoms in the system,
+the number of atoms in the system has to be equal to the
+number of positions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.stress">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stress</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.stress" title="Link to this definition"></a></dt>
+<dd><p>The stress tensor of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.topology">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">topology</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.topology" title="Link to this definition"></a></dt>
+<dd><p>The topology of the system.</p>
+<p>In order to set the topology of the system, the number of atoms
+in the topology has to be equal to the number of atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology">Topology</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.unique_element_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">unique_element_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.unique_element_names" title="Link to this definition"></a></dt>
+<dd><p>The unique element names of the atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.vel">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vel</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.vel" title="Link to this definition"></a></dt>
+<dd><p>The velocities of the atoms in the system.</p>
+<p>In order to set the velocities of the atoms in the system,
+the number of atoms in the system has to be equal to
+the number of velocities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.virial">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">virial</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.virial" title="Link to this definition"></a></dt>
+<dd><p>The virial tensor of the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray">Np2DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.atomic_system.html" class="btn btn-neutral float-left" title="atomic_system" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.atomic_system.exceptions.html" class="btn btn-neutral float-right" title="exceptions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

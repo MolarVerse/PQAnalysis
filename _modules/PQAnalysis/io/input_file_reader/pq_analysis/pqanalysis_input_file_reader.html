@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module for reading the input file for the PQAnalysis.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.exceptions</span> <span class="kn">import</span> <span class="n">InputFileError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.input_file_parser</span> <span class="kn">import</span> <span class="n">InputFileParser</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.io.input_file_reader.formats</span> <span class="kn">import</span> <span class="n">InputFileFormat</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+
+<span class="kn">from</span> <span class="nn">._file_mixin</span> <span class="kn">import</span> <span class="n">_FileMixin</span>
+<span class="kn">from</span> <span class="nn">._selection_mixin</span> <span class="kn">import</span> <span class="n">_SelectionMixin</span>
+<span class="kn">from</span> <span class="nn">._positions_mixin</span> <span class="kn">import</span> <span class="n">_PositionsMixin</span>
+
+
+
+<div class="viewcode-block" id="PQAnalysisInputFileReader">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader">[docs]</a>
+<span class="k">class</span> <span class="nc">PQAnalysisInputFileReader</span><span class="p">(</span><span class="n">_FileMixin</span><span class="p">,</span> <span class="n">_SelectionMixin</span><span class="p">,</span> <span class="n">_PositionsMixin</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to read the input file for the PQAnalysis. </span>
+<span class="sd">    It inherits from _FileMixin, _SelectionMixin and _PositionsMixin.</span>
+
+<span class="sd">    The main idea of this class is work as a super class for all</span>
+<span class="sd">    command line tools of PQAnalysis, but it can also be used </span>
+<span class="sd">    as a standalone class. But if for example an analysis tool</span>
+<span class="sd">    needs only few input file keywords, it is recommended to </span>
+<span class="sd">    inherit from this class.</span>
+
+<span class="sd">    Attention:</span>
+<span class="sd">        As this class is not intended to be used as a standalone class,</span>
+<span class="sd">        it does not check if all required keys are set in the input file,</span>
+<span class="sd">        thus also no information/documentation of the values of the </span>
+<span class="sd">        keywords is given, so that they can be used accordingly in</span>
+<span class="sd">        the implementing subclasses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="n">known_keys</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># fmt: off</span>
+    <span class="n">r_max_key</span> <span class="o">=</span> <span class="s2">&quot;r_max&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_max_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">r_min_key</span> <span class="o">=</span> <span class="s2">&quot;r_min&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_min_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">delta_r_key</span> <span class="o">=</span> <span class="s2">&quot;delta_r&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delta_r_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">n_bins_key</span> <span class="o">=</span> <span class="s2">&quot;n_bins&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_bins_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">traj_files_key</span> <span class="o">=</span> <span class="s2">&quot;traj_files&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traj_files_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">selection_key</span> <span class="o">=</span> <span class="s2">&quot;selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">reference_selection_key</span> <span class="o">=</span> <span class="s2">&quot;reference_selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reference_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">target_selection_key</span> <span class="o">=</span> <span class="s2">&quot;target_selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">use_full_atom_info_key</span> <span class="o">=</span> <span class="s2">&quot;use_full_atom_info&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">use_full_atom_info_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">out_file_key</span> <span class="o">=</span> <span class="s2">&quot;out_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">log_file_key</span> <span class="o">=</span> <span class="s2">&quot;log_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">no_intra_molecular_key</span> <span class="o">=</span> <span class="s2">&quot;no_intra_molecular&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">no_intra_molecular_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">moldescriptor_file_key</span> <span class="o">=</span> <span class="s2">&quot;moldescriptor_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moldescriptor_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">restart_file_key</span> <span class="o">=</span> <span class="s2">&quot;restart_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">restart_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="c1">#fmt: on</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It sets the format to InputFileFormat.PQANALYSIS and the</span>
+<span class="sd">        filename to the given filename. It also creates a </span>
+<span class="sd">        InputFileParser with the given filename.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            the filename of the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQANALYSIS</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">InputFileParser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="PQAnalysisInputFileReader.read">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.read">[docs]</a>
+    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the input file and parses it.</span>
+<span class="sd">        It also sets the raw_input_file and the dictionary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">raw_input_file</span></div>
+
+
+<div class="viewcode-block" id="PQAnalysisInputFileReader.check_required_keys">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.check_required_keys">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">required_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if all required keys are set in the input file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        required_keys : List[str]</span>
+<span class="sd">            the required keys</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        InputFileError</span>
+<span class="sd">            if not all required keys are set in the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                <span class="s2">&quot;Not all required keys were set in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;the input file! The required keys are: </span><span class="si">{</span><span class="n">required_keys</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PQAnalysisInputFileReader.check_known_keys">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.check_known_keys">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">known_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if all keys in the input file are known.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        known_keys : List[str] | None, optional</span>
+<span class="sd">            the known keys, by default None</span>
+
+<span class="sd">        Warns</span>
+<span class="sd">        -----</span>
+<span class="sd">        InputFileWarning</span>
+<span class="sd">            if unknown keys were set in the input file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">known_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">known_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_keys</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">known_keys</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;Unknown keys were set in the input file! &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;The known keys are: </span><span class="si">{</span><span class="n">known_keys</span><span class="si">}</span><span class="s2">. They will be ignored!&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

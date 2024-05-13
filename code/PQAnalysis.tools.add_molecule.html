@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>add_molecule &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="traj_to_com_traj" href="PQAnalysis.tools.traj_to_com_traj.html" />
+    <link rel="prev" title="tools" href="PQAnalysis.tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.tools.html">tools</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">add_molecule</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.tools.traj_to_com_traj.html">traj_to_com_traj</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.tools.html">tools</a></li>
+      <li class="breadcrumb-item active">add_molecule</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.tools.add_molecule.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.tools.add_molecule">
+<span id="add-molecule"></span><h1>add_molecule<a class="headerlink" href="#module-PQAnalysis.tools.add_molecule" title="Link to this heading"></a></h1>
+<p>A module containing functions and classes to add a molecule/AtomicSystem to a restart file.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.tools.add_molecule.AddMolecule" title="PQAnalysis.tools.add_molecule.AddMolecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AddMolecule</span></code></a></p></td>
+<td><p>A class for adding a molecule to a restart file.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.tools.add_molecule.add_molecule" title="PQAnalysis.tools.add_molecule.add_molecule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_molecule</span></code></a></p></td>
+<td><p>Add a molecule to a restart file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.AddMolecule">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AddMolecule</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><span class="pre">OutputFileFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">OutputFileFormat.AUTO</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">number_of_additions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">distance_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_displacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">rotation_angle_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_engine_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/tools/add_molecule.html#AddMolecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.tools.add_molecule.AddMolecule" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for adding a molecule to a restart file.</p>
+<p>The class reads a restart file and a molecule file and adds the
+molecule to the restart file. The molecule is added by fitting t
+he molecule to the restart file. The fitting is done randomly by
+rotating the molecule and translating it to a random position.
+After the fitting, the molecule is added to the restart file.
+The class can add multiple molecules to the restart file.
+The class can also add a moldescriptor file to the restart file
+to keep track of the fitting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>restart_file</strong> (<em>str</em>) – The filename of the restart file.</p></li>
+<li><p><strong>molecule_file</strong> (<em>str</em>) – The filename of the molecule file.</p></li>
+<li><p><strong>output_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the output file, by default None</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The writing mode, by default “w” The following modes are available:
+- “w”: write
+- “a”: append
+- “o”: overwrite</p></li>
+<li><p><strong>molecule_file_type</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><em>OutputFileFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The type of the molecule file, by default OutputFileFormat.AUTO.
+If the type is AUTO, the type will be inferred from the file extension.
+If the type is RESTART, a moldescriptor file can be specified.</p></li>
+<li><p><strong>restart_moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the moldescriptor file of the restart file,
+by default None.</p></li>
+<li><p><strong>molecule_moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the moldescriptor file of the molecule file,
+by default None.
+A moldescriptor file can only be specified for restart file types.</p></li>
+<li><p><strong>number_of_additions</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The number of times the molecule should be added to the restart file, by default 1</p></li>
+<li><p><strong>max_iterations</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The maximum number of iterations to try to fit
+the molecule into the restart file, by default 100</p></li>
+<li><p><strong>distance_cutoff</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – The distance cutoff for the fitting, by default 1.0</p></li>
+<li><p><strong>max_displacement</strong> (<em>PositiveReal</em><em> | </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>, </em><em>optional</em>) – The maximum displacement for the fitting, by default 0.1</p></li>
+<li><p><strong>rotation_angle_step</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The angle step for the fitting, by default 10</p></li>
+<li><p><strong>md_engine_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the restart file, by default MDEngineFormat.PQ</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the molecule file type is not RESTART and a moldescriptor file is specified.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the molecule file type is not RESTART or XYZ.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.AddMolecule.add_molecules">
+<span class="sig-name descname"><span class="pre">add_molecules</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/tools/add_molecule.html#AddMolecule.add_molecules"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.tools.add_molecule.AddMolecule.add_molecules" title="Link to this definition"></a></dt>
+<dd><p>Calculates all newly fitted atomic systems</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The fitted atomic systems.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.AddMolecule.extend_topology_file">
+<span class="sig-name descname"><span class="pre">extend_topology_file</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">original_shake_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">extension_shake_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/tools/add_molecule.html#AddMolecule.extend_topology_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.tools.add_molecule.AddMolecule.extend_topology_file" title="Link to this definition"></a></dt>
+<dd><p>Extend the topology file with the shake bonds of the extension topology file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>original_shake_file</strong> (<em>str</em>) – The filename of the original topology file.</p></li>
+<li><p><strong>extension_shake_file</strong> (<em>str</em>) – The filename of the extension topology file.</p></li>
+<li><p><strong>output</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the output topology file, by default None (stdout).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the restart system or the molecule is not read before extending the topology file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.AddMolecule.write_restart_file">
+<span class="sig-name descname"><span class="pre">write_restart_file</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/tools/add_molecule.html#AddMolecule.write_restart_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.tools.add_molecule.AddMolecule.write_restart_file" title="Link to this definition"></a></dt>
+<dd><p>Write the restart file with the added molecule.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.AddMolecule.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.AddMolecule</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.tools.add_molecule.AddMolecule.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.tools.add_molecule.add_molecule">
+<span class="sig-name descname"><span class="pre">add_molecule</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_file_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><span class="pre">OutputFileFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">OutputFileFormat.AUTO</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">restart_moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">molecule_moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">number_of_additions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_iterations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">distance_cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_displacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">rotation_angle_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_engine_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology_file_to_add</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology_file_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/tools/add_molecule.html#add_molecule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.tools.add_molecule.add_molecule" title="Link to this definition"></a></dt>
+<dd><p>Add a molecule to a restart file.</p>
+<p>The function reads a restart file and a molecule file and adds the
+molecule to the restart file. The molecule is added by fitting
+the molecule to the restart file. The fitting is done randomly
+by rotating the molecule and translating it to a random position.
+After the fitting, the molecule is added to the restart file.
+The function can add multiple molecules to the restart file.
+The function can also add a moldescriptor file to the restart
+file to keep track of the fitting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>restart_file</strong> (<em>str</em>) – The filename of the restart file.</p></li>
+<li><p><strong>molecule_file</strong> (<em>str</em>) – The filename of the molecule file.</p></li>
+<li><p><strong>output_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the output file, by default None</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The writing mode, by default “w” The following modes are available:
+- “w”: write
+- “a”: append
+- “o”: overwrite</p></li>
+<li><p><strong>molecule_file_type</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><em>OutputFileFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The type of the molecule file, by default OutputFileFormat.AUTO.
+If the type is AUTO, the type will be inferred from the file extension.
+If the type is RESTART, a moldescriptor file can be specified.</p></li>
+<li><p><strong>restart_moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the moldescriptor file of the restart file, by default None.</p></li>
+<li><p><strong>molecule_moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the moldescriptor file of the molecule file, by default None.
+A moldescriptor file can only be specified for restart file types.</p></li>
+<li><p><strong>number_of_additions</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The number of times the molecule should be added to the restart file, by default 1</p></li>
+<li><p><strong>max_iterations</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The maximum number of iterations to try to fit the molecule
+into the restart file, by default 100</p></li>
+<li><p><strong>distance_cutoff</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – The distance cutoff for the fitting, by default 1.0</p></li>
+<li><p><strong>max_displacement</strong> (<em>PositiveReal</em><em> | </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>, </em><em>optional</em>) – The maximum displacement for the fitting, by default 0.1</p></li>
+<li><p><strong>rotation_angle_step</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em>, </em><em>optional</em>) – The angle step for the fitting, by default 10</p></li>
+<li><p><strong>md_engine_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the restart file, by default MDEngineFormat.PQ</p></li>
+<li><p><strong>topology_file</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the topology file, by default None</p></li>
+<li><p><strong>topology_file_to_add</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the topology file to add, by default None</p></li>
+<li><p><strong>topology_file_output</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The filename of the output topology file, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the molecule file type is not RESTART and a moldescriptor file is specified.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.tools.html" class="btn btn-neutral float-left" title="tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.tools.traj_to_com_traj.html" class="btn btn-neutral float-right" title="traj_to_com_traj" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

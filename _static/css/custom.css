@@ -1,0 +1,23 @@
+@import url("theme.css");
+
+.wy-nav-content {
+    max-width: 80%;
+}
+
+dl.py.class {
+    dt.sig.sig-object.py {
+        display: block !important;
+    }
+}
+
+.py.property {
+    display: block !important;
+}
+
+.sig.sig-object.py dl {
+    margin-block-end: 0.0em;
+
+    & dd {
+        margin-bottom: 0.0em;
+    }
+}
