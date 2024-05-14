@@ -54,8 +54,8 @@ class _PropertiesMixin:
         if not np.all(n_atoms_list == n_atoms_list[0]):
             self.logger.error(
                 (
-                "The number of atoms (or atoms in the topology), "
-                "positions, velocities, forces and charges must be equal."
+                    "The number of atoms (or atoms in the topology), "
+                    "positions, velocities, forces and charges must be equal."
                 ),
                 exception=AtomicSystemError
             )
@@ -84,9 +84,7 @@ class _PropertiesMixin:
         relative_pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
 
         weighted_average_pos = np.sum(
-            relative_pos * self.atomic_masses[:,
-            None],
-            axis=0
+            relative_pos * self.atomic_masses[:, None], axis=0
         ) / self.mass
 
         center_of_mass = self.cell.image(weighted_average_pos)
