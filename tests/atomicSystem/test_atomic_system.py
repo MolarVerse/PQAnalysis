@@ -6,7 +6,7 @@ import pytest
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, CustomElement, Element, Residue
 from PQAnalysis.topology import Topology
 from PQAnalysis.exceptions import PQTypeError, PQNotImplementedError
 from PQAnalysis.type_checking import get_type_error_message
@@ -698,9 +698,10 @@ class TestAtomicSystem:
 
         with pytest.raises(PQNotImplementedError) as exception:
             system.center_of_mass_residues  # pylint: disable=pointless-statement
-        assert str(
-            exception.value
-        ) == "Center of mass of residues not implemented for systems with forces, velocities or charges."
+        assert str(exception.value) == (
+            "Center of mass of residues not implemented for "
+            "systems with forces, velocities or charges."
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C'), Atom('H')],
@@ -708,10 +709,11 @@ class TestAtomicSystem:
         )
 
         with pytest.raises(PQNotImplementedError) as exception:
-            system.center_of_mass_residues
-        assert str(
-            exception.value
-        ) == "Center of mass of residues not implemented for systems with forces, velocities or charges."
+            system.center_of_mass_residues  # pylint: disable=pointless-statement
+        assert str(exception.value) == (
+            "Center of mass of residues not implemented for "
+            "systems with forces, velocities or charges."
+        )
 
         system = AtomicSystem(
             atoms=[Atom('C'), Atom('H')],
@@ -719,10 +721,11 @@ class TestAtomicSystem:
         )
 
         with pytest.raises(PQNotImplementedError) as exception:
-            system.center_of_mass_residues
-        assert str(
-            exception.value
-        ) == "Center of mass of residues not implemented for systems with forces, velocities or charges."
+            system.center_of_mass_residues  # pylint: disable=pointless-statement
+        assert str(exception.value) == (
+            "Center of mass of residues not implemented for "
+            "systems with forces, velocities or charges."
+        )
 
         topology = Topology(
             atoms=[Atom('C'), Atom('H')],
@@ -731,6 +734,44 @@ class TestAtomicSystem:
 
         system = AtomicSystem(topology=topology)
 
-        print(system.center_of_mass_residues.atoms)
-
         assert system.center_of_mass_residues == system
+
+        reference_residues = [
+            Residue(
+                name="CH2",
+                elements=[Element('C'), Element('H'), Element('H')],
+                residue_id=1,
+                total_charge=0,
+                atom_types=np.array([0, 1, 1]),
+                partial_charges=np.array([0, 0, 0])
+            ),
+            Residue(
+                name="H",
+                elements=[Element('H')],
+                residue_id=2,
+                total_charge=0,
+                atom_types=np.array([1]),
+                partial_charges=np.array([0])
+            )
+        ]
+
+        topology = Topology(
+            atoms=[Atom('C'), Atom('H'), Atom('H'), Atom('H')],
+            residue_ids=np.array([1, 1, 1, 2]),
+            reference_residues=reference_residues
+        )
+
+        system = AtomicSystem(
+            topology=topology,
+            pos=np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]])
+        )
+
+        com_system = system.center_of_mass_residues
+
+        assert com_system.atoms == [
+            Atom(CustomElement('CH2', -1, 14.027)), Atom(Element('H'))
+        ]
+        assert np.allclose(
+            com_system.pos,
+            np.array([[0.5, 0.5, 0.5], [3, 3, 3]]),
+        )
