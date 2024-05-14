@@ -13,7 +13,7 @@ from beartype.typing import Any
 # just for forwardref type hinting
 from beartype.typing import List  # pylint: disable=unused-import
 
-from PQAnalysis.core import Atom, Atoms, Cell, distance, CustomElement
+from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.type_checking import runtime_type_checking
