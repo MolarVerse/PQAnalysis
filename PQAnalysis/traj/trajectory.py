@@ -14,7 +14,10 @@ from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
-from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
+from PQAnalysis.type_checking import (
+    runtime_type_checking,
+    runtime_type_checking_setter,
+)
 
 
 
@@ -35,7 +38,8 @@ class Trajectory:
 
     @runtime_type_checking
     def __init__(
-        self, frames: List[AtomicSystem] | AtomicSystem | None = None
+        self,
+        frames: List[AtomicSystem] | AtomicSystem | None = None,
     ) -> None:
         """
         Parameters
@@ -280,15 +284,18 @@ class Trajectory:
         # Check if all frames are included in the windows
         # Length of the trajectory - window_size should be divisible by window_gap
         if (
-            (trajectory_stop - trajectory_start) - window_size
-        ) % window_gap != 0:
+            ((trajectory_stop - trajectory_start) - window_size) % window_gap
+            != 0
+        ):
             self.logger.warning(
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
         # generate the window of the trajectory
         for i in range(
-            trajectory_start, trajectory_stop - window_size + 1, window_gap
+            trajectory_start,
+            trajectory_stop - window_size + 1,
+            window_gap,
         ):
             yield self[i:i + window_size]
 
