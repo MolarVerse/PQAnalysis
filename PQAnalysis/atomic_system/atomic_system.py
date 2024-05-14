@@ -17,6 +17,7 @@ from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -389,6 +390,7 @@ class AtomicSystem(
         system.image()
         return system
 
+    @property
     def center_of_mass_residues(self) -> "AtomicSystem":
         """
         Computes the center of mass of the residues in the system.
@@ -398,12 +400,29 @@ class AtomicSystem(
         AtomicSystem
             The center of mass of the residues in the system.
             
+        Raises:
+        -------
+        AtomicSystemError
+            If the number of residues in the system is not a 
+            multiple of the number of atoms.
+        PQNotImplementedError
+            if system has forces, velocities or charges.
+            
         TODO:
         -----
         Include also center of mass velocities, forces and so on...
         """
         residue_pos = []
-        custom_elements = []
+        residue_atoms = []
+
+        if self.has_forces or self.has_vel or self.has_charges:
+            self.logger.error(
+                (
+                    "Center of mass of residues not implemented for "
+                    "systems with forces, velocities or charges."
+                ),
+                exception=PQNotImplementedError,
+            )
 
         if len(self.topology.residue_ids) == 0:
             self.logger.error(
@@ -411,23 +430,42 @@ class AtomicSystem(
                 exception=AtomicSystemError,
             )
 
-        for residue_indices in self.topology.residue_atom_indices:
-            residue = self[residue_indices]
-            residue_pos.append(residue.center_of_mass)
-            custom_element = residue.build_custom_element
-            custom_elements.append(custom_element)
+        if len(self.topology.residue_ids) == 1:
+            return self.copy()
 
-        if len(self.topology.residues) != 0:
-            for i, residue in enumerate(self.topology.residues):
-                custom_elements[i].name = residue.name
+        print(self.topology.residue_atom_indices)
+        print(self.topology.residues)
 
-        atoms = [Atom(custom_element) for custom_element in custom_elements]
+        for i, residue_indices in enumerate(self.topology.residue_atom_indices):
+            residue_system = self[residue_indices]
 
-        return AtomicSystem(
-            atoms=atoms,
-            pos=np.array(residue_pos),
-            cell=self.cell,
+            # check if residue_system has more than one atom otherwise return atom element
+            if residue_system.n_atoms != 1 and len(
+                self.topology.residues
+            ) != 0:
+                custom_element = residue_system.build_custom_element
+                custom_element.name = self.topology.residues[i].name
+            elif residue_system.n_atoms == 1:
+                custom_element = residue_system.atoms[0].element
+            else:
+                custom_element = residue_system.atoms[0].element
+
+            residue_atoms.append(Atom(custom_element))
+
+            if residue_system.has_pos:
+                residue_pos.append(residue_system.center_of_mass)
+
+        if not self.has_pos:
+            residue_pos = None
+        else:
+            residue_pos = np.array(residue_pos)
+
+        topology = Topology(
+            atoms=residue_atoms,
+            residue_ids=self.topology.residue_numbers,
         )
+
+        return AtomicSystem(pos=residue_pos, cell=self.cell, topology=topology)
 
     # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
