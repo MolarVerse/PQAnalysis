@@ -35,9 +35,9 @@ from .exceptions import AtomicSystemError
 
 
 
-class AtomicSystem(_PropertiesMixin,
-    _StandardPropertiesMixin,
-    _PositionsMixin):
+class AtomicSystem(
+    _PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin
+):
 
     """
     A class for storing atomic systems.
@@ -169,8 +169,8 @@ class AtomicSystem(_PropertiesMixin,
         if topology is not None and atoms is not None:
             self.logger.error(
                 (
-                "Cannot initialize AtomicSystem with both atoms and topology "
-                "arguments - they are mutually exclusive."
+                    "Cannot initialize AtomicSystem with both atoms and topology "
+                    "arguments - they are mutually exclusive."
                 ),
                 exception=AtomicSystemError
             )
@@ -255,19 +255,19 @@ class AtomicSystem(_PropertiesMixin,
 
             self.fitting_logger.info(
                 (
-                f"Performing fitting for {i + 1}/{number_of_additions} "
-                "addition(s)."
+                    f"Performing fitting for {i + 1}/{number_of_additions} "
+                    "addition(s)."
                 )
             )
 
             systems.append(
                 self._fit_atomic_system(
-                positions_to_fit_into=positions_to_fit_into,
-                system=system,
-                max_iterations=max_iterations,
-                distance_cutoff=distance_cutoff,
-                max_displacement=max_displacement,
-                rotation_angle_step=rotation_angle_step
+                    positions_to_fit_into=positions_to_fit_into,
+                    system=system,
+                    max_iterations=max_iterations,
+                    distance_cutoff=distance_cutoff,
+                    max_displacement=max_displacement,
+                    rotation_angle_step=rotation_angle_step
                 )
             )
 
@@ -357,9 +357,7 @@ class AtomicSystem(_PropertiesMixin,
                 rotation_angles = rotation.as_euler('xyz', degrees=True)
                 rotation_angles += np.array([x, y, z])
                 rotation = Rotation.from_euler(
-                    'xyz',
-                    rotation_angles,
-                    degrees=True
+                    'xyz', rotation_angles, degrees=True
                 )
                 new_pos = rotation.apply(new_pos)
 
@@ -403,21 +401,28 @@ class AtomicSystem(_PropertiesMixin,
         residue_pos = []
         custom_elements = []
 
+        if len(self.topology.residue_ids) == 0:
+            self.logger.error(
+                "No residues in the system.",
+                exception=AtomicSystemError,
+            )
+
         for residue_indices in self.topology.residue_atom_indices:
             residue = self[residue_indices]
             residue_pos.append(residue.center_of_mass)
             custom_element = residue.build_custom_element
             custom_elements.append(custom_element)
 
-        for i, residue in enumerate(self.topology.residues):
-            custom_elements[i].name = residue.name
+        if len(self.topology.residues) != 0:
+            for i, residue in enumerate(self.topology.residues):
+                custom_elements[i].name = residue.name
 
         atoms = [Atom(custom_element) for custom_element in custom_elements]
 
         return AtomicSystem(
             atoms=atoms,
             pos=np.array(residue_pos),
-            cell=self.cell
+            cell=self.cell,
         )
 
     # TODO: refactor or discard this method
@@ -524,8 +529,7 @@ class AtomicSystem(_PropertiesMixin,
         return True
 
     def __getitem__(
-        self,
-        key: Atom | int | slice | Np1DIntArray
+        self, key: Atom | int | slice | Np1DIntArray
     ) -> "AtomicSystem":
         """
         Returns a new AtomicSystem with the given key.
@@ -578,8 +582,8 @@ class AtomicSystem(_PropertiesMixin,
         if isinstance(key, int):
             key = np.array([key])
 
-        keys = np.array(range(self.n_atoms))[key] if isinstance(key,
-            slice) else np.array(key)
+        keys = np.array(range(self.n_atoms)
+                        )[key] if isinstance(key, slice) else np.array(key)
 
         pos = self.pos[keys] if np.shape(self.pos)[0] > 0 else None
         vel = self.vel[keys] if np.shape(self.vel)[0] > 0 else None
