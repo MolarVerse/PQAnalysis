@@ -10,7 +10,10 @@ from numbers import Real
 from beartype.typing import Any, NewType
 from beartype.vale import Is
 
-from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.type_checking import (
+    runtime_type_checking,
+    runtime_type_checking_setter
+)
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
@@ -166,11 +169,11 @@ class CustomElement(Element):
     """
 
     @runtime_type_checking
-    def __init__(self, atomic_symbol: str, atomic_number: int, mass: Real):  # pylint: disable=super-init-not-called
+    def __init__(self, symbol: str, atomic_number: int, mass: Real):  # pylint: disable=super-init-not-called
         """
         Parameters
         ----------
-        atomic_symbol : str
+        symbol : str
             the custom atomic symbol
         atomic_number : int
             the custom atomic number
@@ -178,9 +181,14 @@ class CustomElement(Element):
             the custom atomic mass
         """
 
-        self._symbol = atomic_symbol
+        self._symbol = symbol
         self._atomic_number = atomic_number
         self._mass = mass
+
+    @runtime_type_checking_setter
+    @Element.symbol.setter
+    def symbol(self, value: str) -> None:
+        self._symbol = value
 
 
 

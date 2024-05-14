@@ -13,7 +13,7 @@ from beartype.typing import Any
 # just for forwardref type hinting
 from beartype.typing import List  # pylint: disable=unused-import
 
-from PQAnalysis.core import Atom, Atoms, Cell, distance
+from PQAnalysis.core import Atom, Atoms, Cell, distance, CustomElement
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.type_checking import runtime_type_checking
@@ -386,6 +386,39 @@ class AtomicSystem(_PropertiesMixin,
         system.cell = self.cell
         system.image()
         return system
+
+    def center_of_mass_residues(self) -> "AtomicSystem":
+        """
+        Computes the center of mass of the residues in the system.
+
+        Returns
+        -------
+        AtomicSystem
+            The center of mass of the residues in the system.
+            
+        TODO:
+        -----
+        Include also center of mass velocities, forces and so on...
+        """
+        residue_pos = []
+        custom_elements = []
+
+        for residue_indices in self.topology.residue_atom_indices:
+            residue = self[residue_indices]
+            residue_pos.append(residue.center_of_mass)
+            custom_element = residue.build_custom_element
+            custom_elements.append(custom_element)
+
+        for i, residue in enumerate(self.topology.residues):
+            custom_elements[i].name = residue.name
+
+        atoms = [Atom(custom_element) for custom_element in custom_elements]
+
+        return AtomicSystem(
+            atoms=atoms,
+            pos=np.array(residue_pos),
+            cell=self.cell
+        )
 
     # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
