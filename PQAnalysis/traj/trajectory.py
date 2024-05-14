@@ -35,8 +35,7 @@ class Trajectory:
 
     @runtime_type_checking
     def __init__(
-        self,
-        frames: List[AtomicSystem] | AtomicSystem | None = None
+        self, frames: List[AtomicSystem] | AtomicSystem | None = None
     ) -> None:
         """
         Parameters
@@ -280,16 +279,17 @@ class Trajectory:
 
         # Check if all frames are included in the windows
         # Length of the trajectory - window_size should be divisible by window_gap
-        if ((trajectory_stop - trajectory_start) -
-                window_size) % window_gap != 0:
+        if (
+            (trajectory_stop - trajectory_start) - window_size
+        ) % window_gap != 0:
             self.logger.warning(
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
         # generate the window of the trajectory
-        for i in range(trajectory_start,
-            trajectory_stop - window_size + 1,
-            window_gap):
+        for i in range(
+            trajectory_start, trajectory_stop - window_size + 1, window_gap
+        ):
             yield self[i:i + window_size]
 
     @runtime_type_checking
@@ -398,3 +398,11 @@ class Trajectory:
     def cells(self) -> List[Cell]:
         """List[Cell]: The cells of the trajectory."""
         return [frame.cell for frame in self.frames]
+
+    @property
+    def com_residue_traj(self) -> "Trajectory":
+        """Trajectory: The trajectory with the center of mass of the residues."""
+
+        frames = [frame.com_residue_frame for frame in self.frames]
+
+        return Trajectory(frames)
