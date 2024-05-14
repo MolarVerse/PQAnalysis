@@ -357,28 +357,27 @@ please set 'check_residues' to False"""
                     continue
 
             residue = _find_residue_by_id(
-                residue_ids[atom_counter], self.reference_residues
+                residue_ids[atom_counter],
+                self.reference_residues,
             )
 
-            residue_element_counter = 0
             for i in np.arange(residue.n_atoms) + atom_counter:
                 if (
-                    atoms[i].element != Element() and atoms[i].element
-                    != residue.elements[residue_element_counter]
+                    atoms[i].element != Element() and
+                    atoms[i].element != residue.elements[i - atom_counter]
                 ):
                     self.logger.warning(
                         (
                             f"The element of atom {i} ({atoms[i].element}) "
                             "does not match the element of the reference residue "
                             f"{residue.name} "
-                            f"({residue.elements[residue_element_counter]}). "
+                            f"({residue.elements[i - atom_counter]}). "
                             "Therefore the element type of the residue "
                             "description will be used within the topology format!"
                         )
                     )
 
-                    atoms[i].element = residue.elements[residue_element_counter
-                                                        ]
+                    atoms[i].element = residue.elements[i - atom_counter]
 
                 if residue_ids[i] != residue_ids[atom_counter]:
                     self.logger.error(
