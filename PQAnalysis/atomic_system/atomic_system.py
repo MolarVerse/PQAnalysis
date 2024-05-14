@@ -36,7 +36,9 @@ from .exceptions import AtomicSystemError
 
 
 class AtomicSystem(
-    _PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin
+    _PropertiesMixin,
+    _StandardPropertiesMixin,
+    _PositionsMixin,
 ):
 
     """
@@ -357,7 +359,9 @@ class AtomicSystem(
                 rotation_angles = rotation.as_euler('xyz', degrees=True)
                 rotation_angles += np.array([x, y, z])
                 rotation = Rotation.from_euler(
-                    'xyz', rotation_angles, degrees=True
+                    'xyz',
+                    rotation_angles,
+                    degrees=True,
                 )
                 new_pos = rotation.apply(new_pos)
 
