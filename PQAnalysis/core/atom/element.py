@@ -158,6 +158,32 @@ class Element:
 
 
 
+class CustomElement(Element):
+
+    """
+    A class representing a custom element it 
+    inherits from the Element class.
+    """
+
+    @runtime_type_checking
+    def __init__(self, atomic_symbol: str, atomic_number: int, mass: Real):  # pylint: disable=super-init-not-called
+        """
+        Parameters
+        ----------
+        atomic_symbol : str
+            the custom atomic symbol
+        atomic_number : int
+            the custom atomic number
+        mass : Real
+            the custom atomic mass
+        """
+
+        self._symbol = atomic_symbol
+        self._atomic_number = atomic_number
+        self._mass = mass
+
+
+
 #: A type hint for a list of elements
 Elements = NewType(
     "Elements",
