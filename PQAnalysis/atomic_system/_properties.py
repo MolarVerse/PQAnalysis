@@ -8,8 +8,9 @@ import numpy as np
 
 from beartype.typing import List
 
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, CustomElement
 from PQAnalysis.types import Np1DNumberArray
+
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 from .exceptions import AtomicSystemError
 
@@ -101,3 +102,8 @@ class _PropertiesMixin:
     def unique_element_names(self) -> List[str]:
         """List[str]: The unique element names of the atoms in the system."""
         return list({atom.element_name for atom in self.atoms})
+
+    @property
+    def build_custom_element(self) -> CustomElement:
+        """CustomElement: The custom element of the atoms in the system."""
+        return CustomElement(self.combined_name, -1, self.mass)
