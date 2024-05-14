@@ -12,7 +12,7 @@ from beartype.vale import Is
 
 from PQAnalysis.type_checking import (
     runtime_type_checking,
-    runtime_type_checking_setter
+    runtime_type_checking_setter,
 )
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -185,8 +185,8 @@ class CustomElement(Element):
         self._atomic_number = atomic_number
         self._mass = mass
 
-    @runtime_type_checking_setter
     @Element.symbol.setter
+    @runtime_type_checking_setter
     def symbol(self, value: str) -> None:
         self._symbol = value
 
@@ -195,9 +195,9 @@ class CustomElement(Element):
 #: A type hint for a list of elements
 Elements = NewType(
     "Elements",
-    Annotated[list,
-    Is[lambda list: all(isinstance(element,
-    Element) for element in list)]]
+    Annotated[
+        list,
+        Is[lambda list: all(isinstance(element, Element) for element in list)]]
 )
 
 atomicMasses = {
