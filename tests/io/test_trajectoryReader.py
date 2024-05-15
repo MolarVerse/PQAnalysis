@@ -57,22 +57,12 @@ class TestTrajectoryReader:
 
         frame1 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[0.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            0.0]]),
+            pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
             cell=cell
         )
         frame2 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[1.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            1.0]]),
+            pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]),
             cell=cell
         )
 
@@ -145,22 +135,12 @@ class TestTrajectoryReader:
 
         frame1 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[0.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            0.0]]),
+            pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
             cell=cell
         )
         frame2 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[1.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            1.0]]),
+            pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]),
             cell=cell
         )
 
@@ -174,7 +154,7 @@ class TestTrajectoryReader:
 
         # vacuum cell
         file = open("tmp2.xyz", "w")
-        print("2", file=file)
+        print("2 1.0 1.0 1.0", file=file)
         print("", file=file)
         print("h 0.0 0.0 0.0", file=file)
         print("o 0.0 1.0 0.0", file=file)
@@ -198,6 +178,16 @@ class TestTrajectoryReader:
             frame for frame in reader.frame_generator(trajectory_stop=3)
         ]
         assert test_frames == [frame1, frame2, frame1]
+
+        test_frames = [
+            frame for frame in reader.frame_generator(trajectory_start=2)
+        ]
+        assert test_frames == [frame1, frame2]
+
+        test_frames = [
+            frame for frame in reader.frame_generator(trajectory_stop=2)
+        ]
+        assert test_frames == [frame1, frame2]
 
         # Check file change after setting the reader
         file = open("tmp2.xyz", "w")
@@ -230,7 +220,7 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is less than 0 or greater than the length of the trajectory"
+                "start index is less than 0 or greater than the length of the trajectory"
             ),
             function=reader.frame_generator(trajectory_start=-1).__next__,
         )
@@ -241,7 +231,7 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "stop index is less than 0 or greater than the length of the trajectory"
+                "stop index is less than 0 or greater than the length of the trajectory"
             ),
             function=reader.frame_generator(trajectory_stop=-1).__next__,
         )
@@ -252,11 +242,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is greater than or equal to the stop index"
+                "start index is greater than or equal to the stop index"
             ),
             function=reader.frame_generator(
-            trajectory_start=1,
-            trajectory_stop=1
+                trajectory_start=1, trajectory_stop=1
             ).__next__,
         )
 
@@ -283,22 +272,12 @@ class TestTrajectoryReader:
 
         frame1 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[0.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            0.0]]),
+            pos=np.array([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0]]),
             cell=cell
         )
         frame2 = AtomicSystem(
             atoms=atoms,
-            pos=np.array([[1.0,
-            0.0,
-            0.0],
-            [0.0,
-            1.0,
-            1.0]]),
+            pos=np.array([[1.0, 0.0, 0.0], [0.0, 1.0, 1.0]]),
             cell=cell
         )
 
@@ -312,37 +291,50 @@ class TestTrajectoryReader:
 
         test_frames = list(reader.window_generator(window_size=2))
         assert test_frames == [
-            Trajectory([frame1,
-            frame2]),
-            Trajectory([frame2,
-            frame1]),
-            Trajectory([frame1,
-            frame2]),
+            Trajectory([frame1, frame2]),
+            Trajectory([frame2, frame1]),
+            Trajectory([frame1, frame2]),
         ]
 
         test_frames = list(reader.window_generator(window_size=4))
         assert test_frames == [Trajectory([frame1, frame2, frame1, frame2])]
 
         test_frames = list(
-            reader.window_generator(window_size=2,
-            window_gap=2)
+            reader.window_generator(window_size=2, window_gap=2)
         )
         assert test_frames == [
-            Trajectory([frame1,
-            frame2]),
-            Trajectory([frame1,
-            frame2]),
+            Trajectory([frame1, frame2]),
+            Trajectory([frame1, frame2]),
         ]
 
         test_frames = list(
             reader.window_generator(
-            window_size=2,
-            window_gap=1,
-            trajectory_start=1,
-            trajectory_stop=3
+                window_size=2,
+                window_gap=1,
+                trajectory_start=1,
+                trajectory_stop=3
             )
         )
         assert test_frames == [Trajectory([frame2, frame1])]
+        test_frames = list(
+            reader.window_generator(
+                window_size=2,
+                window_gap=1,
+                trajectory_start=2,
+                trajectory_stop=4
+            )
+        )
+        assert test_frames == [Trajectory([frame1, frame2])]
+
+        filenames = ["tmp.xyz", "tmp.xyz", "tmp.xyz"]
+        reader = TrajectoryReader(filenames)
+
+        test_frames = list(
+            reader.window_generator(
+                window_size=2, window_gap=1, trajectory_stop=2
+            )
+        )
+        assert test_frames == [Trajectory([frame1, frame2])]
 
         # Test file change after setting the reader
         file = open("tmp.xyz", "w")
@@ -359,6 +351,9 @@ class TestTrajectoryReader:
         print("h 0.0 0.0 0.0", file=file)
         print("o 0.0 1.0 0.0", file=file)
         file.close()
+
+        filenames = ["tmp.xyz", "tmp.xyz"]
+        reader = TrajectoryReader(filenames)
 
         test_frames = list(reader.window_generator(1))
         assert test_frames == [
@@ -387,8 +382,7 @@ class TestTrajectoryReader:
             TrajectoryReader.__qualname__,
             "WARNING",
             "Not all frames are included in the windows. Check the window size and gap.",
-            reader.window_generator(1,
-            2).__next__,
+            reader.window_generator(1, 2).__next__,
         )
 
         assert_logging_with_exception(
@@ -397,7 +391,7 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "window size can not be less than 1 or greater than the length of the trajectory"
+                "window size can not be less than 1 or greater than the length of the trajectory"
             ),
             function=reader.window_generator(0).__next__,
         )
@@ -408,7 +402,7 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "window size can not be less than 1 or greater than the length of the trajectory"
+                "window size can not be less than 1 or greater than the length of the trajectory"
             ),
             function=reader.window_generator(5).__next__,
         )
@@ -419,10 +413,9 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "window gap can not be less than 1 or greater than the length of the trajectory"
+                "window gap can not be less than 1 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(3,
-            0).__next__,
+            function=reader.window_generator(3, 0).__next__,
         )
 
         assert_logging_with_exception(
@@ -431,10 +424,9 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "window gap can not be less than 1 or greater than the length of the trajectory"
+                "window gap can not be less than 1 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(3,
-            5).__next__,
+            function=reader.window_generator(3, 5).__next__,
         )
 
         assert_logging_with_exception(
@@ -443,11 +435,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is less than 0 or greater than the length of the trajectory"
+                "start index is less than 0 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(1,
-            1,
-            trajectory_start=-1).__next__,
+            function=reader.window_generator(1, 1,
+                                             trajectory_start=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -456,13 +447,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is less than 0 or greater than the length of the trajectory"
+                "start index is less than 0 or greater than the length of the trajectory"
             ),
             function=reader.window_generator(
-            1,
-            1,
-            trajectory_start=5,
-            trajectory_stop=6
+                1, 1, trajectory_start=5, trajectory_stop=6
             ).__next__,
         )
 
@@ -472,11 +460,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "stop index is less than 0 or greater than the length of the trajectory"
+                "stop index is less than 0 or greater than the length of the trajectory"
             ),
-            function=reader.window_generator(1,
-            1,
-            trajectory_stop=-1).__next__,
+            function=reader.window_generator(1, 1,
+                                             trajectory_stop=-1).__next__,
         )
 
         assert_logging_with_exception(
@@ -485,13 +472,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "stop index is less than 0 or greater than the length of the trajectory"
+                "stop index is less than 0 or greater than the length of the trajectory"
             ),
             function=reader.window_generator(
-            1,
-            1,
-            trajectory_start=0,
-            trajectory_stop=6
+                1, 1, trajectory_start=0, trajectory_stop=6
             ).__next__,
         )
 
@@ -501,13 +485,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is greater than or equal to the stop index"
+                "start index is greater than or equal to the stop index"
             ),
             function=reader.window_generator(
-            1,
-            1,
-            trajectory_start=1,
-            trajectory_stop=0
+                1, 1, trajectory_start=1, trajectory_stop=0
             ).__next__,
         )
 
@@ -517,13 +498,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "start index is greater than or equal to the stop index"
+                "start index is greater than or equal to the stop index"
             ),
             function=reader.window_generator(
-            1,
-            1,
-            trajectory_start=1,
-            trajectory_stop=1
+                1, 1, trajectory_start=1, trajectory_stop=1
             ).__next__,
         )
 
@@ -533,13 +511,10 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-            "window size is greater than the trajectory_stop - trajectory_start"
+                "window size is greater than the trajectory_stop - trajectory_start"
             ),
             function=reader.window_generator(
-            4,
-            1,
-            trajectory_start=0,
-            trajectory_stop=2
+                4, 1, trajectory_start=0, trajectory_stop=2
             ).__next__,
         )
 
@@ -585,7 +560,7 @@ class TestTrajectoryReader:
             exception=TrajectoryReaderError,
             logging_level="ERROR",
             message_to_test=(
-            "Invalid number of atoms in the first line of file tmp2.xyz."
+                "Invalid number of atoms in the first line of file tmp2.xyz."
             ),
             function=reader.calculate_number_of_frames,
         )
@@ -608,7 +583,7 @@ class TestTrajectoryReader:
             exception=TrajectoryReaderError,
             logging_level="ERROR",
             message_to_test=(
-            "Invalid number of atoms in the first line of file tmp2.xyz."
+                "Invalid number of atoms in the first line of file tmp2.xyz."
             ),
             function=reader.calculate_number_of_frames,
         )
@@ -631,8 +606,8 @@ class TestTrajectoryReader:
             exception=TrajectoryReaderError,
             logging_level="ERROR",
             message_to_test=(
-            "The number of lines in the file is not divisible "
-            "by the number of atoms 2 in the first line."
+                "The number of lines in the file is not divisible "
+                "by the number of atoms 2 in the first line."
             ),
             function=reader.calculate_number_of_frames,
         )
@@ -729,8 +704,8 @@ class TestTrajectoryReader:
             exception=TrajectoryReaderError,
             logging_level="ERROR",
             message_to_test=(
-            "Invalid number of arguments for box: 8 encountered "
-            "in file tmp.xyz:1 = 2 1.0 1.0 1.0 90.0 90.0 90.0 0.0"
+                "Invalid number of arguments for box: 8 encountered "
+                "in file tmp.xyz:1 = 2 1.0 1.0 1.0 90.0 90.0 90.0 0.0"
             ),
             function=reader._cell_generator().__next__,
         )

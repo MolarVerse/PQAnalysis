@@ -33,9 +33,9 @@ class BenchmarkTrajReader:
         )
 
         def read_windows():
-            for window in traj_reader.window_generator(window_size=1,
-                trajectory_start=2,
-                trajectory_stop=7): # 5 frames
+            for window in traj_reader.window_generator(
+                window_size=1, trajectory_start=2, trajectory_stop=7
+            ):  # 5 frames
                 pass
 
         benchmark(read_windows)
@@ -58,8 +58,8 @@ class BenchmarkTrajReader:
 
         def read_frames():
             for frame in traj_reader.frame_generator(
-                trajectory_start=2,
-                trajectory_stop=7):
+                trajectory_start=2, trajectory_stop=7
+            ):
                 pass
 
         benchmark(read_frames)
