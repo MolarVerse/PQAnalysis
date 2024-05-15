@@ -736,6 +736,18 @@ class TestAtomicSystem:
 
         assert system.center_of_mass_residues == system
 
+        topology = Topology(
+            atoms=[
+                Atom('C', use_guess_element=False),
+                Atom('H', use_guess_element=False)
+            ],
+            residue_ids=np.array([0, 1]),
+        )
+
+        system = AtomicSystem(topology=topology)
+
+        assert system.center_of_mass_residues == system
+
         reference_residues = [
             Residue(
                 name="CH2",
@@ -773,5 +785,5 @@ class TestAtomicSystem:
         ]
         assert np.allclose(
             com_system.pos,
-            np.array([[0.5, 0.5, 0.5], [3, 3, 3]]),
+            np.array([[0.21557785, 0.21557785, 0.21557785], [3, 3, 3]]),
         )

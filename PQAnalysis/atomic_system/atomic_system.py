@@ -412,7 +412,13 @@ class AtomicSystem(
         -----
         Include also center of mass velocities, forces and so on...
         """
-        residue_pos = []
+        if self.has_pos:
+            residue_pos = np.zeros(
+                (len(self.topology.residue_atom_indices), 3)
+            )
+        else:
+            residue_pos = np.zeros((0, 3))
+
         residue_atoms = []
 
         if self.has_forces or self.has_vel or self.has_charges:
@@ -433,39 +439,36 @@ class AtomicSystem(
         if len(self.topology.residue_ids) == 1:
             return self.copy()
 
-        print(self.topology.residue_atom_indices)
-        print(self.topology.residues)
-
         for i, residue_indices in enumerate(self.topology.residue_atom_indices):
+
             residue_system = self[residue_indices]
 
             # check if residue_system has more than one atom otherwise return atom element
-            if residue_system.n_atoms != 1 and len(
-                self.topology.residues
-            ) != 0:
+            if (
+                residue_system.n_atoms != 1 and
+                len(self.topology.residues) != 0
+            ):
                 custom_element = residue_system.build_custom_element
-                custom_element.name = self.topology.residues[i].name
-            elif residue_system.n_atoms == 1:
-                custom_element = residue_system.atoms[0].element
+                custom_element.symbol = self.topology.residues[i].name
+                custom_atom = Atom(custom_element)
             else:
-                custom_element = residue_system.atoms[0].element
+                custom_atom = residue_system.atoms[0]
 
-            residue_atoms.append(Atom(custom_element))
+            residue_atoms.append(custom_atom)
 
             if residue_system.has_pos:
-                residue_pos.append(residue_system.center_of_mass)
-
-        if not self.has_pos:
-            residue_pos = None
-        else:
-            residue_pos = np.array(residue_pos)
+                residue_pos[i] = residue_system.center_of_mass
 
         topology = Topology(
             atoms=residue_atoms,
-            residue_ids=self.topology.residue_numbers,
+            residue_ids=self.topology.residue_ids_per_residue
         )
 
-        return AtomicSystem(pos=residue_pos, cell=self.cell, topology=topology)
+        return AtomicSystem(
+            pos=residue_pos,
+            cell=self.cell,
+            topology=topology,
+        )
 
     # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
