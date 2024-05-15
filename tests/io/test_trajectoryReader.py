@@ -577,6 +577,8 @@ class TestTrajectoryReader:
         print("o 0.0 1.0 1.0", file=file)
         file.close()
 
+        filenames = ["tmp2.xyz", "tmp.xyz"]
+
         reader = TrajectoryReader(filenames)
 
         assert_logging_with_exception(
