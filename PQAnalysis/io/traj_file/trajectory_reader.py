@@ -164,7 +164,8 @@ class TrajectoryReader(BaseReader):
         """
 
         # Get the length of the trajectory
-        number_of_frames = self.calculate_number_of_frames()
+        number_of_frames = self.calculate_number_of_frames_per_file()
+
         self.length_of_traj = sum(number_of_frames)
 
         if trajectory_stop is None:
@@ -194,6 +195,12 @@ class TrajectoryReader(BaseReader):
                 exception=PQIndexError,
             )
 
+        # Initialize the progress bar
+        progress_bar = tqdm(
+            total=trajectory_stop - trajectory_start,
+            disable=not self.with_progress_bar
+        )
+
         # Track the number of frames that have been read
         frame_index = 0
 
@@ -211,11 +218,6 @@ class TrajectoryReader(BaseReader):
             # Read the file again to get the frames
             with open(filename, "r", encoding="utf-8") as self.file:
                 frame_lines = []
-
-                progress_bar = tqdm(
-                    total=trajectory_stop - trajectory_start,
-                    disable=not self.with_progress_bar
-                )
 
                 # Read the lines of the file using tqdm for progress bar
                 for line in self.file:
@@ -330,7 +332,7 @@ class TrajectoryReader(BaseReader):
         """
 
         # Get the length of the trajectory
-        self.length_of_traj = sum(self.calculate_number_of_frames())
+        self.length_of_traj = sum(self.calculate_number_of_frames_per_file())
 
         # If trajectory_stop is not provided, set it to the length of the trajectory
         if trajectory_stop is None:
@@ -455,7 +457,7 @@ class TrajectoryReader(BaseReader):
 
         return n_atoms + 2
 
-    def calculate_number_of_frames(self) -> List[int]:
+    def calculate_number_of_frames_per_file(self) -> List[int]:
         """
         Calculates the number of frames for each trajectory file.
 
@@ -485,6 +487,9 @@ class TrajectoryReader(BaseReader):
                     continue
 
                 # Calculate the size of the frame
+                # NOTE: this allows the user to give input which is not
+                # consistent in the number of atoms per frame in different
+                # traj files.
                 frame_size = self.calculate_frame_size(filename)
 
                 # +2 for the cell/atom_count + comment lines
