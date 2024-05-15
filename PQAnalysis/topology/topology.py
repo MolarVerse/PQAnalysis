@@ -113,7 +113,7 @@ class Topology:
         else:
             self._reference_residues = reference_residues
 
-        if residue_ids is None:
+        if residue_ids is None or len(residue_ids) == 0:
             residue_ids = np.zeros(len(self.atoms), dtype=int)
         if len(self.atoms) != len(residue_ids):
             self.logger.error(
@@ -511,6 +511,26 @@ please set 'check_residues' to False"""
     def residue_atom_indices(self) -> List[Np1DIntArray]:
         """List[Np1DIntArray]: The residue atom indices of the topology."""
         return self._residue_atom_indices
+
+    @property
+    def n_atoms_per_residue(self) -> Np1DIntArray:
+        """Np1DIntArray: The number of atoms per residue."""
+        return np.array(
+            [len(indices) for indices in self.residue_atom_indices]
+        )
+
+    @property
+    def residue_ids_per_residue(self) -> Np1DIntArray:
+        """List[Np1DIntArray]: The residue ids per residue."""
+        residue_ids_per_residue = []
+
+        if len(self.residue_ids) == 0:
+            return residue_ids_per_residue
+
+        for i in np.cumsum(self.n_atoms_per_residue):
+            residue_ids_per_residue.append(self.residue_ids[i - 1])
+
+        return np.array(residue_ids_per_residue)
 
 
 
