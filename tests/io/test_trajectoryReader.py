@@ -521,7 +521,7 @@ class TestTrajectoryReader:
     # -------------------------------------------------------------------------------- #
 
     @pytest.mark.usefixtures("tmpdir")
-    def test_calculate_number_of_frames(self, caplog):
+    def test_calculate_number_of_frames_per_file(self, caplog):
         file = open("tmp.xyz", "w")
         print("2 1.0 1.0 1.0", file=file)
         print("", file=file)
@@ -539,7 +539,7 @@ class TestTrajectoryReader:
         filenames = ["tmp.xyz", "tmp2.xyz"]
         reader = TrajectoryReader(filenames)
 
-        assert sum(reader.calculate_number_of_frames()) == 2
+        assert sum(reader.calculate_number_of_frames_per_file()) == 2
 
         file = open("tmp2.xyz", "w")
         print("str 1.0 1.0 1.0", file=file)
@@ -562,7 +562,7 @@ class TestTrajectoryReader:
             message_to_test=(
                 "Invalid number of atoms in the first line of file tmp2.xyz."
             ),
-            function=reader.calculate_number_of_frames,
+            function=reader.calculate_number_of_frames_per_file,
         )
 
         file = open("tmp2.xyz", "w")
@@ -585,7 +585,7 @@ class TestTrajectoryReader:
             message_to_test=(
                 "Invalid number of atoms in the first line of file tmp2.xyz."
             ),
-            function=reader.calculate_number_of_frames,
+            function=reader.calculate_number_of_frames_per_file,
         )
 
         file = open("tmp2.xyz", "w")
@@ -609,7 +609,7 @@ class TestTrajectoryReader:
                 "The number of lines in the file is not divisible "
                 "by the number of atoms 2 in the first line."
             ),
-            function=reader.calculate_number_of_frames,
+            function=reader.calculate_number_of_frames_per_file,
         )
 
     # -------------------------------------------------------------------------------- #
