@@ -211,6 +211,7 @@ class TrajectoryReader(BaseReader):
 
                 # Read the lines of the file using tqdm for progress bar
                 for line in self.file:
+
                     stripped_line = line.strip()
                     if stripped_line == "" or not stripped_line[0].isdigit():
                         frame_lines.append(line)
@@ -410,6 +411,35 @@ class TrajectoryReader(BaseReader):
             # yield the next window
             yield window.copy()
 
+    def calculate_frame_size(self) -> int:
+        """
+        Calculates the size of the frame in the trajectory file.
+
+        Returns
+        -------
+        int
+            The size of the frame in the trajectory file.
+
+        Raises
+        ------
+        TrajectoryReaderError
+            If the number of atoms in the first line of the file is invalid.
+        """
+
+        with open(self.filenames[0], "r", encoding="utf-8") as f:
+            try:
+                n_atoms = int(f.readline().split()[0])
+            except (ValueError, IndexError):
+                self.logger.error(
+                    (
+                    "Invalid number of atoms in the first line "
+                    f"of file {self.filenames[0]}."
+                    ),
+                    exception=TrajectoryReaderError,
+                )
+
+        return n_atoms + 2   
+
     def calculate_number_of_frames(self) -> int:
         """
         Calculates the number of frames in the trajectory file.
@@ -422,11 +452,11 @@ class TrajectoryReader(BaseReader):
         Raises
         ------
         TrajectoryReaderError
-            If the number of atoms in the first line of the file is invalid.
             If the number of lines in the file is not divisible by the number of atoms.
         """
 
         n_frames = 0
+        frame_size = self.calculate_frame_size()
 
         for filename in self.filenames:
             with open(filename, "r", encoding="utf-8") as f:
@@ -438,25 +468,14 @@ class TrajectoryReader(BaseReader):
                 if n_lines == 0:
                     continue
 
-                try:
-                    n_atoms = int(lines[0].split()[0])
-                except (ValueError, IndexError):
-                    self.logger.error(
-                        (
-                        "Invalid number of atoms in the first line "
-                        f"of file {filename}."
-                        ),
-                        exception=TrajectoryReaderError,
-                    )
-
                 # +2 for the cell/atom_count + comment lines
-                _n_frames, remainder = divmod(n_lines, n_atoms + 2)
+                _n_frames, remainder = divmod(n_lines, frame_size)
 
                 if remainder != 0:
                     self.logger.error(
                         (
                         "The number of lines in the file is not divisible "
-                        f"by the number of atoms {n_atoms} "
+                        f"by the number of atoms {frame_size - 2} "
                         "in the first line."
                         ),
                         exception=TrajectoryReaderError,
