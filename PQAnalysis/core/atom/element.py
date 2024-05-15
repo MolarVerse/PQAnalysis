@@ -10,7 +10,10 @@ from numbers import Real
 from beartype.typing import Any, NewType
 from beartype.vale import Is
 
-from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.type_checking import (
+    runtime_type_checking,
+    runtime_type_checking_setter,
+)
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
@@ -158,12 +161,43 @@ class Element:
 
 
 
+class CustomElement(Element):
+
+    """
+    A class representing a custom element it 
+    inherits from the Element class.
+    """
+
+    @runtime_type_checking
+    def __init__(self, symbol: str, atomic_number: int, mass: Real):  # pylint: disable=super-init-not-called
+        """
+        Parameters
+        ----------
+        symbol : str
+            the custom atomic symbol
+        atomic_number : int
+            the custom atomic number
+        mass : Real
+            the custom atomic mass
+        """
+
+        self._symbol = symbol
+        self._atomic_number = atomic_number
+        self._mass = mass
+
+    @Element.symbol.setter
+    @runtime_type_checking_setter
+    def symbol(self, value: str) -> None:
+        self._symbol = value
+
+
+
 #: A type hint for a list of elements
 Elements = NewType(
     "Elements",
-    Annotated[list,
-    Is[lambda list: all(isinstance(element,
-    Element) for element in list)]]
+    Annotated[
+        list,
+        Is[lambda list: all(isinstance(element, Element) for element in list)]]
 )
 
 atomicMasses = {

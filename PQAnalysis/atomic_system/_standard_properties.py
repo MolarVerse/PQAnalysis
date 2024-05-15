@@ -81,7 +81,7 @@ class _StandardPropertiesMixin:
     @property
     def has_pos(self) -> bool:
         """bool: A boolean indicating if the system has positions for all atoms."""
-        return len(self.pos) == self.n_atoms
+        return len(self.pos) == self.n_atoms and self.n_atoms != 0
 
     @property
     def vel(self) -> Np2DNumberArray:
@@ -114,7 +114,7 @@ class _StandardPropertiesMixin:
     @property
     def has_vel(self) -> bool:
         """bool: A boolean indicating if the system has velocities for all atoms."""
-        return len(self.vel) == self.n_atoms
+        return len(self.vel) == self.n_atoms and self.n_atoms != 0
 
     @property
     def forces(self) -> Np2DNumberArray:
@@ -147,7 +147,7 @@ class _StandardPropertiesMixin:
     @property
     def has_forces(self) -> bool:
         """bool: A boolean indicating if the system has forces for all atoms."""
-        return len(self.forces) == self.n_atoms
+        return len(self.forces) == self.n_atoms and self.n_atoms != 0
 
     @property
     def charges(self) -> Np1DNumberArray:
@@ -180,7 +180,7 @@ class _StandardPropertiesMixin:
     @property
     def has_charges(self) -> bool:
         """bool: A boolean indicating if the system has charges for all atoms."""
-        return len(self.charges) == self.n_atoms
+        return len(self.charges) == self.n_atoms and self.n_atoms != 0
 
     @property
     def cell(self) -> Cell:

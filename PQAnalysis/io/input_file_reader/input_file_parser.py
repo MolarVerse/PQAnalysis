@@ -83,12 +83,17 @@ class InputFileParser(BaseReader):
             grammar_file = "inputGrammar.lark"
         elif self.input_format in [InputFileFormat.PQ, InputFileFormat.QMCFC]:
             grammar_file = "PQ_inputGrammar.lark"
+        else:
+            InputDictionary.logger.error(
+                f"Input file format {self.input_format} not supported.",
+                exception=PQTypeError
+            )
 
         grammar_path = __base_path__ / "grammar"
 
         parser = Lark.open(
             grammar_path / grammar_file,
-            propagate_positions=True
+            propagate_positions=True,
         )
 
         with open(self.filename, "r", encoding="utf-8") as file:
@@ -491,12 +496,9 @@ class ComposedDatatypesTransformer(Transformer):
             and the line where the token was defined.
         """
 
-        return_range = range(items[0][0],
-            items[1][0]) if len(items) == 2 else range(
-            items[0][0],
-            items[2][0],
-            items[1][0]
-            )
+        return_range = range(
+            items[0][0], items[1][0]
+        ) if len(items) == 2 else range(items[0][0], items[2][0], items[1][0])
 
         return return_range, "range", str(items[0][2])
 
