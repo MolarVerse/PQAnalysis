@@ -17,6 +17,7 @@ from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -35,9 +36,11 @@ from .exceptions import AtomicSystemError
 
 
 
-class AtomicSystem(_PropertiesMixin,
+class AtomicSystem(
+    _PropertiesMixin,
     _StandardPropertiesMixin,
-    _PositionsMixin):
+    _PositionsMixin,
+):
 
     """
     A class for storing atomic systems.
@@ -169,8 +172,8 @@ class AtomicSystem(_PropertiesMixin,
         if topology is not None and atoms is not None:
             self.logger.error(
                 (
-                "Cannot initialize AtomicSystem with both atoms and topology "
-                "arguments - they are mutually exclusive."
+                    "Cannot initialize AtomicSystem with both atoms and topology "
+                    "arguments - they are mutually exclusive."
                 ),
                 exception=AtomicSystemError
             )
@@ -255,19 +258,19 @@ class AtomicSystem(_PropertiesMixin,
 
             self.fitting_logger.info(
                 (
-                f"Performing fitting for {i + 1}/{number_of_additions} "
-                "addition(s)."
+                    f"Performing fitting for {i + 1}/{number_of_additions} "
+                    "addition(s)."
                 )
             )
 
             systems.append(
                 self._fit_atomic_system(
-                positions_to_fit_into=positions_to_fit_into,
-                system=system,
-                max_iterations=max_iterations,
-                distance_cutoff=distance_cutoff,
-                max_displacement=max_displacement,
-                rotation_angle_step=rotation_angle_step
+                    positions_to_fit_into=positions_to_fit_into,
+                    system=system,
+                    max_iterations=max_iterations,
+                    distance_cutoff=distance_cutoff,
+                    max_displacement=max_displacement,
+                    rotation_angle_step=rotation_angle_step
                 )
             )
 
@@ -359,7 +362,7 @@ class AtomicSystem(_PropertiesMixin,
                 rotation = Rotation.from_euler(
                     'xyz',
                     rotation_angles,
-                    degrees=True
+                    degrees=True,
                 )
                 new_pos = rotation.apply(new_pos)
 
@@ -386,6 +389,86 @@ class AtomicSystem(_PropertiesMixin,
         system.cell = self.cell
         system.image()
         return system
+
+    @property
+    def center_of_mass_residues(self) -> "AtomicSystem":
+        """
+        Computes the center of mass of the residues in the system.
+
+        Returns
+        -------
+        AtomicSystem
+            The center of mass of the residues in the system.
+            
+        Raises:
+        -------
+        AtomicSystemError
+            If the number of residues in the system is not a 
+            multiple of the number of atoms.
+        PQNotImplementedError
+            if system has forces, velocities or charges.
+            
+        TODO:
+        -----
+        Include also center of mass velocities, forces and so on...
+        """
+        if self.has_pos:
+            residue_pos = np.zeros(
+                (len(self.topology.residue_atom_indices), 3)
+            )
+        else:
+            residue_pos = np.zeros((0, 3))
+
+        residue_atoms = []
+
+        if self.has_forces or self.has_vel or self.has_charges:
+            self.logger.error(
+                (
+                    "Center of mass of residues not implemented for "
+                    "systems with forces, velocities or charges."
+                ),
+                exception=PQNotImplementedError,
+            )
+
+        if len(self.topology.residue_ids) == 0:
+            self.logger.error(
+                "No residues in the system.",
+                exception=AtomicSystemError,
+            )
+
+        if len(self.topology.residue_ids) == 1:
+            return self.copy()
+
+        for i, residue_indices in enumerate(self.topology.residue_atom_indices):
+
+            residue_system = self[residue_indices]
+
+            # check if residue_system has more than one atom otherwise return atom element
+            if (
+                residue_system.n_atoms != 1 and
+                len(self.topology.residues) != 0
+            ):
+                custom_element = residue_system.build_custom_element
+                custom_element.symbol = self.topology.residues[i].name
+                custom_atom = Atom(custom_element)
+            else:
+                custom_atom = residue_system.atoms[0]
+
+            residue_atoms.append(custom_atom)
+
+            if residue_system.has_pos:
+                residue_pos[i] = residue_system.center_of_mass
+
+        topology = Topology(
+            atoms=residue_atoms,
+            residue_ids=self.topology.residue_ids_per_residue
+        )
+
+        return AtomicSystem(
+            pos=residue_pos,
+            cell=self.cell,
+            topology=topology,
+        )
 
     # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
@@ -491,8 +574,7 @@ class AtomicSystem(_PropertiesMixin,
         return True
 
     def __getitem__(
-        self,
-        key: Atom | int | slice | Np1DIntArray
+        self, key: Atom | int | slice | Np1DIntArray
     ) -> "AtomicSystem":
         """
         Returns a new AtomicSystem with the given key.
@@ -545,8 +627,8 @@ class AtomicSystem(_PropertiesMixin,
         if isinstance(key, int):
             key = np.array([key])
 
-        keys = np.array(range(self.n_atoms))[key] if isinstance(key,
-            slice) else np.array(key)
+        keys = np.array(range(self.n_atoms)
+                        )[key] if isinstance(key, slice) else np.array(key)
 
         pos = self.pos[keys] if np.shape(self.pos)[0] > 0 else None
         vel = self.vel[keys] if np.shape(self.vel)[0] > 0 else None
