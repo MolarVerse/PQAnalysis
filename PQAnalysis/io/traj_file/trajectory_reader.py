@@ -226,10 +226,13 @@ class TrajectoryReader(BaseReader):
                     else:
                         if frame_lines:
                             frame = self._read_single_frame(
-                                "".join(frame_lines), self.topology
+                                "".join(frame_lines),
+                                self.topology,
                             )
+
                             if frame.cell.is_vacuum and last_cell is not None:
                                 frame.cell = last_cell
+
                             last_cell = frame.cell
 
                             # Check if the number of frames yielded is equal to the
@@ -253,7 +256,8 @@ class TrajectoryReader(BaseReader):
 
                 if frame_lines:
                     frame = self._read_single_frame(
-                        "".join(frame_lines), self.topology
+                        "".join(frame_lines),
+                        self.topology,
                     )
 
                     if frame.cell.is_vacuum and last_cell is not None:
@@ -382,14 +386,16 @@ class TrajectoryReader(BaseReader):
         # Check if all frames are included in the windows
         # Length of the trajectory - window_size should be divisible by window_gap
         if (
-            (trajectory_stop - trajectory_start) - window_size
-        ) % window_gap != 0:
+            ((trajectory_stop - trajectory_start) - window_size) % window_gap
+            != 0
+        ):
             self.logger.warning(
                 "Not all frames are included in the windows. Check the window size and gap."
             )
 
         generator = self.frame_generator(
-            trajectory_start=trajectory_start, trajectory_stop=trajectory_stop
+            trajectory_start=trajectory_start,
+            trajectory_stop=trajectory_stop,
         )
 
         # reads first window and converts it to a queue
@@ -451,11 +457,11 @@ class TrajectoryReader(BaseReader):
 
     def calculate_number_of_frames(self) -> List[int]:
         """
-        Calculates the number of frames in the trajectory file.
+        Calculates the number of frames for each trajectory file.
 
         Returns
         -------
-        List of int
+        List[int]
             The number of frames in the trajectory files.
 
         Raises
@@ -613,5 +619,7 @@ class TrajectoryReader(BaseReader):
             If the first atom in the frame is not X for QMCFC.
         """
         return self.frame_reader.read(
-            frame_string, traj_format=self.traj_format, topology=topology
+            frame_string,
+            traj_format=self.traj_format,
+            topology=topology,
         )
