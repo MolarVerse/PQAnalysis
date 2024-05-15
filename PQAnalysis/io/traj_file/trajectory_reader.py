@@ -164,7 +164,8 @@ class TrajectoryReader(BaseReader):
         """
 
         # Get the length of the trajectory
-        self.length_of_traj = self.calculate_number_of_frames()
+        number_of_frames = self.calculate_number_of_frames()
+        self.length_of_traj = sum(number_of_frames)
 
         if trajectory_stop is None:
             trajectory_stop = self.length_of_traj
@@ -198,7 +199,14 @@ class TrajectoryReader(BaseReader):
 
         last_cell = None
 
-        for filename in self.filenames:
+        for i, filename in enumerate(self.filenames):
+
+            if trajectory_start >= frame_index + number_of_frames[i]:
+                frame_index += number_of_frames[i]
+                continue
+
+            if trajectory_stop <= frame_index:
+                break
 
             # Read the file again to get the frames
             with open(filename, "r", encoding="utf-8") as self.file:
@@ -225,8 +233,6 @@ class TrajectoryReader(BaseReader):
                                 frame.cell = last_cell
                             last_cell = frame.cell
 
-                            # TODO: Implement the trajectory_start and trajectory_stop
-                            # more efficiently
                             # Check if the number of frames yielded is equal to the
                             # total number of frames
                             if not (frame_index < trajectory_start or
@@ -255,7 +261,6 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = frame.cell
 
-                    # TODO: Implement the trajectory_start and trajectory_stop more efficiently
                     # Check if the number of frames yielded is equal to the total number of frames
                     if not (frame_index < trajectory_start or
                         frame_index >= trajectory_stop):
@@ -319,7 +324,7 @@ class TrajectoryReader(BaseReader):
         """
 
         # Get the length of the trajectory
-        self.length_of_traj = self.calculate_number_of_frames()
+        self.length_of_traj = sum(self.calculate_number_of_frames())
 
         # If trajectory_stop is not provided, set it to the length of the trajectory
         if trajectory_stop is None:
@@ -411,7 +416,7 @@ class TrajectoryReader(BaseReader):
             # yield the next window
             yield window.copy()
 
-    def calculate_frame_size(self) -> int:
+    def calculate_frame_size(self, filename: str = None) -> int:
         """
         Calculates the size of the frame in the trajectory file.
 
@@ -426,28 +431,28 @@ class TrajectoryReader(BaseReader):
             If the number of atoms in the first line of the file is invalid.
         """
 
-        with open(self.filenames[0], "r", encoding="utf-8") as f:
+        with open(filename, "r", encoding="utf-8") as f:
             try:
                 n_atoms = int(f.readline().split()[0])
             except (ValueError, IndexError):
                 self.logger.error(
                     (
                     "Invalid number of atoms in the first line "
-                    f"of file {self.filenames[0]}."
+                    f"of file {filename}."
                     ),
                     exception=TrajectoryReaderError,
                 )
 
-        return n_atoms + 2   
+        return n_atoms + 2
 
-    def calculate_number_of_frames(self) -> int:
+    def calculate_number_of_frames(self) -> List[int]:
         """
         Calculates the number of frames in the trajectory file.
 
         Returns
         -------
-        int
-            The number of frames in the trajectory file.
+        List of int
+            The number of frames in the trajectory files.
 
         Raises
         ------
@@ -455,10 +460,11 @@ class TrajectoryReader(BaseReader):
             If the number of lines in the file is not divisible by the number of atoms.
         """
 
-        n_frames = 0
-        frame_size = self.calculate_frame_size()
+        n_frames_list = []
 
         for filename in self.filenames:
+            n_frames = 0
+
             with open(filename, "r", encoding="utf-8") as f:
 
                 lines = f.readlines()
@@ -467,6 +473,9 @@ class TrajectoryReader(BaseReader):
                 # If the file is empty, continue to the next file
                 if n_lines == 0:
                     continue
+
+                # Calculate the size of the frame
+                frame_size = self.calculate_frame_size(filename)
 
                 # +2 for the cell/atom_count + comment lines
                 _n_frames, remainder = divmod(n_lines, frame_size)
@@ -483,7 +492,9 @@ class TrajectoryReader(BaseReader):
 
                 n_frames += _n_frames
 
-        return n_frames
+            n_frames_list.append(n_frames)
+
+        return n_frames_list
 
     @property
     def cells(self) -> list[Cell]:
