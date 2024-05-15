@@ -564,7 +564,7 @@ class TestTrajectoryReader:
         filenames = ["tmp.xyz", "tmp2.xyz"]
         reader = TrajectoryReader(filenames)
 
-        assert reader.calculate_number_of_frames() == 2
+        assert sum(reader.calculate_number_of_frames()) == 2
 
         file = open("tmp2.xyz", "w")
         print("str 1.0 1.0 1.0", file=file)
@@ -576,8 +576,6 @@ class TestTrajectoryReader:
         print("h 1.0 0.0 0.0", file=file)
         print("o 0.0 1.0 1.0", file=file)
         file.close()
-
-        filenames = ["tmp2.xyz", "tmp.xyz"]
 
         reader = TrajectoryReader(filenames)
 
