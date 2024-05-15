@@ -410,6 +410,6 @@ class Trajectory:
     def com_residue_traj(self) -> "Trajectory":
         """Trajectory: The trajectory with the center of mass of the residues."""
 
-        frames = [frame.com_residue_frame for frame in self.frames]
+        frames = [frame.center_of_mass_residues for frame in self.frames]
 
         return Trajectory(frames)
