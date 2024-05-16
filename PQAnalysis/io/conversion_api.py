@@ -2,13 +2,12 @@
 A module containing API functions to convert between different file formats.
 """
 
-import numpy as np
-
 from beartype.typing import List
 
 from PQAnalysis.core import Cell
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.type_checking import runtime_type_checking
 
 from .traj_file import (
     TrajectoryWriter,
@@ -24,12 +23,15 @@ from .restart_file.api import read_restart_file
 from .traj_file.api import write_trajectory
 
 
-def gen2xyz(gen_file: str,
-            output: str | None = None,
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            print_box: bool = True,
-            mode: FileWritingMode | str = "w"
-            ) -> None:
+
+@runtime_type_checking
+def gen2xyz(
+    gen_file: str,
+    output: str | None = None,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    print_box: bool = True,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts a gen file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -54,16 +56,24 @@ def gen2xyz(gen_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, engine_format=md_format,
-                     traj_type="xyz", mode=mode)
+    write_trajectory(
+        system,
+        output,
+        engine_format=md_format,
+        traj_type="xyz",
+        mode=mode
+    )
 
 
-def xyz2gen(xyz_file: str,
-            output: str | None = None,
-            periodic: bool | None = None,
-            mode: FileWritingMode | str = "w",
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            ) -> None:
+
+@runtime_type_checking
+def xyz2gen(
+    xyz_file: str,
+    output: str | None = None,
+    periodic: bool | None = None,
+    mode: FileWritingMode | str = "w",
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+) -> None:
     """
     Converts a xyz file to a gen file and prints it to stdout or writes it to a file.
 
@@ -95,12 +105,15 @@ def xyz2gen(xyz_file: str,
     write_gen_file(output, system, periodic, mode)
 
 
-def rst2xyz(restart_file: str,
-            output: str | None = None,
-            print_box: bool = True,
-            md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-            mode: FileWritingMode | str = "w"
-            ) -> None:
+
+@runtime_type_checking
+def rst2xyz(
+    restart_file: str,
+    output: str | None = None,
+    print_box: bool = True,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
 
@@ -129,17 +142,26 @@ def rst2xyz(restart_file: str,
     if not print_box:
         system.cell = Cell()
 
-    write_trajectory(system, output, engine_format=md_format,
-                     traj_type="xyz", mode=mode)
+    write_trajectory(
+        system,
+        output,
+        engine_format=md_format,
+        traj_type="xyz",
+        mode=mode
+    )
 
 
-def traj2box(trajectory_files: List[str],
-             vmd: bool,
-             output: str | None = None,
-             mode: FileWritingMode | str = "w"
-             ) -> None:
+
+@runtime_type_checking
+def traj2box(
+    trajectory_files: List[str],
+    vmd: bool,
+    output: str | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
-    Converts multiple trajectory files to a box file and prints it to stdout or writes it to a file.
+    Converts multiple trajectory files to a box file and 
+    prints it to stdout or writes it to a file.
 
     Without the vmd option the output is printed in a data file format.
     The first column represents the step starting from 1, the second to fourth column
@@ -178,10 +200,13 @@ def traj2box(trajectory_files: List[str],
         writer.write(trajectory, reset_counter=False)
 
 
-def traj2qmcfc(trajectory_files: List[str],
-               output: str | None = None,
-               mode: FileWritingMode | str = "w"
-               ) -> None:
+
+@runtime_type_checking
+def traj2qmcfc(
+    trajectory_files: List[str],
+    output: str | None = None,
+    mode: FileWritingMode | str = "w"
+) -> None:
     """
     Converts multiple trajectory files from a PQ format to a 
     QMCFC format and prints it to stdout or writes it to a file.
@@ -200,7 +225,10 @@ def traj2qmcfc(trajectory_files: List[str],
     """
 
     writer = TrajectoryWriter(
-        filename=output, engine_format="qmcfc", mode=mode)
+        filename=output,
+        engine_format="qmcfc",
+        mode=mode
+    )
 
     for filename in trajectory_files:
         reader = TrajectoryReader(filename)

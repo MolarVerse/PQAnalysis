@@ -6,15 +6,59 @@ import logging
 
 from decorator import decorator
 from beartype.door import is_bearable
+from beartype.typing import ForwardRef
 
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.exceptions import PQTypeError
+from .types import (
+    Np1DIntArray,
+    Np2DIntArray,
+    Np1DNumberArray,
+    Np2DNumberArray,
+    Np3x3NumberArray,
+    NpnDNumberArray,
+)
 
-logger_name = "PQAnalysis.TypeChecking"
+__logger_name__ = "PQAnalysis.TypeChecking"
 
-if not logging.getLogger(logger_name).handlers:
-    logger = setup_logger(logging.getLogger(logger_name))
+if not logging.getLogger(__logger_name__).handlers:
+    logger = setup_logger(logging.getLogger(__logger_name__))
 else:
-    logger = logging.getLogger(logger_name)
+    logger = logging.getLogger(__logger_name__)
+
+
+
+@decorator
+def runtime_type_checking_setter(func, self, value):
+    """
+    A decorator to check the type of the arguments passed to a setter function at runtime.
+    """
+
+    type_hints = func.__annotations__
+
+    # get var_name and type_hint from func.__annotations__
+    var_name = list(type_hints.keys())[0]
+
+    if isinstance(type_hints[var_name], str):
+        type_hints[var_name] = ForwardRef(  # pylint: disable=protected-access
+            type_hints[var_name]
+        )._evaluate(globals(),
+            locals(),
+            frozenset())
+
+    if not is_bearable(value, type_hints[var_name]):
+        logger.error(
+            get_type_error_message(
+            var_name,
+            value,
+            type_hints[var_name],
+            ),
+            exception=PQTypeError,
+        )
+
+    # Call the function
+    return func(self, value)
+
 
 
 @decorator
@@ -23,20 +67,33 @@ def runtime_type_checking(func, *args, **kwargs):
     A decorator to check the type of the arguments passed to a function at runtime.
     """
 
+    if "disable_type_checking" in kwargs:
+        disable_type_checking = kwargs.pop("disable_type_checking")
+        if disable_type_checking:
+            return func(*args, **kwargs)
+
     # Get the type hints of the function
     type_hints = func.__annotations__
 
     # Check the type of each argument
     for arg_name, arg_value in zip(func.__code__.co_varnames, args):
         if arg_name in type_hints:
+
+            if isinstance(type_hints[arg_name], str):
+                type_hints[arg_name] = ForwardRef(  # pylint: disable=protected-access
+                    type_hints[arg_name]
+                )._evaluate(globals(),
+                    locals(),
+                    frozenset())
+
             if not is_bearable(arg_value, type_hints[arg_name]):
                 logger.error(
-                    _get_type_error_message(
-                        arg_name,
-                        arg_value,
-                        type_hints[arg_name],
+                    get_type_error_message(
+                    arg_name,
+                    arg_value,
+                    type_hints[arg_name],
                     ),
-                    exception=TypeError,
+                    exception=PQTypeError,
                 )
 
     # Check the type of each keyword argument
@@ -44,10 +101,10 @@ def runtime_type_checking(func, *args, **kwargs):
         if kwarg_name in type_hints:
             if not is_bearable(kwarg_value, type_hints[kwarg_name]):
                 logger.error(
-                    _get_type_error_message(
-                        kwarg_name,
-                        kwarg_value,
-                        type_hints[kwarg_name],
+                    get_type_error_message(
+                    kwarg_name,
+                    kwarg_value,
+                    type_hints[kwarg_name],
                     ),
                     exception=TypeError,
                 )
@@ -56,7 +113,8 @@ def runtime_type_checking(func, *args, **kwargs):
     return func(*args, **kwargs)
 
 
-def _get_type_error_message(arg_name, value, expected_type):
+
+def get_type_error_message(arg_name, value, expected_type):
     """
     Get the error message for a type error.
     """
