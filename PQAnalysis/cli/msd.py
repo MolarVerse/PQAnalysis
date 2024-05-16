@@ -6,12 +6,10 @@ Command Line Tool for Self-Diffusion Coefficient Analysis
 
 """
 
-import PQAnalysis.config as config
-
-from ._argumentParser import _ArgumentParser
 from PQAnalysis.analysis.msd import msd
-from PQAnalysis.analysis.msd.msdInputFileReader import input_keys_documentation
-from PQAnalysis.traj import MDEngineFormat
+from PQAnalysis.analysis.msd.msd_input_file_reader import input_keys_documentation
+from PQAnalysis.config import code_base_url
+from ._argument_parser import _ArgumentParser
 
 __outputdoc__ = """
 
@@ -19,7 +17,7 @@ This command line tool can be used to calculate the self-diffusion coefficient (
 """
 
 __epilog__ = f"""
-For more information on required and optional input file keys please visit {config.code_base_url}PQAnalysis.cli.msd.html.
+For more information on required and optional input file keys please visit {code_base_url}PQAnalysis.cli.msd.html.
 """
 
 __doc__ += __outputdoc__

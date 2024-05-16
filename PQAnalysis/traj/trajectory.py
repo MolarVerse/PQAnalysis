@@ -250,7 +250,27 @@ class Trajectory:
         # generate the window of the trajectory
         for i in range(window_start, window_stop - window_size + 1, window_gap):
             yield self[i: i + window_size]
+    def unwrap_positions_hlat(self,
+                            frame_start: int = 0,
+                            frame_stop: int | None = None,) -> Trajectory:
+        """
+        Unwraps the positions of the atoms in the trajectory with the heuristic lattice-view scheme.
+        """
+        # 1D u_i+1 = w_i+1 _ floor((w_i+1 - u_i^HLAT)/ L_i+1 + 1/2) * L_i+1
 
+        # w_i wrapped positions inside the simulation box width L_i+1
+        # u_i unwrapped positions at integration step i corresponding to time t_i
+        # u_i^HLAT unwrapped positions at integration step i corresponding to time t_i with the heuristic lattice-view scheme
+        # DOI H. C. Andersen, J. Chem. Phys. 72, 2384 - 2393 (1980)
+        # DOI von Bülow, S Bullerjahn, J. Chem. Phys. 152, 153 021101 (2020)
+        # DOI Kulke, M; Vermaas, J. V. Reversible unwrapping alogrihtm for constant pressure molecular dynamics simulations. J. Chem. Phys. 18, 61761-6171 (2022)
+
+        unwrapped_frames = [self.frames[0]]
+        for i in range(1, len(self)):
+            unwrapped_frames.append(self.frames[i].copy())
+            unwrapped_frames[i].pos  = self.frames[i].positions - self.frames[i].cell.image(self.frames[i].positions - unwrapped_frames[i-1].positions)   
+        return unwrapped_frames
+    
     def __contains__(self, item: AtomicSystem) -> bool:
         """
         This method allows a frame to be checked for membership in a trajectory.

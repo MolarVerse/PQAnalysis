@@ -19,7 +19,7 @@ Functions
 """
 
 from .api import msd
-from .msd import msd
-from .msdInputFileReader import DiffcalcInputFileReader
-from .msdOutputFileWriter import DiffcalcDataWriter, DiffcalcLogWriter
+from .msd import MSD
+from .msd_input_file_reader import MSDInputFileReader
+from .msd_output_file_writer import MSDDataWriter, MSDLogWriter
 from .exceptions import *
