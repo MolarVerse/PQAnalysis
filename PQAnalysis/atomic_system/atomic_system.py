@@ -23,11 +23,6 @@ from PQAnalysis.types import (
     Np3x3NumberArray,
 )
 
-from ._properties import _PropertiesMixin
-from ._standard_properties import _StandardPropertiesMixin
-from ._positions import _PositionsMixin
-from .exceptions import AtomicSystemError
-
 
 class AtomicSystem(_PropertiesMixin, _StandardPropertiesMixin, _PositionsMixin):
     """
