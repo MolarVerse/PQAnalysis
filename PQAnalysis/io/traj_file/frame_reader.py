@@ -39,8 +39,7 @@ class _FrameReader:
     logger = setup_logger(logger)
 
     def __init__(
-        self,
-        md_format: MDEngineFormat | str = MDEngineFormat.PQ
+        self, md_format: MDEngineFormat | str = MDEngineFormat.PQ
     ) -> None:
         """
         Parameters
@@ -214,9 +213,8 @@ class _FrameReader:
     def _check_qmcfc(
         self,
         atoms: List[str],
-        value: Np1DNumberArray | Np2DNumberArray
-    ) -> Tuple[Np1DNumberArray | Np2DNumberArray,
-        List[str]]:
+        value: Np1DNumberArray | Np2DNumberArray,
+    ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
         """
         Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
 
@@ -242,8 +240,8 @@ class _FrameReader:
             if atoms[0].upper() != 'X':
                 self.logger.error(
                     (
-                    'The first atom in one of the frames is not X. '
-                    'Please use PQ (default) md engine instead'
+                        'The first atom in one of the frames is not X. '
+                        'Please use PQ (default) md engine instead'
                     ),
                     exception=FrameReaderError
                 )
@@ -253,9 +251,7 @@ class _FrameReader:
         return value, atoms
 
     def _get_topology(
-        self,
-        atoms: List[str],
-        topology: Topology | None
+        self, atoms: List[str], topology: Topology | None
     ) -> Topology:
         """
         Returns the topology of the frame.
@@ -271,8 +267,8 @@ class _FrameReader:
 
                 topology = Topology(
                     atoms=[
-                    Atom(atom,
-                    disable_type_checking=True) for atom in atoms
+                        Atom(atom, disable_type_checking=True)
+                        for atom in atoms
                     ]
                 )
 
@@ -280,11 +276,11 @@ class _FrameReader:
 
                 topology = Topology(
                     atoms=[
-                    Atom(
-                    atom,
-                    use_guess_element=False,
-                    disable_type_checking=True
-                    ) for atom in atoms
+                        Atom(
+                            atom,
+                            use_guess_element=False,
+                            disable_type_checking=True
+                        ) for atom in atoms
                     ]
                 )
 
@@ -338,10 +334,11 @@ class _FrameReader:
 
         return n_atoms, cell
 
-    def _read_xyz(self,
+    def _read_xyz(
+        self,
         splitted_frame_string: List[str],
-        n_atoms: int) -> Tuple[Np2DNumberArray,
-        List[str]]:
+        n_atoms: int,
+    ) -> Tuple[Np2DNumberArray, List[str]]:
         """
         Reads the xyz coordinates and the atom names from the given string.
 
@@ -382,10 +379,11 @@ class _FrameReader:
                 exception=FrameReaderError
             )
 
-    def _read_scalar(self,
+    def _read_scalar(
+        self,
         splitted_frame_string: List[str],
-        n_atoms: int) -> Tuple[Np1DNumberArray,
-        List[str]]:
+        n_atoms: int,
+    ) -> Tuple[Np1DNumberArray, List[str]]:
         """
         Reads the scalar values and the atom names from the given string.
 

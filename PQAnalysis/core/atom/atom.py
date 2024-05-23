@@ -21,6 +21,7 @@ from beartype.typing import Any, List, TypeVar
 from PQAnalysis import __package_name__
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.exceptions import PQValueError
 
 from .element import Element
 from ..exceptions import AtomError
@@ -82,7 +83,7 @@ class Atom():
     @runtime_type_checking
     def __init__(
         self,
-        name: str | int,
+        name: str | int | Element,
         element_id: int | str | None = None,
         use_guess_element: bool = True,
         **_kwargs
@@ -97,10 +98,12 @@ class Atom():
 
         Parameters
         ----------
-        name : str | int
+        name : str | int | Element
             The name of the atom_type (e.g. 'C1')
             If this parameter is an integer, it is interpreted as the atomic number of the 
-            element symbol and cannot be used together with the id parameter.
+            element symbol and cannot be used together with the id parameter. If the parameter
+            is an Element object, the element is set to this object and no other parameters
+            are used.
         element_id : int | str, optional
             The atomic number or element symbol of the atom_type (e.g. 6 or 'C') 
             If his parameter is not given, the name parameter is used to determine 
@@ -115,9 +118,25 @@ class Atom():
 
         Raises
         ------
-        ValueError
+        PQValueError
+            If the name of the atom_type is an Element object and the id is given.
+        AtomError
             If the name of the atom_type is an integer and the id is given.
         """
+
+        if isinstance(name, Element):
+            if element_id is not None:
+                self.logger.error(
+                    (
+                    "The element of the atom_type cannot be an "
+                    "Element object if the id is given."
+                    ),
+                    exception=PQValueError
+                )
+
+            self._name = name.symbol
+            self._element = name
+            return
 
         if element_id is not None and isinstance(name, int):
 

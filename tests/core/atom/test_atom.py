@@ -58,9 +58,7 @@ class TestAtom:
             caplog,
             "TypeChecking",
             "ERROR",
-            get_type_error_message("name",
-            1.2,
-            str | int),
+            get_type_error_message("name", 1.2, str | int | Element),
             PQTypeError,
             Atom,
             1.2

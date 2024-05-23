@@ -10,7 +10,7 @@ within the api module, but can be used directly from the core package.
 from .exceptions import *
 
 from .cell import Cell, Cells
-from .atom import Atom, Atoms, Element, Elements
+from .atom import Atom, Atoms, Element, Elements, CustomElement
 from .residue import Residue, Residues, QMResidue
 
 from .api import distance
