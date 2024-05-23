@@ -137,7 +137,7 @@ number. The name is the symbol in lower case.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Atom</span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><span class="pre">Element</span></a></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">use_guess_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">_kwargs</span></span></em>,</dd>
@@ -199,9 +199,11 @@ an empty element is created (Element()).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<em>str</em><em> | </em><em>int</em>) – The name of the atom_type (e.g. ‘C1’)
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>int</em><em> | </em><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><em>Element</em></a>) – The name of the atom_type (e.g. ‘C1’)
 If this parameter is an integer, it is interpreted as the atomic number of the
-element symbol and cannot be used together with the id parameter.</p></li>
+element symbol and cannot be used together with the id parameter. If the parameter
+is an Element object, the element is set to this object and no other parameters
+are used.</p></li>
 <li><p><strong>element_id</strong> (<em>int</em><em> | </em><em>str</em><em>, </em><em>optional</em>) – The atomic number or element symbol of the atom_type (e.g. 6 or ‘C’)
 If his parameter is not given, the name parameter is used to determine
 the element type of the atom_type.</p></li>
@@ -213,7 +215,10 @@ by the runtime type checker.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If the name of the atom_type is an integer and the id is given.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError" title="PQAnalysis.exceptions.PQValueError"><strong>PQValueError</strong></a> – If the name of the atom_type is an Element object and the id is given.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.AtomError" title="PQAnalysis.core.exceptions.AtomError"><strong>AtomError</strong></a> – If the name of the atom_type is an integer and the id is given.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">

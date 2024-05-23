@@ -250,7 +250,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Get the length of the trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_number_of_frames</span><span class="p">()</span>
+        <span class="n">number_of_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">number_of_frames</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">trajectory_stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">trajectory_stop</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span>
@@ -279,24 +281,33 @@
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQIndexError</span><span class="p">,</span>
             <span class="p">)</span>
 
+        <span class="c1"># Initialize the progress bar</span>
+        <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">total</span><span class="o">=</span><span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">trajectory_start</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_progress_bar</span>
+        <span class="p">)</span>
+
         <span class="c1"># Track the number of frames that have been read</span>
         <span class="n">frame_index</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="n">last_cell</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">trajectory_start</span> <span class="o">&gt;=</span> <span class="n">frame_index</span> <span class="o">+</span> <span class="n">number_of_frames</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">frame_index</span> <span class="o">+=</span> <span class="n">number_of_frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">trajectory_stop</span> <span class="o">&lt;=</span> <span class="n">frame_index</span><span class="p">:</span>
+                <span class="k">break</span>
 
             <span class="c1"># Read the file again to get the frames</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
                 <span class="n">frame_lines</span> <span class="o">=</span> <span class="p">[]</span>
 
-                <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span>
-                    <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span><span class="p">,</span>
-                    <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_progress_bar</span>
-                <span class="p">)</span>
-
                 <span class="c1"># Read the lines of the file using tqdm for progress bar</span>
                 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">:</span>
+
                     <span class="n">stripped_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
                     <span class="k">if</span> <span class="n">stripped_line</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">stripped_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
                         <span class="n">frame_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
@@ -304,18 +315,20 @@
                         <span class="k">if</span> <span class="n">frame_lines</span><span class="p">:</span>
                             <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_single_frame</span><span class="p">(</span>
                                 <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">frame_lines</span><span class="p">),</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">topology</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
                             <span class="p">)</span>
+
                             <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span> <span class="ow">and</span> <span class="n">last_cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                                 <span class="n">frame</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">last_cell</span>
+
                             <span class="n">last_cell</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span>
 
-                            <span class="c1"># TODO: Implement the trajectory_start and trajectory_stop</span>
-                            <span class="c1"># more efficiently</span>
                             <span class="c1"># Check if the number of frames yielded is equal to the</span>
                             <span class="c1"># total number of frames</span>
-                            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">frame_index</span> <span class="o">&lt;</span> <span class="n">trajectory_start</span> <span class="ow">or</span>
-                                <span class="n">frame_index</span> <span class="o">&gt;=</span> <span class="n">trajectory_stop</span><span class="p">):</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                                <span class="n">frame_index</span> <span class="o">&lt;</span> <span class="n">trajectory_start</span> <span class="ow">or</span>
+                                <span class="n">frame_index</span> <span class="o">&gt;=</span> <span class="n">trajectory_stop</span>
+                            <span class="p">):</span>
                                 <span class="k">yield</span> <span class="n">frame</span>  <span class="c1"># only yield the frame if it is within the range</span>
                                 <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
                                     <span class="mi">1</span>
@@ -332,7 +345,7 @@
                 <span class="k">if</span> <span class="n">frame_lines</span><span class="p">:</span>
                     <span class="n">frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_single_frame</span><span class="p">(</span>
                         <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">frame_lines</span><span class="p">),</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
                     <span class="p">)</span>
 
                     <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span> <span class="ow">and</span> <span class="n">last_cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -340,10 +353,11 @@
 
                     <span class="n">last_cell</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span>
 
-                    <span class="c1"># TODO: Implement the trajectory_start and trajectory_stop more efficiently</span>
                     <span class="c1"># Check if the number of frames yielded is equal to the total number of frames</span>
-                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">frame_index</span> <span class="o">&lt;</span> <span class="n">trajectory_start</span> <span class="ow">or</span>
-                        <span class="n">frame_index</span> <span class="o">&gt;=</span> <span class="n">trajectory_stop</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+                        <span class="n">frame_index</span> <span class="o">&lt;</span> <span class="n">trajectory_start</span> <span class="ow">or</span>
+                        <span class="n">frame_index</span> <span class="o">&gt;=</span> <span class="n">trajectory_stop</span>
+                    <span class="p">):</span>
                         <span class="k">yield</span> <span class="n">frame</span>  <span class="c1"># only yield the frame if it is within the range</span>
                         <span class="n">progress_bar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># update the progress bar</span>
 
@@ -407,7 +421,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Get the length of the trajectory</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_number_of_frames</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length_of_traj</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">())</span>
 
         <span class="c1"># If trajectory_stop is not provided, set it to the length of the trajectory</span>
         <span class="k">if</span> <span class="n">trajectory_stop</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -462,21 +476,23 @@
 
         <span class="c1"># Check if all frames are included in the windows</span>
         <span class="c1"># Length of the trajectory - window_size should be divisible by window_gap</span>
-        <span class="k">if</span> <span class="p">((</span><span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">trajectory_start</span><span class="p">)</span> <span class="o">-</span>
-                <span class="n">window_size</span><span class="p">)</span> <span class="o">%</span> <span class="n">window_gap</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">((</span><span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">trajectory_start</span><span class="p">)</span> <span class="o">-</span> <span class="n">window_size</span><span class="p">)</span> <span class="o">%</span> <span class="n">window_gap</span>
+            <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Not all frames are included in the windows. Check the window size and gap.&quot;</span>
             <span class="p">)</span>
 
         <span class="n">generator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">(</span>
             <span class="n">trajectory_start</span><span class="o">=</span><span class="n">trajectory_start</span><span class="p">,</span>
-            <span class="n">trajectory_stop</span><span class="o">=</span><span class="n">trajectory_stop</span>
+            <span class="n">trajectory_stop</span><span class="o">=</span><span class="n">trajectory_stop</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># reads first window and converts it to a queue</span>
         <span class="n">window</span> <span class="o">=</span> <span class="n">Trajectory</span><span class="p">(</span>
             <span class="p">[</span>
-            <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>  <span class="c1"># pylint: disable=stop-iteration-return</span>
+                <span class="nb">next</span><span class="p">(</span><span class="n">generator</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>  <span class="c1"># pylint: disable=stop-iteration-return</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -484,9 +500,11 @@
         <span class="k">yield</span> <span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
         <span class="c1"># generate the rest of the windows up to trajectory_stop</span>
-        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trajectory_start</span> <span class="o">+</span> <span class="n">window_gap</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+            <span class="n">trajectory_start</span> <span class="o">+</span> <span class="n">window_gap</span><span class="p">,</span>
             <span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">window_gap</span><span class="p">):</span>
+            <span class="n">window_gap</span>
+        <span class="p">):</span>
 
             <span class="c1"># pop the first frame and append the next frame for window_gap times to</span>
             <span class="c1"># get the next window</span>
@@ -500,27 +518,60 @@
             <span class="k">yield</span> <span class="n">window</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TrajectoryReader.calculate_number_of_frames">
-<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.calculate_number_of_frames">[docs]</a>
-    <span class="k">def</span> <span class="nf">calculate_number_of_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<div class="viewcode-block" id="TrajectoryReader.calculate_frame_size">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.calculate_frame_size">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_frame_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Calculates the number of frames in the trajectory file.</span>
+<span class="sd">        Calculates the size of the frame in the trajectory file.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
-<span class="sd">            The number of frames in the trajectory file.</span>
+<span class="sd">            The size of the frame in the trajectory file.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TrajectoryReaderError</span>
 <span class="sd">            If the number of atoms in the first line of the file is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;Invalid number of atoms in the first line &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;of file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryReaderError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n_atoms</span> <span class="o">+</span> <span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="TrajectoryReader.calculate_number_of_frames_per_file">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.calculate_number_of_frames_per_file">[docs]</a>
+    <span class="k">def</span> <span class="nf">calculate_number_of_frames_per_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the number of frames for each trajectory file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[int]</span>
+<span class="sd">            The number of frames in the trajectory files.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TrajectoryReaderError</span>
 <span class="sd">            If the number of lines in the file is not divisible by the number of atoms.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">n_frames</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_frames_list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
+            <span class="n">n_frames</span> <span class="o">=</span> <span class="mi">0</span>
+
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 
                 <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
@@ -530,33 +581,30 @@
                 <span class="k">if</span> <span class="n">n_lines</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">continue</span>
 
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                        <span class="p">(</span>
-                        <span class="s2">&quot;Invalid number of atoms in the first line &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;of file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.&quot;</span>
-                        <span class="p">),</span>
-                        <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryReaderError</span><span class="p">,</span>
-                    <span class="p">)</span>
+                <span class="c1"># Calculate the size of the frame</span>
+                <span class="c1"># NOTE: this allows the user to give input which is not</span>
+                <span class="c1"># consistent in the number of atoms per frame in different</span>
+                <span class="c1"># traj files.</span>
+                <span class="n">frame_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_frame_size</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
                 <span class="c1"># +2 for the cell/atom_count + comment lines</span>
-                <span class="n">_n_frames</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">n_lines</span><span class="p">,</span> <span class="n">n_atoms</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">_n_frames</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">n_lines</span><span class="p">,</span> <span class="n">frame_size</span><span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">remainder</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="p">(</span>
-                        <span class="s2">&quot;The number of lines in the file is not divisible &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;by the number of atoms </span><span class="si">{</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> &quot;</span>
-                        <span class="s2">&quot;in the first line.&quot;</span>
+                            <span class="s2">&quot;The number of lines in the file is not divisible &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;by the number of atoms </span><span class="si">{</span><span class="n">frame_size</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s2"> &quot;</span>
+                            <span class="s2">&quot;in the first line.&quot;</span>
                         <span class="p">),</span>
                         <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryReaderError</span><span class="p">,</span>
                     <span class="p">)</span>
 
                 <span class="n">n_frames</span> <span class="o">+=</span> <span class="n">_n_frames</span>
 
-        <span class="k">return</span> <span class="n">n_frames</span></div>
+            <span class="n">n_frames_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_frames</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n_frames_list</span></div>
 
 
     <span class="nd">@property</span>
@@ -634,9 +682,9 @@
 
                         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                             <span class="p">(</span>
-                            <span class="s2">&quot;Invalid number of arguments for box:&quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span><span class="si">}</span><span class="s2"> encountered in file&quot;</span>
-                            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">line_number</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">stripped_line</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="s2">&quot;Invalid number of arguments for box:&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span><span class="si">}</span><span class="s2"> encountered in file&quot;</span>
+                                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">line_number</span><span class="si">}</span><span class="s2"> = </span><span class="si">{</span><span class="n">stripped_line</span><span class="si">}</span><span class="s2">&quot;</span>
                             <span class="p">),</span>
                             <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryReaderError</span><span class="p">,</span>
                         <span class="p">)</span>
@@ -674,7 +722,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
             <span class="n">frame_string</span><span class="p">,</span>
             <span class="n">traj_format</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">traj_format</span><span class="p">,</span>
-            <span class="n">topology</span><span class="o">=</span><span class="n">topology</span>
+            <span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 </pre></div>

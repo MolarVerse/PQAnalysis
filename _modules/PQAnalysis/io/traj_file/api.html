@@ -81,7 +81,7 @@
 <span class="sd">A module containing different API functions for reading and writing trajectory files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
@@ -146,7 +146,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.api.html#PQAnalysis.io.traj_file.api.read_trajectory">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
 <span class="k">def</span> <span class="nf">read_trajectory</span><span class="p">(</span>
-    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
     <span class="n">traj_format</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">AUTO</span><span class="p">,</span>
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -157,8 +157,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filename : str</span>
-<span class="sd">        The name of the file to read from.</span>
+<span class="sd">    filename : str | List[str]</span>
+<span class="sd">        The name of the file to read from or a list of files to read from.</span>
 <span class="sd">    md_format : MDEngineFormat | str, optional</span>
 <span class="sd">        The format of the trajectory, by default MDEngineFormat.PQ</span>
 <span class="sd">    traj_format : TrajectoryFormat | str, optional</span>

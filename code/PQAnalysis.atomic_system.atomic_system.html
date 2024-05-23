@@ -608,6 +608,17 @@ to the nearest neighbours.</p>
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.build_custom_element">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_custom_element</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.CustomElement" title="PQAnalysis.core.atom.element.CustomElement"><span class="pre">CustomElement</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.build_custom_element" title="Link to this definition"></a></dt>
+<dd><p>The custom element of the atoms in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.CustomElement" title="PQAnalysis.core.atom.element.CustomElement">CustomElement</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.cell">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cell</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.cell" title="Link to this definition"></a></dt>
 <dd><p>The unit cell of the system.</p>
@@ -625,6 +636,28 @@ to the nearest neighbours.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.atomic_system.atomic_system.AtomicSystem.center_of_mass_residues">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">center_of_mass_residues</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></em><a class="headerlink" href="#PQAnalysis.atomic_system.atomic_system.AtomicSystem.center_of_mass_residues" title="Link to this definition"></a></dt>
+<dd><p>Computes the center of mass of the residues in the system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><em>AtomicSystem</em> – The center of mass of the residues in the system.</p></li>
+<li><p><em>Raises</em></p></li>
+<li><p><em>——-</em></p></li>
+<li><p><em>AtomicSystemError</em> – If the number of residues in the system is not a
+multiple of the number of atoms.</p></li>
+<li><p><em>PQNotImplementedError</em> – if system has forces, velocities or charges.</p></li>
+<li><p><em>TODO</em></p></li>
+<li><p><em>—–</em></p></li>
+<li><p><em>Include also center of mass velocities, forces and so on…</em></p></li>
+</ul>
+</p>
 </dd>
 </dl>
 </dd></dl>

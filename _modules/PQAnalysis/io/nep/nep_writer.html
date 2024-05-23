@@ -319,10 +319,10 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="s2">&quot;No output filename was specified. In order to &quot;</span>
-                    <span class="s2">&quot;use the test_ratio or total_ratios splitting feature &quot;</span>
-                    <span class="s2">&quot;a filename has to be given in order to write all &quot;</span>
-                    <span class="s2">&quot;generated files.&quot;</span>
+                        <span class="s2">&quot;No output filename was specified. In order to &quot;</span>
+                        <span class="s2">&quot;use the test_ratio or total_ratios splitting feature &quot;</span>
+                        <span class="s2">&quot;a filename has to be given in order to write all &quot;</span>
+                        <span class="s2">&quot;generated files.&quot;</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                 <span class="p">)</span>
@@ -342,12 +342,10 @@
             <span class="n">energy</span> <span class="o">=</span> <span class="n">EnergyFileReader</span><span class="p">(</span><span class="n">en_files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">info_files</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
             <span class="n">xyz_generator</span> <span class="o">=</span> <span class="n">read_trajectory_generator</span><span class="p">(</span>
-                <span class="n">xyz_file</span><span class="p">,</span>
-                <span class="n">traj_format</span><span class="o">=</span><span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
+                <span class="n">xyz_file</span><span class="p">,</span> <span class="n">traj_format</span><span class="o">=</span><span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
             <span class="p">)</span>
             <span class="n">force_generator</span> <span class="o">=</span> <span class="n">read_trajectory_generator</span><span class="p">(</span>
-                <span class="n">force_files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">traj_format</span><span class="o">=</span><span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">FORCE</span>
+                <span class="n">force_files</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">traj_format</span><span class="o">=</span><span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">FORCE</span>
             <span class="p">)</span> <span class="k">if</span> <span class="n">use_forces</span> <span class="k">else</span> <span class="kc">None</span>
 
             <span class="n">n_frames</span> <span class="o">=</span> <span class="n">calculate_frames_of_trajectory_file</span><span class="p">(</span><span class="n">xyz_file</span><span class="p">)</span>
@@ -377,11 +375,11 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="p">(</span>
-                        <span class="s2">&quot;No QM energy found in the energy file. &quot;</span>
-                        <span class="s2">&quot;The NEP builder is implemented only for QM energies. &quot;</span>
-                        <span class="s2">&quot;If there is a need for a different energy type, &quot;</span>
-                        <span class="s2">&quot;please file an issue at &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">issues.&quot;</span>
+                            <span class="s2">&quot;No QM energy found in the energy file. &quot;</span>
+                            <span class="s2">&quot;The NEP builder is implemented only for QM energies. &quot;</span>
+                            <span class="s2">&quot;If there is a need for a different energy type, &quot;</span>
+                            <span class="s2">&quot;please file an issue at &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">issues.&quot;</span>
                         <span class="p">),</span>
                         <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                     <span class="p">)</span>
@@ -396,11 +394,7 @@
                     <span class="n">system</span><span class="o">.</span><span class="n">stress</span> <span class="o">=</span> <span class="n">stress</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">write_from_atomic_system</span><span class="p">(</span>
-                    <span class="n">system</span><span class="p">,</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span>
-                    <span class="n">use_forces</span><span class="p">,</span>
-                    <span class="n">use_stress</span><span class="p">,</span>
-                    <span class="n">use_virial</span>
+                    <span class="n">system</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">,</span> <span class="n">use_forces</span><span class="p">,</span> <span class="n">use_stress</span><span class="p">,</span> <span class="n">use_virial</span>
                 <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_validation</span> <span class="o">=</span> <span class="kc">False</span>
@@ -415,13 +409,20 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">n_validation_frames</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">is_validation</span> <span class="o">=</span> <span class="kc">True</span>
                     <span class="n">file_to_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_ref_file</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="p">(</span>
+                            <span class="s2">&quot;An error occurred during the frame splitting. &quot;</span>
+                            <span class="s2">&quot;The frame index is not in any of the training, &quot;</span>
+                            <span class="s2">&quot;testing, or validation indices. This should not &quot;</span>
+                            <span class="s2">&quot;happen. Please file an issue at &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">issues.&quot;</span>
+                        <span class="p">),</span>
+                        <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
+                    <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">write_from_atomic_system</span><span class="p">(</span>
-                    <span class="n">system</span><span class="p">,</span>
-                    <span class="n">file_to_write</span><span class="p">,</span>
-                    <span class="n">use_forces</span><span class="p">,</span>
-                    <span class="n">use_stress</span><span class="p">,</span>
-                    <span class="n">use_virial</span>
+                    <span class="n">system</span><span class="p">,</span> <span class="n">file_to_write</span><span class="p">,</span> <span class="n">use_forces</span><span class="p">,</span> <span class="n">use_stress</span><span class="p">,</span> <span class="n">use_virial</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_validation</span><span class="p">:</span>
@@ -435,13 +436,13 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Processed </span><span class="si">{</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> frames from files:</span><span class="se">\n</span><span class="s2">&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xyz_file</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">en_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_forces</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stress_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_stress</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">virial_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_virial</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Processed </span><span class="si">{</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> frames from files:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xyz_file</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">en_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">info_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_forces</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">stress_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_stress</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">virial_files</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">use_virial</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="kc">None</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -514,8 +515,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">test_ratio</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="n">total_ratios</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The test_ratio and total_ratios keyword &quot;</span>
-                <span class="s2">&quot;arguments are mutually exclusive.&quot;</span>
+                    <span class="s2">&quot;The test_ratio and total_ratios keyword &quot;</span>
+                    <span class="s2">&quot;arguments are mutually exclusive.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -533,9 +534,9 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The total_ratios keyword argument </span><span class="si">{</span><span class="n">total_ratios</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="s2">&quot;is not in the correct format. The correct format &quot;</span>
-                    <span class="s2">&quot;is train_ratio:test_ratio:validation_ratio.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;The total_ratios keyword argument </span><span class="si">{</span><span class="n">total_ratios</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;is not in the correct format. The correct format &quot;</span>
+                        <span class="s2">&quot;is train_ratio:test_ratio:validation_ratio.&quot;</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                 <span class="p">)</span>
@@ -552,21 +553,20 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The test_ratio must be between 0.0 and 1.0. &quot;</span>
-                <span class="s2">&quot;The given test_ratio &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="s2">&quot;The test_ratio must be between 0.0 and 1.0. &quot;</span>
+                    <span class="s2">&quot;The given test_ratio &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span><span class="p">,</span>
-            <span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_ratio</span><span class="p">,</span>
-            <span class="mf">0.0</span><span class="p">):</span>
+                      <span class="mf">0.0</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_ratio</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;It has no sense to have validation frames without test &quot;</span>
-                <span class="s2">&quot;frames. This error results from the given total_ratios &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;keyword argument </span><span class="si">{</span><span class="n">total_ratios</span><span class="si">}</span><span class="s2">.&quot;</span>
+                    <span class="s2">&quot;It has no sense to have validation frames without test &quot;</span>
+                    <span class="s2">&quot;frames. This error results from the given total_ratios &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;keyword argument </span><span class="si">{</span><span class="n">total_ratios</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -582,12 +582,10 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ratio</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_writer</span> <span class="o">=</span> <span class="n">BaseWriter</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_train&quot;</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_train&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">test_writer</span> <span class="o">=</span> <span class="n">BaseWriter</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_test&quot;</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_test&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">train_writer</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">test_writer</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
@@ -596,13 +594,11 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_ratio</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_writer</span> <span class="o">=</span> <span class="n">BaseWriter</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_validation&quot;</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_validation&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_writer</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_ref_writer</span> <span class="o">=</span> <span class="n">BaseWriter</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_validation.ref&quot;</span><span class="p">,</span>
-                <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2">_validation.ref&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span>
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_ref_writer</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validation_writer</span><span class="o">.</span><span class="n">file</span>
@@ -612,8 +608,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">file_prefixes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span>
-        <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines the files to be used for writing the NEP trajectory file.</span>
 
@@ -688,7 +683,7 @@
         <span class="k">def</span> <span class="nf">raise_number_of_files_error</span><span class="p">(</span>
             <span class="n">file_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-            <span class="n">xyz_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+            <span class="n">xyz_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Raises an error if the number of files does not </span>
@@ -705,11 +700,11 @@
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The number of </span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s2"> files does not match &quot;</span>
-                <span class="s2">&quot;the number of coordinate files. The found &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s2"> files are: </span><span class="si">{</span><span class="n">files</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;and the found coordinate files are: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xyz_files</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;The number of </span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s2"> files does not match &quot;</span>
+                    <span class="s2">&quot;the number of coordinate files. The found &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_type</span><span class="si">}</span><span class="s2"> files are: </span><span class="si">{</span><span class="n">files</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;and the found coordinate files are: &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xyz_files</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -791,19 +786,17 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">filtered_files</span> <span class="o">=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">find_matching_files</span><span class="p">(</span>
-            <span class="n">files</span><span class="p">,</span>
-            <span class="n">output_file_format</span><span class="p">,</span>
-            <span class="n">file_extension</span>
+            <span class="n">files</span><span class="p">,</span> <span class="n">output_file_format</span><span class="p">,</span> <span class="n">file_extension</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filtered_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">file_extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="s2">&quot;You did specify a file extension for the &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_format</span><span class="si">}</span><span class="s2"> files, but no files with &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;the extension </span><span class="si">{</span><span class="n">file_extension</span><span class="si">}</span><span class="s2"> were found, &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;that match the given file prefixes </span><span class="si">{</span><span class="n">file_prefixes</span><span class="si">}</span><span class="s2">.&quot;</span>
+                        <span class="s2">&quot;You did specify a file extension for the &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_format</span><span class="si">}</span><span class="s2"> files, but no files with &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;the extension </span><span class="si">{</span><span class="n">file_extension</span><span class="si">}</span><span class="s2"> were found, &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;that match the given file prefixes </span><span class="si">{</span><span class="n">file_prefixes</span><span class="si">}</span><span class="s2">.&quot;</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                 <span class="p">)</span>
@@ -813,19 +806,19 @@
                 <span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">output_file_format</span><span class="si">}</span><span class="s2"> files were found in &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">files</span><span class="si">}</span><span class="s2"> that match the given file prefixes &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefixes</span><span class="si">}</span><span class="s2">. All possible file extensions are &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_formats</span><span class="si">}</span><span class="s2">. &quot;</span>
-                    <span class="s2">&quot;If the specific file extension you are looking for &quot;</span>
-                    <span class="s2">&quot;is not in the list, please specify it using the &quot;</span>
-                    <span class="s2">&quot;corresponding file_extension argument. If the &quot;</span>
-                    <span class="s2">&quot;files should be found, please check the file paths &quot;</span>
-                    <span class="s2">&quot;and the file prefixes. Additionally, if you think &quot;</span>
-                    <span class="s2">&quot;that the file extension you chose is of general &quot;</span>
-                    <span class="s2">&quot;interest and should be added to the list of &quot;</span>
-                    <span class="s2">&quot;possible file extensions, please file an issue at &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">issues.&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;No </span><span class="si">{</span><span class="n">output_file_format</span><span class="si">}</span><span class="s2"> files were found in &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">files</span><span class="si">}</span><span class="s2"> that match the given file prefixes &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefixes</span><span class="si">}</span><span class="s2">. All possible file extensions are &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">output_file_formats</span><span class="si">}</span><span class="s2">. &quot;</span>
+                        <span class="s2">&quot;If the specific file extension you are looking for &quot;</span>
+                        <span class="s2">&quot;is not in the list, please specify it using the &quot;</span>
+                        <span class="s2">&quot;corresponding file_extension argument. If the &quot;</span>
+                        <span class="s2">&quot;files should be found, please check the file paths &quot;</span>
+                        <span class="s2">&quot;and the file prefixes. Additionally, if you think &quot;</span>
+                        <span class="s2">&quot;that the file extension you chose is of general &quot;</span>
+                        <span class="s2">&quot;interest and should be added to the list of &quot;</span>
+                        <span class="s2">&quot;possible file extensions, please file an issue at &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">issues.&quot;</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                 <span class="p">)</span>
@@ -837,9 +830,7 @@
         <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">test_ratio</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
         <span class="n">validation_ratio</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span>
-        <span class="nb">int</span><span class="p">,</span>
-        <span class="nb">int</span><span class="p">]:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the maximum number of training, testing,</span>
 <span class="sd">        and validation frames.</span>
@@ -905,10 +896,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">write_from_atomic_system</span><span class="p">(</span>
-                <span class="n">frame</span><span class="p">,</span>
-                <span class="n">use_forces</span><span class="p">,</span>
-                <span class="n">use_stress</span><span class="p">,</span>
-                <span class="n">use_virial</span>
+                <span class="n">frame</span><span class="p">,</span> <span class="n">use_forces</span><span class="p">,</span> <span class="n">use_stress</span><span class="p">,</span> <span class="n">use_virial</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
@@ -972,8 +960,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">system</span><span class="o">.</span><span class="n">has_pos</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The system does not have coordinates, &quot;</span>
-                <span class="s2">&quot;which are required for NEP trajectory files.&quot;</span>
+                    <span class="s2">&quot;The system does not have coordinates, &quot;</span>
+                    <span class="s2">&quot;which are required for NEP trajectory files.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -988,8 +976,8 @@
         <span class="k">if</span> <span class="n">use_forces</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">system</span><span class="o">.</span><span class="n">has_forces</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The system does not have forces, and they were &quot;</span>
-                <span class="s2">&quot;specified to be written to the NEP trajectory file.&quot;</span>
+                    <span class="s2">&quot;The system does not have forces, and they were &quot;</span>
+                    <span class="s2">&quot;specified to be written to the NEP trajectory file.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -997,9 +985,9 @@
         <span class="k">if</span> <span class="n">use_stress</span> <span class="ow">and</span> <span class="n">use_virial</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;Both the stress and the virial tensor were &quot;</span>
-                <span class="s2">&quot;specified to be written to the NEP trajectory file. &quot;</span>
-                <span class="s2">&quot;Only one of them can be written at a time.&quot;</span>
+                    <span class="s2">&quot;Both the stress and the virial tensor were &quot;</span>
+                    <span class="s2">&quot;specified to be written to the NEP trajectory file. &quot;</span>
+                    <span class="s2">&quot;Only one of them can be written at a time.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -1007,8 +995,8 @@
         <span class="k">if</span> <span class="n">use_stress</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">system</span><span class="o">.</span><span class="n">has_stress</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The system does not have a stress tensor, &quot;</span>
-                <span class="s2">&quot;and it was specified to be written to the NEP trajectory file.&quot;</span>
+                    <span class="s2">&quot;The system does not have a stress tensor, &quot;</span>
+                    <span class="s2">&quot;and it was specified to be written to the NEP trajectory file.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -1016,8 +1004,8 @@
         <span class="k">if</span> <span class="n">use_virial</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">system</span><span class="o">.</span><span class="n">has_virial</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The system does not have a virial tensor, and &quot;</span>
-                <span class="s2">&quot;it was specified to be written to the NEP trajectory file.&quot;</span>
+                    <span class="s2">&quot;The system does not have a virial tensor, and &quot;</span>
+                    <span class="s2">&quot;it was specified to be written to the NEP trajectory file.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
@@ -1118,10 +1106,10 @@
 
             <span class="nb">print</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">symbol</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">symbol</span><span class="si">:</span><span class="s2">&lt;4</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">),</span>
                 <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
                 <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span>
@@ -1132,9 +1120,9 @@
             <span class="k">if</span> <span class="n">use_forces</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">15.8e</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">),</span>
                     <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
                     <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span>

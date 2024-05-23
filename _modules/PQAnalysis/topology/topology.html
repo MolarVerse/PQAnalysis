@@ -94,7 +94,10 @@
 <span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DIntArray</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span><span class="p">,</span> <span class="n">runtime_type_checking_setter</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">runtime_type_checking</span><span class="p">,</span>
+    <span class="n">runtime_type_checking_setter</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TopologyError</span>
 <span class="kn">from</span> <span class="nn">.bonded_topology.bonded_topology</span> <span class="kn">import</span> <span class="n">BondedTopology</span>
@@ -191,7 +194,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reference_residues</span> <span class="o">=</span> <span class="n">reference_residues</span>
 
-        <span class="k">if</span> <span class="n">residue_ids</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">residue_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">residue_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">residue_ids</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
@@ -232,13 +235,14 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_residue_ids</span> <span class="o">=</span> <span class="n">residue_ids</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_residues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_residues</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_residue_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_residue_atom_indices</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">,</span>
-                <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">_residue_numbers</span> <span class="o">=</span> <span class="p">[]</span>
@@ -248,8 +252,8 @@
                 <span class="n">_residue_numbers</span> <span class="o">+=</span> <span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">n_atoms</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_residue_atom_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                     <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                    <span class="n">atom_counter</span><span class="p">,</span>
-                    <span class="n">atom_counter</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">n_atoms</span>
+                        <span class="n">atom_counter</span><span class="p">,</span>
+                        <span class="n">atom_counter</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
 
@@ -330,7 +334,7 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_names">[docs]</a>
     <span class="k">def</span> <span class="nf">get_atom_indices_from_residue_names</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">residue_name</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="n">residue_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the atom indices for the given residue name.</span>
@@ -346,7 +350,8 @@
 <span class="sd">            The atom indices for the given residue name.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">residue</span><span class="p">,</span> <span class="n">_atom_indices</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">residue</span><span class="p">,</span> <span class="n">_atom_indices</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">,</span>
+                                          <span class="bp">self</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">residue_name</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
                 <span class="n">atom_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom_indices</span><span class="p">,</span> <span class="n">_atom_indices</span><span class="p">)</span>
 
@@ -357,7 +362,7 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology.get_atom_indices_from_residue_numbers">[docs]</a>
     <span class="k">def</span> <span class="nf">get_atom_indices_from_residue_numbers</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">residue_numbers</span><span class="p">:</span> <span class="n">Np1DIntArray</span>
+        <span class="n">residue_numbers</span><span class="p">:</span> <span class="n">Np1DIntArray</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the atom indices for the given residue numbers.</span>
@@ -372,14 +377,17 @@
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The atom indices for the given residue numbers.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residue_numbers</span><span class="p">,</span>
-            <span class="n">residue_numbers</span><span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residue_numbers</span><span class="p">,</span>
+            <span class="n">residue_numbers</span><span class="p">,</span>
+        <span class="p">))</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_setup_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">_setup_residues</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">residue_ids</span><span class="p">:</span> <span class="n">Np1DIntArray</span><span class="p">,</span>
-        <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Residues</span><span class="p">,</span>
-        <span class="n">Atoms</span><span class="p">]:</span>
+        <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Residues</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sets up the residues of the topology.</span>
 
@@ -422,8 +430,8 @@
             <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Residue ids </span><span class="si">{</span><span class="n">not_found_residue_ids</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;have no corresponding reference residue.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Residue ids </span><span class="si">{</span><span class="n">not_found_residue_ids</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;have no corresponding reference residue.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
             <span class="p">)</span>
@@ -446,33 +454,33 @@
 
             <span class="n">residue</span> <span class="o">=</span> <span class="n">_find_residue_by_id</span><span class="p">(</span>
                 <span class="n">residue_ids</span><span class="p">[</span><span class="n">atom_counter</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">reference_residues</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reference_residues</span><span class="p">,</span>
             <span class="p">)</span>
 
-            <span class="n">residue_element_counter</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span> <span class="o">+</span> <span class="n">atom_counter</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span> <span class="o">!=</span> <span class="n">Element</span><span class="p">()</span> <span class="ow">and</span> <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span>
-                        <span class="o">!=</span> <span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">residue_element_counter</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span> <span class="o">!=</span> <span class="n">Element</span><span class="p">()</span> <span class="ow">and</span>
+                    <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span> <span class="o">!=</span> <span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">atom_counter</span><span class="p">]</span>
+                <span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                         <span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;The element of atom </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span><span class="si">}</span><span class="s2">) &quot;</span>
-                        <span class="s2">&quot;does not match the element of the reference residue &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">residue_element_counter</span><span class="p">]</span><span class="si">}</span><span class="s2">). &quot;</span>
-                        <span class="s2">&quot;Therefore the element type of the residue &quot;</span>
-                        <span class="s2">&quot;description will be used within the topology format!&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;The element of atom </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span><span class="si">}</span><span class="s2">) &quot;</span>
+                            <span class="s2">&quot;does not match the element of the reference residue &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">atom_counter</span><span class="p">]</span><span class="si">}</span><span class="s2">). &quot;</span>
+                            <span class="s2">&quot;Therefore the element type of the residue &quot;</span>
+                            <span class="s2">&quot;description will be used within the topology format!&quot;</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
 
-                    <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">residue_element_counter</span>
-                                                        <span class="p">]</span>
+                    <span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">element</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="n">atom_counter</span><span class="p">]</span>
 
                 <span class="k">if</span> <span class="n">residue_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">residue_ids</span><span class="p">[</span><span class="n">atom_counter</span><span class="p">]:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="p">(</span>
-                        <span class="s2">&quot;The residue ids are not contiguous. Problems with residue &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with indices </span><span class="si">{</span><span class="n">atom_counter</span><span class="si">}</span><span class="s2">-&quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_counter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+                            <span class="s2">&quot;The residue ids are not contiguous. Problems with residue &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> with indices </span><span class="si">{</span><span class="n">atom_counter</span><span class="si">}</span><span class="s2">-&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_counter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span><span class="o">-</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
                         <span class="p">),</span>
                         <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
                     <span class="p">)</span>
@@ -528,7 +536,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_residues</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_residues</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_residues</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -581,9 +589,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of QM residues in the topology.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span>
             <span class="p">[</span>
-            <span class="n">residue</span> <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">residue</span><span class="p">,</span>
-            <span class="n">QMResidue</span><span class="p">)</span>
+                <span class="n">residue</span> <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">residue</span><span class="p">,</span> <span class="n">QMResidue</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span>
 
@@ -605,7 +612,27 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">residue_atom_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Np1DIntArray</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List[Np1DIntArray]: The residue atom indices of the topology.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residue_atom_indices</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_residue_atom_indices</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_atoms_per_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Np1DIntArray: The number of atoms per residue.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="k">for</span> <span class="n">indices</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">residue_ids_per_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;List[Np1DIntArray]: The residue ids per residue.&quot;&quot;&quot;</span>
+        <span class="n">residue_ids_per_residue</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">residue_ids_per_residue</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms_per_residue</span><span class="p">):</span>
+            <span class="n">residue_ids_per_residue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">residue_ids_per_residue</span><span class="p">)</span></div>
 
 
 
@@ -640,14 +667,12 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residue</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">Topology</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The residue id </span><span class="si">{</span><span class="n">res_id</span><span class="si">}</span><span class="s2"> is not unique.&quot;</span><span class="p">,</span>
-            <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
+            <span class="sa">f</span><span class="s2">&quot;The residue id </span><span class="si">{</span><span class="n">res_id</span><span class="si">}</span><span class="s2"> is not unique.&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residue</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">Topology</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The residue id </span><span class="si">{</span><span class="n">res_id</span><span class="si">}</span><span class="s2"> was not found.&quot;</span><span class="p">,</span>
-            <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
+            <span class="sa">f</span><span class="s2">&quot;The residue id </span><span class="si">{</span><span class="n">res_id</span><span class="si">}</span><span class="s2"> was not found.&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">ResidueError</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">residue</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>

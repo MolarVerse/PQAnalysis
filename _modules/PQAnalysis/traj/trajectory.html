@@ -93,7 +93,10 @@
 <span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span><span class="p">,</span> <span class="n">runtime_type_checking_setter</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">runtime_type_checking</span><span class="p">,</span>
+    <span class="n">runtime_type_checking_setter</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 
@@ -117,7 +120,7 @@
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">frames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AtomicSystem</span><span class="p">]</span> <span class="o">|</span> <span class="n">AtomicSystem</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">frames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AtomicSystem</span><span class="p">]</span> <span class="o">|</span> <span class="n">AtomicSystem</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -387,16 +390,20 @@
 
         <span class="c1"># Check if all frames are included in the windows</span>
         <span class="c1"># Length of the trajectory - window_size should be divisible by window_gap</span>
-        <span class="k">if</span> <span class="p">((</span><span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">trajectory_start</span><span class="p">)</span> <span class="o">-</span>
-                <span class="n">window_size</span><span class="p">)</span> <span class="o">%</span> <span class="n">window_gap</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="p">((</span><span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">trajectory_start</span><span class="p">)</span> <span class="o">-</span> <span class="n">window_size</span><span class="p">)</span> <span class="o">%</span> <span class="n">window_gap</span>
+            <span class="o">!=</span> <span class="mi">0</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;Not all frames are included in the windows. Check the window size and gap.&quot;</span>
             <span class="p">)</span>
 
         <span class="c1"># generate the window of the trajectory</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">trajectory_start</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span>
+            <span class="n">trajectory_start</span><span class="p">,</span>
             <span class="n">trajectory_stop</span> <span class="o">-</span> <span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
-            <span class="n">window_gap</span><span class="p">):</span>
+            <span class="n">window_gap</span><span class="p">,</span>
+        <span class="p">):</span>
             <span class="k">yield</span> <span class="bp">self</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="n">window_size</span><span class="p">]</span></div>
 
 
@@ -520,7 +527,15 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cells</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Cell</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List[Cell]: The cells of the trajectory.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">com_residue_traj</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Trajectory&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trajectory: The trajectory with the center of mass of the residues.&quot;&quot;&quot;</span>
+
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">frame</span><span class="o">.</span><span class="n">center_of_mass_residues</span> <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">Trajectory</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span></div>
 
 </pre></div>
 

@@ -96,6 +96,7 @@
 <span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">PositiveInt</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQNotImplementedError</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.random</span> <span class="kn">import</span> <span class="n">get_random_seed</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
@@ -116,9 +117,11 @@
 
 <div class="viewcode-block" id="AtomicSystem">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem">[docs]</a>
-<span class="k">class</span> <span class="nc">AtomicSystem</span><span class="p">(</span><span class="n">_PropertiesMixin</span><span class="p">,</span>
+<span class="k">class</span> <span class="nc">AtomicSystem</span><span class="p">(</span>
+    <span class="n">_PropertiesMixin</span><span class="p">,</span>
     <span class="n">_StandardPropertiesMixin</span><span class="p">,</span>
-    <span class="n">_PositionsMixin</span><span class="p">):</span>
+    <span class="n">_PositionsMixin</span><span class="p">,</span>
+<span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for storing atomic systems.</span>
@@ -250,8 +253,8 @@
         <span class="k">if</span> <span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;Cannot initialize AtomicSystem with both atoms and topology &quot;</span>
-                <span class="s2">&quot;arguments - they are mutually exclusive.&quot;</span>
+                    <span class="s2">&quot;Cannot initialize AtomicSystem with both atoms and topology &quot;</span>
+                    <span class="s2">&quot;arguments - they are mutually exclusive.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">AtomicSystemError</span>
             <span class="p">)</span>
@@ -338,19 +341,19 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">fitting_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Performing fitting for </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">number_of_additions</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;addition(s).&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Performing fitting for </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">number_of_additions</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;addition(s).&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
             <span class="n">systems</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_fit_atomic_system</span><span class="p">(</span>
-                <span class="n">positions_to_fit_into</span><span class="o">=</span><span class="n">positions_to_fit_into</span><span class="p">,</span>
-                <span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span>
-                <span class="n">max_iterations</span><span class="o">=</span><span class="n">max_iterations</span><span class="p">,</span>
-                <span class="n">distance_cutoff</span><span class="o">=</span><span class="n">distance_cutoff</span><span class="p">,</span>
-                <span class="n">max_displacement</span><span class="o">=</span><span class="n">max_displacement</span><span class="p">,</span>
-                <span class="n">rotation_angle_step</span><span class="o">=</span><span class="n">rotation_angle_step</span>
+                    <span class="n">positions_to_fit_into</span><span class="o">=</span><span class="n">positions_to_fit_into</span><span class="p">,</span>
+                    <span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span>
+                    <span class="n">max_iterations</span><span class="o">=</span><span class="n">max_iterations</span><span class="p">,</span>
+                    <span class="n">distance_cutoff</span><span class="o">=</span><span class="n">distance_cutoff</span><span class="p">,</span>
+                    <span class="n">max_displacement</span><span class="o">=</span><span class="n">max_displacement</span><span class="p">,</span>
+                    <span class="n">rotation_angle_step</span><span class="o">=</span><span class="n">rotation_angle_step</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -443,7 +446,7 @@
                 <span class="n">rotation</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span>
                     <span class="s1">&#39;xyz&#39;</span><span class="p">,</span>
                     <span class="n">rotation_angles</span><span class="p">,</span>
-                    <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="n">new_pos</span> <span class="o">=</span> <span class="n">rotation</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">new_pos</span><span class="p">)</span>
 
@@ -470,6 +473,86 @@
         <span class="n">system</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span>
         <span class="n">system</span><span class="o">.</span><span class="n">image</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">system</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">center_of_mass_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes the center of mass of the residues in the system.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The center of mass of the residues in the system.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystemError</span>
+<span class="sd">            If the number of residues in the system is not a </span>
+<span class="sd">            multiple of the number of atoms.</span>
+<span class="sd">        PQNotImplementedError</span>
+<span class="sd">            if system has forces, velocities or charges.</span>
+<span class="sd">            </span>
+<span class="sd">        TODO:</span>
+<span class="sd">        -----</span>
+<span class="sd">        Include also center of mass velocities, forces and so on...</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pos</span><span class="p">:</span>
+            <span class="n">residue_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">residue_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="n">residue_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_forces</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_vel</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_charges</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Center of mass of residues not implemented for &quot;</span>
+                    <span class="s2">&quot;systems with forces, velocities or charges.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQNotImplementedError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;No residues in the system.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">AtomicSystemError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">residue_indices</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">):</span>
+
+            <span class="n">residue_system</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">residue_indices</span><span class="p">]</span>
+
+            <span class="c1"># check if residue_system has more than one atom otherwise return atom element</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">residue_system</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span>
+                <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span>
+            <span class="p">):</span>
+                <span class="n">custom_element</span> <span class="o">=</span> <span class="n">residue_system</span><span class="o">.</span><span class="n">build_custom_element</span>
+                <span class="n">custom_element</span><span class="o">.</span><span class="n">symbol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span>
+                <span class="n">custom_atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="n">custom_element</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">custom_atom</span> <span class="o">=</span> <span class="n">residue_system</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">residue_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">custom_atom</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">residue_system</span><span class="o">.</span><span class="n">has_pos</span><span class="p">:</span>
+                <span class="n">residue_pos</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">residue_system</span><span class="o">.</span><span class="n">center_of_mass</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span>
+            <span class="n">atoms</span><span class="o">=</span><span class="n">residue_atoms</span><span class="p">,</span>
+            <span class="n">residue_ids</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_ids_per_residue</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">residue_pos</span><span class="p">,</span>
+            <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span>
+            <span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># TODO: refactor or discard this method</span>
 <div class="viewcode-block" id="AtomicSystem.compute_com_atomic_system">
@@ -586,8 +669,7 @@
 <div class="viewcode-block" id="AtomicSystem.__getitem__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__getitem__">[docs]</a>
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">key</span><span class="p">:</span> <span class="n">Atom</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">Np1DIntArray</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Atom</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">Np1DIntArray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a new AtomicSystem with the given key.</span>
@@ -640,8 +722,8 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">key</span><span class="p">])</span>
 
-        <span class="n">keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">))[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span>
-            <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span>
+                        <span class="p">)[</span><span class="n">key</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
 
         <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">vel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vel</span><span class="p">[</span><span class="n">keys</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vel</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>

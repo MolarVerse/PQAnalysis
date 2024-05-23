@@ -100,6 +100,7 @@
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQValueError</span>
 
 <span class="kn">from</span> <span class="nn">.element</span> <span class="kn">import</span> <span class="n">Element</span>
 <span class="kn">from</span> <span class="nn">..exceptions</span> <span class="kn">import</span> <span class="n">AtomError</span>
@@ -163,7 +164,7 @@
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Element</span><span class="p">,</span>
         <span class="n">element_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_guess_element</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="o">**</span><span class="n">_kwargs</span>
@@ -178,10 +179,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        name : str | int</span>
+<span class="sd">        name : str | int | Element</span>
 <span class="sd">            The name of the atom_type (e.g. &#39;C1&#39;)</span>
 <span class="sd">            If this parameter is an integer, it is interpreted as the atomic number of the </span>
-<span class="sd">            element symbol and cannot be used together with the id parameter.</span>
+<span class="sd">            element symbol and cannot be used together with the id parameter. If the parameter</span>
+<span class="sd">            is an Element object, the element is set to this object and no other parameters</span>
+<span class="sd">            are used.</span>
 <span class="sd">        element_id : int | str, optional</span>
 <span class="sd">            The atomic number or element symbol of the atom_type (e.g. 6 or &#39;C&#39;) </span>
 <span class="sd">            If his parameter is not given, the name parameter is used to determine </span>
@@ -196,9 +199,25 @@
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
-<span class="sd">        ValueError</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            If the name of the atom_type is an Element object and the id is given.</span>
+<span class="sd">        AtomError</span>
 <span class="sd">            If the name of the atom_type is an integer and the id is given.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">Element</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">element_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                    <span class="s2">&quot;The element of the atom_type cannot be an &quot;</span>
+                    <span class="s2">&quot;Element object if the id is given.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">symbol</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_element</span> <span class="o">=</span> <span class="n">name</span>
+            <span class="k">return</span>
 
         <span class="k">if</span> <span class="n">element_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
 
