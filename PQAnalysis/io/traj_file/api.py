@@ -2,7 +2,7 @@
 A module containing different API functions for reading and writing trajectory files.
 """
 
-from beartype.typing import Generator
+from beartype.typing import Generator, List
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.atomic_system import AtomicSystem
@@ -62,7 +62,7 @@ def write_trajectory(
 
 @runtime_type_checking
 def read_trajectory(
-    filename: str,
+    filename: str | List[str],
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
     topology: Topology | None = None,
@@ -73,8 +73,8 @@ def read_trajectory(
 
     Parameters
     ----------
-    filename : str
-        The name of the file to read from.
+    filename : str | List[str]
+        The name of the file to read from or a list of files to read from.
     md_format : MDEngineFormat | str, optional
         The format of the trajectory, by default MDEngineFormat.PQ
     traj_format : TrajectoryFormat | str, optional

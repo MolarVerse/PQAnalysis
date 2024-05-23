@@ -8,8 +8,9 @@ import numpy as np
 
 from beartype.typing import List
 
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, CustomElement
 from PQAnalysis.types import Np1DNumberArray
+
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 from .exceptions import AtomicSystemError
 
@@ -53,8 +54,8 @@ class _PropertiesMixin:
         if not np.all(n_atoms_list == n_atoms_list[0]):
             self.logger.error(
                 (
-                "The number of atoms (or atoms in the topology), "
-                "positions, velocities, forces and charges must be equal."
+                    "The number of atoms (or atoms in the topology), "
+                    "positions, velocities, forces and charges must be equal."
                 ),
                 exception=AtomicSystemError
             )
@@ -83,9 +84,7 @@ class _PropertiesMixin:
         relative_pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
 
         weighted_average_pos = np.sum(
-            relative_pos * self.atomic_masses[:,
-            None],
-            axis=0
+            relative_pos * self.atomic_masses[:, None], axis=0
         ) / self.mass
 
         center_of_mass = self.cell.image(weighted_average_pos)
@@ -101,3 +100,8 @@ class _PropertiesMixin:
     def unique_element_names(self) -> List[str]:
         """List[str]: The unique element names of the atoms in the system."""
         return list({atom.element_name for atom in self.atoms})
+
+    @property
+    def build_custom_element(self) -> CustomElement:
+        """CustomElement: The custom element of the atoms in the system."""
+        return CustomElement(self.combined_name, -1, self.mass)
