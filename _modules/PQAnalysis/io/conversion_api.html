@@ -142,7 +142,7 @@
         <span class="n">output</span><span class="p">,</span>
         <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
         <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -183,10 +183,15 @@
     <span class="n">system</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
         <span class="n">xyz_file</span><span class="p">,</span>
         <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
-        <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span>
+        <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
-    <span class="n">write_gen_file</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">system</span><span class="p">,</span> <span class="n">periodic</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="n">write_gen_file</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">system</span><span class="o">=</span><span class="n">system</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+        <span class="n">periodic</span><span class="o">=</span><span class="n">periodic</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -230,11 +235,7 @@
         <span class="n">system</span><span class="o">.</span><span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
 
     <span class="n">write_trajectory</span><span class="p">(</span>
-        <span class="n">system</span><span class="p">,</span>
-        <span class="n">output</span><span class="p">,</span>
-        <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
-        <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+        <span class="n">system</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span> <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span></div>
 
 
@@ -318,9 +319,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">writer</span> <span class="o">=</span> <span class="n">TrajectoryWriter</span><span class="p">(</span>
-        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
-        <span class="n">engine_format</span><span class="o">=</span><span class="s2">&quot;qmcfc&quot;</span><span class="p">,</span>
-        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">engine_format</span><span class="o">=</span><span class="s2">&quot;qmcfc&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">trajectory_files</span><span class="p">:</span>

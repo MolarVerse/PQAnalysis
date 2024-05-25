@@ -209,8 +209,8 @@
             <span class="k">if</span> <span class="n">element_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="s2">&quot;The element of the atom_type cannot be an &quot;</span>
-                    <span class="s2">&quot;Element object if the id is given.&quot;</span>
+                        <span class="s2">&quot;The element of the atom_type cannot be an &quot;</span>
+                        <span class="s2">&quot;Element object if the id is given.&quot;</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
                 <span class="p">)</span>
@@ -335,7 +335,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">element_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;str: The name of the element (e.g. &#39;Carbon&#39;)&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">name</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">symbol</span></div>
 
 </pre></div>
 

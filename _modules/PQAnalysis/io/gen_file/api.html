@@ -117,8 +117,8 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.gen_file.api.html#PQAnalysis.io.gen_file.api.write_gen_file">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
 <span class="k">def</span> <span class="nf">write_gen_file</span><span class="p">(</span>
-    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">system</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -127,10 +127,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    filename : str</span>
-<span class="sd">        The filename of the gen file.</span>
 <span class="sd">    system : AtomicSystem</span>
 <span class="sd">        The system to write.</span>
+<span class="sd">    filename : str | None, optional</span>
+<span class="sd">        The filename of the gen file. If None, the file is not opened, </span>
+<span class="sd">        by default None.</span>
 <span class="sd">    periodic : bool, optional</span>
 <span class="sd">        The periodicity of the system. If True, the system is considered periodic. </span>
 <span class="sd">        If False, the system is considered non-periodic. If None, the periodicity</span>

@@ -141,23 +141,21 @@
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;xyz_file&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The gen file to be converted.&#39;</span>
-        <span class="p">)</span>
-
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;periodic&#39;</span><span class="p">,</span>
-            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span>
-            <span class="kc">False</span><span class="p">,</span>
-            <span class="kc">None</span><span class="p">],</span>
+            <span class="s1">&#39;xyz_file&#39;</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The gen file to be converted.&#39;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">&#39;--periodic&#39;</span><span class="p">,</span>
+            <span class="n">choices</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s1">&#39;If True, the box is printed. If False, the box is not printed. &#39;</span>
-            <span class="s1">&#39;If None, the box is printed if it is present in the xyz file.&#39;</span>
+                <span class="s1">&#39;If True, the box is printed. If False, the box is not printed. &#39;</span>
+                <span class="s1">&#39;If None, the box is printed if it is present in the xyz file.&#39;</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
