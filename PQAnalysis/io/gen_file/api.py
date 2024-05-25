@@ -33,8 +33,8 @@ def read_gen_file(filename: str) -> AtomicSystem:
 
 @runtime_type_checking
 def write_gen_file(
-    filename: str,
     system: AtomicSystem,
+    filename: str | None = None,
     periodic: bool | None = None,
     mode: FileWritingMode | str = "w"
 ) -> None:
@@ -43,10 +43,11 @@ def write_gen_file(
 
     Parameters
     ----------
-    filename : str
-        The filename of the gen file.
     system : AtomicSystem
         The system to write.
+    filename : str | None, optional
+        The filename of the gen file. If None, the file is not opened, 
+        by default None.
     periodic : bool, optional
         The periodicity of the system. If True, the system is considered periodic. 
         If False, the system is considered non-periodic. If None, the periodicity

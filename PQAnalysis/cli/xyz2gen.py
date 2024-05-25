@@ -55,23 +55,21 @@ class XYZ2GENCLI(CLIBase):
         parser : _ArgumentParser
             The parser to which the arguments should be added.
         """
-        parser.add_argument(
-            'xyz_file',
-            type=str,
-            help='The gen file to be converted.'
-        )
-
         parser.parse_output_file()
 
         parser.add_argument(
-            'periodic',
-            choices=[True,
-            False,
-            None],
+            'xyz_file',
+            type=str,
+            help='The gen file to be converted.',
+        )
+
+        parser.add_argument(
+            '--periodic',
+            choices=[True, False, None],
             default=None,
             help=(
-            'If True, the box is printed. If False, the box is not printed. '
-            'If None, the box is printed if it is present in the xyz file.'
+                'If True, the box is printed. If False, the box is not printed. '
+                'If None, the box is printed if it is present in the xyz file.'
             )
         )
 
