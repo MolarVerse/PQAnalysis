@@ -52,7 +52,7 @@ class GenFileReader(BaseReader):
             The AtomicSystem including the Cell object.
         """
         with open(self.filename, 'r', encoding='utf-8') as file:
-            lines = file.read_lines()
+            lines = file.readlines()
 
             self.n_atoms, is_periodic, atom_names = self._read_header(lines[:2])
 
@@ -67,9 +67,7 @@ class GenFileReader(BaseReader):
             return AtomicSystem(atoms=atoms, pos=coords, cell=cell)
 
     def _read_header(self,
-        header: List[str]) -> Tuple[PositiveInt,
-        bool,
-        List[str]]:
+                     header: List[str]) -> Tuple[PositiveInt, bool, List[str]]:
         """
         Reads the header of the gen file.
 
@@ -111,8 +109,7 @@ class GenFileReader(BaseReader):
         return n_atoms, is_periodic, atom_names
 
     def _read_coords(self,
-        lines: List[str]) -> Tuple[Np2DNumberArray,
-        Np1DIntArray]:
+                     lines: List[str]) -> Tuple[Np2DNumberArray, Np1DIntArray]:
         """
         Reads the coordinates block of the gen file.
 
