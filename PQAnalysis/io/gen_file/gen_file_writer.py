@@ -28,14 +28,15 @@ class GenFileWriter(BaseWriter):
     @runtime_type_checking
     def __init__(
         self,
-        filename: str,
+        filename: str | None = None,
         mode: FileWritingMode | str = "w",
     ) -> None:
         """
         Parameters
         ----------
-        filename : str
-            The filename of the gen file.
+        filename : str | None, optional
+            The filename of the gen file. If None, the file is not opened,
+            by default None.
         mode : FileWritingMode | str, optional
             The writing mode, by default "w". The following modes are available:
             - "w": write
@@ -105,7 +106,7 @@ class GenFileWriter(BaseWriter):
         the periodicity of the system. The second line contains the atom names from which 
         the indices of the atoms in the coordinates block can be derived.
         """
-        print({self.system.n_atoms}, {periodicity}, file=self.file)
+        print(self.system.n_atoms, periodicity, file=self.file)
 
         element_names = self.system.unique_element_names
 
@@ -128,12 +129,9 @@ class GenFileWriter(BaseWriter):
                 "\t",
                 i + 1,
                 element_names.index(self.system.atoms[i].element_name) + 1,
-                self.system.pos[i,
-                0],
-                self.system.pos[i,
-                1],
-                self.system.pos[i,
-                2],
+                self.system.pos[i, 0],
+                self.system.pos[i, 1],
+                self.system.pos[i, 2],
                 file=self.file
             )
 
@@ -153,11 +151,8 @@ class GenFileWriter(BaseWriter):
         print(0.0, 0.0, 0.0, file=self.file)
         for i in range(3):
             print(
-                box_matrix[i,
-                0],
-                box_matrix[i,
-                1],
-                box_matrix[i,
-                2],
+                box_matrix[i, 0],
+                box_matrix[i, 1],
+                box_matrix[i, 2],
                 file=self.file
             )
