@@ -61,7 +61,7 @@ def gen2xyz(
         output,
         engine_format=md_format,
         traj_type="xyz",
-        mode=mode
+        mode=mode,
     )
 
 
@@ -99,10 +99,15 @@ def xyz2gen(
     system = TrajectoryReader(
         xyz_file,
         md_format=md_format,
-        traj_format="xyz"
+        traj_format="xyz",
     ).read()
 
-    write_gen_file(output, system, periodic, mode)
+    write_gen_file(
+        filename=output,
+        system=system[0],
+        periodic=periodic,
+        mode=mode,
+    )
 
 
 
@@ -143,11 +148,7 @@ def rst2xyz(
         system.cell = Cell()
 
     write_trajectory(
-        system,
-        output,
-        engine_format=md_format,
-        traj_type="xyz",
-        mode=mode
+        system, output, engine_format=md_format, traj_type="xyz", mode=mode
     )
 
 
@@ -225,9 +226,7 @@ def traj2qmcfc(
     """
 
     writer = TrajectoryWriter(
-        filename=output,
-        engine_format="qmcfc",
-        mode=mode
+        filename=output, engine_format="qmcfc", mode=mode
     )
 
     for filename in trajectory_files:
