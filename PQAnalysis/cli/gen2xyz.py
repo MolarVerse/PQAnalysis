@@ -59,9 +59,7 @@ class GEN2XYZCLI(CLIBase):
             The parser to which the arguments should be added.
         """
         parser.add_argument(
-            'gen_file',
-            type=str,
-            help='The gen file to be converted.'
+            'gen_file', type=str, help='The gen file to be converted.'
         )
 
         parser.parse_output_file()

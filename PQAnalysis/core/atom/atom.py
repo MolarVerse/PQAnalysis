@@ -128,8 +128,8 @@ class Atom():
             if element_id is not None:
                 self.logger.error(
                     (
-                    "The element of the atom_type cannot be an "
-                    "Element object if the id is given."
+                        "The element of the atom_type cannot be an "
+                        "Element object if the id is given."
                     ),
                     exception=PQValueError
                 )
@@ -245,4 +245,4 @@ class Atom():
     @property
     def element_name(self) -> str:
         """str: The name of the element (e.g. 'Carbon')"""
-        return self._element.name
+        return self._element.symbol
