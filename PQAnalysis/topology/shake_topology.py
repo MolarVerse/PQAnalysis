@@ -135,11 +135,11 @@ class ShakeTopologyGenerator:
                     exception=PQValueError
                 )
 
-            self.line_comments = []
+            self.line_comments = [""] * len(self.indices)
 
             for i, equivalent_indices in enumerate(indices):
                 for _ in equivalent_indices:
-                    self.line_comments.append(comments[i])
+                    self.line_comments[equivalent_indices[i]] = comments[i]
 
     @runtime_type_checking
     def write_topology(
