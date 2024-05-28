@@ -1,7 +1,10 @@
+import pytest
+
 from PQAnalysis.io.traj_file import TrajectoryReader
 
 
 
+@pytest.mark.benchmark(group="TrajectoryReader")
 class BenchmarkTrajReader:
 
     def benchmark_read_2frames(self, benchmark):
