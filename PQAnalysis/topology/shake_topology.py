@@ -138,8 +138,12 @@ class ShakeTopologyGenerator:
             self.line_comments = [""] * len(self.indices)
 
             for i, equivalent_indices in enumerate(indices):
-                for _ in equivalent_indices:
-                    self.line_comments[equivalent_indices[i]] = comments[i]
+                _indices = np.nonzero(
+                    np.in1d(self.indices, equivalent_indices)
+                )[0]
+
+                for index in _indices:
+                    self.line_comments[index] = comments[i]
 
     @runtime_type_checking
     def write_topology(
