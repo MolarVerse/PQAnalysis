@@ -11,9 +11,6 @@ The future development of this package focuses on two main goals. On the one han
 
 ## Installation
 
-Prerequisites:
-- pip package-management system
-
 Install with pip:
 
     pip install pqanalysis
