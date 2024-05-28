@@ -14,6 +14,12 @@ The future development of this package focuses on two main goals. On the one han
 Prerequisites:
 - pip package-management system
 
+Install with pip:
+
+    pip install pqanalysis
+
+## Development
+
 Clone the PQAnalysis GitHub repositroy and navigate into the directory:
 
     git clone https://github.com/MolarVerse/PQAnalysis.git
