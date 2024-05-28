@@ -547,6 +547,34 @@ class AtomicSystem(
         bool
             Whether the AtomicSystem is equal to the other AtomicSystem.
         """
+
+        return self.isclose(other)
+
+    @runtime_type_checking
+    def isclose(
+        self,
+        other: Any,
+        rtol: PositiveReal = 1e-5,
+        atol: PositiveReal = 1e-8,
+    ) -> bool:
+        """
+        Checks whether the AtomicSystem is close to another AtomicSystem.
+
+        Parameters
+        ----------
+        other : AtomicSystem
+            The other AtomicSystem to compare to.
+        rtol : PositiveReal, optional
+            The relative tolerance, by default 1e-5
+        atol : PositiveReal, optional
+            The absolute tolerance, by default 1e-8
+
+        Returns
+        -------
+        bool
+            Whether the AtomicSystem is close to the other AtomicSystem.
+        """
+
         if not isinstance(other, AtomicSystem):
             return False
 
@@ -556,19 +584,19 @@ class AtomicSystem(
         if self.topology != other.topology:
             return False
 
-        if self.cell != other.cell:
+        if not self.cell.isclose(other.cell, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.pos, other.pos):
+        if not np.allclose(self.pos, other.pos, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.vel, other.vel):
+        if not np.allclose(self.vel, other.vel, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.forces, other.forces):
+        if not np.allclose(self.forces, other.forces, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.charges, other.charges):
+        if not np.allclose(self.charges, other.charges, rtol=rtol, atol=atol):
             return False
 
         return True
