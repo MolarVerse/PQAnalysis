@@ -156,7 +156,7 @@ class ShakeTopologyGenerator:
             The comments to add to each line of the shake topology.
         """
 
-        if len(comments) != len(self.indices):
+        if self.indices is None or len(comments) != len(self.indices):
             self.logger.error(
                 "The number of comments does not match the number of indices.",
                 exception=PQValueError
