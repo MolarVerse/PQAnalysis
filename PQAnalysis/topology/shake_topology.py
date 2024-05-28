@@ -118,7 +118,7 @@ class ShakeTopologyGenerator:
         indices : List[Np1DIntArray] | Np2DIntArray
             The indices of the equivalent atoms.
         comments : List[str], optional
-            The comments for the topology, by default None
+            The line comments for the averaged distances, by default None
         """
 
         for equivalent_indices in indices:
@@ -144,6 +144,29 @@ class ShakeTopologyGenerator:
 
                 for index in _indices:
                     self.line_comments[index] = comments[i]
+
+    @runtime_type_checking
+    def add_comments(self, comments: List[str]) -> None:
+        """
+        Adds comments to the topology.
+
+        Parameters
+        ----------
+        comments : List[str]
+            The comments to add to each line of the shake topology.
+        """
+
+        if len(comments) != len(self.indices):
+            self.logger.error(
+                "The number of comments does not match the number of indices.",
+                exception=PQValueError
+            )
+
+        if self.line_comments is None:
+            self.line_comments = [""] * len(self.indices)
+
+        for i, comment in enumerate(comments):
+            self.line_comments[i] = comment
 
     @runtime_type_checking
     def write_topology(
