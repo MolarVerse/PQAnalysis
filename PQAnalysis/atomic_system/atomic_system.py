@@ -20,6 +20,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis import __package_name__
 
 from PQAnalysis.types import (
@@ -665,3 +666,31 @@ class AtomicSystem(
             The string representation of the AtomicSystem.
         """
         return self.__str__()
+
+    def select(
+        self,
+        selection_object: SelectionCompatible,
+        use_full_atom_info: bool = False
+    ) -> "AtomicSystem":
+        """
+        Selects a subset of atoms from the AtomicSystem and 
+        returns a new AtomicSystem with the selected atoms.
+
+        Parameters
+        ----------
+        selection_object : SelectionCompatible
+            The selection object to select the atoms with.
+        use_full_atom_info : bool, optional
+            Whether to use the full atom information for the selection,
+            by default False
+
+        Returns
+        -------
+        AtomicSystem
+            A new AtomicSystem with the selected atoms.        
+        """
+
+        selection = Selection(selection_object)
+        selected_indices = selection.select(self.topology, use_full_atom_info)
+
+        return self[selected_indices]
