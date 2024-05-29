@@ -348,7 +348,7 @@ class Trajectory:
 
     def isclose(
         self,
-        other: "Trajectory",
+        other: Any,
         rtol: PositiveReal = 1e-5,
         atol: PositiveReal = 1e-8,
     ) -> bool:
@@ -357,8 +357,8 @@ class Trajectory:
 
         Parameters
         ----------
-        other : Trajectory
-            The other trajectory to compare.
+        other : Any
+            The other object to compare with.
         rtol : PositiveReal, optional
             The relative tolerance parameter, by default 1e-5
         atol : PositiveReal, optional
