@@ -8,7 +8,7 @@ import numpy as np
 from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
+from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, PositiveReal
 from PQAnalysis.exceptions import PQIndexError, PQTypeError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
@@ -344,13 +344,44 @@ class Trajectory:
             The other trajectory to compare.
         """
 
+        return self.isclose(other)
+
+    def isclose(
+        self,
+        other: "Trajectory",
+        rtol: PositiveReal = 1e-5,
+        atol: PositiveReal = 1e-8,
+    ) -> bool:
+        """
+        This method allows two trajectories to be compared for closeness.
+
+        Parameters
+        ----------
+        other : Trajectory
+            The other trajectory to compare.
+        rtol : PositiveReal, optional
+            The relative tolerance parameter, by default 1e-5
+        atol : PositiveReal, optional
+            The absolute tolerance parameter, by default 1e-8
+
+        Returns
+        -------
+        bool
+            Whether the two trajectories are close.
+        """
+
         if not isinstance(other, Trajectory):
             return False
 
         if len(self.frames) != len(other.frames):
             return False
 
-        return self.frames == other.frames
+        return np.all(
+            [
+                self.frames[i].isclose(other.frames[i], rtol=rtol, atol=atol)
+                for i in np.arange(len(self.frames))
+            ]
+        )
 
     def __str__(self) -> str:
         """
