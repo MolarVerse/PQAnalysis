@@ -115,13 +115,17 @@ class Selection:
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(self, selection_object: SelectionCompatible = None):
+    def __init__(
+        self,
+        selection_object: SelectionCompatible = None,
+    ):
         """
         Parameters
         ----------
         selection_object : SelectionCompatible, optional
             The object to create the selection from.
         """
+
         if isinstance(selection_object, Selection):
             self.selection_object = selection_object.selection_object
         else:
@@ -158,9 +162,11 @@ class Selection:
             return np.arange(topology.n_atoms)
 
         return np.unique(
-            _selection(self.selection_object,
-            topology,
-            use_full_atom_info)
+            _selection(
+                self.selection_object,
+                topology,
+                use_full_atom_info,
+            )
         )
 
     def __str__(self) -> str:
@@ -190,7 +196,7 @@ class Selection:
 def _selection(
     atoms: SelectionCompatible,
     topology: Topology,
-    use_full_atom_info: bool
+    use_full_atom_info: bool,
 ) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based
@@ -214,10 +220,11 @@ def _selection(
     if isinstance(atoms, (Atom, Element)):
         return _selection_of_atoms(atoms, topology, use_full_atom_info)
 
-    if (isinstance(atoms,
-        List) and len(atoms) > 0 and isinstance(atoms[0],
-        (Atom,
-        Element))):
+    if (
+        # check if the first element is an Atom or Element object
+        isinstance(atoms, List) and len(atoms) > 0 and
+        isinstance(atoms[0], (Atom, Element))
+    ):
         return _selection_of_atoms(atoms[0], topology, use_full_atom_info)
 
     if isinstance(atoms, List):
@@ -261,7 +268,9 @@ def _selection_of_atoms(
         atoms = [atoms]
 
     if isinstance(atoms[0], Element):
+
         if use_full_atom_info:
+
             Selection.logger.error(
                 "The use_full_atom_info parameter is not supported for Element objects.",
                 exception=PQValueError
@@ -283,7 +292,7 @@ def _selection_of_atoms(
 
 def _selection_of_atomtypes(
     atomtype_names: List[str],
-    topology: Topology
+    topology: Topology,
 ) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a list of atom type names.
@@ -312,7 +321,7 @@ def _selection_of_atomtypes(
 def _selection_of_string(
     string: str,
     topology: Topology,
-    use_full_atom_info: bool
+    use_full_atom_info: bool,
 ) -> Np1DIntArray:
     """
     Overloaded function for selecting atoms based on a string.
@@ -339,11 +348,13 @@ def _selection_of_string(
     parser = Lark.open(grammar_path / grammar_file, propagate_positions=True)
 
     tree = parser.parse(string)
+
     transformed_tree = SelectionTransformer(
         topology=topology,
         visit_tokens=True,
         use_full_atom_info=use_full_atom_info
     ).transform(tree)
+
     visitor = SelectionVisitor()
 
     return np.sort(visitor.visit(transformed_tree))
@@ -823,8 +834,7 @@ def _indices_by_atom(atom: Atom, topology: Topology) -> Np1DIntArray:
 
 
 def _indices_by_element_types(
-    atom: Atom | Element,
-    topology: Topology
+    atom: Atom | Element, topology: Topology
 ) -> Np1DIntArray:
     """
     Returns the indices of the given element type.
