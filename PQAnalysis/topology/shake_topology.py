@@ -2,6 +2,7 @@
 A module containing the ShakeTopologyGenerator class.
 """
 
+import logging
 import numpy as np
 
 from beartype.typing import List
@@ -10,6 +11,9 @@ from PQAnalysis.traj import Trajectory
 from PQAnalysis.types import Np1DIntArray, Np2DIntArray
 from PQAnalysis.io import BaseWriter, FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis import __package_name__
 
 from .selection import SelectionCompatible, Selection
 
@@ -20,6 +24,9 @@ class ShakeTopologyGenerator:
     """
     A class for generating the shake topology for a given trajectory
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     @runtime_type_checking
     def __init__(
@@ -46,6 +53,7 @@ class ShakeTopologyGenerator:
         self.target_indices = None
         self.distances = None
         self._topology = None
+        self.line_comments = None
 
     @runtime_type_checking
     def generate_topology(self, trajectory: Trajectory) -> None:
@@ -69,8 +77,7 @@ class ShakeTopologyGenerator:
         self._topology = trajectory.topology
 
         indices = self.selection.select(
-            self._topology,
-            self._use_full_atom_info
+            self._topology, self._use_full_atom_info
         )
 
         target_indices, distances = atomic_system.nearest_neighbours(
@@ -96,7 +103,8 @@ class ShakeTopologyGenerator:
     @runtime_type_checking
     def average_equivalents(
         self,
-        indices: List[Np1DIntArray] | Np2DIntArray
+        indices: List[Np1DIntArray] | Np2DIntArray,
+        comments: List[str] | None = None
     ) -> None:
         """
         Averages the distances for equivalent atoms.
@@ -109,6 +117,8 @@ class ShakeTopologyGenerator:
         ----------
         indices : List[Np1DIntArray] | Np2DIntArray
             The indices of the equivalent atoms.
+        comments : List[str], optional
+            The line comments for the averaged distances, by default None
         """
 
         for equivalent_indices in indices:
@@ -117,6 +127,46 @@ class ShakeTopologyGenerator:
             mean_distance = np.mean(self.distances[_indices])
 
             self.distances[_indices] = mean_distance
+
+        if comments is not None:
+            if len(comments) != len(indices):
+                self.logger.error(
+                    "The number of comments does not match the number of indices.",
+                    exception=PQValueError
+                )
+
+            self.line_comments = [""] * len(self.indices)
+
+            for i, equivalent_indices in enumerate(indices):
+                _indices = np.nonzero(
+                    np.in1d(self.indices, equivalent_indices)
+                )[0]
+
+                for index in _indices:
+                    self.line_comments[index] = comments[i]
+
+    @runtime_type_checking
+    def add_comments(self, comments: List[str]) -> None:
+        """
+        Adds comments to the topology.
+
+        Parameters
+        ----------
+        comments : List[str]
+            The comments to add to each line of the shake topology.
+        """
+
+        if self.indices is None or len(comments) != len(self.indices):
+            self.logger.error(
+                "The number of comments does not match the number of indices.",
+                exception=PQValueError
+            )
+
+        if self.line_comments is None:
+            self.line_comments = [""] * len(self.indices)
+
+        for i, comment in enumerate(comments):
+            self.line_comments[i] = comment
 
     @runtime_type_checking
     def write_topology(
@@ -147,8 +197,8 @@ class ShakeTopologyGenerator:
 
         print(
             (
-            f"SHAKE {len(self.indices)}  "
-            f"{len(np.unique(self.target_indices))}  0"
+                f"SHAKE {len(self.indices)}  "
+                f"{len(np.unique(self.target_indices))}  0"
             ),
             file=writer.file
         )
@@ -157,7 +207,16 @@ class ShakeTopologyGenerator:
             target_index = self.target_indices[i]
             distance = self.distances[i]
 
-            print(f"{index+1} {target_index+1} {distance}", file=writer.file)
+            print(
+                f"{index+1} {target_index+1} {distance}",
+                end="",
+                file=writer.file
+            )
+
+            if self.line_comments is not None:
+                print(f"  # {self.line_comments[i]}", file=writer.file)
+            else:
+                print("", file=writer.file)
 
         print("END", file=writer.file)
 
