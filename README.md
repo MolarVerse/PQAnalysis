@@ -17,7 +17,7 @@ Install with pip:
 
 ## Development
 
-Clone the PQAnalysis GitHub repositroy and navigate into the directory:
+Clone the PQAnalysis GitHub repository and navigate into the directory:
 
     git clone https://github.com/MolarVerse/PQAnalysis.git
     cd PQAnalysis
