@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>units &mdash; PQAnalysis  documentation</title>
+  <title>math &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -19,10 +19,12 @@
         <script src="../_static/documentation_options.js?v=5929fcd5"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="random" href="PQAnalysis.utils.random.html" /> 
+    <link rel="next" title="random" href="PQAnalysis.utils.random.html" />
+    <link rel="prev" title="files" href="PQAnalysis.utils.files.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -64,9 +66,9 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.custom_logging.html">custom_logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.decorators.html">decorators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.files.html">files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.math.html">math</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">math</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.random.html">random</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">units</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.units.html">units</a></li>
 </ul>
 </li>
 </ul>
@@ -91,9 +93,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.utils.html">utils</a></li>
-      <li class="breadcrumb-item active">units</li>
+      <li class="breadcrumb-item active">math</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/code/PQAnalysis.utils.units.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/code/PQAnalysis.utils.math.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -101,14 +103,61 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-PQAnalysis.utils.units">
-<span id="units"></span><h1>units<a class="headerlink" href="#module-PQAnalysis.utils.units" title="Link to this heading"></a></h1>
-<p>A module containing different units related to the unum subpackage.</p>
+  <section id="module-PQAnalysis.utils.math">
+<span id="math"></span><h1>math<a class="headerlink" href="#module-PQAnalysis.utils.math" title="Link to this heading"></a></h1>
+<p>A collection of utility functions for mathematical operations.</p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.utils.math.allclose_vectorized" title="PQAnalysis.utils.math.allclose_vectorized"><code class="xref py py-obj docutils literal notranslate"><span class="pre">allclose_vectorized</span></code></a></p></td>
+<td><p>Perform element-wise comparison of two arrays to determine if they are equal within a tolerance.</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="reference">
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.utils.math.allclose_vectorized">
+<span class="sig-name descname"><span class="pre">allclose_vectorized</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">b</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/utils/math.html#allclose_vectorized"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.utils.math.allclose_vectorized" title="Link to this definition"></a></dt>
+<dd><p>Perform element-wise comparison of two arrays to determine if they
+are equal within a tolerance. This function is a vectorized version
+of <cite>math.isclose</cite> that can be applied to numpy arrays.</p>
+<p>This function uses the full symmetric definition of <cite>math.isclose</cite> to
+compare two arrays, by applying the following formula element-wise:</p>
+<div class="math notranslate nohighlight">
+\[|a - b| &lt;= max(rtol * max(|a|, |b|), atol))\]</div>
+<p>For a full discussion on why this function is needed, and replaces <cite>np.allclose</cite>,
+see [pull request #74](<a class="reference external" href="https://github.com/MolarVerse/PQAnalysis/pull/74">https://github.com/MolarVerse/PQAnalysis/pull/74</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>np.ndarray</em>) – first array to compare</p></li>
+<li><p><strong>b</strong> (<em>np.ndarray</em>) – second array to compare</p></li>
+<li><p><strong>rtol</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – the relative tolerance parameter, by default 1e-09</p></li>
+<li><p><strong>atol</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – the absolute tolerance parameter, by default 0.0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the arrays are element-wise equal within the given tolerance, False otherwise</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Bool</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -116,7 +165,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PQAnalysis.utils.random.html" class="btn btn-neutral float-left" title="random" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.utils.files.html" class="btn btn-neutral float-left" title="files" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.utils.random.html" class="btn btn-neutral float-right" title="random" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

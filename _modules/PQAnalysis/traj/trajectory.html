@@ -87,12 +87,17 @@
 <span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span>
 
 <span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQIndexError</span><span class="p">,</span> <span class="n">PQTypeError</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Cell</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.atomic_system</span> <span class="kn">import</span> <span class="n">AtomicSystem</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+    <span class="n">PositiveReal</span><span class="p">,</span>
+    <span class="n">Bool</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">runtime_type_checking</span><span class="p">,</span>
     <span class="n">runtime_type_checking_setter</span><span class="p">,</span>
@@ -450,7 +455,7 @@
 
 <div class="viewcode-block" id="Trajectory.__eq__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method allows two trajectories to be compared for equality.</span>
 
@@ -458,6 +463,40 @@
 <span class="sd">        ----------</span>
 <span class="sd">        other : Trajectory</span>
 <span class="sd">            The other trajectory to compare.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Bool</span>
+<span class="sd">            Whether the two trajectories are equal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Trajectory.isclose">
+<a class="viewcode-back" href="../../../code/PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory.isclose">[docs]</a>
+    <span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">rtol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
+        <span class="n">atol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method allows two trajectories to be compared for closeness.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : Any</span>
+<span class="sd">            The other object to compare with.</span>
+<span class="sd">        rtol : PositiveReal, optional</span>
+<span class="sd">            The relative tolerance parameter, by default 1e-9</span>
+<span class="sd">        atol : PositiveReal, optional</span>
+<span class="sd">            The absolute tolerance parameter, by default 0.0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Bool</span>
+<span class="sd">            Whether the two trajectories are close.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">):</span>
@@ -466,7 +505,12 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">frames</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frames</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">frames</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">frames</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frames</span><span class="p">))</span>
+            <span class="p">]</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Trajectory.__str__">

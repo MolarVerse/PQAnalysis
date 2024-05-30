@@ -141,11 +141,29 @@ Is always ignored if atoms is not a list of atom objects.</p></li>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.add_comments">
+<span class="sig-name descname"><span class="pre">add_comments</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/shake_topology.html#ShakeTopologyGenerator.add_comments"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.add_comments" title="Link to this definition"></a></dt>
+<dd><p>Adds comments to the topology.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>comments</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – The comments to add to each line of the shake topology.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.average_equivalents">
 <span class="sig-name descname"><span class="pre">average_equivalents</span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">indices</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><span class="pre">Np1DIntArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DIntArray" title="PQAnalysis.types.Np2DIntArray"><span class="pre">Np2DIntArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">comments</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 </dl>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/topology/shake_topology.html#ShakeTopologyGenerator.average_equivalents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.average_equivalents" title="Link to this definition"></a></dt>
@@ -155,7 +173,10 @@ Each row of the array contains the indices of equivalent atoms.
 All of the equivalent atoms will be averaged to a single distance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>indices</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em>] </em><em>| </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DIntArray" title="PQAnalysis.types.Np2DIntArray"><em>Np2DIntArray</em></a>) – The indices of the equivalent atoms.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indices</strong> (<em>List</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DIntArray" title="PQAnalysis.types.Np1DIntArray"><em>Np1DIntArray</em></a><em>] </em><em>| </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DIntArray" title="PQAnalysis.types.Np2DIntArray"><em>Np2DIntArray</em></a>) – The indices of the equivalent atoms.</p></li>
+<li><p><strong>comments</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – The line comments for the averaged distances, by default None</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -212,6 +233,11 @@ If no filename is given, the topology will be written to stdout.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.ShakeTopologyGenerator</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.selection_object">

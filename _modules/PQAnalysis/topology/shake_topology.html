@@ -81,6 +81,7 @@
 <span class="sd">A module containing the ShakeTopologyGenerator class.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
@@ -89,6 +90,9 @@
 <span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DIntArray</span><span class="p">,</span> <span class="n">Np2DIntArray</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="n">BaseWriter</span><span class="p">,</span> <span class="n">FileWritingMode</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQValueError</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 
 <span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">SelectionCompatible</span><span class="p">,</span> <span class="n">Selection</span>
 
@@ -101,6 +105,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for generating the shake topology for a given trajectory</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -127,6 +134,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">distances</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="ShakeTopologyGenerator.generate_topology">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.generate_topology">[docs]</a>
@@ -152,8 +160,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">topology</span>
 
         <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span>
         <span class="p">)</span>
 
         <span class="n">target_indices</span><span class="p">,</span> <span class="n">distances</span> <span class="o">=</span> <span class="n">atomic_system</span><span class="o">.</span><span class="n">nearest_neighbours</span><span class="p">(</span>
@@ -182,7 +189,8 @@
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span> <span class="nf">average_equivalents</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Np1DIntArray</span><span class="p">]</span> <span class="o">|</span> <span class="n">Np2DIntArray</span>
+        <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Np1DIntArray</span><span class="p">]</span> <span class="o">|</span> <span class="n">Np2DIntArray</span><span class="p">,</span>
+        <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Averages the distances for equivalent atoms.</span>
@@ -195,6 +203,8 @@
 <span class="sd">        ----------</span>
 <span class="sd">        indices : List[Np1DIntArray] | Np2DIntArray</span>
 <span class="sd">            The indices of the equivalent atoms.</span>
+<span class="sd">        comments : List[str], optional</span>
+<span class="sd">            The line comments for the averaged distances, by default None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">equivalent_indices</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
@@ -202,7 +212,50 @@
 
             <span class="n">mean_distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">_indices</span><span class="p">])</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_distance</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">mean_distance</span>
+
+        <span class="k">if</span> <span class="n">comments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;The number of comments does not match the number of indices.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">equivalent_indices</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+                <span class="n">_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span>
+                    <span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">equivalent_indices</span><span class="p">)</span>
+                <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">_indices</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">comments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ShakeTopologyGenerator.add_comments">
+<a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.add_comments">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">add_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds comments to the topology.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        comments : List[str]</span>
+<span class="sd">            The comments to add to each line of the shake topology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The number of comments does not match the number of indices.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">comments</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">comment</span></div>
 
 
 <div class="viewcode-block" id="ShakeTopologyGenerator.write_topology">
@@ -236,8 +289,8 @@
 
         <span class="nb">print</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;SHAKE </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2">  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">))</span><span class="si">}</span><span class="s2">  0&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;SHAKE </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span><span class="si">}</span><span class="s2">  &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">))</span><span class="si">}</span><span class="s2">  0&quot;</span>
             <span class="p">),</span>
             <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span>
         <span class="p">)</span>
@@ -246,7 +299,16 @@
             <span class="n">target_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
             <span class="n">distance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">distance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">target_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">distance</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">end</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  # </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">writer</span><span class="o">.</span><span class="n">file</span><span class="p">)</span></div>
 

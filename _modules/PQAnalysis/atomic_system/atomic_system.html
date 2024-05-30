@@ -94,11 +94,12 @@
 
 <span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">distance</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">PositiveInt</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Bool</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQNotImplementedError</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.random</span> <span class="kn">import</span> <span class="n">get_random_seed</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.math</span> <span class="kn">import</span> <span class="n">allclose_vectorized</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 
 <span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="p">(</span>
@@ -625,7 +626,7 @@
 
 <div class="viewcode-block" id="AtomicSystem.__eq__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether the AtomicSystem is equal to another AtomicSystem.</span>
 
@@ -639,6 +640,37 @@
 <span class="sd">        bool</span>
 <span class="sd">            Whether the AtomicSystem is equal to the other AtomicSystem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AtomicSystem.isclose">
+<a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.isclose">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">rtol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
+        <span class="n">atol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks whether the AtomicSystem is close to another AtomicSystem.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        other : AtomicSystem</span>
+<span class="sd">            The other AtomicSystem to compare to.</span>
+<span class="sd">        rtol : PositiveReal, optional</span>
+<span class="sd">            The relative tolerance, by default 1e-9</span>
+<span class="sd">        atol : PositiveReal, optional</span>
+<span class="sd">            The absolute tolerance, by default 0.0</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether the AtomicSystem is close to the other AtomicSystem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AtomicSystem</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -648,19 +680,23 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">topology</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span> <span class="o">!=</span> <span class="n">other</span><span class="o">.</span><span class="n">cell</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">cell</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allclose_vectorized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">vel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allclose_vectorized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forces</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">forces</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allclose_vectorized</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">forces</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">forces</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">charges</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">charges</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">allclose_vectorized</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">charges</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">charges</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="kc">True</span></div>
