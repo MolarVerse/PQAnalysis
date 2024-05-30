@@ -5,7 +5,7 @@ A collection of utility functions for mathematical operations.
 import math
 import numpy as np
 
-from PQAnalysis.types import PositiveReal
+from PQAnalysis.types import PositiveReal, Bool
 
 
 
@@ -14,7 +14,7 @@ def allclose_vectorized(
     b,
     rtol: PositiveReal = 1e-09,
     atol: PositiveReal = 0.0,
-):
+) -> Bool:
     """
     Perform element-wise comparison of two arrays to determine if they
     are equal within a tolerance. This function is a vectorized version
@@ -43,11 +43,12 @@ def allclose_vectorized(
 
     Returns
     -------
-    _type_
-        _description_
+    Bool
+        True if the arrays are element-wise equal within the given tolerance, False otherwise
     """
 
-    isclose_vectorized = np.vectorize(math.isclose)
+    # otypes needed: ValueError: cannot call `vectorize` on size 0 inputs unless `otypes` is set
+    isclose_vectorized = np.vectorize(math.isclose, otypes=[bool])
 
     result = isclose_vectorized(a, b, rel_tol=rtol, abs_tol=atol)
 
