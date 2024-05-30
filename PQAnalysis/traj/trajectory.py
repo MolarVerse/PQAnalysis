@@ -359,8 +359,8 @@ class Trajectory:
     def isclose(
         self,
         other: Any,
-        rtol: PositiveReal = 1e-5,
-        atol: PositiveReal = 1e-8,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
     ) -> Bool:
         """
         This method allows two trajectories to be compared for closeness.
@@ -370,9 +370,9 @@ class Trajectory:
         other : Any
             The other object to compare with.
         rtol : PositiveReal, optional
-            The relative tolerance parameter, by default 1e-5
+            The relative tolerance parameter, by default 1e-9
         atol : PositiveReal, optional
-            The absolute tolerance parameter, by default 1e-8
+            The absolute tolerance parameter, by default 0.0
 
         Returns
         -------

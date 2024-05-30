@@ -555,8 +555,8 @@ class AtomicSystem(
     def isclose(
         self,
         other: Any,
-        rtol: PositiveReal = 1e-5,
-        atol: PositiveReal = 1e-8,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
     ) -> Bool:
         """
         Checks whether the AtomicSystem is close to another AtomicSystem.
@@ -566,9 +566,9 @@ class AtomicSystem(
         other : AtomicSystem
             The other AtomicSystem to compare to.
         rtol : PositiveReal, optional
-            The relative tolerance, by default 1e-5
+            The relative tolerance, by default 1e-9
         atol : PositiveReal, optional
-            The absolute tolerance, by default 1e-8
+            The absolute tolerance, by default 0.0
 
         Returns
         -------

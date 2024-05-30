@@ -176,8 +176,8 @@ class Cell(_StandardPropertiesMixin):
     def isclose(
         self,
         other: Any,
-        rtol: PositiveReal = 1e-5,
-        atol: PositiveReal = 1e-8,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
     ) -> Bool:
         """
         Checks if the Cell is close to another Cell.
@@ -187,9 +187,9 @@ class Cell(_StandardPropertiesMixin):
         other : Cell
             The Cell to compare with.
         rtol : PositiveReal, optional
-            The relative tolerance parameter.
+            The relative tolerance parameter. Default is 1e-9.
         atol : PositiveReal, optional
-            The absolute tolerance parameter.
+            The absolute tolerance parameter. Default is 0.0.
 
         Returns
         -------
