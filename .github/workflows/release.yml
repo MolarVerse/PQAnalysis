@@ -2,6 +2,7 @@ name: Publish Python distribution to PyPI and TestPyPI
 
 on: 
   push:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -31,7 +32,7 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python distribution to PyPI
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
     needs:
     - build
     runs-on: ubuntu-latest
@@ -98,6 +99,16 @@ jobs:
         commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
         file_pattern: CHANGELOG.md
 
+    # check if github release already exists
+    - name: Check if GitHub Release already exists
+      id: check_release
+      run: |
+        gh release view ${{ github.ref_name }} --repo ${{ github.repository }} > /dev/null 2>&1
+        if [ $? -eq 0 ]; then
+          gh release edit -n ${{ github.ref_name }} --repo ${{ github.repository }} --notes ${{ steps.changelog.outputs.changes }}
+          exit 0
+        fi
+
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -128,7 +139,7 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/PQAnalysis
 
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
