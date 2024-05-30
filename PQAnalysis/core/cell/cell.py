@@ -13,7 +13,7 @@ from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
 
 from PQAnalysis.type_checking import runtime_type_checking
-from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray, PositiveReal
+from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray, PositiveReal, Bool
 from PQAnalysis.utils.math import allclose_vectorized
 
 from ._standard_properties import _StandardPropertiesMixin
@@ -155,7 +155,7 @@ class Cell(_StandardPropertiesMixin):
 
         return np.reshape(pos, original_shape)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         Checks if the Cell is equal to another Cell.
 
@@ -166,18 +166,19 @@ class Cell(_StandardPropertiesMixin):
 
         Returns
         -------
-        bool
+        Bool
             True if the Cells are equal, False otherwise.
         """
 
         return self.isclose(other)
 
+    @runtime_type_checking
     def isclose(
         self,
         other: Any,
         rtol: PositiveReal = 1e-5,
         atol: PositiveReal = 1e-8,
-    ) -> bool:
+    ) -> Bool:
         """
         Checks if the Cell is close to another Cell.
 
@@ -192,7 +193,7 @@ class Cell(_StandardPropertiesMixin):
 
         Returns
         -------
-        bool
+        Bool
             True if the Cells are close, False otherwise.
         """
 
