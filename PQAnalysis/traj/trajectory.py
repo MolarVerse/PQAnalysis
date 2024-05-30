@@ -347,6 +347,11 @@ class Trajectory:
         ----------
         other : Trajectory
             The other trajectory to compare.
+
+        Returns
+        -------
+        Bool
+            Whether the two trajectories are equal.
         """
 
         return self.isclose(other)
@@ -371,7 +376,7 @@ class Trajectory:
 
         Returns
         -------
-        bool
+        Bool
             Whether the two trajectories are close.
         """
 
