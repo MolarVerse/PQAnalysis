@@ -15,7 +15,7 @@ from beartype.typing import List  # pylint: disable=unused-import
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
-from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.types import PositiveReal, PositiveInt, Bool
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
@@ -533,7 +533,7 @@ class AtomicSystem(
             topology=self.topology
         )
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         Checks whether the AtomicSystem is equal to another AtomicSystem.
 
@@ -556,7 +556,7 @@ class AtomicSystem(
         other: Any,
         rtol: PositiveReal = 1e-5,
         atol: PositiveReal = 1e-8,
-    ) -> bool:
+    ) -> Bool:
         """
         Checks whether the AtomicSystem is close to another AtomicSystem.
 
