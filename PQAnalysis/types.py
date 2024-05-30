@@ -56,9 +56,11 @@ NpnDNumberArray = NewType(
 #: A type hint for a 3x3 np.ndarray matrix with dtype np.number
 Np3x3NumberArray = NewType(
     "Np2x2NumberArray",
-    Annotated[np.ndarray,
-              Is[lambda array: array.ndim == 2 and array.shape == (3, 3) and
-                 (np.issubdtype(array.dtype, np.number))]]
+    Annotated[
+        np.ndarray,
+        Is[lambda array: array.ndim == 2 and array.shape == (3, 3) and
+           (np.issubdtype(array.dtype, np.number))],
+    ]
 )
 
 #: A type hint for a 2D np.ndarray with dtype np.integer
@@ -87,7 +89,7 @@ Range = NewType("Range", Annotated[range, Is[lambda r: isinstance(r, range)]])
 Bool = NewType(
     "Bool",
     Annotated[
-        bool,
-        Is[lambda b: isinstance(b, bool) or isinstance(b, np.bool_)],
+        bool | np.bool_,
+        Is[lambda b: isinstance(b, (bool, np.bool_))],
     ]
 )
