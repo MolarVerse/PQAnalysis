@@ -8,12 +8,17 @@ import numpy as np
 from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray, PositiveReal
 from PQAnalysis.exceptions import PQIndexError, PQTypeError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.types import (
+    Np2DNumberArray,
+    Np1DNumberArray,
+    PositiveReal,
+    Bool,
+)
 from PQAnalysis.type_checking import (
     runtime_type_checking,
     runtime_type_checking_setter,
@@ -334,7 +339,7 @@ class Trajectory:
 
         return Trajectory(self.frames + other.frames)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         This method allows two trajectories to be compared for equality.
 
@@ -351,7 +356,7 @@ class Trajectory:
         other: Any,
         rtol: PositiveReal = 1e-5,
         atol: PositiveReal = 1e-8,
-    ) -> bool:
+    ) -> Bool:
         """
         This method allows two trajectories to be compared for closeness.
 
