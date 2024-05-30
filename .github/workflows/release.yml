@@ -2,7 +2,12 @@ name: Publish Python distribution to PyPI and TestPyPI
 
 on: 
   push:
+    branches:
+      - '*'
+
   workflow_dispatch:
+
+permissions: write-all
 
 jobs:
   build:
