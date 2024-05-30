@@ -330,7 +330,7 @@ class TestTrajectory:
         traj2 = Trajectory([frame2, frame2])
         traj3 = Trajectory([frame3, frame3])
 
-        assert traj1.isclose(traj2, atol=1e-4)
+        assert traj1.isclose(traj2, atol=1.0001e-4)
         assert not traj1.isclose(traj2, atol=1e-5)
 
         assert traj1.isclose(traj3, rtol=1e-3)

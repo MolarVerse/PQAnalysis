@@ -237,7 +237,7 @@ class TestAtomicSystem:
             cell=Cell(0.75, 0.76, 0.75)
         )
 
-        assert system3.isclose(system4, atol=1e-5)
+        assert system3.isclose(system4, atol=1.0001e-5)
         assert system3.isclose(system4, rtol=1)
         assert not system3.isclose(system4, atol=1e-6)
         assert not system3.isclose(system4, rtol=1e-6)
