@@ -3,8 +3,8 @@ name: Publish Python distribution to PyPI and TestPyPI
 on: 
   push:
     branches:
-      - '*'
-      
+      - v[0-9]+.[0-9]+.[0-9]+
+
   workflow_dispatch:
 
 permissions: write-all
@@ -37,7 +37,6 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python distribution to PyPI
-    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
     needs:
     - build
     runs-on: ubuntu-latest
@@ -58,10 +57,7 @@ jobs:
 
   github-release:
     name: >-
-      Sign the Python distribution with Sigstore
-      and upload them to GitHub Release
-    needs:
-    - publish-to-pypi
+      Create or update GitHub Release
     runs-on: ubuntu-latest
 
     permissions:
@@ -69,19 +65,6 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
-    - name: Download all the dists
-      uses: actions/download-artifact@v3
-      with:
-        name: python-package-distributions
-        path: dist/
-
-    - name: Sign the dists with Sigstore
-      uses: sigstore/gh-action-sigstore-python@v2.1.1
-      with:
-        inputs: >-
-          ./dist/*.tar.gz
-          ./dist/*.whl
-
     - name: Get previous tag
       id: previousTag
       run: |
@@ -123,6 +106,33 @@ jobs:
         --repo '${{ github.repository }}'
         --notes '${{ steps.changelog.outputs.changes }}''
 
+  pypi-release-update:
+    name: >-
+      Sign the Python distribution with Sigstore
+      and upload them to GitHub Release
+    needs:
+    - publish-to-pypi
+    - github-release
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v2.1.1
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+
     - name: Upload artifact signatures to GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -144,7 +154,6 @@ jobs:
       name: testpypi
       url: https://test.pypi.org/p/PQAnalysis
 
-    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
