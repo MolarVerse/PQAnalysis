@@ -5,6 +5,8 @@ from _pytest.capture import CaptureFixture
 from PQAnalysis.utils import print_header
 from PQAnalysis._version import __version__
 
+from . import pytestmark
+
 
 
 def test_print_header(capsys: CaptureFixture):
