@@ -14,6 +14,7 @@ from beartype.vale import Is
 
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray, PositiveReal
+from PQAnalysis.utils.math import allclose_vectorized
 
 from ._standard_properties import _StandardPropertiesMixin
 
@@ -198,14 +199,14 @@ class Cell(_StandardPropertiesMixin):
         if not isinstance(other, Cell):
             return False
 
-        is_equal = np.allclose(
+        is_equal = allclose_vectorized(
             self.box_lengths,
             other.box_lengths,
             rtol=rtol,
             atol=atol,
         )
 
-        is_equal &= np.allclose(
+        is_equal &= allclose_vectorized(
             self.box_angles,
             other.box_angles,
             rtol=rtol,
