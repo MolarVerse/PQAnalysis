@@ -220,6 +220,48 @@ class TestAtomicSystem:
         assert system1 != system2
         assert system3 != system5
 
+    def test_isclose(self):
+        system3 = AtomicSystem(
+            pos=np.array([[0, 0, 0], [1, 1, 1]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(0.75, 0.75, 0.75)
+        )
+        system4 = AtomicSystem(
+            pos=np.array([[0.00001, 0, 0], [1, 1.00001, 1]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(0.75, 0.750001, 0.75)
+        )
+        system5 = AtomicSystem(
+            pos=np.array([[0, 0.01, 0], [1, 1.01, 1]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(0.75, 0.76, 0.75)
+        )
+
+        assert system3.isclose(system4, atol=1.0001e-5)
+        assert system3.isclose(system4, rtol=1)
+        assert not system3.isclose(system4, atol=1e-6)
+        assert not system3.isclose(system4, rtol=1e-6)
+
+        assert system3.isclose(system5, atol=1e-1)
+        assert not system3.isclose(system5, rtol=1e-1)
+        assert not system3.isclose(system5, atol=1e-3)
+        assert not system3.isclose(system5, rtol=1e-2)
+
+        system1 = AtomicSystem(
+            pos=np.array([[0.0, 0, 0], [1, 100.1, 1]]),
+            atoms=[Atom('C'), Atom('H')]
+        )
+
+        system2 = AtomicSystem(
+            pos=np.array([[0.0, 0, 0], [1, 100.11, 1]]),
+            atoms=[Atom('C'), Atom('H')]
+        )
+
+        assert system1.isclose(system2, atol=1.1e-2)
+        assert system1.isclose(system2, rtol=1.1e-4)
+        assert not system1.isclose(system2, atol=1.0e-3)
+        assert not system1.isclose(system2, rtol=1.0e-5)
+
     def test__getitem__(self):
         system = AtomicSystem(
             pos=np.array([[0, 0, 0], [1, 1, 1]]),

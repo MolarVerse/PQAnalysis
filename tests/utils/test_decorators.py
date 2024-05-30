@@ -1,5 +1,7 @@
 from PQAnalysis.utils import count_decorator, instance_function_count_decorator
 
+from . import pytestmark
+
 
 
 def test_count_decorator():
