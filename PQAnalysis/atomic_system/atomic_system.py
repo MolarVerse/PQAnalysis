@@ -20,6 +20,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.utils.math import allclose_vectorized
 from PQAnalysis import __package_name__
 
 from PQAnalysis.types import (
@@ -587,16 +588,20 @@ class AtomicSystem(
         if not self.cell.isclose(other.cell, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.pos, other.pos, rtol=rtol, atol=atol):
+        if not allclose_vectorized(self.pos, other.pos, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.vel, other.vel, rtol=rtol, atol=atol):
+        if not allclose_vectorized(self.vel, other.vel, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.forces, other.forces, rtol=rtol, atol=atol):
+        if not allclose_vectorized(
+            self.forces, other.forces, rtol=rtol, atol=atol
+        ):
             return False
 
-        if not np.allclose(self.charges, other.charges, rtol=rtol, atol=atol):
+        if not allclose_vectorized(
+            self.charges, other.charges, rtol=rtol, atol=atol
+        ):
             return False
 
         return True
