@@ -191,9 +191,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_check_topology_args</span><span class="p">(</span>
-        <span class="n">topology_file</span><span class="p">,</span>
-        <span class="n">topology_file_to_add</span><span class="p">,</span>
-        <span class="n">topology_file_output</span>
+        <span class="n">topology_file</span><span class="p">,</span> <span class="n">topology_file_to_add</span><span class="p">,</span> <span class="n">topology_file_output</span>
     <span class="p">)</span>
 
     <span class="n">_add_molecule</span> <span class="o">=</span> <span class="n">AddMolecule</span><span class="p">(</span>
@@ -261,8 +259,8 @@
         <span class="k">if</span> <span class="n">topology_file_output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The output topology file is specified, but no topology &quot;</span>
-                <span class="s2">&quot;files are given to add. The output topology file will be ignored.&quot;</span>
+                    <span class="s2">&quot;The output topology file is specified, but no topology &quot;</span>
+                    <span class="s2">&quot;files are given to add. The output topology file will be ignored.&quot;</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -283,9 +281,9 @@
     <span class="k">if</span> <span class="n">topology_file_output</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">AddMolecule</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="s2">&quot;The output topology file must be specified if topology files are &quot;</span>
-            <span class="s2">&quot;given to add. This is a special case where None cannot be treated &quot;</span>
-            <span class="s2">&quot;as stdout as it is already used for the restart file.&quot;</span>
+                <span class="s2">&quot;The output topology file must be specified if topology files are &quot;</span>
+                <span class="s2">&quot;given to add. This is a special case where None cannot be treated &quot;</span>
+                <span class="s2">&quot;as stdout as it is already used for the restart file.&quot;</span>
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
         <span class="p">)</span>
@@ -393,19 +391,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">=</span> <span class="n">OutputFileFormat</span><span class="p">(</span>
-            <span class="p">(</span><span class="n">molecule_file_type</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">)</span>
+            <span class="p">(</span><span class="n">molecule_file_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file</span><span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">!=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span> <span class="ow">and</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">molecule_moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="o">!=</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">molecule_moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;A moldescriptor file can only be specified for restart files.&quot;</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span><span class="p">,</span>
-            <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">XYZ</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule_file_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">RESTART</span><span class="p">,</span> <span class="n">OutputFileFormat</span><span class="o">.</span><span class="n">XYZ</span>
+        <span class="p">]:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;The molecule file type must be either RESTART or XYZ.&quot;</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
@@ -464,8 +464,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="s2">&quot;Extension of the topology file is only implemented for shake bonds. &quot;</span>
-            <span class="s2">&quot;The extension of general bonded topologies is not implemented yet.&quot;</span>
+                <span class="s2">&quot;Extension of the topology file is only implemented for shake bonds. &quot;</span>
+                <span class="s2">&quot;The extension of general bonded topologies is not implemented yet.&quot;</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
@@ -475,9 +475,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_system</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">molecule</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The restart frame and the molecule must be read &quot;</span>
-                <span class="s2">&quot;before extending the topology file. Either call &quot;</span>
-                <span class="s2">&quot;the read_files method or the add_molecules method first.&quot;</span>
+                    <span class="s2">&quot;The restart frame and the molecule must be read &quot;</span>
+                    <span class="s2">&quot;before extending the topology file. Either call &quot;</span>
+                    <span class="s2">&quot;the read_files method or the add_molecules method first.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>
