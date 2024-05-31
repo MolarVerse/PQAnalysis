@@ -83,8 +83,8 @@ class RestartFileReader(BaseReader):
         if moldescriptor_filename is not None and reference_residues is not None:
             self.logger.error(
                 (
-                "Both moldescriptor_filename and reference_residues "
-                "are given. They are mutually exclusive."
+                    "Both moldescriptor_filename and reference_residues "
+                    "are given. They are mutually exclusive."
                 ),
                 exception=RestartFileReaderError
             )
@@ -273,7 +273,7 @@ class RestartFileReader(BaseReader):
                     exception=RestartFileReaderError
                 )
 
-            atoms.append(Atom(line[0], use_guess_element=False))
+            atoms.append(Atom(line[0]))
             residues.append(int(line[2]))
             positions.append(np.array([float(l) for l in line[3:6]]))
             velocities.append(np.array([float(l) for l in line[6:9]]))

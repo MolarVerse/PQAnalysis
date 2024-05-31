@@ -73,6 +73,7 @@ jobs:
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
         echo "previousTag: $name"
         echo "previousTag=$name" >> $GITHUB_ENV
+        echo "::set-output name=previousTag::$name"
 
     - name: Update CHANGELOG
       id: changelog
