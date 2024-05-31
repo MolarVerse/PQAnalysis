@@ -140,8 +140,6 @@ class OutputFileFormat(BaseEnumFormat):
 
         file_extension = "." + file_path.split(".")[-1]
 
-        print(file_extension)
-
         if file_extension in cls.file_extensions()[cls.XYZ.value]:
             return cls.XYZ
 

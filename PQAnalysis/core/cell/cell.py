@@ -277,9 +277,6 @@ class Cell(_StandardPropertiesMixin):
             ) / (y * z)
         )
 
-        print(alpha, beta, gamma)
-        print(np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
-
         return cls(
             x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma)
         )
