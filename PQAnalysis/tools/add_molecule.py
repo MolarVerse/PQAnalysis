@@ -110,9 +110,7 @@ def add_molecule(
     """
 
     _check_topology_args(
-        topology_file,
-        topology_file_to_add,
-        topology_file_output
+        topology_file, topology_file_to_add, topology_file_output
     )
 
     _add_molecule = AddMolecule(
@@ -179,8 +177,8 @@ def _check_topology_args(
         if topology_file_output is not None:
             AddMolecule.logger.warning(
                 (
-                "The output topology file is specified, but no topology "
-                "files are given to add. The output topology file will be ignored."
+                    "The output topology file is specified, but no topology "
+                    "files are given to add. The output topology file will be ignored."
                 )
             )
 
@@ -201,9 +199,9 @@ def _check_topology_args(
     if topology_file_output is None:
         AddMolecule.logger.error(
             (
-            "The output topology file must be specified if topology files are "
-            "given to add. This is a special case where None cannot be treated "
-            "as stdout as it is already used for the restart file."
+                "The output topology file must be specified if topology files are "
+                "given to add. This is a special case where None cannot be treated "
+                "as stdout as it is already used for the restart file."
             ),
             exception=PQValueError
         )
@@ -309,19 +307,21 @@ class AddMolecule:
         self.restart_system = None
 
         self.molecule_file_type = OutputFileFormat(
-            (molecule_file_type,
-            self.molecule_file)
+            (molecule_file_type, self.molecule_file)
         )
 
-        if (self.molecule_file_type != OutputFileFormat.RESTART and
-                self.molecule_moldescriptor_file is not None):
+        if (
+            self.molecule_file_type != OutputFileFormat.RESTART and
+            self.molecule_moldescriptor_file is not None
+        ):
             self.logger.error(
                 "A moldescriptor file can only be specified for restart files.",
                 exception=PQValueError
             )
 
-        if self.molecule_file_type not in [OutputFileFormat.RESTART,
-            OutputFileFormat.XYZ]:
+        if self.molecule_file_type not in [
+            OutputFileFormat.RESTART, OutputFileFormat.XYZ
+        ]:
             self.logger.error(
                 "The molecule file type must be either RESTART or XYZ.",
                 exception=PQValueError
@@ -375,8 +375,8 @@ class AddMolecule:
 
         self.logger.warning(
             (
-            "Extension of the topology file is only implemented for shake bonds. "
-            "The extension of general bonded topologies is not implemented yet."
+                "Extension of the topology file is only implemented for shake bonds. "
+                "The extension of general bonded topologies is not implemented yet."
             )
         )
 
@@ -386,9 +386,9 @@ class AddMolecule:
         if self.restart_system is None or self.molecule is None:
             self.logger.error(
                 (
-                "The restart frame and the molecule must be read "
-                "before extending the topology file. Either call "
-                "the read_files method or the add_molecules method first."
+                    "The restart frame and the molecule must be read "
+                    "before extending the topology file. Either call "
+                    "the read_files method or the add_molecules method first."
                 ),
                 exception=PQValueError
             )
