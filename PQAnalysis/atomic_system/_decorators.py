@@ -24,9 +24,7 @@ from beartype.typing import Any
 from decorator import decorator
 
 from .exceptions import (
-    AtomicSystemPositionsError,
-    AtomicSystemMassError,
-    AtomicSystemError
+    AtomicSystemPositionsError, AtomicSystemMassError, AtomicSystemError
 )
 
 
@@ -54,17 +52,12 @@ def check_atom_number_setters(func, self, arg_to_set: Any) -> None:
     AtomicSystemError
         If the number of atoms is not equal the number of positions.
     """
-    print("test")
-    print(func.__name__, file=sys.stderr)
-    print(self.logger)
-    print(arg_to_set)
     if self.n_atoms != np.shape(arg_to_set)[0]:
-        print("test")
         self.logger.error(
             (
-            "The number of atoms in the AtomicSystem object have "
-            "to be equal to the number of atoms in the new array "
-            "in order to set the property."
+                "The number of atoms in the AtomicSystem object have "
+                "to be equal to the number of atoms in the new array "
+                "in order to set the property."
             ),
             exception=AtomicSystemError
         )
@@ -129,8 +122,7 @@ def check_atoms_has_mass(func, *args, **kwargs):
 
     if not all(atom.mass is not None for atom in self.atoms):
         self.logger.error(
-            AtomicSystemMassError.message,
-            exception=AtomicSystemMassError
+            AtomicSystemMassError.message, exception=AtomicSystemMassError
         )
 
     return func(*args, **kwargs)
