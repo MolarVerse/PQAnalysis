@@ -2,10 +2,8 @@ name: Publish Python distribution to PyPI and TestPyPI
 
 on: 
   push:
-    branches:
-      - v[0-9]+.[0-9]+.[0-9]+
-
-  workflow_dispatch:
+    tags:
+      - '**'
 
 permissions: write-all
 
@@ -65,12 +63,17 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Get previous tag
       id: previousTag
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
         echo "previousTag: $name"
         echo "previousTag=$name" >> $GITHUB_ENV
+        echo "::set-output name=previousTag::$name"
 
     - name: Update CHANGELOG
       id: changelog
@@ -78,7 +81,7 @@ jobs:
       with:
         token: ${{ github.token }}
         fromTag: ${{ github.ref_name }}
-        toTag: ${{ steps.previousTag.outputs.previousTag.name }}
+        toTag: ${{ steps.previousTag.outputs.previousTag }}
 
     - name: Commit CHANGELOG.md
       uses: stefanzweifel/git-auto-commit-action@v4
@@ -86,16 +89,6 @@ jobs:
         branch: main
         commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
         file_pattern: CHANGELOG.md
-
-    # check if github release already exists
-    - name: Check if GitHub Release already exists
-      id: check_release
-      run: |
-        gh release view ${{ github.ref_name }} --repo ${{ github.repository }} > /dev/null 2>&1
-        if [ $? -eq 0 ]; then
-          gh release edit -n ${{ github.ref_name }} --repo ${{ github.repository }} --notes ${{ steps.changelog.outputs.changes }}
-          exit 0
-        fi
 
     - name: Create GitHub Release
       env:
