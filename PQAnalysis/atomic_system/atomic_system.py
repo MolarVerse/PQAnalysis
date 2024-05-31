@@ -194,7 +194,10 @@ class AtomicSystem(
         self._stress = stress
         self._cell = cell
 
-    @runtime_type_checking
+    #TODO: check why dynamic formatting does
+    #      not work here for "AtomicSystem"
+    #
+    # @runtime_type_checking
     def fit_atomic_system(
         self,
         system: "AtomicSystem",
