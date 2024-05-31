@@ -63,6 +63,8 @@ jobs:
       id-token: write  # IMPORTANT: mandatory for sigstore
 
     steps:
+    - uses: actions/checkout@v4
+
     - name: Get previous tag
       id: previousTag
       run: |
