@@ -132,13 +132,11 @@ class PQInputFileReader(_OutputFileMixin):
                 if key in self.dictionary.keys():
 
                     new_filename = self.dictionary[key][0].replace(
-                        self.actual_n,
-                        new_actual_n
+                        self.actual_n, new_actual_n
                     )
 
                     new_raw_input_file = new_raw_input_file.replace(
-                        self.dictionary[key][0],
-                        new_filename
+                        self.dictionary[key][0], new_filename
                     )
 
             # replace digit strings in output files
@@ -146,19 +144,16 @@ class PQInputFileReader(_OutputFileMixin):
                 if key in self.dictionary.keys():
 
                     new_filename = self.dictionary[key][0].replace(
-                        self.start_n,
-                        new_start_n
+                        self.start_n, new_start_n
                     )
 
                     new_raw_input_file = new_raw_input_file.replace(
-                        self.dictionary[key][0],
-                        new_filename
+                        self.dictionary[key][0], new_filename
                     )
 
             # create new input file and write new_raw_input_file to it
             new_filename = self.filename.replace(
-                self.input_file_n,
-                new_input_file_n
+                self.input_file_n, new_input_file_n
             )
 
             with open(new_filename, "w", encoding="utf-8") as file:
@@ -191,8 +186,10 @@ class PQInputFileReader(_OutputFileMixin):
 
         if self.is_rpmd_start_file_defined:
             # add "." to match also files without extension
-            if (_n := _get_digit_string_from_filename(self.rpmd_start_file +
-                '.')) != n:
+            if (
+                _n :=
+                _get_digit_string_from_filename(self.rpmd_start_file + '.')
+            ) != n:
                 self.logger.error(
                     f"N from start_file ({n}) and rpmd_start_file ({_n}) do not match.",
                     exception=PQValueError
@@ -226,7 +223,6 @@ class PQInputFileReader(_OutputFileMixin):
                 )
 
                 if _n != n and n is not None:
-                    print(_n, n, key)
                     self.logger.error(
                         "Actual n in output files is not consistent.",
                         exception=PQValueError
@@ -324,8 +320,8 @@ def _get_digit_string_from_filename(filename: str) -> str:
     if (regex := re.search(r"\d+.", filename)) is None:
         PQInputFileReader.logger.error(
             (
-            f"Filename {filename} does not contain a number to be "
-            "continued from. It has to be of the form \"...<number>.<extension>\"."
+                f"Filename {filename} does not contain a number to be "
+                "continued from. It has to be of the form \"...<number>.<extension>\"."
             ),
             exception=PQValueError
         )
