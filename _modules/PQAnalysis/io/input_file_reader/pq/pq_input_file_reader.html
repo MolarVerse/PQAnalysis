@@ -218,13 +218,11 @@
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
                     <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">,</span>
-                        <span class="n">new_actual_n</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">,</span> <span class="n">new_actual_n</span>
                     <span class="p">)</span>
 
                     <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="n">new_raw_input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">new_filename</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_filename</span>
                     <span class="p">)</span>
 
             <span class="c1"># replace digit strings in output files</span>
@@ -232,19 +230,16 @@
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
                     <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">,</span>
-                        <span class="n">new_start_n</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">,</span> <span class="n">new_start_n</span>
                     <span class="p">)</span>
 
                     <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="n">new_raw_input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
-                        <span class="n">new_filename</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_filename</span>
                     <span class="p">)</span>
 
             <span class="c1"># create new input file and write new_raw_input_file to it</span>
             <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span><span class="p">,</span>
-                <span class="n">new_input_file_n</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span><span class="p">,</span> <span class="n">new_input_file_n</span>
             <span class="p">)</span>
 
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">new_filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
@@ -278,8 +273,10 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_rpmd_start_file_defined</span><span class="p">:</span>
             <span class="c1"># add &quot;.&quot; to match also files without extension</span>
-            <span class="k">if</span> <span class="p">(</span><span class="n">_n</span> <span class="o">:=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpmd_start_file</span> <span class="o">+</span>
-                <span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="n">_n</span> <span class="o">:=</span>
+                <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rpmd_start_file</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span><span class="p">)</span>
+            <span class="p">)</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;N from start_file (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">) and rpmd_start_file (</span><span class="si">{</span><span class="n">_n</span><span class="si">}</span><span class="s2">) do not match.&quot;</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
@@ -313,7 +310,6 @@
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="n">_n</span> <span class="o">!=</span> <span class="n">n</span> <span class="ow">and</span> <span class="n">n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="n">_n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="s2">&quot;Actual n in output files is not consistent.&quot;</span><span class="p">,</span>
                         <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
@@ -412,8 +408,8 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">regex</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">PQInputFileReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Filename </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> does not contain a number to be &quot;</span>
-            <span class="s2">&quot;continued from. It has to be of the form </span><span class="se">\&quot;</span><span class="s2">...&lt;number&gt;.&lt;extension&gt;</span><span class="se">\&quot;</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Filename </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> does not contain a number to be &quot;</span>
+                <span class="s2">&quot;continued from. It has to be of the form </span><span class="se">\&quot;</span><span class="s2">...&lt;number&gt;.&lt;extension&gt;</span><span class="se">\&quot;</span><span class="s2">.&quot;</span>
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
         <span class="p">)</span>
