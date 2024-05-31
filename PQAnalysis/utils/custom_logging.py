@@ -76,13 +76,14 @@ class CustomLogger(logging.Logger):
     and original_critical methods can be used.
     """
 
-    def _log(self,   # pylint: disable=arguments-differ
-             level: Any,
-             msg: Any,
-             args: Any,
-             exception: Exception | None = None,
-             **kwargs
-             ) -> None:
+    def _log(
+        self,  # pylint: disable=arguments-differ
+        level: Any,
+        msg: Any,
+        args: Any,
+        exception: Exception | None = None,
+        **kwargs
+    ) -> None:
         """
         This method is a wrapper method for the original _log method of the logging.Logger class.
 
@@ -147,19 +148,14 @@ class CustomLogger(logging.Logger):
                 """
                 A custom exception hook that ignores the CustomLoggerException.
                 """
-                if exc_type != PQException:
+                if isinstance(exc_type, PQException):
                     sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
             sys.excepthook = exception_hook
             raise exception(msg)  # pylint: disable=broad-exception-raised
 
     def _original_log(
-        self,
-        level: Any,
-        msg: Any,
-        args: Any,
-        extra=None,
-        **kwargs
+        self, level: Any, msg: Any, args: Any, extra=None, **kwargs
     ) -> None:
         """
         The original _log method of the logging.Logger class.
@@ -355,8 +351,8 @@ class CustomFormatter(logging.Formatter):
 
         messages = message.split('\n')
         wrapper = textwrap.TextWrapper(
-            width=shutil.get_terminal_size(fallback=(80,
-            100)).columns - len(level),
+            width=shutil.get_terminal_size(fallback=(80, 100)).columns -
+            len(level),
             initial_indent=' ' * (len(longest_level_key) + 2),
             subsequent_indent=' ' * (len(longest_level_key) + 2),
         )
