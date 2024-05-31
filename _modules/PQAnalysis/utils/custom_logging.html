@@ -160,13 +160,14 @@
 <span class="sd">    and original_critical methods can be used.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>   <span class="c1"># pylint: disable=arguments-differ</span>
-             <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-             <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-             <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-             <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-             <span class="o">**</span><span class="n">kwargs</span>
-             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_log</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+        <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+        <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This method is a wrapper method for the original _log method of the logging.Logger class.</span>
 
@@ -231,19 +232,14 @@
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">                A custom exception hook that ignores the CustomLoggerException.</span>
 <span class="sd">                &quot;&quot;&quot;</span>
-                <span class="k">if</span> <span class="n">exc_type</span> <span class="o">!=</span> <span class="n">PQException</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">PQException</span><span class="p">):</span>
                     <span class="n">sys</span><span class="o">.</span><span class="n">__excepthook__</span><span class="p">(</span><span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_value</span><span class="p">,</span> <span class="n">exc_traceback</span><span class="p">)</span>
 
             <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">exception_hook</span>
             <span class="k">raise</span> <span class="n">exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>  <span class="c1"># pylint: disable=broad-exception-raised</span>
 
     <span class="k">def</span> <span class="nf">_original_log</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-        <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The original _log method of the logging.Logger class.</span>
@@ -459,8 +455,8 @@
 
         <span class="n">messages</span> <span class="o">=</span> <span class="n">message</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">wrapper</span> <span class="o">=</span> <span class="n">textwrap</span><span class="o">.</span><span class="n">TextWrapper</span><span class="p">(</span>
-            <span class="n">width</span><span class="o">=</span><span class="n">shutil</span><span class="o">.</span><span class="n">get_terminal_size</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span>
-            <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="n">columns</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
+            <span class="n">width</span><span class="o">=</span><span class="n">shutil</span><span class="o">.</span><span class="n">get_terminal_size</span><span class="p">(</span><span class="n">fallback</span><span class="o">=</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span><span class="o">.</span><span class="n">columns</span> <span class="o">-</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">level</span><span class="p">),</span>
             <span class="n">initial_indent</span><span class="o">=</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">longest_level_key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span>
             <span class="n">subsequent_indent</span><span class="o">=</span><span class="s1">&#39; &#39;</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">longest_level_key</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">),</span>
         <span class="p">)</span>
