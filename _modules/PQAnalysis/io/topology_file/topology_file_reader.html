@@ -174,7 +174,7 @@
             <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
 
             <span class="c1"># check if last line is END else raise error</span>
-            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;END&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;Something went wrong. Each block should end with &#39;END&#39;&quot;</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span><span class="p">,</span>
@@ -184,7 +184,7 @@
             <span class="n">blocks</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="n">block</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;END&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
                     <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
                     <span class="n">block</span> <span class="o">=</span> <span class="p">[]</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -247,8 +247,7 @@
                 <span class="n">impropers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_impropers</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Unknown block </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unknown block </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span>
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">BondedTopology</span><span class="p">(</span>
@@ -301,10 +300,10 @@
 
             <span class="n">bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Bond</span><span class="p">(</span>
-                <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
-                <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_index</span><span class="p">),</span>
-                <span class="n">bond_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">bond_type</span><span class="p">),</span>
-                <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
+                    <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_index</span><span class="p">),</span>
+                    <span class="n">bond_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">bond_type</span><span class="p">),</span>
+                    <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -351,11 +350,11 @@
 
             <span class="n">angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Angle</span><span class="p">(</span>
-                <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
-                <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
-                <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
-                <span class="n">angle_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">angle_type</span><span class="p">),</span>
-                <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
+                    <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
+                    <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
+                    <span class="n">angle_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">angle_type</span><span class="p">),</span>
+                    <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -402,12 +401,12 @@
 
             <span class="n">dihedrals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Dihedral</span><span class="p">(</span>
-                <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
-                <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
-                <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
-                <span class="n">index4</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index4</span><span class="p">),</span>
-                <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
-                <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
+                    <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
+                    <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
+                    <span class="n">index4</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index4</span><span class="p">),</span>
+                    <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
+                    <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -454,13 +453,13 @@
 
             <span class="n">dihedrals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Dihedral</span><span class="p">(</span>
-                <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
-                <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
-                <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
-                <span class="n">index4</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index4</span><span class="p">),</span>
-                <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
-                <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
-                <span class="n">is_improper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index1</span><span class="p">),</span>
+                    <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index2</span><span class="p">),</span>
+                    <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
+                    <span class="n">index4</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index4</span><span class="p">),</span>
+                    <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
+                    <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">is_improper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -502,11 +501,11 @@
 
             <span class="n">shake_bonds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                 <span class="n">Bond</span><span class="p">(</span>
-                <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
-                <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_index</span><span class="p">),</span>
-                <span class="n">equilibrium_distance</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">distance</span><span class="p">),</span>
-                <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
-                <span class="n">is_shake</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">index1</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index</span><span class="p">),</span>
+                    <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_index</span><span class="p">),</span>
+                    <span class="n">equilibrium_distance</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">distance</span><span class="p">),</span>
+                    <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">is_shake</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
