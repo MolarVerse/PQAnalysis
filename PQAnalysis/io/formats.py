@@ -10,9 +10,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import (
-    BoxFileFormatError,
-    FileWritingModeError,
-    OutputFileFormatError
+    BoxFileFormatError, FileWritingModeError, OutputFileFormatError
 )
 
 logger = logging.getLogger(__package_name__).getChild("OutputFileFormat")
@@ -87,8 +85,8 @@ class OutputFileFormat(BaseEnumFormat):
         if output_file_format == cls.AUTO and filename is None:
             logger.error(
                 (
-                "The file format could not be inferred from "
-                "the file extension because no filename was given."
+                    "The file format could not be inferred from "
+                    "the file extension because no filename was given."
                 ),
                 exception=OutputFileFormatError
             )
@@ -119,9 +117,7 @@ class OutputFileFormat(BaseEnumFormat):
         file_extensions[cls.VIRIAL.value] = [".virial", ".virials", ".vir"]
         file_extensions[cls.INFO.value] = [".info", ".information"]
         file_extensions[cls.INSTANTANEOUS_ENERGY.value] = [
-            ".instant_en",
-            ".instant_energies",
-            ".inst_energy"
+            ".instant_en", ".instant_energies", ".inst_energy"
         ]
 
         return file_extensions
@@ -142,36 +138,37 @@ class OutputFileFormat(BaseEnumFormat):
             The inferred file format.
         """
 
-        file_extension = file_path.split(".")[-1]
+        file_extension = "." + file_path.split(".")[-1]
 
-        if file_extension in cls.file_extensions()[cls.XYZ]:
+        print(file_extension)
+
+        if file_extension in cls.file_extensions()[cls.XYZ.value]:
             return cls.XYZ
 
-        if file_extension in cls.file_extensions()[cls.VEL]:
+        if file_extension in cls.file_extensions()[cls.VEL.value]:
             return cls.VEL
 
-        if file_extension in cls.file_extensions()[cls.FORCE]:
+        if file_extension in cls.file_extensions()[cls.FORCE.value]:
             return cls.FORCE
 
-        if file_extension in cls.file_extensions()[cls.CHARGE]:
+        if file_extension in cls.file_extensions()[cls.CHARGE.value]:
             return cls.CHARGE
 
-        if file_extension in cls.file_extensions()[cls.RESTART]:
+        if file_extension in cls.file_extensions()[cls.RESTART.value]:
             return cls.RESTART
 
         logger.error(
             (
-            "Could not infer the file format from the file extension of "
-            f"\"{file_path}\". Possible file formats are: "
-            f"{cls.__members__.values()}"
+                "Could not infer the file format from the file extension of "
+                f"\"{file_path}\". Possible file formats are: "
+                f"{cls.__members__.values()}"
             ),
             exception=OutputFileFormatError
         )
 
     @classmethod
     def get_file_extensions(
-        cls,
-        file_format: "OutputFileFormat | str"
+        cls, file_format: "OutputFileFormat | str"
     ) -> List[str]:
         """
         Get the file extensions of the given file format.
