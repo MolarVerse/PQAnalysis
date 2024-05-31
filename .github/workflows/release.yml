@@ -90,16 +90,6 @@ jobs:
         commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
         file_pattern: CHANGELOG.md
 
-    # check if github release already exists
-    - name: Check if GitHub Release already exists
-      id: check_release
-      run: |
-        gh release view ${{ github.ref_name }} --repo ${{ github.repository }} > /dev/null 2>&1
-        if [ $? -eq 0 ]; then
-          gh release edit -n ${{ github.ref_name }} --repo ${{ github.repository }} --notes ${{ steps.changelog.outputs.changes }}
-          exit 0
-        fi
-
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
