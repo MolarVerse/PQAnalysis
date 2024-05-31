@@ -90,7 +90,7 @@ class TopologyFileReader(BaseReader):
             lines = [line for line in lines if line.strip()]
 
             # check if last line is END else raise error
-            if lines[-1].strip() != "END":
+            if lines[-1].strip().lower() != "end":
                 self.logger.error(
                     "Something went wrong. Each block should end with 'END'",
                     exception=TopologyFileError,
@@ -100,7 +100,7 @@ class TopologyFileReader(BaseReader):
             blocks = []
             block = []
             for line in lines:
-                if line.strip().lower() == "END":
+                if line.strip().lower() == "end":
                     blocks.append(block)
                     block = []
                 else:
@@ -163,8 +163,7 @@ class TopologyFileReader(BaseReader):
                 impropers = self._parse_impropers(value)
             else:
                 self.logger.error(
-                    f"Unknown block {key}",
-                    exception=TopologyFileError
+                    f"Unknown block {key}", exception=TopologyFileError
                 )
 
         return BondedTopology(
@@ -217,10 +216,10 @@ class TopologyFileReader(BaseReader):
 
             bonds.append(
                 Bond(
-                index1=int(index),
-                index2=int(target_index),
-                bond_type=int(bond_type),
-                is_linker=is_linker,
+                    index1=int(index),
+                    index2=int(target_index),
+                    bond_type=int(bond_type),
+                    is_linker=is_linker,
                 )
             )
 
@@ -267,11 +266,11 @@ class TopologyFileReader(BaseReader):
 
             angles.append(
                 Angle(
-                index1=int(index1),
-                index2=int(index2),
-                index3=int(index3),
-                angle_type=int(angle_type),
-                is_linker=is_linker,
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    angle_type=int(angle_type),
+                    is_linker=is_linker,
                 )
             )
 
@@ -318,12 +317,12 @@ class TopologyFileReader(BaseReader):
 
             dihedrals.append(
                 Dihedral(
-                index1=int(index1),
-                index2=int(index2),
-                index3=int(index3),
-                index4=int(index4),
-                dihedral_type=int(dihedral_type),
-                is_linker=is_linker,
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    index4=int(index4),
+                    dihedral_type=int(dihedral_type),
+                    is_linker=is_linker,
                 )
             )
 
@@ -370,13 +369,13 @@ class TopologyFileReader(BaseReader):
 
             dihedrals.append(
                 Dihedral(
-                index1=int(index1),
-                index2=int(index2),
-                index3=int(index3),
-                index4=int(index4),
-                dihedral_type=int(dihedral_type),
-                is_linker=is_linker,
-                is_improper=True,
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    index4=int(index4),
+                    dihedral_type=int(dihedral_type),
+                    is_linker=is_linker,
+                    is_improper=True,
                 )
             )
 
@@ -418,11 +417,11 @@ class TopologyFileReader(BaseReader):
 
             shake_bonds.append(
                 Bond(
-                index1=int(index),
-                index2=int(target_index),
-                equilibrium_distance=float(distance),
-                is_linker=is_linker,
-                is_shake=True,
+                    index1=int(index),
+                    index2=int(target_index),
+                    equilibrium_distance=float(distance),
+                    is_linker=is_linker,
+                    is_shake=True,
                 )
             )
 

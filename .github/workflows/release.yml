@@ -75,21 +75,6 @@ jobs:
         echo "previousTag=$name" >> $GITHUB_ENV
         echo "::set-output name=previousTag::$name"
 
-    - name: Update CHANGELOG
-      id: changelog
-      uses: requarks/changelog-action@v1
-      with:
-        token: ${{ github.token }}
-        fromTag: ${{ github.ref_name }}
-        toTag: ${{ steps.previousTag.outputs.previousTag }}
-
-    - name: Commit CHANGELOG.md
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        branch: main
-        commit_message: 'docs: update CHANGELOG.md for ${{ github.ref_name }} [skip ci]'
-        file_pattern: CHANGELOG.md
-
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -97,7 +82,29 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --notes '${{ steps.changelog.outputs.changes }}'
+        --generate-notes
+
+    # - name: Create GitHub Changelog.md
+    #   env:
+    #     GITHUB_TOKEN: ${{ github.token }}
+    #   run: >-
+    #     gh release view
+    #     '${{ github.ref_name }}'
+
+    # - name: Add .github/.pylint_cache to the commit
+    #   run: |
+    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
+    #     git config --global user.name "github-actions[bot]"
+
+    #     git add CHANGELOG.md
+    #     git commit -m "Docs: Update CHANGELOG.md on release event"
+
+    # - name: Push changes
+    #   if: github.event_name == 'push'
+    #   uses: ad-m/github-push-action@master
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     branch: 'main'
 
   pypi-release-update:
     name: >-
