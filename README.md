@@ -1,3 +1,5 @@
+<img src="docs/source/logo/PQAnalysis.png" width="250">
+
 # PQAnalysis
 
 [![CI](https://github.com/MolarVerse/PQAnalysis/actions/workflows/ci.yml/badge.svg)](https://github.com/MolarVerse/PQAnalysis/actions/workflows/ci.yml)
