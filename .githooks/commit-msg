@@ -59,7 +59,16 @@ if [[ "$lowercase_message" =~ ^chore(\(.+\))?: ]]; then
 fi
 
 #merge
-if [[ "$lowercase_message" =~ ^merge(\(.+\))?: ]]; then
+if [[ "$lowercase_message" =~ ^merge(\(.+\))?(:)? ]]; then
+  matched=true
+  group="Merge"
+elif [[ "$lowercase_message" =~ ^merges(\(.+\))?(:)? ]]; then
+  matched=true
+  group="Merge"
+elif [[ "$lowercase_message" =~ ^merged(\(.+\))?(:)? ]]; then
+  matched=true
+  group="Merge"
+elif [[ "$lowercase_message" =~ ^merging(\(.+\))?(:)? ]]; then
   matched=true
   group="Merge"
 fi
@@ -114,12 +123,13 @@ if ! $matched; then
   echo "  - Performance:    perf:"
   echo "  - Test:           test:, tests:"
   echo "  - Chore:          chore:"
-  echo "  - Merge:          merge:"
   echo "  - Revert:         revert:"
   echo "  - Build:          build:"
   echo "  - Example:        example:, examples:"
   echo "  - Dependency:     deps:"
   echo "  - CI:             ci:"
+  echo "  - Merge:          merge, merges, merged, merging"
+
   # ... (similar output for other patterns in the list)
   echo "  - --------------------------------------------\n"
 
