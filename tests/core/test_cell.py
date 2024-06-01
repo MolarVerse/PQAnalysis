@@ -18,16 +18,7 @@ class TestCell:
         assert cell.beta == 90
         assert cell.gamma == 90
         assert np.allclose(
-            cell.box_matrix,
-            np.array([[1,
-            0,
-            0],
-            [0,
-            2,
-            0],
-            [0,
-            0,
-            3]])
+            cell.box_matrix, np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
         )
 
         cell = Cell(1, 2, 3, 60, 90, 120)
@@ -40,15 +31,7 @@ class TestCell:
         assert np.allclose(
             cell.box_matrix,
             np.array(
-            [[1,
-            -1,
-            0],
-            [0,
-            1.73205081,
-            1.73205081],
-            [0,
-            0,
-            2.44948974]]
+                [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]
             )
         )
 
@@ -61,16 +44,7 @@ class TestCell:
         cell.box_lengths = np.array([2, 3, 4])
         assert np.allclose(cell.box_lengths, np.array([2, 3, 4]))
         assert np.allclose(
-            cell.box_matrix,
-            np.array([[2,
-            0,
-            0],
-            [0,
-            3,
-            0],
-            [0,
-            0,
-            4]])
+            cell.box_matrix, np.array([[2, 0, 0], [0, 3, 0], [0, 0, 4]])
         )
 
     def test_box_angles(self):
@@ -84,15 +58,7 @@ class TestCell:
         assert np.allclose(
             cell.box_matrix,
             np.array(
-            [[1,
-            -1,
-            0],
-            [0,
-            1.73205081,
-            1.73205081],
-            [0,
-            0,
-            2.44948974]]
+                [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]
             )
         )
 
@@ -102,7 +68,8 @@ class TestCell:
         assert np.isclose(
             cell.volume,
             np.prod(cell.box_lengths) * np.sqrt(
-            1 - sum(np.cos(box_angles)**2) + 2 * np.prod(np.cos(box_angles))
+                1 - sum(np.cos(box_angles)**2) +
+                2 * np.prod(np.cos(box_angles))
             )
         )
 
@@ -119,6 +86,7 @@ class TestCell:
         assert np.allclose(edges[7], np.array([0, 1.73205081, 1.22474487]))
 
     def test__eq__(self):
+
         cell1 = Cell(1, 2, 3, 60, 90, 120)
         cell2 = Cell(1, 2, 3, 60, 90, 120)
         assert cell1 == cell2
@@ -130,39 +98,35 @@ class TestCell:
         cell1 = Cell(1, 2, 3, 60, 90, 120)
         assert cell1 != 1
 
+        cell1 = Cell(1, 2, 3, 60, 90, 120)
+        cell2 = Cell(1, 3, 3, 60, 90, 120)
+
+        assert cell1 != cell2
+
+    def test_isclose(self):
+        cell1 = Cell(1, 2, 3, 60, 90, 120.1)
+        cell2 = Cell(1, 2, 3, 60, 90, 120.0)
+        assert cell1.isclose(cell2, atol=1e-1)
+        assert not cell1.isclose(cell2, atol=1e-2)
+        assert cell1.isclose(cell2, rtol=1e-3)
+        assert not cell1.isclose(cell2, rtol=1e-4)
+
     def test_image(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
         assert np.allclose(
-            cell.image(np.array([0,
-            0,
-            0])),
-            np.array([0,
-            0,
-            0])
+            cell.image(np.array([0, 0, 0])), np.array([0, 0, 0])
         )
         assert np.allclose(
-            cell.image(np.array([0.75,
-            0.5,
-            0.5])),
-            np.array([-0.25,
-            0.5,
-            0.5])
+            cell.image(np.array([0.75, 0.5, 0.5])),
+            np.array([-0.25, 0.5, 0.5])
         )
         assert np.allclose(
-            cell.image(np.array([1,
-            2,
-            3])),
-            np.array([0.,
-            0.267949192,
-            0.550510257])
+            cell.image(np.array([1, 2, 3])),
+            np.array([0., 0.267949192, 0.550510257])
         )
         assert np.allclose(
-            cell.image(np.array([-1,
-            -2,
-            -3])),
-            np.array([0.,
-            -0.267949192,
-            -0.550510257])
+            cell.image(np.array([-1, -2, -3])),
+            np.array([0., -0.267949192, -0.550510257])
         )
 
     def test__str__(self):
@@ -189,15 +153,7 @@ class TestCell:
         assert np.isclose(cell.volume, 6)
 
         box_matrix = np.array(
-            [[1,
-            -1,
-            0],
-            [0,
-            1.73205081,
-            1.73205081],
-            [0,
-            0,
-            2.44948974]]
+            [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]
         )
         cell = Cell.init_from_box_matrix(box_matrix)
         assert np.isclose(cell.x, 1)

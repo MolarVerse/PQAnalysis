@@ -13,7 +13,8 @@ from beartype.typing import Any, NewType, Annotated
 from beartype.vale import Is
 
 from PQAnalysis.type_checking import runtime_type_checking
-from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray
+from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray, PositiveReal, Bool
+from PQAnalysis.utils.math import allclose_vectorized
 
 from ._standard_properties import _StandardPropertiesMixin
 
@@ -98,7 +99,8 @@ class Cell(_StandardPropertiesMixin):
         for i, x in enumerate([-0.5, 0.5]):
             for j, y in enumerate([-0.5, 0.5]):
                 for k, z in enumerate([-0.5, 0.5]):
-                    edges[i*4+j*2+k, :] = self.box_matrix @ np.array([x, y, z])
+                    edges[i * 4 + j * 2 +
+                          k, :] = self.box_matrix @ np.array([x, y, z])
 
         return edges
 
@@ -107,8 +109,7 @@ class Cell(_StandardPropertiesMixin):
         """volume: The volume of the unit cell."""
         with warnings.catch_warnings():
             warnings.filterwarnings(
-                "ignore",
-                message="overflow encountered in det"
+                "ignore", message="overflow encountered in det"
             )
             volume = np.linalg.det(self.box_matrix)
 
@@ -154,7 +155,7 @@ class Cell(_StandardPropertiesMixin):
 
         return np.reshape(pos, original_shape)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         Checks if the Cell is equal to another Cell.
 
@@ -165,16 +166,54 @@ class Cell(_StandardPropertiesMixin):
 
         Returns
         -------
-        bool
+        Bool
             True if the Cells are equal, False otherwise.
+        """
+
+        return self.isclose(other)
+
+    @runtime_type_checking
+    def isclose(
+        self,
+        other: Any,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
+    ) -> Bool:
+        """
+        Checks if the Cell is close to another Cell.
+
+        Parameters
+        ----------
+        other : Cell
+            The Cell to compare with.
+        rtol : PositiveReal, optional
+            The relative tolerance parameter. Default is 1e-9.
+        atol : PositiveReal, optional
+            The absolute tolerance parameter. Default is 0.0.
+
+        Returns
+        -------
+        Bool
+            True if the Cells are close, False otherwise.
         """
 
         if not isinstance(other, Cell):
             return False
 
-        is_equal = True
-        is_equal &= np.allclose(self.box_lengths, other.box_lengths)
-        is_equal &= np.allclose(self.box_angles, other.box_angles)
+        is_equal = allclose_vectorized(
+            self.box_lengths,
+            other.box_lengths,
+            rtol=rtol,
+            atol=atol,
+        )
+
+        is_equal &= allclose_vectorized(
+            self.box_angles,
+            other.box_angles,
+            rtol=rtol,
+            atol=atol,
+        )
+
         return is_equal
 
     def __str__(self) -> str:
@@ -233,21 +272,13 @@ class Cell(_StandardPropertiesMixin):
         beta = np.arccos(box_matrix[0][2] / z)
         alpha = np.arccos(
             (
-            box_matrix[0][1] * box_matrix[0][2] +
-            box_matrix[1][1] * box_matrix[1][2]
+                box_matrix[0][1] * box_matrix[0][2] +
+                box_matrix[1][1] * box_matrix[1][2]
             ) / (y * z)
         )
 
-        print(alpha, beta, gamma)
-        print(np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma))
-
         return cls(
-            x,
-            y,
-            z,
-            np.rad2deg(alpha),
-            np.rad2deg(beta),
-            np.rad2deg(gamma)
+            x, y, z, np.rad2deg(alpha), np.rad2deg(beta), np.rad2deg(gamma)
         )
 
 
@@ -256,6 +287,5 @@ class Cell(_StandardPropertiesMixin):
 Cells = NewType(
     "Cells",
     Annotated[list,
-    Is[lambda list: all(isinstance(atom,
-    Cell) for atom in list)]]
+              Is[lambda list: all(isinstance(atom, Cell) for atom in list)]]
 )

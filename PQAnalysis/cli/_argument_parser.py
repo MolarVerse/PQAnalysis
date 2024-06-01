@@ -50,9 +50,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         """
 
         super().__init__(
-            formatter_class=ArgumentDefaultsRichHelpFormatter,
-            *args,
-            **kwargs
+            formatter_class=ArgumentDefaultsRichHelpFormatter, *args, **kwargs
         )
 
         # To remove the ".py" ending from the prog argument
@@ -90,7 +88,10 @@ class _ArgumentParser(argparse.ArgumentParser):
 
         config.with_progress_bar = args.progress
 
-        if args.log_file is not None:
+        if args.log_file is None:
+            args.log_file = "__LOG_DEFINED_BY_TIMESTAMP__"
+
+        if args.log_file.lower() != "off":
             config.use_log_file = True
             if args.log_file != "__LOG_DEFINED_BY_TIMESTAMP__":
                 config.log_file_name = args.log_file
@@ -158,9 +159,9 @@ class _ArgumentParser(argparse.ArgumentParser):
             type=FileWritingMode,
             default=FileWritingMode("w"),
             help=(
-            'The writing mode. The following modes '
-            'are available: "w": write, "a": append, '
-            '"o": overwrite.'
+                'The writing mode. The following modes '
+                'are available: "w": write, "a": append, '
+                '"o": overwrite.'
             )
         )
 
@@ -170,9 +171,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         The progress argument is an optional argument and defaults to True.
         """
         super().add_argument(
-            '--progress',
-            action='store_false',
-            help='Show progress bar.'
+            '--progress', action='store_false', help='Show progress bar.'
         )
 
     def _parse_version(self):
@@ -181,9 +180,7 @@ class _ArgumentParser(argparse.ArgumentParser):
         The version argument is an optional argument and defaults to the current version.
         """
         super().add_argument(
-            '--version',
-            action='version',
-            version=__version__
+            '--version', action='version', version=__version__
         )
 
     def _parse_log_file(self):
@@ -200,14 +197,15 @@ class _ArgumentParser(argparse.ArgumentParser):
             const="__LOG_DEFINED_BY_TIMESTAMP__",
             nargs='?',
             help=(
-            "This options can be used to set wether "
-            "a log file should be used or not. "
-            "If the option is given without a value, "
-            "the log will be printed to an "
-            "automatically generated file. If the option "
-            "is not given, the log will be only printed "
-            "to stderr. If the option is given with a "
-            "value, the log will be printed to the given file."
+                "This options can be used to set wether "
+                "a log file should be used or not. "
+                "If the option is not given or without a value, "
+                "the log will be printed to an "
+                "automatically generated file. If the option "
+                "is given with the case-insensitive value \"off\""
+                ", the log will be only printed "
+                "to stderr. If the option is given with a "
+                "value, the log will be printed to the given file."
             )
         )
 

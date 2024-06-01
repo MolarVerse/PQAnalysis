@@ -8,12 +8,17 @@ import numpy as np
 from beartype.typing import List, Any, Iterable
 
 from PQAnalysis.topology import Topology
-from PQAnalysis.types import Np2DNumberArray, Np1DNumberArray
 from PQAnalysis.exceptions import PQIndexError, PQTypeError
 from PQAnalysis.core import Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
+from PQAnalysis.types import (
+    Np2DNumberArray,
+    Np1DNumberArray,
+    PositiveReal,
+    Bool,
+)
 from PQAnalysis.type_checking import (
     runtime_type_checking,
     runtime_type_checking_setter,
@@ -334,7 +339,7 @@ class Trajectory:
 
         return Trajectory(self.frames + other.frames)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         This method allows two trajectories to be compared for equality.
 
@@ -342,6 +347,37 @@ class Trajectory:
         ----------
         other : Trajectory
             The other trajectory to compare.
+
+        Returns
+        -------
+        Bool
+            Whether the two trajectories are equal.
+        """
+
+        return self.isclose(other)
+
+    def isclose(
+        self,
+        other: Any,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
+    ) -> Bool:
+        """
+        This method allows two trajectories to be compared for closeness.
+
+        Parameters
+        ----------
+        other : Any
+            The other object to compare with.
+        rtol : PositiveReal, optional
+            The relative tolerance parameter, by default 1e-9
+        atol : PositiveReal, optional
+            The absolute tolerance parameter, by default 0.0
+
+        Returns
+        -------
+        Bool
+            Whether the two trajectories are close.
         """
 
         if not isinstance(other, Trajectory):
@@ -350,7 +386,12 @@ class Trajectory:
         if len(self.frames) != len(other.frames):
             return False
 
-        return self.frames == other.frames
+        return np.all(
+            [
+                self.frames[i].isclose(other.frames[i], rtol=rtol, atol=atol)
+                for i in np.arange(len(self.frames))
+            ]
+        )
 
     def __str__(self) -> str:
         """

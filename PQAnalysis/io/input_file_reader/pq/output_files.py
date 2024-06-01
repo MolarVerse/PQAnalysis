@@ -40,11 +40,11 @@ class _OutputFileMixin:
     @property
     def is_start_file_defined(self) -> bool:
         """bool: Whether a start file is defined in the input file."""
-        try:
-            _ = self.start_file
+
+        if "start_file" in self.dictionary.keys():
             return True
-        except PQKeyError:
-            return False
+
+        return False
 
     @property
     def rpmd_start_file(self) -> str:
@@ -54,11 +54,10 @@ class _OutputFileMixin:
     @property
     def is_rpmd_start_file_defined(self) -> bool:
         """bool: Whether a rpmd start file is defined in the input file."""
-        try:
-            _ = self.rpmd_start_file
+        if "rpmd_start_file" in self.dictionary.keys():
             return True
-        except PQKeyError:
-            return False
+
+        return False
 
     @property
     def restart_file(self) -> str:

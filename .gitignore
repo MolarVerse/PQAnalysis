@@ -6,6 +6,8 @@ build/
 _version.py
 **/*.ipynb
 
+.github/.pylint_cache
+
 .coverage
 coverage.xml
 htmlcov/

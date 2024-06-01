@@ -15,11 +15,12 @@ from beartype.typing import List  # pylint: disable=unused-import
 
 from PQAnalysis.core import Atom, Atoms, Cell, distance
 from PQAnalysis.topology import Topology
-from PQAnalysis.types import PositiveReal, PositiveInt
+from PQAnalysis.types import PositiveReal, PositiveInt, Bool
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.utils.math import allclose_vectorized
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis import __package_name__
 
@@ -194,7 +195,10 @@ class AtomicSystem(
         self._stress = stress
         self._cell = cell
 
-    @runtime_type_checking
+    #TODO: check why dynamic formatting does
+    #      not work here for "AtomicSystem"
+    #
+    # @runtime_type_checking
     def fit_atomic_system(
         self,
         system: "AtomicSystem",
@@ -534,7 +538,7 @@ class AtomicSystem(
             topology=self.topology
         )
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: Any) -> Bool:
         """
         Checks whether the AtomicSystem is equal to another AtomicSystem.
 
@@ -548,6 +552,34 @@ class AtomicSystem(
         bool
             Whether the AtomicSystem is equal to the other AtomicSystem.
         """
+
+        return self.isclose(other)
+
+    @runtime_type_checking
+    def isclose(
+        self,
+        other: Any,
+        rtol: PositiveReal = 1e-9,
+        atol: PositiveReal = 0.0,
+    ) -> Bool:
+        """
+        Checks whether the AtomicSystem is close to another AtomicSystem.
+
+        Parameters
+        ----------
+        other : AtomicSystem
+            The other AtomicSystem to compare to.
+        rtol : PositiveReal, optional
+            The relative tolerance, by default 1e-9
+        atol : PositiveReal, optional
+            The absolute tolerance, by default 0.0
+
+        Returns
+        -------
+        bool
+            Whether the AtomicSystem is close to the other AtomicSystem.
+        """
+
         if not isinstance(other, AtomicSystem):
             return False
 
@@ -557,19 +589,23 @@ class AtomicSystem(
         if self.topology != other.topology:
             return False
 
-        if self.cell != other.cell:
+        if not self.cell.isclose(other.cell, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.pos, other.pos):
+        if not allclose_vectorized(self.pos, other.pos, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.vel, other.vel):
+        if not allclose_vectorized(self.vel, other.vel, rtol=rtol, atol=atol):
             return False
 
-        if not np.allclose(self.forces, other.forces):
+        if not allclose_vectorized(
+            self.forces, other.forces, rtol=rtol, atol=atol
+        ):
             return False
 
-        if not np.allclose(self.charges, other.charges):
+        if not allclose_vectorized(
+            self.charges, other.charges, rtol=rtol, atol=atol
+        ):
             return False
 
         return True

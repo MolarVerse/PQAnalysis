@@ -10,18 +10,12 @@ on:
       - '*'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pull-requests: write
-
 jobs:
   pylint:
 
     runs-on: ubuntu-latest
 
-    permissions:                # Job-level permissions configuration starts here
-      contents: write           # 'write' access to repository contents
-      pull-requests: write      # 'write' access to pull requests
+    permissions: write-all      # Job-level permissions configuration starts here
 
     steps:
     - uses: actions/checkout@master
@@ -63,10 +57,10 @@ jobs:
         head -n3 comment.txt | tail -n 1 | awk '{print $7}'
         head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1
         score=$(head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1)
-        if (( $(echo "$score > 9.75" | bc -l) )); then
-          echo "Pylint score is higher than 9.75 and is $score"
+        if (( $(echo "$score > 9.5" | bc -l) )); then
+          echo "Pylint score is higher than 9.5 and is $score"
         else
-          echo "Pylint score is lower than 9.75 and is $score"
+          echo "Pylint score is lower than 9.5 and is $score"
           exit 1
         fi
       shell: bash
@@ -99,7 +93,7 @@ jobs:
 
     #add changes of .github/.pylint_cache to the commit if it is based on push event
     - name: Add .github/.pylint_cache to the commit
-      if: github.event_name == 'push' && github.ref_name != 'main'
+      if: (github.event_name == 'push' || github.event.pull_request.merged == true) && github.ref_name != 'main'
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"

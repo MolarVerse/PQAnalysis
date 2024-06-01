@@ -309,6 +309,33 @@ class TestTrajectory:
 
         assert Trajectory() != 1
 
+    def test_isclose(self):
+        frame1 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=np.array([[1.0001, 1.0002, 2.0003]]),
+            cell=Cell(100.1, 100.1, 100.1)
+        )
+        frame2 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=np.array([[1.0002, 1.0003, 2.0004]]),
+            cell=Cell(100.1001, 100.1001, 100.1001)
+        )
+        frame3 = AtomicSystem(
+            atoms=self.atoms1,
+            pos=np.array([[1.0001, 1.0002, 2.0003]]),
+            cell=Cell(100.2, 100.2, 100.2)
+        )
+
+        traj1 = Trajectory([frame1, frame1])
+        traj2 = Trajectory([frame2, frame2])
+        traj3 = Trajectory([frame3, frame3])
+
+        assert traj1.isclose(traj2, atol=1.0001e-4)
+        assert not traj1.isclose(traj2, atol=1e-5)
+
+        assert traj1.isclose(traj3, rtol=1e-3)
+        assert not traj1.isclose(traj3, rtol=1e-4)
+
     def test_append(self):
         traj = Trajectory()
         print(len(traj))
