@@ -317,7 +317,7 @@ def _get_digit_string_from_filename(filename: str) -> str:
         if filename does not contain a number to be parsed
     """
 
-    if (regex := re.search(r"\d+.", filename)) is None:
+    if (regex := re.search(r"\d+\.", filename)) is None:
         PQInputFileReader.logger.error(
             (
                 f"Filename {filename} does not contain a number to be "
