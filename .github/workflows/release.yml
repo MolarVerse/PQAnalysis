@@ -87,7 +87,7 @@ jobs:
     - name: generate new changelog
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        echo "git-changelog=$(git-changelog -F "$name.. -c angular")" >> $GITHUB_ENV
+        echo "git-changelog=$(git-changelog --sections chore,ci,doc,feat,fix,perf,test -F "$name.. -c angular")" >> $GITHUB_ENV
 
     - name: Create GitHub Release
       env:
@@ -100,7 +100,7 @@ jobs:
 
     - name: Build CHANGELOG.md
       run: |
-        git-changelog -o CHANGELOG.md -c angular
+        git-changelog --sections chore,ci,doc,feat,fix,perf,test -o CHANGELOG.md -c angular --in-place
 
     - name: Add CHANGELOG.md to commit
       run: |
