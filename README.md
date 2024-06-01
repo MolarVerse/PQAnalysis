@@ -27,3 +27,9 @@ Clone the PQAnalysis GitHub repository and navigate into the directory:
 Install with pip:
 
     pip install .
+
+In order to have a nice changelog strategy, please stick to [conventional commit definiton](https://www.conventionalcommits.org/en/v1.0.0-beta.4/). In order to make git accept only valid commit message please make a symlink of the git-hook template `.githooks/commit-msg`:
+
+    ln -s .githooks/commit-msg .git/hooks/
+
+More information on preferred and undesirable commit message will come soon...
