@@ -96,6 +96,13 @@ if [[ "$lowercase_message" =~ ^ci(\(.+\))?: ]]; then
   group="CI"
 fi
 
+#random stuff that doesn't fit into any of the above categories
+#starting with a $
+if [[ "$lowercase_message" =~ ^\$ ]]; then
+  matched=true
+  group="Random"
+fi
+
 # ... (similar checks for other patterns in the list)
 
 # No match found
@@ -120,6 +127,7 @@ if ! $matched; then
   echo "  - Example:        example:, examples:"
   echo "  - Dependency:     deps:"
   echo "  - CI:             ci:"
+  echo "  - Random:         $"
   # ... (similar output for other patterns in the list)
   echo "  - --------------------------------------------\n"
 
