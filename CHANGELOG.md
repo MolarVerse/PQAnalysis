@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.0.12](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.0.12) - 2024-06-01
+
+<small>[Compare with v1.0.11](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.11...v1.0.12)</small>
+
+### Continuous Integration
+
+- cleaned up release.yml for changelog writing ([f9435b4](https://github.com/MolarVerse/PQAnalysis/commit/f9435b4dcc316e12e5f0a40a21510bb72fc1cc8d) by Jakob Gamper).
+
 ## [v1.0.11](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.0.11) - 2024-06-01
 
 <small>[Compare with v1.0.10](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.10...v1.0.11)</small>
@@ -132,4 +140,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [v0.0.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v0.0.0) - 2023-10-23
 
 <small>[Compare with first commit](https://github.com/MolarVerse/PQAnalysis/compare/e5b4d04ce4e5a3c6e910f027a1f443cb0fc1fb39...v0.0.0)</small>
-
