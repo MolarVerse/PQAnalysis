@@ -67,6 +67,15 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.12'
+
+    - name: build git-changelog
+      run: |
+        python3 -m pip install git-changelog
+
     - name: Get previous tag
       id: previousTag
       run: |
@@ -75,6 +84,11 @@ jobs:
         echo "previousTag=$name" >> $GITHUB_ENV
         echo "::set-output name=previousTag::$name"
 
+    - name: generate new changelog
+      run: |
+        name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
+        echo "git-changelog=$(git-changelog -F "$name.. -c angular")" >> $GITHUB_ENV
+
     - name: Create GitHub Release
       env:
         GITHUB_TOKEN: ${{ github.token }}
@@ -82,29 +96,26 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --generate-notes
+        --notes "${changelog}"
 
-    # - name: Create GitHub Changelog.md
-    #   env:
-    #     GITHUB_TOKEN: ${{ github.token }}
-    #   run: >-
-    #     gh release view
-    #     '${{ github.ref_name }}'
+    - name: Build CHANGELOG.md
+      run: |
+        git-changelog -o CHANGELOG.md -c angular
 
-    # - name: Add .github/.pylint_cache to the commit
-    #   run: |
-    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    #     git config --global user.name "github-actions[bot]"
+    - name: Add CHANGELOG.md to commit
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
 
-    #     git add CHANGELOG.md
-    #     git commit -m "Docs: Update CHANGELOG.md on release event"
+        git add CHANGELOG.md
+        git commit -m "Docs: Update CHANGELOG.md on release event"
 
-    # - name: Push changes
-    #   if: github.event_name == 'push'
-    #   uses: ad-m/github-push-action@master
-    #   with:
-    #     github_token: ${{ secrets.GITHUB_TOKEN }}
-    #     branch: 'main'
+    - name: Push changes
+      if: github.event_name == 'push'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: 'main'
 
   pypi-release-update:
     name: >-
