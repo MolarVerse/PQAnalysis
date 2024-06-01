@@ -38,6 +38,25 @@ def tmpdir():
 
 
 @pytest.fixture(scope="function")
+def test_integration_folder(example_dir):
+
+    tmpdir = "tmpdir"
+
+    if os.path.exists(tmpdir) and os.path.isdir(tmpdir):
+        shutil.rmtree(tmpdir)
+
+    shutil.copytree(os.path.join("examples", example_dir), tmpdir)
+
+    os.chdir(tmpdir)
+
+    yield tmpdir
+
+    os.chdir("..")
+    shutil.rmtree(tmpdir)
+
+
+
+@pytest.fixture(scope="function")
 def test_with_data_dir(example_dir):
 
     tmpdir = "tmpdir"
@@ -69,9 +88,7 @@ class CatchLogFixture:
 
     @contextmanager
     def catch_logs(
-        self,
-        level: int,
-        logger: logging.Logger
+        self, level: int, logger: logging.Logger
     ) -> LogCaptureHandler:
         """Set the level for capturing of logs. After the end of the 'with' statement,
         the level is restored to its original value.
@@ -119,15 +136,16 @@ def assert_logging_with_exception(
     **kwargs
 ):
 
-    with caplog_for_logger(caplog,
-        __package_name__ + "." + logging_name,
-        logging_level):
+    with caplog_for_logger(
+        caplog, __package_name__ + "." + logging_name, logging_level
+    ):
         result = None
         try:
             result = function(*args, **kwargs)
         except (PQException, BeartypeCallHintParamViolation) as e:
-            if isinstance(e,
-                BeartypeCallHintParamViolation) and exception is PQTypeError:
+            if isinstance(
+                e, BeartypeCallHintParamViolation
+            ) and exception is PQTypeError:
                 return result
             if not isinstance(e, PQException):
                 raise e
