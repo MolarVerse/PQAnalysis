@@ -1,0 +1,44 @@
+# Type of this run
+      jobtype = qm-md;
+#     dim     = 3d;
+
+# Number of steps to be performed and timestep in fs; nreset gives the first n steps in which the total momentum is reset
+      nstep = 20000; timestep = 2.0; nreset = 5;
+
+# Time integration algorithm
+      integrator = v-verlet;
+
+# Request computation of the stress tensor
+# (IMPORTANT for virial calculation to the correct pressure)
+      virial = atomic; # stress_tensor = on;
+
+# Output frequency of ALL data files
+      output_freq = 2;
+
+# Generate Start velocities instead of taking them from the .rst file
+#     init_velocities = true;
+
+# Temperature algorithm (Berendsen), Target T in K and Relaxation time in ps
+      thermostat = velocity_rescaling; temp = 298.15; t_relaxation = 0.1;
+
+# Pressure coupling algorithm, Target p in bar and Relaxation time in ps
+#     manostat = berendsen; pressure = 1.013; p_relaxation = 10.0;
+
+# QM Program and QM script to run the program and parse its output
+      qm_prog = dftbplus; qm_script = dftbplus_periodic_stress;
+
+# Activate shake algorithm
+      shake = on;
+
+# Files
+
+      start_file   = initial_mil68ga.rst;
+      topology_file= shake.top;
+
+      output_file  = mil68ga-md-01.out;
+      info_file    = mil68ga-md-01.info;
+      energy_file  = mil68ga-md-01.en;
+      traj_file    = mil68ga-md-01.xyz;
+      vel_file     = mil68ga-md-01.vel;
+      charge_file  = mil68ga-md-01.chrg;
+      restart_file = mil68ga-md-01.rst;
