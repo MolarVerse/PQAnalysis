@@ -12,7 +12,7 @@ from beartype.typing import NewType
 #: A type hint for positive integers
 PositiveInt = NewType(
     "PositiveInt",
-    Annotated[int, Is[lambda int: int > 0]],
+    Annotated[int | np.int_, Is[lambda int: int > 0]],
 )
 
 # :A type hint for positive real numbers
