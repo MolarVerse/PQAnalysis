@@ -43,6 +43,16 @@ Np2DNumberArray = NewType(
     ]
 )
 
+#: A type hint for a 2D np.ndarray with dtype np.number
+Np3DNumberArray = NewType(
+    "Np2DNumberArray",
+    Annotated[
+        np.ndarray,
+        Is[lambda array: array.ndim == 3 and
+           (np.issubdtype(array.dtype, np.number))],
+    ]
+)
+
 #: A type hint for a nD np.ndarray with dtype np.number
 NpnDNumberArray = NewType(
     "NpnDNumberArray",
