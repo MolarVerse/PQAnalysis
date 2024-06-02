@@ -34,14 +34,17 @@ class TopologyFileWriter(BaseWriter):
 
     @runtime_type_checking
     def __init__(
-        self, filename: str, mode: str | FileWritingMode = "w"
+        self,
+        filename: str | None = None,
+        mode: str | FileWritingMode = "w",
     ) -> None:
         """
         Parameters
         ----------
-        filename : str
-            The name of the topology file
-        mode: str | FileWritingMode
+        filename : str, optional
+            The name of the topology file, Default is None, which means that the
+            output is printed to stdout.
+        mode: str | FileWritingMode, optional
             The writing mode. Default is "w".
             The writing mode can be either a string or a FileWritingMode enum value.
             Possible values are:
