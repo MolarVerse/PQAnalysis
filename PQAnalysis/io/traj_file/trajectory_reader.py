@@ -4,20 +4,24 @@ A module containing classes for reading a trajectory from a file.
 
 # 3rd party modules
 import logging
+import sys
+import numpy as np
+
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
 
 # Local absolute imports
+from PQAnalysis import __package_name__
 from PQAnalysis.config import with_progress_bar
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, Atom
+from PQAnalysis.io import BaseReader
 from PQAnalysis.topology import Topology
-from PQAnalysis.io.base import BaseReader
-from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis import __package_name__
 from PQAnalysis.exceptions import PQIndexError
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis.types import PositiveReal, predict_size_of_np_array
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
@@ -628,3 +632,25 @@ class TrajectoryReader(BaseReader):
             traj_format=self.traj_format,
             topology=topology,
         )
+
+    def estimate_ram_storage_size(self) -> PositiveReal:
+        """
+        Estimates the RAM storage size of the trajectory.
+
+        Returns
+        -------
+        PositiveReal
+            The estimated RAM storage size of the trajectory.
+        """
+
+        number_of_frames = np.sum(self.calculate_number_of_frames_per_file())
+
+        number_of_atoms = self.calculate_frame_size(self.filenames[0])
+
+        atom_size = sys.getsizeof(Atom("C", use_full=True))
+        cell_size = sys.getsizeof(Cell())
+
+        size_of_xyz_data = predict_size_of_np_array(2, 3 * number_of_atoms)
+        frame_size = cell_size + size_of_xyz_data + number_of_atoms * atom_size
+
+        return number_of_frames * frame_size
