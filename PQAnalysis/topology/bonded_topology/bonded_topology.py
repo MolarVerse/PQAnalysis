@@ -112,7 +112,7 @@ class BondedTopology(TopologyPropertiesMixin):
 
         max_index_shake_bonds = max(
             [bond.index1
-            for bond in shake_bonds] + [bond.index2 for bond in shake_bonds]
+             for bond in shake_bonds] + [bond.index2 for bond in shake_bonds]
         )
 
         if n_atoms_per_extension is None:
@@ -120,8 +120,8 @@ class BondedTopology(TopologyPropertiesMixin):
         elif n_atoms_per_extension < max_index_shake_bonds:
             self.logger.error(
                 (
-                "n_atoms_per_extension must be greater or equal "
-                "than the highest index in the provided shake bonds."
+                    "n_atoms_per_extension must be greater or equal "
+                    "than the highest index in the provided shake bonds."
                 ),
                 exception=PQValueError
             )

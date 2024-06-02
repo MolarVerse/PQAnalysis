@@ -24,6 +24,7 @@ class Dihedral:
         dihedral_type: int | None = None,
         is_linker: bool = False,
         is_improper: bool = False,
+        comment: str | None = None
     ) -> None:
         """
         Parameters
@@ -44,6 +45,8 @@ class Dihedral:
             A flag to indicate if the dihedral is a linker, by default False.
         is_improper : bool, optional
             A flag to indicate if the dihedral is an improper dihedral, by default False.
+        comment : str, optional
+            A comment for the dihedral, by default None.
         """
 
         self.index1 = index1
@@ -54,6 +57,7 @@ class Dihedral:
         self.dihedral_type = dihedral_type
         self.is_linker = is_linker
         self.is_improper = is_improper
+        self.comment = comment
 
     def copy(self) -> "Dihedral":
         """
@@ -72,7 +76,8 @@ class Dihedral:
             equilibrium_angle=self.equilibrium_angle,
             dihedral_type=self.dihedral_type,
             is_linker=self.is_linker,
-            is_improper=self.is_improper
+            is_improper=self.is_improper,
+            comment=self.comment
         )
 
     def __eq__(self, value: object) -> bool:
