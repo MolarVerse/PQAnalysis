@@ -103,3 +103,27 @@ Bool = NewType(
         Is[lambda b: isinstance(b, (bool, np.bool_))],
     ]
 )
+
+
+
+def predict_size_of_np_array(
+    dim: PositiveInt,
+    size: PositiveInt,
+) -> PositiveInt:
+    """
+    predict the size of a 2D np.ndarray with dtype np.number
+
+    Parameters
+    ----------
+    dim : PositiveInt
+        The number of dimensions of the array.
+    size : PositiveInt
+        The size of the array.
+        
+    Returns
+    -------
+    PositiveInt
+        The size of the array.
+        
+    """
+    return 96 + dim * 16 + size * 8
