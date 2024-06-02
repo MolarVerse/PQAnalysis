@@ -205,7 +205,7 @@ class TopologyFileReader(BaseReader):
             If the number of columns in the block is not 3 or 4.
         """
         bonds = []
-        for line in block:
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             # split line by comment char
             splitted_line = line.split("#")
@@ -271,7 +271,7 @@ class TopologyFileReader(BaseReader):
             If the number of columns in the block is not 4 or 5.
         """
         angles = []
-        for line in block:
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             # split line by comment char
             splitted_line = line.split("#")
@@ -338,7 +338,7 @@ class TopologyFileReader(BaseReader):
             If the number of columns in the block is not 5 or 6.
         """
         dihedrals = []
-        for line in block:
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             # split line by comment char
             splitted_line = line.split("#")
@@ -406,7 +406,7 @@ class TopologyFileReader(BaseReader):
             If the number of columns in the block is not 5 or 6.
         """
         dihedrals = []
-        for line in block:
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             # split line by comment char
             splitted_line = line.split("#")
@@ -475,7 +475,7 @@ class TopologyFileReader(BaseReader):
             If the number of columns in the block is not 3 or 4.
         """
         shake_bonds = []
-        for line in block:
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             # split line by comment char
             splitted_line = line.split("#")
