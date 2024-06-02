@@ -6,7 +6,7 @@ documentation page of PQ https://molarverse.github.io/PQ/
 
 import logging
 
-from beartype.typing import List
+from beartype.typing import List, Tuple
 
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
@@ -207,19 +207,7 @@ class TopologyFileReader(BaseReader):
         bonds = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
-            # split line by comment char
-            splitted_line = line.split("#")
-
-            # check if there is a comment
-            # if there is a comment, join all parts after the first
-            # comment char to get the full comment
-            if len(splitted_line) > 1:
-                comment = "#".join(splitted_line[1:])
-            else:
-                comment = None
-
-            # get the non-comment part of the line
-            line = splitted_line[0]
+            line, comment = self._get_data_line_comment(line)
 
             if len(line.split()) == 4:
                 index, target_index, bond_type, _ = line.split()
@@ -273,19 +261,7 @@ class TopologyFileReader(BaseReader):
         angles = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
-            # split line by comment char
-            splitted_line = line.split("#")
-
-            # check if there is a comment
-            # if there is a comment, join all parts after the first
-            # comment char to get the full comment
-            if len(splitted_line) > 1:
-                comment = "#".join(splitted_line[1:])
-            else:
-                comment = None
-
-            # get the non-comment part of the line
-            line = splitted_line[0]
+            line, comment = self._get_data_line_comment(line)
 
             if len(line.split()) == 5:
                 index1, index2, index3, angle_type, _ = line.split()
@@ -340,19 +316,7 @@ class TopologyFileReader(BaseReader):
         dihedrals = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
-            # split line by comment char
-            splitted_line = line.split("#")
-
-            # check if there is a comment
-            # if there is a comment, join all parts after the first
-            # comment char to get the full comment
-            if len(splitted_line) > 1:
-                comment = "#".join(splitted_line[1:])
-            else:
-                comment = None
-
-            # get the non-comment part of the line
-            line = splitted_line[0]
+            line, comment = self._get_data_line_comment(line)
 
             if len(line.split()) == 6:
                 index1, index2, index3, index4, dihedral_type, _ = line.split()
@@ -408,19 +372,7 @@ class TopologyFileReader(BaseReader):
         dihedrals = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
-            # split line by comment char
-            splitted_line = line.split("#")
-
-            # check if there is a comment
-            # if there is a comment, join all parts after the first
-            # comment char to get the full comment
-            if len(splitted_line) > 1:
-                comment = "#".join(splitted_line[1:])
-            else:
-                comment = None
-
-            # get the non-comment part of the line
-            line = splitted_line[0]
+            line, comment = self._get_data_line_comment(line)
 
             if len(line.split()) == 6:
                 index1, index2, index3, index4, dihedral_type, _ = line.split()
@@ -477,19 +429,7 @@ class TopologyFileReader(BaseReader):
         shake_bonds = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
-            # split line by comment char
-            splitted_line = line.split("#")
-
-            # check if there is a comment
-            # if there is a comment, join all parts after the first
-            # comment char to get the full comment
-            if len(splitted_line) > 1:
-                comment = "#".join(splitted_line[1:])
-            else:
-                comment = None
-
-            # get the non-comment part of the line
-            line = splitted_line[0]
+            line, comment = self._get_data_line_comment(line)
 
             if len(line.split()) == 4:
                 index, target_index, distance, _ = line.split()
@@ -510,3 +450,28 @@ class TopologyFileReader(BaseReader):
             )
 
         return shake_bonds
+
+    @staticmethod
+    def _get_data_line_comment(line: str) -> Tuple[str, str | None]:
+        """
+        Get the data and the comment from a line.
+
+        Parameters
+        ----------
+        line : str
+            A line from the topology file.
+
+        Returns
+        -------
+        tuple[str, str]
+            A tuple with the data and the comment.
+        """
+        splitted_line = line.split("#")
+        data = splitted_line[0].strip()
+
+        if len(splitted_line) > 1:
+            comment = "#".join(splitted_line[1:]).strip()
+        else:
+            comment = None
+
+        return data, comment

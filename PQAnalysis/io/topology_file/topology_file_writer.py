@@ -34,9 +34,7 @@ class TopologyFileWriter(BaseWriter):
 
     @runtime_type_checking
     def __init__(
-        self,
-        filename: str,
-        mode: str | FileWritingMode = "w"
+        self, filename: str, mode: str | FileWritingMode = "w"
     ) -> None:
         """
         Parameters
@@ -79,13 +77,13 @@ class TopologyFileWriter(BaseWriter):
             If the bonded topology is not a Topology or BondedTopology object.
         """
 
-        if isinstance(bonded_topology,
-            Topology) and bonded_topology.bonded_topology is not None:
+        if isinstance(
+            bonded_topology, Topology
+        ) and bonded_topology.bonded_topology is not None:
             bonded_topology = bonded_topology.bonded_topology
         elif not isinstance(bonded_topology, BondedTopology):
             self.logger.error(
-                "Invalid bonded topology.",
-                exception=TopologyFileError
+                "Invalid bonded topology.", exception=TopologyFileError
             )
 
         self.open()
@@ -102,9 +100,7 @@ class TopologyFileWriter(BaseWriter):
 
     @classmethod
     def _write_bond_info(
-        cls,
-        bonded_topology: BondedTopology,
-        file: File
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
         Determines if the bonded topology contains bonds and 
@@ -124,9 +120,7 @@ class TopologyFileWriter(BaseWriter):
 
     @classmethod
     def _write_angle_info(
-        cls,
-        bonded_topology: BondedTopology,
-        file: File
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
         Determines if the bonded topology contains angles and
@@ -146,9 +140,7 @@ class TopologyFileWriter(BaseWriter):
 
     @classmethod
     def _write_dihedral_info(
-        cls,
-        bonded_topology: BondedTopology,
-        file: File
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
         Determines if the bonded topology contains dihedrals and
@@ -168,9 +160,7 @@ class TopologyFileWriter(BaseWriter):
 
     @classmethod
     def _write_improper_info(
-        cls,
-        bonded_topology: BondedTopology,
-        file: File
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
         Writes the improper information to the file.
@@ -189,9 +179,7 @@ class TopologyFileWriter(BaseWriter):
 
     @classmethod
     def _write_shake_info(
-        cls,
-        bonded_topology: BondedTopology,
-        file: File
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
         Writes the shake information to the file.
@@ -242,7 +230,12 @@ class TopologyFileWriter(BaseWriter):
         )
 
         for bond in bonded_topology.bonds:
-            lines.append(f"{bond.index1} {bond.index2} {bond.bond_type}")
+            line = f"{bond.index1} {bond.index2} {bond.bond_type}"
+
+            if bond.comment is not None:
+                line += f" # {bond.comment}"
+
+            lines.append(line)
 
         lines.append("END")
 
@@ -284,10 +277,15 @@ class TopologyFileWriter(BaseWriter):
         )
 
         for angle in bonded_topology.angles:
-            lines.append(
+            line = (
                 f"{angle.index1} {angle.index2} "
                 f"{angle.index3} {angle.angle_type}"
             )
+
+            if angle.comment is not None:
+                line += f" # {angle.comment}"
+
+            lines.append(line)
 
         lines.append("END")
 
@@ -329,10 +327,16 @@ class TopologyFileWriter(BaseWriter):
         )
 
         for dihedral in bonded_topology.dihedrals:
-            lines.append(
-                f"{dihedral.index1} {dihedral.index2} {dihedral.index3} "
-                f"{dihedral.index4} {dihedral.dihedral_type}"
+            line = (
+                f"{dihedral.index1} {dihedral.index2} "
+                f"{dihedral.index3} {dihedral.index4} "
+                f"{dihedral.dihedral_type}"
             )
+
+            if dihedral.comment is not None:
+                line += f" # {dihedral.comment}"
+
+            lines.append(line)
 
         lines.append("END")
 
@@ -374,10 +378,17 @@ class TopologyFileWriter(BaseWriter):
         )
 
         for improper in bonded_topology.impropers:
-            lines.append(
-                f"{improper.index1} {improper.index2} {improper.index3} "
-                f"{improper.index4} {improper.improper_type}"
+
+            line = (
+                f"{improper.index1} {improper.index2} "
+                f"{improper.index3} {improper.index4} "
+                f"{improper.improper_type}"
             )
+
+            if improper.comment is not None:
+                line += f" # {improper.comment}"
+
+            lines.append(line)
 
         lines.append("END")
 
@@ -420,10 +431,16 @@ class TopologyFileWriter(BaseWriter):
 
         for bond in bonded_topology.shake_bonds:
             linker = "*" if bond.is_linker else ""
-            lines.append(
+
+            line = (
                 f"{bond.index1} {bond.index2} "
                 f"{bond.equilibrium_distance} {linker}"
             )
+
+            if bond.comment is not None:
+                line += f" # {bond.comment}"
+
+            lines.append(line)
 
         lines.append("END")
 
