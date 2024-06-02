@@ -230,7 +230,7 @@ class TopologyFileWriter(BaseWriter):
         )
 
         for bond in bonded_topology.bonds:
-            line = f"{bond.index1} {bond.index2} {bond.bond_type}"
+            line = f"{bond.index1:>5d} {bond.index2:>5d} {bond.bond_type:>5d}"
 
             if bond.comment is not None:
                 line += f" # {bond.comment}"
@@ -278,8 +278,8 @@ class TopologyFileWriter(BaseWriter):
 
         for angle in bonded_topology.angles:
             line = (
-                f"{angle.index1} {angle.index2} "
-                f"{angle.index3} {angle.angle_type}"
+                f"{angle.index1:>5d} {angle.index2:>5d} "
+                f"{angle.index3:>5d} {angle.angle_type:>5d}"
             )
 
             if angle.comment is not None:
@@ -328,9 +328,9 @@ class TopologyFileWriter(BaseWriter):
 
         for dihedral in bonded_topology.dihedrals:
             line = (
-                f"{dihedral.index1} {dihedral.index2} "
-                f"{dihedral.index3} {dihedral.index4} "
-                f"{dihedral.dihedral_type}"
+                f"{dihedral.index1:>5d} {dihedral.index2:>5d} "
+                f"{dihedral.index3:>5d} {dihedral.index4:>5d} "
+                f"{dihedral.dihedral_type:>5d}"
             )
 
             if dihedral.comment is not None:
@@ -380,9 +380,9 @@ class TopologyFileWriter(BaseWriter):
         for improper in bonded_topology.impropers:
 
             line = (
-                f"{improper.index1} {improper.index2} "
-                f"{improper.index3} {improper.index4} "
-                f"{improper.improper_type}"
+                f"{improper.index1:>5d} {improper.index2:>5d} "
+                f"{improper.index3:>5d} {improper.index4:>5d} "
+                f"{improper.improper_type:>5d}"
             )
 
             if improper.comment is not None:
@@ -433,8 +433,8 @@ class TopologyFileWriter(BaseWriter):
             linker = "*" if bond.is_linker else ""
 
             line = (
-                f"{bond.index1} {bond.index2} "
-                f"{bond.equilibrium_distance} {linker}"
+                f"{bond.index1:>5d} {bond.index2:>5d} "
+                f"{bond.equilibrium_distance:16.12f}\t{linker}"
             )
 
             if bond.comment is not None:
