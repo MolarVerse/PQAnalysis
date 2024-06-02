@@ -338,7 +338,7 @@ class TopologyFileWriter(BaseWriter):
         """
         n_unique_indices1 = len(bonded_topology.unique_angle1_indices)
         n_unique_indices2 = len(bonded_topology.unique_angle2_indices)
-        n_unique_indices3 = len(bonded_topology.unique_angle_target_indices)
+        n_unique_indices3 = len(bonded_topology.unique_angle3_indices)
         n_linkers = len(bonded_topology.angle_linkers)
 
         lines = []
@@ -460,7 +460,7 @@ class TopologyFileWriter(BaseWriter):
             line = (
                 f"{improper.index1:>5d} {improper.index2:>5d} "
                 f"{improper.index3:>5d} {improper.index4:>5d} "
-                f"{improper.improper_type:>5d}"
+                f"{improper.dihedral_type:>5d}"
             )
 
             if improper.is_linker:
@@ -517,9 +517,6 @@ class TopologyFileWriter(BaseWriter):
                 f"{bond.index1:>5d} {bond.index2:>5d} "
                 f"{bond.equilibrium_distance:16.12f}\t{linker}"
             )
-
-            if bond.is_linker:
-                line += " *"
 
             if bond.comment is not None:
                 line += f" # {bond.comment}"
