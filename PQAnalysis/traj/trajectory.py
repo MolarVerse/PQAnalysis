@@ -14,8 +14,9 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.types import (
-    Np2DNumberArray,
     Np1DNumberArray,
+    Np2DNumberArray,
+    Np3DNumberArray,
     PositiveReal,
     Bool,
 )
@@ -454,3 +455,8 @@ class Trajectory:
         frames = [frame.center_of_mass_residues for frame in self.frames]
 
         return Trajectory(frames)
+
+    @property
+    def pos(self) -> Np3DNumberArray:
+        """Np3DNumberArray: The positions of the trajectory."""
+        return np.array([frame.pos for frame in self.frames])
