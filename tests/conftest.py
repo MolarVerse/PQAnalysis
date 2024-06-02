@@ -6,9 +6,10 @@ import os
 import shutil
 import logging
 
+from contextlib import contextmanager
+
 import pytest
 
-from contextlib import contextmanager
 from _pytest.logging import LogCaptureHandler, _remove_ansi_escape_sequences
 from beartype.roar import BeartypeCallHintParamViolation
 
