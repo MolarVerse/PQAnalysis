@@ -38,6 +38,14 @@ class PQTypeError(PQException):
 
 
 
+class PQMemoryError(PQException):
+
+    """
+    Exception raised for errors related to the AtomicSystem class
+    """
+
+
+
 class PQNotImplementedError(PQException):
 
     """
