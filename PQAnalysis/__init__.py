@@ -1,5 +1,6 @@
 """
-PQAnalysis is a Python package for the analysis of molecular topologies and trajectories.
+PQAnalysis is a Python package for the analysis of molecular 
+topologies and trajectories.
 """
 # pylint: disable=invalid-name
 
@@ -8,6 +9,9 @@ import os
 import time
 
 from pathlib import Path
+
+import psutil
+
 from beartype.claw import beartype_this_package
 
 import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
@@ -21,10 +25,10 @@ __package_name__ = __name__
 # BEARTYPE SETUP #
 ##################
 
-# TODO: change the default level to "RELEASE" after all changes are implemented
 __beartype_default_level__ = "RELEASE"
 __beartype_level__ = os.getenv(
-    "PQANALYSIS_BEARTYPE_LEVEL", __beartype_default_level__
+    "PQANALYSIS_BEARTYPE_LEVEL",
+    __beartype_default_level__,
 )
 
 if __beartype_level__.upper() == "DEBUG":
@@ -62,3 +66,14 @@ if log_file_env_var and logging_env_var.lower() != "off":
 
 if config.log_file_name is None:
     config.log_file_name = f"PQAnalysis_{execution_start_time}.log"
+
+#####################
+# Memory management #
+#####################
+
+# virtual memory in MB
+virtual_memory = float(os.getenv("PQANALYSIS_VIRTUAL_MEMORY", "500"))
+_available_virtual_memory = psutil.virtual_memory().available / 1024**2
+
+if _available_virtual_memory * 0.75 < virtual_memory:
+    virtual_memory = _available_virtual_memory * 0.75
