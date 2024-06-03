@@ -11,7 +11,7 @@ from tqdm.auto import tqdm
 from pympler import asizeof
 
 # Local absolute imports
-from PQAnalysis import __package_name__
+from PQAnalysis import __package_name__, virtual_memory
 from PQAnalysis.config import with_progress_bar, base_url
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
@@ -516,6 +516,18 @@ class TrajectoryReader(BaseReader):
         return n_frames_list
 
     @property
+    def calculate_total_frame_number(self) -> int:
+        """
+        Calculates the total number of frames in the trajectory.
+
+        Returns
+        -------
+        int
+            The total number of frames in the trajectory.
+        """
+        return sum(self.calculate_number_of_frames_per_file())
+
+    @property
     def cells(self) -> list[Cell]:
         """
         Returns the cells of the trajectory.
@@ -633,17 +645,16 @@ class TrajectoryReader(BaseReader):
             topology=topology,
         )
 
-    def estimate_ram_storage_size(self) -> PositiveReal:
+    def estimate_vmem_of_frame(self) -> PositiveReal:
         """
-        Estimates the RAM storage size of the trajectory.
+        Estimates the virtual memory needed for a single frame.
 
         Returns
         -------
         PositiveReal
-            The estimated RAM storage size of the trajectory.
+            The estimated virtual memory needed for a single frame.
+            The unit is MB.
         """
-
-        number_of_frames = np.sum(self.calculate_number_of_frames_per_file())
 
         number_of_atoms = self.calculate_frame_size(self.filenames[0])
 
@@ -670,4 +681,58 @@ class TrajectoryReader(BaseReader):
         size_of_xyz_data = predict_size_of_np_array(2, 3 * number_of_atoms)
         frame_size = cell_size + size_of_xyz_data + number_of_atoms * atom_size
 
-        return number_of_frames * frame_size
+        return frame_size / 1024**2
+
+    def estimate_vmem_of_traj(self) -> PositiveReal:
+        """
+        Estimates the virtual memory needed for the full trajectory.
+
+        Returns
+        -------
+        PositiveReal
+            The estimated virtual memory needed for the full trajectory.
+            The unit is MB.
+        """
+
+        number_of_frames = self.calculate_total_frame_number()
+
+        return number_of_frames * self.estimate_vmem_of_frame()
+
+    def chunk_frame_generator(self) -> Generator[AtomicSystem]:
+        """
+        A generator that yields chunks of frames of the trajectory.
+
+        This method is based on the estimated virtual memory
+        of the trajectory, which should be read. Therefore, the number of 
+        frames to be read at once is calculated based on the estimated ram
+        storage of the trajectory in conjunction with the maximum virtual 
+        memory (default 500MB). The maximum virtual memory can be set by 
+        setting the 'PQANALYSIS_VIRTUAL_MEMORY' environment variable in MB.
+        
+        Note: The given virtual memory is checked against the maximum available
+        virtual memory on the system. If the given virtual memory is greater than
+        75% of the available virtual memory, the virtual memory is set to 50% of
+        the available virtual memory.
+        
+        Returns
+        -------
+        Generator[AtomicSystem]
+            The frames of the trajectory.
+        """
+
+        estimated_vmem = self.estimate_vmem_of_frame()
+        maximum_number_of_frames = int(virtual_memory / estimated_vmem)
+
+        if maximum_number_of_frames < 1:
+            self.logger.error(
+                "The estimated virtual memory of the frame is "
+                "greater than the maximum virtual memory. "
+                "Please increase the maximum virtual memory or switch to alternative "
+                "methods to read the trajectory. The estimated virtual memory of the "
+                f"frame is {estimated_vmem} MB and the maximum virtual memory is "
+                f"{virtual_memory} MB.",
+            )
+        elif maximum_number_of_frames > self.calculate_total_frame_number():
+            maximum_number_of_frames = self.length_of_traj
+
+        return self.window_generator(maximum_number_of_frames)

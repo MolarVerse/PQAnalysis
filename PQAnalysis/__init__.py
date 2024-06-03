@@ -75,5 +75,5 @@ if config.log_file_name is None:
 virtual_memory = float(os.getenv("PQANALYSIS_VIRTUAL_MEMORY", "500"))
 _available_virtual_memory = psutil.virtual_memory().available / 1024**2
 
-if _available_virtual_memory * 0.75 < virtual_memory:
-    virtual_memory = _available_virtual_memory * 0.75
+if _available_virtual_memory * 0.50 < virtual_memory:
+    virtual_memory = _available_virtual_memory * 0.50
