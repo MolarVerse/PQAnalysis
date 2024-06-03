@@ -4,15 +4,15 @@ A module containing classes for reading a trajectory from a file.
 
 # 3rd party modules
 import logging
-import sys
 import numpy as np
 
 from beartype.typing import List, Generator
 from tqdm.auto import tqdm
+from pympler import asizeof
 
 # Local absolute imports
 from PQAnalysis import __package_name__
-from PQAnalysis.config import with_progress_bar
+from PQAnalysis.config import with_progress_bar, base_url
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
@@ -647,8 +647,25 @@ class TrajectoryReader(BaseReader):
 
         number_of_atoms = self.calculate_frame_size(self.filenames[0])
 
-        atom_size = sys.getsizeof(Atom("C", use_full=True))
-        cell_size = sys.getsizeof(Cell())
+        try:
+            atom_size = asizeof.asizeof(Atom("C", use_full=True))
+            cell_size = asizeof.asizeof(Cell())
+        except ModuleNotFoundError:
+            atom_size = 688
+            cell_size = 1096
+
+            self.logger.warning(
+                "It seems that there is a problem with the pympler package. "
+                "One known issue is that the asizeof function does not work "
+                "in bpython terminal. Please try running the code in a different "
+                "terminal if you are using bpython. If the problem persists, "
+                "please open an issue at "
+                f"{base_url}/issues.\n\n",
+                "For now, hard coded estimates are used for the size of the "
+                "Atom (688B) and Cell (1096(B)) objects. These estimates are based "
+                "on the development status on 2024-06-03 and may not be accurate "
+                "anymore."
+            )
 
         size_of_xyz_data = predict_size_of_np_array(2, 3 * number_of_atoms)
         frame_size = cell_size + size_of_xyz_data + number_of_atoms * atom_size
