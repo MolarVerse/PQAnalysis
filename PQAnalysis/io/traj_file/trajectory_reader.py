@@ -18,7 +18,7 @@ from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.io import BaseReader
 from PQAnalysis.topology import Topology
-from PQAnalysis.exceptions import PQIndexError
+from PQAnalysis.exceptions import PQIndexError, PQMemoryError
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.types import PositiveReal, predict_size_of_np_array
@@ -370,7 +370,12 @@ class TrajectoryReader(BaseReader):
         # the length of the trajectory, raise an IndexError
         if window_size < 1 or window_size > self.length_of_traj:
             self.logger.error(
-                "window size can not be less than 1 or greater than the length of the trajectory",
+                (
+                    "Window size can not be less than 1 or "
+                    "greater than the length of the trajectory.\n"
+                    f"Actual window size: {window_size}, "
+                    f"Length of the trajectory: {self.length_of_traj}"
+                ),
                 exception=PQIndexError,
             )
 
@@ -515,7 +520,6 @@ class TrajectoryReader(BaseReader):
 
         return n_frames_list
 
-    @property
     def calculate_total_frame_number(self) -> int:
         """
         Calculates the total number of frames in the trajectory.
@@ -698,7 +702,11 @@ class TrajectoryReader(BaseReader):
 
         return number_of_frames * self.estimate_vmem_of_frame()
 
-    def chunk_frame_generator(self) -> Generator[AtomicSystem]:
+    def chunk_frame_generator(
+        self,
+        scaling_factor: PositiveReal = 1,
+        power_factor: PositiveReal = 1,
+    ) -> Generator[AtomicSystem]:
         """
         A generator that yields chunks of frames of the trajectory.
 
@@ -714,6 +722,30 @@ class TrajectoryReader(BaseReader):
         75% of the available virtual memory, the virtual memory is set to 50% of
         the available virtual memory.
         
+        With the scaling factor and power factor, the estimated virtual memory
+        of the frame can be adjusted. The estimated virtual memory of the frame
+        is calculated by the formula:
+        
+        estimated_vmem = (estimated_vmem * scaling_factor) ^ power_factor
+        
+        With these factors, it is possible to steer the number of frames to be
+        read at once based on the complexity of the algorithm used. This means 
+        if for example an algorithm needs all possible of frame combinations 
+        from two sub-trajectories, the scaling factor can be set to 1 and the
+        power factor to 2. This will result in the estimated virtual memory of
+        the frame being squared. Therefore, the total allocated virtual memory
+        of the generated windows should not exceed the square root of the maximum 
+        virtual memory.
+        
+        Parameters
+        ----------
+        scaling_factor : PositiveReal, optional
+            The scaling factor by which the estimated virtual memory is scaled,
+            by default 1.
+        power_factor : PositiveReal, optional
+            The power factor by which the estimated virtual memory is raised,
+            by default 1.
+        
         Returns
         -------
         Generator[AtomicSystem]
@@ -721,18 +753,26 @@ class TrajectoryReader(BaseReader):
         """
 
         estimated_vmem = self.estimate_vmem_of_frame()
+        estimated_vmem *= scaling_factor
+        estimated_vmem **= power_factor
+
         maximum_number_of_frames = int(virtual_memory / estimated_vmem)
+
+        number_of_frames = self.calculate_total_frame_number()
 
         if maximum_number_of_frames < 1:
             self.logger.error(
-                "The estimated virtual memory of the frame is "
-                "greater than the maximum virtual memory. "
-                "Please increase the maximum virtual memory or switch to alternative "
-                "methods to read the trajectory. The estimated virtual memory of the "
-                f"frame is {estimated_vmem} MB and the maximum virtual memory is "
-                f"{virtual_memory} MB.",
+                (
+                    "The estimated virtual memory of the frame is "
+                    "greater than the maximum virtual memory. "
+                    "Please increase the maximum virtual memory or switch to alternative "
+                    "methods to read the trajectory. The estimated virtual memory of the "
+                    f"frame is {estimated_vmem} MB and the maximum virtual memory is "
+                    f"{virtual_memory} MB."
+                ),
+                exception=PQMemoryError,
             )
-        elif maximum_number_of_frames > self.calculate_total_frame_number():
-            maximum_number_of_frames = self.length_of_traj
+        elif maximum_number_of_frames > number_of_frames:
+            maximum_number_of_frames = number_of_frames
 
         return self.window_generator(maximum_number_of_frames)
