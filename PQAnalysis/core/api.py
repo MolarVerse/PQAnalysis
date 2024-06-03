@@ -81,3 +81,35 @@ def distance(
     delta_pos = cell.image(delta_pos)
 
     return np.linalg.norm(delta_pos, axis=-1)
+
+
+
+def delta_atomic_positions(
+    pos1: np.array,
+    pos2: np.array,
+    cell: _cell.Cell = _cell.Cell(),
+) -> np.array:
+    """
+    Performs an elementwise subtraction of two np.ndarray 
+    of atomic positions. The positions are imaged into the
+    unit cell after the subtraction.
+
+    Parameters
+    ----------
+    pos1 : Np1DNumberArray | Np2DNumberArray
+        _description_
+    pos2 : Np1DNumberArray | Np2DNumberArray
+        _description_
+    cell : _cell.Cell, optional
+        _description_, by default _cell.Cell()
+    """
+
+    if np.shape(pos1) != np.shape(pos2):
+        #TODO: implement logger for PQAnalysis
+        raise ValueError("The shapes of the positions do not match.")
+
+    delta_pos = pos2 - pos1
+
+    delta_pos = cell.image(delta_pos)
+
+    return delta_pos
