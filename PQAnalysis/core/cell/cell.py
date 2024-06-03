@@ -140,6 +140,9 @@ class Cell(_StandardPropertiesMixin):
             The image of the position(s) in the unit cell.
         """
 
+        if self.is_vacuum:
+            return pos
+
         original_shape = np.shape(pos)
         pos = np.reshape(pos, (-1, 3))
 
