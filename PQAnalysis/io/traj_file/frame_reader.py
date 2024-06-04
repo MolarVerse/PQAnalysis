@@ -251,7 +251,9 @@ class _FrameReader:
         return value, atoms
 
     def _get_topology(
-        self, atoms: List[str], topology: Topology | None
+        self,
+        atoms: List[str],
+        topology: Topology | None,
     ) -> Topology:
         """
         Returns the topology of the frame.

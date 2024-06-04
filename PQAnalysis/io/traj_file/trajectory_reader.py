@@ -251,7 +251,7 @@ class TrajectoryReader(BaseReader):
                             # then increment the frame index
                             frame_index += 1
 
-                            if self.constant_topology and self.topology is not None:
+                            if self.constant_topology and self.topology is None:
                                 self.topology = frame.topology
 
                         frame_lines = [line]
@@ -278,7 +278,7 @@ class TrajectoryReader(BaseReader):
                     # then increment the frame index
                     frame_index += 1
 
-                if self.constant_topology and self.topology is not None:
+                if self.constant_topology and self.topology is None:
                     self.topology = frame.topology
 
     @runtime_type_checking
