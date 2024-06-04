@@ -243,10 +243,7 @@ class TrajectoryReader(BaseReader):
 
                             # Check if the number of frames yielded is equal to the
                             # total number of frames
-                            if not (
-                                frame_index < trajectory_start or
-                                frame_index >= trajectory_stop
-                            ):
+                            if frame_index >= trajectory_start:
                                 yield frame  # only yield the frame if it is within the range
                                 progress_bar.update(
                                     1
@@ -271,11 +268,9 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = frame.cell
 
-                    # Check if the number of frames yielded is equal to the total number of frames
-                    if not (
-                        frame_index < trajectory_start or
-                        frame_index >= trajectory_stop
-                    ):
+                    # Check if the number of frames yielded is equal to the
+                    # total number of frames
+                    if frame_index >= trajectory_start:
                         yield frame  # only yield the frame if it is within the range
                         progress_bar.update(1)  # update the progress bar
 
