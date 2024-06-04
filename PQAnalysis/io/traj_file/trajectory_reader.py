@@ -222,6 +222,9 @@ class TrajectoryReader(BaseReader):
                 # Read the lines of the file using tqdm for progress bar
                 for line in self.file:
 
+                    if trajectory_stop <= frame_index:
+                        break
+
                     stripped_line = line.strip()
                     if stripped_line == "" or not stripped_line[0].isdigit():
                         frame_lines.append(line)
