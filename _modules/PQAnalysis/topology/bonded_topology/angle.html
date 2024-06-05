@@ -103,6 +103,7 @@
         <span class="n">equilibrium_angle</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">angle_type</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_linker</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -119,6 +120,8 @@
 <span class="sd">            The type of the angle, by default None.</span>
 <span class="sd">        is_linker : bool, optional</span>
 <span class="sd">            A flag to indicate if the angle is a linker, by default False.</span>
+<span class="sd">        comment : str, optional</span>
+<span class="sd">            A comment for the angle, by default None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">index1</span> <span class="o">=</span> <span class="n">index1</span>
@@ -127,6 +130,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_angle</span> <span class="o">=</span> <span class="n">equilibrium_angle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angle_type</span> <span class="o">=</span> <span class="n">angle_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_linker</span> <span class="o">=</span> <span class="n">is_linker</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
 
 <div class="viewcode-block" id="Angle.copy">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.angle.html#PQAnalysis.topology.bonded_topology.angle.Angle.copy">[docs]</a>
@@ -146,6 +150,7 @@
             <span class="n">equilibrium_angle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_angle</span><span class="p">,</span>
             <span class="n">angle_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">angle_type</span><span class="p">,</span>
             <span class="n">is_linker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_linker</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comment</span>
         <span class="p">)</span></div>
 
 

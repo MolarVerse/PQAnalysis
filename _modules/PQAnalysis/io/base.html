@@ -159,6 +159,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BaseWriter.open">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter.open">[docs]</a>
@@ -231,13 +232,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">WRITE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-                <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">mode</span> <span class="o">==</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">WRITE</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. &quot;</span>
-                <span class="s2">&quot;Use mode </span><span class="se">\&#39;</span><span class="s2">a</span><span class="se">\&#39;</span><span class="s2"> to append to the file or mode &quot;</span>
-                <span class="s2">&quot;</span><span class="se">\&#39;</span><span class="s2">o</span><span class="se">\&#39;</span><span class="s2"> to overwrite the file.&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="si">}</span><span class="s2"> already exists. &quot;</span>
+                    <span class="s2">&quot;Use mode </span><span class="se">\&#39;</span><span class="s2">a</span><span class="se">\&#39;</span><span class="s2"> to append to the file or mode &quot;</span>
+                    <span class="s2">&quot;</span><span class="se">\&#39;</span><span class="s2">o</span><span class="se">\&#39;</span><span class="s2"> to overwrite the file.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">FileWritingModeError</span>
             <span class="p">)</span>
@@ -301,8 +304,8 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">_filename</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                         <span class="p">(</span>
-                        <span class="s2">&quot;At least one of the given files does not exist. &quot;</span>
-                        <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">_filename</span><span class="si">}</span><span class="s2"> not found.&quot;</span>
+                            <span class="s2">&quot;At least one of the given files does not exist. &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;File </span><span class="si">{</span><span class="n">_filename</span><span class="si">}</span><span class="s2"> not found.&quot;</span>
                         <span class="p">),</span>
                         <span class="n">exception</span><span class="o">=</span><span class="n">PQFileNotFoundError</span>
                     <span class="p">)</span>

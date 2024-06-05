@@ -89,12 +89,17 @@
 
 <span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
 
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.io.base</span> <span class="kn">import</span> <span class="n">BaseWriter</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.io.formats</span> <span class="kn">import</span> <span class="n">FileWritingMode</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">Topology</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">Topology</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.topology.bonded_topology</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Bond</span><span class="p">,</span>
+    <span class="n">Angle</span><span class="p">,</span>
+    <span class="n">Dihedral</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TopologyFileError</span>
 
@@ -116,15 +121,16 @@
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        filename : str</span>
-<span class="sd">            The name of the topology file</span>
-<span class="sd">        mode: str | FileWritingMode</span>
+<span class="sd">        filename : str, optional</span>
+<span class="sd">            The name of the topology file, Default is None, which means that the</span>
+<span class="sd">            output is printed to stdout.</span>
+<span class="sd">        mode: str | FileWritingMode, optional</span>
 <span class="sd">            The writing mode. Default is &quot;w&quot;.</span>
 <span class="sd">            The writing mode can be either a string or a FileWritingMode enum value.</span>
 <span class="sd">            Possible values are:</span>
@@ -162,13 +168,13 @@
 <span class="sd">            If the bonded topology is not a Topology or BondedTopology object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">,</span>
-            <span class="n">Topology</span><span class="p">)</span> <span class="ow">and</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonded_topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">bonded_topology</span><span class="p">,</span> <span class="n">Topology</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonded_topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">bonded_topology</span> <span class="o">=</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonded_topology</span>
         <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">,</span> <span class="n">BondedTopology</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Invalid bonded topology.&quot;</span><span class="p">,</span>
-                <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span>
+                <span class="s2">&quot;Invalid bonded topology.&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
@@ -186,9 +192,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_write_bond_info</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span>
-        <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the bonded topology contains bonds and </span>
@@ -200,7 +204,15 @@
 <span class="sd">            The bonded topology object containing the bond information.</span>
 <span class="sd">        file : File</span>
 <span class="sd">            The file object to write the bond information to.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TopologyFileError</span>
+<span class="sd">            If any bond in the bonded topology does not have a bond type defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_type_given</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">,</span> <span class="s2">&quot;bond&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_bond_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
@@ -208,9 +220,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_write_angle_info</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span>
-        <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the bonded topology contains angles and</span>
@@ -222,7 +232,15 @@
 <span class="sd">            The bonded topology object containing the angle information.</span>
 <span class="sd">        file : File </span>
 <span class="sd">            The file object to write the angle information to.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TopologyFileError</span>
+<span class="sd">            If any angle in the bonded topology does not have an angle type defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_type_given</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">angles</span><span class="p">,</span> <span class="s2">&quot;angle&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">angles</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_angle_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
@@ -230,9 +248,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_write_dihedral_info</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span>
-        <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Determines if the bonded topology contains dihedrals and</span>
@@ -244,7 +260,15 @@
 <span class="sd">            The bonded topology object containing the dihedral information.</span>
 <span class="sd">        file : File</span>
 <span class="sd">            The file object to write the dihedral information to.</span>
+<span class="sd">            </span>
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TopologyFileError</span>
+<span class="sd">            If any dihedral in the bonded topology does not have a dihedral type defined.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_type_given</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">,</span> <span class="s2">&quot;dihedral&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_dihedral_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
@@ -252,9 +276,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_write_improper_info</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span>
-        <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the improper information to the file.</span>
@@ -266,6 +288,9 @@
 <span class="sd">        file : File</span>
 <span class="sd">            The file object to write the improper information to.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">cls</span><span class="o">.</span><span class="n">_check_type_given</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">impropers</span><span class="p">,</span> <span class="s2">&quot;improper&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">impropers</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_improper_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
@@ -273,9 +298,7 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">_write_shake_info</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span>
-        <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span>
-        <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the shake information to the file.</span>
@@ -291,6 +314,40 @@
             <span class="n">lines</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_get_shake_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_check_type_given</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Bond</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="n">Dihedral</span><span class="p">],</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the type is given for each bond, angle, or dihedral.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        types : List[Bond | Angle | Dihedral]</span>
+<span class="sd">            The list of bonds, angles, or dihedrals to check.</span>
+<span class="sd">        type_name : str</span>
+<span class="sd">            The name of the type to check.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="n">type_</span><span class="p">:</span> <span class="n">Bond</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="n">Dihedral</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">Bond</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">type_</span><span class="o">.</span><span class="n">bond_type</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">Angle</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">type_</span><span class="o">.</span><span class="n">angle_type</span>
+
+            <span class="k">return</span> <span class="n">type_</span><span class="o">.</span><span class="n">dihedral_type</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">get_type</span><span class="p">(</span><span class="n">type_</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">type_</span> <span class="ow">in</span> <span class="n">types</span><span class="p">):</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;In order to write the </span><span class="si">{</span><span class="n">type_name</span><span class="si">}</span><span class="s2"> information in &#39;PQ&#39; topology format, &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;all </span><span class="si">{</span><span class="n">type_name</span><span class="si">}</span><span class="s2">s must have a </span><span class="si">{</span><span class="n">type_name</span><span class="si">}</span><span class="s2"> type defined.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span>
+            <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_get_bond_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
@@ -317,7 +374,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_unique_indices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_bond1_indices</span><span class="p">)</span>
         <span class="n">n_unique_target_indices</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_bond2_indices</span><span class="p">)</span>
-        <span class="n">n_linkers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">linkers</span><span class="p">)</span>
+        <span class="n">n_linkers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">bond_linkers</span><span class="p">)</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -326,7 +383,15 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">bonds</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index2</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">bond_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index1</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index2</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">bond_type</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">is_linker</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot; *&quot;</span>
+
+            <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
 
@@ -357,7 +422,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_unique_indices1</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_angle1_indices</span><span class="p">)</span>
         <span class="n">n_unique_indices2</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_angle2_indices</span><span class="p">)</span>
-        <span class="n">n_unique_indices3</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_angle_target_indices</span><span class="p">)</span>
+        <span class="n">n_unique_indices3</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">unique_angle3_indices</span><span class="p">)</span>
         <span class="n">n_linkers</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">bonded_topology</span><span class="o">.</span><span class="n">angle_linkers</span><span class="p">)</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
@@ -368,10 +433,18 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">angles</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index2</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index3</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">angle_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index1</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index2</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">index3</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">angle_type</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">angle</span><span class="o">.</span><span class="n">is_linker</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot; *&quot;</span>
+
+            <span class="k">if</span> <span class="n">angle</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="n">angle</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
 
@@ -413,10 +486,19 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">dihedral</span> <span class="ow">in</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">dihedrals</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index2</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index3</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">dihedral_type</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index1</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index2</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index3</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">index4</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">dihedral_type</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">dihedral</span><span class="o">.</span><span class="n">is_linker</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot; *&quot;</span>
+
+            <span class="k">if</span> <span class="n">dihedral</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="n">dihedral</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
 
@@ -458,10 +540,20 @@
         <span class="p">)</span>
 
         <span class="k">for</span> <span class="n">improper</span> <span class="ow">in</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">impropers</span><span class="p">:</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index2</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index3</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index4</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">improper_type</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index1</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index2</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index3</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">index4</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">dihedral_type</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">improper</span><span class="o">.</span><span class="n">is_linker</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="s2">&quot; *&quot;</span>
+
+            <span class="k">if</span> <span class="n">improper</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="n">improper</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
 
@@ -504,10 +596,16 @@
 
         <span class="k">for</span> <span class="n">bond</span> <span class="ow">in</span> <span class="n">bonded_topology</span><span class="o">.</span><span class="n">shake_bonds</span><span class="p">:</span>
             <span class="n">linker</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span> <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">is_linker</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
-            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index2</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">equilibrium_distance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">linker</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">line</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index1</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">index2</span><span class="si">:</span><span class="s2">&gt;5d</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">equilibrium_distance</span><span class="si">:</span><span class="s2">16.12f</span><span class="si">}</span><span class="se">\t</span><span class="si">{</span><span class="n">linker</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">bond</span><span class="o">.</span><span class="n">comment</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; # </span><span class="si">{</span><span class="n">bond</span><span class="o">.</span><span class="n">comment</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;END&quot;</span><span class="p">)</span>
 

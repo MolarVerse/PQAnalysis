@@ -85,13 +85,14 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">PQAnalysis.io.base</span> <span class="kn">import</span> <span class="n">BaseReader</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Bond</span><span class="p">,</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">Angle</span><span class="p">,</span> <span class="n">Dihedral</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis.utils.string</span> <span class="kn">import</span> <span class="n">is_comment_line</span>
 <span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
 
 <span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TopologyFileError</span>
 
@@ -167,14 +168,14 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
-            <span class="c1"># remove all #.... parts from all lines</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">]</span>
-
-            <span class="c1"># remove all empty lines</span>
-            <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+            <span class="c1"># remove all comment lines and empty lines</span>
+            <span class="n">no_comment_lines</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span> <span class="k">if</span>
+                <span class="ow">not</span> <span class="n">is_comment_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">comment_token</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">empty_line</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">]</span>
 
             <span class="c1"># check if last line is END else raise error</span>
-            <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">no_comment_lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="s2">&quot;Something went wrong. Each block should end with &#39;END&#39;&quot;</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">TopologyFileError</span><span class="p">,</span>
@@ -185,9 +186,12 @@
             <span class="n">block</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;end&quot;</span><span class="p">:</span>
+                    <span class="n">block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
                     <span class="n">blocks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
                     <span class="n">block</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">else</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="ow">not</span> <span class="n">is_comment_line</span><span class="p">(</span>
+                    <span class="n">line</span><span class="p">,</span> <span class="n">comment_token</span><span class="o">=</span><span class="s2">&quot;#&quot;</span><span class="p">,</span> <span class="n">empty_line</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">):</span>
                     <span class="n">block</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
             <span class="c1"># make a dictionary for each block with the key</span>
@@ -285,7 +289,10 @@
 <span class="sd">            If the number of columns in the block is not 3 or 4.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bonds</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
+
+            <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">index</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">bond_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -304,6 +311,7 @@
                     <span class="n">index2</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">target_index</span><span class="p">),</span>
                     <span class="n">bond_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">bond_type</span><span class="p">),</span>
                     <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -335,7 +343,10 @@
 <span class="sd">            If the number of columns in the block is not 4 or 5.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">angles</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
+
+            <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">angle_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -355,6 +366,7 @@
                     <span class="n">index3</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index3</span><span class="p">),</span>
                     <span class="n">angle_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">angle_type</span><span class="p">),</span>
                     <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -386,7 +398,10 @@
 <span class="sd">            If the number of columns in the block is not 5 or 6.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dihedrals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
+
+            <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">index4</span><span class="p">,</span> <span class="n">dihedral_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -407,6 +422,7 @@
                     <span class="n">index4</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">index4</span><span class="p">),</span>
                     <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
                     <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -438,7 +454,10 @@
 <span class="sd">            If the number of columns in the block is not 5 or 6.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dihedrals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
+
+            <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">index4</span><span class="p">,</span> <span class="n">dihedral_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -460,6 +479,7 @@
                     <span class="n">dihedral_type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">dihedral_type</span><span class="p">),</span>
                     <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
                     <span class="n">is_improper</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -491,7 +511,10 @@
 <span class="sd">            If the number of columns in the block is not 3 or 4.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">shake_bonds</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
+
+            <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">index</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -506,10 +529,36 @@
                     <span class="n">equilibrium_distance</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">distance</span><span class="p">),</span>
                     <span class="n">is_linker</span><span class="o">=</span><span class="n">is_linker</span><span class="p">,</span>
                     <span class="n">is_shake</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">comment</span><span class="o">=</span><span class="n">comment</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">shake_bonds</span></div>
+        <span class="k">return</span> <span class="n">shake_bonds</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the data and the comment from a line.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        line : str</span>
+<span class="sd">            A line from the topology file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple[str, str]</span>
+<span class="sd">            A tuple with the data and the comment.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">splitted_line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">splitted_line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="s2">&quot;#&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">comment</span></div>
 
 </pre></div>
 

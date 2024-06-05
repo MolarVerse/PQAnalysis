@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>common &mdash; PQAnalysis  documentation</title>
+  <title>string &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="custom_logging" href="PQAnalysis.utils.custom_logging.html" />
-    <link rel="prev" title="utils" href="PQAnalysis.utils.html" /> 
+    <link rel="next" title="units" href="PQAnalysis.utils.units.html" />
+    <link rel="prev" title="random" href="PQAnalysis.utils.random.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -61,13 +61,13 @@
 <li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
 <li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.utils.html">utils</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">common</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.common.html">common</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.custom_logging.html">custom_logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.decorators.html">decorators</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.files.html">files</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.math.html">math</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.random.html">random</a></li>
-<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.string.html">string</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">string</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.utils.units.html">units</a></li>
 </ul>
 </li>
@@ -93,9 +93,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.utils.html">utils</a></li>
-      <li class="breadcrumb-item active">common</li>
+      <li class="breadcrumb-item active">string</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/code/PQAnalysis.utils.common.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/code/PQAnalysis.utils.string.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -103,16 +103,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-PQAnalysis.utils.common">
-<span id="common"></span><h1>common<a class="headerlink" href="#module-PQAnalysis.utils.common" title="Link to this heading"></a></h1>
-<p>Common things needed by command line scripts.</p>
+  <section id="module-PQAnalysis.utils.string">
+<span id="string"></span><h1>string<a class="headerlink" href="#module-PQAnalysis.utils.string" title="Link to this heading"></a></h1>
+<p>This module contains utility functions for string manipulation.</p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <p>Functions:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.utils.common.print_header" title="PQAnalysis.utils.common.print_header"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_header</span></code></a></p></td>
-<td><p>A function to print the header of the program.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.utils.string.is_comment_line" title="PQAnalysis.utils.string.is_comment_line"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_comment_line</span></code></a></p></td>
+<td><p>Returns whether the line is a comment line.</p></td>
 </tr>
 </tbody>
 </table>
@@ -120,11 +120,32 @@
 <section id="reference">
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="PQAnalysis.utils.common.print_header">
-<span class="sig-name descname"><span class="pre">print_header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/utils/common.html#print_header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.utils.common.print_header" title="Link to this definition"></a></dt>
-<dd><p>A function to print the header of the program.</p>
-<p>This header is printed to stderr so that it can be used
-by all cli scripts without interfering with the output.</p>
+<dt class="sig sig-object py" id="PQAnalysis.utils.string.is_comment_line">
+<span class="sig-name descname"><span class="pre">is_comment_line</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">comment_token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">empty_line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/utils/string.html#is_comment_line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.utils.string.is_comment_line" title="Link to this definition"></a></dt>
+<dd><p>Returns whether the line is a comment line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<em>str</em>) – The line to be checked.</p></li>
+<li><p><strong>comment_token</strong> (<em>str</em><em>, </em><em>optional</em>) – The token that indicates a comment line, by default “#”.</p></li>
+<li><p><strong>empty_line</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether an empty line should be considered a comment line, by default False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether the line is a comment line.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -134,8 +155,8 @@ by all cli scripts without interfering with the output.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PQAnalysis.utils.html" class="btn btn-neutral float-left" title="utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="PQAnalysis.utils.custom_logging.html" class="btn btn-neutral float-right" title="custom_logging" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PQAnalysis.utils.random.html" class="btn btn-neutral float-left" title="random" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.utils.units.html" class="btn btn-neutral float-right" title="units" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

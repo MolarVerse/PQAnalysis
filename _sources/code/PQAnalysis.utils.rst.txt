@@ -21,6 +21,7 @@ utils
        PQAnalysis.utils.files
        PQAnalysis.utils.math
        PQAnalysis.utils.random
+       PQAnalysis.utils.string
        PQAnalysis.utils.units
 
 

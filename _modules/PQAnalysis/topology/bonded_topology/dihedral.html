@@ -105,6 +105,7 @@
         <span class="n">dihedral_type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_linker</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">is_improper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -125,6 +126,8 @@
 <span class="sd">            A flag to indicate if the dihedral is a linker, by default False.</span>
 <span class="sd">        is_improper : bool, optional</span>
 <span class="sd">            A flag to indicate if the dihedral is an improper dihedral, by default False.</span>
+<span class="sd">        comment : str, optional</span>
+<span class="sd">            A comment for the dihedral, by default None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">index1</span> <span class="o">=</span> <span class="n">index1</span>
@@ -135,6 +138,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dihedral_type</span> <span class="o">=</span> <span class="n">dihedral_type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_linker</span> <span class="o">=</span> <span class="n">is_linker</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_improper</span> <span class="o">=</span> <span class="n">is_improper</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span>
 
 <div class="viewcode-block" id="Dihedral.copy">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral.copy">[docs]</a>
@@ -155,7 +159,8 @@
             <span class="n">equilibrium_angle</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">equilibrium_angle</span><span class="p">,</span>
             <span class="n">dihedral_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dihedral_type</span><span class="p">,</span>
             <span class="n">is_linker</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_linker</span><span class="p">,</span>
-            <span class="n">is_improper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_improper</span>
+            <span class="n">is_improper</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">is_improper</span><span class="p">,</span>
+            <span class="n">comment</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">comment</span>
         <span class="p">)</span></div>
 
 
