@@ -6,9 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
-## Unreleased
+## [v1.1.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.1.1) - 2024-06-05
 
-<small>[Compare with latest](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.12...HEAD)</small>
+<small>[Compare with v1.0.12](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.12...v1.1.1)</small>
 
 ### Docs
 
@@ -33,7 +33,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - added constant seed strategy for executing tests ([b6a14b7](https://github.com/MolarVerse/PQAnalysis/commit/b6a14b72e5a014b17047268da7a117e13e413a2a) by Jakob Gamper).
 - added basic structure for integration tests ([729334e](https://github.com/MolarVerse/PQAnalysis/commit/729334e3b647f40937e17572effa79aec1a726c8) by Jakob Gamper).
 
-<!-- insertion marker -->
 
 ## [v1.0.12](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.0.12) - 2024-06-01
 
