@@ -7,15 +7,19 @@ import numpy as np
 
 from beartype.typing import List
 
+from PQAnalysis import __package_name__
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.types import Np1DIntArray, Np2DIntArray
-from PQAnalysis.io import BaseWriter, FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.exceptions import PQValueError
-from PQAnalysis import __package_name__
+from PQAnalysis.io import (
+    FileWritingMode,
+    TopologyFileWriter,
+)
 
 from .selection import SelectionCompatible, Selection
+from .bonded_topology import BondedTopology, Bond
 
 
 
@@ -192,33 +196,32 @@ class ShakeTopologyGenerator:
             - "o": overwrite
         """
 
-        writer = BaseWriter(filename, mode=mode)
-        writer.open()
-
-        print(
-            (
-                f"SHAKE {len(self.indices)}  "
-                f"{len(np.unique(self.target_indices))}  0"
-            ),
-            file=writer.file
-        )
+        shake_bonds = []
+        if self.line_comments is None:
+            comments = [None] * len(self.indices)
+        else:
+            comments = self.line_comments
 
         for i, index in enumerate(self.indices):
-            target_index = self.target_indices[i]
+            index = index + 1
+            target_index = self.target_indices[i] + 1
             distance = self.distances[i]
+            comment = comments[i]
 
-            print(
-                f"{index+1} {target_index+1} {distance}",
-                end="",
-                file=writer.file
+            bond = Bond(
+                index1=index,
+                index2=target_index,
+                equilibrium_distance=distance,
+                is_shake=True,
+                comment=comment
             )
 
-            if self.line_comments is not None:
-                print(f"  # {self.line_comments[i]}", file=writer.file)
-            else:
-                print("", file=writer.file)
+            shake_bonds.append(bond)
 
-        print("END", file=writer.file)
+        topology = BondedTopology(shake_bonds=shake_bonds)
+
+        writer = TopologyFileWriter(filename, mode)
+        writer.write(topology)
 
     @property
     def selection_object(self) -> SelectionCompatible:

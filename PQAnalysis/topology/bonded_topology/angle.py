@@ -22,6 +22,7 @@ class Angle:
         equilibrium_angle: PositiveReal | None = None,
         angle_type: PositiveInt | None = None,
         is_linker: bool = False,
+        comment: str | None = None
     ) -> None:
         """
         Parameters
@@ -38,6 +39,8 @@ class Angle:
             The type of the angle, by default None.
         is_linker : bool, optional
             A flag to indicate if the angle is a linker, by default False.
+        comment : str, optional
+            A comment for the angle, by default None.
         """
 
         self.index1 = index1
@@ -46,6 +49,7 @@ class Angle:
         self.equilibrium_angle = equilibrium_angle
         self.angle_type = angle_type
         self.is_linker = is_linker
+        self.comment = comment
 
     def copy(self) -> "Angle":
         """
@@ -63,6 +67,7 @@ class Angle:
             equilibrium_angle=self.equilibrium_angle,
             angle_type=self.angle_type,
             is_linker=self.is_linker,
+            comment=self.comment
         )
 
     def __eq__(self, value: object) -> bool:

@@ -22,6 +22,7 @@ class Bond:
         bond_type: PositiveInt | None = None,
         is_linker: bool = False,
         is_shake: bool = False,
+        comment: str | None = None
     ) -> None:
         """
         Parameters
@@ -38,6 +39,8 @@ class Bond:
             A flag to indicate if the bond is a linker, by default False.
         is_shake : bool, optional
             A flag to indicate if the bond is a shake bond, by default False.
+        comment : str, optional
+            A comment for the bond, by default None.
         """
 
         self.index1 = index1
@@ -46,6 +49,7 @@ class Bond:
         self.bond_type = bond_type
         self.is_linker = is_linker
         self.is_shake = is_shake
+        self.comment = comment
 
     def copy(self) -> "Bond":
         """
@@ -63,6 +67,7 @@ class Bond:
             bond_type=self.bond_type,
             is_linker=self.is_linker,
             is_shake=self.is_shake,
+            comment=self.comment
         )
 
     def __eq__(self, value: object) -> bool:
