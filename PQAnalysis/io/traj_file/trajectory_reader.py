@@ -222,6 +222,10 @@ class TrajectoryReader(BaseReader):
                 # Read the lines of the file using tqdm for progress bar
                 for line in self.file:
 
+                    # Break the generator if the trajectory_stop is reached
+                    if trajectory_stop <= frame_index:
+                        return
+
                     stripped_line = line.strip()
                     if stripped_line == "" or not stripped_line[0].isdigit():
                         frame_lines.append(line)
@@ -239,10 +243,7 @@ class TrajectoryReader(BaseReader):
 
                             # Check if the number of frames yielded is equal to the
                             # total number of frames
-                            if not (
-                                frame_index < trajectory_start or
-                                frame_index >= trajectory_stop
-                            ):
+                            if frame_index >= trajectory_start:
                                 yield frame  # only yield the frame if it is within the range
                                 progress_bar.update(
                                     1
@@ -251,7 +252,7 @@ class TrajectoryReader(BaseReader):
                             # then increment the frame index
                             frame_index += 1
 
-                            if self.constant_topology and self.topology is not None:
+                            if self.constant_topology and self.topology is None:
                                 self.topology = frame.topology
 
                         frame_lines = [line]
@@ -267,18 +268,16 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = frame.cell
 
-                    # Check if the number of frames yielded is equal to the total number of frames
-                    if not (
-                        frame_index < trajectory_start or
-                        frame_index >= trajectory_stop
-                    ):
+                    # Check if the number of frames yielded is equal to the
+                    # total number of frames
+                    if frame_index >= trajectory_start:
                         yield frame  # only yield the frame if it is within the range
                         progress_bar.update(1)  # update the progress bar
 
                     # then increment the frame index
                     frame_index += 1
 
-                if self.constant_topology and self.topology is not None:
+                if self.constant_topology and self.topology is None:
                     self.topology = frame.topology
 
     @runtime_type_checking

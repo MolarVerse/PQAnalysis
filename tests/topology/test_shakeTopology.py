@@ -127,10 +127,10 @@ class TestShakeTopologyGenerator:
 
         captured = capsys.readouterr()
         assert captured.out == """
-SHAKE 3  2  0
-2 1 0.8035533905932738
-3 4 0.8035533905932737
-5 4 1.290569415042095
+SHAKE 3 2 0
+    2     1   0.803553390593\t
+    3     4   0.803553390593\t
+    5     4   1.290569415042\t
 END
 """
 
@@ -141,10 +141,10 @@ END
 
         captured = capsys.readouterr()
         assert captured.out == """
-SHAKE 3  2  0
-2 1 0.8035533905932738  # test
-3 4 0.8035533905932737  # test2
-5 4 1.290569415042095  # test3
+SHAKE 3 2 0
+    2     1   0.803553390593\t # test
+    3     4   0.803553390593\t # test2
+    5     4   1.290569415042\t # test3
 END
 """
 
@@ -158,9 +158,9 @@ END
 
         captured = capsys.readouterr()
         assert captured.out == """
-SHAKE 3  2  0
-2 1 0.8035533905932738  # test
-3 4 1.0470614028176843  # test2
-5 4 1.0470614028176843  # test2
+SHAKE 3 2 0
+    2     1   0.803553390593\t # test
+    3     4   1.047061402818\t # test2
+    5     4   1.047061402818\t # test2
 END
 """

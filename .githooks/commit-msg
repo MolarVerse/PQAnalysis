@@ -96,6 +96,24 @@ if [[ "$lowercase_message" =~ ^ci(\(.+\))?: ]]; then
   group="CI"
 fi
 
+#pylint
+if [[ "$lowercase_message" =~ ^pylint(\(.+\))?: ]]; then
+  matched=true
+  group="Pylint"
+fi
+
+if [[ "$lowercase_message" =~ ^admin(\(.+\))?: ]]; then
+  matched=true
+  group="Administrative"
+fi
+
+#random stuff that doesn't fit into any of the above categories
+#starting with a $
+if [[ "$lowercase_message" =~ ^\$ ]]; then
+  matched=true
+  group="Random"
+fi
+
 # ... (similar checks for other patterns in the list)
 
 # No match found
@@ -120,6 +138,9 @@ if ! $matched; then
   echo "  - Example:        example:, examples:"
   echo "  - Dependency:     deps:"
   echo "  - CI:             ci:"
+  echo "  - Pylint:         pylint:"
+  echo "  - Administrative: admin:"
+  echo "  - Random:         $"
   # ... (similar output for other patterns in the list)
   echo "  - --------------------------------------------\n"
 
