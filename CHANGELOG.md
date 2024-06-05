@@ -6,6 +6,35 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## Unreleased
+
+<small>[Compare with latest](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.12...HEAD)</small>
+
+### Docs
+
+- Add logo to README.md ([a9aef5c](https://github.com/MolarVerse/PQAnalysis/commit/a9aef5c7afaf9a385c12f477d8b3aba66c41b7bb) by Josef M. Gallmetzer).
+
+### Features
+
+- Added possibility to import directly from PQAnalysis.topology.bonded_topology ([75de1a7](https://github.com/MolarVerse/PQAnalysis/commit/75de1a79eec3837cb3a89871d1ee48acf0399da3) by Jakob Gamper).
+- merging topologies keeps now comments of data line to be more consistent with input topologies ([d224e78](https://github.com/MolarVerse/PQAnalysis/commit/d224e789f2e82993a136c585c84cf019670bfe44) by Jakob Gamper).
+- added utils function to check if line is a comment_line ([9852e33](https://github.com/MolarVerse/PQAnalysis/commit/9852e33dcda8042d0e3aef7ec726ef2f859ee6fe) by Jakob Gamper).
+
+### Bug Fixes
+
+- read_trajectory with constant topology did actually not use a constant topology approach ([ef1c5db](https://github.com/MolarVerse/PQAnalysis/commit/ef1c5dba3752f9308685e2ce57cb017e54e719e1) by Jakob Gamper).
+- added missing linker output for linker bonds, angles, ... ([ad47473](https://github.com/MolarVerse/PQAnalysis/commit/ad47473f1e0f25374fc526eeb9e747108a9dc6a0) by Jakob Gamper).
+- included possibility to write topology to stdout ([3ea89c3](https://github.com/MolarVerse/PQAnalysis/commit/3ea89c3213ef88b8d9462166e9de60147772928b) by Jakob Gamper).
+
+### Tests
+
+- added some unit tests for TopologyFileWriter ([65891fa](https://github.com/MolarVerse/PQAnalysis/commit/65891fa2138861024fbb2589cde061313187e7ee) by Jakob Gamper).
+- first integration tests of add_molecules added ([bc9e694](https://github.com/MolarVerse/PQAnalysis/commit/bc9e694dc6e48dd31fb9cf1973354356904c53ae) by Jakob Gamper).
+- added constant seed strategy for executing tests ([b6a14b7](https://github.com/MolarVerse/PQAnalysis/commit/b6a14b72e5a014b17047268da7a117e13e413a2a) by Jakob Gamper).
+- added basic structure for integration tests ([729334e](https://github.com/MolarVerse/PQAnalysis/commit/729334e3b647f40937e17572effa79aec1a726c8) by Jakob Gamper).
+
+<!-- insertion marker -->
+
 ## [v1.0.12](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.0.12) - 2024-06-01
 
 <small>[Compare with v1.0.11](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.11...v1.0.12)</small>
