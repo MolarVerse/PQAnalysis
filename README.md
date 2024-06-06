@@ -1,4 +1,4 @@
-<img src="docs/source/logo/PQAnalysis.png" width="250">
+<img src="https://raw.githubusercontent.com/MolarVerse/PQAnalysis/main/docs/source/logo/PQAnalysis.png" width="250">
 
 # PQAnalysis
 
