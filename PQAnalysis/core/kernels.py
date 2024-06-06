@@ -83,10 +83,10 @@ def distance(
 
 
 def delta_atomic_positions(
-    pos1: np.array,
-    pos2: np.array,
+    pos1: Np1DNumberArray | Np2DNumberArray,
+    pos2: Np1DNumberArray | Np2DNumberArray,
     cell: _cell.Cell = _cell.Cell(),
-) -> np.array:
+) -> Np1DNumberArray | Np2DNumberArray:
     """
     Performs an elementwise subtraction of two np.ndarray 
     of atomic positions. The positions are imaged into the

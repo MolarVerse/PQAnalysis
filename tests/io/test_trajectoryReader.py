@@ -381,7 +381,10 @@ class TestTrajectoryReader:
             caplog,
             TrajectoryReader.__qualname__,
             "WARNING",
-            "Not all frames are included in the windows. Check the window size and gap.",
+            (
+                "Not all frames are included in the windows. "
+                "Check the window size and gap."
+            ),
             reader.window_generator(1, 2).__next__,
         )
 
@@ -391,7 +394,9 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-                "window size can not be less than 1 or greater than the length of the trajectory"
+                "Window size can not be less than 1 or greater than "
+                "the length of the trajectory.\n"
+                "Actual window size: 0, Length of the trajectory: 4"
             ),
             function=reader.window_generator(0).__next__,
         )
@@ -402,7 +407,9 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-                "window size can not be less than 1 or greater than the length of the trajectory"
+                "Window size can not be less than 1 or greater "
+                "than the length of the trajectory.\n"
+                "Actual window size: 5, Length of the trajectory: 4"
             ),
             function=reader.window_generator(5).__next__,
         )
@@ -413,7 +420,8 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-                "window gap can not be less than 1 or greater than the length of the trajectory"
+                "window gap can not be less than 1 or greater "
+                "than the length of the trajectory.\n"
             ),
             function=reader.window_generator(3, 0).__next__,
         )
@@ -424,7 +432,8 @@ class TestTrajectoryReader:
             exception=PQIndexError,
             logging_level="ERROR",
             message_to_test=(
-                "window gap can not be less than 1 or greater than the length of the trajectory"
+                "window gap can not be less than 1 or greater "
+                "than the length of the trajectory.\n"
             ),
             function=reader.window_generator(3, 5).__next__,
         )
