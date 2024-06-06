@@ -13,4 +13,4 @@ from .cell import Cell, Cells
 from .atom import Atom, Atoms, Element, Elements, CustomElement
 from .residue import Residue, Residues, QMResidue
 
-from .api import distance
+from .api import distance, delta_atomic_positions
