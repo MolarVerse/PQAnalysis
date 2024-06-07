@@ -119,7 +119,7 @@ def calculate_frames_of_trajectory_file(filename: str):
         The number of frames in the trajectory file.
     """
     reader = TrajectoryReader(filename)
-    return reader.calculate_number_of_frames()
+    return sum(reader.calculate_number_of_frames_per_file())
 
 
 
