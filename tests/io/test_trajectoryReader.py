@@ -4,12 +4,30 @@ import numpy as np
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError, TrajectoryReaderError
+from PQAnalysis.io.traj_file.api import calculate_frames_of_trajectory_file
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.exceptions import PQIndexError, PQFileNotFoundError
 
 from ..conftest import assert_logging, assert_logging_with_exception
 from . import pytestmark
+
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_calculate_number_of_frames():
+    file = open("tmp.xyz", "w")
+    print("2 1.0 1.0 1.0", file=file)
+    print("", file=file)
+    print("X 0.0 0.0 0.0", file=file)
+    print("o 0.0 1.0 0.0", file=file)
+    print("2", file=file)
+    print("", file=file)
+    print("X 1.0 0.0 0.0", file=file)
+    print("o 0.0 1.0 1.0", file=file)
+    file.close()
+
+    assert calculate_frames_of_trajectory_file("tmp.xyz") == 2
 
 
 
@@ -25,8 +43,6 @@ class TestTrajectoryReader:
         reader = TrajectoryReader("tmp.xyz")
         assert reader.filename == "tmp.xyz"
         assert reader.frames == []
-
-    # -------------------------------------------------------------------------------- #
 
     @pytest.mark.usefixtures("tmpdir")
     def test_read(self):
