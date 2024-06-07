@@ -88,7 +88,7 @@ jobs:
       id: generate_changelog
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)"
+        changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)
         echo "changelog=$changelog" >> $GITHUB_OUTPUT
 
     - name: Create GitHub Release
