@@ -85,9 +85,11 @@ jobs:
         echo "::set-output name=previousTag::$name"
 
     - name: generate new changelog
+      id: generate_changelog
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        echo "git-changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)" >> $GITHUB_ENV
+        changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)"
+        echo "changelog=$changelog" >> $GITHUB_OUTPUT
 
     - name: Create GitHub Release
       env:
@@ -96,7 +98,7 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --notes "${changelog}"
+        --notes '${{ steps.generate_changelog.outputs.changelog }}'
 
     - name: Build CHANGELOG.md
       run: |
