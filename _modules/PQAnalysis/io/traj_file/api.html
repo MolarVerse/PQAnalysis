@@ -206,7 +206,7 @@
 <span class="sd">        The number of frames in the trajectory file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">reader</span><span class="o">.</span><span class="n">calculate_number_of_frames</span><span class="p">()</span></div>
+    <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">())</span></div>
 
 
 
