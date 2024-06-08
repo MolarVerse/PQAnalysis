@@ -5,7 +5,12 @@ A module containing the Trajectory class.
 import logging
 import numpy as np
 
-from beartype.typing import List, Any, Iterable
+from beartype.typing import (
+    List,
+    Any,
+    Iterable,
+    Generator,
+)
 
 from PQAnalysis.topology import Topology
 from PQAnalysis.exceptions import PQIndexError, PQTypeError
@@ -44,7 +49,8 @@ class Trajectory:
     @runtime_type_checking
     def __init__(
         self,
-        frames: List[AtomicSystem] | AtomicSystem | None = None,
+        frames: List[AtomicSystem] | Generator[AtomicSystem] | AtomicSystem
+        | None = None,
     ) -> None:
         """
         Parameters
@@ -54,10 +60,16 @@ class Trajectory:
             If frames is an AtomicSystem, it is first converted to list of frames.
             If frames is None, an empty list is created, by default None
         """
+
+        self._frame_generator = None
+
         if frames is None:
             frames = []
 
-        self._frames = list(np.atleast_1d(frames))
+        if isinstance(frames, Generator):
+            self._frame_generator = frames
+        else:
+            self._frames = list(np.atleast_1d(frames))
 
         self.logger = setup_logger(self.logger)
 
@@ -180,14 +192,14 @@ class Trajectory:
         frames.topology = self.topology
         return frames
 
-    def __iter__(self) -> Iterable[AtomicSystem]:
+    def __iter__(self) -> Generator[AtomicSystem]:
         """
         This method allows a trajectory to be iterated over.
 
         Returns
         -------
-        Iterable[Frame]
-            An Iterable over the frames in the trajectory.
+        Generator[Frame]
+            An Generator over the frames in the trajectory.
         """
         for frame in self.frames:
             frame.topology = self.topology
@@ -418,12 +430,29 @@ class Trajectory:
     @property
     def frames(self) -> List[AtomicSystem]:
         """List[AtomicSystem]: The frames in the trajectory."""
+
+        if self._frame_generator is not None:
+            self._frames = list(self._frame_generator)
+            self._frame_generator = None
+
         return self._frames
 
     @frames.setter
     @runtime_type_checking_setter
     def frames(self, frames: List[AtomicSystem]) -> None:
         self._frames = frames
+        self._frame_generator = None
+
+    @property
+    def lazy_frames(self) -> Generator[AtomicSystem]:
+        """Generator[AtomicSystem]: The frames in the trajectory."""
+        if self._frame_generator is not None:
+            for frame in self._frame_generator:
+                self._frames.append(frame)
+                yield frame
+        else:
+            for frame in self.frames:
+                yield frame
 
     @property
     def topology(self) -> Topology:
@@ -445,12 +474,12 @@ class Trajectory:
     @property
     def cells(self) -> List[Cell]:
         """List[Cell]: The cells of the trajectory."""
-        return [frame.cell for frame in self.frames]
+        return [frame.cell for frame in self.lazy_frames]
 
     @property
     def com_residue_traj(self) -> "Trajectory":
         """Trajectory: The trajectory with the center of mass of the residues."""
 
-        frames = [frame.center_of_mass_residues for frame in self.frames]
+        frames = (frame.center_of_mass_residues for frame in self.lazy_frames)
 
         return Trajectory(frames)
