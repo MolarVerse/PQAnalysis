@@ -37,10 +37,11 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "pytest",
-    "coverage",
     "pytest-cov",
+    "pytest-runner",
     "pylint",
     "pylint-django",
+    "coverage",
     "docstr-coverage",
 ]
 docs = [
