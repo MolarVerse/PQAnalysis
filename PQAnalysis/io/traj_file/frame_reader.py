@@ -4,8 +4,6 @@ A module containing classes for reading a frame from a string.
 
 import logging
 
-from numba import njit
-
 import numpy as np
 
 from beartype.typing import List, Tuple
@@ -19,6 +17,8 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import FrameReaderError
+
+import PQAnalysis.io.traj_file.mytest as mytest
 
 
 
@@ -100,7 +100,7 @@ class _FrameReader:
 
         # This should never happen - only for safety
         self.logger.error(
-            f'Invalid TrajectoryFormat given.{traj_format=}',
+            f'Invalid TrajectoryFormat given. {traj_format=}',
             exception=FrameReaderError
         )
 
@@ -366,7 +366,7 @@ class _FrameReader:
             If the given string does not contain the correct number of lines.
         """
         try:
-            xyz, atoms = process_lines(splitted_frame_string, n_atoms)
+            atoms, xyz = mytest.process_lines_with_atoms(splitted_frame_string[2:], n_atoms)
 
             return xyz, atoms
         except ValueError:
@@ -418,18 +418,3 @@ class _FrameReader:
             atoms.append(line.split()[0])
 
         return scalar, atoms
-
-
-
-import PQAnalysis.io.traj_file.mytest as mytest
-
-
-
-def process_lines(splitted_frame_string, n_atoms):
-    # Convert the frame string to a list of lines
-    lines = splitted_frame_string[2:2 + n_atoms]
-
-    # Use list comprehension to fill the xyz array
-    atoms, xyz = mytest.process_lines(lines, n_atoms)
-
-    return xyz, atoms

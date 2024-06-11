@@ -10,11 +10,13 @@ static PyObject* process_lines(PyObject* self, PyObject* args) {
     int n_atoms;
 
     if (!PyArg_ParseTuple(args, "Oi", &input, &n_atoms)) {
+        PyErr_SetString(PyExc_ValueError, "Could not parse arguments");
         return NULL;  // Error parsing arguments
     }
 
     PyObject* lines = PyList_GetSlice(input, 0, n_atoms);
     if (lines == NULL) {
+        PyErr_SetString(PyExc_ValueError, "Could not get list slice");
         return NULL;  // Error getting list slice
     }
 
