@@ -32,6 +32,7 @@ dependencies = [
     "argcomplete",
     "yapf",
     "rich-argparse",
+    "Cython",
 ]
 
 [project.optional-dependencies]
