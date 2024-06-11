@@ -1,3 +1,7 @@
+"""
+This file is used to build the package. It is used to compile the Cython code
+"""
+
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy as np
