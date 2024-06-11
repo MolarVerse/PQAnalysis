@@ -17,7 +17,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import FrameReaderError
-from .process_lines import process_lines_with_atoms
+from .process_lines import process_lines_with_atoms  # pylint: disable=import-error
 
 
 
@@ -315,6 +315,9 @@ class _FrameReader:
         FrameReaderError
             If the header line is not valid. Either it contains too many or too few values.
         """
+
+        n_atoms = 0  # default value
+        cell = None  # default value
 
         header_line = header_line.split()
 
