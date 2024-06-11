@@ -43,6 +43,7 @@ test = [
     "pylint-django",
     "coverage",
     "docstr-coverage",
+    "setuptools",
 ]
 docs = [
     "sphinx",
