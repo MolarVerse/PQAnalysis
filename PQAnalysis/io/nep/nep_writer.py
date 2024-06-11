@@ -316,6 +316,8 @@ class NEPWriter(BaseWriter):
 
                 self.is_validation = False
 
+                file_to_write = None  # to avoid linting warning
+
                 if j in train_indices:
                     self.n_train_frames += 1
                     file_to_write = self.train_file
@@ -339,7 +341,11 @@ class NEPWriter(BaseWriter):
                     )
 
                 self.write_from_atomic_system(
-                    system, file_to_write, use_forces, use_stress, use_virial
+                    system,
+                    file_to_write,
+                    use_forces,
+                    use_stress,
+                    use_virial,
                 )
 
                 if self.is_validation:
@@ -437,12 +443,16 @@ class NEPWriter(BaseWriter):
                 exception=NEPError
             )
 
+        n_train = 0.0
+        n_validation = 0.0
+        n_test = 0.0
+
         if total_ratios is not None:
             ratios = total_ratios.split(":")
             if len(ratios) == 2:
                 n_train = float(ratios[0])
                 n_test = float(ratios[1])
-                n_validation = 0
+                n_validation = 0.0
             elif len(ratios) == 3:
                 n_train = float(ratios[0])
                 n_test = float(ratios[1])
@@ -456,10 +466,6 @@ class NEPWriter(BaseWriter):
                     ),
                     exception=NEPError
                 )
-        else:
-            n_train = 0.0
-            n_validation = 0.0
-            n_test = 0.0
 
         sum_frames = n_train + n_test + n_validation
 

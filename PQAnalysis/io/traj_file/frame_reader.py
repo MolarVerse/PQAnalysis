@@ -17,6 +17,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import FrameReaderError
+from .process_lines import process_lines_with_atoms  # pylint: disable=import-error
 
 
 
@@ -98,7 +99,7 @@ class _FrameReader:
 
         # This should never happen - only for safety
         self.logger.error(
-            f'Invalid TrajectoryFormat given.{traj_format=}',
+            f'Invalid TrajectoryFormat given. {traj_format=}',
             exception=FrameReaderError
         )
 
@@ -315,6 +316,9 @@ class _FrameReader:
             If the header line is not valid. Either it contains too many or too few values.
         """
 
+        n_atoms = 0  # default value
+        cell = None  # default value
+
         header_line = header_line.split()
 
         if len(header_line) == 4:
@@ -364,15 +368,7 @@ class _FrameReader:
             If the given string does not contain the correct number of lines.
         """
         try:
-            # Pre-allocate xyz and atoms
-            xyz = np.empty((n_atoms, 3), dtype=np.float32)
-            atoms = [None] * n_atoms
-
-            # Fill xyz and atoms in a single loop
-            for i, line in enumerate(splitted_frame_string[2:2 + n_atoms]):
-                split_line = line.split()
-                atoms[i] = split_line[0]
-                xyz[i] = split_line[1:4]
+            atoms, xyz = process_lines_with_atoms(splitted_frame_string[2:], n_atoms)
 
             return xyz, atoms
         except ValueError:
