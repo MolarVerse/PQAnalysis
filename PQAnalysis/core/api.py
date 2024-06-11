@@ -17,7 +17,7 @@ def distance(
     pos1: Np1DNumberArray | Np2DNumberArray,
     pos2: Np1DNumberArray | Np2DNumberArray,
     cell: _cell.Cell = _cell.Cell(),
-    **kwargs
+    **kwargs  # pylint: disable=unused-argument
 ) -> PositiveReal | Np1DNumberArray | Np2DNumberArray:
     """
     Returns the distances between all combinations of two position arrays.
@@ -66,7 +66,7 @@ def distance(
     cell : Cell, optional
         The unit cell of the system. Default is Cell().
     **kwargs
-        Arbitrary keyword arguments.
+        Additional keyword arguments.
 
     Returns
     -------

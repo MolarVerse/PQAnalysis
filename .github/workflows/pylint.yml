@@ -47,9 +47,6 @@ jobs:
           python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
         fi
 
-
-    #check if the first line of comment.txt rates higher than 9.75 with following format
-    #Your code has been rated at 9.86/10 (previous run: 7.63/10, +2.22)
     - name: Check if pylint score is higher than 9.75
       id: check_pylint_score
       run: |
@@ -57,10 +54,10 @@ jobs:
         head -n3 comment.txt | tail -n 1 | awk '{print $7}'
         head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1
         score=$(head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1)
-        if (( $(echo "$score > 9.5" | bc -l) )); then
-          echo "Pylint score is higher than 9.5 and is $score"
+        if (( $(echo "$score > 9.75" | bc -l) )); then
+          echo "Pylint score is higher than 9.75 and is $score"
         else
-          echo "Pylint score is lower than 9.5 and is $score"
+          echo "Pylint score is lower than 9.75 and is $score"
           exit 1
         fi
       shell: bash
