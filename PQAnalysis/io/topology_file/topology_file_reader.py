@@ -209,6 +209,11 @@ class TopologyFileReader(BaseReader):
 
             line, comment = self._get_data_line_comment(line)
 
+            index = None  # to avoid linter warning
+            target_index = None  # to avoid linter warning
+            bond_type = None  # to avoid linter warning
+            is_linker = None  # to avoid linter warning
+
             if len(line.split()) == 4:
                 index, target_index, bond_type, _ = line.split()
                 is_linker = True
@@ -262,6 +267,12 @@ class TopologyFileReader(BaseReader):
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             line, comment = self._get_data_line_comment(line)
+
+            index1 = None  # to avoid linter warning
+            index2 = None  # to avoid linter warning
+            index3 = None  # to avoid linter warning
+            angle_type = None  # to avoid linter warning
+            is_linker = None  # to avoid linter warning
 
             if len(line.split()) == 5:
                 index1, index2, index3, angle_type, _ = line.split()
@@ -317,6 +328,13 @@ class TopologyFileReader(BaseReader):
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             line, comment = self._get_data_line_comment(line)
+
+            index1 = None  # to avoid linter warning
+            index2 = None  # to avoid linter warning
+            index3 = None  # to avoid linter warning
+            index4 = None  # to avoid linter warning
+            dihedral_type = None  # to avoid linter warning
+            is_linker = None  # to avoid linter warning
 
             if len(line.split()) == 6:
                 index1, index2, index3, index4, dihedral_type, _ = line.split()
@@ -374,6 +392,13 @@ class TopologyFileReader(BaseReader):
 
             line, comment = self._get_data_line_comment(line)
 
+            index1 = None  # to avoid linter warning
+            index2 = None  # to avoid linter warning
+            index3 = None  # to avoid linter warning
+            index4 = None  # to avoid linter warning
+            dihedral_type = None  # to avoid linter warning
+            is_linker = None  # to avoid linter warning
+
             if len(line.split()) == 6:
                 index1, index2, index3, index4, dihedral_type, _ = line.split()
                 is_linker = True
@@ -430,6 +455,11 @@ class TopologyFileReader(BaseReader):
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
 
             line, comment = self._get_data_line_comment(line)
+
+            index = None  # to avoid linter warning
+            target_index = None  # to avoid linter warning
+            distance = None  # to avoid linter warning
+            is_linker = None  # to avoid linter warning
 
             if len(line.split()) == 4:
                 index, target_index, distance, _ = line.split()

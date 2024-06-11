@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42", "setuptools_scm>=8"]
+requires = ["setuptools>=42", "setuptools_scm>=8", "wheel", "numpy", "Cython"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -32,16 +32,19 @@ dependencies = [
     "argcomplete",
     "yapf",
     "rich-argparse",
+    "Cython",
 ]
 
 [project.optional-dependencies]
 test = [
     "pytest",
-    "coverage",
     "pytest-cov",
+    "pytest-runner",
     "pylint",
     "pylint-django",
+    "coverage",
     "docstr-coverage",
+    "setuptools",
 ]
 docs = [
     "sphinx",
