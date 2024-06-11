@@ -17,8 +17,7 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import FrameReaderError
-
-import PQAnalysis.io.traj_file.process_lines as process_lines
+from .process_lines import process_lines_with_atoms
 
 
 
@@ -366,7 +365,7 @@ class _FrameReader:
             If the given string does not contain the correct number of lines.
         """
         try:
-            atoms, xyz = process_lines.process_lines_with_atoms(splitted_frame_string[2:], n_atoms)
+            atoms, xyz = process_lines_with_atoms(splitted_frame_string[2:], n_atoms)
 
             return xyz, atoms
         except ValueError:
