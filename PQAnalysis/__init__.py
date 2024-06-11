@@ -21,7 +21,6 @@ __package_name__ = __name__
 # BEARTYPE SETUP #
 ##################
 
-# TODO: change the default level to "RELEASE" after all changes are implemented
 __beartype_default_level__ = "RELEASE"
 __beartype_level__ = os.getenv(
     "PQANALYSIS_BEARTYPE_LEVEL", __beartype_default_level__

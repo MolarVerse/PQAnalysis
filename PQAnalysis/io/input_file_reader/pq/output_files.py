@@ -2,8 +2,6 @@
 A module containing a Mixin class for output files of a PQ input file.
 """
 
-from PQAnalysis.exceptions import PQKeyError
-
 
 
 class _OutputFileMixin:

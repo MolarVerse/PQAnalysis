@@ -93,6 +93,7 @@ class GenFileReader(BaseReader):
         """
         n_atoms, periodicity = header[0].split()
         n_atoms = int(n_atoms)
+        is_periodic = False  # Default value
 
         if periodicity.lower() == "c":
             is_periodic = False

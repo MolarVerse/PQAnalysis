@@ -79,6 +79,9 @@ class InputFileParser(BaseReader):
         InputDictionary: InputDictionary
             The parsed input file dictionary.
         """
+
+        grammar_file = None  # to avoid linter warning
+
         if self.input_format == InputFileFormat.PQANALYSIS:
             grammar_file = "inputGrammar.lark"
         elif self.input_format in [InputFileFormat.PQ, InputFileFormat.QMCFC]:
