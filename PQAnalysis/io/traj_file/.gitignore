@@ -1,2 +1,2 @@
 *.so
-mytest.c
+process_lines.c
