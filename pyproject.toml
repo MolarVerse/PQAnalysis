@@ -33,6 +33,7 @@ dependencies = [
     "yapf",
     "rich-argparse",
     "Cython",
+    "setuptools",
 ]
 
 [project.optional-dependencies]
@@ -44,13 +45,13 @@ test = [
     "pylint-django",
     "coverage",
     "docstr-coverage",
-    "setuptools",
 ]
 docs = [
     "sphinx",
     "sphinx-sitemap",
-    "myst-parser",
     "sphinx-rtd-theme",
+    "breathe",
+    "myst-parser",
     "better-apidoc",
     "six",
     "docstr-coverage",
