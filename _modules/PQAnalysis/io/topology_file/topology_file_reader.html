@@ -293,6 +293,11 @@
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">target_index</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">bond_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">index</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">bond_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -346,6 +351,12 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+            <span class="n">index1</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index3</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">angle_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">angle_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -401,6 +412,13 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+            <span class="n">index1</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index3</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index4</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">dihedral_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">index4</span><span class="p">,</span> <span class="n">dihedral_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
@@ -458,6 +476,13 @@
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
+            <span class="n">index1</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index3</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">index4</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">dihedral_type</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
                 <span class="n">index1</span><span class="p">,</span> <span class="n">index2</span><span class="p">,</span> <span class="n">index3</span><span class="p">,</span> <span class="n">index4</span><span class="p">,</span> <span class="n">dihedral_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
                 <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">True</span>
@@ -514,6 +539,11 @@
         <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">block</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>  <span class="c1"># [-1] to avoid the &quot;END&quot; line of the block</span>
 
             <span class="n">line</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_line_comment</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+            <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">target_index</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">distance</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
+            <span class="n">is_linker</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
                 <span class="n">index</span><span class="p">,</span> <span class="n">target_index</span><span class="p">,</span> <span class="n">distance</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>

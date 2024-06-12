@@ -177,6 +177,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">n_atoms</span><span class="p">,</span> <span class="n">periodicity</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
         <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)</span>
+        <span class="n">is_periodic</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Default value</span>
 
         <span class="k">if</span> <span class="n">periodicity</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;c&quot;</span><span class="p">:</span>
             <span class="n">is_periodic</span> <span class="o">=</span> <span class="kc">False</span>

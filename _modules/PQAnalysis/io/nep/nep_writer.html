@@ -399,6 +399,8 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">is_validation</span> <span class="o">=</span> <span class="kc">False</span>
 
+                <span class="n">file_to_write</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linting warning</span>
+
                 <span class="k">if</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">train_indices</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">n_train_frames</span> <span class="o">+=</span> <span class="mi">1</span>
                     <span class="n">file_to_write</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_file</span>
@@ -422,7 +424,11 @@
                     <span class="p">)</span>
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">write_from_atomic_system</span><span class="p">(</span>
-                    <span class="n">system</span><span class="p">,</span> <span class="n">file_to_write</span><span class="p">,</span> <span class="n">use_forces</span><span class="p">,</span> <span class="n">use_stress</span><span class="p">,</span> <span class="n">use_virial</span>
+                    <span class="n">system</span><span class="p">,</span>
+                    <span class="n">file_to_write</span><span class="p">,</span>
+                    <span class="n">use_forces</span><span class="p">,</span>
+                    <span class="n">use_stress</span><span class="p">,</span>
+                    <span class="n">use_virial</span><span class="p">,</span>
                 <span class="p">)</span>
 
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_validation</span><span class="p">:</span>
@@ -521,12 +527,16 @@
                 <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
             <span class="p">)</span>
 
+        <span class="n">n_train</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">n_validation</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">n_test</span> <span class="o">=</span> <span class="mf">0.0</span>
+
         <span class="k">if</span> <span class="n">total_ratios</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ratios</span> <span class="o">=</span> <span class="n">total_ratios</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratios</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
                 <span class="n">n_train</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ratios</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">n_test</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ratios</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-                <span class="n">n_validation</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">n_validation</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">ratios</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
                 <span class="n">n_train</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ratios</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="n">n_test</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">ratios</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -540,10 +550,6 @@
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">NEPError</span>
                 <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">n_train</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">n_validation</span> <span class="o">=</span> <span class="mf">0.0</span>
-            <span class="n">n_test</span> <span class="o">=</span> <span class="mf">0.0</span>
 
         <span class="n">sum_frames</span> <span class="o">=</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_test</span> <span class="o">+</span> <span class="n">n_validation</span>
 

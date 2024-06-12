@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>io.traj_file &mdash; PQAnalysis  documentation</title>
+  <title>process_lines &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
@@ -22,8 +22,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="api" href="PQAnalysis.io.traj_file.api.html" />
-    <link rel="prev" title="topology_file_writer" href="PQAnalysis.io.topology_file.topology_file_writer.html" /> 
+    <link rel="next" title="trajectory_reader" href="PQAnalysis.io.traj_file.trajectory_reader.html" />
+    <link rel="prev" title="frame_reader" href="PQAnalysis.io.traj_file.frame_reader.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,11 +71,11 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.nep.html">io.nep</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.restart_file.html">io.restart_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.topology_file.html">io.topology_file</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">io.traj_file</a><ul>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.io.traj_file.html">io.traj_file</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.api.html">api</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html">exceptions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.frame_reader.html">frame_reader</a></li>
-<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.process_lines.html">process_lines</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">process_lines</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html">trajectory_reader</a></li>
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_writer.html">trajectory_writer</a></li>
 </ul>
@@ -110,9 +110,10 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
           <li class="breadcrumb-item"><a href="PQAnalysis.io.html">io</a></li>
-      <li class="breadcrumb-item active">io.traj_file</li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.io.traj_file.html">io.traj_file</a></li>
+      <li class="breadcrumb-item active">process_lines</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/code/PQAnalysis.io.traj_file.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/code/PQAnalysis.io.traj_file.process_lines.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -120,21 +121,78 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-PQAnalysis.io.traj_file">
-<span id="io-traj-file"></span><h1>io.traj_file<a class="headerlink" href="#module-PQAnalysis.io.traj_file" title="Link to this heading"></a></h1>
-<p>A subpackage to handle trajectory files.</p>
-<section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.api.html">api</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html">exceptions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.frame_reader.html">frame_reader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.process_lines.html">process_lines</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html">trajectory_reader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_writer.html">trajectory_writer</a></li>
+  <section id="module-PQAnalysis.io.traj_file.process_lines">
+<span id="process-lines"></span><h1>process_lines<a class="headerlink" href="#module-PQAnalysis.io.traj_file.process_lines" title="Link to this heading"></a></h1>
+<p>This module contains the functions that are used to parse the body of
+xyz formatted files. The functions are written in Cython and are compiled
+to C code.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.process_lines.process_lines" title="PQAnalysis.io.traj_file.process_lines.process_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_lines</span></code></a></p></td>
+<td><p>Function to parse the body of an xyz file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.process_lines.process_lines_with_atoms" title="PQAnalysis.io.traj_file.process_lines.process_lines_with_atoms"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_lines_with_atoms</span></code></a></p></td>
+<td><p>Function to parse the body of an xyz file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.process_lines.process_lines">
+<span class="sig-name descname"><span class="pre">process_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PQAnalysis.io.traj_file.process_lines.process_lines" title="Link to this definition"></a></dt>
+<dd><p>Function to parse the body of an xyz file. The function expects a list of
+strings, where each string is a line in the file. The function will parse
+the lines and return a numpy array with the xyz coordinates of the atoms
+in the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>list</em>) – A list of strings, where each string is a line in the xyz file.</p></li>
+<li><p><strong>n_atoms</strong> (<em>int</em>) – The number of atoms in the xyz file.</p></li>
 </ul>
-</div>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A numpy array with the xyz coordinates of the atoms in the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.process_lines.process_lines_with_atoms">
+<span class="sig-name descname"><span class="pre">process_lines_with_atoms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_atoms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PQAnalysis.io.traj_file.process_lines.process_lines_with_atoms" title="Link to this definition"></a></dt>
+<dd><p>Function to parse the body of an xyz file. The function expects a list of
+strings, where each string is a line in the file. The function will parse
+the lines and return a tuple with two elements. The first element is a list
+of strings, where each string is the atom type of the corresponding atom in
+the xyz file. The second element is a numpy array with the xyz coordinates
+of the atoms in the file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input</strong> (<em>list</em>) – A list of strings, where each string is a line in the xyz file.</p></li>
+<li><p><strong>n_atoms</strong> (<em>int</em>) – The number of atoms in the xyz file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A tuple with two elements. The first element is a list of strings, where
+each string is the atom type of the corresponding atom in the xyz file.
+The second element is a numpy array with the xyz coordinates of the atoms
+in the file.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -142,8 +200,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="PQAnalysis.io.topology_file.topology_file_writer.html" class="btn btn-neutral float-left" title="topology_file_writer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="PQAnalysis.io.traj_file.api.html" class="btn btn-neutral float-right" title="api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="PQAnalysis.io.traj_file.frame_reader.html" class="btn btn-neutral float-left" title="frame_reader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.io.traj_file.trajectory_reader.html" class="btn btn-neutral float-right" title="trajectory_reader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
