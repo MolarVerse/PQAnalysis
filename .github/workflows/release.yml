@@ -22,10 +22,9 @@ jobs:
       run: |
         python3 -m pip install build --user
         python3 -m pip install twine --user
-        python3 -m pip install wheel --user
 
     - name: Build a binary wheel and a source tarball
-      run: python3 -m build
+      run: python3 -m build --sdist
     - name: Store the distribution packages
       uses: actions/upload-artifact@v3
       with:
@@ -49,7 +48,7 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: python-package-distributions
-        path: dist/*.tar.gz
+        path: dist/
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
 
@@ -89,7 +88,8 @@ jobs:
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
         changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)
-        echo "changelog=$changelog" >> $GITHUB_OUTPUT
+        echo "changelog_var=$changelog" >> $GITHUB_ENV
+        echo "::set-output name=changelog_var::$changelog"
 
     - name: Create GitHub Release
       env:
@@ -98,7 +98,7 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --notes '${{ steps.generate_changelog.outputs.changelog }}'
+        --notes "${{ steps.generate_changelog.outputs.changelog_var }}"
 
     - name: Build CHANGELOG.md
       run: |
@@ -144,7 +144,6 @@ jobs:
       with:
         inputs: >-
           ./dist/*.tar.gz
-          ./dist/*.whl
 
     - name: Upload artifact signatures to GitHub Release
       env:
