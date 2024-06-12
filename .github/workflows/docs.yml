@@ -52,10 +52,12 @@ jobs:
           && pip3 install rich-argparse
           && pip3 install better-apidoc
           && pip3 install six
+          && pip3 install Cython
           && pip3 install .
 
       - name: Build
         run: |
+          python setup.py build_ext --inplace
           cd docs
           make clean
           rm source/code/*
