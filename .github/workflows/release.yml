@@ -87,9 +87,7 @@ jobs:
       id: generate_changelog
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        changelog=$(git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular)
-        echo "changelog_var=$changelog" >> $GITHUB_ENV
-        echo "::set-output name=changelog_var::$changelog"
+        git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular > changelog.tmp
 
     - name: Create GitHub Release
       env:
@@ -98,7 +96,7 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --notes "${{ steps.generate_changelog.outputs.changelog_var }}"
+        --notes "$(cat changelog.tmp)"
 
     - name: Build CHANGELOG.md
       run: |
