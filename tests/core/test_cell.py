@@ -131,7 +131,9 @@ class TestCell:
 
     def test__str__(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
-        assert str(cell) == "Cell(x=1, y=2, z=3, alpha=60, beta=90, gamma=120)"
+        assert str(
+            cell
+        ) == "Cell(x=1.0, y=2.0, z=3.0, alpha=60.0, beta=90.0, gamma=120.0)"
         assert str(cell) == repr(cell)
 
         cell = Cell()
