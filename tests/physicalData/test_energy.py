@@ -6,7 +6,6 @@ import numpy as np
 from PQAnalysis.physical_data import Energy, EnergyError
 
 
-
 class TestEnergy:
 
     def test__init__(self):
