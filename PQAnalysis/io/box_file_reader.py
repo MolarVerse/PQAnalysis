@@ -52,11 +52,14 @@ class BoxFileReader(BaseReader):
 
         self.engine_format = engine_format
 
-        if filename is MDEngineFormat.PQ and filename is not None:
+        if engine_format is MDEngineFormat.PQ and filename is not None:
             super().__init__(filename)
+            self.trajectory = None
 
         elif trajectory is not None:
             self.trajectory = trajectory
+            self.filename = None
+
         else:
             raise PQFileNotFoundError(
                 "Either a filename or a trajectory must be provided depending on the engine format.")
@@ -99,12 +102,12 @@ class BoxFileReader(BaseReader):
                 if line.startswith("#"):
                     continue
                 line = line.split()
-                a.append(float(line[0]))
-                b.append(float(line[1]))
-                c.append(float(line[2]))
-                alpha.append(float(line[3]))
-                beta.append(float(line[4]))
-                gamma.append(float(line[5]))
+                a.append(float(line[1]))
+                b.append(float(line[2]))
+                c.append(float(line[3]))
+                alpha.append(float(line[4]))
+                beta.append(float(line[5]))
+                gamma.append(float(line[6]))
             return Box(np.array(a), np.array(b), np.array(c), np.array(alpha), np.array(beta), np.array(gamma), self.unit)
 
     def _read_from_trajectory(self):

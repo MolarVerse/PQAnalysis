@@ -14,10 +14,10 @@ from PQAnalysis import __package_name__
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
-from ._finite_difference_mixin import _FiniteDifferenceMixin
+from ._thermal_expansion_mixin import _ThermalExpansionMixin
 
 
-class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin, _FiniteDifferenceMixin):
+class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin, _ThermalExpansionMixin):
 
     """
     A class to read the input file for the PQAnalysis. 
@@ -58,9 +58,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin, _F
     restart_file_key = "restart_file"; known_keys.append(restart_file_key) # pylint: disable=multiple-statements
     box_files_key = "box_files"; known_keys.append(box_files_key) # pylint: disable=multiple-statements
     temperature_points_key = "temperature_points"; known_keys.append(temperature_points_key) # pylint: disable=multiple-statements
-    finite_difference_points_key = "finite_difference_point"; known_keys.append(finite_difference_points_key) # pylint: disable=multiple-statements
-    std_points_key = "std_points"; known_keys.append(std_points_key) # pylint: disable=multiple-statements
-
+    unit_key = "unit"; known_keys.append(unit_key) # pylint: disable=multiple-statements
 
 
     #fmt: on

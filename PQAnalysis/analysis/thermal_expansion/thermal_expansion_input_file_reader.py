@@ -1,24 +1,21 @@
 """
-A module to read input files to setup the :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` class.
+A module to read input files to setup the 
+:py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` class.
 """
 import logging
 
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
-from PQAnalysis.io.input_file_reader.exceptions import InputFileError
-from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 
 class ThermalExpansionInputFileReader(Reader):
 
     """
-    A class to read input files to setup the :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` class.
+    A class to read input files to setup the
+    :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` class.
     """
-
-    logger = logging.getLogger(__package_name__).getChild(__qualname__)
-    logger = setup_logger(logger)
 
     #: List[str]: The required keys of the input file
     required_keys = [
@@ -71,11 +68,16 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
     * - Key
         - Value
     * - {Reader.temperature_points_key}
-        - The temperatures which corrosponds to the box_files.
+        - An array of temperature keys where every point corrosponds to a box file.
     * - {Reader.box_files_key}
-        - The file containing the box dimensions: :math:`a`, :math:`b`, :math:`c`, :math:`\\alpha`, :math:`\\beta`, :math:`\\gamma`.
+        - A list of files. Each file contains the box dimensions:
+        :math:`a`, :math:`b`, :math:`c`, :math:`\\alpha`, :math:`\\beta`, :math:`\\gamma`
+        and corroponds to a temperature point.
+    * - {Reader.unit_key}
+        - The unit of the box dimensions. Default is "Å".
     * - {Reader.out_file_key}
-        - The output file to write linear thermal expansion coefficients to.
+        - The output file to write Box dimension
+        averages and standard deviations, linear and volumetric thermal expansion coefficients to.
 
 .. list-table:: Optional keys
     :header-rows: 1
@@ -91,7 +93,8 @@ They are optional in the input file, but they might be required for
 the analysis. This means that if an optional keyword is specified
 other keywords might be required.
 - :code:`{Reader.log_file_key}` is optional for the analysis.
-(for more information see :py:class:`~PQAnalysis.io.input_file_reader.pq_analysis.thermal_expansion.thermal_expansion.ThermalExpansion`).
+(for more information see
+:py:class:`~PQAnalysis.io.input_file_reader.pq_analysis.thermal_expansion.thermal_expansion.ThermalExpansion`).
 
 """
 

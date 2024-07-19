@@ -41,7 +41,7 @@ from .topology_file.api import read_topology_file, write_topology_file
 from .info_file_reader import InfoFileReader
 from .energy_file_reader import EnergyFileReader
 from .box_file_reader import BoxFileReader
-from .box_writer import BoxWrite
+from .box_writer import BoxWriter
 
 from .input_file_reader import InputFileParser
 from .input_file_reader import PQInputFileReader

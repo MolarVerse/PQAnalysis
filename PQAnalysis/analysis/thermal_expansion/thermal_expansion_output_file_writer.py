@@ -1,13 +1,11 @@
 """
 A module containing the classes for writing related to an
-:py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion` analysis to a file.
+:py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+analysis to a file.
 """
 
-# 3rd party imports
-from beartype.typing import Tuple
-
 # local imports
-from PQAnalysis.types import Np1DNumberArray
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
@@ -37,8 +35,9 @@ class ThermalExpansionDataWriter(BaseWriter):
     @runtime_type_checking
     def write(
         self,
-        box_av_data: Np1DNumberArray,
-        box_std_data: Np1DNumberArray,
+        temperature_points: Np1DNumberArray,
+        box_avg_data: Np2DNumberArray,
+        box_std_data: Np2DNumberArray,
         thermal_expansion_data: Np1DNumberArray,
 
     ):
@@ -47,14 +46,40 @@ class ThermalExpansionDataWriter(BaseWriter):
 
         Parameters
         ----------
-        data : Np1DNumberArray
-            the data output from the ThermalExpansion.run() method
+        temperature_points : Np1DNumberArray
+            the temperature points
+        box_avg_data : Np2DNumberArray
+            the average box data output from the Box._initialize_run() method
+        box_std_data : Np2DNumberArray
+            the standard deviation box data output from the Box._initialize_run() method
+        thermal_expansion_data : Np1DNumberArray
+            the thermal expansion data output from the Box.run() method
         """
-        super().open()
 
-        for i in range(len(box_av_data)):
-            self.file.write(f"{box_av_data[i][0]} {box_av_data[i][1]} {box_av_data[i][2]} {box_std_data[i][0]} {box_std_data[i][1]} {box_std_data[i][2]} {
-                            box_std_data[i][3]} {thermal_expansion_data[i][0]} {thermal_expansion_data[i][1]} {thermal_expansion_data[i][2]}\n")
+        thermal_expansion_data_mega = thermal_expansion_data * 1e6
+        super().open()
+        angstrom = '\u212B'.encode('utf-8')
+        self.file.write(
+            f"T / K"
+            f"a_avg / {angstrom}      a_std / {angstrom}"
+            f"b_avg / {angstrom}      b_std / {angstrom}"
+            f"c_avg / {angstrom}      c_std / {angstrom}"
+            f"volume / {angstrom}³       volume_std / {angstrom}³"
+            f"thermal_expansion_a / MK^-1       thermal_expansion_b / MK^-1"
+            f"thermal_expansion_c / MK^-1       volumetric expansion / MK^-1\n"
+        )
+        for i, temperature_point in enumerate(temperature_points):
+            self.file.write(
+                f"{temperature_point}"
+                f"{box_avg_data[0][i]}       {box_std_data[0][i]}"
+                f"{box_avg_data[1][i]}       {box_std_data[1][i]}"
+                f"{box_avg_data[2][i]}       {box_std_data[2][i]}"
+                f"{box_avg_data[3][i]}       {box_std_data[3][i]}"
+                f"{thermal_expansion_data_mega[0]}       {
+                    thermal_expansion_data_mega[1]}"
+                f"{thermal_expansion_data_mega[2]}       {
+                    thermal_expansion_data_mega[3]}\n"
+            )
 
         super().close()
 
@@ -62,7 +87,7 @@ class ThermalExpansionDataWriter(BaseWriter):
 class ThermalExpansionLogWriter(BaseWriter):
 
     """
-    Class for writing the log of an 
+    Class for writing the log of an
     :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
     analysis to a file.
     """
@@ -81,18 +106,19 @@ class ThermalExpansionLogWriter(BaseWriter):
     @runtime_type_checking
     def write_before_run(self, thermal_expansion: ThermalExpansion) -> None:
         """
-      Writes the log before the 
+        Writes the log before the
         :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
         run() method is called.
 
         This includes the general header of PQAnalysis
         and the most important setup parameters of the
-        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` analysis.
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+        analysis.
 
         Parameters
         ----------
         thermal_expansion : ThermalExpansion
-            the linear thermal expansion coefficient object
+            the thermal expansion coefficient object
         """
         super().open()
 
@@ -100,21 +126,31 @@ class ThermalExpansionLogWriter(BaseWriter):
             print(__header__, file=self.file)
             print(file=self.file)
 
-        print("Thermal expansion coefficient calculation:", file=self.file)
+        print("Thermal Expansion Analysis", file=self.file)
+
+        print(f"    Number of temperature points: {
+              len(thermal_expansion.temperature_points)}", file=self.file)
+        print(f"    Temperature points: {
+            thermal_expansion.temperature_points}", file=self.file)
+        print(f"    Temperature step size: {
+            thermal_expansion.temperature_step_size}", file=self.file)
+        print(f"    Number of box files: {
+            len(thermal_expansion.box)}", file=self.file)
+
         print(file=self.file)
-        self.file.write(str(thermal_expansion))
-        self.file.write(
-            "T a_av a_std b_av b_std c_av c_std volume volume_std thermal_expansion_a thermal_expansion_b thermal_expansion_c\n")
+
         super().close()
 
     @runtime_type_checking
     def write_after_run(self, thermal_expansion: ThermalExpansion) -> None:
         """
-        Writes the log after the 
-        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion` run() method is called.
+        Writes the log after the
+        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+        run() method is called.
 
         This includes the elapsed time of the
-        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion` run() method.
+        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+        run() method.
 
         Parameters
         ----------
@@ -122,7 +158,90 @@ class ThermalExpansionLogWriter(BaseWriter):
             the linear thermal expansion coefficient object
         """
         super().open()
+        angstrom = '\u212B'.encode('utf-8')
+        print(
+            f"    Average a: {thermal_expansion.box_av[0]}{
+                angstrom}+/- {thermal_expansion.box_std[0]}{angstrom}",
+            file=self.file
+        )
+        print(
+            f"    Average b: {thermal_expansion.box_av[1]}{
+                angstrom}+/- {thermal_expansion.box_std[1]}{angstrom}",
+            file=self.file
+        )
+        print(
+            f"    Average c: {thermal_expansion.box_av[2]}{
+                angstrom}+/- {thermal_expansion.box_std[2]}{angstrom}",
+            file=self.file
+        )
+        print(
+            f"    Average volume: {thermal_expansion.box_av[3]}{
+                angstrom}³ +/- {thermal_expansion.box_std[3]}{angstrom}³",
+            file=self.file
+        )
+        print(
+            f"    Middle points: {thermal_expansion.middle_points} at {
+                thermal_expansion.temperature_points[
+                    len(thermal_expansion.temperature_points) // 2
+                ]} K",
+            file=self.file
+        )
+        print(
+            f"    Linear thermal expansion a: {
+                thermal_expansion.thermal_expansions[0]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Linear thermal expansion b: {
+                thermal_expansion.thermal_expansions[1]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Linear thermal expansion c: {
+                thermal_expansion.thermal_expansions[2]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Volumetric expansion: {
+                thermal_expansion.thermal_expansions[3]} 1/K",
+            file=self.file
+        )
 
-        self.file.write(f"Elapsed time: {thermal_expansion.elapsed_time} s\n")
+        print(file=self.file)
+
+        print(
+            "    Linear thermal expansion a in M/K: ",
+            file=self.file
+        )
+        print(
+            f"    {thermal_expansion.thermal_expansions[0] * 1e6} M/K",
+            file=self.file
+        )
+        print(
+            "    Linear thermal expansion b in M/K: ", file=self.file
+        )
+        print(
+            f"    {thermal_expansion.thermal_expansions[1] * 1e6} M/K",
+            file=self.file
+        )
+        print(
+            "    Linear thermal expansion c in M/K ", file=self.file
+        )
+        print(
+            f"    {thermal_expansion.thermal_expansions[2] * 1e6} M/K",
+            file=self.file
+        )
+
+        print(
+            "    Volumetric thermal expansion in M/K: ",
+            file=self.file
+        )
+        print(
+            f"    {thermal_expansion.thermal_expansions[3] * 1e6} M/K",
+            file=self.file
+        )
+
+        self.file.write(f"Elapsed time: {
+            thermal_expansion.elapsed_time} s\n")
 
         super().close()

@@ -9,7 +9,8 @@ from ...exceptions import PQException, PQWarning
 class ThermalExpansionError(PQException):
 
     """
-    Exception raised if something goes wrong during the thermal expansion coefficient setup or calculation.
+    Exception raised if something goes wrong during 
+    the thermal expansion coefficient setup or calculation.
     """
 
     def __init__(self, message: str) -> None:
@@ -26,7 +27,8 @@ class ThermalExpansionError(PQException):
 class ThermalExpansionWarning(PQWarning):
 
     """
-    Warning raised if something goes wrong during the thermal expansion coefficient setup or calculation.
+    Warning raised if something goes wrong 
+    during the thermal expansion coefficient setup or calculation.
     """
 
     def __init__(self, message: str) -> None:

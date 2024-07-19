@@ -1,5 +1,6 @@
 """
-A package containing classes and functions to handle linear thermal expansion coefficient.
+A package containing classes and functions 
+to handle linear or volumetric thermal expansion coefficient.
 
 Classes
 -------
