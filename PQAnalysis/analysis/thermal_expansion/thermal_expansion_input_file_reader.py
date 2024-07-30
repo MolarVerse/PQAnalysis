@@ -84,7 +84,7 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
     * - Key
         - Value
     * - {Reader.unit_key}
-        - The unit of the box dimensions. Default is Å.
+        - The unit of the box dimensions.
     * - {Reader.log_file_key}
         - The log file to write the log information to.
 Note
@@ -93,7 +93,7 @@ Optional keys does not mean that they are optional for the analysis.
 They are optional in the input file, but they might be required for
 the analysis. This means that if an optional keyword is specified
 other keywords might be required.
-
+- :code:`{Reader.unit_key}` is optional for the analysis.
 - :code:`{Reader.log_file_key}` is optional for the analysis.
 (for more information see
 :py:class:`~PQAnalysis.io.input_file_reader.pq_analysis.thermal_expansion.thermal_expansion.ThermalExpansion`).

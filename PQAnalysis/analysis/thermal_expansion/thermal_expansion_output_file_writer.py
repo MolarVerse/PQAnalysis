@@ -9,6 +9,7 @@ from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.io.formats import FileWritingMode
 
 from .thermal_expansion import ThermalExpansion
 
@@ -22,15 +23,25 @@ class ThermalExpansionDataWriter(BaseWriter):
     """
 
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+            self,
+            filename: str,
+            mode: str | FileWritingMode = "w") -> None:
         """
         Parameters
         ----------
         filename : str
             the filename to write to
+        mode : str | FileWritingMode, optional
+            The writing mode. Default is "w".
+            The writing mode can be either a string or a FileWritingMode enum value.
+            Possible values are:
+            - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
+            - "a" or FileWritingMode.APPEND: append mode
+            - "o" or FileWritingMode.OVERWRITE: overwrite mode
         """
         self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, mode=mode)
 
     @runtime_type_checking
     def write(
@@ -59,14 +70,15 @@ class ThermalExpansionDataWriter(BaseWriter):
         thermal_expansion_data_mega = thermal_expansion_data * 1e6
         super().open()
         angstrom = '\u212B'.encode('utf-8')
-        self.file.write(
+        print(
             f"T / K"
             f"a_avg in {angstrom}      a_std in {angstrom}"
             f"b_avg in {angstrom}      b_std in {angstrom}"
             f"c_avg in {angstrom}      c_std in {angstrom}"
             f"volume in {angstrom}³       volume_std in {angstrom}³"
             f"thermal_expansion_a in (M/K)       thermal_expansion_b in (M/K)"
-            f"thermal_expansion_c in (M/K)      volumetric expansion in (M/K)\n"
+            f"thermal_expansion_c in (M/K)      volumetric expansion in (M/K)",
+            file=self.file
         )
         for i, temperature_point in enumerate(temperature_points):
             print(
@@ -91,15 +103,25 @@ class ThermalExpansionLogWriter(BaseWriter):
     """
 
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+            self,
+            filename: str,
+            mode: str | FileWritingMode = "w") -> None:
         """
         Parameters
         ----------
         filename : str
             the filename to write to
+        mode : str | FileWritingMode, optional
+            The writing mode. Default is "w".
+            The writing mode can be either a string or a FileWritingMode enum value.
+            Possible values are:
+            - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
+            - "a" or FileWritingMode.APPEND: append mode
+            - "o" or FileWritingMode.OVERWRITE: overwrite mode
         """
         self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, mode=mode)
 
     @runtime_type_checking
     def write_before_run(self, thermal_expansion: ThermalExpansion) -> None:

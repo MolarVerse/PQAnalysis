@@ -64,6 +64,7 @@ class ThermalExpansionCLI(CLIBase):
         """
         parser.parse_input_file()
         parser.parse_engine()
+        parser.parse_mode()
 
     @classmethod
     def run(cls, args):
@@ -75,7 +76,7 @@ class ThermalExpansionCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        thermal_expansion(args.input_file, args.engine)
+        thermal_expansion(args.input_file, args.engine, args.mode)
 
 
 def main():

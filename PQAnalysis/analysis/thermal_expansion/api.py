@@ -8,6 +8,7 @@ import numpy as np
 from PQAnalysis.io import BoxFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.io.formats import FileWritingMode
 
 from .thermal_expansion import ThermalExpansion
 from .thermal_expansion_input_file_reader import ThermalExpansionInputFileReader
@@ -16,7 +17,10 @@ from .thermal_expansion_output_file_writer import ThermalExpansionLogWriter
 
 
 @runtime_type_checking
-def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
+def thermal_expansion(
+        input_file: str,
+        md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+        mode: FileWritingMode | str = "w"):
     """
     Calculates the thermal expansion coefficient using a given input file.
 
@@ -38,6 +42,13 @@ def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngin
         the format of the input trajectory. Default is "PQ".
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.    
+    mode : FileWritingMode | str, optional
+        The writing mode. Default is "w".
+        The writing mode can be either a string or a FileWritingMode enum value.
+        Possible values are:
+        - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
+        - "a" or FileWritingMode.APPEND: append mode
+        - "o" or FileWritingMode.OVERWRITE: overwrite mode
     """
     md_format = MDEngineFormat(md_format)
 
@@ -69,10 +80,12 @@ def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngin
     )
 
     data_writer = ThermalExpansionDataWriter(
-        filename=input_reader.out_file_key
+        filename=input_reader.out_file_key,
+        mode=mode
     )
 
-    log_writer = ThermalExpansionLogWriter(filename=input_reader.log_file)
+    log_writer = ThermalExpansionLogWriter(
+        filename=input_reader.log_file, mode=mode)
 
     log_writer.write_before_run(_thermal_expansion)
 
