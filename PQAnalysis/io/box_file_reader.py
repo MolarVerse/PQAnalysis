@@ -6,6 +6,8 @@ A module to read lattice parameter data from a file or from trajectory data.
 import logging
 import numpy as np
 
+
+from PQAnalysis.physical_data.box import Box
 from PQAnalysis.utils import instance_function_count_decorator
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -13,8 +15,8 @@ from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checkin
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.exceptions import PQFileNotFoundError
+
 from .exceptions import BoxReaderError
-from PQAnalysis.physical_data.box import Box
 from .base import BaseReader
 
 
@@ -56,6 +58,10 @@ class BoxFileReader(BaseReader):
             super().__init__(filename)
             self.trajectory = None
 
+        elif engine_format is not MDEngineFormat.PQ and filename is not None:
+            super().__init__(filename)
+            self.trajectory = None
+
         elif trajectory is not None:
             self.trajectory = trajectory
             self.filename = None
@@ -76,7 +82,7 @@ class BoxFileReader(BaseReader):
             The lattice parameter data.
         """
 
-        if self.engine_format is MDEngineFormat.PQ:
+        if self.filename is not None:
             return self._read_from_file()
         else:
             return self._read_from_trajectory()

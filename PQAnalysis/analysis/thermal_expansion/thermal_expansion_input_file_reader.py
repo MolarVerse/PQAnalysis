@@ -26,6 +26,7 @@ class ThermalExpansionInputFileReader(Reader):
 
     #: List[str]: The optional keys of the input file
     optional_keys = required_keys + [
+        Reader.unit_key,
         Reader.log_file_key,
     ]
 
@@ -73,8 +74,6 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
         - A list of files. Each file contains the box dimensions:
         :math:`a`, :math:`b`, :math:`c`, :math:`\\alpha`, :math:`\\beta`, :math:`\\gamma`
         and corroponds to a temperature point.
-    * - {Reader.unit_key}
-        - The unit of the box dimensions. Default is "Å".
     * - {Reader.out_file_key}
         - The output file to write Box dimension
         averages and standard deviations, linear and volumetric thermal expansion coefficients to.
@@ -84,6 +83,8 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
 
     * - Key
         - Value
+    * - {Reader.unit_key}
+        - The unit of the box dimensions. Default is Å.
     * - {Reader.log_file_key}
         - The log file to write the log information to.
 Note
@@ -92,6 +93,7 @@ Optional keys does not mean that they are optional for the analysis.
 They are optional in the input file, but they might be required for
 the analysis. This means that if an optional keyword is specified
 other keywords might be required.
+
 - :code:`{Reader.log_file_key}` is optional for the analysis.
 (for more information see
 :py:class:`~PQAnalysis.io.input_file_reader.pq_analysis.thermal_expansion.thermal_expansion.ThermalExpansion`).

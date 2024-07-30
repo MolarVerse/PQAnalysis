@@ -3,11 +3,11 @@ This module provides API functions for
 linear or volumetric thermal expansion coefficient analysis.
 """
 
+import numpy as np
 
 from PQAnalysis.io import BoxFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
-
 
 from .thermal_expansion import ThermalExpansion
 from .thermal_expansion_input_file_reader import ThermalExpansionInputFileReader
@@ -44,14 +44,21 @@ def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngin
     input_reader = ThermalExpansionInputFileReader(input_file)
     input_reader.read()
 
-    temperature_points = input_reader.temperature_points
+    if input_reader.unit is None:
+        unit = "Angstrom"
+    else:
+        unit = input_reader.unit
+
+    temperature_points = np.array(input_reader.temperature_points)
 
     box_data = []
-    for box_file in input_reader.box_files:
+    for i, box_file in enumerate(input_reader.box_files):
+        print(f"Reading box file: {
+              box_file} at temperature: {temperature_points[i]} K")
         box_reader = BoxFileReader(
             filename=box_file,
             engine_format=md_format,
-            unit=input_reader.unit
+            unit=unit
         )
         box = box_reader.read()
         box_data.append(box)
@@ -69,12 +76,12 @@ def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngin
 
     log_writer.write_before_run(_thermal_expansion)
 
-    box_avg_data, box_std_data, thermal_expansion_data = _thermal_expansion.run()
+    boxes_avg_data, boxes_std_data, thermal_expansion_data = _thermal_expansion.run()
 
     data_writer.write(
         temperature_points=temperature_points,
-        box_avg_data=box_avg_data,
-        box_std_data=box_std_data,
+        boxes_avg_data=boxes_avg_data,
+        boxes_std_data=boxes_std_data,
         thermal_expansion_data=thermal_expansion_data
     )
     log_writer.write_after_run(_thermal_expansion)

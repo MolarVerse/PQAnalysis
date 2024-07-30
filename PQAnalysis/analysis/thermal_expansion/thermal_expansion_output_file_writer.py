@@ -36,7 +36,7 @@ class ThermalExpansionDataWriter(BaseWriter):
     def write(
         self,
         temperature_points: Np1DNumberArray,
-        boxes_avgg_data: Np2DNumberArray,
+        boxes_avg_data: Np2DNumberArray,
         boxes_std_data: Np2DNumberArray,
         thermal_expansion_data: Np1DNumberArray,
 
@@ -48,7 +48,7 @@ class ThermalExpansionDataWriter(BaseWriter):
         ----------
         temperature_points : Np1DNumberArray
             the temperature points
-        boxes_avgg_data : Np2DNumberArray
+        boxes_avg_data : Np2DNumberArray
             the average box data output from the Box._initialize_run() method
         boxes_std_data : Np2DNumberArray
             the standard deviation box data output from the Box._initialize_run() method
@@ -61,26 +61,24 @@ class ThermalExpansionDataWriter(BaseWriter):
         angstrom = '\u212B'.encode('utf-8')
         self.file.write(
             f"T / K"
-            f"a_avg / {angstrom}      a_std / {angstrom}"
-            f"b_avg / {angstrom}      b_std / {angstrom}"
-            f"c_avg / {angstrom}      c_std / {angstrom}"
-            f"volume / {angstrom}³       volume_std / {angstrom}³"
-            f"thermal_expansion_a / MK^-1       thermal_expansion_b / MK^-1"
-            f"thermal_expansion_c / MK^-1       volumetric expansion / MK^-1\n"
+            f"a_avg in {angstrom}      a_std in {angstrom}"
+            f"b_avg in {angstrom}      b_std in {angstrom}"
+            f"c_avg in {angstrom}      c_std in {angstrom}"
+            f"volume in {angstrom}³       volume_std in {angstrom}³"
+            f"thermal_expansion_a in (M/K)       thermal_expansion_b in (M/K)"
+            f"thermal_expansion_c in (M/K)      volumetric expansion in (M/K)\n"
         )
         for i, temperature_point in enumerate(temperature_points):
-            self.file.write(
-                f"{temperature_point}"
-                f"{boxes_avgg_data[0][i]}       {boxes_std_data[0][i]}"
-                f"{boxes_avgg_data[1][i]}       {boxes_std_data[1][i]}"
-                f"{boxes_avgg_data[2][i]}       {boxes_std_data[2][i]}"
-                f"{boxes_avgg_data[3][i]}       {boxes_std_data[3][i]}"
+            print(
+                f"{temperature_point}       "
+                f"{boxes_avg_data[0][i]}       {boxes_std_data[0][i]}       "
+                f"{boxes_avg_data[1][i]}       {boxes_std_data[1][i]}       "
+                f"{boxes_avg_data[2][i]}       {boxes_std_data[2][i]}       "
+                f"{boxes_avg_data[3][i]}       {boxes_std_data[3][i]}       "
                 f"{thermal_expansion_data_mega[0]}       {
-                    thermal_expansion_data_mega[1]}"
+                    thermal_expansion_data_mega[1]}       "
                 f"{thermal_expansion_data_mega[2]}       {
-                    thermal_expansion_data_mega[3]}\n"
-            )
-
+                    thermal_expansion_data_mega[3]}", file=self.file)
         super().close()
 
 
@@ -135,7 +133,7 @@ class ThermalExpansionLogWriter(BaseWriter):
         print(f"    Temperature step size: {
             thermal_expansion.temperature_step_size}", file=self.file)
         print(f"    Number of box files: {
-            len(thermal_expansion.box)}", file=self.file)
+            len(thermal_expansion.boxes)}", file=self.file)
 
         print(file=self.file)
 

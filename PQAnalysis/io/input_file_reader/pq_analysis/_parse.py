@@ -291,10 +291,10 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     return data[0]
 
 
-def _parse_lists(input_dict: InputDictionary, key: str) -> Tuple[List[float]] | List[float] | None:
+def _parse_lists(input_dict: InputDictionary, key: str) -> List[float] | None:
     """
     Gets the value of a key from the input dictionary and 
-    checks if it is a tuple of lists of floats or a list of floats.
+    checks if it is a list of floats.
 
     Parameters
     ----------
@@ -305,13 +305,13 @@ def _parse_lists(input_dict: InputDictionary, key: str) -> Tuple[List[float]] | 
 
     Returns
     -------
-    Tuple[List[float]] | List[float] | None
+    List[float] | None
         the value of the key or None if the key is not in the dictionary
 
     Raises
     ------
     InputFileError
-        if the value is not a tuple of lists of floats or a list of floats
+        if the value is not a list of floats
     """
 
     try:
@@ -321,7 +321,17 @@ def _parse_lists(input_dict: InputDictionary, key: str) -> Tuple[List[float]] | 
 
     data_type = data[1]
 
-    if data_type in {"glob", "list(float), tuple(list(float))"}:
+    if data_type == "float":
+        return [data[0]]
+
+    if data_type in {"glob", "list(float)"}:
         return data[0]
 
-    return data[0]
+    logger.error(
+        (
+            f"The \"{key}\" value has to be either a "
+            "string, glob or a list of floats - actually "
+            f"it is parsed as a {data_type}"
+        ),
+        exception=InputFileError
+    )

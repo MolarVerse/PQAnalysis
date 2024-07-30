@@ -22,11 +22,11 @@ class _ThermalExpansionMixin:
         """
         List[float] | None: The temperature points.
         """
-        return _parse_lists(self, "temperature_points")
+        return _parse_lists(self.dictionary, self.temperature_points_key)
 
     @property
     def unit(self) -> str | None:
         """
-        str | None: The unit of the temperature points.
+        str | None: The unit of the box files.
         """
-        return _parse_string(self, "unit")
+        return _parse_string(self.dictionary, self.unit_key)
