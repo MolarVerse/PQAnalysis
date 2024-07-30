@@ -9,6 +9,7 @@ from .traj2qmcfc import Traj2QMCFCCLI
 from .traj2box import Traj2BoxCLI
 from .rst2xyz import Rst2XYZCLI
 from .rdf import RDFCLI
+from .thermal_expansion import ThermalExpansionCLI
 from .gen2xyz import GEN2XYZCLI
 from .continue_input import ContinueInputCLI
 from .add_molecules import AddMoleculesCLI
@@ -25,7 +26,6 @@ __epilog__ += "For more information on required and optional input file keys ple
 __epilog__ += f"{code_base_url}PQAnalysis.cli.html."
 __epilog__ += "\n"
 __epilog__ += "\n"
-
 
 
 def main():
@@ -46,6 +46,7 @@ def main():
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,
+        ThermalExpansionCLI().program_name(): ThermalExpansionCLI,
     }
 
     for key, value in sub_parser_dict.items():

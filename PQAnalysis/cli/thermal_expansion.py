@@ -1,7 +1,8 @@
 """
 .. _cli.thermal_expansion:
 
-Command Line Tool for linear thermal expansion coefficient Analysis
+Command Line Tool for Linear/Volumetric 
+Thermal Expansion Coefficient Analysis
 ==================================
 
 """
@@ -15,8 +16,7 @@ from ._cli_base import CLIBase
 __outputdoc__ = """
 
 This command line tool can be used to calculate the 
-linear thermal expansion coefficient of given lattice parameters or 
-volumetric thermal expansion coefficient of given volume data.
+linear/volumetric thermal expansion coefficient of 
 """
 
 __epilog__ = "\n"
@@ -27,17 +27,17 @@ __epilog__ += "\n"
 
 __doc__ += __outputdoc__
 __doc__ += "For more information on the general the "
-__doc__ += "linear thermal expansion coefficient analysis and its input file options "
+__doc__ += "ThermalExpansion analysis and its input file options "
 __doc__ += "please visit "
-__doc__ += ":py:class:`PQAnalysis.analysis.thermal_expansion.thermal_expansion.thermal_expansion.ThermalExpansion` "
-__doc__ += "and :py:mod:`PQAnalysis.analysis.thermal_expansion.thermal_input_file_reader`\n"
+__doc__ += ":py:class:`PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` "
+__doc__ += "and :py:mod:`PQAnalysis.analysis.thermal_expansion.thermal_expansion_input_file_reader`\n"
 __doc__ += input_keys_documentation
 
 
 class ThermalExpansionCLI(CLIBase):
 
     """
-    Command Line Tool for linear or volumetric thermal expansion coefficient Analysis
+    Command Line Tool for ThermalExpansion Analysis
     """
 
     @classmethod
@@ -80,7 +80,7 @@ class ThermalExpansionCLI(CLIBase):
 
 def main():
     """
-    The main function of the linear thermal expansion coefficient analysis command line tool,
+    The main function of the ThermalExpansion analysis command line tool,
     which is basically just a wrapper for the thermal_expansion function. 
     For more information on the thermal_expansion function please 
     visit :py:func:`PQAnalysis.analysis.thermal_expansion.api.thermal_expansion`.
