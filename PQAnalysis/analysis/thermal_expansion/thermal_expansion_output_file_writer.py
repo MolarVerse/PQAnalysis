@@ -1,6 +1,6 @@
 """
 A module containing the classes for writing related to an
-:py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+:py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
 analysis to a file.
 """
 
@@ -17,7 +17,7 @@ class ThermalExpansionDataWriter(BaseWriter):
 
     """
     Class for writing the data of an
-    :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+    :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
     analysis to a file.
     """
 
@@ -36,8 +36,8 @@ class ThermalExpansionDataWriter(BaseWriter):
     def write(
         self,
         temperature_points: Np1DNumberArray,
-        box_avg_data: Np2DNumberArray,
-        box_std_data: Np2DNumberArray,
+        boxes_avgg_data: Np2DNumberArray,
+        boxes_std_data: Np2DNumberArray,
         thermal_expansion_data: Np1DNumberArray,
 
     ):
@@ -48,9 +48,9 @@ class ThermalExpansionDataWriter(BaseWriter):
         ----------
         temperature_points : Np1DNumberArray
             the temperature points
-        box_avg_data : Np2DNumberArray
+        boxes_avgg_data : Np2DNumberArray
             the average box data output from the Box._initialize_run() method
-        box_std_data : Np2DNumberArray
+        boxes_std_data : Np2DNumberArray
             the standard deviation box data output from the Box._initialize_run() method
         thermal_expansion_data : Np1DNumberArray
             the thermal expansion data output from the Box.run() method
@@ -71,10 +71,10 @@ class ThermalExpansionDataWriter(BaseWriter):
         for i, temperature_point in enumerate(temperature_points):
             self.file.write(
                 f"{temperature_point}"
-                f"{box_avg_data[0][i]}       {box_std_data[0][i]}"
-                f"{box_avg_data[1][i]}       {box_std_data[1][i]}"
-                f"{box_avg_data[2][i]}       {box_std_data[2][i]}"
-                f"{box_avg_data[3][i]}       {box_std_data[3][i]}"
+                f"{boxes_avgg_data[0][i]}       {boxes_std_data[0][i]}"
+                f"{boxes_avgg_data[1][i]}       {boxes_std_data[1][i]}"
+                f"{boxes_avgg_data[2][i]}       {boxes_std_data[2][i]}"
+                f"{boxes_avgg_data[3][i]}       {boxes_std_data[3][i]}"
                 f"{thermal_expansion_data_mega[0]}       {
                     thermal_expansion_data_mega[1]}"
                 f"{thermal_expansion_data_mega[2]}       {
@@ -145,11 +145,11 @@ class ThermalExpansionLogWriter(BaseWriter):
     def write_after_run(self, thermal_expansion: ThermalExpansion) -> None:
         """
         Writes the log after the
-        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
         run() method is called.
 
         This includes the elapsed time of the
-        :py:class:`~PQAnalysis.analysis.finite_differentiation.thermal_expansion.ThermalExpansion`
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
         run() method.
 
         Parameters
@@ -160,23 +160,23 @@ class ThermalExpansionLogWriter(BaseWriter):
         super().open()
         angstrom = '\u212B'.encode('utf-8')
         print(
-            f"    Average a: {thermal_expansion.box_av[0]}{
-                angstrom}+/- {thermal_expansion.box_std[0]}{angstrom}",
+            f"    Average a: {thermal_expansion.boxes_avg[0]}{
+                angstrom}+/- {thermal_expansion.boxes_std[0]}{angstrom}",
             file=self.file
         )
         print(
-            f"    Average b: {thermal_expansion.box_av[1]}{
-                angstrom}+/- {thermal_expansion.box_std[1]}{angstrom}",
+            f"    Average b: {thermal_expansion.boxes_avg[1]}{
+                angstrom}+/- {thermal_expansion.boxes_std[1]}{angstrom}",
             file=self.file
         )
         print(
-            f"    Average c: {thermal_expansion.box_av[2]}{
-                angstrom}+/- {thermal_expansion.box_std[2]}{angstrom}",
+            f"    Average c: {thermal_expansion.boxes_avg[2]}{
+                angstrom}+/- {thermal_expansion.boxes_std[2]}{angstrom}",
             file=self.file
         )
         print(
-            f"    Average volume: {thermal_expansion.box_av[3]}{
-                angstrom}³ +/- {thermal_expansion.box_std[3]}{angstrom}³",
+            f"    Average volume: {thermal_expansion.boxes_avg[3]}{
+                angstrom}³ +/- {thermal_expansion.boxes_std[3]}{angstrom}³",
             file=self.file
         )
         print(
