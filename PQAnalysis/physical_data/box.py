@@ -30,31 +30,31 @@ class Box():
     @runtime_type_checking
     def __init__(
         self,
-        a: Np1DNumberArray,
-        b: Np1DNumberArray,
-        c: Np1DNumberArray,
-        alpha: Np1DNumberArray,
-        beta: Np1DNumberArray,
-        gamma: Np1DNumberArray,
+        a: Np1DNumberArray | None = None,
+        b: Np1DNumberArray | None = None,
+        c: Np1DNumberArray | None = None,
+        alpha: Np1DNumberArray | None = None,
+        beta: Np1DNumberArray | None = None,
+        gamma: Np1DNumberArray | None = None,
         unit: str | None = None
 
     ) -> None:
         """
         Parameters
         ----------
-        a : Np1DNumberArray
+        a : Np1DNumberArray | None 
             The lattice parameter a.
-        b : Np1DNumberArray
+        b : Np1DNumberArray | None 
             The lattice parameter b.
-        c : Np1DNumberArray
+        c : Np1DNumberArray | None 
             The lattice parameter c.
-        alpha : Np1DNumberArray
+        alpha : Np1DNumberArray | None 
             The lattice parameter alpha.
-        beta : Np1DNumberArray
+        beta : Np1DNumberArray | None 
             The lattice parameter beta.
-        gamma : Np1DNumberArray
+        gamma : Np1DNumberArray | None 
             The lattice parameter gamma.
-        unit : str, optional
+        unit : str | None , optional
             The unit of the lattice parameters, by default None
         """
 

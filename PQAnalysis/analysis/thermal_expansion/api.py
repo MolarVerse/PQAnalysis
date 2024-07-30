@@ -58,7 +58,7 @@ def thermal_expansion(input_file: str, md_format: MDEngineFormat | str = MDEngin
 
     _thermal_expansion = ThermalExpansion(
         temperature_points=temperature_points,
-        box=box_data
+        boxes=box_data
     )
 
     data_writer = ThermalExpansionDataWriter(

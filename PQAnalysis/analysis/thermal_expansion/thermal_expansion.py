@@ -31,16 +31,17 @@ class ThermalExpansion:
 
     The thermal expansion coefficient is calculated using finite differentiation.
     At the moment only a five-point stencil is supported.
-    Therefore, the number of temperature points and boxes must be 5.
-    So at 5 different temperatures, the box data must be provided.
-    The box data should be a list of Box objects.
+    Therefore, the number of temperature points and boxeses must be 5.
+    So at 5 different temperatures, the boxes data must be provided.
+    The boxes data should be a list of Box objects.
 
     .. math::
-        \alpha = \frac{1}{L_{2}}frac{\Delta L}{\Delta T}
+
+        \\alpha = \\frac{1}{L_{2}}\\frac{\\Delta L}{\\Delta T}
 
     .. math::
-        (\frac{\Delta L}{\Delta T})_P = 
-            \frac{<L_{0}> - 8 L_{1}> + 8 <L_{3}> - <L_{4}>}{12 \Delta T}
+
+        (\\frac{\\Delta L}{\\Delta T})_P =  \\frac{<L_{0}> - 8 L_{1}> + 8 <L_{3}> - <L_{4}>}{12 \\Delta T}
     -----
     """
 
@@ -51,20 +52,20 @@ class ThermalExpansion:
     def __init__(
         self,
         temperature_points: Np1DNumberArray | None = None,
-        box: List[Box] | None = None,
+        boxes: List[Box] | None = None,
     ):
         """
         Parameters
         ----------
         temperature_points : Np1DNumberArray
             the temperature points, by default None
-        box : List[Box]
-            the box data: a, b, c, alpha, beta, gamma
+        boxes : List[Box]
+            the boxes data: a, b, c, alpha, beta, gamma
         """
         # dummy implementation
         self._temperature_step_size = 0
-        self._box_avg = np.zeros(4)
-        self._box_std = np.zeros(4)
+        self._boxes_avg = np.zeros(4)
+        self._boxes_std = np.zeros(4)
         self._thermal_expansions = np.zeros(4)
         self._middle_points = np.zeros(4)
 
@@ -78,14 +79,14 @@ class ThermalExpansion:
                 "Temperature points must be provided",
                 exception=ThermalExpansionError
             )
-        if np.all(np.diff(self._temperature_points) != self._temperature_step_size):
+        if not np.allclose(np.diff(temperature_points), self._temperature_step_size, rtol=1e-4):
             self.logger.error(
                 "Temperature points must have the same step size",
                 exception=ThermalExpansionError
             )
 
-        if box is not None:
-            self._box = box
+        if boxes is not None:
+            self._boxes = boxes
         else:
             self.logger.error(
                 "Box data must be provided",
@@ -94,40 +95,43 @@ class ThermalExpansion:
         if len(self._temperature_points) != 5:
             self.logger.error(
                 (
-                    "The number of temperature points must be 5"
-                    f"You have provided {len(self._temperature_points)} points"
+                    "The number of temperature points must be 5. "
+                    f"You have provided {
+                        len(self._temperature_points)} points. "
                     "Only 5-point stencil is supported at the moment!"
                 ),
                 exception=ThermalExpansionError
             )
-        if len(self._temperature_points) != len(self._box):
+        if len(self._temperature_points) != len(self._boxes):
             self.logger.error(
-                "Temperature points and box data must have the same length",
+                "Temperature points and boxes data must have the same length",
                 exception=ThermalExpansionError
             )
 
     def _initialize_run(self):
         """
         Initializes the thermal expansion analysis.
-        Calculates the average box data and 
-        the standard deviation of the box data.
-        For the thermal expansion analysis, 
-        the middle points of the box data are calculated.
+        Calculates the average boxes data and
+        the standard deviation of the boxes data.
+        For the thermal expansion analysis,
+        the middle points of the boxes data are calculated.
 
         The data is stored in the following format:
         [a_avg, b_avg, c_avg, volume_avg]
         [a_std, b_std, c_std, volume_std]
-        in the self._box_avg and self._box_std attributes.
+        in the self._boxes_avg and self._boxes_std attributes.
         """
 
-        a_avg = np.array([np.average(box.a) for box in self._box])
-        b_avg = np.array([np.average(box.b) for box in self._box])
-        c_avg = np.array([np.average(box.c) for box in self._box])
-        a_std = np.array([np.std(box.a) for box in self._box])
-        b_std = np.array([np.std(box.b) for box in self._box])
-        c_std = np.array([np.std(box.c) for box in self._box])
-        volume_avg = np.array([np.average(box.volume()) for box in self._box])
-        volume_std = np.array([np.std(box.volume()) for box in self._box])
+        a_avg = np.array([np.average(boxes.a) for boxes in self._boxes])
+        b_avg = np.array([np.average(boxes.b) for boxes in self._boxes])
+        c_avg = np.array([np.average(boxes.c) for boxes in self._boxes])
+        a_std = np.array([np.std(boxes.a) for boxes in self._boxes])
+        b_std = np.array([np.std(boxes.b) for boxes in self._boxes])
+        c_std = np.array([np.std(boxes.c) for boxes in self._boxes])
+        volume_avg = np.array([np.average(boxes.volume())
+                               for boxes in self._boxes])
+        volume_std = np.array([np.std(boxes.volume())
+                               for boxes in self._boxes])
         middle_point = []
         middle_point.append(a_avg[len(a_avg) // 2])
         middle_point.append(b_avg[len(b_avg) // 2])
@@ -136,9 +140,9 @@ class ThermalExpansion:
 
         self._middle_points = np.array(middle_point)
 
-        self._box_avg = np.array(
+        self._boxes_avg = np.array(
             [a_avg, b_avg, c_avg, volume_avg])
-        self._box_std = np.array(
+        self._boxes_std = np.array(
             [a_std, b_std, c_std, volume_std])
 
     def _five_point_stencel(self):
@@ -146,7 +150,7 @@ class ThermalExpansion:
         Calculates the finite difference using a five-point stencil.
 
         .. math::
-            f'(x) = \frac{f(x-2h) - 8f(x-h) + 8f(x+h) - f(x+2h)}{12h}`
+            f'(x) = \\frac{f(x-2h) - 8f(x-h) + 8f(x+h) - f(x+2h)}{12h}`
 
         Returns
         -------
@@ -154,8 +158,8 @@ class ThermalExpansion:
             the finite difference data
         """
 
-        finite_difference_data = (self._box_avg[:, 0]-8*self._box_avg[:, 1]+8 *
-                                  self._box_avg[:, 3]-self._box_avg[:, 4]) / (12 * self._temperature_step_size)
+        finite_difference_data = (self._boxes_avg[:, 0]-8*self._boxes_avg[:, 1]+8 *
+                                  self._boxes_avg[:, 3]-self._boxes_avg[:, 4]) / (12 * self._temperature_step_size)
 
         return finite_difference_data
 
@@ -168,7 +172,7 @@ class ThermalExpansion:
         thermal_deviations = self._five_point_stencel()
         self._thermal_expansions = thermal_deviations / self._middle_points
 
-    @timeit_in_class
+    @ timeit_in_class
     def run(self):
         """
         Runs the thermal expansion analysis.
@@ -176,19 +180,19 @@ class ThermalExpansion:
         Returns
         -------
         List[Np1DNumberArray]
-            the average box data, 
-            the standard deviation of the box data and
+            the average boxes data, 
+            the standard deviation of the boxes data and
             the thermal expansion coefficients
         """
         self._initialize_run()
         self._calculate_thermal_expansion()
-        return [self._box_avg, self._box_std, self._thermal_expansions]
+        return [self._boxes_avg, self._boxes_std, self._thermal_expansions]
 
-    ###########################################################################
+        ###########################################################################
 
-    # Getters
+        # Getters
 
-    @property
+    @ property
     def temperature_points(self):
         """
         Returns
@@ -198,7 +202,7 @@ class ThermalExpansion:
         """
         return self._temperature_points
 
-    @property
+    @ property
     def temperature_step_size(self):
         """
         Returns
@@ -208,37 +212,37 @@ class ThermalExpansion:
         """
         return self._temperature_step_size
 
-    @property
-    def box(self):
+    @ property
+    def boxes(self):
         """
         Returns
         -------
         List[Box]
-            the box data
+            the boxes data
         """
-        return self._box
+        return self._boxes
 
-    @property
-    def box_avg(self):
+    @ property
+    def boxes_avg(self):
         """
         Returns
         -------
         Np1DNumberArray
-            the average box data
+            the average boxes data
         """
-        return self._box_avg
+        return self._boxes_avg
 
-    @property
-    def box_std(self):
+    @ property
+    def boxes_std(self):
         """
         Returns
         -------
         Np1DNumberArray
-            the standard deviation of the box data
+            the standard deviation of the boxes data
         """
-        return self._box_std
+        return self._boxes_std
 
-    @property
+    @ property
     def thermal_expansions(self):
         """
         Returns
@@ -248,12 +252,12 @@ class ThermalExpansion:
         """
         return self._thermal_expansions
 
-    @property
+    @ property
     def middle_points(self):
         """
         Returns
         -------
         Np1DNumberArray
-            the middle points of the box data
+            the middle points of the boxes data
         """
         return self._middle_points
