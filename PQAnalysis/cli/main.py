@@ -14,6 +14,7 @@ from .continue_input import ContinueInputCLI
 from .add_molecules import AddMoleculesCLI
 from .build_nep_traj import BuildNEPTrajCLI
 from ._argument_parser import _ArgumentParser
+from .bulk_modulus import BulkModulusCLI
 
 __outputdoc__ = """
 
@@ -46,6 +47,7 @@ def main():
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,
+        BulkModulusCLI.program_name(): BulkModulusCLI,
     }
 
     for key, value in sub_parser_dict.items():

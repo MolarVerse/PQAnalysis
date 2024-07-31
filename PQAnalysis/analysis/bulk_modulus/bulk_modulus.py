@@ -257,6 +257,26 @@ class BulkModulus:
 
         finite_difference = self._two_point_stencel()
         self._bulk_modulus = -(self._volume_equilibrium * finite_difference)
+    
+    def _run_simple(self):
+        """
+        Runs the simple finite difference method.
+
+        Returns
+        -------
+        List[1DNumberArray, 1DNumberArray, 1DNumberArray]
+            the volume perturbation,
+            the pressure perturbation average,
+            the pressure perturbation standard deviation,
+        """
+        self._initialize_run_simple()
+        self._calculate_bulk_modulus_simple()
+
+        return [
+            self._volumes_perturbation,
+            self._pressures_perturbation_avg,
+            self._pressures_perturbation_std
+        ]
 
     @ timeit_in_class
     def run(self):
@@ -283,25 +303,6 @@ class BulkModulus:
                 exception=BulkModulusError,
             )
 
-    def _run_simple(self):
-        """
-        Runs the simple finite difference method.
-
-        Returns
-        -------
-        List[1DNumberArray, 1DNumberArray, 1DNumberArray]
-            the volume perturbation,
-            the pressure perturbation average,
-            the pressure perturbation standard deviation,
-        """
-        self._initialize_run_simple()
-        self._calculate_bulk_modulus_simple()
-
-        return [
-            self._volumes_perturbation,
-            self._pressures_perturbation_avg,
-            self._pressures_perturbation_std
-        ]
 
         # ###########################################################################
 
