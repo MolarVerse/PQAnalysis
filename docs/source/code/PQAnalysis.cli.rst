@@ -17,8 +17,10 @@ cli
 
        PQAnalysis.cli.add_molecules
        PQAnalysis.cli.build_nep_traj
+       PQAnalysis.cli.bulk_modulus
        PQAnalysis.cli.continue_input
        PQAnalysis.cli.gen2xyz
+       PQAnalysis.cli.main
        PQAnalysis.cli.rdf
        PQAnalysis.cli.rst2xyz
        PQAnalysis.cli.traj2box

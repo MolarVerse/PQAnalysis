@@ -7,13 +7,20 @@ build_nep_traj
 .. currentmodule:: PQAnalysis.cli.build_nep_traj
 
 .. automodule:: PQAnalysis.cli.build_nep_traj
-    :members: code_base_url, main
+    :members: BuildNEPTrajCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        BuildNEPTrajCLI
 
     Functions:
 

@@ -25,7 +25,7 @@ def bulk_modulus(input_file: str, md_format: MDEngineFormat | str = MDEngineForm
     For more information on the input file keys please
     visit
     :py:mod:`~PQAnalysis.analysis.bulk_modulus.bulk_modulus_input_file_reader`.
-    For more information on the exact calculation of the thermal expansion coefficient please visit
+    For more information on the exact calculation of the bulk modulus
     :py:class:`~PQAnalysis.analysis.bulk_modulus.bulk_modulus.BulkModulus`.
 
     Parameters

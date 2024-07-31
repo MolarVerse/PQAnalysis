@@ -7,13 +7,20 @@ gen2xyz
 .. currentmodule:: PQAnalysis.cli.gen2xyz
 
 .. automodule:: PQAnalysis.cli.gen2xyz
-    :members: code_base_url, main
+    :members: GEN2XYZCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        GEN2XYZCLI
 
     Functions:
 

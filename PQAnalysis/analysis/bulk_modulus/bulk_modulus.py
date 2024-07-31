@@ -255,8 +255,8 @@ class BulkModulus:
             B = -V \\left(\\frac{dP}{dV}\\right)_T
         """
 
-        thermal_deviations = self._two_point_stencel()
-        self._bulk_modulus = -(self._volume_equilibrium * thermal_deviations)
+        finite_difference = self._two_point_stencel()
+        self._bulk_modulus = -(self._volume_equilibrium * finite_difference)
 
     @ timeit_in_class
     def run(self):

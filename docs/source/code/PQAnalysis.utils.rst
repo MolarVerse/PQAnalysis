@@ -19,7 +19,9 @@ utils
        PQAnalysis.utils.custom_logging
        PQAnalysis.utils.decorators
        PQAnalysis.utils.files
+       PQAnalysis.utils.math
        PQAnalysis.utils.random
+       PQAnalysis.utils.string
        PQAnalysis.utils.units
 
 

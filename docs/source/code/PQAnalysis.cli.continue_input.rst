@@ -7,13 +7,20 @@ continue_input
 .. currentmodule:: PQAnalysis.cli.continue_input
 
 .. automodule:: PQAnalysis.cli.continue_input
-    :members: code_base_url, main
+    :members: ContinueInputCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        ContinueInputCLI
 
     Functions:
 
