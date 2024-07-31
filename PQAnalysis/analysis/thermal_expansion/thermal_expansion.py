@@ -41,7 +41,7 @@ class ThermalExpansion:
 
     .. math::
 
-        \\left (\\frac{\\partial L}{\\partial T} \\right )_{P} =  \\frac{\\left<L_{0}\\right> - 8 \\left <L_{1} \\right> + 8 \\left<L_{3}\\right> - <L_{4}>}{12 \\Delta T}
+        \\left (\\frac{\\partial L}{\\partial T} \\right )_{P} =  \\frac{\\left<L_{0}\\right> - 8 \\left <L_{1} \\right> + 8 \\left<L_{3}\\right> - \\left <L_{4} \\right >}{12 \\Delta T}
     -----
     """
 

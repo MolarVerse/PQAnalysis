@@ -229,21 +229,21 @@ class ThermalExpansionLogWriter(BaseWriter):
             file=self.file
         )
         print(
-            f"    {thermal_expansion.thermal_expansions[0] * 1e6} M/K",
+            f"    {thermal_expansion.thermal_expansions[0] / 1e-6} M/K",
             file=self.file
         )
         print(
             "    Linear thermal expansion b in M/K: ", file=self.file
         )
         print(
-            f"    {thermal_expansion.thermal_expansions[1] * 1e6} M/K",
+            f"    {thermal_expansion.thermal_expansions[1] / 1e-6} M/K",
             file=self.file
         )
         print(
             "    Linear thermal expansion c in M/K ", file=self.file
         )
         print(
-            f"    {thermal_expansion.thermal_expansions[2] * 1e6} M/K",
+            f"    {thermal_expansion.thermal_expansions[2] / 1e-6} M/K",
             file=self.file
         )
 
@@ -252,7 +252,7 @@ class ThermalExpansionLogWriter(BaseWriter):
             file=self.file
         )
         print(
-            f"    {thermal_expansion.thermal_expansions[3] * 1e6} M/K",
+            f"    {thermal_expansion.thermal_expansions[3] / 1e-6} M/K",
             file=self.file
         )
 
