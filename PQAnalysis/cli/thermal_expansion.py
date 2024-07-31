@@ -3,6 +3,7 @@
 
 Command Line Tool for Linear/Volumetric 
 Thermal Expansion Coefficient Analysis
+
 ==================================
 
 """
@@ -16,7 +17,10 @@ from ._cli_base import CLIBase
 __outputdoc__ = """
 
 This command line tool can be used to calculate the 
-linear/volumetric thermal expansion coefficient of 
+linear/volumetric thermal expansion coefficient of
+given lattice parameter data. This is an input file based tool,
+so that the input file can be used to specify the
+parameters of the thermal expansion coefficient calculation.
 """
 
 __epilog__ = "\n"

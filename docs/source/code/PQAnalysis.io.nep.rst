@@ -15,6 +15,7 @@ io.nep
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.io.nep.exceptions
        PQAnalysis.io.nep.nep_writer
 
 

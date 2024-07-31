@@ -7,13 +7,20 @@ add_molecules
 .. currentmodule:: PQAnalysis.cli.add_molecules
 
 .. automodule:: PQAnalysis.cli.add_molecules
-    :members: code_base_url, main
+    :members: AddMoleculesCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        AddMoleculesCLI
 
     Functions:
 

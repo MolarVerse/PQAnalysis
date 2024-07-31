@@ -15,6 +15,7 @@ physical_data
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.physical_data.box
        PQAnalysis.physical_data.energy
        PQAnalysis.physical_data.exceptions
 

@@ -1,5 +1,5 @@
 """
-A module containing the classes for finite differentiation analysis.
+A module containing the classes for thermal expansion analysis.
 """
 
 from beartype.typing import List
@@ -37,11 +37,11 @@ class ThermalExpansion:
 
     .. math::
 
-        \\alpha = \\frac{1}{L_{2}}\\frac{\\Delta L}{\\Delta T}
+        \\alpha = \\frac{1}{L_{2}}\\left (\\frac{\\partial L}{\\partial T}\\right )_{P}
 
     .. math::
 
-        (\\frac{\\Delta L}{\\Delta T})_P =  \\frac{<L_{0}> - 8 L_{1}> + 8 <L_{3}> - <L_{4}>}{12 \\Delta T}
+        \\left (\\frac{\\partial L}{\\partial T} \\right )_{P} =  \\frac{\\left<L_{0}\\right> - 8 \\left <L_{1} \\right> + 8 \\left<L_{3}\\right> - <L_{4}>}{12 \\Delta T}
     -----
     """
 
@@ -166,7 +166,9 @@ class ThermalExpansion:
     def _calculate_thermal_expansion(self):
         """
         Calculates the thermal expansion coefficients.
-        :math:`\\alpha = \\frac{\\Delta L}{L \\Delta T}`
+
+        .. math::
+            \\alpha = \\left (\\frac{\\partial L}{L \\partial T} \\right )_{P}
         """
 
         thermal_deviations = self._five_point_stencel()

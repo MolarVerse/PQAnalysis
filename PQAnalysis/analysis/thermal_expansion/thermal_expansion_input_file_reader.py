@@ -63,7 +63,8 @@ class ThermalExpansionInputFileReader(Reader):
 input_keys_documentation = f"""
 
 For the linear or volumetric thermal expansion coefficient analysis the following keys are required:
-.. list-table::
+
+.. list-table:: Required keys
     :header-rows: 1
 
     * - Key
@@ -72,7 +73,11 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
         - An array of temperature keys where every point corrosponds to a box file.
     * - {Reader.box_files_key}
         - A list of files. Each file contains the box dimensions:
-        :math:`a`, :math:`b`, :math:`c`, :math:`\\alpha`, :math:`\\beta`, :math:`\\gamma`
+
+        .. math::
+
+            a, b, c, \\alpha, \\beta, \\gamma
+
         and corroponds to a temperature point.
     * - {Reader.out_file_key}
         - The output file to write Box dimension

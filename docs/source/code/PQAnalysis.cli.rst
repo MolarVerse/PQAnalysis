@@ -19,8 +19,10 @@ cli
        PQAnalysis.cli.build_nep_traj
        PQAnalysis.cli.continue_input
        PQAnalysis.cli.gen2xyz
+       PQAnalysis.cli.main
        PQAnalysis.cli.rdf
        PQAnalysis.cli.rst2xyz
+       PQAnalysis.cli.thermal_expansion
        PQAnalysis.cli.traj2box
        PQAnalysis.cli.traj2qmcfc
        PQAnalysis.cli.xyz2gen

@@ -17,6 +17,7 @@ io
 
        PQAnalysis.io.api
        PQAnalysis.io.base
+       PQAnalysis.io.box_file_reader
        PQAnalysis.io.box_writer
        PQAnalysis.io.conversion_api
        PQAnalysis.io.energy_file_reader

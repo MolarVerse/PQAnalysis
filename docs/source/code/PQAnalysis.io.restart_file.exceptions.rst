@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.io.restart_file.exceptions
 
 .. automodule:: PQAnalysis.io.restart_file.exceptions
-    :members: RestartFileReaderError
+    :members: RestartFileReaderError, RestartFileWriterError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -21,6 +21,7 @@ exceptions
         :nosignatures:
 
         RestartFileReaderError
+        RestartFileWriterError
 
 
 

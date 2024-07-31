@@ -7,26 +7,10 @@ frame_reader
 .. currentmodule:: PQAnalysis.io.traj_file.frame_reader
 
 .. automodule:: PQAnalysis.io.traj_file.frame_reader
-    :members: FrameReader
-    :undoc-members:
-    :show-inheritance:
-    :member-order: groupwise
-
-    Summary
-    -------
-
-    Classes:
-
-    .. autosummary::
-        :nosignatures:
-
-        FrameReader
+    
 
 
 
 
 
 
-
-    Reference
-    ---------

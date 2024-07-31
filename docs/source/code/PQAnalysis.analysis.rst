@@ -16,6 +16,7 @@ analysis
        :maxdepth: 1
 
        PQAnalysis.analysis.rdf
+       PQAnalysis.analysis.thermal_expansion
 
 
 
