@@ -5,7 +5,7 @@ linear or volumetric thermal expansion coefficient analysis.
 
 import numpy as np
 
-from PQAnalysis.io import BoxFileReader
+from PQAnalysis.io.box_file_reader import BoxFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.io.formats import FileWritingMode
