@@ -21,6 +21,8 @@ class _OutputFileMixin:
         "energy_file",
         "info_file",
         "output_file",
+        "virial_file",
+        "rescale_file",
         "file_prefix",
         "rpmd_restart_file",
         "rpmd_traj_file",
@@ -96,6 +98,16 @@ class _OutputFileMixin:
     def output_file(self) -> str:
         """str: The output file of the simulation."""
         return self.dictionary["output_file"][0]
+
+    @property
+    def virial_file(self) -> str:
+        """str: The virial file of the simulation."""
+        return self.dictionary["virial_file"][0]
+
+    @property
+    def rescale_file(self) -> str:
+        """str: The rescale file of the simulation."""
+        return self.dictionary["rescale_file"][0]
 
     @property
     def file_prefix(self) -> str:

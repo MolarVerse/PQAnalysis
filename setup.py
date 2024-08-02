@@ -10,7 +10,7 @@ module = cythonize(
     Extension(
         'PQAnalysis.io.traj_file.process_lines',
         sources=['PQAnalysis/io/traj_file/process_lines.pyx'],
-        include_dirs=[np.get_include()]
+        include_dirs=[np.get_include(), "include/c++/"]
     )
 )
 
