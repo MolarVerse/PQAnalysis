@@ -680,6 +680,17 @@ class AtomicSystem(
             topology=self.topology[keys]
         )
 
+    def __len__(self) -> int:
+        """
+        Returns the number of atoms in the AtomicSystem.
+
+        Returns
+        -------
+        int
+            The number of atoms in the AtomicSystem.
+        """
+        return self.n_atoms
+
     def __str__(self) -> str:
         """
         Returns the string representation of the AtomicSystem.
