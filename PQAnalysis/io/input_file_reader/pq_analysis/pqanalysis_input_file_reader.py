@@ -14,10 +14,11 @@ from PQAnalysis import __package_name__
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
+from ._mode_mixin import _ModeMixin
+from ._bulk_modulus_mixin import _BulkModulusMixin
 
 
-
-class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
+class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin, _ModeMixin, _BulkModulusMixin):
 
     """
     A class to read the input file for the PQAnalysis. 
@@ -56,6 +57,13 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
     no_intra_molecular_key = "no_intra_molecular"; known_keys.append(no_intra_molecular_key) # pylint: disable=multiple-statements
     moldescriptor_file_key = "moldescriptor_file"; known_keys.append(moldescriptor_file_key) # pylint: disable=multiple-statements
     restart_file_key = "restart_file"; known_keys.append(restart_file_key) # pylint: disable=multiple-statements
+    energy_files_key = "energy_files"; known_keys.append(energy_files_key) # pylint: disable=multiple-statements
+    energy_perturbation_files_key = "energy_perturbation_files"; known_keys.append(energy_perturbation_files_key) # pylint: disable=multiple-statements
+    volumes_perturbation_key = "volumes_perturbation"; known_keys.append(volumes_perturbation_key) # pylint: disable=multiple-statements
+    volume_equilibrium_key = "volume_equilibrium"; known_keys.append(volume_equilibrium_key) # pylint: disable=multiple-statements
+    info_file_key = "info_file"; known_keys.append(info_file_key) # pylint: disable=multiple-statements
+    mode_key = "mode"; known_keys.append(mode_key) # pylint: disable=multiple-statements
+
     #fmt: on
 
     def __init__(self, filename: str) -> None:
@@ -101,8 +109,8 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         if not all(key in self.dictionary.keys() for key in required_keys):
             self.logger.error(
                 (
-                "Not all required keys were set in "
-                f"the input file! The required keys are: {required_keys}."
+                    "Not all required keys were set in "
+                    f"the input file! The required keys are: {required_keys}."
                 ),
                 exception=InputFileError
             )

@@ -1,5 +1,6 @@
 dist/
 build/
+testing/
 **/PQAnalysis.egg-info/
 **/__pycache*
 

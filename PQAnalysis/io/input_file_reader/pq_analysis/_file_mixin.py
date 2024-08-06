@@ -8,7 +8,6 @@ from beartype.typing import List
 from ._parse import _parse_files, _parse_string
 
 
-
 class _FileMixin:
 
     """
@@ -19,6 +18,10 @@ class _FileMixin:
         - traj_files
         - out_file
         - log_file
+        - moldescriptor_file
+        - restart_file
+        - energy_files
+        - info_file
     """
 
     @property
@@ -45,3 +48,18 @@ class _FileMixin:
     def restart_file(self) -> str | None:
         """str | None: The restart file of the simulation."""
         return _parse_string(self.dictionary, self.restart_file_key)
+
+    @property
+    def energy_files(self) -> List[str] | None:
+        """List[str] | None: The energy files of the simulation."""
+        return _parse_files(self.dictionary, self.energy_files_key)
+
+    @property
+    def energy_perturbation_files(self) -> List[str] | None:
+        """List[str] | None: The energy perturbation files of the simulation."""
+        return _parse_files(self.dictionary, self.energy_perturbation_files_key)
+
+    @property
+    def info_file(self) -> str | None:
+        """str | None: The info file of the simulation."""
+        return _parse_string(self.dictionary, self.info_file_key)

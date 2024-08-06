@@ -7,13 +7,20 @@ traj2box
 .. currentmodule:: PQAnalysis.cli.traj2box
 
 .. automodule:: PQAnalysis.cli.traj2box
-    :members: code_base_url, main
+    :members: Traj2BoxCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        Traj2BoxCLI
 
     Functions:
 

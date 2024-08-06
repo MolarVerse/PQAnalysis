@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.exceptions
 
 .. automodule:: PQAnalysis.exceptions
-    :members: BaseEnumFormatError, PQException, PQWarning
+    :members: BaseEnumFormatError, PQException, PQFileNotFoundError, PQIndexError, PQKeyError, PQNotImplementedError, PQTypeError, PQValueError, PQWarning
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -22,6 +22,12 @@ exceptions
 
         BaseEnumFormatError
         PQException
+        PQFileNotFoundError
+        PQIndexError
+        PQKeyError
+        PQNotImplementedError
+        PQTypeError
+        PQValueError
         PQWarning
 
 

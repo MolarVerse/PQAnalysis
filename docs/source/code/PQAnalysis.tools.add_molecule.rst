@@ -7,7 +7,7 @@ add_molecule
 .. currentmodule:: PQAnalysis.tools.add_molecule
 
 .. automodule:: PQAnalysis.tools.add_molecule
-    :members: AddMolecule, add_molecule, check_topology_args
+    :members: AddMolecule, add_molecule
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -28,7 +28,6 @@ add_molecule
         :nosignatures:
 
         add_molecule
-        check_topology_args
 
 
 

@@ -15,6 +15,7 @@ analysis
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.analysis.bulk_modulus
        PQAnalysis.analysis.rdf
 
 

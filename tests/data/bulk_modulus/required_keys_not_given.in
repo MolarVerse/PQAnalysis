@@ -1,0 +1,12 @@
+
+
+volumes_perturbation = [17833.352806364625,17869.055214385375]
+
+volume_equilibrium = 17851.204010375
+
+mode = simple
+
+info_file = MOF5-md-01.info
+
+out_file = bulk_modulus.out 
+log_file = bulk_modulus.log

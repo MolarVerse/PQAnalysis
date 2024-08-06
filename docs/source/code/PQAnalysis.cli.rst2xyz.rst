@@ -7,13 +7,20 @@ rst2xyz
 .. currentmodule:: PQAnalysis.cli.rst2xyz
 
 .. automodule:: PQAnalysis.cli.rst2xyz
-    :members: code_base_url, main
+    :members: Rst2XYZCLI, code_base_url, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        Rst2XYZCLI
 
     Functions:
 
