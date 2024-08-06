@@ -11,8 +11,7 @@ module = cythonize(
         'PQAnalysis.io.traj_file.process_lines',
         sources=['PQAnalysis/io/traj_file/process_lines.pyx'],
         include_dirs=[np.get_include()]
-    ),
-    compiler_directives={'language_level': 3}
+    )
 )
 
 setup(
