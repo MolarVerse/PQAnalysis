@@ -356,6 +356,20 @@ class TestAtomicSystem:
             system
         )
 
+    def test__len__(self):
+        system = AtomicSystem()
+        assert len(system) == 0
+
+        system = AtomicSystem(pos=np.array([[0, 0, 0], [1, 1, 1]]))
+        assert len(system) == 2
+
+        system = AtomicSystem(
+            pos=np.array([[0, 0, 0], [1, 1, 1]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(0.75, 0.75, 0.75)
+        )
+        assert len(system) == 2
+
     def test__str__(self):
         """
         Test the __str__ method of the AtomicSystem class.
