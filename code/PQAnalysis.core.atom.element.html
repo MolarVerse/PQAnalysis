@@ -290,7 +290,7 @@ symbol, atomic number and mass are set to None, by default None</p>
 <dt class="sig sig-object py" id="PQAnalysis.core.atom.element.Elements">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Elements</span></span><a class="headerlink" href="#PQAnalysis.core.atom.element.Elements" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a list of elements</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, Is[lambda list: all((isinstance(element, Element) for element in list))]]</p>
 </dd></dl>
 
 </section>
