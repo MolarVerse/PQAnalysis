@@ -233,7 +233,7 @@ class Cell(_StandardPropertiesMixin):
         gamma = self.gamma
 
         if self != Cell():
-            return f"Cell({x=}, {y=}, {z=}, {alpha=}, {beta=}, {gamma=})"
+            return f"Cell(x={x}, y={y}, z={z}, alpha={alpha}, beta={beta}, gamma={gamma})"
 
         return "Cell()"
 

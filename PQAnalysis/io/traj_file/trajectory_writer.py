@@ -157,6 +157,10 @@ class TrajectoryWriter(BaseWriter):
             The cell of the frame. Default is Cell().
         """
 
+        # If the format is QMCFC, an additional atom is added to the count.
+        if self.format == MDEngineFormat.QMCFC:
+            n_atoms += 1
+
         if cell != Cell():
             print(
                 (
