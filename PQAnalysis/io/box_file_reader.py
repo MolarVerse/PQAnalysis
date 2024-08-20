@@ -7,7 +7,7 @@ import logging
 import numpy as np
 
 
-from PQAnalysis.physical_data.box import Box
+from PQAnalysis.core.cell import Cell, Cells
 from PQAnalysis.utils import instance_function_count_decorator
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -29,7 +29,6 @@ class BoxFileReader(BaseReader):
             self,
             filename: str | None = None,
             trajectory: Trajectory | None = None,
-            unit: str | None = None,
             engine_format: MDEngineFormat | str = MDEngineFormat.PQ
     ):
         """
@@ -47,18 +46,12 @@ class BoxFileReader(BaseReader):
             The file to read the lattice parameter data from.
         trajectory : object, optional
             The trajectory data to read the lattice parameter data from.
-        unit : str, optional
-            The unit of the lattice parameters.
         engine_format : object or str, optional
         """
 
         self.engine_format = engine_format
 
         if engine_format is MDEngineFormat.PQ and filename is not None:
-            super().__init__(filename)
-            self.trajectory = None
-
-        elif engine_format is not MDEngineFormat.PQ and filename is not None:
             super().__init__(filename)
             self.trajectory = None
 
@@ -69,8 +62,7 @@ class BoxFileReader(BaseReader):
         else:
             raise PQFileNotFoundError(
                 "Either a filename or a trajectory must be provided depending on the engine format.")
-        if unit is not None:
-            self.unit = unit
+
 
     def read(self):
         """
@@ -97,24 +89,14 @@ class BoxFileReader(BaseReader):
             The lattice parameter data.
         """
         with open(self.filename, 'r', encoding='utf-8') as file:
-            a = []
-            b = []
-            c = []
-            alpha = []
-            beta = []
-            gamma = []
-
+            cells = []
             for line in file:
                 if line.startswith("#"):
                     continue
                 line = line.split()
-                a.append(float(line[1]))
-                b.append(float(line[2]))
-                c.append(float(line[3]))
-                alpha.append(float(line[4]))
-                beta.append(float(line[5]))
-                gamma.append(float(line[6]))
-            return Box(np.array(a), np.array(b), np.array(c), np.array(alpha), np.array(beta), np.array(gamma), self.unit)
+                cell = Cell(*line)
+                cells.append(cell)
+            return Cells(cells)
 
     def _read_from_trajectory(self):
         """
@@ -127,23 +109,12 @@ class BoxFileReader(BaseReader):
         """
         self.__check_pbc__(self.trajectory)
 
-        a = []
-        b = []
-        c = []
-        alpha = []
-        beta = []
-        gamma = []
+        cells = []
 
         for i, frame in enumerate(self.trajectory):
             cell = frame.cell
-            a.append(cell.a)
-            b.append(cell.b)
-            c.append(cell.c)
-            alpha.append(cell.alpha)
-            beta.append(cell.beta)
-            gamma.append(cell.gamma)
-
-        return Box(np.array(a), np.array(b), np.array(c), np.array(alpha), np.array(beta), np.array(gamma), self.unit)
+            cells.append(cell)
+        return Cells(cells)
 
     def __check_pbc__(self, traj: Trajectory) -> None:
         """
