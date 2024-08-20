@@ -14,6 +14,7 @@ from PQAnalysis.io.formats import FileWritingMode
 from .thermal_expansion import ThermalExpansion
 
 
+
 class ThermalExpansionDataWriter(BaseWriter):
 
     """
@@ -24,9 +25,8 @@ class ThermalExpansionDataWriter(BaseWriter):
 
     @runtime_type_checking
     def __init__(
-            self,
-            filename: str,
-            mode: str | FileWritingMode = "w") -> None:
+        self, filename: str, mode: str | FileWritingMode = "w"
+    ) -> None:
         """
         Parameters
         ----------
@@ -50,7 +50,6 @@ class ThermalExpansionDataWriter(BaseWriter):
         boxes_avg_data: Np2DNumberArray,
         boxes_std_data: Np2DNumberArray,
         thermal_expansion_data: Np1DNumberArray,
-
     ):
         """
         Writes the data to the file.
@@ -87,11 +86,12 @@ class ThermalExpansionDataWriter(BaseWriter):
                 f"{boxes_avg_data[1][i]}       {boxes_std_data[1][i]}       "
                 f"{boxes_avg_data[2][i]}       {boxes_std_data[2][i]}       "
                 f"{boxes_avg_data[3][i]}       {boxes_std_data[3][i]}       "
-                f"{thermal_expansion_data_mega[0]}       {
-                    thermal_expansion_data_mega[1]}       "
-                f"{thermal_expansion_data_mega[2]}       {
-                    thermal_expansion_data_mega[3]}", file=self.file)
+                f"{thermal_expansion_data_mega[0]}       {thermal_expansion_data_mega[1]}       "
+                f"{thermal_expansion_data_mega[2]}       {thermal_expansion_data_mega[3]}",
+                file=self.file
+            )
         super().close()
+
 
 
 class ThermalExpansionLogWriter(BaseWriter):
@@ -104,9 +104,8 @@ class ThermalExpansionLogWriter(BaseWriter):
 
     @runtime_type_checking
     def __init__(
-            self,
-            filename: str,
-            mode: str | FileWritingMode = "w") -> None:
+        self, filename: str, mode: str | FileWritingMode = "w"
+    ) -> None:
         """
         Parameters
         ----------
@@ -148,15 +147,22 @@ class ThermalExpansionLogWriter(BaseWriter):
 
         print("Thermal Expansion Analysis", file=self.file)
 
-        print(f"    Number of temperature points: {
-              len(thermal_expansion.temperature_points)}", file=self.file)
-        print(f"    Number of box files: {
-            len(thermal_expansion.boxes)}", file=self.file)
-        print(f"    Temperature points: {
-            thermal_expansion.temperature_points}", file=self.file)
-        print(f"    Temperature step size: {
-            thermal_expansion.temperature_step_size}", file=self.file)
-
+        print(
+            f"    Number of temperature points: {len(thermal_expansion.temperature_points)}",
+            file=self.file
+        )
+        print(
+            f"    Number of box files: {len(thermal_expansion.boxes)}",
+            file=self.file
+        )
+        print(
+            f"    Temperature points: {thermal_expansion.temperature_points}",
+            file=self.file
+        )
+        print(
+            f"    Temperature step size: {thermal_expansion.temperature_step_size}",
+            file=self.file
+        )
 
         print(file=self.file)
 
@@ -182,81 +188,78 @@ class ThermalExpansionLogWriter(BaseWriter):
         angstrom = '\u212B'.encode('utf-8')
         for i, box in enumerate(thermal_expansion.boxes_avg):
             print(
-                f"    a : {box}{
-                    angstrom}+/- {thermal_expansion.boxes_std[i,0]}{angstrom} at {thermal_expansion.temperature_points[i]} K",
+                (
+                    f"    a : {box}{angstrom} +/- "
+                    f"{thermal_expansion.boxes_std[i,0]}{angstrom} at "
+                    f"{thermal_expansion.temperature_points[i]} K"
+                ),
                 file=self.file
             )
             print(
-                f"    b: {thermal_expansion.boxes_avg[i,1]}{angstrom}+/- {thermal_expansion.boxes_std[i,1]}{angstrom} at {thermal_expansion.temperature_points[i]} K",
+                (
+                    f"    b: {thermal_expansion.boxes_avg[i,1]}{angstrom} +/- "
+                    f"{thermal_expansion.boxes_std[i,1]}{angstrom} at "
+                    f"{thermal_expansion.temperature_points[i]} K"
+                ),
                 file=self.file
             )
             print(
-                f"    c: {thermal_expansion.boxes_avg[i,2]}{angstrom}+/- {thermal_expansion.boxes_std[i,2]}{angstrom} at {thermal_expansion.temperature_points[i]} K",
-                file=self.file
-            )   
-
-            print(
-                f"    Volume: {thermal_expansion.boxes_avg[i,3]}{angstrom}³ +/- {thermal_expansion.boxes_std[i,3]}{angstrom}³ at {thermal_expansion.temperature_points[i]} K",
+                (
+                    f"    c: {thermal_expansion.boxes_avg[i,2]}{angstrom} +/- "
+                    f"{thermal_expansion.boxes_std[i,2]}{angstrom} at "
+                    f"{thermal_expansion.temperature_points[i]} K"
+                ),
                 file=self.file
             )
-
-
+            print(
+                (
+                    f"    Volume: {thermal_expansion.boxes_avg[i,3]}{angstrom}³ +/- "
+                    f"{thermal_expansion.boxes_std[i,3]}{angstrom}³ at "
+                    f"{thermal_expansion.temperature_points[i]} K"
+                ),
+                file=self.file
+            )
         print(
-            f"    Linear thermal expansion a: {
-                thermal_expansion.thermal_expansions[0]} 1/K",
+            f"    Linear thermal expansion a: {thermal_expansion.thermal_expansions[0]} 1/K",
             file=self.file
         )
         print(
-            f"    Linear thermal expansion b: {
-                thermal_expansion.thermal_expansions[1]} 1/K",
+            f"    Linear thermal expansion b: {thermal_expansion.thermal_expansions[1]} 1/K",
             file=self.file
         )
         print(
-            f"    Linear thermal expansion c: {
-                thermal_expansion.thermal_expansions[2]} 1/K",
+            f"    Linear thermal expansion c: {thermal_expansion.thermal_expansions[2]} 1/K",
             file=self.file
         )
         print(
-            f"    Volumetric expansion: {
-                thermal_expansion.thermal_expansions[3]} 1/K",
+            f"    Volumetric expansion: {thermal_expansion.thermal_expansions[3]} 1/K",
             file=self.file
         )
 
         print(file=self.file)
 
-        print(
-            "    Linear thermal expansion a in M/K: ",
-            file=self.file
-        )
+        print("    Linear thermal expansion a in M/K: ", file=self.file)
         print(
             f"    {thermal_expansion.thermal_expansions[0] / 1e-6} M/K",
             file=self.file
         )
-        print(
-            "    Linear thermal expansion b in M/K: ", file=self.file
-        )
+        print("    Linear thermal expansion b in M/K: ", file=self.file)
         print(
             f"    {thermal_expansion.thermal_expansions[1] / 1e-6} M/K",
             file=self.file
         )
-        print(
-            "    Linear thermal expansion c in M/K ", file=self.file
-        )
+        print("    Linear thermal expansion c in M/K ", file=self.file)
         print(
             f"    {thermal_expansion.thermal_expansions[2] / 1e-6} M/K",
             file=self.file
         )
 
-        print(
-            "    Volumetric thermal expansion in M/K: ",
-            file=self.file
-        )
+        print("    Volumetric thermal expansion in M/K: ", file=self.file)
         print(
             f"    {thermal_expansion.thermal_expansions[3] / 1e-6} M/K",
             file=self.file
         )
 
-        self.file.write(f"Elapsed time: {
-            thermal_expansion.elapsed_time} s\n")
+        self.file.write(f"Elapsed time: {thermal_expansion.elapsed_time} s\n")
 
         super().close()

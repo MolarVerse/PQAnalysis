@@ -16,11 +16,13 @@ from .thermal_expansion_output_file_writer import ThermalExpansionDataWriter
 from .thermal_expansion_output_file_writer import ThermalExpansionLogWriter
 
 
+
 @runtime_type_checking
 def thermal_expansion(
-        input_file: str,
-        md_format: MDEngineFormat | str = MDEngineFormat.PQ,
-        mode: FileWritingMode | str = "w"):
+    input_file: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    mode: FileWritingMode | str = "w"
+):
     """
     Calculates the thermal expansion coefficient using a given input file.
 
@@ -55,37 +57,28 @@ def thermal_expansion(
     input_reader = ThermalExpansionInputFileReader(input_file)
     input_reader.read()
 
-    if input_reader.unit is None:
-        unit = "Angstrom"
-    else:
-        unit = input_reader.unit
-
     temperature_points = np.array(input_reader.temperature_points)
 
     box_data = []
     for i, box_file in enumerate(input_reader.box_files):
-        print(f"Reading box file: {
-              box_file} at temperature: {temperature_points[i]} K")
-        box_reader = BoxFileReader(
-            filename=box_file,
-            engine_format=md_format,
-            unit=unit
+        print(
+            f"Reading box file: {box_file} at temperature: {temperature_points[i]} K"
         )
+        box_reader = BoxFileReader(filename=box_file, engine_format=md_format)
         box = box_reader.read()
         box_data.append(box)
 
     _thermal_expansion = ThermalExpansion(
-        temperature_points=temperature_points,
-        boxes=box_data
+        temperature_points=temperature_points, boxes=box_data
     )
 
     data_writer = ThermalExpansionDataWriter(
-        filename=input_reader.out_file_key,
-        mode=mode
+        filename=input_reader.out_file_key, mode=mode
     )
 
     log_writer = ThermalExpansionLogWriter(
-        filename=input_reader.log_file, mode=mode)
+        filename=input_reader.log_file, mode=mode
+    )
 
     log_writer.write_before_run(_thermal_expansion)
 

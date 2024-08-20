@@ -6,6 +6,7 @@ the :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalE
 from ...exceptions import PQException, PQWarning
 
 
+
 class ThermalExpansionError(PQException):
 
     """
@@ -22,6 +23,7 @@ class ThermalExpansionError(PQException):
         """
         self.message = message
         super().__init__(self.message)
+
 
 
 class ThermalExpansionWarning(PQWarning):

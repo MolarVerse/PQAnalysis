@@ -2,16 +2,8 @@
 A module to read lattice parameter data from a file or from trajectory data.
 """
 
-
-import logging
-import numpy as np
-
-
 from PQAnalysis.core.cell import Cell, Cells
-from PQAnalysis.utils import instance_function_count_decorator
-from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis import __package_name__
-from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
+
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.exceptions import PQFileNotFoundError
@@ -20,25 +12,27 @@ from .exceptions import BoxReaderError
 from .base import BaseReader
 
 
+
 class BoxFileReader(BaseReader):
+
     """
     A class to read lattice parameter data from a file or from trajectory data.
     """
 
     def __init__(
-            self,
-            filename: str | None = None,
-            trajectory: Trajectory | None = None,
-            engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+        self,
+        filename: str | None = None,
+        trajectory: Trajectory | None = None,
+        engine_format: MDEngineFormat | str = MDEngineFormat.PQ
     ):
         """
         Initialize the BoxReader object. 
         Either a filename or a trajectory must be provided
         depending which engine was used.
-        The lattice parameter data are stored in a box object.
+        The lattice parameter data are stored in a Cells object.
 
-        For more information about the box object, see
-        :py:class:`PQAnalysis.physical_data.box.Box`.
+        For more information about the cell object, see
+        :py:class:`PQAnalysis.core.cell`.
 
         Parameters
         ----------
@@ -61,8 +55,11 @@ class BoxFileReader(BaseReader):
 
         else:
             raise PQFileNotFoundError(
-                "Either a filename or a trajectory must be provided depending on the engine format.")
-
+                (
+                    "Either a filename or a trajectory must be "
+                    "provided depending on the engine format."
+                )
+            )
 
     def read(self):
         """
@@ -76,8 +73,7 @@ class BoxFileReader(BaseReader):
 
         if self.filename is not None:
             return self._read_from_file()
-        else:
-            return self._read_from_trajectory()
+        return self._read_from_trajectory()
 
     def _read_from_file(self):
         """
@@ -85,18 +81,11 @@ class BoxFileReader(BaseReader):
 
         Returns
         -------
-        Box
+        Cells
             The lattice parameter data.
         """
         with open(self.filename, 'r', encoding='utf-8') as file:
-            cells = []
-            for line in file:
-                if line.startswith("#"):
-                    continue
-                line = line.split()
-                cell = Cell(*line)
-                cells.append(cell)
-            return Cells(cells)
+            return [Cell(line) for line in file if not line.startswith("#")]
 
     def _read_from_trajectory(self):
         """
@@ -104,17 +93,12 @@ class BoxFileReader(BaseReader):
 
         Returns
         -------
-        Box
+        Cells
             The lattice parameter data.
         """
         self.__check_pbc__(self.trajectory)
 
-        cells = []
-
-        for i, frame in enumerate(self.trajectory):
-            cell = frame.cell
-            cells.append(cell)
-        return Cells(cells)
+        return [frame.cell for frame in self.trajectory]
 
     def __check_pbc__(self, traj: Trajectory) -> None:
         """

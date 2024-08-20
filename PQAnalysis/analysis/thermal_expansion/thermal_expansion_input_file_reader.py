@@ -2,12 +2,12 @@
 A module to read input files to setup the 
 :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion` class.
 """
-import logging
 
 # local imports
-from PQAnalysis.utils.custom_logging import setup_logger
+
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
 from PQAnalysis.type_checking import runtime_type_checking
+
 
 
 class ThermalExpansionInputFileReader(Reader):
@@ -60,6 +60,7 @@ class ThermalExpansionInputFileReader(Reader):
         super().check_known_keys(self.required_keys + self.optional_keys)
 
 
+
 input_keys_documentation = f"""
 
 For the linear or volumetric thermal expansion coefficient analysis the following keys are required:
@@ -80,7 +81,7 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
 
         and corroponds to a temperature point.
     * - {Reader.out_file_key}
-        - The output file to write Box dimension
+        - The output file to write cell dimension
         averages and standard deviations, linear and volumetric thermal expansion coefficients to.
 
 .. list-table:: Optional keys
@@ -88,8 +89,6 @@ For the linear or volumetric thermal expansion coefficient analysis the followin
 
     * - Key
         - Value
-    * - {Reader.unit_key}
-        - The unit of the box dimensions.
     * - {Reader.log_file_key}
         - The log file to write the log information to.
 Note

@@ -8,7 +8,7 @@ from PQAnalysis.analysis.thermal_expansion.exceptions import ThermalExpansionErr
 from PQAnalysis.analysis import ThermalExpansion
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.exceptions import PQTypeError
-from PQAnalysis.physical_data.box import Box
+from PQAnalysis.core.cell import Cells, Cell
 
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
@@ -19,7 +19,8 @@ from ...conftest import assert_logging_with_exception
 class TestThermalExpansion:
 
     def test__init__type_checking(self, caplog):
-        box1 = [Box(), Box(), Box(), Box(), Box()]
+        cells = Cells(Cell())
+        box1 = [cells, cells, cells, cells, cells]
         temp1 = np.linspace(248.15, 348.15, 25)
         assert_logging_with_exception(
             caplog=caplog,
@@ -42,7 +43,7 @@ class TestThermalExpansion:
             message_to_test=get_type_error_message(
                 "boxes",
                 1.0,
-                List[Box] | None
+                List[Cells] | None
             ),
             exception=PQTypeError,
             function=ThermalExpansion,
@@ -58,8 +59,11 @@ class TestThermalExpansion:
         alpha = np.ones(1000)*90
         beta = np.ones(1000)*90
         gamma = np.ones(1000)*90
-        box = Box(a, b, c, alpha, beta, gamma)
-        box1 = [box, box, box, box, box]
+        cells = []
+        for a, b, c, alpha, beta, gamma in zip(a, b, c, alpha, beta, gamma):
+            cell = Cell(a, b, c, alpha, beta, gamma)
+            cells.append(cell)
+        box1 = Cells(cells)
 
         assert_logging_with_exception(
             caplog=caplog,
@@ -68,11 +72,11 @@ class TestThermalExpansion:
             exception=ThermalExpansionError,
             function=ThermalExpansion,
             message_to_test="Temperature points must be provided",
-            boxes=box1,
+            boxes=[box1],
             temperature_points=None,
         )
 
-        box_not_same_length = [box, box, box, box]
+        box_not_same_length = [box1, box1, box1, box1]
         temperature_points = np.arange(248.15, 373.15, 25)
         print(temperature_points)
         temperature_points_not_same_step = np.array(
@@ -86,7 +90,7 @@ class TestThermalExpansion:
             logging_level="ERROR",
             exception=ThermalExpansionError,
             function=ThermalExpansion,
-            message_to_test="Box data must be provided",
+            message_to_test="Cell data must be provided",
             boxes=None,
             temperature_points=temperature_points
         )
@@ -139,11 +143,16 @@ class TestThermalExpansion:
         alpha = np.ones(1000)*90
         beta = np.ones(1000)*90
         gamma = np.ones(1000)*90
-        box = Box(a, b, c, alpha, beta, gamma)
+        cells = []
+        for a, b, c, alpha, beta, gamma in zip(a, b, c, alpha, beta, gamma):
+            cell = Cell(a, b, c, alpha, beta, gamma)
+            cells.append(cell)
+        box1 = Cells(cells)
+
 
         temperature_points = np.arange(248.15, 373.15, 25)
         thermal_expansion = ThermalExpansion(
-            temperature_points=temperature_points, boxes=[box, box, box, box, box])
+            temperature_points=temperature_points, boxes=[box1, box1, box1, box1, box1])
 
         assert np.allclose(
             thermal_expansion.temperature_step_size, 25, rtol=1e-4)
@@ -160,11 +169,16 @@ class TestThermalExpansion:
         alpha = np.ones(1000)*90
         beta = np.ones(1000)*90
         gamma = np.ones(1000)*90
-        box = Box(a, b, c, alpha, beta, gamma)
+        cells = []
+        for a, b, c, alpha, beta, gamma in zip(a, b, c, alpha, beta, gamma):
+            cell = Cell(a, b, c, alpha, beta, gamma)
+            cells.append(cell)
+        box1 = Cells(cells)
+
 
         temperature_points = np.arange(248.15, 373.15, 25)
         thermal_expansion = ThermalExpansion(
-            temperature_points=temperature_points, boxes=[box, box, box, box, box])
+            temperature_points=temperature_points, boxes=[box1, box1, box1, box1, box1])
 
         assert np.all(thermal_expansion._temperature_points ==
                       temperature_points)
@@ -177,13 +191,19 @@ class TestThermalExpansion:
         alpha = np.ones(1000)*90
         beta = np.ones(1000)*90
         gamma = np.ones(1000)*90
-        box = Box(a, b, c, alpha, beta, gamma)
+        cells = []
+        for a, b, c, alpha, beta, gamma in zip(a, b, c, alpha, beta, gamma):
+            cell = Cell(a, b, c, alpha, beta, gamma)
+            cells.append(cell)
+        box1 = Cells(cells)
+
+
 
         temperature_points = np.arange(248.15, 373.15, 25)
         thermal_expansion = ThermalExpansion(
-            temperature_points=temperature_points, boxes=[box, box, box, box, box])
+            temperature_points=temperature_points, boxes=[box1, box1, box1, box1, box1])
 
-        assert np.all(thermal_expansion.boxes == [box, box, box, box, box])
+        assert np.all(thermal_expansion.boxes == [box1, box1, box1, box1, box1])
 
     def test__initialize_run(self):
         np.random.seed(0)
@@ -193,11 +213,30 @@ class TestThermalExpansion:
         alpha = np.ones(1000)*90
         beta = np.ones(1000)*90
         gamma = np.ones(1000)*90
-        box1 = Box(a, b, c, alpha, beta, gamma)
-        box2 = Box(a*0.1, b*0.1, c*0.1, alpha, beta, gamma)
-        box3 = Box(a*0.2, b*0.2, c*0.2, alpha, beta, gamma)
-        box4 = Box(a*0.3, b*0.3, c*0.3, alpha, beta, gamma)
-        box5 = Box(a*0.4, b*0.4, c*0.4, alpha, beta, gamma)
+        cells1 = []
+        cells2 = []
+        cells3 = []
+        cells4 = []
+        cells5 = []
+        for a, b, c, alpha, beta, gamma in zip(a, b, c, alpha, beta, gamma):
+            cell1 = Cell(a, b, c, alpha, beta, gamma)
+            cell2 = Cell(a*0.1, b*0.1, c*0.1, alpha, beta, gamma)
+            cell3 = Cell(a*0.2, b*0.2, c*0.2, alpha, beta, gamma)
+            cell4 = Cell(a*0.3, b*0.3, c*0.3, alpha, beta, gamma)
+            cell5 = Cell(a*0.4, b*0.4, c*0.4, alpha, beta, gamma)
+            cells1.append(cell1)
+            cells2.append(cell2)
+            cells3.append(cell3)
+            cells4.append(cell4)
+            cells5.append(cell5)
+
+
+        box1 = Cells(cells1)
+        box2 = Cells(cells2)
+        box3 = Cells(cells3)
+        box4 = Cells(cells4)
+        box5 = Cells(cells5)
+        
         v1 = a*b*c*np.sqrt(1 - np.cos(alpha)**2 - np.cos(beta)**2 -
                            np.cos(gamma)**2 + 2*np.cos(alpha)*np.cos(beta)*np.cos(gamma))
         v2 = a*0.1*b*0.1*c*0.1*np.sqrt(1 - np.cos(alpha)**2 - np.cos(
