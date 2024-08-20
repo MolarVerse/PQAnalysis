@@ -6,6 +6,40 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.2.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.1) - 2024-08-19
+
+<small>[Compare with v1.1.2](https://github.com/MolarVerse/PQAnalysis/compare/v1.1.2...v1.2.1)</small>
+
+### Continuous Integration
+
+- changelog creation for release notes refactored - hopefully working now ([66c8d81](https://github.com/MolarVerse/PQAnalysis/commit/66c8d81326284f56bb691e4ca93715a2a0feb925) by 97gamjak).
+- release.yml refactored to not upload wheels due to cython build ([0f42fe5](https://github.com/MolarVerse/PQAnalysis/commit/0f42fe56a45dc9523b6fa10df7052d036e1f6cdb) by 97gamjak).
+- docs deployment should now work - cleaned up ([b7b318c](https://github.com/MolarVerse/PQAnalysis/commit/b7b318cac046df71d3311ea8fa9277bcea89cf71) by 97gamjak).
+- release deployment should work now with cython ([824fbfe](https://github.com/MolarVerse/PQAnalysis/commit/824fbfe68348496c31b34236cb40b2050a3c1ba1) by 97gamjak).
+- docs deployment fix to wotk now with cython ([a91d409](https://github.com/MolarVerse/PQAnalysis/commit/a91d40920d7e1d7306f8827eaa24e18c57c6edee) by 97gamjak).
+- added optional dependency of setuptools to [test] ([93f92de](https://github.com/MolarVerse/PQAnalysis/commit/93f92dedc45f1966ba81a889541160b13365834f) by Jakob Gamper).
+
+### Bug Fixes
+
+- small bugfix in release.yml ([2283160](https://github.com/MolarVerse/PQAnalysis/commit/22831600199e05e9ebbad3df339b9e52e37d216c) by Jakob Gamper).
+
+### Performance Improvements
+
+- Improved performance of reading a trajectory ([d929e0b](https://github.com/MolarVerse/PQAnalysis/commit/d929e0b4616632c7a1a00dd0bba659262f1a3be1) by Jakob Gamper).
+
+### Tests
+
+- fixed pytest.sh ([64967cc](https://github.com/MolarVerse/PQAnalysis/commit/64967ccb5bd78929ea3b27835bf7d8fe8d4bf771) by Jakob Gamper).
+- pytest.sh updated to work with cython files ([9950f34](https://github.com/MolarVerse/PQAnalysis/commit/9950f34c9164d47349a5d5dd158bbc04506f2e45) by Jakob Gamper).
+
+## [v1.1.2](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.1.2) - 2024-06-07
+
+<small>[Compare with v1.1.1](https://github.com/MolarVerse/PQAnalysis/compare/v1.1.1...v1.1.2)</small>
+
+### Continuous Integration
+
+- updated release.yml ([6d51565](https://github.com/MolarVerse/PQAnalysis/commit/6d515650ddc42a7ad6e91bd364c4540dc39697b3) by Jakob Gamper).
+
 ## [v1.1.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.1.1) - 2024-06-05
 
 <small>[Compare with v1.0.12](https://github.com/MolarVerse/PQAnalysis/compare/v1.0.12...v1.1.1)</small>
