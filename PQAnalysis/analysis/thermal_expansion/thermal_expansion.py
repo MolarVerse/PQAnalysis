@@ -17,7 +17,6 @@ from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
-from PQAnalysis.core.cell import Cells
 
 from PQAnalysis.type_checking import runtime_type_checking
 # local relative imports
@@ -104,8 +103,6 @@ class ThermalExpansion:
             )
 
         if boxes_avg is not None:
-            # reshape the boxes data so that the columns are the temperature points and the rows are the boxes data
-            # if the boxes data is not in the correct format, transpose it
             boxes_avg = np.array(boxes_avg)
             if np.shape(boxes_avg)[0] == 4:
                 self._boxes_avg = boxes_avg

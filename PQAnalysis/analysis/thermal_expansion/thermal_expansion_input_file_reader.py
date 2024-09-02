@@ -26,7 +26,6 @@ class ThermalExpansionInputFileReader(Reader):
 
     #: List[str]: The optional keys of the input file
     optional_keys = required_keys + [
-        Reader.unit_key,
         Reader.log_file_key,
     ]
 
@@ -97,7 +96,6 @@ Optional keys does not mean that they are optional for the analysis.
 They are optional in the input file, but they might be required for
 the analysis. This means that if an optional keyword is specified
 other keywords might be required.
-- :code:`{Reader.unit_key}` is optional for the analysis.
 - :code:`{Reader.log_file_key}` is optional for the analysis.
 (for more information see
 :py:class:`~PQAnalysis.io.input_file_reader.pq_analysis.thermal_expansion.thermal_expansion.ThermalExpansion`).
