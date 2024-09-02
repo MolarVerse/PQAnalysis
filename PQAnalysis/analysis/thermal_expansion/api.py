@@ -9,7 +9,6 @@ from PQAnalysis.io.box_file_reader import BoxFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.io.formats import FileWritingMode
-from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 
 from .thermal_expansion import ThermalExpansion
 from .thermal_expansion_input_file_reader import ThermalExpansionInputFileReader

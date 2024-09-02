@@ -70,9 +70,10 @@ class ThermalExpansionDataWriter(BaseWriter):
 
         thermal_expansion_data_mega = thermal_expansion_data * 1e6
         super().open()
-        angstrom = u'\u212b'
+        angstrom = '\u212b'
+        powert2three = '\u00b3'
         print(
-            f"# K {angstrom} {angstrom} {angstrom} {angstrom}³ 1/M 1/M 1/M 1/M",
+            f"# K {angstrom} {angstrom} {angstrom} {angstrom}{powert2three} 1/M 1/M 1/M 1/M",
             file=self.file
         )
         print(
