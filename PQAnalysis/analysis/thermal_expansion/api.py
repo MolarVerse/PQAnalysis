@@ -71,9 +71,8 @@ def thermal_expansion(
     _thermal_expansion = ThermalExpansion(
         temperature_points=temperature_points, boxes=box_data
     )
-
     data_writer = ThermalExpansionDataWriter(
-        filename=input_reader.out_file_key, mode=mode
+        filename=input_reader.out_file, mode=mode
     )
 
     log_writer = ThermalExpansionLogWriter(
