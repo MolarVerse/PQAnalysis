@@ -85,7 +85,22 @@ class BoxFileReader(BaseReader):
             The lattice parameter data.
         """
         with open(self.filename, 'r', encoding='utf-8') as file:
-            return [Cell(line) for line in file if not line.startswith("#")]
+            cell = []
+            for line in file:
+                if not line.startswith("#"):
+                    line = line.strip().split()
+                    N = int(line[0])
+                    a = float(line[1])
+                    b = float(line[2])
+                    c = float(line[3])
+                    if len(line) > 4:
+                        alpha = float(line[4])
+                        beta = float(line[5])
+                        gamma = float(line[6])
+                        cell.append(Cell(a, b, c, alpha, beta, gamma))
+                    else:
+                        cell.append(Cell(a, b, c))
+                    return cell
 
     def _read_from_trajectory(self):
         """
