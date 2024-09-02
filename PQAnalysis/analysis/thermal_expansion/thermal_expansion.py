@@ -21,7 +21,7 @@ from PQAnalysis.core.cell import Cells
 
 from PQAnalysis.type_checking import runtime_type_checking
 # local relative imports
-from .exceptions import ThermalExpansionError
+from .exceptions import ThermalExpansionError, ThermalExpansionWarning
 
 
 
@@ -102,38 +102,51 @@ class ThermalExpansion:
                 ),
                 exception=ThermalExpansionError
             )
-        if len(self._temperature_points) != len(boxes_avg):
-            self.logger.error(
-                "Temperature points and boxes data must have the same length",
-                exception=ThermalExpansionError
-            )
 
         if boxes_avg is not None:
-            if np.shape(boxes_avg)[1] != 4:
+            # reshape the boxes data so that the columns are the temperature points and the rows are the boxes data
+            # if the boxes data is not in the correct format, transpose it
+            boxes_avg = np.array(boxes_avg)
+            if np.shape(boxes_avg)[0] == 4:
+                self._boxes_avg = boxes_avg
+            elif np.shape(boxes_avg)[1] == 4:
+                self._boxes_avg = boxes_avg.T
+            else:
                 self.logger.error(
                     "The boxes data must have 4 columns",
                     exception=ThermalExpansionError
                 )
-            if np.shape(boxes_avg)[0] == 5:
-                self._boxes_avg = np.array(boxes_avg).T
-            else:
-                self._boxes_avg = np.array(boxes_avg)
+            if np.shape(self._boxes_avg)[1] != len(self._temperature_points):
+                self.logger.error(
+                    "The boxes data must have the same length as the temperature points",
+                    exception=ThermalExpansionError
+                )
         else:
             self.logger.error(
                 "Cell data must be provided", exception=ThermalExpansionError
             )
         if boxes_std is not None:
-            if np.shape(boxes_std)[1] != 4:
+            boxes_std = np.array(boxes_std)
+            if np.shape(boxes_std)[0] == 4:
+                self._boxes_std = boxes_std
+            elif np.shape(boxes_std)[1] == 4:
+                self._boxes_std = boxes_std.T
+            else:
                 self.logger.error(
-                    "The boxes data must have 4 columns",
+                    "The boxes std data must have 4 columns",
                     exception=ThermalExpansionError
                 )
-            if np.shape(boxes_std)[0] == 5:
-                self._boxes_std = np.array(boxes_std).T
-            else:
-                self._boxes_std = np.array(boxes_std)
+            if np.shape(self._boxes_std)[1] != len(self._temperature_points):
+                self.logger.error(
+                    "The boxes std data must have the same length as the temperature points",
+                    exception=ThermalExpansionError
+                )
         else:
             self._boxes_std = np.zeros_like(self._boxes_avg)
+            self.logger.warning(
+                "The standard deviation of the boxes is set to zero because no data is provided",
+                exception=ThermalExpansionWarning
+            )
 
     def _initialize_run(self):
         """
