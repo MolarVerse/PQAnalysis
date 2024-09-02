@@ -74,8 +74,9 @@ class ThermalExpansion:
 
         # check temperature_points have always the same step size
         if temperature_points is not None:
-            self._temperature_step_size = temperature_points[1] - \
-                temperature_points[0]
+            self._temperature_step_size = (
+                temperature_points[1] - temperature_points[0]
+            )
             self._temperature_points = temperature_points
         else:
             self.logger.error(
@@ -127,17 +128,17 @@ class ThermalExpansion:
         in the self._boxes_avg and self._boxes_std attributes.
         """
 
-        a_avg = np.array([np.average(boxes.x) for boxes in self._boxes])
-        b_avg = np.array([np.average(boxes.y) for boxes in self._boxes])
-        c_avg = np.array([np.average(boxes.z) for boxes in self._boxes])
-        a_std = np.array([np.std(boxes.x) for boxes in self._boxes])
-        b_std = np.array([np.std(boxes.y) for boxes in self._boxes])
-        c_std = np.array([np.std(boxes.z) for boxes in self._boxes])
+        a_avg = np.array([np.average(boxes[0].x) for boxes in self._boxes])
+        b_avg = np.array([np.average(boxes[0].y) for boxes in self._boxes])
+        c_avg = np.array([np.average(boxes[0].z) for boxes in self._boxes])
+        a_std = np.array([np.std(boxes[0].x) for boxes in self._boxes])
+        b_std = np.array([np.std(boxes[0].y) for boxes in self._boxes])
+        c_std = np.array([np.std(boxes[0].z) for boxes in self._boxes])
         volume_avg = np.array(
-            [np.average(boxes.volume()) for boxes in self._boxes]
+            [np.average(boxes[0].volume) for boxes in self._boxes]
         )
         volume_std = np.array(
-            [np.std(boxes.volume()) for boxes in self._boxes]
+            [np.std(boxes[0].volume) for boxes in self._boxes]
         )
         middle_point = []
         middle_point.append(a_avg[len(a_avg) // 2])
