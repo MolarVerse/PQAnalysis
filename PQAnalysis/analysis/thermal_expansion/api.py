@@ -9,6 +9,7 @@ from PQAnalysis.io.box_file_reader import BoxFileReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 
 from .thermal_expansion import ThermalExpansion
 from .thermal_expansion_input_file_reader import ThermalExpansionInputFileReader
@@ -59,18 +60,33 @@ def thermal_expansion(
 
     temperature_points = np.array(input_reader.temperature_points)
 
-    box_data = []
+    box_data_avg = []
+    box_data_std = []
     for i, box_file in enumerate(input_reader.box_files):
         print(
             f"Reading box file: {box_file} at temperature: {temperature_points[i]} K"
         )
         box_reader = BoxFileReader(filename=box_file, engine_format=md_format)
-        box = box_reader.read()
-        box_data.append(box)
+        box_list = box_reader.read()
+        a = np.average([box.x for box in box_list])
+        a_std = np.std([box.x for box in box_list])
+        b = np.average([box.y for box in box_list])
+        b_std = np.std([box.y for box in box_list])
+        c = np.average([box.z for box in box_list])
+        c_std = np.std([box.z for box in box_list])
+        volume = np.average([box.volume for box in box_list])
+        volume_std = np.std([box.volume for box in box_list])
+        data_avg = np.array([a, b, c, volume])
+        data_std = np.array([a_std, b_std, c_std, volume_std])
+        box_data_avg.append(data_avg)
+        box_data_std.append(data_std)
 
     _thermal_expansion = ThermalExpansion(
-        temperature_points=temperature_points, boxes=box_data
+        temperature_points=temperature_points,
+        boxes_avg=box_data_avg,
+        boxes_std=box_data_std
     )
+
     data_writer = ThermalExpansionDataWriter(
         filename=input_reader.out_file, mode=mode
     )
@@ -81,12 +97,12 @@ def thermal_expansion(
 
     log_writer.write_before_run(_thermal_expansion)
 
-    boxes_avg_data, boxes_std_data, thermal_expansion_data = _thermal_expansion.run()
+    _thermal_expansion.run()
 
     data_writer.write(
-        temperature_points=temperature_points,
-        boxes_avg_data=boxes_avg_data,
-        boxes_std_data=boxes_std_data,
-        thermal_expansion_data=thermal_expansion_data
+        temperature_points=_thermal_expansion.temperature_points,
+        boxes_avg_data=_thermal_expansion.boxes_avg,
+        boxes_std_data=_thermal_expansion.boxes_std,
+        thermal_expansion_data=_thermal_expansion.thermal_expansions,
     )
     log_writer.write_after_run(_thermal_expansion)

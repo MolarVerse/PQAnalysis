@@ -13,7 +13,7 @@ import numpy as np
 
 # local absolute imports
 # from PQAnalysis.config import with_progress_bar
-from PQAnalysis.types import Np1DNumberArray
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -55,20 +55,21 @@ class ThermalExpansion:
     def __init__(
         self,
         temperature_points: Np1DNumberArray | None = None,
-        boxes: List[Cells] | None = None,
+        boxes_avg: List[Np1DNumberArray] | None = None,
+        boxes_std: List[Np1DNumberArray] | None = None
     ):
         """
         Parameters
         ----------
         temperature_points : Np1DNumberArray
             the temperature points, by default None
-        boxes : List[Cells]
-            the boxes data: a, b, c, alpha, beta, gamma
+        boxes_avg : List[Np1DNumberArray]
+            the average boxes data, by default None
+        boxes_std : List[Np1DNumberArray]
+            the standard deviation of the boxes data, by default None
         """
         # dummy implementation
         self._temperature_step_size = 0
-        self._boxes_avg = np.zeros(4)
-        self._boxes_std = np.zeros(4)
         self._thermal_expansions = np.zeros(4)
         self._middle_points = np.zeros(4)
 
@@ -92,13 +93,6 @@ class ThermalExpansion:
                 "Temperature points must have the same step size",
                 exception=ThermalExpansionError
             )
-
-        if boxes is not None:
-            self._boxes = boxes
-        else:
-            self.logger.error(
-                "Cell data must be provided", exception=ThermalExpansionError
-            )
         if len(self._temperature_points) != 5:
             self.logger.error(
                 (
@@ -108,11 +102,38 @@ class ThermalExpansion:
                 ),
                 exception=ThermalExpansionError
             )
-        if len(self._temperature_points) != len(self._boxes):
+        if len(self._temperature_points) != len(boxes_avg):
             self.logger.error(
                 "Temperature points and boxes data must have the same length",
                 exception=ThermalExpansionError
             )
+
+        if boxes_avg is not None:
+            if np.shape(boxes_avg)[1] != 4:
+                self.logger.error(
+                    "The boxes data must have 4 columns",
+                    exception=ThermalExpansionError
+                )
+            if np.shape(boxes_avg)[0] == 5:
+                self._boxes_avg = np.array(boxes_avg).T
+            else:
+                self._boxes_avg = np.array(boxes_avg)
+        else:
+            self.logger.error(
+                "Cell data must be provided", exception=ThermalExpansionError
+            )
+        if boxes_std is not None:
+            if np.shape(boxes_std)[1] != 4:
+                self.logger.error(
+                    "The boxes data must have 4 columns",
+                    exception=ThermalExpansionError
+                )
+            if np.shape(boxes_std)[0] == 5:
+                self._boxes_std = np.array(boxes_std).T
+            else:
+                self._boxes_std = np.array(boxes_std)
+        else:
+            self._boxes_std = np.zeros_like(self._boxes_avg)
 
     def _initialize_run(self):
         """
@@ -128,28 +149,11 @@ class ThermalExpansion:
         in the self._boxes_avg and self._boxes_std attributes.
         """
 
-        a_avg = np.array([np.average(boxes[0].x) for boxes in self._boxes])
-        b_avg = np.array([np.average(boxes[0].y) for boxes in self._boxes])
-        c_avg = np.array([np.average(boxes[0].z) for boxes in self._boxes])
-        a_std = np.array([np.std(boxes[0].x) for boxes in self._boxes])
-        b_std = np.array([np.std(boxes[0].y) for boxes in self._boxes])
-        c_std = np.array([np.std(boxes[0].z) for boxes in self._boxes])
-        volume_avg = np.array(
-            [np.average(boxes[0].volume) for boxes in self._boxes]
-        )
-        volume_std = np.array(
-            [np.std(boxes[0].volume) for boxes in self._boxes]
-        )
         middle_point = []
-        middle_point.append(a_avg[len(a_avg) // 2])
-        middle_point.append(b_avg[len(b_avg) // 2])
-        middle_point.append(c_avg[len(c_avg) // 2])
-        middle_point.append(volume_avg[len(volume_avg) // 2])
-
+        middle_point.append(
+            self._boxes_avg[:, np.shape(self._boxes_avg)[0] // 2]
+        )
         self._middle_points = np.array(middle_point)
-
-        self._boxes_avg = np.array([a_avg, b_avg, c_avg, volume_avg])
-        self._boxes_std = np.array([a_std, b_std, c_std, volume_std])
 
     def _five_point_stencel(self):
         """
@@ -223,34 +227,24 @@ class ThermalExpansion:
         return self._temperature_step_size
 
     @property
-    def boxes(self):
-        """
-        Returns
-        -------
-        List[Cells]
-            the cell data
-        """
-        return self._boxes
-
-    @property
     def boxes_avg(self):
         """
         Returns
         -------
-        Np1DNumberArray
+        Np2DNumberArray
             the average boxes data
         """
-        return self._boxes_avg
+        return Np2DNumberArray(self._boxes_avg)
 
     @property
     def boxes_std(self):
         """
         Returns
         -------
-        Np1DNumberArray
+        Np2DNumberArray
             the standard deviation of the boxes data
         """
-        return self._boxes_std
+        return Np2DNumberArray(self._boxes_std)
 
     @property
     def thermal_expansions(self):
@@ -260,14 +254,14 @@ class ThermalExpansion:
         Np1DNumberArray
             the thermal expansion coefficients
         """
-        return self._thermal_expansions
+        return Np1DNumberArray(self._thermal_expansions[0])
 
     @property
     def middle_points(self):
         """
         Returns
         -------
-        Np1DNumberArray
+        Np2DNumberArray
             the middle points of the boxes data
         """
-        return self._middle_points
+        return Np2DNumberArray(self._middle_points)

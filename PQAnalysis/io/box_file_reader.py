@@ -1,7 +1,7 @@
 """
 A module to read lattice parameter data from a file or from trajectory data.
 """
-
+import numpy as np
 from PQAnalysis.core.cell import Cell, Cells
 
 from PQAnalysis.traj import Trajectory
@@ -75,7 +75,7 @@ class BoxFileReader(BaseReader):
             return self._read_from_file()
         return self._read_from_trajectory()
 
-    def _read_from_file(self):
+    def _read_from_file(self):  # -> list:
         """
         Read the lattice parameter data from a file.
 
@@ -84,23 +84,44 @@ class BoxFileReader(BaseReader):
         Cells
             The lattice parameter data.
         """
+
         with open(self.filename, 'r', encoding='utf-8') as file:
             cell = []
-            for line in file:
-                if not line.startswith("#"):
-                    line = line.strip().split()
-                    N = int(line[0])
-                    a = float(line[1])
-                    b = float(line[2])
-                    c = float(line[3])
-                    if len(line) > 4:
-                        alpha = float(line[4])
-                        beta = float(line[5])
-                        gamma = float(line[6])
-                        cell.append(Cell(a, b, c, alpha, beta, gamma))
-                    else:
-                        cell.append(Cell(a, b, c))
-                    return cell
+            i = 0
+            while True:
+                line = file.readline()
+                if not line:
+                    print(i, "lines end")
+                    break
+                if line.startswith("#"):
+                    print("i: ", i, "continue")
+                    continue
+                line = [float(l) for l in line.split()]
+                if len(line) == 3:
+                    a, b, c = line
+                    cell.append(Cell(a, b, c))
+                elif len(line) == 4:
+                    N, a, b, c = line
+                    cell.append(Cell(a, b, c))
+                elif len(line) == 7:
+                    N, a, b, c, alpha, beta, gamma = line
+                    cell.append(Cell(a, b, c, alpha, beta, gamma))
+                elif len(line) == 6:
+                    a, b, c, alpha, beta, gamma = line
+                    cell.append(Cell(a, b, c, alpha, beta, gamma))
+                else:
+                    self.logger.error(
+                        (
+                            f"Line {i} in file {self.filename} has "
+                            f"an invalid number of columns: {len(line)}"
+                        ),
+                        exception=BoxReaderError
+                    )
+                i += 1
+                if i == 10:
+                    break
+            print(f"Read {i} lines from file {self.filename}")
+            return cell
 
     def _read_from_trajectory(self):
         """
