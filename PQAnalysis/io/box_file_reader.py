@@ -12,7 +12,6 @@ from .exceptions import BoxReaderError
 from .base import BaseReader
 
 
-
 class BoxFileReader(BaseReader):
 
     """
@@ -91,10 +90,8 @@ class BoxFileReader(BaseReader):
             while True:
                 line = file.readline()
                 if not line:
-                    print(i, "lines end")
                     break
                 if line.startswith("#"):
-                    print("i: ", i, "continue")
                     continue
                 line = [float(l) for l in line.split()]
                 if len(line) == 3:
