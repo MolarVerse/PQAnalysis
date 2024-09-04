@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.physical_data.exceptions
 
 .. automodule:: PQAnalysis.physical_data.exceptions
-    :members: EnergyError
+    :members: BoxError, EnergyError
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,6 +20,7 @@ exceptions
     .. autosummary::
         :nosignatures:
 
+        BoxError
         EnergyError
 
 

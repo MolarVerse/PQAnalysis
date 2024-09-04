@@ -7,7 +7,7 @@ exceptions
 .. currentmodule:: PQAnalysis.core.exceptions
 
 .. automodule:: PQAnalysis.core.exceptions
-    :members: ElementNotFoundError, ResidueError, ResidueWarning
+    :members: AtomError, ElementNotFoundError, ResidueError, ResidueWarning
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -20,6 +20,7 @@ exceptions
     .. autosummary::
         :nosignatures:
 
+        AtomError
         ElementNotFoundError
         ResidueError
         ResidueWarning

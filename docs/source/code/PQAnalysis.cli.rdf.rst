@@ -7,13 +7,20 @@ rdf
 .. currentmodule:: PQAnalysis.cli.rdf
 
 .. automodule:: PQAnalysis.cli.rdf
-    :members: code_base_url, input_keys_documentation, main
+    :members: RDFCLI, code_base_url, input_keys_documentation, main
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
 
     Summary
     -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        RDFCLI
 
     Functions:
 

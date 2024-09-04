@@ -17,7 +17,6 @@ from .base import BaseReader
 from .info_file_reader import InfoFileReader
 
 
-
 class EnergyFileReader(BaseReader):
 
     """

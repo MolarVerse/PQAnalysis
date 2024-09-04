@@ -1,0 +1,237 @@
+"""
+A module containing the classes for writing related to an
+:py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+analysis to a file.
+"""
+
+import numpy as np
+
+# local imports
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
+from PQAnalysis.io import BaseWriter
+from PQAnalysis.utils import __header__
+from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.io.formats import FileWritingMode
+
+from .thermal_expansion import ThermalExpansion
+
+
+
+class ThermalExpansionDataWriter(BaseWriter):
+
+    """
+    Class for writing the data of an
+    :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+    analysis to a file.
+    """
+
+    @runtime_type_checking
+    def __init__(
+        self, filename: str, mode: str | FileWritingMode = "w"
+    ) -> None:
+        """
+        Parameters
+        ----------
+        filename : str
+            the filename to write to
+        mode : str | FileWritingMode, optional
+            The writing mode. Default is "w".
+            The writing mode can be either a string or a FileWritingMode enum value.
+            Possible values are:
+            - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
+            - "a" or FileWritingMode.APPEND: append mode
+            - "o" or FileWritingMode.OVERWRITE: overwrite mode
+        """
+        self.filename = filename
+        super().__init__(filename, mode=mode)
+
+    @runtime_type_checking
+    def write(
+        self,
+        temperature_points: Np1DNumberArray,
+        boxes_avg_data: Np2DNumberArray,
+        boxes_std_data: Np2DNumberArray,
+        thermal_expansion_data: Np1DNumberArray,
+    ):
+        """
+        Writes the data to the file.
+
+        Parameters
+        ----------
+        temperature_points : Np1DNumberArray
+            the temperature points
+        boxes_avg_data : Np1DNNp2DNumberArrayumberArray
+            the average box data output from the Box._initialize_run() method
+        boxes_std_data : Np2DNumberArray
+            the standard deviation box data output from the Box._initialize_run() method
+        thermal_expansion_data : Np1DNumberArray
+            the thermal expansion data output from the Box.run() method
+        """
+
+        thermal_expansion_data_mega = thermal_expansion_data * 1e6
+        super().open()
+        angstrom = '\u212b'
+        powert2three = '\u00b3'
+        print(
+            f"# K {angstrom} {angstrom} {angstrom} {angstrom}{powert2three} 1/M 1/M 1/M 1/M",
+            file=self.file
+        )
+        print(
+            "T a_avg a_std b_avg b_std c_avg c_std V_avg V_std "
+            "thermal_expansion_a thermal_expansion_b "
+            "thermal_expansion_c volumetric_expansion",
+            file=self.file
+        )
+
+        for i, temperature in enumerate(temperature_points):
+            print(
+                f"{temperature:16.16f} "
+                f"{boxes_avg_data[0,i]:16.16f} {boxes_std_data[0,i]:16.16f} "
+                f"{boxes_avg_data[1,i]:16.16f} {boxes_std_data[1,i]:16.16f} "
+                f"{boxes_avg_data[2,i]:16.16f} {boxes_std_data[2,i]:16.16f} "
+                f"{boxes_avg_data[3,i]:16.16f} {boxes_std_data[3,i]:16.16f} "
+                f"{thermal_expansion_data_mega[0]:16.16f} {thermal_expansion_data_mega[1]:16.16f} "
+                f"{thermal_expansion_data_mega[2]:16.16f} {thermal_expansion_data_mega[3]:16.16f}",
+                file=self.file
+            )
+
+        super().close()
+
+
+
+class ThermalExpansionLogWriter(BaseWriter):
+
+    """
+    Class for writing the log of an
+    :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+    analysis to a file.
+    """
+
+    @runtime_type_checking
+    def __init__(
+        self, filename: str, mode: str | FileWritingMode = "w"
+    ) -> None:
+        """
+        Parameters
+        ----------
+        filename : str
+            the filename to write to
+        mode : str | FileWritingMode, optional
+            The writing mode. Default is "w".
+            The writing mode can be either a string or a FileWritingMode enum value.
+            Possible values are:
+            - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
+            - "a" or FileWritingMode.APPEND: append mode
+            - "o" or FileWritingMode.OVERWRITE: overwrite mode
+        """
+        self.filename = filename
+        super().__init__(filename, mode=mode)
+
+    @runtime_type_checking
+    def write_before_run(self, thermal_expansion: ThermalExpansion) -> None:
+        """
+        Writes the log before the
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+        run() method is called.
+
+        This includes the general header of PQAnalysis
+        and the most important setup parameters of the
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+        analysis.
+
+        Parameters
+        ----------
+        thermal_expansion : ThermalExpansion
+            the thermal expansion coefficient object
+        """
+        super().open()
+
+        if self.filename is not None:
+            print(__header__, file=self.file)
+            print(file=self.file)
+
+        print("Thermal Expansion Analysis", file=self.file)
+
+        print(
+            f"    Number of temperature points: {len(thermal_expansion.temperature_points)}",
+            file=self.file
+        )
+        print(
+            f"    Number of box files: {np.shape(thermal_expansion.boxes_avg)[1]}",
+            file=self.file
+        )
+        print(
+            f"    Temperature points: {thermal_expansion.temperature_points}",
+            file=self.file
+        )
+        print(
+            f"    Temperature step size: {thermal_expansion.temperature_step_size}",
+            file=self.file
+        )
+
+        print(file=self.file)
+
+        super().close()
+
+    @runtime_type_checking
+    def write_after_run(self, thermal_expansion: ThermalExpansion) -> None:
+        """
+        Writes the log after the
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+        run() method is called.
+
+        This includes the elapsed time of the
+        :py:class:`~PQAnalysis.analysis.thermal_expansion.thermal_expansion.ThermalExpansion`
+        run() method.
+
+        Parameters
+        ----------
+        thermal_expansion : ThermalExpansion
+            the linear thermal expansion coefficient object
+        """
+        super().open()
+
+        print(
+            f"    Linear thermal expansion a: {thermal_expansion.thermal_expansions[0]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Linear thermal expansion b: {thermal_expansion.thermal_expansions[1]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Linear thermal expansion c: {thermal_expansion.thermal_expansions[2]} 1/K",
+            file=self.file
+        )
+        print(
+            f"    Volumetric expansion: {thermal_expansion.thermal_expansions[3]} 1/K",
+            file=self.file
+        )
+
+        print(file=self.file)
+
+        print("    Linear thermal expansion a in M/K: ", file=self.file)
+        print(
+            f"    {thermal_expansion.thermal_expansions[0] / 1e-6} M/K",
+            file=self.file
+        )
+        print("    Linear thermal expansion b in M/K: ", file=self.file)
+        print(
+            f"    {thermal_expansion.thermal_expansions[1] / 1e-6} M/K",
+            file=self.file
+        )
+        print("    Linear thermal expansion c in M/K ", file=self.file)
+        print(
+            f"    {thermal_expansion.thermal_expansions[2] / 1e-6} M/K",
+            file=self.file
+        )
+
+        print("    Volumetric thermal expansion in M/K: ", file=self.file)
+        print(
+            f"    {thermal_expansion.thermal_expansions[3] / 1e-6} M/K",
+            file=self.file
+        )
+
+        self.file.write(f"Elapsed time: {thermal_expansion.elapsed_time} s\n")
+
+        super().close()

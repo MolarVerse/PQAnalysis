@@ -15,6 +15,7 @@ Input file based tools
 For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
 - :ref:`rdf<cli.rdf>`
+- :ref:`thermal_expansion<cli.thermal_expansion>`
 
 Pure command line tools
 -----------------------
@@ -23,4 +24,5 @@ Pure command line tools
 - :ref:`rst2xyz<cli.rst2xyz>`
 - :ref:`traj2qmcfc<cli.traj2qmcfc>`
 - :ref:`traj2box<cli.traj2box>`
+
 

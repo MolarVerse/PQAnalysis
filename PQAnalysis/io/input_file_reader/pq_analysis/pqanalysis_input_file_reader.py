@@ -14,10 +14,10 @@ from PQAnalysis import __package_name__
 from ._file_mixin import _FileMixin
 from ._selection_mixin import _SelectionMixin
 from ._positions_mixin import _PositionsMixin
+from ._thermal_expansion_mixin import _ThermalExpansionMixin
 
 
-
-class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
+class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin, _ThermalExpansionMixin):
 
     """
     A class to read the input file for the PQAnalysis. 
@@ -56,6 +56,11 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
     no_intra_molecular_key = "no_intra_molecular"; known_keys.append(no_intra_molecular_key) # pylint: disable=multiple-statements
     moldescriptor_file_key = "moldescriptor_file"; known_keys.append(moldescriptor_file_key) # pylint: disable=multiple-statements
     restart_file_key = "restart_file"; known_keys.append(restart_file_key) # pylint: disable=multiple-statements
+    box_files_key = "box_files"; known_keys.append(box_files_key) # pylint: disable=multiple-statements
+    temperature_points_key = "temperature_points"; known_keys.append(temperature_points_key) # pylint: disable=multiple-statements
+    unit_key = "unit"; known_keys.append(unit_key) # pylint: disable=multiple-statements
+
+
     #fmt: on
 
     def __init__(self, filename: str) -> None:
@@ -101,8 +106,8 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         if not all(key in self.dictionary.keys() for key in required_keys):
             self.logger.error(
                 (
-                "Not all required keys were set in "
-                f"the input file! The required keys are: {required_keys}."
+                    "Not all required keys were set in "
+                    f"the input file! The required keys are: {required_keys}."
                 ),
                 exception=InputFileError
             )

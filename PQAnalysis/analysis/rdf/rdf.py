@@ -31,7 +31,6 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RDFError
 
 
-
 class RDF:
 
     """
@@ -286,9 +285,9 @@ class RDF:
         elif all([n_bins, delta_r, r_max]):
             self.logger.error(
                 (
-                "It is not possible to specify all of n_bins, "
-                "delta_r and r_max in the same RDF analysis "
-                "as this would lead to ambiguous results."
+                    "It is not possible to specify all of n_bins, "
+                    "delta_r and r_max in the same RDF analysis "
+                    "as this would lead to ambiguous results."
                 ),
                 exception=RDFError
             )
@@ -359,10 +358,10 @@ class RDF:
                 self.cells) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
                 (
-                "The provided trajectory is not fully periodic or "
-                "in vacuum, meaning that some frames are in vacuum "
-                "and others are periodic. This is not supported by "
-                "the RDF analysis."
+                    "The provided trajectory is not fully periodic or "
+                    "in vacuum, meaning that some frames are in vacuum "
+                    "and others are periodic. This is not supported by "
+                    "the RDF analysis."
                 ),
                 exception=RDFError
             )
@@ -376,10 +375,10 @@ class RDF:
     def run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Runs the RDF analysis.
 
@@ -454,7 +453,7 @@ class RDF:
                     reference_index]
                 self.target_index_combinations.append(
                     np.setdiff1d(self.target_indices,
-                    residue_indices)
+                                 residue_indices)
                 )
 
     def _calculate_bins(self):
@@ -470,8 +469,8 @@ class RDF:
         """
 
         for frame in tqdm(self.frame_generator,
-            total=self.n_frames,
-            disable=not with_progress_bar):
+                          total=self.n_frames,
+                          disable=not with_progress_bar):
             for i, reference_index in enumerate(self.reference_indices):
 
                 if self.no_intra_molecular:
@@ -498,10 +497,10 @@ class RDF:
     def _finalize_run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Finalizes the RDF analysis after running.
 
@@ -704,11 +703,11 @@ class RDF:
         if check_trajectory_pbc(cells) and r_max > cls._infer_r_max(cells):
             cls.logger.warning(
                 (
-                f"The calculated r_max {r_max} is larger "
-                "than the maximum allowed radius according "
-                "to the box vectors of the trajectory "
-                f"{cls._infer_r_max(cells)}. r_max will be "
-                "set to the maximum allowed radius."
+                    f"The calculated r_max {r_max} is larger "
+                    "than the maximum allowed radius according "
+                    "to the box vectors of the trajectory "
+                    f"{cls._infer_r_max(cells)}. r_max will be "
+                    "set to the maximum allowed radius."
                 ),
             )
 
@@ -723,7 +722,7 @@ class RDF:
         r_max: PositiveReal,
         r_min: PositiveReal
     ) -> Tuple[PositiveInt,
-        PositiveReal]:
+               PositiveReal]:
         """
         Calculates the number of bins of the RDF analysis from the provided parameters.
 
@@ -783,10 +782,10 @@ class RDF:
         if not check_trajectory_pbc(cells):
             cls.logger.error(
                 (
-                "To infer r_max of the RDF analysis, "
-                "the trajectory cannot be a vacuum trajectory. "
-                "Please specify r_max manually or use the "
-                "combination n_bins and delta_r."
+                    "To infer r_max of the RDF analysis, "
+                    "the trajectory cannot be a vacuum trajectory. "
+                    "Please specify r_max manually or use the "
+                    "combination n_bins and delta_r."
                 ),
                 exception=RDFError
             )

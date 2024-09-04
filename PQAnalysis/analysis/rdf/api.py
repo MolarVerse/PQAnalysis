@@ -12,7 +12,6 @@ from .rdf_input_file_reader import RDFInputFileReader
 from .rdf_output_file_writer import RDFDataWriter, RDFLogWriter
 
 
-
 @runtime_type_checking
 def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     """

@@ -5,13 +5,18 @@ A module containing different exceptions related to the io subpackage.
 from PQAnalysis.exceptions import PQException, BaseEnumFormatError
 
 
-
 class BoxWriterError(PQException):
 
     """
     Exception raised for errors related to the BoxWriter class
     """
 
+
+class BoxReaderError(PQException):
+
+    """
+    Exception raised for errors related to the BoxReader class
+    """
 
 
 class MoldescriptorReaderError(PQException):
@@ -21,7 +26,6 @@ class MoldescriptorReaderError(PQException):
     """
 
 
-
 class BoxFileFormatError(BaseEnumFormatError):
 
     """
@@ -29,13 +33,11 @@ class BoxFileFormatError(BaseEnumFormatError):
     """
 
 
-
 class FileWritingModeError(BaseEnumFormatError):
 
     """
     Exception raised if the given enum is not valid
     """
-
 
 
 class OutputFileFormatError(BaseEnumFormatError):

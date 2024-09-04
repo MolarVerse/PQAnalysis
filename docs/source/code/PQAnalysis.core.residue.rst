@@ -7,7 +7,7 @@ residue
 .. currentmodule:: PQAnalysis.core.residue
 
 .. automodule:: PQAnalysis.core.residue
-    :members: QMResidue, Residue
+    :members: QMResidue, Residue, Residues
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise

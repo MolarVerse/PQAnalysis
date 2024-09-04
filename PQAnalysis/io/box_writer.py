@@ -15,7 +15,6 @@ from .formats import BoxFileFormat, FileWritingMode
 from .exceptions import BoxWriterError
 
 
-
 class BoxWriter(BaseWriter):
 
     """
@@ -100,9 +99,9 @@ class BoxWriter(BaseWriter):
             print("8", file=self.file)
             print(
                 (
-                f"Box   "
-                f"{cell.x} {cell.y} {cell.z}    "
-                f"{cell.alpha} {cell.beta} {cell.gamma}"
+                    f"Box   "
+                    f"{cell.x} {cell.y} {cell.z}    "
+                    f"{cell.alpha} {cell.beta} {cell.gamma}"
                 ),
                 file=self.file
             )
@@ -148,9 +147,9 @@ class BoxWriter(BaseWriter):
             cell = frame.cell
             print(
                 (
-                f"{counter + i+1} "
-                f"{cell.x} {cell.y} {cell.z} "
-                f"{cell.alpha} {cell.beta} {cell.gamma}"
+                    f"{counter + i+1} "
+                    f"{cell.x} {cell.y} {cell.z} "
+                    f"{cell.alpha} {cell.beta} {cell.gamma}"
                 ),
                 file=self.file
             )

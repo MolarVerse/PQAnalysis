@@ -18,7 +18,6 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import EnergyError
 
 
-
 class Energy():
 
     """
@@ -189,7 +188,7 @@ class Energy():
                     self,
                     value + "_with_unit",
                     (self.data[self.info[attribute]],
-                    self.units[attribute])
+                     self.units[attribute])
                 )
 
     ################################################

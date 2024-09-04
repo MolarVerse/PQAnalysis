@@ -105,3 +105,8 @@ class _StandardPropertiesMixin:
     def inverse_box_matrix(self) -> Np3x3NumberArray:
         """Np3x3NumberArray: The inverse box matrix."""
         return self._inverse_box_matrix
+
+    @property
+    def volume(self) -> Real:
+        """Real: The volume of the box."""
+        return np.linalg.det(self.box_matrix)
