@@ -115,8 +115,6 @@ class BoxFileReader(BaseReader):
                         exception=BoxReaderError
                     )
                 i += 1
-                if i == 10:
-                    break
             print(f"Read {i} lines from file {self.filename}")
             return cell
 

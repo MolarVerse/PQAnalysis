@@ -4,6 +4,7 @@ A module to test the thermal expansion API.
 
 import pytest  # pylint: disable=unused-import
 
+from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.analysis.thermal_expansion.api import thermal_expansion
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.exceptions import PQTypeError
@@ -43,3 +44,8 @@ class TestThermalExpansionAPI:
             input_file="test",
             md_format=1,
         )
+
+    # @pytest.mark.parametrize("input_file", ["tests/analysis/thermal_expansion/test_input_file.txt"])
+
+    # def test_themal_expansion(self, input_file):
+    #     thermal_expansion(input_file=input_file, md_format=MDEngineFormat.PQ)

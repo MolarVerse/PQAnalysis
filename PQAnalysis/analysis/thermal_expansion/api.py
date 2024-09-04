@@ -16,7 +16,6 @@ from .thermal_expansion_output_file_writer import ThermalExpansionDataWriter
 from .thermal_expansion_output_file_writer import ThermalExpansionLogWriter
 
 
-
 @runtime_type_checking
 def thermal_expansion(
     input_file: str,
@@ -51,6 +50,20 @@ def thermal_expansion(
         - "w" or FileWritingMode.WRITE: write mode (default, no overwrite)
         - "a" or FileWritingMode.APPEND: append mode
         - "o" or FileWritingMode.OVERWRITE: overwrite mode
+
+    Raises
+    ------
+    PQFileNotFoundError
+        If the input file is not found.
+    PQTypeError
+        If the input file is not a string or the md_format is not a MDEngineFormat or a string.
+
+    Examples
+    --------
+    >>> from PQAnalysis.analysis.thermal_expansion.api import thermal_expansion
+    >>> thermal_expansion(input_file="input_file.in", md_format=MDEngineFormat.PQ, mode="w")
+    >>> thermal_expansion(input_file="input_file.in", md_format="PQ", mode="w")
+
     """
     md_format = MDEngineFormat(md_format)
 
@@ -63,7 +76,8 @@ def thermal_expansion(
     box_data_std = []
     for i, box_file in enumerate(input_reader.box_files):
         print(
-            f"Reading box file: {box_file} at temperature: {temperature_points[i]} K"
+            f"Reading box file: {box_file} at temperature: {
+                temperature_points[i]} K"
         )
         box_reader = BoxFileReader(filename=box_file, engine_format=md_format)
         box_list = box_reader.read()
