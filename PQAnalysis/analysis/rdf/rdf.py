@@ -31,7 +31,6 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RDFError
 
 
-
 class RDF:
 
     """
@@ -75,8 +74,8 @@ class RDF:
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
         target_species: SelectionCompatible,
-        use_full_atom_info: bool = False,
-        no_intra_molecular: bool = False,
+        use_full_atom_info: bool | None = False ,
+        no_intra_molecular: bool | None = False,
         n_bins: PositiveInt | None = None,
         delta_r: PositiveReal | None = None,
         r_max: PositiveReal | None = None,
@@ -92,10 +91,10 @@ class RDF:
             The reference species of the RDF analysis.
         target_species : SelectionCompatible
             The target species of the RDF analysis.
-        use_full_atom_info : bool, optional
+        use_full_atom_info : bool | None, optional
             Whether to use the full atom information of the trajectory
             or not, by default None (False).
-        no_intra_molecular : bool, optional
+        no_intra_molecular : bool | None, optional
             Whether to exclude intra-molecular distances or not, by default None (False).
         n_bins : PositiveInt | None, optional
             number of bins, by default None
@@ -193,7 +192,7 @@ class RDF:
         ############################################
         # Initialize Trajectory iterator/generator #
         ############################################
-
+        
         self.cells = traj.cells
 
         if isinstance(traj, TrajectoryReader):
@@ -209,6 +208,7 @@ class RDF:
             )
 
         self.first_frame = next(self.frame_generator)
+
         self.topology = traj.topology
 
         self._setup_bins(

@@ -56,7 +56,7 @@ class TrajectoryReader(BaseReader):
             The format is inferred from the file extension.
         md_format : MDEngineFormat | str, optional
             The format of the trajectory. Default is MDEngineFormat.PQ.
-        topology : Topology, optional
+        topology : Topology | None, optional
             The topology of the trajectory. Default is None.
         constant_topology : bool, optional
             Whether the topology is constant over the trajectory or does change. Default is True.
