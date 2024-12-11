@@ -77,7 +77,7 @@ class RDFInputFileReader(Reader):
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
         super().not_defined_optional_keys(self.optional_keys)
-
+        
         if (self.no_intra_molecular is not None and
             (self.restart_file is None or self.moldescriptor_file is None)):
             self.logger.error(
@@ -93,6 +93,16 @@ class RDFInputFileReader(Reader):
                 (
                 "The moldescriptor_file key can only be "
                 "used in a meaningful way if a restart file is given."
+                ),
+                exception=InputFileError,
+            )
+
+        if self.restart_file is None and self.moldescriptor_file is None:
+            self.logger.error(
+                (
+                "The restart_file key or the moldescriptor_file key with restart_file key "
+                "have to be set in order to use the RDF analysis." 
+                "It is needed for the selection of the target and reference residues."
                 ),
                 exception=InputFileError,
             )
