@@ -76,6 +76,7 @@ class RDFInputFileReader(Reader):
         super().read()
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
+        super().not_defined_optional_keys(self.optional_keys)
 
         if (self.no_intra_molecular is not None and
             (self.restart_file is None or self.moldescriptor_file is None)):
