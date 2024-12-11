@@ -526,8 +526,11 @@ class RDF:
         differential_bins : Np1DNumberArray
             The differential bins of the RDF analysis based on the spherical shell model.
         """
-
-        target_density = len(self.target_index_combinations[0])
+        if self.no_intra_molecular:
+            target_density = len(self.target_index_combinations[0])
+        else:
+            target_density = len(self.target_indices)
+        
         target_density /= self._average_volume
 
         norm = self._norm(
