@@ -142,6 +142,4 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         """
         for key in optional_keys:
             if key not in self.dictionary.keys():
-                self.dictionary[key] = None
-            
-        
+                self.dictionary.__setitem__(key=key,value=(None,"None","None"))
