@@ -87,7 +87,7 @@ def _parse_real(input_dict: InputDictionary, key: str) -> Real | None:
     except PQKeyError:
         return None
 
-    if data[1] not in ["float", "int"]:
+    if data[1] not in ["float", "int", "None"]:
         logger.error(
             f"The \"{key}\" value has to be of float type - actually it is parsed as a {data[1]}",
             exception=InputFileError
@@ -132,7 +132,10 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
 
     if data_type in {"glob", "list(str)"}:
         return data[0]
-
+    
+    if data_type == "None":
+        return None
+    
     logger.error(
         (
         f"The \"{key}\" value has to be either a "
@@ -170,7 +173,7 @@ def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
     except PQKeyError:
         return None
 
-    if data[1] != "int":
+    if data[1] not in ["int", "None"]:
         logger.error(
             f"The \"{key}\" value has to be of int type - actually it is parsed as a {data[1]}",
             exception=InputFileError
@@ -245,7 +248,7 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
     except PQKeyError:
         return None
 
-    if data[1] != "str":
+    if data[1] not in ["str", "None"]:
         logger.error(
             (
             f"The \"{key}\" value has to be of "
@@ -266,7 +269,7 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     ----------
     dict : InputDictionary
         the input dictionary
-    key : str
+    key : str 
         the key to get the value from
 
     Returns
@@ -283,8 +286,8 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
         data = input_dict[key]
     except PQKeyError:
         return None
-
-    if data[1] != "bool":
+    
+    if data[1] not in["bool", "None"]:
         logger.error(
             f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}",
             exception=InputFileError
