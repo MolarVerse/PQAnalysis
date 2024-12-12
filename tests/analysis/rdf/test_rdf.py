@@ -18,7 +18,6 @@ from ...conftest import assert_logging_with_exception
 # pylint: disable=protected-access
 
 
-
 def test__calculate_n_bins():
     r_min = 1.0
     r_max = 101.5
@@ -28,7 +27,6 @@ def test__calculate_n_bins():
 
     assert n_bins == 100
     assert np.isclose(r_max, 101.0)
-
 
 
 def test__infer_r_max(caplog):
@@ -50,16 +48,15 @@ def test__infer_r_max(caplog):
         logging_name=RDF.__qualname__,
         logging_level="ERROR",
         message_to_test=(
-        "To infer r_max of the RDF analysis, the "
-        "trajectory cannot be a vacuum trajectory. "
-        "Please specify r_max manually or use "
-        "the combination n_bins and delta_r."
+            "To infer r_max of the RDF analysis, the "
+            "trajectory cannot be a vacuum trajectory. "
+            "Please specify r_max manually or use "
+            "the combination n_bins and delta_r."
         ),
         exception=RDFError,
         function=RDF._infer_r_max,
         cells=traj.cells,
     )
-
 
 
 def test__check_r_max(caplog):
@@ -82,10 +79,10 @@ def test__check_r_max(caplog):
         logging_name=RDF.__qualname__,
         logging_level="WARNING",
         message_to_test=(
-        f"The calculated r_max {r_max} "
-        "is larger than the maximum allowed radius "
-        "according to the box vectors of the trajectory 5.0. "
-        "r_max will be set to the maximum allowed radius."
+            f"The calculated r_max {r_max} "
+            "is larger than the maximum allowed radius "
+            "according to the box vectors of the trajectory 5.0. "
+            "r_max will be set to the maximum allowed radius."
         ),
         exception=None,
         function=RDF._check_r_max,
@@ -94,7 +91,6 @@ def test__check_r_max(caplog):
     )
 
     assert np.isclose(r_max, 5.0)
-
 
 
 def test__calculate_r_max(caplog):
@@ -113,7 +109,6 @@ def test__calculate_r_max(caplog):
     assert np.isclose(r_max, 8.0)
 
 
-
 def test__setup_bin_middle_points():
     n_bins = 5
     r_min = 3.0
@@ -130,7 +125,6 @@ def test__setup_bin_middle_points():
     assert np.allclose(bin_middle_points, np.array([3.5, 4.5, 5.5, 6.5, 7.5]))
 
 
-
 def test__integration():
     bins = np.array([1, 2, 3, 4, 5])
     len_reference_indices = 3
@@ -142,14 +136,13 @@ def test__integration():
     assert np.allclose(
         integration,
         np.array(
-        [1 / n_total,
-        3 / n_total,
-        6 / n_total,
-        10 / n_total,
-        15 / n_total]
+            [1 / n_total,
+             3 / n_total,
+             6 / n_total,
+             10 / n_total,
+             15 / n_total]
         )
     )
-
 
 
 def test__norm():
@@ -177,7 +170,6 @@ def test__norm():
     )
 
 
-
 def test__add_to_bins():
     n_bins = 5
     r_min = 3.0
@@ -187,16 +179,15 @@ def test__add_to_bins():
 
     assert np.allclose(
         RDF._add_to_bins(distances,
-        r_min,
-        delta_r,
-        n_bins),
+                         r_min,
+                         delta_r,
+                         n_bins),
         np.array([3,
-        2,
-        1,
-        1,
-        0])
+                  2,
+                  1,
+                  1,
+                  0])
     )
-
 
 
 class TestRDF:
@@ -207,9 +198,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "traj",
-            1,
-            Trajectory | TrajectoryReader
+                "traj",
+                1,
+                Trajectory | TrajectoryReader
             ),
             exception=PQTypeError,
             function=RDF,
@@ -223,9 +214,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "reference_species",
-            Trajectory(),
-            SelectionCompatible
+                "reference_species",
+                Trajectory(),
+                SelectionCompatible
             ),
             exception=PQTypeError,
             function=RDF,
@@ -239,9 +230,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "target_species",
-            Trajectory(),
-            SelectionCompatible
+                "target_species",
+                Trajectory(),
+                SelectionCompatible
             ),
             exception=PQTypeError,
             function=RDF,
@@ -255,9 +246,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "use_full_atom_info",
-            1,
-            bool
+                "use_full_atom_info",
+                1,
+                bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -272,9 +263,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "no_intra_molecular",
-            1,
-            bool
+                "no_intra_molecular",
+                1,
+                bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -289,9 +280,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "r_max",
-            -1,
-            PositiveReal | None
+                "r_max",
+                -1,
+                PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -306,9 +297,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "r_min",
-            -1,
-            PositiveReal | None
+                "r_min",
+                -1,
+                PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -323,9 +314,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "delta_r",
-            -1,
-            PositiveReal | None
+                "delta_r",
+                -1,
+                PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -340,9 +331,9 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "n_bins",
-            -1,
-            PositiveInt | None
+                "n_bins",
+                -1,
+                PositiveInt | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -377,10 +368,10 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "The provided trajectory is not fully periodic "
-            "or in vacuum, meaning that some frames are in "
-            "vacuum and others are periodic. This is not "
-            "supported by the RDF analysis."
+                "The provided trajectory is not fully periodic "
+                "or in vacuum, meaning that some frames are in "
+                "vacuum and others are periodic. This is not "
+                "supported by the RDF analysis."
             ),
             exception=RDFError,
             function=RDF,
@@ -415,9 +406,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "It is not possible to specify all of n_bins, "
-            "delta_r and r_max in the same RDF analysis as "
-            "this would lead to ambiguous results."
+                "It is not possible to specify all of n_bins, "
+                "delta_r and r_max in the same RDF analysis as "
+                "this would lead to ambiguous results."
             ),
             exception=RDFError,
             function=RDF,
@@ -443,10 +434,10 @@ class TestRDF:
         assert np.allclose(
             rdf.bin_middle_points,
             np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+                      1.5,
+                      2.5,
+                      3.5,
+                      4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
@@ -460,9 +451,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="WARNING",
             message_to_test=(
-            "The calculated r_max 10.0 is larger than the maximum allowed "
-            "radius according to the box vectors of the trajectory 5.0. "
-            "r_max will be set to the maximum allowed radius."
+                "The calculated r_max 10.0 is larger than the maximum allowed "
+                "radius according to the box vectors of the trajectory 5.0. "
+                "r_max will be set to the maximum allowed radius."
             ),
             exception=None,
             function=RDF,
@@ -485,9 +476,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "To infer r_max of the RDF analysis, the trajectory cannot "
-            "be a vacuum trajectory. Please specify r_max manually or "
-            "use the combination n_bins and delta_r."
+                "To infer r_max of the RDF analysis, the trajectory cannot "
+                "be a vacuum trajectory. Please specify r_max manually or "
+                "use the combination n_bins and delta_r."
             ),
             exception=RDFError,
             function=RDF,
@@ -502,9 +493,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "To infer r_max of the RDF analysis, the trajectory cannot be "
-            "a vacuum trajectory. Please specify r_max manually or use the "
-            "combination n_bins and delta_r."
+                "To infer r_max of the RDF analysis, the trajectory cannot be "
+                "a vacuum trajectory. Please specify r_max manually or use the "
+                "combination n_bins and delta_r."
             ),
             exception=RDFError,
             function=RDF,
@@ -524,10 +515,10 @@ class TestRDF:
         assert np.allclose(
             rdf.bin_middle_points,
             np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+                      1.5,
+                      2.5,
+                      3.5,
+                      4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
@@ -542,10 +533,10 @@ class TestRDF:
         assert np.allclose(
             rdf.bin_middle_points,
             np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+                      1.5,
+                      2.5,
+                      3.5,
+                      4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
