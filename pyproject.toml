@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=42", "setuptools_scm>=8", "wheel", "numpy", "Cython"]
+requires = ["setuptools>=42", "setuptools_scm>=8", "wheel", "numpy", "Cython", "cmake"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -33,6 +33,7 @@ dependencies = [
     "yapf",
     "rich-argparse",
     "Cython",
+    "pybind11",
     "setuptools==70.0.0",
 ]
 
