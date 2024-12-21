@@ -14,4 +14,4 @@ target_link_libraries(core_cell PRIVATE Eigen3::Eigen)
 
 # link the library to the pybind11 module
 target_compile_definitions(core_cell
-                           PRIVATE VERSION_INFO=${PROJECT_VERSION})
+                           PRIVATE VERSION_INFO=${VERSION_INFO})

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 
 # find pybind11 package
 find_package(pybind11 REQUIRED)
+
 # find Eigen package
 find_package(Eigen3 REQUIRED)
 

@@ -6,22 +6,21 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <pybind11/eigen.h>
-#include <pybind11/stl.h>
+#include <vector>
 #include <math.h>
 
 namespace py = pybind11;
 using array_d = py::array_t<double>;
 
-Eigen::Map<Eigen::Matrix> numpy_to_eigen(array_d &array);
+// Convert 2D vector to numpy array
+array_d vector_to_array(const std::vector<std::vector<double>> &vec);
+std::vector<std::vector<double>> array_to_vector(array_d arr);
 
 class CoreCell
 {
 private:
-    double _x, _y, _z, _alpha, _beta, _gamma;
-    Eigen::Matrix<double, 3, 3> _box_matrix;
-    array_d _box_lengths;
-    array_d _box_angles;
+    std::vector<double> _box_lengths, _box_angles;
+    std::vector<std::vector<double>> _box_matrix;
 
 public:
     CoreCell();
@@ -29,11 +28,11 @@ public:
     ~CoreCell() = default;
 
 private:
-    Matrix<double, 3, 3> _init_box_matrix();
+    std::vector<std::vector<double>> _setup_box_matrix();
 
 public:
     // 2D array
-    Eigen::Matrix bouding_edges();
+    array_d bouding_edges();
     double volume();
     bool is_vacuum();
     array_d image(array_d pos);
@@ -42,59 +41,46 @@ public:
     // Getters
     array_d get_box_matrix() const
     {
-        return _box_matrix;
+        // Convert 2D vector to numpy array
+        return vector_to_array(_box_matrix);
     }
     array_d get_box_lengths() const
     {
-        return _box_lengths;
+        return array_d(_box_lengths.size(), _box_lengths.data());
     }
     array_d get_box_angles() const
     {
-        return _box_angles;
+        return array_d(_box_angles.size(), _box_angles.data());
     }
-    double get_x() const { return _x; }
-    double get_y() const { return _y; }
-    double get_z() const { return _z; }
-    double get_alpha() const { return _alpha; }
-    double get_beta() const { return _beta; }
-    double get_gamma() const { return _gamma; }
+    double get_x() const { return _box_lengths[0]; }
+    double get_y() const { return _box_lengths[1]; }
+    double get_z() const { return _box_lengths[2]; }
+    double get_alpha() const { return _box_angles[0]; }
+    double get_beta() const { return _box_angles[1]; }
+    double get_gamma() const { return _box_angles[2]; }
 
     // Setters
-    void set_box_matrix(Eigen::Matrix box_matrix)
+    void set_box_matrix(array_d box_matrix)
     {
-        _box_matrix = numpy_to_eigen(box_matrix);
+        // Convert numpy array to 2D vector
+        _box_matrix = py::cast<std::vector<std::vector<double>>>(box_matrix);
     }
     void set_box_lengths(array_d box_lengths)
     {
-        _box_lengths = box_lengths;
+        // Convert numpy array to vector
+        _box_lengths = py::cast<std::vector<double>>(box_lengths);
     }
     void set_box_angles(array_d box_angles)
     {
-        _box_angles = box_angles;
+        // Convert numpy array to vector
+        _box_angles = py::cast<std::vector<double>>(box_angles);
     }
-    void set_x(double x) { _x = x; }
-    void set_y(double y) { _y = y; }
-    void set_z(double z) { _z = z; }
-    void set_alpha(double alpha) { _alpha = alpha; }
-    void set_beta(double beta) { _beta = beta; }
-    void set_gamma(double gamma) { _gamma = gamma; }
+    void set_x(double x) { _box_lengths[0] = x; }
+    void set_y(double y) { _box_lengths[1] = y; }
+    void set_z(double z) { _box_lengths[2] = z; }
+    void set_alpha(double alpha) { _box_angles[0] = alpha; }
+    void set_beta(double beta) { _box_angles[1] = beta; }
+    void set_gamma(double gamma) { _box_angles[2] = gamma; }
 };
-
-// Convert NumPy array to Eigen Map
-Eigen::Map<Eigen::Matrix> numpy_to_eigen(array_d array)
-{
-    py::buffer_info info = array.request();
-
-    if (info.ndim != 2)
-    {
-        throw std::runtime_error("Input array must be 2D");
-    }
-
-    return Eigen::Map<Eigen::Matrix>(
-        static_cast<double *>(info.ptr),
-        info.shape[0], // rows
-        info.shape[1]  // cols
-    );
-}
 
 #endif // CELL_HPP

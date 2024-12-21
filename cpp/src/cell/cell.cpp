@@ -4,22 +4,28 @@ using namespace std;
 
 CoreCell::CoreCell()
 {
-    _box_lengths = array_d::zeros(3);
-    _box_angles = array_d::zeros(3);
-    _box_matrix = Eigen::Matrix::Zero(3, 3);
+    _box_lengths = vector(3, 0.0);
+    _box_angles = vector(3, 0.0);
+    _box_matrix = _setup_box_matrix();
 }
 
 CoreCell::CoreCell(double a, double b, double c, double alpha, double beta, double gamma)
 {
-    _box_lengths = {a, b, c};
-    _box_angles = {alpha, beta, gamma};
+    _box_lengths = vector({a, b, c});
+    _box_angles = vector({alpha, beta, gamma});
     _box_matrix = _setup_box_matrix();
 }
 
-Eigen::Matrix CoreCell::_setup_box_matrix()
+vector<vector<double>> CoreCell::_setup_box_matrix()
 {
     // Initialize box matrix with 3 rows and 3 columns
-    Eigen::Matrix box_matrix = Eigen::Matrix::Zero(3, 3);
+    vector<vector<double>> box_matrix(3, vector<double>(3));
+
+    // if volume is zero, return zero matrix
+    if (volume() == 0)
+    {
+        return box_matrix;
+    }
 
     // Calculate cosines and sines of angles
     double alpha = _box_angles[0], beta = _box_angles[1], gamma = _box_angles[2];
@@ -44,13 +50,14 @@ Eigen::Matrix CoreCell::_setup_box_matrix()
     return box_matrix;
 }
 
-Eigen::Matrix CoreCell::bouding_edges()
+array_d CoreCell::bouding_edges()
 {
     // Initialize edges array with 8 rows and 3 columns - array_t<double> is a 2D array
-    Matrix edges = Matrix::Zero(8, 3);
+    vector<vector<double>> edges(8, vector<double>(3));
 
     // Values to iterate over
-    vector_d values = {-0.5, 0.5};
+    double values[2] = {0.0, 1.0};
+
     // Triple nested loop for x, y, z coordinates
     for (int i = 0; i < 2; i++)
     {
@@ -66,22 +73,30 @@ Eigen::Matrix CoreCell::bouding_edges()
                 int idx = i * 4 + j * 2 + k;
 
                 // Perform matrix multiplication using Eigen
-                array_d vec = {x, y, z};
-                Matrix result = _box_matrix * vec;
+                // Perform matrix multiplication using Eigen
+                vector<double> result(3);
+                result[0] = _box_matrix[0][0] * x + _box_matrix[0][1] * y + _box_matrix[0][2] * z;
+                result[1] = _box_matrix[1][0] * x + _box_matrix[1][1] * y + _box_matrix[1][2] * z;
+                result[2] = _box_matrix[2][0] * x + _box_matrix[2][1] * y + _box_matrix[2][2] * z;
 
                 // Assign result to edges
-                edges.row(idx) = result;
+                edges[idx] = result;
             }
         }
     }
 
-    return edges;
+    return vector_to_array(edges);
 }
 
 double CoreCell::volume()
 {
     // Calculate volume using determinant of box matrix
-    return _box_matrix.determinant();
+    return _box_matrix[0][0] * _box_matrix[1][1] * _box_matrix[2][2] +
+           _box_matrix[0][1] * _box_matrix[1][2] * _box_matrix[2][0] +
+           _box_matrix[0][2] * _box_matrix[1][0] * _box_matrix[2][1] -
+           _box_matrix[0][2] * _box_matrix[1][1] * _box_matrix[2][0] -
+           _box_matrix[0][1] * _box_matrix[1][0] * _box_matrix[2][2] -
+           _box_matrix[0][0] * _box_matrix[1][2] * _box_matrix[2][1];
 }
 
 bool CoreCell::is_vacuum()
@@ -92,41 +107,80 @@ bool CoreCell::is_vacuum()
 
 array_d CoreCell::image(array_d pos)
 {
-
     // Unpack position array
-    auto position = array_d::ensure(pos);
+    auto position = array_to_vector(pos);
 
     // Initialize image matrix with same size as position
-    Matrix image = Eigen::Matrix::Zero(position.shape(0), position.shape(1));
+    vector<vector<double>> image(position.size(), vector<double>(3));
 
     // Iterate over all positions
-    for (int i = 0; i < position.shape(0); i++)
+    for (int i = 0; i < position.size(); i++)
     {
         // Perform matrix multiplication manually
-        for (int col = 0; col < position.shape(1); col++)
+        for (int col = 0; col < 3; col++)
         {
-            image[i][col] = _box_matrix[col][0] * position(i, 0) +
-                            _box_matrix[col][1] * position(i, 1) +
-                            _box_matrix[col][2] * position(i, 2);
+            image[i][col] = _box_matrix[0][col] * position[i][0] +
+                            _box_matrix[1][col] * position[i][1] +
+                            _box_matrix[2][col] * position[i][2];
         }
     }
 
-    return image;
+    return vector_to_array(image);
 }
 
 CoreCell &CoreCell::init_from_box_matrix(array_d box_matrix)
 {
-    // Convert numpy array to Eigen matrix
-    _box_matrix = numpy_to_eigen(box_matrix);
+    // Assign box matrix
+    _box_matrix = py::cast<vector<vector<double>>>(box_matrix);
 
     // Calculate box lengths and angles
-    _box_lengths = {sqrt(_box_matrix.col(0).squaredNorm()),
-                    sqrt(_box_matrix.col(1).squaredNorm()),
-                    sqrt(_box_matrix.col(2).squaredNorm())};
+    _box_lengths = {sqrt(_box_matrix[0][0] * _box_matrix[0][0] + _box_matrix[1][0] * _box_matrix[1][0] + _box_matrix[2][0] * _box_matrix[2][0]),
+                    sqrt(_box_matrix[0][1] * _box_matrix[0][1] + _box_matrix[1][1] * _box_matrix[1][1] + _box_matrix[2][1] * _box_matrix[2][1]),
+                    sqrt(_box_matrix[0][2] * _box_matrix[0][2] + _box_matrix[1][2] * _box_matrix[1][2] + _box_matrix[2][2] * _box_matrix[2][2])};
 
-    _box_angles = {acos(_box_matrix.col(1).dot(_box_matrix.col(2)) / (_box_lengths[1] * _box_lengths[2])) * 180.0 / M_PI,
-                   acos(_box_matrix.col(0).dot(_box_matrix.col(2)) / (_box_lengths[0] * _box_lengths[2])) * 180.0 / M_PI,
-                   acos(_box_matrix.col(0).dot(_box_matrix.col(1)) / (_box_lengths[0] * _box_lengths[1])) * 180.0 / M_PI};
+    _box_angles = {acos((_box_matrix[0][1] * _box_matrix[0][2] + _box_matrix[1][1] * _box_matrix[1][2] + _box_matrix[2][1] * _box_matrix[2][2]) / (_box_lengths[1] * _box_lengths[2])) * 180.0 / M_PI,
+                   acos((_box_matrix[0][0] * _box_matrix[0][2] + _box_matrix[1][0] * _box_matrix[1][2] + _box_matrix[2][0] * _box_matrix[2][2]) / (_box_lengths[0] * _box_lengths[2])) * 180.0 / M_PI,
+                   acos((_box_matrix[0][0] * _box_matrix[0][1] + _box_matrix[1][0] * _box_matrix[1][1] + _box_matrix[2][0] * _box_matrix[2][1]) / (_box_lengths[0] * _box_lengths[1])) * 180.0 / M_PI};
 
-    return this;
+    return *this;
+}
+
+array_d vector_to_array(const std::vector<std::vector<double>> &vec)
+{
+    // Determine the dimensions of the 2D array
+    size_t rows = vec.size();
+    size_t cols = vec.empty() ? 0 : vec[0].size();
+
+    // Flatten the 2D vector into a 1D vector
+    std::vector<double> flattened;
+    flattened.reserve(rows * cols);
+    for (const auto &row : vec)
+    {
+        flattened.insert(flattened.end(), row.begin(), row.end());
+    }
+
+    // Create a NumPy array from the flattened data
+    array_d array({rows, cols}, flattened.data());
+    return array;
+}
+
+std::vector<std::vector<double>> array_to_vector(array_d arr)
+{
+    // Get the dimensions of the NumPy array
+    py::buffer_info info = arr.request();
+    size_t rows = info.shape[0];
+    size_t cols = info.shape[1];
+
+    // Create a 2D vector from the NumPy array
+    std::vector<std::vector<double>> vec(rows, std::vector<double>(cols));
+    double *ptr = static_cast<double *>(info.ptr);
+    for (size_t i = 0; i < rows; i++)
+    {
+        for (size_t j = 0; j < cols; j++)
+        {
+            vec[i][j] = ptr[i * cols + j];
+        }
+    }
+
+    return vec;
 }
