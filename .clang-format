@@ -1,0 +1,44 @@
+# options: https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: google
+
+IndentWidth: 4
+ColumnLimit: 80
+SpaceAfterCStyleCast: true
+UseTab: Never
+SpacesBeforeTrailingComments: 3
+NamespaceIndentation: All
+
+# AllowShortLoopsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: All
+AllowShortBlocksOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: Never
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllArgumentsOnNextLine: false
+
+AlignTrailingComments: true
+AlignConsecutiveMacros: Consecutive
+AlignConsecutiveAssignments:
+  Enabled: true
+  AlignCompound: true
+AlignConsecutiveDeclarations: true
+AlignAfterOpenBracket: BlockIndent
+
+BreakBeforeBraces: Allman
+
+BreakBeforeConceptDeclarations: Always
+AlwaysBreakTemplateDeclarations: Yes  
+IndentRequiresClause: false
+
+BinPackArguments: false
+BinPackParameters: false
+
+RemoveSemicolon: true
+
+IncludeBlocks: Regroup
+
+# use \n instead of \r\n
+UseCRLF: false
+
+PenaltyReturnTypeOnItsOwnLine: 100000000
+
