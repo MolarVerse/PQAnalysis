@@ -6,7 +6,7 @@ CoreCell::CoreCell()
 {
     _box_lengths = vector(3, 0.0);
     _box_angles = vector(3, 0.0);
-    _box_matrix = _setup_box_matrix();
+    _box_matrix = vector(3, vector(3, 0.0));
 }
 
 CoreCell::CoreCell(double a, double b, double c, double alpha, double beta, double gamma)
@@ -20,12 +20,6 @@ vector<vector<double>> CoreCell::_setup_box_matrix()
 {
     // Initialize box matrix with 3 rows and 3 columns
     vector<vector<double>> box_matrix(3, vector<double>(3));
-
-    // if volume is zero, return zero matrix
-    if (volume() == 0)
-    {
-        return box_matrix;
-    }
 
     // Calculate cosines and sines of angles
     double alpha = _box_angles[0], beta = _box_angles[1], gamma = _box_angles[2];
