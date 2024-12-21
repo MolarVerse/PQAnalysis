@@ -1,49 +1,57 @@
 #ifndef CELL_HPP
 #define CELL_HPP
 
-#define STRINGIFY(x) #x
+#define STRINGIFY(x)       #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
-#include <pybind11/pybind11.h>
-#include <pybind11/numpy.h>
-#include <vector>
 #include <math.h>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
-namespace py = pybind11;
+#include <vector>
+
+namespace py  = pybind11;
 using array_d = py::array_t<double>;
 
 // Convert 2D vector to numpy array
-array_d vector_to_array(const std::vector<std::vector<double>> &vec);
-std::vector<std::vector<double>> array_to_vector(array_d arr);
-std::vector<double> array_to_vector_1d(array_d arr);
+array_d vector_2d_to_array(const std::vector<std::vector<double>> &vec);
+std::vector<std::vector<double>> array_to_vector_2d(array_d arr);
+std::vector<double>              array_to_vector_1d(array_d arr);
 
 class CoreCell
 {
-private:
-    std::vector<double> _box_lengths, _box_angles;
+   private:
+    std::vector<double>              _box_lengths, _box_angles;
     std::vector<std::vector<double>> _box_matrix;
 
-public:
+   public:
     CoreCell();
-    CoreCell(double x, double y, double z, double alpha, double beta, double gamma);
+    CoreCell(
+        double x,
+        double y,
+        double z,
+        double alpha,
+        double beta,
+        double gamma
+    );
     ~CoreCell() = default;
 
-private:
+   private:
     std::vector<std::vector<double>> _setup_box_matrix();
 
-public:
+   public:
     // 2D array
-    array_d bouding_edges();
-    double volume();
-    bool is_vacuum();
-    array_d image(array_d pos);
+    array_d   bouding_edges();
+    double    volume();
+    bool      is_vacuum();
+    array_d   image(array_d pos);
     CoreCell &init_from_box_matrix(array_d box_matrix);
 
     // Getters
     array_d get_box_matrix() const
     {
         // Convert 2D vector to numpy array
-        return vector_to_array(_box_matrix);
+        return vector_2d_to_array(_box_matrix);
     }
     array_d get_box_lengths() const
     {
@@ -64,7 +72,7 @@ public:
     void set_box_matrix(array_d box_matrix)
     {
         // Convert numpy array to 2D vector
-        _box_matrix = array_to_vector(box_matrix);
+        _box_matrix = array_to_vector_2d(box_matrix);
     }
     void set_box_lengths(array_d box_lengths)
     {
@@ -84,4 +92,4 @@ public:
     void set_gamma(double gamma) { _box_angles[2] = gamma; }
 };
 
-#endif // CELL_HPP
+#endif   // CELL_HPP
