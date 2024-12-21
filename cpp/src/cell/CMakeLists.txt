@@ -9,9 +9,6 @@ include_directories(${PROJECT_SOURCE_DIR}/cpp/include/cell)
 # create the library
 pybind11_add_module(core_cell ${CELL})
 
-# link the Eigen library to the pybind11 module
-target_link_libraries(core_cell PRIVATE Eigen3::Eigen)
-
 # link the library to the pybind11 module
 target_compile_definitions(core_cell
                            PRIVATE VERSION_INFO=${VERSION_INFO})

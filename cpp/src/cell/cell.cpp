@@ -50,7 +50,7 @@ array_d CoreCell::bouding_edges()
     vector<vector<double>> edges(8, vector<double>(3));
 
     // Values to iterate over
-    double values[2] = {0.0, 1.0};
+    double values[2] = {-0.5, 0.5};
 
     // Triple nested loop for x, y, z coordinates
     for (int i = 0; i < 2; i++)
@@ -125,7 +125,7 @@ array_d CoreCell::image(array_d pos)
 CoreCell &CoreCell::init_from_box_matrix(array_d box_matrix)
 {
     // Assign box matrix
-    _box_matrix = py::cast<vector<vector<double>>>(box_matrix);
+    _box_matrix = array_to_vector(box_matrix);
 
     // Calculate box lengths and angles
     _box_lengths = {sqrt(_box_matrix[0][0] * _box_matrix[0][0] + _box_matrix[1][0] * _box_matrix[1][0] + _box_matrix[2][0] * _box_matrix[2][0]),
@@ -174,6 +174,23 @@ std::vector<std::vector<double>> array_to_vector(array_d arr)
         {
             vec[i][j] = ptr[i * cols + j];
         }
+    }
+
+    return vec;
+}
+
+std::vector<double> array_to_vector_1d(array_d arr)
+{
+    // Get the dimensions of the NumPy array
+    py::buffer_info info = arr.request();
+    size_t size = info.size;
+
+    // Create a 1D vector from the NumPy array
+    std::vector<double> vec(size);
+    double *ptr = static_cast<double *>(info.ptr);
+    for (size_t i = 0; i < size; i++)
+    {
+        vec[i] = ptr[i];
     }
 
     return vec;

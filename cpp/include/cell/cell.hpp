@@ -15,6 +15,7 @@ using array_d = py::array_t<double>;
 // Convert 2D vector to numpy array
 array_d vector_to_array(const std::vector<std::vector<double>> &vec);
 std::vector<std::vector<double>> array_to_vector(array_d arr);
+std::vector<double> array_to_vector_1d(array_d arr);
 
 class CoreCell
 {
@@ -63,17 +64,17 @@ public:
     void set_box_matrix(array_d box_matrix)
     {
         // Convert numpy array to 2D vector
-        _box_matrix = py::cast<std::vector<std::vector<double>>>(box_matrix);
+        _box_matrix = array_to_vector(box_matrix);
     }
     void set_box_lengths(array_d box_lengths)
     {
         // Convert numpy array to vector
-        _box_lengths = py::cast<std::vector<double>>(box_lengths);
+        _box_lengths = array_to_vector_1d(box_lengths);
     }
     void set_box_angles(array_d box_angles)
     {
         // Convert numpy array to vector
-        _box_angles = py::cast<std::vector<double>>(box_angles);
+        _box_angles = array_to_vector_1d(box_angles);
     }
     void set_x(double x) { _box_lengths[0] = x; }
     void set_y(double y) { _box_lengths[1] = y; }
