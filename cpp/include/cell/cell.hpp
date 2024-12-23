@@ -18,34 +18,34 @@ array_d vector_2d_to_array(const std::vector<std::vector<double>> &vec);
 std::vector<std::vector<double>> array_to_vector_2d(array_d arr);
 std::vector<double>              array_to_vector_1d(array_d arr);
 
-class CoreCell
+class Cell
 {
    private:
     std::vector<double>              _box_lengths, _box_angles;
     std::vector<std::vector<double>> _box_matrix;
 
    public:
-    CoreCell();
-    CoreCell(
-        double x,
-        double y,
-        double z,
-        double alpha,
-        double beta,
-        double gamma
-    );
-    ~CoreCell() = default;
+    Cell();
+    Cell(double x, double y, double z);
+    Cell(double x, double y, double z, double alpha, double beta, double gamma);
+    ~Cell() = default;
 
    private:
     std::vector<std::vector<double>> _setup_box_matrix();
 
    public:
     // 2D array
-    array_d   bouding_edges();
-    double    volume();
-    bool      is_vacuum();
-    array_d   image(array_d pos);
-    CoreCell &init_from_box_matrix(array_d box_matrix);
+    array_d bouding_edges();
+    double  volume();
+    bool    is_vacuum();
+    array_d image(array_d pos);
+    Cell   &init_from_box_matrix(array_d box_matrix);
+
+    // Operators
+    bool operator==(const Cell &other) const
+    {
+        return _box_matrix == other._box_matrix;
+    }
 
     // Getters
     array_d get_box_matrix() const

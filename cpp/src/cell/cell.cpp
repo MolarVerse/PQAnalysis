@@ -2,14 +2,21 @@
 
 using namespace std;
 
-CoreCell::CoreCell()
+Cell::Cell()
 {
     _box_lengths = vector(3, 0.0);
     _box_angles  = vector(3, 0.0);
     _box_matrix  = vector(3, vector(3, 0.0));
 }
 
-CoreCell::CoreCell(
+Cell::Cell(double x, double y, double z)
+{
+    _box_lengths = vector({x, y, z});
+    _box_angles  = vector(3, 90.0);
+    _box_matrix  = _setup_box_matrix();
+}
+
+Cell::Cell(
     double a,
     double b,
     double c,
@@ -23,7 +30,7 @@ CoreCell::CoreCell(
     _box_matrix  = _setup_box_matrix();
 }
 
-vector<vector<double>> CoreCell::_setup_box_matrix()
+vector<vector<double>> Cell::_setup_box_matrix()
 {
     // Initialize box matrix with 3 rows and 3 columns
     vector<vector<double>> box_matrix(3, vector<double>(3));
@@ -55,7 +62,7 @@ vector<vector<double>> CoreCell::_setup_box_matrix()
     return box_matrix;
 }
 
-array_d CoreCell::bouding_edges()
+array_d Cell::bouding_edges()
 {
     // Initialize edges array with 8 rows and 3 columns - array_t<double> is a
     // 2D array
@@ -97,7 +104,7 @@ array_d CoreCell::bouding_edges()
     return vector_2d_to_array(edges);
 }
 
-double CoreCell::volume()
+double Cell::volume()
 {
     // Calculate volume using determinant of box matrix
     return _box_matrix[0][0] * _box_matrix[1][1] * _box_matrix[2][2] +
@@ -108,13 +115,13 @@ double CoreCell::volume()
            _box_matrix[0][0] * _box_matrix[1][2] * _box_matrix[2][1];
 }
 
-bool CoreCell::is_vacuum()
+bool Cell::is_vacuum()
 {
     // Check if volume is zero
     return volume() == 0;
 }
 
-array_d CoreCell::image(array_d pos)
+array_d Cell::image(array_d pos)
 {
     // Unpack position array
     auto position = array_to_vector_2d(pos);
@@ -137,7 +144,7 @@ array_d CoreCell::image(array_d pos)
     return vector_2d_to_array(image);
 }
 
-CoreCell &CoreCell::init_from_box_matrix(array_d box_matrix)
+Cell &Cell::init_from_box_matrix(array_d box_matrix)
 {
     // Assign box matrix
     _box_matrix = array_to_vector_2d(box_matrix);

@@ -7,8 +7,6 @@ import re
 import subprocess
 import sys
 from pathlib import Path
-# from Cython.Build import cythonize
-# import numpy as np
 
 from setuptools import Extension, setup
 from setuptools.command.build_ext import build_ext
@@ -143,14 +141,6 @@ class CMakeBuild(build_ext):
         )
 
 
-
-# module = cythonize(
-#     Extension(
-#         'PQAnalysis.io.traj_file.process_lines',
-#         sources=['PQAnalysis/io/traj_file/process_lines.pyx'],
-#         include_dirs=[np.get_include()]
-#     )
-# )
 
 setup(
     name="PQAnalysis",

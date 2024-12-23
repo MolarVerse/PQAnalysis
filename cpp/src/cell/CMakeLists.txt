@@ -7,8 +7,8 @@ file(GLOB CELL "*.cpp")
 include_directories(${PROJECT_SOURCE_DIR}/cpp/include/cell)
 
 # create the library
-pybind11_add_module(core_cell ${CELL})
+pybind11_add_module(cell ${CELL})
 
 # link the library to the pybind11 module
-target_compile_definitions(core_cell
+target_compile_definitions(cell
                            PRIVATE VERSION_INFO=${VERSION_INFO})
