@@ -57,7 +57,7 @@ class Trajectory:
         if frames is None:
             frames = []
 
-        self._frames = list(np.atleast_1d(frames))
+        self._frames = frames
 
         self.logger = setup_logger(self.logger)
 

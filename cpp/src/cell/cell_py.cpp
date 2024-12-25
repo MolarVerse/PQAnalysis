@@ -39,7 +39,29 @@ PYBIND11_MODULE(cell, m)
         .def_property("alpha", &Cell::get_alpha, &Cell::set_alpha)
         .def_property("beta", &Cell::get_beta, &Cell::set_beta)
         .def_property("gamma", &Cell::get_gamma, &Cell::set_gamma)
+        .def(
+            "isclose",
+            &Cell::isclose,
+            py::arg("other"),
+            py::arg("rel_tol") = 1e-9,
+            py::arg("abs_tol") = 0.0
+        )
         .def("__eq__", &Cell::operator==)
+        .def(
+            "__str__",
+            [](Cell &a)
+            {
+                return std::format(
+                    "Cell(x={}, y={}, z={}, alpha={}, beta={}, gamma={})",
+                    a.get_x(),
+                    a.get_y(),
+                    a.get_z(),
+                    a.get_alpha(),
+                    a.get_beta(),
+                    a.get_gamma()
+                );
+            }
+        )
         .def(
             "__repr__",
             [](Cell &a)

@@ -44,7 +44,41 @@ class Cell
     // Operators
     bool operator==(const Cell &other) const
     {
-        return _box_matrix == other._box_matrix;
+        // Compare box matrix with other box matrix contents
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (_box_matrix[i][j] != other._box_matrix[i][j])
+                {
+                    return false;
+                }
+            }
+        }
+    }
+
+    bool isclose(const Cell &other, double rel_tol = 1e-9, double abs_tol = 0.0)
+        const
+    {
+        // Compare box matrix with other box matrix contents
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (fabs(_box_matrix[i][j] - other._box_matrix[i][j]) >
+                    fmax(
+                        rel_tol * fmax(
+                                      fabs(_box_matrix[i][j]),
+                                      fabs(other._box_matrix[i][j])
+                                  ),
+                        abs_tol
+                    ))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     // Getters
