@@ -7,9 +7,29 @@ PYBIND11_MODULE(cell, m)
     m.doc() = "Cell module";
     py::class_<Cell>(m, "Cell")
         .def(py::init<>())
-        .def(py::init<double, double, double>())
-        .def(py::init<double, double, double, double, double, double>())
-        .def("bouding_edges", &Cell::bouding_edges)
+        .def(
+            py::init<double, double, double>(),
+            py::arg("x"),
+            py::arg("y"),
+            py::arg("z")
+        )
+        .def(
+            py::init<double, double, double, double, double, double>(),
+            py::arg("a"),
+            py::arg("b"),
+            py::arg("c"),
+            py::arg("alpha"),
+            py::arg("beta"),
+            py::arg("gamma")
+        )
+        .def_property_readonly(
+            "bouding_edges",
+            [](Cell &self)
+            {
+                py::array endges = py::cast(self.bouding_edges());
+                return endges;
+            }
+        )
         .def("volume", &Cell::volume)
         .def("is_vacuum", &Cell::is_vacuum)
         .def("image", &Cell::image, py::arg("pos"))

@@ -62,7 +62,7 @@ vector<vector<double>> Cell::_setup_box_matrix()
     return box_matrix;
 }
 
-array_d Cell::bouding_edges()
+vector<vector<double>> Cell::bouding_edges()
 {
     // Initialize edges array with 8 rows and 3 columns - array_t<double> is a
     // 2D array
@@ -82,11 +82,8 @@ array_d Cell::bouding_edges()
             {
                 double z = values[k];
 
-                // Calculate index similar to Python version
                 int idx = i * 4 + j * 2 + k;
 
-                // Perform matrix multiplication using Eigen
-                // Perform matrix multiplication using Eigen
                 vector<double> result(3);
                 result[0] = _box_matrix[0][0] * x + _box_matrix[0][1] * y +
                             _box_matrix[0][2] * z;
@@ -95,13 +92,12 @@ array_d Cell::bouding_edges()
                 result[2] = _box_matrix[2][0] * x + _box_matrix[2][1] * y +
                             _box_matrix[2][2] * z;
 
-                // Assign result to edges
                 edges[idx] = result;
             }
         }
     }
 
-    return vector_2d_to_array(edges);
+    return edges;
 }
 
 double Cell::volume()

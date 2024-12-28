@@ -34,12 +34,11 @@ class Cell
     std::vector<std::vector<double>> _setup_box_matrix();
 
    public:
-    // 2D array
-    array_d bouding_edges();
-    double  volume();
-    bool    is_vacuum();
-    array_d image(array_d pos);
-    Cell   &init_from_box_matrix(array_d box_matrix);
+    std::vector<std::vector<double>> bouding_edges();
+    double                           volume();
+    bool                             is_vacuum();
+    array_d                          image(array_d pos);
+    Cell                            &init_from_box_matrix(array_d box_matrix);
 
     // Operators
     bool operator==(const Cell &other) const
