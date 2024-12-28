@@ -9,13 +9,6 @@ Cell::Cell()
     _box_matrix  = vector(3, vector(3, 0.0));
 }
 
-Cell::Cell(double x, double y, double z)
-{
-    _box_lengths = vector({x, y, z});
-    _box_angles  = vector(3, 90.0);
-    _box_matrix  = _setup_box_matrix();
-}
-
 Cell::Cell(
     double a,
     double b,
@@ -62,10 +55,9 @@ vector<vector<double>> Cell::_setup_box_matrix()
     return box_matrix;
 }
 
-vector<vector<double>> Cell::bouding_edges()
+vector<vector<double>> Cell::bounding_edges()
 {
-    // Initialize edges array with 8 rows and 3 columns - array_t<double> is a
-    // 2D array
+    // Initialize edges with 8 rows and 3 columns
     vector<vector<double>> edges(8, vector<double>(3));
 
     // Values to iterate over
@@ -84,15 +76,13 @@ vector<vector<double>> Cell::bouding_edges()
 
                 int idx = i * 4 + j * 2 + k;
 
-                vector<double> result(3);
-                result[0] = _box_matrix[0][0] * x + _box_matrix[0][1] * y +
-                            _box_matrix[0][2] * z;
-                result[1] = _box_matrix[1][0] * x + _box_matrix[1][1] * y +
-                            _box_matrix[1][2] * z;
-                result[2] = _box_matrix[2][0] * x + _box_matrix[2][1] * y +
-                            _box_matrix[2][2] * z;
-
-                edges[idx] = result;
+                // Perform matrix multiplication manually
+                for (int col = 0; col < 3; col++)
+                {
+                    edges[idx][col] = _box_matrix[0][col] * x +
+                                      _box_matrix[1][col] * y +
+                                      _box_matrix[2][col] * z;
+                }
             }
         }
     }
@@ -117,33 +107,69 @@ bool Cell::is_vacuum()
     return volume() == 0;
 }
 
-array_d Cell::image(array_d pos)
+vector<vector<double>> Cell::image(vector<vector<double>> pos)
 {
-    // Unpack position array
-    auto position = array_to_vector_2d(pos);
+    vector<vector<double>> image(pos.size(), vector<double>(3, 0.0));
 
-    // Initialize image matrix with same size as position
-    vector<vector<double>> image(position.size(), vector<double>(3));
+    // Check for orthorhombic cell optimization
+    bool is_orthorhombic =
+        (_box_angles[0] == 90.0 && _box_angles[1] == 90.0 &&
+         _box_angles[2] == 90.0);
 
-    // Iterate over all positions
-    for (int i = 0; i < position.size(); i++)
+    if (is_orthorhombic)
     {
-        // Perform matrix multiplication manually
-        for (int col = 0; col < 3; col++)
+        // Fast path for orthorhombic cells
+        for (size_t i = 0; i < pos.size(); i++)
         {
-            image[i][col] = _box_matrix[0][col] * position[i][0] +
-                            _box_matrix[1][col] * position[i][1] +
-                            _box_matrix[2][col] * position[i][2];
+            for (int j = 0; j < 3; j++)
+            {
+                double scaled = pos[i][j] / _box_lengths[j];
+                image[i][j]   = pos[i][j] - _box_lengths[j] * round(scaled);
+            }
+        }
+    }
+    else
+    {
+        // General case using box matrix
+        vector<vector<double>> fractional(pos.size(), vector<double>(3, 0.0));
+
+        // Convert to fractional coordinates
+        for (size_t i = 0; i < pos.size(); i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    fractional[i][j] += pos[i][k] * _box_matrix[k][j];
+                }
+            }
+            // Wrap to [-0.5, 0.5)
+            for (int j = 0; j < 3; j++)
+            {
+                fractional[i][j] -= round(fractional[i][j]);
+            }
+        }
+
+        // Convert back to cartesian
+        for (size_t i = 0; i < pos.size(); i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                for (int k = 0; k < 3; k++)
+                {
+                    image[i][j] += fractional[i][k] * _box_matrix[j][k];
+                }
+            }
         }
     }
 
-    return vector_2d_to_array(image);
+    return image;
 }
 
-Cell &Cell::init_from_box_matrix(array_d box_matrix)
+Cell &Cell::init_from_box_matrix(vector<vector<double>> box_matrix)
 {
     // Assign box matrix
-    _box_matrix = array_to_vector_2d(box_matrix);
+    _box_matrix = box_matrix;
 
     // Calculate box lengths and angles
     _box_lengths = {
@@ -189,61 +215,4 @@ Cell &Cell::init_from_box_matrix(array_d box_matrix)
     };
 
     return *this;
-}
-
-array_d vector_2d_to_array(const std::vector<std::vector<double>> &vec)
-{
-    // Determine the dimensions of the 2D array
-    size_t rows = vec.size();
-    size_t cols = vec.empty() ? 0 : vec[0].size();
-
-    // Flatten the 2D vector into a 1D vector
-    std::vector<double> flattened;
-    flattened.reserve(rows * cols);
-    for (const auto &row : vec)
-    {
-        flattened.insert(flattened.end(), row.begin(), row.end());
-    }
-
-    // Create a NumPy array from the flattened data
-    array_d array({rows, cols}, flattened.data());
-    return array;
-}
-
-std::vector<std::vector<double>> array_to_vector_2d(array_d arr)
-{
-    // Get the dimensions of the NumPy array
-    py::buffer_info info = arr.request();
-    size_t          rows = info.shape[0];
-    size_t          cols = info.shape[1];
-
-    // Create a 2D vector from the NumPy array
-    std::vector<std::vector<double>> vec(rows, std::vector<double>(cols));
-    double                          *ptr = static_cast<double *>(info.ptr);
-    for (size_t i = 0; i < rows; i++)
-    {
-        for (size_t j = 0; j < cols; j++)
-        {
-            vec[i][j] = ptr[i * cols + j];
-        }
-    }
-
-    return vec;
-}
-
-std::vector<double> array_to_vector_1d(array_d arr)
-{
-    // Get the dimensions of the NumPy array
-    py::buffer_info info = arr.request();
-    size_t          size = info.size;
-
-    // Create a 1D vector from the NumPy array
-    std::vector<double> vec(size);
-    double             *ptr = static_cast<double *>(info.ptr);
-    for (size_t i = 0; i < size; i++)
-    {
-        vec[i] = ptr[i];
-    }
-
-    return vec;
 }

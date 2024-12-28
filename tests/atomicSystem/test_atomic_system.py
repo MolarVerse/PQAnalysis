@@ -351,8 +351,7 @@ class TestAtomicSystem:
                 "The number of atoms (or atoms in the topology), "
                 "positions, velocities, forces and charges must be equal."
             ),
-            AtomicSystemError,
-            lambda system: system.n_atoms,
+            AtomicSystemError, lambda system: system.n_atoms,
             system
         )
 

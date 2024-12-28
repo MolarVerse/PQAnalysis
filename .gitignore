@@ -26,3 +26,6 @@ venv.bak/
 .examples
 .mypy_cache
 .pytest_cache
+
+# C extensions
+*.so

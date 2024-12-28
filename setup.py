@@ -145,6 +145,6 @@ class CMakeBuild(build_ext):
 setup(
     name="PQAnalysis",
     packages=["PQAnalysis"],
-    ext_modules=[CMakeExtension("PQAnalysis")],
+    ext_modules=[CMakeExtension("cell"), CMakeExtension("process_lines")],
     cmdclass={"build_ext": CMakeBuild},
 )
