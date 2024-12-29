@@ -126,7 +126,7 @@ class ShakeTopologyGenerator:
         """
 
         for equivalent_indices in indices:
-            _indices = np.nonzero(np.in1d(self.indices, equivalent_indices))[0]
+            _indices = np.nonzero(np.isin(self.indices, equivalent_indices))[0]
 
             mean_distance = np.mean(self.distances[_indices])
 
@@ -143,7 +143,7 @@ class ShakeTopologyGenerator:
 
             for i, equivalent_indices in enumerate(indices):
                 _indices = np.nonzero(
-                    np.in1d(self.indices, equivalent_indices)
+                    np.isin(self.indices, equivalent_indices)
                 )[0]
 
                 for index in _indices:
