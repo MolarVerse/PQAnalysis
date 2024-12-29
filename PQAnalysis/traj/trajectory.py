@@ -57,7 +57,10 @@ class Trajectory:
         if frames is None:
             frames = []
 
-        self._frames = frames
+        if not isinstance(frames, list):
+            self._frames = [frames]
+        else:
+            self._frames = frames
 
         self.logger = setup_logger(self.logger)
 
@@ -172,13 +175,13 @@ class Trajectory:
         """
         frames = self.frames[key]
 
-        if np.shape(frames) != ():
-            traj = Trajectory(frames)
-            traj.topology = self.topology
-            return traj
+        if isinstance(frames, AtomicSystem):
+            frames.topology = self.topology
+            return frames
 
-        frames.topology = self.topology
-        return frames
+        traj = Trajectory(frames)
+        traj.topology = self.topology
+        return traj
 
     def __iter__(self) -> Iterable[AtomicSystem]:
         """

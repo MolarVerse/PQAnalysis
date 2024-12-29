@@ -27,6 +27,6 @@ std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms
         xyz[(i * 3) + 2] = z;
     }
 
-    // Return atoms and xyz coordinates
-    return {atoms, xyz};
+    // Return shared pointer to atoms and xyz
+    return std::make_pair(atoms, xyz);
 }
