@@ -8,6 +8,7 @@
 
 #define STRINGIFY(x)       #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
+#define PYBIND11_DETAILED_ERROR_MESSAGES
 
 namespace py = pybind11;
 
@@ -15,12 +16,14 @@ PYBIND11_MODULE(cell, m)
 {
     m.doc() = "Cell module";
     py::class_<Cell>(m, "Cell")
-        .def(py::init<>())
         .def(
-            py::init<double, double, double, double, double, double>(),
-            py::arg("x"),
-            py::arg("y"),
-            py::arg("z"),
+            py::init<float, float, float, float, float, float>(),
+            py::arg("x") = cbrt(std::numeric_limits<float>::max()) *
+                           0.99,   // 0.99 * max float for is_vacuum check
+            py::arg("y") = cbrt(std::numeric_limits<float>::max()) *
+                           0.99,   // 0.99 * max float for is_vacuum check
+            py::arg("z") = cbrt(std::numeric_limits<float>::max()) *
+                           0.99,   // 0.99 * max float for is_vacuum check
             py::arg("alpha") = 90.0,
             py::arg("beta")  = 90.0,
             py::arg("gamma") = 90.0
@@ -30,33 +33,24 @@ PYBIND11_MODULE(cell, m)
             [](Cell &self)
             {
                 py::array edges = py::cast(self.bounding_edges());
-                return edges;
+                return edges.reshape({-1, 3});
             }
         )
         .def("volume", &Cell::volume)
         .def("is_vacuum", &Cell::is_vacuum)
         .def(
             "image",
-            [](Cell &self, py::array_t<double> pos)
+            [](Cell &self, py::array_t<float> pos)
             {
                 // Convert position to a vector of vectors
                 py::buffer_info info           = pos.request();
                 auto            original_shape = info.shape;
 
-                if (info.ndim == 1)
-                {
-                    pos = pos.reshape({-1, 3});
-                }
-                py::buffer_info new_info = pos.request();
-                if (new_info.ndim != 2 || new_info.shape[1] != 3)
-                {
-                    throw std::runtime_error(
-                        "pos must be a 2D array with 3 columns"
-                    );
-                }
+                // Check if the input is a 1D array
+                std::vector<float> pos_vec =
+                    py::cast<std::vector<float>>(pos.attr("flatten")());
 
-                std::vector<std::vector<double>> pos_vec =
-                    py::cast<std::vector<std::vector<double>>>(pos);
+                // Check if the input is a 2D array
                 py::array image_array = py::cast(self.image(pos_vec));
                 return image_array.reshape(original_shape);
             },
@@ -64,7 +58,7 @@ PYBIND11_MODULE(cell, m)
         )
         .def(
             "init_from_box_matrix",
-            [](Cell &self, py::array_t<double> box_matrix)
+            [](Cell &self, py::array_t<float> box_matrix)
             {
                 py::buffer_info info = box_matrix.request();
                 if (info.ndim != 2)
@@ -75,9 +69,8 @@ PYBIND11_MODULE(cell, m)
                 {
                     throw std::runtime_error("box_matrix must be a 3x3 array");
                 }
-                std::vector<std::vector<double>> box_matrix_vec(
-                    info.shape[0],
-                    std::vector<double>(info.shape[1])
+                std::vector<float> box_matrix_vec(
+                    info.shape[0] * info.shape[1]
                 );
                 return self.init_from_box_matrix(box_matrix_vec);
             },
@@ -88,9 +81,9 @@ PYBIND11_MODULE(cell, m)
             [](Cell &self)
             {
                 py::array box_matrix = py::cast(self.get_box_matrix());
-                return box_matrix;
+                return box_matrix.reshape({3, 3});
             },
-            [](Cell &self, py::array_t<double> box_matrix)
+            [](Cell &self, py::array_t<float> box_matrix)
             {
                 py::buffer_info info = box_matrix.request();
                 if (info.ndim != 2)
@@ -101,9 +94,8 @@ PYBIND11_MODULE(cell, m)
                 {
                     throw std::runtime_error("box_matrix must be a 3x3 array");
                 }
-                std::vector<std::vector<double>> box_matrix_vec(
-                    info.shape[0],
-                    std::vector<double>(info.shape[1])
+                std::vector<float> box_matrix_vec(
+                    info.shape[0] * info.shape[1]
                 );
                 self.set_box_matrix(box_matrix_vec);
             }
@@ -115,7 +107,7 @@ PYBIND11_MODULE(cell, m)
                 py::array box_lengths = py::cast(self.get_box_lengths());
                 return box_lengths;
             },
-            [](Cell &self, py::array_t<double> box_lengths)
+            [](Cell &self, py::array_t<float> box_lengths)
             {
                 py::buffer_info info = box_lengths.request();
                 if (info.ndim != 1)
@@ -127,7 +119,7 @@ PYBIND11_MODULE(cell, m)
                     throw std::runtime_error("box_lengths must have 3 elements"
                     );
                 }
-                std::vector<double> box_lengths_vec(info.shape[0]);
+                std::vector<float> box_lengths_vec(info.shape[0]);
                 self.set_box_lengths(box_lengths_vec);
             }
         )
@@ -138,7 +130,7 @@ PYBIND11_MODULE(cell, m)
                 py::array box_angles = py::cast(self.get_box_angles());
                 return box_angles;
             },
-            [](Cell &self, py::array_t<double> box_angles)
+            [](Cell &self, py::array_t<float> box_angles)
             {
                 py::buffer_info info = box_angles.request();
                 if (info.ndim != 1)
@@ -149,7 +141,7 @@ PYBIND11_MODULE(cell, m)
                 {
                     throw std::runtime_error("box_angles must have 3 elements");
                 }
-                std::vector<double> box_angles_vec(info.shape[0]);
+                std::vector<float> box_angles_vec(info.shape[0]);
                 self.set_box_angles(box_angles_vec);
             }
         )
@@ -168,44 +160,8 @@ PYBIND11_MODULE(cell, m)
             "Check if two cells are close"
         )
         .def("__eq__", [](Cell &a, Cell &b) { return a.isclose(b); })
-        .def(
-            "__str__",
-            [](Cell &a)
-            {
-                if (a.is_vacuum())
-                {
-                    return std::string("Cell()");
-                }
-                return std::format(
-                    "Cell(x={}, y={}, z={}, alpha={}, beta={}, gamma={})",
-                    a.get_x(),
-                    a.get_y(),
-                    a.get_z(),
-                    a.get_alpha(),
-                    a.get_beta(),
-                    a.get_gamma()
-                );
-            }
-        )
-        .def(
-            "__repr__",
-            [](Cell &a)
-            {
-                if (a.is_vacuum())
-                {
-                    return std::string("Cell()");
-                }
-                return std::format(
-                    "Cell(x={}, y={}, z={}, alpha={}, beta={}, gamma={})",
-                    a.get_x(),
-                    a.get_y(),
-                    a.get_z(),
-                    a.get_alpha(),
-                    a.get_beta(),
-                    a.get_gamma()
-                );
-            }
-        );
+        .def("__str__", &Cell::to_string)
+        .def("__repr__", &Cell::to_string);
 #ifdef VERSION_INFO
     m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else
