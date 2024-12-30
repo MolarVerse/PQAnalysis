@@ -712,3 +712,5 @@ class AtomicSystem(
             The string representation of the AtomicSystem.
         """
         return self.__str__()
+
+    __iter__ = None  # To avoid iteration over the AtomicSystem object

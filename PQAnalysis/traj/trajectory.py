@@ -57,10 +57,10 @@ class Trajectory:
         if frames is None:
             frames = []
 
-        if not isinstance(frames, list):
-            self._frames = [frames]
-        else:
-            self._frames = frames
+        if isinstance(frames, AtomicSystem):
+            frames = [frames]
+
+        self._frames = frames.copy()
 
         self.logger = setup_logger(self.logger)
 
