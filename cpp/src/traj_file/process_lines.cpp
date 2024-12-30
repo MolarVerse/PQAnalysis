@@ -18,7 +18,7 @@ std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms
 
         if (!(iss >> atom >> x >> y >> z))
         {
-            throw std::runtime_error("Could not parse line");
+            throw std::runtime_error("Failed to parse line " + std::to_string(i));
         }
 
         atoms[i]         = atom;

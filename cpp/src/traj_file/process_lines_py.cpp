@@ -13,11 +13,27 @@ PYBIND11_MODULE(process_lines, m)
         "process_lines_with_atoms",
         [](const py::list &input, int n_atoms)
         {
+            // Cast the input list to a vector of strings
             std::vector<std::string> _input =
                 py::cast<std::vector<std::string>>(input);
-            auto [atoms, xyz]   = process_lines_with_atoms(_input, n_atoms);
-            py::array xyz_array = py::cast(xyz);
-            return std::make_pair(atoms, xyz_array.reshape({n_atoms, 3}));
+
+            // try-catch block to catch any exceptions
+            try
+            {
+                // Process the lines and return the result
+                auto [atoms, xyz] = process_lines_with_atoms(_input, n_atoms);
+
+                // Cast the atoms vector to a Python list
+                py::array xyz_array = py::cast(xyz);
+
+                // Return the atoms and xyz as a pair
+                return std::make_pair(atoms, xyz_array.reshape({n_atoms, 3}));
+            }
+            catch (const std::exception &e)
+            {
+                // Raise a Python value error with the exception message
+                throw py::value_error(e.what());
+            }
         },
         py::arg("input"),
         py::arg("n_atoms")
