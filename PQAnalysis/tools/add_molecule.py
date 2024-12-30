@@ -422,7 +422,10 @@ class AddMolecule:
             rotation_angle_step=self.rotation_angle_step
         )
 
-        return list(np.atleast_1d(fitted_systems))
+        if isinstance(fitted_systems, AtomicSystem):
+            return [fitted_systems]
+
+        return fitted_systems
 
     def _read_files(self):
         """
