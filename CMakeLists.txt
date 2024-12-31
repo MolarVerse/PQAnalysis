@@ -4,6 +4,9 @@ project(PQAnalysis)
 # set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 
+# include omp
+find_package(OpenMP REQUIRED)
+
 # find pybind11 package
 find_package(pybind11 REQUIRED)
 

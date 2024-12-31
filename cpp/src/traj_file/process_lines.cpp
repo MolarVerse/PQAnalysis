@@ -1,5 +1,7 @@
 #include "process_lines.hpp"
 
+#include <omp.h>
+
 #include <sstream>
 
 std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms(
@@ -10,6 +12,7 @@ std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms
     std::vector<std::string> atoms(n_atoms);
     std::vector<float>       xyz(n_atoms * 3);
 
+#pragma omp parallel for
     for (int i = 0; i < n_atoms; i++)
     {
         std::istringstream iss(input[i]);
@@ -18,7 +21,9 @@ std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms
 
         if (!(iss >> atom >> x >> y >> z))
         {
-            throw std::runtime_error("Failed to parse line " + std::to_string(i));
+            throw std::runtime_error(
+                "Failed to parse line " + std::to_string(i)
+            );
         }
 
         atoms[i]         = atom;

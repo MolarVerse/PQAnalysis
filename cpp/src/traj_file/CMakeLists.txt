@@ -12,3 +12,5 @@ pybind11_add_module(process_lines ${PROCESS_LINES})
 # link the library to the pybind11 module
 target_compile_definitions(process_lines
                            PRIVATE VERSION_INFO=${VERSION_INFO})
+# link openmp
+target_link_libraries(process_lines PRIVATE OpenMP::OpenMP_CXX)
