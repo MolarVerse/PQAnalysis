@@ -1,7 +1,5 @@
 #include "process_lines.hpp"
 
-#include <omp.h>
-
 #include <sstream>
 
 std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms(
@@ -12,7 +10,6 @@ std::pair<std::vector<std::string>, std::vector<float>> process_lines_with_atoms
     std::vector<std::string> atoms(n_atoms);
     std::vector<float>       xyz(n_atoms * 3);
 
-#pragma omp parallel for
     for (int i = 0; i < n_atoms; i++)
     {
         std::istringstream iss(input[i]);

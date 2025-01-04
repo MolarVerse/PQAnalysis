@@ -20,7 +20,6 @@ PLAT_TO_CMAKE = {
 }
 
 
-
 # A CMakeExtension needs a sourcedir instead of a file list.
 # The name must be the _single_ output extension from the CMake build.
 # If you need multiple extensions, see scikit-build.
@@ -29,7 +28,6 @@ class CMakeExtension(Extension):
     def __init__(self, name: str, sourcedir: str = "") -> None:
         super().__init__(name, sources=[])
         self.sourcedir = os.fspath(Path(sourcedir).resolve())
-
 
 
 class CMakeBuild(build_ext):
@@ -85,7 +83,8 @@ class CMakeBuild(build_ext):
                     ninja_executable_path = Path(ninja.BIN_DIR) / "ninja"
                     cmake_args += [
                         "-GNinja",
-                        f"-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_executable_path}",
+                        f"-DCMAKE_MAKE_PROGRAM:FILEPATH={
+                            ninja_executable_path}",
                     ]
                 except ImportError:
                     pass
@@ -141,10 +140,9 @@ class CMakeBuild(build_ext):
         )
 
 
-
 setup(
     name="PQAnalysis",
     packages=["PQAnalysis"],
-    ext_modules=[CMakeExtension("process_lines")],
+    ext_modules=[CMakeExtension("process_lines"), CMakeExtension("cell")],
     cmdclass={"build_ext": CMakeBuild},
 )
