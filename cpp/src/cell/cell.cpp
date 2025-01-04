@@ -42,7 +42,7 @@ vector<float> Cell::_setup_box_matrix()
     return box_matrix;
 }
 
-vector<float> Cell::bounding_edges()
+vector<float> Cell::bounding_edges() const
 {
     // Initialize edges with 8 rows and 3 columns
     vector<float> edges(8 * 3, 0.0);

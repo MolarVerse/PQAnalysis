@@ -14,12 +14,13 @@ class Cell
 
    public:
     Cell(float x, float y, float z, float alpha, float beta, float gamma);
+    ~Cell() = default;
 
    private:
     std::vector<float> _setup_box_matrix();
 
    public:
-    std::vector<float> bounding_edges();
+    std::vector<float> bounding_edges() const;
     float              volume() const;
     bool               is_vacuum() const;
     std::vector<float> image(std::vector<float> pos);
@@ -35,19 +36,28 @@ class Cell
         // Compare box matrix with other box matrix contents
         for (int i = 0; i < 3; i++)
         {
-            for (int j = 0; j < 3; j++)
+            // Compare box angles with other box angles contents
+            if (fabs(_box_angles[i] - other._box_angles[i]) >
+                fmax(
+                    rtol *
+                        fmax(fabs(_box_angles[i]), fabs(other._box_angles[i])),
+                    atol
+                ))
             {
-                if (fabs(_box_matrix[i + j] - other._box_matrix[i + j]) >
-                    fmax(
-                        rtol * fmax(
-                                   fabs(_box_matrix[i + j]),
-                                   fabs(other._box_matrix[i + j])
-                               ),
-                        atol
-                    ))
-                {
-                    return false;
-                }
+                return false;
+            }
+
+            // Compare box lengths with other box lengths contents
+            if (fabs(_box_lengths[i] - other._box_lengths[i]) >
+                fmax(
+                    rtol * fmax(
+                               fabs(_box_lengths[i]),
+                               fabs(other._box_lengths[i])
+                           ),
+                    atol
+                ))
+            {
+                return false;
             }
         }
         return true;
@@ -92,12 +102,12 @@ class Cell
             return "Cell()";
         }
 
-        return "Cell(" + std::to_string(_box_lengths[0]) + ", " +
-               std::to_string(_box_lengths[1]) + ", " +
-               std::to_string(_box_lengths[2]) + ", " +
-               std::to_string(_box_angles[0]) + ", " +
-               std::to_string(_box_angles[1]) + ", " +
-               std::to_string(_box_angles[2]) + ")";
+        return "Cell(x=" + std::to_string(_box_lengths[0]) +
+               ", y=" + std::to_string(_box_lengths[1]) +
+               ", z=" + std::to_string(_box_lengths[2]) +
+               ", alpha=" + std::to_string(_box_angles[0]) +
+               ", beta=" + std::to_string(_box_angles[1]) +
+               ", gamma=" + std::to_string(_box_angles[2]) + ")";
     }
 };
 
