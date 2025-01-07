@@ -192,7 +192,6 @@ class RDF:
         ############################################
         # Initialize Trajectory iterator/generator #
         ############################################
-        
         self.cells = traj.cells
 
         if isinstance(traj, TrajectoryReader):
