@@ -246,7 +246,7 @@ class TestRDFLogWriter:
             "\n",
             f"    Reference selection: {rdf.reference_selection}\n",
             f"    total number of atoms in reference selection: {len(rdf.reference_indices)}\n",
-            f"    Target selection:    {{rdf.target_selection}}\n",
+            f"    Target selection:    {rdf.target_selection}\n",
             f"    total number of atoms in target selection:    {len(rdf.target_indices)}\n",
             "\n",
             f"    Eliminate intra molecular contributions: {rdf.no_intra_molecular}\n",

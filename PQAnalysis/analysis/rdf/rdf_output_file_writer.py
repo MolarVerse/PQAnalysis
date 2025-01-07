@@ -138,7 +138,7 @@ class RDFLogWriter(BaseWriter):
         )
         print(
             "    Target selection:   ",
-            {rdf.target_selection},
+            rdf.target_selection,
             file=self.file
         )
         print(
