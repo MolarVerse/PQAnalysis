@@ -9,6 +9,7 @@ _version.py
 .github/.pylint_cache/__*
 
 .coverage
+.coverage.*
 coverage.xml
 htmlcov/
 .vscode
