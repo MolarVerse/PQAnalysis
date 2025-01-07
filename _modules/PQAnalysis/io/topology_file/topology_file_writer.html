@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.io.topology_file.topology_file_writer &mdash; PQAnalysis  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -83,31 +81,31 @@
 <span class="sd">please visit the documentation page of PQ https://molarverse.github.io/PQ/.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span> <span class="nn">_io</span> <span class="kn">import</span> <span class="n">TextIOWrapper</span> <span class="k">as</span> <span class="n">File</span>  <span class="c1"># type: ignore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TextIOWrapper</span> <span class="k">as</span> <span class="n">File</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.io.base</span> <span class="kn">import</span> <span class="n">BaseWriter</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.io.formats</span> <span class="kn">import</span> <span class="n">FileWritingMode</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">Topology</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.topology.bonded_topology</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">Topology</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology.bonded_topology</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Bond</span><span class="p">,</span>
     <span class="n">Angle</span><span class="p">,</span>
     <span class="n">Dihedral</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">TopologyFileError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TopologyFileError</span>
 
 
 
 <div class="viewcode-block" id="TopologyFileWriter">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.topology_file.topology_file_writer.html#PQAnalysis.io.topology_file.topology_file_writer.TopologyFileWriter">[docs]</a>
-<span class="k">class</span> <span class="nc">TopologyFileWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TopologyFileWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for writing topology files containing bonded information for the PQ and </span>
@@ -119,7 +117,7 @@
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
@@ -152,7 +150,7 @@
 <div class="viewcode-block" id="TopologyFileWriter.write">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.topology_file.topology_file_writer.html#PQAnalysis.io.topology_file.topology_file_writer.TopologyFileWriter.write">[docs]</a>
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the bonded topology to the file.</span>
 
@@ -191,7 +189,7 @@
 
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_write_bond_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_bond_info</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -219,7 +217,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_write_angle_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_angle_info</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -247,7 +245,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_write_dihedral_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_dihedral_info</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -275,7 +273,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_write_improper_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_improper_info</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -297,7 +295,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_write_shake_info</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_shake_info</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">File</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -316,7 +314,7 @@
                 <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_check_type_given</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_type_given</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Bond</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="n">Dihedral</span><span class="p">],</span> <span class="n">type_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -330,7 +328,7 @@
 <span class="sd">            The name of the type to check.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">get_type</span><span class="p">(</span><span class="n">type_</span><span class="p">:</span> <span class="n">Bond</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="n">Dihedral</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">get_type</span><span class="p">(</span><span class="n">type_</span><span class="p">:</span> <span class="n">Bond</span> <span class="o">|</span> <span class="n">Angle</span> <span class="o">|</span> <span class="n">Dihedral</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">Bond</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">type_</span><span class="o">.</span><span class="n">bond_type</span>
@@ -350,7 +348,7 @@
             <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_bond_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_bond_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the bond lines for the bonded topology.</span>
 
@@ -398,7 +396,7 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_angle_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_angle_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the angle lines for the bonded topology.</span>
 
@@ -451,7 +449,7 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_dihedral_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_dihedral_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the dihedral lines for the bonded topology.</span>
 
@@ -505,7 +503,7 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_improper_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_improper_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the improper lines for the bonded topology.</span>
 
@@ -560,7 +558,7 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">_get_shake_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_shake_lines</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">:</span> <span class="n">BondedTopology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the shake lines for the bonded topology.</span>
 

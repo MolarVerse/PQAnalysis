@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
@@ -5,20 +7,16 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>types &mdash; PQAnalysis  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
-      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -99,56 +97,56 @@
 <dt class="sig sig-object py" id="PQAnalysis.types.Np1DIntArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Np1DIntArray</span></span><a class="headerlink" href="#PQAnalysis.types.Np1DIntArray" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a 1D np.ndarray with dtype np.integer</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim == 1 and np.issubdtype(array.dtype, np.integer) or len(array) == 0]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim == 1 and np.issubdtype(array.dtype, np.integer) or len(array) == 0]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.Np1DNumberArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Np1DNumberArray</span></span><a class="headerlink" href="#PQAnalysis.types.Np1DNumberArray" title="Link to this definition"></a></dt>
 <dd><p>A type variable for a 1D np.ndarray with dtype np.number</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim == 1 and np.issubdtype(array.dtype, np.number) or len(array) == 0]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim == 1 and np.issubdtype(array.dtype, np.number) or len(array) == 0]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.Np2DIntArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Np2DIntArray</span></span><a class="headerlink" href="#PQAnalysis.types.Np2DIntArray" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a 2D np.ndarray with dtype np.integer</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim == 2 and np.issubdtype(array.dtype, np.integer)]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim == 2 and np.issubdtype(array.dtype, np.integer)]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.Np2DNumberArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Np2DNumberArray</span></span><a class="headerlink" href="#PQAnalysis.types.Np2DNumberArray" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a 2D np.ndarray with dtype np.number</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim == 2 and np.issubdtype(array.dtype, np.number)]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim == 2 and np.issubdtype(array.dtype, np.number)]]</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="PQAnalysis.types.Np3x3NumberArray">
 <span class="sig-name descname"><span class="pre">Np3x3NumberArray</span></span><a class="headerlink" href="#PQAnalysis.types.Np3x3NumberArray" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a 3x3 np.ndarray matrix with dtype np.number</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim == 2 and array.shape == (3, 3) and np.issubdtype(array.dtype, np.number)]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim == 2 and array.shape == (3, 3) and np.issubdtype(array.dtype, np.number)]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.NpnDNumberArray">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">NpnDNumberArray</span></span><a class="headerlink" href="#PQAnalysis.types.NpnDNumberArray" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a nD np.ndarray with dtype np.number</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, Is[lambda array: array.ndim &gt; 0 and np.issubdtype(array.dtype, np.number)]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, beartype.vale.Is[lambda array: array.ndim &gt; 0 and np.issubdtype(array.dtype, np.number)]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.PositiveInt">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">PositiveInt</span></span><a class="headerlink" href="#PQAnalysis.types.PositiveInt" title="Link to this definition"></a></dt>
 <dd><p>A type hint for positive integers</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, Is[lambda int: int &gt; 0]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">int64</span></code>, beartype.vale.Is[lambda int: int &gt; 0]]</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.types.Range">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Range</span></span><a class="headerlink" href="#PQAnalysis.types.Range" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a range object</p>
-<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">range</span></code>, Is[lambda r: isinstance(r, range)]]</p>
+<p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">range</span></code>, beartype.vale.Is[lambda r: isinstance(r, range)]]</p>
 </dd></dl>
 
 </section>

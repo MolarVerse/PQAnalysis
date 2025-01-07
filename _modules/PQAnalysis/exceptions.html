@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.exceptions &mdash; PQAnalysis  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=3e08eec4" />
-      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -81,13 +79,13 @@
 <span class="sd">A module containing different exceptions which could be useful.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">multimethod</span> <span class="kn">import</span> <span class="n">multimethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multimethod</span><span class="w"> </span><span class="kn">import</span> <span class="n">multimethod</span>
 
 
 
 <div class="viewcode-block" id="PQException">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException">[docs]</a>
-<span class="k">class</span> <span class="nc">PQException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for exceptions in this package.</span>
@@ -98,7 +96,7 @@
 
 <div class="viewcode-block" id="PQWarning">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQWarning">[docs]</a>
-<span class="k">class</span> <span class="nc">PQWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQWarning</span><span class="p">(</span><span class="ne">Warning</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for warnings in this package.</span>
@@ -109,7 +107,7 @@
 
 <div class="viewcode-block" id="PQIndexError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQIndexError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQIndexError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQIndexError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -120,7 +118,7 @@
 
 <div class="viewcode-block" id="PQTypeError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQTypeError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQTypeError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQTypeError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -131,7 +129,7 @@
 
 <div class="viewcode-block" id="PQNotImplementedError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQNotImplementedError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQNotImplementedError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQNotImplementedError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -142,7 +140,7 @@
 
 <div class="viewcode-block" id="PQFileNotFoundError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQFileNotFoundError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQFileNotFoundError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQFileNotFoundError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -153,7 +151,7 @@
 
 <div class="viewcode-block" id="PQKeyError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQKeyError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQKeyError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQKeyError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -164,7 +162,7 @@
 
 <div class="viewcode-block" id="PQValueError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQValueError">[docs]</a>
-<span class="k">class</span> <span class="nc">PQValueError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PQValueError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
@@ -175,14 +173,14 @@
 
 <div class="viewcode-block" id="BaseEnumFormatError">
 <a class="viewcode-back" href="../../code/PQAnalysis.exceptions.html#PQAnalysis.exceptions.BaseEnumFormatError">[docs]</a>
-<span class="k">class</span> <span class="nc">BaseEnumFormatError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseEnumFormatError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for enum exceptions if the given enum is not valid</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@multimethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span> <span class="n">enum</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -204,7 +202,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
 
     <span class="nd">@multimethod</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=function-redefined</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pylint: disable=function-redefined</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
 
 </pre></div>

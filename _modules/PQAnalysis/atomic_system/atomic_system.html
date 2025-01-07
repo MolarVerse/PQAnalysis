@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.atomic_system.atomic_system &mdash; PQAnalysis  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -81,44 +79,44 @@
 <span class="sd">A module containing the AtomicSystem class</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">scipy.spatial.transform</span> <span class="kn">import</span> <span class="n">Rotation</span>
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="c1"># just for forwardref type hinting</span>
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">List</span>  <span class="c1"># pylint: disable=unused-import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>  <span class="c1"># pylint: disable=unused-import</span>
 
-<span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">distance</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Topology</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Bool</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.exceptions</span> <span class="kn">import</span> <span class="n">PQNotImplementedError</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils.random</span> <span class="kn">import</span> <span class="n">get_random_seed</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils.math</span> <span class="kn">import</span> <span class="n">allclose_vectorized</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">distance</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Topology</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Bool</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PQNotImplementedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.random</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_random_seed</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">allclose_vectorized</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
 
-<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Np2DNumberArray</span><span class="p">,</span>
     <span class="n">Np1DNumberArray</span><span class="p">,</span>
     <span class="n">Np1DIntArray</span><span class="p">,</span>
     <span class="n">Np3x3NumberArray</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">._properties</span> <span class="kn">import</span> <span class="n">_PropertiesMixin</span>
-<span class="kn">from</span> <span class="nn">._standard_properties</span> <span class="kn">import</span> <span class="n">_StandardPropertiesMixin</span>
-<span class="kn">from</span> <span class="nn">._positions</span> <span class="kn">import</span> <span class="n">_PositionsMixin</span>
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">AtomicSystemError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._properties</span><span class="w"> </span><span class="kn">import</span> <span class="n">_PropertiesMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._standard_properties</span><span class="w"> </span><span class="kn">import</span> <span class="n">_StandardPropertiesMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._positions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_PositionsMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystemError</span>
 
 
 
 <div class="viewcode-block" id="AtomicSystem">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem">[docs]</a>
-<span class="k">class</span> <span class="nc">AtomicSystem</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AtomicSystem</span><span class="p">(</span>
     <span class="n">_PropertiesMixin</span><span class="p">,</span>
     <span class="n">_StandardPropertiesMixin</span><span class="p">,</span>
     <span class="n">_PositionsMixin</span><span class="p">,</span>
@@ -134,22 +132,22 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    An atomic system does not have to containing any positions,</span>
-<span class="sd">    velocities, forces and so forth. The only requirement is that</span>
+<span class="sd">    An atomic system does not have to contain any positions,</span>
+<span class="sd">    velocities, forces and so on. The only requirement is that</span>
 <span class="sd">    the number of atoms in the topology is equal to the number of</span>
 <span class="sd">    entries in the positions, velocities, forces and charges </span>
-<span class="sd">    arrays. If e.g. only a system containing information of the</span>
-<span class="sd">    velocities is needed, the positions, forces and charges arrays</span>
+<span class="sd">    arrays. For example, if a system containing only information about</span>
+<span class="sd">    the velocities is needed, the positions, forces and charges arrays</span>
 <span class="sd">    can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)).</span>
 <span class="sd">    The same goes for the other properties. An empty cell can be</span>
 <span class="sd">    created with Cell() and represents a system without periodic</span>
 <span class="sd">    boundary conditions. (For more information see the </span>
 <span class="sd">    documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`).</span>
-<span class="sd">    As the topology is can be really and complex and most of the </span>
-<span class="sd">    cases really specific to the system, here no further </span>
-<span class="sd">    information is given. (For more information see the </span>
+<span class="sd">    Since, the topology can be really complex and most of the </span>
+<span class="sd">    cases really specific to the system, no further </span>
+<span class="sd">    information is given here. (For more information see the </span>
 <span class="sd">    documentation of :py:class:`~PQAnalysis.topology.topology.Topology`).</span>
-<span class="sd">    Furthermore for this reason if no specialization of the topology</span>
+<span class="sd">    For this reason, if no specialization of the topology</span>
 <span class="sd">    is needed, the atomic system can be initialized with only a list</span>
 <span class="sd">    of atoms (see examples, and the documentation of </span>
 <span class="sd">    :py:class:`~PQAnalysis.core.atom.atom.Atom`).</span>
@@ -193,7 +191,7 @@
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">pos</span><span class="p">:</span> <span class="n">Np2DNumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -281,7 +279,7 @@
     <span class="c1"># @runtime_type_checking</span>
 <div class="viewcode-block" id="AtomicSystem.fit_atomic_system">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.fit_atomic_system">[docs]</a>
-    <span class="k">def</span> <span class="nf">fit_atomic_system</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_atomic_system</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">,</span>
         <span class="n">number_of_additions</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -364,7 +362,7 @@
         <span class="k">return</span> <span class="n">systems</span> <span class="k">if</span> <span class="n">number_of_additions</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">systems</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_fit_atomic_system</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_atomic_system</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">positions_to_fit_into</span><span class="p">:</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
         <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">,</span>
@@ -479,7 +477,7 @@
         <span class="k">return</span> <span class="n">system</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">center_of_mass_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">center_of_mass_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes the center of mass of the residues in the system.</span>
 
@@ -561,7 +559,7 @@
     <span class="c1"># TODO: refactor or discard this method</span>
 <div class="viewcode-block" id="AtomicSystem.compute_com_atomic_system">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.compute_com_atomic_system">[docs]</a>
-    <span class="k">def</span> <span class="nf">compute_com_atomic_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_com_atomic_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.</span>
 
@@ -608,7 +606,7 @@
 
 <div class="viewcode-block" id="AtomicSystem.copy">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.copy">[docs]</a>
-    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns a copy of the AtomicSystem.</span>
 
@@ -629,7 +627,7 @@
 
 <div class="viewcode-block" id="AtomicSystem.__eq__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__eq__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks whether the AtomicSystem is equal to another AtomicSystem.</span>
 
@@ -650,7 +648,7 @@
 <div class="viewcode-block" id="AtomicSystem.isclose">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.isclose">[docs]</a>
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span> <span class="nf">isclose</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">isclose</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
         <span class="n">rtol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
@@ -707,7 +705,7 @@
 
 <div class="viewcode-block" id="AtomicSystem.__getitem__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__getitem__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Atom</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">Np1DIntArray</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -779,9 +777,23 @@
         <span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="AtomicSystem.__len__">
+<a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__len__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the number of atoms in the AtomicSystem.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of atoms in the AtomicSystem.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span></div>
+
+
 <div class="viewcode-block" id="AtomicSystem.__str__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__str__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the string representation of the AtomicSystem.</span>
 
@@ -795,7 +807,7 @@
 
 <div class="viewcode-block" id="AtomicSystem.__repr__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__repr__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns the string representation of the AtomicSystem.</span>
 
@@ -805,7 +817,9 @@
 <span class="sd">            The string representation of the AtomicSystem.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
-</div>
+
+
+    <span class="fm">__iter__</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># To avoid iteration over the AtomicSystem object</span></div>
 
 </pre></div>
 

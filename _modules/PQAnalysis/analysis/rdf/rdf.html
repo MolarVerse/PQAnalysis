@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.rdf.rdf &mdash; PQAnalysis  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=fd3f3429" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" /> 
@@ -85,35 +83,35 @@
 <span class="sd">of finding a particle at a distance r from another particle. </span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="c1"># 3rd party imports</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># 3rd party imports</span>
-<span class="kn">from</span> <span class="nn">beartype.typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
-<span class="kn">from</span> <span class="nn">tqdm.auto</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="c1"># local absolute imports</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.config</span> <span class="kn">import</span> <span class="n">with_progress_bar</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.types</span> <span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.core</span> <span class="kn">import</span> <span class="n">distance</span><span class="p">,</span> <span class="n">Cells</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.traj</span> <span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">check_trajectory_pbc</span><span class="p">,</span> <span class="n">check_trajectory_vacuum</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.topology</span> <span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils</span> <span class="kn">import</span> <span class="n">timeit_in_class</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.utils.custom_logging</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.io</span> <span class="kn">import</span> <span class="n">TrajectoryReader</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis</span> <span class="kn">import</span> <span class="n">__package_name__</span>
-<span class="kn">from</span> <span class="nn">PQAnalysis.type_checking</span> <span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">with_progress_bar</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance</span><span class="p">,</span> <span class="n">Cells</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">check_trajectory_pbc</span><span class="p">,</span> <span class="n">check_trajectory_vacuum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit_in_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
 
 <span class="c1"># local relative imports</span>
-<span class="kn">from</span> <span class="nn">.exceptions</span> <span class="kn">import</span> <span class="n">RDFError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDFError</span>
 
 
 
 <div class="viewcode-block" id="RDF">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF">[docs]</a>
-<span class="k">class</span> <span class="nc">RDF</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">RDF</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for calculating the radial distribution of a </span>
@@ -151,7 +149,7 @@
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">,</span>
         <span class="n">reference_species</span><span class="p">:</span> <span class="n">SelectionCompatible</span><span class="p">,</span>
@@ -309,7 +307,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_bins</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_bins</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -425,7 +423,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_trajectory_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_trajectory_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the trajectory is fully periodic or fully in vacuum.</span>
 
@@ -449,14 +447,14 @@
             <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">average_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">average_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;PositiveReal: The average volume of the trajectory.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">cell</span><span class="o">.</span><span class="n">volume</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">])</span>
 
 <div class="viewcode-block" id="RDF.run">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF.run">[docs]</a>
     <span class="nd">@timeit_in_class</span>
-    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
         <span class="bp">self</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
         <span class="n">Np1DNumberArray</span><span class="p">,</span>
@@ -500,7 +498,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_run</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_initialize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the RDF analysis for running.</span>
 
@@ -519,7 +517,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_target_index_combinations</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_initialize_target_index_combinations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_target_index_combinations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the target index combinations of the RDF analysis.</span>
 
@@ -541,7 +539,7 @@
                     <span class="n">residue_indices</span><span class="p">)</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_calculate_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the bins of the RDF analysis.</span>
 
@@ -579,7 +577,7 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span>
                 <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_finalize_run</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finalize_run</span><span class="p">(</span>
         <span class="bp">self</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
         <span class="n">Np1DNumberArray</span><span class="p">,</span>
@@ -645,17 +643,17 @@
         <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of frames of the RDF analysis.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of atoms of the RDF analysis.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_add_to_bins</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_to_bins</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">distances</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
         <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
@@ -689,7 +687,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="n">n_bins</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_setup_bin_middle_points</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_bin_middle_points</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">,</span>
         <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
@@ -723,7 +721,7 @@
         <span class="k">return</span> <span class="n">bin_middle_points</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_calculate_r_max</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_r_max</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">n_bins</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">,</span>
         <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
@@ -757,7 +755,7 @@
         <span class="k">return</span> <span class="n">r_max</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_check_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks if the provided maximum radius is larger than the </span>
 <span class="sd">        maximum allowed radius according to the box vectors of the trajectory.</span>
@@ -801,7 +799,7 @@
         <span class="k">return</span> <span class="n">r_max</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_calculate_n_bins</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_n_bins</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
         <span class="n">r_max</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
@@ -839,7 +837,7 @@
         <span class="k">return</span> <span class="n">n_bins</span><span class="p">,</span> <span class="n">r_max</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_infer_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infer_r_max</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">cells</span><span class="p">:</span> <span class="n">Cells</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Infers the maximum radius of the RDF analysis from </span>
 <span class="sd">        the box vectors of the trajectory.</span>
@@ -878,7 +876,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">cell</span><span class="o">.</span><span class="n">box_lengths</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">cells</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_norm</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_norm</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">n_bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
@@ -921,7 +919,7 @@
         <span class="k">return</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">target_density</span> <span class="o">*</span> <span class="n">n_reference_indices</span> <span class="o">*</span> <span class="n">n_frames</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">_integration</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_integration</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
         <span class="n">n_reference_indices</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
