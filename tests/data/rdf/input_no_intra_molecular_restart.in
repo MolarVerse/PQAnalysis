@@ -1,0 +1,7 @@
+traj_files = md-00.xyz
+reference_selection = C 
+target_selection = C
+out_file = rdf.out 
+delta_r = 0.05
+restart_file = md-00.rst 
+no_intra_molecular = True
