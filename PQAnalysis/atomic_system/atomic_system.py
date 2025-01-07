@@ -53,22 +53,22 @@ class AtomicSystem(
 
     Notes
     -----
-    An atomic system does not have to containing any positions,
-    velocities, forces and so forth. The only requirement is that
+    An atomic system does not have to contain any positions,
+    velocities, forces and so on. The only requirement is that
     the number of atoms in the topology is equal to the number of
     entries in the positions, velocities, forces and charges 
-    arrays. If e.g. only a system containing information of the
-    velocities is needed, the positions, forces and charges arrays
+    arrays. For example, if a system containing only information about
+    the velocities is needed, the positions, forces and charges arrays
     can be left empty (i.e. np.zeros((0, 3)) and np.zeros(0)).
     The same goes for the other properties. An empty cell can be
     created with Cell() and represents a system without periodic
     boundary conditions. (For more information see the 
     documentation of :py:class:`~PQAnalysis.core.cell.cell.Cell`).
-    As the topology is can be really and complex and most of the 
-    cases really specific to the system, here no further 
-    information is given. (For more information see the 
+    Since, the topology can be really complex and most of the 
+    cases really specific to the system, no further 
+    information is given here. (For more information see the 
     documentation of :py:class:`~PQAnalysis.topology.topology.Topology`).
-    Furthermore for this reason if no specialization of the topology
+    For this reason, if no specialization of the topology
     is needed, the atomic system can be initialized with only a list
     of atoms (see examples, and the documentation of 
     :py:class:`~PQAnalysis.core.atom.atom.Atom`).
@@ -680,6 +680,17 @@ class AtomicSystem(
             topology=self.topology[keys]
         )
 
+    def __len__(self) -> int:
+        """
+        Returns the number of atoms in the AtomicSystem.
+
+        Returns
+        -------
+        int
+            The number of atoms in the AtomicSystem.
+        """
+        return self.n_atoms
+
     def __str__(self) -> str:
         """
         Returns the string representation of the AtomicSystem.
@@ -701,3 +712,5 @@ class AtomicSystem(
             The string representation of the AtomicSystem.
         """
         return self.__str__()
+
+    __iter__ = None  # To avoid iteration over the AtomicSystem object

@@ -33,7 +33,7 @@ dependencies = [
     "yapf",
     "rich-argparse",
     "Cython",
-    "setuptools<=71.1",
+    "setuptools==70.0.0"
 ]
 
 [project.optional-dependencies]

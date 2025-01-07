@@ -225,12 +225,12 @@ class Cell(_StandardPropertiesMixin):
         str
             A string representation of the Cell.
         """
-        x = self.x
-        y = self.y
-        z = self.z
-        alpha = self.alpha
-        beta = self.beta
-        gamma = self.gamma
+        x = float(self.x)
+        y = float(self.y)
+        z = float(self.z)
+        alpha = float(self.alpha)
+        beta = float(self.beta)
+        gamma = float(self.gamma)
 
         if self != Cell():
             return f"Cell(x={x}, y={y}, z={z}, alpha={alpha}, beta={beta}, gamma={gamma})"
