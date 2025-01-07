@@ -254,6 +254,7 @@ class TestRDFLogWriter:
             "\n",
             "\n", 
             "\n",
+            "\n",
         ]
 
 
