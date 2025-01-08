@@ -21,8 +21,7 @@ logger = setup_logger(logger)
 
 
 def _parse_positive_real(
-    input_dict: InputDictionary,
-    key: str
+    input_dict: InputDictionary, key: str
 ) -> PositiveReal | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive real number.
@@ -132,15 +131,15 @@ def _parse_files(input_dict: InputDictionary, key: str) -> List[str] | None:
 
     if data_type in {"glob", "list(str)"}:
         return data[0]
-    
+
     if data_type == "None":
         return None
-    
+
     logger.error(
         (
-        f"The \"{key}\" value has to be either a "
-        "string, glob or a list of strings - actually "
-        f"it is parsed as a {data_type}"
+            f"The \"{key}\" value has to be either a "
+            "string, glob or a list of strings - actually "
+            f"it is parsed as a {data_type}"
         ),
         exception=InputFileError
     )
@@ -184,8 +183,7 @@ def _parse_int(input_dict: InputDictionary, key: str) -> int | None:
 
 
 def _parse_positive_int(
-    input_dict: InputDictionary,
-    key: str
+    input_dict: InputDictionary, key: str
 ) -> PositiveInt | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a positive integer.
@@ -251,8 +249,8 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
     if data[1] not in ["str", "None"]:
         logger.error(
             (
-            f"The \"{key}\" value has to be of "
-            f"string type - actually it is parsed as a {data[1]}"
+                f"The \"{key}\" value has to be of "
+                f"string type - actually it is parsed as a {data[1]}"
             ),
             exception=InputFileError
         )
@@ -286,8 +284,8 @@ def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
         data = input_dict[key]
     except PQKeyError:
         return None
-    
-    if data[1] not in["bool", "None"]:
+
+    if data[1] not in ["bool", "None"]:
         logger.error(
             f"The \"{key}\" value has to be of bool type - actually it is parsed as a {data[1]}",
             exception=InputFileError
