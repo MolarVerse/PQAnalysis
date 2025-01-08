@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.2.2](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.2) - 2025-01-07
+
+<small>[Compare with v1.2.1](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.1...v1.2.2)</small>
+
+### Bug Fixes
+
+- pin setuptools to version 70.0.0 so that pytest.sh works ([1b191f8](https://github.com/MolarVerse/PQAnalysis/commit/1b191f85f70d6f1b1eff0e79b600fba454527cc4) by Josef M. Gallmetzer).
+- update setuptools dependency to latest version ([d52e3b1](https://github.com/MolarVerse/PQAnalysis/commit/d52e3b16475a5cb8a48dab4fd51f79987d0b25f7) by Josef M. Gallmetzer).
+- Replace np.in1d with np.isin for improved index matching ([cfb5391](https://github.com/MolarVerse/PQAnalysis/commit/cfb5391f76fd7fee0d31b32c8f0b6d4d41455036) by Josef M. Gallmetzer).
+- Disable iteration over AtomicSystem object ([bfb0365](https://github.com/MolarVerse/PQAnalysis/commit/bfb03650c9d902569b20409bae534b4a3fc3189f) by Josef M. Gallmetzer).
+
 ## [v1.2.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.1) - 2024-08-19
 
 <small>[Compare with v1.1.2](https://github.com/MolarVerse/PQAnalysis/compare/v1.1.2...v1.2.1)</small>
