@@ -4,7 +4,7 @@ import pytest
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
@@ -606,3 +606,83 @@ class TestRDF:
             ]
         )
         assert np.isclose(rdf.average_volume, v)
+
+    def test__initialize_run(self, caplog):
+
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["H"], ["H"], delta_r=0.1, n_bins=5)
+
+        rdf._initialize_run()
+
+        assert np.isclose(rdf._average_volume, rdf.average_volume, atol=1e-6)
+
+        assert np.isclose(rdf._average_volume, 10**3, atol=1e-6)
+
+        assert len(rdf.reference_indices) == 2
+
+        assert np.isclose(rdf._reference_density, 2 / (10**3), atol=1e-6)
+
+    def test__initialize_target_index_combinations_no_intra_molecular(
+        self, caplog
+    ):
+        # Create atomic systems
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(
+            traj, ["H"], ["H"], delta_r=0.1, n_bins=5, no_intra_molecular=True
+        )
+
+        rdf._initialize_target_index_combinations()
+
+        assert len(rdf.target_index_combinations) == len(rdf.reference_indices)
+        print(rdf.target_index_combinations)
+
+        expected_combinations = [np.array([1]), np.array([0])]
+
+        assert np.array_equal(
+            rdf.target_index_combinations, expected_combinations
+        )
+
+    def test__finalize_run(self, caplog):
+
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["H"], ["H"], delta_r=0.1, n_bins=5)
+
+        rdf._initialize_run()
+
+        rdf._finalize_run()
