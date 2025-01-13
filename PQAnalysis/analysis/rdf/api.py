@@ -64,9 +64,7 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         )
 
     traj_reader = TrajectoryReader(
-        input_reader.traj_files,
-        md_format=md_format,
-        topology=topology
+        input_reader.traj_files, md_format=md_format, topology=topology
     )
 
     _rdf = RDF(

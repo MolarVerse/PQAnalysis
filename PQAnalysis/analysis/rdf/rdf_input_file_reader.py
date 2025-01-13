@@ -99,16 +99,6 @@ class RDFInputFileReader(Reader):
                 exception=InputFileError,
             )
 
-        if self.restart_file is None and self.moldescriptor_file is None:
-            self.logger.error(
-                (
-                    "The restart_file key or the moldescriptor_file key with restart_file key "
-                    "have to be set in order to use the RDF analysis."
-                    "It is needed for the selection of the target and reference residues."
-                ),
-                exception=InputFileError,
-            )
-
 
 
 input_keys_documentation = f"""

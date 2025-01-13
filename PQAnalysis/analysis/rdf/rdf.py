@@ -208,7 +208,10 @@ class RDF:
 
         self.first_frame = next(self.frame_generator)
 
-        self.topology = traj.topology
+        if traj.topology is not None:
+            self.topology = traj.topology
+        else:
+            self.topology = self.first_frame.topology
 
         self._setup_bins(
             n_bins=n_bins, delta_r=delta_r, r_max=r_max, r_min=self.r_min
