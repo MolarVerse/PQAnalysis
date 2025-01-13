@@ -1,0 +1,6 @@
+
+reference_selection = H
+target_selection = Q
+delta_r = 0.05
+out_file = rdf.out
+traj_files = md.xyz

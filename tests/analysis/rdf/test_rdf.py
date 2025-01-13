@@ -4,7 +4,7 @@ import pytest
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
@@ -50,10 +50,10 @@ def test__infer_r_max(caplog):
         logging_name=RDF.__qualname__,
         logging_level="ERROR",
         message_to_test=(
-        "To infer r_max of the RDF analysis, the "
-        "trajectory cannot be a vacuum trajectory. "
-        "Please specify r_max manually or use "
-        "the combination n_bins and delta_r."
+            "To infer r_max of the RDF analysis, the "
+            "trajectory cannot be a vacuum trajectory. "
+            "Please specify r_max manually or use "
+            "the combination n_bins and delta_r."
         ),
         exception=RDFError,
         function=RDF._infer_r_max,
@@ -82,10 +82,10 @@ def test__check_r_max(caplog):
         logging_name=RDF.__qualname__,
         logging_level="WARNING",
         message_to_test=(
-        f"The calculated r_max {r_max} "
-        "is larger than the maximum allowed radius "
-        "according to the box vectors of the trajectory 5.0. "
-        "r_max will be set to the maximum allowed radius."
+            f"The calculated r_max {r_max} "
+            "is larger than the maximum allowed radius "
+            "according to the box vectors of the trajectory 5.0. "
+            "r_max will be set to the maximum allowed radius."
         ),
         exception=None,
         function=RDF._check_r_max,
@@ -121,10 +121,7 @@ def test__setup_bin_middle_points():
     delta_r = 1.0
 
     bin_middle_points = RDF._setup_bin_middle_points(
-        n_bins,
-        r_min,
-        r_max,
-        delta_r
+        n_bins, r_min, r_max, delta_r
     )
 
     assert np.allclose(bin_middle_points, np.array([3.5, 4.5, 5.5, 6.5, 7.5]))
@@ -142,11 +139,13 @@ def test__integration():
     assert np.allclose(
         integration,
         np.array(
-        [1 / n_total,
-        3 / n_total,
-        6 / n_total,
-        10 / n_total,
-        15 / n_total]
+            [
+                1 / n_total,
+                3 / n_total,
+                6 / n_total,
+                10 / n_total,
+                15 / n_total
+            ]
         )
     )
 
@@ -160,11 +159,7 @@ def test__norm():
     target_density = 2.0
 
     norm = RDF._norm(
-        n_bins,
-        delta_r,
-        target_density,
-        n_reference_indices,
-        n_frames
+        n_bins, delta_r, target_density, n_reference_indices, n_frames
     )
 
     help_1 = np.arange(0, n_bins)
@@ -172,8 +167,7 @@ def test__norm():
     norm_ref = (help_2**3 - help_1**3) * delta_r**3 * 4 / 3 * np.pi
 
     assert np.allclose(
-        norm,
-        norm_ref * target_density * n_reference_indices * n_frames
+        norm, norm_ref * target_density * n_reference_indices * n_frames
     )
 
 
@@ -186,15 +180,8 @@ def test__add_to_bins():
     distances = np.array([1.5, 2.5, 3.5, 3.6, 3.7, 4.5, 4.6, 5.5, 6.5, 8.5])
 
     assert np.allclose(
-        RDF._add_to_bins(distances,
-        r_min,
-        delta_r,
-        n_bins),
-        np.array([3,
-        2,
-        1,
-        1,
-        0])
+        RDF._add_to_bins(distances, r_min, delta_r, n_bins),
+        np.array([3, 2, 1, 1, 0])
     )
 
 
@@ -207,9 +194,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "traj",
-            1,
-            Trajectory | TrajectoryReader
+                "traj", 1, Trajectory | TrajectoryReader
             ),
             exception=PQTypeError,
             function=RDF,
@@ -223,9 +208,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "reference_species",
-            Trajectory(),
-            SelectionCompatible
+                "reference_species", Trajectory(), SelectionCompatible
             ),
             exception=PQTypeError,
             function=RDF,
@@ -239,9 +222,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "target_species",
-            Trajectory(),
-            SelectionCompatible
+                "target_species", Trajectory(), SelectionCompatible
             ),
             exception=PQTypeError,
             function=RDF,
@@ -255,9 +236,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "use_full_atom_info",
-            1,
-            bool
+                "use_full_atom_info", 1, bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -272,9 +251,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "no_intra_molecular",
-            1,
-            bool
+                "no_intra_molecular", 1, bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -289,9 +266,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "r_max",
-            -1,
-            PositiveReal | None
+                "r_max", -1, PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -306,9 +281,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "r_min",
-            -1,
-            PositiveReal | None
+                "r_min", -1, PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -323,9 +296,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "delta_r",
-            -1,
-            PositiveReal | None
+                "delta_r", -1, PositiveReal | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -340,9 +311,7 @@ class TestRDF:
             logging_name="TypeChecking",
             logging_level="ERROR",
             message_to_test=get_type_error_message(
-            "n_bins",
-            -1,
-            PositiveInt | None
+                "n_bins", -1, PositiveInt | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -353,6 +322,75 @@ class TestRDF:
         )
 
     def test__init__(self, caplog):
+
+        system1 = AtomicSystem(cell=Cell(10, 10, 10, 90, 90, 90))
+        system2 = AtomicSystem(cell=Cell(16, 13, 12, 90, 90, 90))
+        traj = Trajectory([system1, system2])
+
+        # initialize rdf with use_full_atom_info is None
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            use_full_atom_info=None
+        )
+
+        assert rdf.use_full_atom_info == rdf._use_full_atom_default
+
+        # initialize rdf with use_full_atom_info is not None
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            use_full_atom_info=True
+        )
+
+        assert rdf.use_full_atom_info is True
+
+        # initialize rdf with no_intra_molecular is None
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            no_intra_molecular=None
+        )
+
+        assert rdf.no_intra_molecular == rdf._no_intra_molecular_default
+
+        # initialize rdf with no_intra_molecular is not None and r_min is not None
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            r_min=3.0,
+            no_intra_molecular=True
+        )
+
+        assert rdf.no_intra_molecular is True
+
+        assert rdf.r_min == 3.0
+
+        # initialize rdf with r_min is None
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            r_min=None,
+        )
+
+        assert rdf.r_min == rdf._r_min_default
+
+        # initialize rdf with empty trajectory
 
         assert_logging_with_exception(
             caplog=caplog,
@@ -372,15 +410,17 @@ class TestRDF:
         system2 = AtomicSystem(cell=Cell())
         traj = Trajectory([system1, system2])
 
+        # initialize rdf with trajectory with vacuum system or not fully periodic
+
         assert_logging_with_exception(
             caplog=caplog,
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "The provided trajectory is not fully periodic "
-            "or in vacuum, meaning that some frames are in "
-            "vacuum and others are periodic. This is not "
-            "supported by the RDF analysis."
+                "The provided trajectory is not fully periodic "
+                "or in vacuum, meaning that some frames are in "
+                "vacuum and others are periodic. This is not "
+                "supported by the RDF analysis."
             ),
             exception=RDFError,
             function=RDF,
@@ -396,6 +436,8 @@ class TestRDF:
 
         traj = Trajectory([system1, system2])
 
+        # initialize rdf without n_bins or delta_r
+
         assert_logging_with_exception(
             caplog=caplog,
             logging_name=RDF.__qualname__,
@@ -410,14 +452,16 @@ class TestRDF:
             r_min=3.0,
         )
 
+        # initialize rdf with r_max, delta_r and n_bins
+
         assert_logging_with_exception(
             caplog=caplog,
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "It is not possible to specify all of n_bins, "
-            "delta_r and r_max in the same RDF analysis as "
-            "this would lead to ambiguous results."
+                "It is not possible to specify all of n_bins, "
+                "delta_r and r_max in the same RDF analysis as "
+                "this would lead to ambiguous results."
             ),
             exception=RDFError,
             function=RDF,
@@ -441,12 +485,7 @@ class TestRDF:
         assert np.isclose(rdf.r_min, 0.0)
         assert len(rdf.bins) == 5
         assert np.allclose(
-            rdf.bin_middle_points,
-            np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+            rdf.bin_middle_points, np.array([0.5, 1.5, 2.5, 3.5, 4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
@@ -460,9 +499,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="WARNING",
             message_to_test=(
-            "The calculated r_max 10.0 is larger than the maximum allowed "
-            "radius according to the box vectors of the trajectory 5.0. "
-            "r_max will be set to the maximum allowed radius."
+                "The calculated r_max 10.0 is larger than the maximum allowed "
+                "radius according to the box vectors of the trajectory 5.0. "
+                "r_max will be set to the maximum allowed radius."
             ),
             exception=None,
             function=RDF,
@@ -485,9 +524,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "To infer r_max of the RDF analysis, the trajectory cannot "
-            "be a vacuum trajectory. Please specify r_max manually or "
-            "use the combination n_bins and delta_r."
+                "To infer r_max of the RDF analysis, the trajectory cannot "
+                "be a vacuum trajectory. Please specify r_max manually or "
+                "use the combination n_bins and delta_r."
             ),
             exception=RDFError,
             function=RDF,
@@ -502,9 +541,9 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "To infer r_max of the RDF analysis, the trajectory cannot be "
-            "a vacuum trajectory. Please specify r_max manually or use the "
-            "combination n_bins and delta_r."
+                "To infer r_max of the RDF analysis, the trajectory cannot be "
+                "a vacuum trajectory. Please specify r_max manually or use the "
+                "combination n_bins and delta_r."
             ),
             exception=RDFError,
             function=RDF,
@@ -522,12 +561,7 @@ class TestRDF:
         assert np.isclose(rdf.r_min, 0.0)
         assert len(rdf.bins) == 5
         assert np.allclose(
-            rdf.bin_middle_points,
-            np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+            rdf.bin_middle_points, np.array([0.5, 1.5, 2.5, 3.5, 4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
@@ -540,12 +574,115 @@ class TestRDF:
         assert np.isclose(rdf.r_min, 0.0)
         assert len(rdf.bins) == 5
         assert np.allclose(
-            rdf.bin_middle_points,
-            np.array([0.5,
-            1.5,
-            2.5,
-            3.5,
-            4.5])
+            rdf.bin_middle_points, np.array([0.5, 1.5, 2.5, 3.5, 4.5])
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
+
+    def test_average_volume(self, caplog):
+
+        system1 = AtomicSystem(cell=Cell(10.0, 10.0, 10.0, 90, 90, 90))
+        system2 = AtomicSystem(cell=Cell(20.0, 20.0, 20.0, 90, 90, 90))
+        system3 = AtomicSystem(cell=Cell(10.0, 10.0, 10.0, 90, 90, 90))
+        system4 = AtomicSystem(cell=Cell(20.0, 20.0, 20.0, 90, 90, 90))
+        traj = Trajectory([system1, system2, system3, system4])
+
+        rdf = RDF(traj, ["h"], ["h"], delta_r=0.1, n_bins=5)
+        v = np.mean([10.0**3, 20.0**3, 10.0**3, 20.0**3])
+        assert np.isclose(rdf.average_volume, v)
+
+        system1 = AtomicSystem(cell=Cell(10.0, 10.0, 10.0, 90, 90, 120))
+        system2 = AtomicSystem(cell=Cell(20.0, 20.0, 20.0, 90, 90, 120))
+        system3 = AtomicSystem(cell=Cell(10.0, 10.0, 10.0, 90, 90, 120))
+        system4 = AtomicSystem(cell=Cell(20.0, 20.0, 20.0, 90, 90, 120))
+        traj = Trajectory([system1, system2, system3, system4])
+        rdf = RDF(traj, ["h"], ["h"], delta_r=0.1, n_bins=5)
+        v = np.mean(
+            [
+                10.0**3 * np.sin(np.deg2rad(120)),
+                20.0**3 * np.sin(np.deg2rad(120)),
+                10.0**3 * np.sin(np.deg2rad(120)),
+                20.0**3 * np.sin(np.deg2rad(120))
+            ]
+        )
+        assert np.isclose(rdf.average_volume, v)
+
+    def test__initialize_run(self, caplog):
+
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["H"], ["H"], delta_r=0.1, n_bins=5)
+
+        rdf._initialize_run()
+
+        assert np.isclose(rdf._average_volume, rdf.average_volume, atol=1e-6)
+
+        assert np.isclose(rdf._average_volume, 10**3, atol=1e-6)
+
+        assert len(rdf.reference_indices) == 2
+
+        assert np.isclose(rdf._reference_density, 2 / (10**3), atol=1e-6)
+
+    def test__initialize_target_index_combinations_no_intra_molecular(
+        self, caplog
+    ):
+        # Create atomic systems
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(
+            traj, ["H"], ["H"], delta_r=0.1, n_bins=5, no_intra_molecular=True
+        )
+
+        rdf._initialize_target_index_combinations()
+
+        assert len(rdf.target_index_combinations) == len(rdf.reference_indices)
+        print(rdf.target_index_combinations)
+
+        expected_combinations = [np.array([1]), np.array([0])]
+
+        assert np.array_equal(
+            rdf.target_index_combinations, expected_combinations
+        )
+
+    def test__finalize_run(self, caplog):
+
+        system1 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("H"), Atom("H"), Atom("C")],
+            pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["H"], ["H"], delta_r=0.1, n_bins=5)
+
+        rdf._initialize_run()
+
+        rdf._finalize_run()

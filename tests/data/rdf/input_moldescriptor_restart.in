@@ -1,0 +1,5 @@
+traj_files = md-00.xyz
+reference_selection = C 
+target_selection = C
+out_file = rdf.out 
+moldescriptor_file = moldescriptor.dat

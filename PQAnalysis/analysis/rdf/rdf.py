@@ -75,8 +75,8 @@ class RDF:
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
         target_species: SelectionCompatible,
-        use_full_atom_info: bool = False,
-        no_intra_molecular: bool = False,
+        use_full_atom_info: bool | None = False,
+        no_intra_molecular: bool | None = False,
         n_bins: PositiveInt | None = None,
         delta_r: PositiveReal | None = None,
         r_max: PositiveReal | None = None,
@@ -92,10 +92,10 @@ class RDF:
             The reference species of the RDF analysis.
         target_species : SelectionCompatible
             The target species of the RDF analysis.
-        use_full_atom_info : bool, optional
+        use_full_atom_info : bool | None, optional
             Whether to use the full atom information of the trajectory
             or not, by default None (False).
-        no_intra_molecular : bool, optional
+        no_intra_molecular : bool | None, optional
             Whether to exclude intra-molecular distances or not, by default None (False).
         n_bins : PositiveInt | None, optional
             number of bins, by default None
@@ -193,7 +193,6 @@ class RDF:
         ############################################
         # Initialize Trajectory iterator/generator #
         ############################################
-
         self.cells = traj.cells
 
         if isinstance(traj, TrajectoryReader):
@@ -204,28 +203,26 @@ class RDF:
             self.frame_generator = iter(traj)
         else:
             self.logger.error(
-                "Trajectory cannot be of length 0.",
-                exception=RDFError
+                "Trajectory cannot be of length 0.", exception=RDFError
             )
 
         self.first_frame = next(self.frame_generator)
-        self.topology = traj.topology
+
+        if traj.topology is not None:
+            self.topology = traj.topology
+        else:
+            self.topology = self.first_frame.topology
 
         self._setup_bins(
-            n_bins=n_bins,
-            delta_r=delta_r,
-            r_max=r_max,
-            r_min=self.r_min
+            n_bins=n_bins, delta_r=delta_r, r_max=r_max, r_min=self.r_min
         )
 
         self.reference_indices = self.reference_selection.select(
-            self.topology,
-            self.use_full_atom_info
+            self.topology, self.use_full_atom_info
         )
 
         self.target_indices = self.target_selection.select(
-            self.topology,
-            self.use_full_atom_info
+            self.topology, self.use_full_atom_info
         )
 
     def _setup_bins(
@@ -286,9 +283,9 @@ class RDF:
         elif all([n_bins, delta_r, r_max]):
             self.logger.error(
                 (
-                "It is not possible to specify all of n_bins, "
-                "delta_r and r_max in the same RDF analysis "
-                "as this would lead to ambiguous results."
+                    "It is not possible to specify all of n_bins, "
+                    "delta_r and r_max in the same RDF analysis "
+                    "as this would lead to ambiguous results."
                 ),
                 exception=RDFError
             )
@@ -301,10 +298,7 @@ class RDF:
             self.delta_r = delta_r
 
             self.r_max = self._calculate_r_max(
-                n_bins,
-                delta_r,
-                r_min,
-                self.cells
+                n_bins, delta_r, r_min, self.cells
             )
 
             self.n_bins, self.r_max = self._calculate_n_bins(
@@ -336,10 +330,7 @@ class RDF:
                 self.delta_r = (self.r_max - self.r_min) / self.n_bins
 
         self.bin_middle_points = self._setup_bin_middle_points(
-            self.n_bins,
-            self.r_min,
-            self.r_max,
-            self.delta_r
+            self.n_bins, self.r_min, self.r_max, self.delta_r
         )
 
         self.bins = np.zeros(self.n_bins)
@@ -356,13 +347,14 @@ class RDF:
         """
 
         if not check_trajectory_pbc(
-                self.cells) and not check_trajectory_vacuum(self.cells):
+            self.cells
+        ) and not check_trajectory_vacuum(self.cells):
             self.logger.error(
                 (
-                "The provided trajectory is not fully periodic or "
-                "in vacuum, meaning that some frames are in vacuum "
-                "and others are periodic. This is not supported by "
-                "the RDF analysis."
+                    "The provided trajectory is not fully periodic or "
+                    "in vacuum, meaning that some frames are in vacuum "
+                    "and others are periodic. This is not supported by "
+                    "the RDF analysis."
                 ),
                 exception=RDFError
             )
@@ -376,10 +368,10 @@ class RDF:
     def run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Runs the RDF analysis.
 
@@ -453,8 +445,7 @@ class RDF:
                 residue_indices = self.topology.residue_atom_indices[
                     reference_index]
                 self.target_index_combinations.append(
-                    np.setdiff1d(self.target_indices,
-                    residue_indices)
+                    np.setdiff1d(self.target_indices, residue_indices)
                 )
 
     def _calculate_bins(self):
@@ -469,9 +460,11 @@ class RDF:
         calculated from these distances.
         """
 
-        for frame in tqdm(self.frame_generator,
+        for frame in tqdm(
+            self.frame_generator,
             total=self.n_frames,
-            disable=not with_progress_bar):
+            disable=not with_progress_bar
+        ):
             for i, reference_index in enumerate(self.reference_indices):
 
                 if self.no_intra_molecular:
@@ -483,25 +476,20 @@ class RDF:
                 target_positions = frame.pos[target_indices]
 
                 distances = distance(
-                    reference_position,
-                    target_positions,
-                    frame.cell
+                    reference_position, target_positions, frame.cell
                 )
 
                 self.bins += self._add_to_bins(
-                    distances,
-                    self.r_min,
-                    self.delta_r,
-                    self.n_bins
+                    distances, self.r_min, self.delta_r, self.n_bins
                 )
 
     def _finalize_run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Finalizes the RDF analysis after running.
 
@@ -526,8 +514,11 @@ class RDF:
         differential_bins : Np1DNumberArray
             The differential bins of the RDF analysis based on the spherical shell model.
         """
+        if self.no_intra_molecular:
+            target_density = len(self.target_index_combinations[0])
+        else:
+            target_density = len(self.target_indices)
 
-        target_density = len(self.target_index_combinations[0])
         target_density /= self._average_volume
 
         norm = self._norm(
@@ -541,9 +532,7 @@ class RDF:
         self.normalized_bins = self.bins / norm
 
         self.integrated_bins = self._integration(
-            self.bins,
-            len(self.reference_indices),
-            self.n_frames
+            self.bins, len(self.reference_indices), self.n_frames
         )
 
         self.normalized_bins2 = self.bins / target_density
@@ -704,11 +693,11 @@ class RDF:
         if check_trajectory_pbc(cells) and r_max > cls._infer_r_max(cells):
             cls.logger.warning(
                 (
-                f"The calculated r_max {r_max} is larger "
-                "than the maximum allowed radius according "
-                "to the box vectors of the trajectory "
-                f"{cls._infer_r_max(cells)}. r_max will be "
-                "set to the maximum allowed radius."
+                    f"The calculated r_max {r_max} is larger "
+                    "than the maximum allowed radius according "
+                    "to the box vectors of the trajectory "
+                    f"{cls._infer_r_max(cells)}. r_max will be "
+                    "set to the maximum allowed radius."
                 ),
             )
 
@@ -718,12 +707,8 @@ class RDF:
 
     @classmethod
     def _calculate_n_bins(
-        cls,
-        delta_r: PositiveReal,
-        r_max: PositiveReal,
-        r_min: PositiveReal
-    ) -> Tuple[PositiveInt,
-        PositiveReal]:
+        cls, delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal
+    ) -> Tuple[PositiveInt, PositiveReal]:
         """
         Calculates the number of bins of the RDF analysis from the provided parameters.
 
@@ -783,10 +768,10 @@ class RDF:
         if not check_trajectory_pbc(cells):
             cls.logger.error(
                 (
-                "To infer r_max of the RDF analysis, "
-                "the trajectory cannot be a vacuum trajectory. "
-                "Please specify r_max manually or use the "
-                "combination n_bins and delta_r."
+                    "To infer r_max of the RDF analysis, "
+                    "the trajectory cannot be a vacuum trajectory. "
+                    "Please specify r_max manually or use the "
+                    "combination n_bins and delta_r."
                 ),
                 exception=RDFError
             )
@@ -838,10 +823,7 @@ class RDF:
 
     @classmethod
     def _integration(
-        cls,
-        bins: Np1DNumberArray,
-        n_reference_indices: int,
-        n_frames: int
+        cls, bins: Np1DNumberArray, n_reference_indices: int, n_frames: int
     ) -> Np1DNumberArray:
         """
         Calculates the integrated RDF analysis. 

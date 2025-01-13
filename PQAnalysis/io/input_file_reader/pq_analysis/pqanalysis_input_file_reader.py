@@ -129,3 +129,17 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
                 "Unknown keys were set in the input file! "
                 f"The known keys are: {known_keys}. They will be ignored!"
             )
+
+    def not_defined_optional_keys(self, optional_keys: List[str]):
+        """
+        Checks if optional keys are set in the input file.
+        If not set, it sets them to None.
+
+        Parameters
+        ----------
+        optional_keys : List[str]
+            the optional keys
+        """
+        for key in optional_keys:
+            if key not in self.dictionary.keys():
+                self.dictionary.__setitem__(key=key,value=(None,"None","None"))
