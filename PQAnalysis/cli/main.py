@@ -8,6 +8,7 @@ from .xyz2gen import XYZ2GENCLI
 from .traj2qmcfc import Traj2QMCFCCLI
 from .traj2box import Traj2BoxCLI
 from .rst2xyz import Rst2XYZCLI
+from .xyz2rst import XYZ2RstCLI
 from .rdf import RDFCLI
 from .gen2xyz import GEN2XYZCLI
 from .continue_input import ContinueInputCLI
@@ -43,6 +44,7 @@ def main():
         GEN2XYZCLI.program_name(): GEN2XYZCLI,
         RDFCLI.program_name(): RDFCLI,
         Rst2XYZCLI.program_name(): Rst2XYZCLI,
+        XYZ2RstCLI.program_name(): XYZ2RstCLI,
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,

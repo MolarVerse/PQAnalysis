@@ -4,13 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PQAnalysis"
-dynamic = [
-    "version"
-]
+dynamic = ["version"]
 authors = [
-  { name="Jakob Gamper", email="97gamjak@gmail.com" },
-  { name="Josef M. Gallmetzer", email="gallmetzer.josef@gmail.com" },
-  { name="Clarissa A. Seidler", email="clarissa.seidler@gmail.com" },
+    { name = "Jakob Gamper", email = "97gamjak@gmail.com" },
+    { name = "Josef M. Gallmetzer", email = "gallmetzer.josef@gmail.com" },
+    { name = "Clarissa A. Seidler", email = "clarissa.seidler@gmail.com" },
 ]
 description = "PQAnalysis is a python package for the analysis of PQ simulations."
 requires-python = ">=3.12"
@@ -33,7 +31,7 @@ dependencies = [
     "yapf",
     "rich-argparse",
     "Cython",
-    "setuptools==70.0.0"
+    "setuptools==70.0.0",
 ]
 
 [project.optional-dependencies]
@@ -65,6 +63,7 @@ pqanalysis = "PQAnalysis.cli.main:main"
 traj2box = "PQAnalysis.cli.traj2box:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
+xyz2rst = "PQAnalysis.cli.xyz2rst:main"
 continue_input = "PQAnalysis.cli.continue_input:main"
 rdf = "PQAnalysis.cli.rdf:main"
 add_molecules = "PQAnalysis.cli.add_molecules:main"

@@ -48,5 +48,6 @@ from .input_file_reader import PQAnalysisInputFileReader
 from .input_file_reader import InputFileFormat
 
 from .api import continue_input_file
-from .conversion_api import (gen2xyz, xyz2gen, rst2xyz, traj2box, traj2qmcfc)
+from .conversion_api import (
+    gen2xyz, xyz2gen, rst2xyz, xyz2rst, traj2box, traj2qmcfc)
 from .write_api import write, write_box
