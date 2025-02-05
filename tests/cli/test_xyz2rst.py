@@ -21,6 +21,16 @@ H    1    0    2.0 2.0 2.0 2.0 2.0 2.0 4.0 5.0 6.0
 N    2    0    3.0 3.0 3.0 3.0 3.0 3.0 7.0 8.0 9.0
 N    3    0    4.0 4.0 4.0 4.0 4.0 4.0 10.0 11.0 12.0
 """
+    print()
+    xyz2rst("md-01_nobox.xyz")
+
+    captured = capsys.readouterr()
+    assert captured.out == """
+C    0    0    1.0 1.0 1.0 0.0 0.0 0.0 0.0 0.0 0.0
+H    1    0    2.0 2.0 2.0 0.0 0.0 0.0 0.0 0.0 0.0
+N    2    0    3.0 3.0 3.0 0.0 0.0 0.0 0.0 0.0 0.0
+N    3    0    4.0 4.0 4.0 0.0 0.0 0.0 0.0 0.0 0.0
+"""
 
 
 @pytest.mark.parametrize("example_dir", ["xyz2rst"], indirect=False)
