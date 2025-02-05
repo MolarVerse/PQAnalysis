@@ -140,7 +140,8 @@ class RestartFileWriter(BaseWriter):
         """
 
         lines = []
-        lines.append(self._get_box_line(frame.cell))
+        if not frame.cell.is_vacuum:
+            lines.append(self._get_box_line(frame.cell))
 
         lines += self._get_atom_lines(
             frame,
