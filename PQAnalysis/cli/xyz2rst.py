@@ -14,10 +14,8 @@ from ._cli_base import CLIBase
 
 __outputdoc__ = """
 
-This command line tool can be used to convert xyz files to files files. 
+This command line tool can be used to convert xyz files to restart files. 
 
-If the box information from the xyz file should not be included in the restart file, 
-please use the --nobox option.
 """
 
 __epilog__ = "\n"
