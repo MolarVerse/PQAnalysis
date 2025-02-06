@@ -77,6 +77,13 @@ class XYZ2RstCLI(CLIBase):
             help='The force file to be converted.'
         )
 
+        parser.add_argument(
+            '--randomize',
+            type=float,
+            default=0.0,
+            help='Randomize the atom order. Default is 0.0.'
+        )
+
         parser.parse_engine()
         parser.parse_mode()
 
@@ -94,6 +101,7 @@ class XYZ2RstCLI(CLIBase):
             xyz_file=args.xyz_file,
             velocity_file=args.velocity_file,
             force_file=args.force_file,
+            randomize=args.randomize,
             output=args.output,
             md_format=args.engine,
             mode=args.mode,

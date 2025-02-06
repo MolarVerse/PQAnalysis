@@ -157,6 +157,8 @@ def xyz2rst(
     xyz_file: str,
     velocity_file: str | None = None,
     force_file: str | None = None,
+    randomize: float = 0.0,
+    random_seed: int | None = 0,
     output: str | None = None,
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     mode: FileWritingMode | str = "w"
@@ -176,6 +178,8 @@ def xyz2rst(
         The velocity file to be converted. Default is None.
     force_file : str | None
         The force file to be converted. Default is None.
+    randomize : float, optional
+        Randomize the atom order. Default is 0.0.
     output : str | None
         The output file. If not specified, the output is printed to stdout.
     md_format : MDEngineFormat | str, optional
@@ -206,6 +210,9 @@ def xyz2rst(
             md_format=md_format,
             traj_format="force",
         ).read()[-1].forces
+
+    if randomize != 0.0:
+        system.randomize_positions(stdev=randomize, seed=random_seed)
 
     write_restart_file(
         atomic_system=system,

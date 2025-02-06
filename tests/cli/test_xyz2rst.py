@@ -32,6 +32,17 @@ N    2    0    3.0 3.0 3.0 0.0 0.0 0.0 0.0 0.0 0.0
 N    3    0    4.0 4.0 4.0 0.0 0.0 0.0 0.0 0.0 0.0
 """
 
+    print()
+    xyz2rst("md-01_null.xyz", random_seed=1, randomize=0.1)
+
+    captured = capsys.readouterr()
+    assert captured.out == """
+C    0    0    0.16243453323841095 -0.0611756406724453 -0.05281717702746391 0.0 0.0 0.0 0.0 0.0 0.0
+H    1    0    -0.10729686170816422 0.08654076606035233 -0.2301538735628128 0.0 0.0 0.0 0.0 0.0 0.0
+N    2    0    0.17448118329048157 -0.07612068951129913 0.031903911381959915 0.0 0.0 0.0 0.0 0.0 0.0
+N    3    0    -0.024937037378549576 0.14621078968048096 -0.20601406693458557 0.0 0.0 0.0 0.0 0.0 0.0
+"""
+
 
 @pytest.mark.parametrize("example_dir", ["xyz2rst"], indirect=False)
 def test_main(test_with_data_dir, capsys):
@@ -64,6 +75,7 @@ N    3    0    4.0 4.0 4.0 0.0 0.0 0.0 0.0 0.0 0.0 4.0 4.0 4.0 0.0 0.0 0.0 0.0 0
         xyz_file="md-01.xyz",
         velocity_file="md-01.vel",
         force_file="md-01.force",
+        randomize=0.0,
         output=None,
         engine="PQ",
         mode="w",
@@ -82,6 +94,7 @@ def main_xyz2rst(mock_args):
         xyz_file="md-01_qmcfc.xyz",
         velocity_file=None,
         force_file=None,
+        randomize=0.0,
         output=None,
         engine="qmcfc",
         mode="w",
