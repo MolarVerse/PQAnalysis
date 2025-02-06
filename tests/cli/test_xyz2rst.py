@@ -4,8 +4,12 @@ from unittest import mock
 from filecmp import cmp as filecmp
 
 from . import ArgparseNamespace
-from PQAnalysis.cli.xyz2rst import main
+from PQAnalysis.cli.xyz2rst import main, XYZ2RstCLI
 from PQAnalysis.io.conversion_api import xyz2rst
+
+
+def test_name():
+    assert XYZ2RstCLI.program_name() == "xyz2rst"
 
 
 @pytest.mark.parametrize("example_dir", ["xyz2rst"], indirect=False)
