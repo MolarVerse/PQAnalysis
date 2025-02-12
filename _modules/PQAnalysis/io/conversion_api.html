@@ -96,9 +96,11 @@
     <span class="n">write_gen_file</span><span class="p">,</span>
     <span class="n">read_gen_file</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.restart_file.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_restart_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.restart_file.api</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">read_restart_file</span><span class="p">,</span>
+    <span class="n">write_restart_file</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.traj_file.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_trajectory</span>
-
 
 
 <div class="viewcode-block" id="gen2xyz">
@@ -142,7 +144,6 @@
         <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
         <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
     <span class="p">)</span></div>
-
 
 
 
@@ -193,7 +194,6 @@
 
 
 
-
 <div class="viewcode-block" id="rst2xyz">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.rst2xyz">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
@@ -236,6 +236,78 @@
         <span class="n">system</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span> <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span>
     <span class="p">)</span></div>
 
+
+
+<div class="viewcode-block" id="xyz2rst">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.xyz2rst">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">xyz2rst</span><span class="p">(</span>
+    <span class="n">xyz_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">velocity_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">force_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">randomize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts a xyz file to a restart file and prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    When the print_box flag is set to True, the box is printed as well.</span>
+<span class="sd">    This means that after the number of atoms the box is printed in the</span>
+<span class="sd">    same line in the format a b c alpha beta gamma.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    xyz_file : str</span>
+<span class="sd">        The xyz file to be converted.</span>
+<span class="sd">    velocity_file : str | None</span>
+<span class="sd">        The velocity file to be converted. Default is None.</span>
+<span class="sd">    force_file : str | None</span>
+<span class="sd">        The force file to be converted. Default is None.</span>
+<span class="sd">    randomize : float, optional</span>
+<span class="sd">        Randomize the atom order. Default is 0.0.</span>
+<span class="sd">    output : str | None</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the md engine for the output file. The default is MDEngineFormat.PQ.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">system</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
+        <span class="n">xyz_file</span><span class="p">,</span>
+        <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+        <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">velocity_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">vel</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
+            <span class="n">velocity_file</span><span class="p">,</span>
+            <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+            <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">vel</span>
+
+    <span class="k">if</span> <span class="n">force_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">forces</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
+            <span class="n">force_file</span><span class="p">,</span>
+            <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+            <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;force&quot;</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">forces</span>
+
+    <span class="k">if</span> <span class="n">randomize</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">randomize_positions</span><span class="p">(</span><span class="n">stdev</span><span class="o">=</span><span class="n">randomize</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
+
+    <span class="n">write_restart_file</span><span class="p">(</span>
+        <span class="n">atomic_system</span><span class="o">=</span><span class="n">system</span><span class="p">,</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">md_engine_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 
 
@@ -287,7 +359,6 @@
         <span class="n">trajectory</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">reset_counter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
 
 
 

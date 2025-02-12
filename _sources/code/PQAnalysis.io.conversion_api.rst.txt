@@ -7,7 +7,7 @@ conversion_api
 .. currentmodule:: PQAnalysis.io.conversion_api
 
 .. automodule:: PQAnalysis.io.conversion_api
-    :members: gen2xyz, rst2xyz, traj2box, traj2qmcfc, xyz2gen
+    :members: gen2xyz, rst2xyz, traj2box, traj2qmcfc, xyz2gen, xyz2rst
     :undoc-members:
     :show-inheritance:
     :member-order: groupwise
@@ -25,6 +25,7 @@ conversion_api
         traj2box
         traj2qmcfc
         xyz2gen
+        xyz2rst
 
 
 

@@ -113,7 +113,6 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystemError</span>
 
 
-
 <div class="viewcode-block" id="AtomicSystem">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomicSystem</span><span class="p">(</span>
@@ -273,7 +272,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stress</span> <span class="o">=</span> <span class="n">stress</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
 
-    <span class="c1">#TODO: check why dynamic formatting does</span>
+    <span class="c1"># TODO: check why dynamic formatting does</span>
     <span class="c1">#      not work here for &quot;AtomicSystem&quot;</span>
     <span class="c1">#</span>
     <span class="c1"># @runtime_type_checking</span>
@@ -485,7 +484,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystem</span>
 <span class="sd">            The center of mass of the residues in the system.</span>
-<span class="sd">            </span>
+
 <span class="sd">        Raises:</span>
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystemError</span>
@@ -493,7 +492,7 @@
 <span class="sd">            multiple of the number of atoms.</span>
 <span class="sd">        PQNotImplementedError</span>
 <span class="sd">            if system has forces, velocities or charges.</span>
-<span class="sd">            </span>
+
 <span class="sd">        TODO:</span>
 <span class="sd">        -----</span>
 <span class="sd">        Include also center of mass velocities, forces and so on...</span>
@@ -602,6 +601,37 @@
         <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">pos</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pos</span><span class="p">),</span> <span class="n">atoms</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AtomicSystem.randomize_positions">
+<a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.randomize_positions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">randomize_positions</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">stdev</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Randomizes the positions of the atoms in the system with a normal distribution.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        stdev : float, optional</span>
+<span class="sd">            The standard deviation of the random displacements, by default 0.001</span>
+<span class="sd">        seed : int, optional</span>
+<span class="sd">            The seed for the random number generator, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The AtomicSystem with the randomized positions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pos</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">stdev</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
 <div class="viewcode-block" id="AtomicSystem.copy">

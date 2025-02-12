@@ -128,6 +128,9 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.restart_file.api.read_restart_file" title="PQAnalysis.io.restart_file.api.read_restart_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_restart_file</span></code></a></p></td>
 <td><p>API function for reading a restart file.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.restart_file.api.write_restart_file" title="PQAnalysis.io.restart_file.api.write_restart_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_restart_file</span></code></a></p></td>
+<td><p>API function for reading a restart file.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -165,6 +168,33 @@ by default MDEngineFormat.PQ</p></li>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.io.restart_file.api.write_restart_file">
+<span class="sig-name descname"><span class="pre">write_restart_file</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atomic_system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_engine_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/restart_file/api.html#write_restart_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.restart_file.api.write_restart_file" title="Link to this definition"></a></dt>
+<dd><p>API function for reading a restart file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atomic_system</strong> (<a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a>) – The AtomicSystem object to write.</p></li>
+<li><p><strong>filename</strong> (<em>str</em>) – The filename of the restart file.</p></li>
+<li><p><strong>md_engine_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the restart file,
+by default MDEngineFormat.PQ</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The mode of the file. Either ‘w’ for write,
+‘a’ for append or ‘o’ for overwrite. The default is ‘w’.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
