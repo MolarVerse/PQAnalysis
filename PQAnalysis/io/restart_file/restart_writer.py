@@ -20,7 +20,6 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RestartFileWriterError
 
 
-
 class RestartFileWriter(BaseWriter):
 
     """
@@ -140,7 +139,8 @@ class RestartFileWriter(BaseWriter):
         """
 
         lines = []
-        lines.append(self._get_box_line(frame.cell))
+        if not frame.cell.is_vacuum:
+            lines.append(self._get_box_line(frame.cell))
 
         lines += self._get_atom_lines(
             frame,
@@ -191,9 +191,9 @@ class RestartFileWriter(BaseWriter):
             if len(atom_counter) != frame.n_atoms:
                 cls.logger.error(
                     (
-                    "The atom counter has to have the same length as "
-                    "the number of atoms in the frame if it is given "
-                    "as an array."
+                        "The atom counter has to have the same length as "
+                        "the number of atoms in the frame if it is given "
+                        "as an array."
                     ),
                     exception=RestartFileWriterError
                 )
@@ -218,9 +218,11 @@ class RestartFileWriter(BaseWriter):
             line = ""
 
             line += f"{atom.name}    {atom_counter[i]}    {residue}    "
-            line += f"{pos[0]} {pos[1]} {pos[2]} "
-            line += f"{vel[0]} {vel[1]} {vel[2]} "
-            line += f"{force[0]} {force[1]} {force[2]}"
+            line += f"{pos[0]} {pos[1]} {pos[2]}"
+
+            if (frame.has_vel and frame.has_forces) or md_engine_format != MDEngineFormat.PQ:
+                line += f" {vel[0]} {vel[1]} {vel[2]}"
+                line += f" {force[0]} {force[1]} {force[2]}"
 
             if md_engine_format != MDEngineFormat.PQ:
                 line += f" {pos[0]} {pos[1]} {pos[2]} "

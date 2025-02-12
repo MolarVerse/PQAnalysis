@@ -36,7 +36,6 @@ from ._positions import _PositionsMixin
 from .exceptions import AtomicSystemError
 
 
-
 class AtomicSystem(
     _PropertiesMixin,
     _StandardPropertiesMixin,
@@ -194,7 +193,7 @@ class AtomicSystem(
         self._stress = stress
         self._cell = cell
 
-    #TODO: check why dynamic formatting does
+    # TODO: check why dynamic formatting does
     #      not work here for "AtomicSystem"
     #
     # @runtime_type_checking
@@ -403,7 +402,7 @@ class AtomicSystem(
         -------
         AtomicSystem
             The center of mass of the residues in the system.
-            
+
         Raises:
         -------
         AtomicSystemError
@@ -411,7 +410,7 @@ class AtomicSystem(
             multiple of the number of atoms.
         PQNotImplementedError
             if system has forces, velocities or charges.
-            
+
         TODO:
         -----
         Include also center of mass velocities, forces and so on...
@@ -518,6 +517,34 @@ class AtomicSystem(
         names = [Atom(name, use_guess_element=False) for name in names]
 
         return AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell)
+
+    def randomize_positions(
+        self,
+        stdev: float = 0.001,
+        seed: int | None = None,
+    ) -> "AtomicSystem":
+        """
+        Randomizes the positions of the atoms in the system with a normal distribution.
+
+        Parameters
+        ----------
+        stdev : float, optional
+            The standard deviation of the random displacements, by default 0.001
+        seed : int, optional
+            The seed for the random number generator, by default None
+
+        Returns
+        -------
+        AtomicSystem
+            The AtomicSystem with the randomized positions.
+        """
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        self.pos += np.random.normal(scale=stdev, size=self.pos.shape)
+
+        return self
 
     def copy(self) -> "AtomicSystem":
         """

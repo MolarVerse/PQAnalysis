@@ -22,7 +22,6 @@ from . import pytestmark  # pylint: disable=unused-import
 from ..conftest import assert_logging_with_exception, assert_type_error_in_debug_mode
 
 
-
 class TestAtomicSystem:
 
     """
@@ -261,6 +260,25 @@ class TestAtomicSystem:
         assert system1.isclose(system2, rtol=1.1e-4)
         assert not system1.isclose(system2, atol=1.0e-3)
         assert not system1.isclose(system2, rtol=1.0e-5)
+
+    def test_randomize_positions(self):
+        system = AtomicSystem(
+            pos=np.array([[0., 0., 0.], [1., 1., 1.]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(0.75, 0.75, 0.75)
+        )
+
+        system.randomize_positions(stdev=0.1, seed=0)
+
+        assert np.allclose(
+            system.pos,
+            np.array(
+                [
+                    [0.17640523, 0.04001572, 0.0978738],
+                    [1.22408932, 1.1867558, 0.90227221]
+                ]
+            )
+        )
 
     def test__getitem__(self):
         system = AtomicSystem(
