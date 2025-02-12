@@ -19,9 +19,11 @@ from .gen_file import (
     write_gen_file,
     read_gen_file,
 )
-from .restart_file.api import read_restart_file
+from .restart_file.api import (
+    read_restart_file,
+    write_restart_file
+)
 from .traj_file.api import write_trajectory
-
 
 
 @runtime_type_checking
@@ -63,7 +65,6 @@ def gen2xyz(
         traj_type="xyz",
         mode=mode,
     )
-
 
 
 @runtime_type_checking
@@ -110,7 +111,6 @@ def xyz2gen(
     )
 
 
-
 @runtime_type_checking
 def rst2xyz(
     restart_file: str,
@@ -151,6 +151,75 @@ def rst2xyz(
         system, output, engine_format=md_format, traj_type="xyz", mode=mode
     )
 
+
+@runtime_type_checking
+def xyz2rst(
+    xyz_file: str,
+    velocity_file: str | None = None,
+    force_file: str | None = None,
+    randomize: float = 0.0,
+    random_seed: int | None = 0,
+    output: str | None = None,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    mode: FileWritingMode | str = "w"
+) -> None:
+    """
+    Converts a xyz file to a restart file and prints it to stdout or writes it to a file.
+
+    When the print_box flag is set to True, the box is printed as well.
+    This means that after the number of atoms the box is printed in the
+    same line in the format a b c alpha beta gamma.
+
+    Parameters
+    ----------
+    xyz_file : str
+        The xyz file to be converted.
+    velocity_file : str | None
+        The velocity file to be converted. Default is None.
+    force_file : str | None
+        The force file to be converted. Default is None.
+    randomize : float, optional
+        Randomize the atom order. Default is 0.0.
+    output : str | None
+        The output file. If not specified, the output is printed to stdout.
+    md_format : MDEngineFormat | str, optional
+        The format of the md engine for the output file. The default is MDEngineFormat.PQ.
+    mode : FileWritingMode | str, optional
+        The writing mode, by default "w". The following modes are available:
+        - "w": write
+        - "a": append
+        - "o": overwrite
+    """
+
+    system = TrajectoryReader(
+        xyz_file,
+        md_format=md_format,
+        traj_format="xyz",
+    ).read()[-1]
+
+    if velocity_file is not None:
+        system.vel = TrajectoryReader(
+            velocity_file,
+            md_format=md_format,
+            traj_format="vel",
+        ).read()[-1].vel
+
+    if force_file is not None:
+        system.forces = TrajectoryReader(
+            force_file,
+            md_format=md_format,
+            traj_format="force",
+        ).read()[-1].forces
+
+    if randomize != 0.0:
+        system.randomize_positions(stdev=randomize, seed=random_seed)
+
+    write_restart_file(
+        atomic_system=system,
+        filename=output,
+        md_engine_format=md_format,
+        mode=mode,
+    )
 
 
 @runtime_type_checking
@@ -199,7 +268,6 @@ def traj2box(
         trajectory = reader.read()
 
         writer.write(trajectory, reset_counter=False)
-
 
 
 @runtime_type_checking
