@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.2.3](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.3) - 2025-02-12
+
+<small>[Compare with v1.2.2](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.2...v1.2.3)</small>
+
+### Docs
+
+- deleted no-box from output docs ([75eaea6](https://github.com/MolarVerse/PQAnalysis/commit/75eaea696a6c7749ed4c77613c5486afa64a5d5d) by Josef M. Gallmetzer).
+
+### Features
+
+- add randomization option for atom positions in xyz2rst conversion ([1a1ddc5](https://github.com/MolarVerse/PQAnalysis/commit/1a1ddc5a4e5cd92e54a7d31f37175beced726d57) by Josef M. Gallmetzer).
+- add xyz2rst conversion functionality and related tests ([598473f](https://github.com/MolarVerse/PQAnalysis/commit/598473f778f4d8bc5cbbd22de43d64f2ea1d7a23) by Josef M. Gallmetzer).
+- add API function to write restart files with specified format and mode ([184061e](https://github.com/MolarVerse/PQAnalysis/commit/184061ed0d51e01bd6de8d04bf8c441e900e6cf2) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- update restart writer to conditionally include velocities and forces in output ([bd841d9](https://github.com/MolarVerse/PQAnalysis/commit/bd841d9999b44a6b183e0ccabc5be718038ef3f5) by Josef M. Gallmetzer).
+- prevent adding box line for vacuum cells in restart file writer ([5f72088](https://github.com/MolarVerse/PQAnalysis/commit/5f72088c4179d6d68d7b62fa2fc4eccc8d31c0af) by Josef M. Gallmetzer).
+
+### Tests
+
+- add test for XYZ2RstCLI program name ([e7ee687](https://github.com/MolarVerse/PQAnalysis/commit/e7ee687425532e264d47526939c19839c4d9e868) by Josef M. Gallmetzer).
+- add test for xyz2rst conversion with no box data ([119cd75](https://github.com/MolarVerse/PQAnalysis/commit/119cd75829abe883b1bde55982d03975337bade4) by Josef M. Gallmetzer).
+
 ## [v1.2.2](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.2) - 2025-01-07
 
 <small>[Compare with v1.2.1](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.1...v1.2.2)</small>
