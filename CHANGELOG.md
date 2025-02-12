@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.2.4](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.4) - 2025-02-12
+
+<small>[Compare with v1.2.3](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.3...v1.2.4)</small>
+
 ## [v1.2.3](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.3) - 2025-02-12
 
 <small>[Compare with v1.2.2](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.2...v1.2.3)</small>
