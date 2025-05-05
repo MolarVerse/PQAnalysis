@@ -17,13 +17,16 @@
          |   integer
          |   word
          |   boolean
+         |   url
 
 word: WORD
 float.3: FLOAT
 integer.2: INT
 boolean.2: BOOL
+url: URL
 
 %import .terminals.WORD
 %import .terminals.FLOAT
 %import .terminals.INT
 %import .terminals.BOOL
+%import .terminals.URL
