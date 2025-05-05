@@ -11,6 +11,8 @@ COMMENT: /#.*/ NEWLINE
 
 WORD: ("_"|"-"|"."|LETTER|DIGIT)+
 
+URL: /(https?:\/\/[^;\s]+)/
+
 %import common.NEWLINE
 %import common.WS
 %import common.WS_INLINE
