@@ -1,15 +1,46 @@
-import pytest
-import numpy as np
+import builtins
+import importlib
 
-from PQAnalysis.io import _FrameReader
-from PQAnalysis.io.traj_file.exceptions import FrameReaderError
+import numpy as np
+import pytest
+
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.traj.exceptions import TrajectoryFormatError
-from PQAnalysis.traj import TrajectoryFormat
+from PQAnalysis.io import _FrameReader
+from PQAnalysis.io.traj_file import _process_lines_py
+import PQAnalysis.io.traj_file.frame_reader as frame_reader
+from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.topology import Topology
+from PQAnalysis.traj import TrajectoryFormat
+from PQAnalysis.traj.exceptions import TrajectoryFormatError
 
 from . import pytestmark
 
+
+
+def test_frame_reader_uses_python_fallback(monkeypatch):
+    real_import = builtins.__import__
+
+    def fail_process_lines_import(
+        name, globals=None, locals=None, fromlist=(), level=0
+    ):
+        if level == 1 and name == "process_lines":
+            raise ModuleNotFoundError(
+                "No module named 'PQAnalysis.io.traj_file.process_lines'"
+            )
+
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", fail_process_lines_import)
+
+    reloaded_frame_reader = importlib.reload(frame_reader)
+
+    assert (
+        reloaded_frame_reader.process_lines_with_atoms
+        is _process_lines_py.process_lines_with_atoms
+    )
+
+    monkeypatch.undo()
+    importlib.reload(frame_reader)
 
 
 class TestFrameReader:
