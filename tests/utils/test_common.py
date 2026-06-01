@@ -3,7 +3,7 @@ import pytest
 from _pytest.capture import CaptureFixture
 
 from PQAnalysis.utils import print_header
-from PQAnalysis._version import __version__
+from PQAnalysis.version import __version__
 
 from . import pytestmark
 

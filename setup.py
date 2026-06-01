@@ -1,21 +1,16 @@
-"""
-This file is used to build the package. It is used to compile the Cython code
-"""
+"""Build the Cython extension used by PQAnalysis."""
 
-from setuptools import setup, Extension
 from Cython.Build import cythonize
 import numpy as np
+from setuptools import Extension, setup
 
-module = cythonize(
+extensions = cythonize(
     Extension(
         'PQAnalysis.io.traj_file.process_lines',
         sources=['PQAnalysis/io/traj_file/process_lines.pyx'],
         include_dirs=[np.get_include()]
-    )
+    ),
+    language_level=3,
 )
 
-setup(
-    name="PQAnalysis",
-    packages=["PQAnalysis"],
-    ext_modules=module,
-)
+setup(ext_modules=extensions)

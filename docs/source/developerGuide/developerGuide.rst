@@ -70,7 +70,7 @@ In order to install all the dependencies required for building the documentation
 
 .. code:: bash
 
-    $ pip install .[doc] # install the project with the documentation dependencies
+    $ pip install -e ".[docs]" # install the project with the documentation dependencies
 
 To build the documentation, use the following command:
 
@@ -100,7 +100,7 @@ The project uses `pytest <https://docs.pytest.org/en/latest/>`_ for testing. Bef
 
 .. code:: bash
 
-    $ pip install .[test] # install the project with the test dependencies
+    $ pip install -e ".[test]" # install the project with the test dependencies
 
     $ python -m pytest
 
