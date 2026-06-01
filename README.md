@@ -24,9 +24,13 @@ Clone the PQAnalysis GitHub repository and navigate into the directory:
     git clone https://github.com/MolarVerse/PQAnalysis.git
     cd PQAnalysis
 
-Install with pip:
+Install in editable mode with test dependencies:
 
-    pip install .
+    pip install -e ".[test]"
+
+Run the test suite:
+
+    python -m pytest
 
 In order to have a nice changelog strategy, please stick to [conventional commit definiton](https://www.conventionalcommits.org/en/v1.0.0-beta.4/). In order to make git accept only valid commit message please make a symlink of the git-hook template `.githooks/commit-msg`:
 
