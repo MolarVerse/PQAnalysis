@@ -120,7 +120,7 @@
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cell</span></span><span class="sig-paren">(</span>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cell</span></span><span class="sig-paren">(</span>
 
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.7976931348623157e+308</span></span></em>,</dd>
@@ -153,6 +153,29 @@
 Cell(x=sys.float_info.max, y=sys.float_info.max, z=sys.float_info.max,
 alpha=90, beta=90, gamma=90).</p>
 </div>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.init_from_box_matrix">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_box_matrix</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">box_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Np2x2NumberArray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.init_from_box_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.init_from_box_matrix" title="Link to this definition"></a></dt>
+<dd><p>Initializes a Cell object from a box matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>box_matrix</strong> (<em>Np3x3NumberArray</em>) – The box matrix.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Cell object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span>
@@ -231,29 +254,6 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.init_from_box_matrix">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">init_from_box_matrix</span></span><span class="sig-paren">(</span>
-
-<dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">box_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Np2x2NumberArray</span></span></em>,</dd>
-</dl>
-
-<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/core/cell/cell.html#Cell.init_from_box_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.init_from_box_matrix" title="Link to this definition"></a></dt>
-<dd><p>Initializes a Cell object from a box matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>box_matrix</strong> (<em>Np3x3NumberArray</em>) – The box matrix.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The Cell object.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell">Cell</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.isclose">
 <span class="sig-name descname"><span class="pre">isclose</span></span><span class="sig-paren">(</span>
 
@@ -298,7 +298,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.alpha">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.alpha" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">alpha</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.alpha" title="Link to this definition"></a></dt>
 <dd><p>The angle between the second and third box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -309,7 +309,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.beta">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.beta" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">beta</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.beta" title="Link to this definition"></a></dt>
 <dd><p>The angle between the first and third box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -320,7 +320,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.bounding_edges">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounding_edges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.bounding_edges" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bounding_edges</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.bounding_edges" title="Link to this definition"></a></dt>
 <dd><p>The 8 corners of the bounding box of the unit cell.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -331,7 +331,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_angles">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_angles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_angles" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_angles</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_angles" title="Link to this definition"></a></dt>
 <dd><p>The angles between the box vectors.</p>
 <p>When setting the box angles, the box matrix is recalculated.</p>
 <dl class="field-list simple">
@@ -343,7 +343,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_lengths">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_lengths" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_lengths</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_lengths" title="Link to this definition"></a></dt>
 <dd><p>The lengths of the box vectors.</p>
 <p>When setting the box lengths, the box matrix is recalculated.</p>
 <dl class="field-list simple">
@@ -355,7 +355,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.box_matrix">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_matrix" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.box_matrix" title="Link to this definition"></a></dt>
 <dd><p>The box matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -366,7 +366,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.gamma">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gamma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.gamma" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gamma</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.gamma" title="Link to this definition"></a></dt>
 <dd><p>The angle between the first and second box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -377,7 +377,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.inverse_box_matrix">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inverse_box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.inverse_box_matrix" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inverse_box_matrix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Np2x2NumberArray</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.inverse_box_matrix" title="Link to this definition"></a></dt>
 <dd><p>The inverse box matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -388,7 +388,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.is_vacuum">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_vacuum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.is_vacuum" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_vacuum</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.is_vacuum" title="Link to this definition"></a></dt>
 <dd><p>Returns whether the unit cell is a vacuum.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -399,7 +399,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.volume">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.volume" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">volume</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.volume" title="Link to this definition"></a></dt>
 <dd><p>The volume of the unit cell.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -410,7 +410,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.x">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.x" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.x" title="Link to this definition"></a></dt>
 <dd><p>The length of the first box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -421,7 +421,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.y">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.y" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.y" title="Link to this definition"></a></dt>
 <dd><p>The length of the second box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -432,7 +432,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.z">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.z" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">z</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Real</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.z" title="Link to this definition"></a></dt>
 <dd><p>The length of the third box vector.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -445,7 +445,7 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cells">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cells</span></span><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cells" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Cells</span></span><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cells" title="Link to this definition"></a></dt>
 <dd><p>A type hint for a list of cells</p>
 <p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, beartype.vale.Is[lambda list: all((isinstance(atom, Cell) for atom in list))]]</p>
 </dd></dl>
