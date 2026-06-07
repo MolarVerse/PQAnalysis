@@ -18,7 +18,7 @@ In order to contribute to the project, it is important to follow the coding styl
 How to Contribute
 *****************
 
-For any contributor willing to contribute to the project, it is important to understand the branching model used by the project. The project uses the `Gitflow <http://nvie.com/posts/a-successful-git-branching-model/>`_ branching model. In order to contribute to the project please follow the following steps:
+For any contributor willing to contribute to the project, it is important to understand the branching model used by the project. The project uses the `Gitflow <http://nvie.com/posts/a-successful-git-branching-model/>`_ branching model. Pull requests should stay small and reviewer-readable. In order to contribute to the project please follow the following steps:
 
 
     #. Fork the project on Github. (not necessary if you are a member of the project)
@@ -49,12 +49,20 @@ For any contributor willing to contribute to the project, it is important to und
         .. code:: bash
 
             $ git add <files>
-            $ git commit -m "commit message"
+            $ git commit -m "fix: describe the bug fix"
             $ git flow feature publish <feature_branch_name>
     
     #. Create a pull request on Github.
 
-    #. Once your pull request is approved, it will be merged into the develop branch.
+    #. Use a short Conventional Commits title for the pull request, for example ``feat: add a new analysis command`` or ``fix(io): handle missing trajectory data``. This title is validated by CI.
+
+    #. Once your pull request is approved and all required checks pass, it will be merged into the develop branch. If the pull request is squash merged, use the pull request title as the squash commit message.
+
+    #. Optional: enable the local commit-message hook for earlier feedback:
+
+        .. code:: bash
+
+            $ git config core.hooksPath .githooks
 
 *************
 Documentation
