@@ -16,6 +16,58 @@ from PQAnalysis.traj.exceptions import TrajectoryFormatError
 from . import pytestmark
 
 
+def test_frame_reader_uses_python_fallback(monkeypatch):
+    real_import = builtins.__import__
+
+    def fail_process_lines_import(
+        name, globals=None, locals=None, fromlist=(), level=0
+    ):
+        if level == 1 and name == "process_lines":
+            raise ModuleNotFoundError(
+                "No module named 'PQAnalysis.io.traj_file.process_lines'"
+            )
+
+        return real_import(name, globals, locals, fromlist, level)
+
+    monkeypatch.setattr(builtins, "__import__", fail_process_lines_import)
+
+    reloaded_frame_reader = importlib.reload(frame_reader)
+
+    assert (
+        reloaded_frame_reader.process_lines_with_atoms
+        is _process_lines_py.process_lines_with_atoms
+    )
+
+    monkeypatch.undo()
+    importlib.reload(frame_reader)
+
+
+def test_frame_reader_base_class_is_abstract():
+    with pytest.raises(TypeError):
+        frame_reader.BaseFrameReader()
+
+
+def test_frame_reader_compatibility_alias():
+    reader = frame_reader._FrameReader()
+
+    assert isinstance(reader, frame_reader.BaseFrameReader)
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+
+
+@pytest.mark.parametrize(
+    "traj_format",
+    [
+        TrajectoryFormat.XYZ,
+        TrajectoryFormat.VEL,
+        TrajectoryFormat.FORCE,
+        TrajectoryFormat.CHARGE,
+    ],
+)
+def test_get_frame_reader(traj_format):
+    reader = frame_reader.get_frame_reader(traj_format)
+
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+
 
 def test_frame_reader_uses_python_fallback(monkeypatch):
     real_import = builtins.__import__

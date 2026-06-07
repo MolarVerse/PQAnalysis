@@ -21,7 +21,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
-from .frame_reader import _FrameReader
+from .frame_reader import get_frame_reader
 
 
 
@@ -75,7 +75,9 @@ class TrajectoryReader(BaseReader):
         self.traj_format = TrajectoryFormat((traj_format, self.filenames[0]))
 
         self.md_format = MDEngineFormat(md_format)
-        self.frame_reader = _FrameReader(md_format=self.md_format)
+        self.frame_reader = get_frame_reader(
+            self.traj_format, md_format=self.md_format
+        )
 
         # The length of the trajectory
         self.length_of_traj = 0
