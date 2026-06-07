@@ -43,6 +43,33 @@ def test_frame_reader_uses_python_fallback(monkeypatch):
     importlib.reload(frame_reader)
 
 
+def test_frame_reader_base_class_is_abstract():
+    with pytest.raises(TypeError):
+        frame_reader.BaseFrameReader()
+
+
+def test_frame_reader_compatibility_alias():
+    reader = frame_reader._FrameReader()
+
+    assert isinstance(reader, frame_reader.BaseFrameReader)
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+
+
+@pytest.mark.parametrize(
+    "traj_format",
+    [
+        TrajectoryFormat.XYZ,
+        TrajectoryFormat.VEL,
+        TrajectoryFormat.FORCE,
+        TrajectoryFormat.CHARGE,
+    ],
+)
+def test_get_frame_reader(traj_format):
+    reader = frame_reader.get_frame_reader(traj_format)
+
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+
+
 class TestFrameReader:
 
     def test__read_header_line(self):

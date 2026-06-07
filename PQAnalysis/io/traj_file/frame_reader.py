@@ -3,6 +3,7 @@ A module containing classes for reading a frame from a string.
 """
 
 import logging
+from abc import ABC, abstractmethod
 
 import numpy as np
 
@@ -25,19 +26,13 @@ except ModuleNotFoundError:
 
 
 
-class _FrameReader:
+class BaseFrameReader(ABC):
 
     """
-    This class provides methods for reading a frame from a string.
-    The string can be a single frame or a whole trajectory.
-    The format of the string can be specified with the format parameter.
-    Generally, this class should not be used directly.
-    Instead, the :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`
-    class can be used to read a whole trajectory as well as
-    a single frame from a file.
+    Base class for frame readers.
 
-    For more information about the format of the string,
-    see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
+    Subclasses implement the parsing for a concrete frame format while this
+    class provides shared MD-engine handling and topology construction.
     """
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
@@ -54,6 +49,114 @@ class _FrameReader:
         """
         self.md_format = MDEngineFormat(md_format)
         self.topology = None
+
+    @abstractmethod
+    def read(
+        self,
+        frame_string: str,
+        topology: Topology | None = None,
+        traj_format: TrajectoryFormat | str = TrajectoryFormat.XYZ
+    ) -> AtomicSystem:
+        """
+        Reads a frame from a string.
+        """
+
+    def _check_qmcfc(
+        self,
+        atoms: List[str],
+        value: Np1DNumberArray | Np2DNumberArray,
+    ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
+        """
+        Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
+
+        Parameters
+        ----------
+        atoms : List[str]
+            The list of atoms.
+        value : Np1DNumberArray | Np2DNumberArray
+            The array of values.
+
+        Returns
+        -------
+        Tuple[List[str], Np1DNumberArray | Np2DNumberArray]
+            The list of atoms and the array of values.
+
+        Raises
+        ------
+        FrameReaderError
+            If the first atom is not X for QMCFC.
+        """
+
+        if self.md_format == MDEngineFormat.QMCFC:
+            if atoms[0].upper() != 'X':
+                self.logger.error(
+                    (
+                        'The first atom in one of the frames is not X. '
+                        'Please use PQ (default) md engine instead'
+                    ),
+                    exception=FrameReaderError
+                )
+            value = value[1:]
+            atoms = atoms[1:]
+
+        return value, atoms
+
+    def _get_topology(
+        self,
+        atoms: List[str],
+        topology: Topology | None,
+    ) -> Topology:
+        """
+        Returns the topology of the frame.
+
+        Returns
+        -------
+        Topology
+            The topology of the frame.
+        """
+
+        if topology is None:
+            try:
+
+                topology = Topology(
+                    atoms=[
+                        Atom(atom, disable_type_checking=True)
+                        for atom in atoms
+                    ]
+                )
+
+            except ElementNotFoundError:
+
+                topology = Topology(
+                    atoms=[
+                        Atom(
+                            atom,
+                            use_guess_element=False,
+                            disable_type_checking=True
+                        ) for atom in atoms
+                    ]
+                )
+
+        return topology
+
+
+class XYZFrameReader(BaseFrameReader):
+
+    """
+    This class provides methods for reading a frame from a string.
+    The string can be a single frame or a whole trajectory.
+    The format of the string can be specified with the format parameter.
+    Generally, this class should not be used directly.
+    Instead, the :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`
+    class can be used to read a whole trajectory as well as
+    a single frame from a file.
+
+    For more information about the format of the string,
+    see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.
+    """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     def read(
         self,
@@ -102,10 +205,9 @@ class _FrameReader:
             return self.read_charges(frame_string)
 
         # This should never happen - only for safety
-        self.logger.error(
-            f'Invalid TrajectoryFormat given. {traj_format=}',
-            exception=FrameReaderError
-        )
+        message = f'Invalid TrajectoryFormat given. {traj_format=}'
+        self.logger.error(message, exception=FrameReaderError)
+        raise FrameReaderError(message)
 
     def read_positions(self, frame_string: str) -> AtomicSystem:
         """
@@ -214,84 +316,6 @@ class _FrameReader:
         topology = self._get_topology(atoms, self.topology)
 
         return AtomicSystem(topology=topology, charges=charges, cell=cell)
-
-    def _check_qmcfc(
-        self,
-        atoms: List[str],
-        value: Np1DNumberArray | Np2DNumberArray,
-    ) -> Tuple[Np1DNumberArray | Np2DNumberArray, List[str]]:
-        """
-        Check if the first atom is X for QMCFC. If it is, remove it from the list and array.
-
-        Parameters
-        ----------
-        atoms : List[str]
-            The list of atoms.
-        value : Np1DNumberArray | Np2DNumberArray
-            The array of values.
-
-        Returns
-        -------
-        Tuple[List[str], Np1DNumberArray | Np2DNumberArray]
-            The list of atoms and the array of values.
-
-        Raises
-        ------
-        FrameReaderError
-            If the first atom is not X for QMCFC.
-        """
-
-        if self.md_format == MDEngineFormat.QMCFC:
-            if atoms[0].upper() != 'X':
-                self.logger.error(
-                    (
-                        'The first atom in one of the frames is not X. '
-                        'Please use PQ (default) md engine instead'
-                    ),
-                    exception=FrameReaderError
-                )
-            value = value[1:]
-            atoms = atoms[1:]
-
-        return value, atoms
-
-    def _get_topology(
-        self,
-        atoms: List[str],
-        topology: Topology | None,
-    ) -> Topology:
-        """
-        Returns the topology of the frame.
-
-        Returns
-        -------
-        Topology
-            The topology of the frame.
-        """
-
-        if topology is None:
-            try:
-
-                topology = Topology(
-                    atoms=[
-                        Atom(atom, disable_type_checking=True)
-                        for atom in atoms
-                    ]
-                )
-
-            except ElementNotFoundError:
-
-                topology = Topology(
-                    atoms=[
-                        Atom(
-                            atom,
-                            use_guess_element=False,
-                            disable_type_checking=True
-                        ) for atom in atoms
-                    ]
-                )
-
-        return topology
 
     def _read_header_line(self, header_line: str) -> Tuple[int, Cell]:
         """
@@ -424,3 +448,36 @@ class _FrameReader:
             atoms.append(line.split()[0])
 
         return scalar, atoms
+
+
+class _FrameReader(XYZFrameReader):
+
+    """
+    Backward-compatible alias for the default xyz-family frame reader.
+    """
+
+
+XYZ_FRAME_READER_TRAJ_FORMATS = (
+    TrajectoryFormat.XYZ,
+    TrajectoryFormat.VEL,
+    TrajectoryFormat.FORCE,
+    TrajectoryFormat.CHARGE,
+)
+
+
+def get_frame_reader(
+    traj_format: TrajectoryFormat | str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+):
+    """
+    Return the frame reader implementation for a trajectory format.
+    """
+
+    traj_format = TrajectoryFormat(traj_format)
+    if traj_format in XYZ_FRAME_READER_TRAJ_FORMATS:
+        return XYZFrameReader(md_format=md_format)
+
+    # This should never happen - only for safety
+    message = f'Invalid TrajectoryFormat given. {traj_format=}'
+    BaseFrameReader.logger.error(message, exception=FrameReaderError)
+    raise FrameReaderError(message)
