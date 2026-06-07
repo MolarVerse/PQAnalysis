@@ -1,6 +1,6 @@
 import argparse
 
-from PQAnalysis._version import __version__
+from PQAnalysis.version import __version__
 
 
 

@@ -15,15 +15,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.x
+        python-version: "3.12"
+        cache: pip
 
     - name: build PQAnalysis
       run: |
-        pip install .[test]
+        python -m pip install --upgrade pip
+        python -m pip install -e ".[test]"
 
     - name: Generate coverage report
       run: |
@@ -38,4 +40,3 @@ jobs:
         fail_ci_if_error: true
         flags: unittests
         verbose: true
-

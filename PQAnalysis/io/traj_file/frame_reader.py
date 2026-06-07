@@ -17,7 +17,11 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import FrameReaderError
-from .process_lines import process_lines_with_atoms  # pylint: disable=import-error
+
+try:
+    from .process_lines import process_lines_with_atoms  # pylint: disable=import-error
+except ModuleNotFoundError:
+    from ._process_lines_py import process_lines_with_atoms
 
 
 
