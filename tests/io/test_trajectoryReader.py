@@ -1,8 +1,9 @@
 import pytest
 import numpy as np
 
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.traj import MDEngineFormat, Trajectory
 from PQAnalysis.io import TrajectoryReader
+import PQAnalysis.io.traj_file.frame_reader as frame_reader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError, TrajectoryReaderError
 from PQAnalysis.io.traj_file.api import calculate_frames_of_trajectory_file
 from PQAnalysis.core import Cell, Atom
@@ -43,6 +44,10 @@ class TestTrajectoryReader:
         reader = TrajectoryReader("tmp.xyz")
         assert reader.filename == "tmp.xyz"
         assert reader.frames == []
+
+        reader = TrajectoryReader("tmp.xyz", md_format="qmcfc")
+        assert isinstance(reader.frame_reader, frame_reader.XYZFrameReader)
+        assert reader.frame_reader.md_format is MDEngineFormat.QMCFC
 
     @pytest.mark.usefixtures("tmpdir")
     def test_read(self):
