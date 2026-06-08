@@ -11,6 +11,7 @@ from beartype.typing import List, Tuple
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.types import PositiveInt, Np2DNumberArray, Np1DIntArray
 from PQAnalysis.core import Cell, Atom
+from PQAnalysis.core.atom.element import atomicNumbers as ATOMIC_NUMBERS
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -58,13 +59,24 @@ class GenFileReader(BaseReader):
 
             coords, ids = self._read_coords(lines[2:2 + self.n_atoms])
 
+            cell_start = 2 + self.n_atoms
             cell = self._read_cell(
-                lines[2 + self.n_atoms:2 + self.n_atoms + 3]
+                lines[cell_start:cell_start + 4]
             ) if is_periodic else Cell()
 
-            atoms = [Atom(atom_names[id - 1]) for id in ids]
+            atoms = [self._read_atom(atom_names[id - 1]) for id in ids]
 
             return AtomicSystem(atoms=atoms, pos=coords, cell=cell)
+
+    @staticmethod
+    def _read_atom(atom_name: str) -> Atom:
+        """
+        Reads a gen atom name, preserving custom labels if needed.
+        """
+        if atom_name.lower() in ATOMIC_NUMBERS:
+            return Atom(atom_name)
+
+        return Atom(atom_name, use_guess_element=False)
 
     def _read_header(self,
                      header: List[str]) -> Tuple[PositiveInt, bool, List[str]]:
@@ -105,7 +117,7 @@ class GenFileReader(BaseReader):
                 exception=GenFileReaderError
             )
 
-        atom_names = [name.lower() for name in header[1].split()]
+        atom_names = header[1].split()
 
         return n_atoms, is_periodic, atom_names
 
@@ -140,7 +152,8 @@ class GenFileReader(BaseReader):
         """
         Reads the cell block of the gen file.
 
-        The cell block contains the box matrix in row-major order.
+        The cell block contains an origin line followed by the box matrix in
+        row-major order.
 
         Parameters
         ----------
@@ -152,8 +165,10 @@ class GenFileReader(BaseReader):
         Cell
             The cell object.
         """
+        box_lines = lines[1:] if len(lines) == 4 else lines
+
         box_matrix = np.zeros((3, 3))
-        for i, line in enumerate(lines):
+        for i, line in enumerate(box_lines):
             box_matrix[i] = np.array(line.split(), dtype=float)
 
         # NOTE: The box matrix is stored in row-major order
