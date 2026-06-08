@@ -6,6 +6,7 @@ function (RDF) is a measure of the probability density
 of finding a particle at a distance r from another particle. 
 """
 
+import itertools
 import logging
 
 # 3rd party imports
@@ -75,8 +76,8 @@ class RDF:
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
         target_species: SelectionCompatible,
-        use_full_atom_info: bool = False,
-        no_intra_molecular: bool = False,
+        use_full_atom_info: bool | None = False,
+        no_intra_molecular: bool | None = False,
         n_bins: PositiveInt | None = None,
         delta_r: PositiveReal | None = None,
         r_max: PositiveReal | None = None,
@@ -92,10 +93,10 @@ class RDF:
             The reference species of the RDF analysis.
         target_species : SelectionCompatible
             The target species of the RDF analysis.
-        use_full_atom_info : bool, optional
+        use_full_atom_info : bool | None, optional
             Whether to use the full atom information of the trajectory
             or not, by default None (False).
-        no_intra_molecular : bool, optional
+        no_intra_molecular : bool | None, optional
             Whether to exclude intra-molecular distances or not, by default None (False).
         n_bins : PositiveInt | None, optional
             number of bins, by default None
@@ -209,7 +210,10 @@ class RDF:
             )
 
         self.first_frame = next(self.frame_generator)
-        self.topology = traj.topology
+        if traj.topology is not None:
+            self.topology = traj.topology
+        else:
+            self.topology = self.first_frame.topology
 
         self._setup_bins(
             n_bins=n_bins,
@@ -469,7 +473,7 @@ class RDF:
         calculated from these distances.
         """
 
-        for frame in tqdm(self.frame_generator,
+        for frame in tqdm(itertools.chain([self.first_frame], self.frame_generator),
             total=self.n_frames,
             disable=not with_progress_bar):
             for i, reference_index in enumerate(self.reference_indices):
@@ -486,7 +490,7 @@ class RDF:
                     reference_position,
                     target_positions,
                     frame.cell
-                )
+                ).ravel()
 
                 self.bins += self._add_to_bins(
                     distances,
@@ -527,7 +531,10 @@ class RDF:
             The differential bins of the RDF analysis based on the spherical shell model.
         """
 
-        target_density = len(self.target_index_combinations[0])
+        if self.no_intra_molecular:
+            target_density = len(self.target_index_combinations[0])
+        else:
+            target_density = len(self.target_indices)
         target_density /= self._average_volume
 
         norm = self._norm(

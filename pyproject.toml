@@ -33,6 +33,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+    "ase",
     "pytest",
     "pytest-cov",
     "pylint",

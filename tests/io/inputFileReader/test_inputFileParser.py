@@ -78,3 +78,13 @@ class TestInputFileParser:
         dict["myglob"] = (["input.in"], "glob", "9")
 
         assert input_dictionary.dict == dict
+
+    def test_parse_boolean_false(self, tmp_path):
+        input_file = tmp_path / "input.in"
+        input_file.write_text("enabled = True\ndisabled = False\n", encoding="utf-8")
+
+        input_file_parser = InputFileParser(str(input_file))
+        input_dictionary = input_file_parser.parse()
+
+        assert input_dictionary["enabled"] == (True, "bool", "1")
+        assert input_dictionary["disabled"] == (False, "bool", "2")

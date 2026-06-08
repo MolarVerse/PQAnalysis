@@ -4,7 +4,7 @@ import pytest
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Atom, Cell
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
@@ -16,6 +16,73 @@ from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
 
 # pylint: disable=protected-access
+
+
+
+def _make_no_intra_trajectory():
+    system1 = AtomicSystem(
+        atoms=[Atom("H"), Atom("H"), Atom("C")],
+        pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+        cell=Cell(10, 10, 10, 90, 90, 90)
+    )
+    system2 = AtomicSystem(
+        atoms=[Atom("H"), Atom("H"), Atom("C")],
+        pos=np.array([[0, 0, 0], [1, 0, 0], [2, 0, 0]]),
+        cell=Cell(10, 10, 10, 90, 90, 90)
+    )
+
+    return Trajectory([system1, system2])
+
+
+def _make_partial_rdf_reference_trajectory():
+    symbols = ["H", "H", "H", "O", "O", "O", "O"]
+    box_length = 12.0
+    cell = Cell(box_length, box_length, box_length, 90, 90, 90)
+    positions_by_frame = [
+        np.array(
+            [
+                [0.4, 0.7, 1.1],
+                [5.3, 5.5, 5.1],
+                [10.8, 1.2, 4.4],
+                [1.2, 0.9, 1.4],
+                [6.7, 5.1, 5.8],
+                [11.5, 11.7, 4.9],
+                [3.1, 7.4, 10.6],
+            ]
+        ),
+        np.array(
+            [
+                [0.6, 0.9, 1.0],
+                [5.0, 5.8, 5.2],
+                [10.6, 1.4, 4.2],
+                [1.5, 1.1, 1.8],
+                [6.4, 5.4, 5.7],
+                [11.3, 11.6, 5.2],
+                [3.4, 7.0, 10.1],
+            ]
+        ),
+        np.array(
+            [
+                [0.2, 0.5, 1.4],
+                [5.6, 5.2, 4.8],
+                [10.9, 1.0, 4.6],
+                [1.0, 1.3, 1.7],
+                [6.9, 4.8, 5.4],
+                [11.6, 11.4, 4.6],
+                [3.3, 7.7, 10.9],
+            ]
+        ),
+    ]
+    trajectory = Trajectory([
+        AtomicSystem(
+            atoms=[Atom(symbol) for symbol in symbols],
+            pos=positions,
+            cell=cell,
+        )
+        for positions in positions_by_frame
+    ])
+
+    return symbols, box_length, positions_by_frame, trajectory
 
 
 
@@ -257,7 +324,7 @@ class TestRDF:
             message_to_test=get_type_error_message(
             "use_full_atom_info",
             1,
-            bool
+            bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -274,7 +341,7 @@ class TestRDF:
             message_to_test=get_type_error_message(
             "no_intra_molecular",
             1,
-            bool
+            bool | None
             ),
             exception=PQTypeError,
             function=RDF,
@@ -395,6 +462,20 @@ class TestRDF:
         system2 = AtomicSystem(cell=Cell(16, 13, 12, 90, 90, 90))
 
         traj = Trajectory([system1, system2])
+
+        rdf = RDF(
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.1,
+            use_full_atom_info=None,
+            no_intra_molecular=None,
+            r_min=None,
+        )
+
+        assert rdf.use_full_atom_info == rdf._use_full_atom_default
+        assert rdf.no_intra_molecular == rdf._no_intra_molecular_default
+        assert rdf.r_min == rdf._r_min_default
 
         assert_logging_with_exception(
             caplog=caplog,
@@ -549,3 +630,117 @@ class TestRDF:
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test__init__uses_first_frame_topology_without_reader_topology(
+        self, test_with_data_dir
+    ):
+        traj_reader = TrajectoryReader("traj.xyz")
+
+        rdf = RDF(traj_reader, ["X"], ["X"], delta_r=0.1, n_bins=5)
+
+        assert rdf.topology == rdf.first_frame.topology
+        assert rdf.reference_indices.tolist() == [0, 1]
+        assert rdf.target_indices.tolist() == [0, 1]
+
+        _bin_middle_points, normalized_bins, *_ = rdf.run()
+
+        assert np.isfinite(normalized_bins).all()
+
+    def test_run_with_no_intra_molecular(self):
+        rdf = RDF(
+            _make_no_intra_trajectory(),
+            ["H"],
+            ["H"],
+            delta_r=0.5,
+            n_bins=5,
+            no_intra_molecular=True
+        )
+
+        (
+            _bin_middle_points,
+            normalized_bins,
+            integrated_bins,
+            normalized_bins2,
+            differential_bins
+        ) = rdf.run()
+
+        assert len(rdf.target_index_combinations) == 2
+        assert np.array_equal(rdf.target_index_combinations[0], np.array([1]))
+        assert np.array_equal(rdf.target_index_combinations[1], np.array([0]))
+        assert np.allclose(integrated_bins, np.array([0.0, 0.0, 1.0, 1.0, 1.0]))
+        assert np.isfinite(normalized_bins).all()
+        assert np.isfinite(normalized_bins2).all()
+        assert np.isfinite(differential_bins).all()
+
+    def test_matches_ase_partial_rdf_reference(self):
+        from ase import Atoms
+        from ase.geometry.rdf import get_rdf as ase_get_rdf
+
+        (
+            symbols,
+            box_length,
+            positions_by_frame,
+            trajectory,
+        ) = _make_partial_rdf_reference_trajectory()
+        delta_r = 0.5
+        r_max = 5.0
+        n_bins = int(r_max / delta_r)
+
+        bin_centers, normalized_bins, *_ = RDF(
+            trajectory,
+            "H",
+            "O",
+            delta_r=delta_r,
+            r_max=r_max,
+        ).run()
+
+        expected_centers = np.arange(delta_r / 2, r_max, delta_r)
+        np.testing.assert_allclose(bin_centers, expected_centers)
+
+        edges = np.linspace(0.0, r_max, n_bins + 1)
+        h_indices = [i for i, symbol in enumerate(symbols) if symbol == "H"]
+        o_indices = [i for i, symbol in enumerate(symbols) if symbol == "O"]
+        counts = np.zeros(n_bins, dtype=float)
+        ase_partial_bins = []
+
+        for positions in positions_by_frame:
+            atoms = Atoms(
+                symbols=symbols,
+                positions=positions,
+                cell=[box_length, box_length, box_length],
+                pbc=True,
+            )
+            distances = atoms.get_all_distances(mic=True)[
+                np.ix_(h_indices, o_indices)
+            ].ravel()
+            distance_bins = np.floor_divide(distances, delta_r).astype(int)
+            distance_bins = distance_bins[distances < r_max]
+            counts += np.bincount(distance_bins, minlength=n_bins)[:n_bins]
+
+            ase_rdf, _ase_distances = ase_get_rdf(
+                atoms,
+                rmax=r_max,
+                nbins=n_bins,
+                elements=[1, 8],
+                no_dists=False,
+            )
+            ase_partial_bins.append(ase_rdf)
+
+        shell_volumes = 4.0 / 3.0 * np.pi * (edges[1:] ** 3 - edges[:-1] ** 3)
+        target_density = len(o_indices) / box_length**3
+        expected_bins = counts / (
+            shell_volumes * target_density * len(h_indices) * len(positions_by_frame)
+        )
+
+        np.testing.assert_allclose(normalized_bins, expected_bins)
+        ase_reference_bins = np.mean(ase_partial_bins, axis=0)
+        # ASE changed partial RDF normalization across releases.
+        if not np.allclose(ase_reference_bins, expected_bins):
+            ase_reference_bins *= len(symbols) / len(o_indices)
+
+        np.testing.assert_allclose(
+            ase_reference_bins,
+            expected_bins,
+        )
+        np.testing.assert_allclose(normalized_bins, ase_reference_bins)
