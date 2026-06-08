@@ -28,8 +28,13 @@ Install with pip:
 
     pip install .
 
-In order to have a nice changelog strategy, please stick to [conventional commit definiton](https://www.conventionalcommits.org/en/v1.0.0-beta.4/). In order to make git accept only valid commit message please make a symlink of the git-hook template `.githooks/commit-msg`:
+Use squash merges for pull requests. The pull request title becomes the commit
+message on the target branch, so PR titles must follow
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
 
-    ln -s .githooks/commit-msg .git/hooks/
+    feat: add a new analysis command
+    fix(io): handle missing trajectory data
 
-More information on preferred and undesirable commit message will come soon...
+The local commit hook is optional contributor feedback. Enable it with:
+
+    git config core.hooksPath .githooks

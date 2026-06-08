@@ -45,7 +45,7 @@ test = [
     "docstr-coverage",
 ]
 docs = [
-    "sphinx",
+    "sphinx>=7,<9",
     "sphinx-sitemap",
     "sphinx-rtd-theme",
     "breathe",
