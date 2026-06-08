@@ -90,7 +90,7 @@ jobs:
       id: generate_changelog
       run: |
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        git-changelog --sections ci,doc,feat,fix,perf,test -F "$name.." -c angular > changelog.tmp
+        git-changelog --sections :all: -F "$name.." -c angular > changelog.tmp
 
     - name: Create GitHub Release
       env:
@@ -103,7 +103,7 @@ jobs:
 
     - name: Build CHANGELOG.md
       run: |
-        git-changelog --sections ci,doc,feat,fix,perf,test -o CHANGELOG.md -c angular --in-place
+        git-changelog --sections :all: -o CHANGELOG.md -c angular --in-place
 
     - name: Add CHANGELOG.md to commit
       run: |

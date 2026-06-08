@@ -1,0 +1,36 @@
+name: PR Title
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  conventional-title:
+    name: conventional-title
+    runs-on: ubuntu-latest
+    env:
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Validate PR title
+        run: |
+          shopt -s nocasematch
+          pattern='^(feat|fix|revert|ref|refactor|perf|build|chore|ci|deps|doc|docs|style|test|tests)(\([a-z0-9._-]+\))?!?: .+'
+
+          if [[ ! "$PR_TITLE" =~ $pattern ]]; then
+            echo "PR title must follow Conventional Commits."
+            echo
+            echo "Examples:"
+            echo "  feat: add a new analysis command"
+            echo "  fix(io): handle missing trajectory data"
+            echo "  refactor: simplify trajectory parsing"
+            echo
+            echo "Allowed types: feat, fix, revert, refactor, perf, build, chore, ci, deps, docs, style, test."
+            exit 1
+          fi
