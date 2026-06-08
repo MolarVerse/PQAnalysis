@@ -87,7 +87,7 @@
 </section>
 <section id="how-to-contribute">
 <h2>How to Contribute<a class="headerlink" href="#how-to-contribute" title="Link to this heading"></a></h2>
-<p>For any contributor willing to contribute to the project, it is important to understand the branching model used by the project. The project uses the <a class="reference external" href="http://nvie.com/posts/a-successful-git-branching-model/">Gitflow</a> branching model. In order to contribute to the project please follow the following steps:</p>
+<p>For any contributor willing to contribute to the project, it is important to understand the branching model used by the project. The project uses the <a class="reference external" href="http://nvie.com/posts/a-successful-git-branching-model/">Gitflow</a> branching model. Pull requests should stay small and reviewer-readable. In order to contribute to the project please follow the following steps:</p>
 <blockquote>
 <div><ol class="arabic">
 <li><p>Fork the project on Github. (not necessary if you are a member of the project)</p></li>
@@ -117,14 +117,22 @@
 <li><p>Commit your changes to your feature branch and publish your feature branch:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>&lt;files&gt;
-$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;commit message&quot;</span>
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: describe the bug fix&quot;</span>
 $<span class="w"> </span>git<span class="w"> </span>flow<span class="w"> </span>feature<span class="w"> </span>publish<span class="w"> </span>&lt;feature_branch_name&gt;
 </pre></div>
 </div>
 </div></blockquote>
 </li>
 <li><p>Create a pull request on Github.</p></li>
-<li><p>Once your pull request is approved, it will be merged into the develop branch.</p></li>
+<li><p>Use a short Conventional Commits title for the pull request, for example <code class="docutils literal notranslate"><span class="pre">feat:</span> <span class="pre">add</span> <span class="pre">a</span> <span class="pre">new</span> <span class="pre">analysis</span> <span class="pre">command</span></code> or <code class="docutils literal notranslate"><span class="pre">fix(io):</span> <span class="pre">handle</span> <span class="pre">missing</span> <span class="pre">trajectory</span> <span class="pre">data</span></code>. This title is validated by CI.</p></li>
+<li><p>Once your pull request is approved and all required checks pass, it will be merged into the develop branch. If the pull request is squash merged, use the pull request title as the squash commit message.</p></li>
+<li><p>Optional: enable the local commit-message hook for earlier feedback:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>config<span class="w"> </span>core.hooksPath<span class="w"> </span>.githooks
+</pre></div>
+</div>
+</div></blockquote>
+</li>
 </ol>
 </div></blockquote>
 </section>
