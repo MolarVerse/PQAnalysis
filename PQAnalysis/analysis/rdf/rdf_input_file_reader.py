@@ -76,13 +76,16 @@ class RDFInputFileReader(Reader):
         super().read()
         super().check_required_keys(self.required_keys)
         super().check_known_keys(self.required_keys + self.optional_keys)
+        super().not_defined_optional_keys(self.optional_keys)
 
-        if (self.no_intra_molecular is not None and
-            (self.restart_file is None or self.moldescriptor_file is None)):
+        if (
+            self.no_intra_molecular is True and
+            (self.restart_file is None or self.moldescriptor_file is None)
+        ):
             self.logger.error(
                 (
-                "The no_intra_molecular key can only be used "
-                "if both a restart file and a moldescriptor file are given."
+                    "The no_intra_molecular key can only be used "
+                    "if both a restart file and a moldescriptor file are given."
                 ),
                 exception=InputFileError,
             )
@@ -90,8 +93,8 @@ class RDFInputFileReader(Reader):
         if self.moldescriptor_file is not None and self.restart_file is None:
             self.logger.error(
                 (
-                "The moldescriptor_file key can only be "
-                "used in a meaningful way if a restart file is given."
+                    "The moldescriptor_file key can only be "
+                    "used in a meaningful way if a restart file is given."
                 ),
                 exception=InputFileError,
             )
@@ -147,19 +150,25 @@ They are optional in the input file, but they might be required for
 the analysis. This means that if an optional keyword is specified
 other keywords might be required. For example:
 
-- If the :code:`{Reader.no_intra_molecular_key}` key is specified,
-the :code:`{Reader.restart_file_key}` and
-:code:`{Reader.moldescriptor_file_key}` keys
-are required in order to exclude intra molecular pairs.
+- Basic RDF calculations can be run without a restart file. In that
+  case, intra molecular pairs are included.
+- If the :code:`{Reader.no_intra_molecular_key}` key is enabled,
+  the :code:`{Reader.restart_file_key}` and
+  :code:`{Reader.moldescriptor_file_key}` keys
+  are required in order to exclude intra molecular pairs.
 - If the :code:`{Reader.moldescriptor_file_key}` key is specified,
-the :code:`{Reader.restart_file_key}` key is required in order
-use the reference residues in any meaningful way.
+  the :code:`{Reader.restart_file_key}` key is required in order
+  to use the reference residues in any meaningful way.
+- File names are not inferred automatically. Provide
+  :code:`{Reader.restart_file_key}` and
+  :code:`{Reader.moldescriptor_file_key}` explicitly when they are
+  required.
 - In general, the :code:`{Reader.r_max_key}`,
-:code:`{Reader.n_bins_key}` and :code:`{Reader.delta_r_key}`
-are mutual exclusive, meaning that they can't be specified at
-the same time. Furthermore, at least one of
-:code:`{Reader.n_bins}' or :code:`{Reader.delta_r}` is required
-(for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).
+  :code:`{Reader.n_bins_key}` and :code:`{Reader.delta_r_key}`
+  are mutual exclusive, meaning that they can't be specified at
+  the same time. Furthermore, at least one of
+  :code:`{Reader.n_bins_key}` or :code:`{Reader.delta_r_key}` is required
+  (for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).
 
 """
 

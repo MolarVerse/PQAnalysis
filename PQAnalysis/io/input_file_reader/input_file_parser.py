@@ -363,7 +363,7 @@ class PrimitiveTransformer(Transformer):
             tuple containing the bool value, the string "bool",
             and the line where the token was defined.
         """
-        return bool(items[0]), "bool", str(items[0].end_line)
+        return str(items[0]).lower() == "true", "bool", str(items[0].end_line)
 
 
 

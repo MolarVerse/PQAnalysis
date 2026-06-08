@@ -52,6 +52,11 @@ class TestPrimitiveTransformer:
 
         assert transformer.boolean([token]) == (True, "bool", "1")
 
+        token = Token("BOOL", "False")
+        token.end_line = 1
+
+        assert transformer.boolean([token]) == (False, "bool", "1")
+
 
 
 class TestComposedTransformer:

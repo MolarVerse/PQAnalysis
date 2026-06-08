@@ -1,0 +1,4 @@
+required_key1 = 1
+required_key2 = 2
+optional_key1 = 3
+optional_key2 = 4

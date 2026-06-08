@@ -75,13 +75,17 @@ def test_parse_files():
 
     assert parse._parse_files(input_dict, "c") == ["file1", "file2"]
 
-    input_dict["d"] = (2, "int", "1")
+    input_dict["d"] = ("None", "None", "1")
+
+    assert parse._parse_files(input_dict, "d") == None
+
+    input_dict["e"] = (2, "int", "1")
 
     with pytest.raises(InputFileError) as exception:
-        parse._parse_files(input_dict, "d")
+        parse._parse_files(input_dict, "e")
     assert str(
         exception.value
-    ) == "The \"d\" value has to be either a string, glob or a list of strings - actually it is parsed as a int"
+    ) == "The \"e\" value has to be either a string, glob or a list of strings - actually it is parsed as a int"
 
 
 
