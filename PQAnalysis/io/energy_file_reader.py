@@ -30,7 +30,7 @@ class EnergyFileReader(BaseReader):
     @runtime_type_checking
     def __init__(
         self,
-        filename: str,
+        filename: str | list[str],
         info_filename: str | None = None,
         use_info_file: bool = True,
         engine_format: MDEngineFormat | str = MDEngineFormat.PQ
@@ -58,8 +58,9 @@ class EnergyFileReader(BaseReader):
 
         Parameters
         ----------
-        filename : str
-            The name of the file to read from.
+        filename : str or list of str
+            The name of the file to read from or a list of filenames to read
+            from.
         info_filename : str, optional
             The name of the info file to read from, by default None
         use_info_file : bool, optional
@@ -103,10 +104,21 @@ class EnergyFileReader(BaseReader):
 
             info, units = reader.read()
 
-        with open(self.filename, "r", encoding='utf-8') as file:
+        data = []
 
-            data = []
+        for filename in self._filenames_to_read():
+            data.extend(self._read_data_from_file(filename))
 
+        return Energy(np.array(data).T, info, units)
+
+    @staticmethod
+    def _read_data_from_file(filename: str) -> list[list[float]]:
+        """
+        Reads energy data from a single file.
+        """
+        data = []
+
+        with open(filename, "r", encoding='utf-8') as file:
             for line in file:
                 if line.startswith("#"):
                     continue
@@ -114,7 +126,16 @@ class EnergyFileReader(BaseReader):
                 data_line = [float(x) for x in line.split()]
                 data.append(list(data_line))
 
-        return Energy(np.array(data).T, info, units)
+        return data
+
+    def _filenames_to_read(self) -> list[str]:
+        """
+        Gets the energy filenames to read.
+        """
+        if self.multiple_files:
+            return self.filenames
+
+        return [self.filename]
 
     def __info_file_found__(self) -> bool:
         """
@@ -137,7 +158,9 @@ class EnergyFileReader(BaseReader):
         """
         if self.info_filename is None:
 
-            self.info_filename = os.path.splitext(self.filename)[0] + ".info"
+            self.info_filename = os.path.splitext(
+                self._filenames_to_read()[0]
+            )[0] + ".info"
 
             try:
                 BaseReader(self.info_filename)

@@ -20,20 +20,36 @@ class TestEnergyReader:
             EnergyFileReader("tmp")
         assert str(exception.value) == "File tmp not found."
 
+        with pytest.raises(PQFileNotFoundError) as exception:
+            EnergyFileReader(["md-01.en", "tmp"])
+        assert str(exception.value) == (
+            "At least one of the given files does not exist. File tmp not found."
+        )
+
         reader = EnergyFileReader("md-01.en")
         assert reader.filename == "md-01.en"
+        assert reader.multiple_files == False
+        assert reader.info_filename == "md-01.info"
+        assert reader.with_info_file == True
+        assert reader.format == MDEngineFormat.PQ
+
+        reader = EnergyFileReader(["md-01.en", "md-01_noinfo.en"])
+        assert reader.filenames == ["md-01.en", "md-01_noinfo.en"]
+        assert reader.multiple_files == True
         assert reader.info_filename == "md-01.info"
         assert reader.with_info_file == True
         assert reader.format == MDEngineFormat.PQ
 
         reader = EnergyFileReader("md-01.en", use_info_file=False)
         assert reader.filename == "md-01.en"
+        assert reader.multiple_files == False
         assert reader.info_filename == None
         assert reader.with_info_file == False
         assert reader.format == MDEngineFormat.PQ
 
         reader = EnergyFileReader("md-01_noinfo.en")
         assert reader.filename == "md-01_noinfo.en"
+        assert reader.multiple_files == False
         assert reader.info_filename == None
         assert reader.with_info_file == False
         assert reader.format == MDEngineFormat.PQ
@@ -140,6 +156,27 @@ class TestEnergyReader:
         reader = EnergyFileReader("md-01_noinfo.en")
         energy = reader.read()
         assert np.allclose(energy.data, data_ref)
+        assert energy.info == defaultdict(lambda: None)
+        assert energy.units == defaultdict(lambda: None)
+        assert energy.info_given == False
+        assert energy.units_given == False
+
+        reader = EnergyFileReader(["md-01.en", "md-01.en"])
+        energy = reader.read()
+        assert energy.data.shape == (12, 4)
+        assert np.allclose(energy.data, np.hstack([data_ref, data_ref]))
+        assert energy.info == info
+        assert energy.units == units
+        assert energy.info_given == True
+        assert energy.units_given == True
+
+        reader = EnergyFileReader(
+            ["md-01_noinfo.en", "md-01_noinfo.en"],
+            use_info_file=False,
+        )
+        energy = reader.read()
+        assert energy.data.shape == (12, 4)
+        assert np.allclose(energy.data, np.hstack([data_ref, data_ref]))
         assert energy.info == defaultdict(lambda: None)
         assert energy.units == defaultdict(lambda: None)
         assert energy.info_given == False
