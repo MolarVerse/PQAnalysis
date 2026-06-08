@@ -4,7 +4,7 @@ Common things needed by command line scripts.
 
 import sys
 
-from .._version import __version__
+from PQAnalysis.version import __version__
 
 __line__ = "                                              *"
 __header__ = r"""

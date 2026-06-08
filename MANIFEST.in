@@ -1,0 +1,5 @@
+include LICENSE
+include README.md
+include CHANGELOG.md
+recursive-include PQAnalysis/grammar *.lark
+include PQAnalysis/io/traj_file/process_lines.pyx

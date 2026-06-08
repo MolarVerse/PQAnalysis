@@ -19,7 +19,7 @@ import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
 from PQAnalysis.utils.common import __header__
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
-from PQAnalysis._version import __version__
+from PQAnalysis.version import __version__
 
 
 
