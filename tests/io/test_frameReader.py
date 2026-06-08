@@ -10,11 +10,37 @@ from PQAnalysis.io.traj_file import _process_lines_py
 import PQAnalysis.io.traj_file.frame_reader as frame_reader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
 from PQAnalysis.topology import Topology
-from PQAnalysis.traj import TrajectoryFormat
+from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
 from PQAnalysis.traj.exceptions import TrajectoryFormatError
 
 from . import pytestmark
 
+
+def test_frame_reader_base_class_is_abstract():
+    with pytest.raises(TypeError):
+        frame_reader.BaseFrameReader()
+
+
+def test_frame_reader_compatibility_alias():
+    reader = frame_reader._FrameReader()
+
+    assert isinstance(reader, frame_reader.BaseFrameReader)
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+
+
+@pytest.mark.parametrize(
+    "traj_format",
+    [
+        TrajectoryFormat.XYZ,
+        TrajectoryFormat.VEL,
+        TrajectoryFormat.FORCE,
+        TrajectoryFormat.CHARGE,
+    ],
+)
+def test_get_frame_reader(traj_format):
+    reader = frame_reader.get_frame_reader(traj_format)
+
+    assert isinstance(reader, frame_reader.XYZFrameReader)
 
 
 def test_frame_reader_uses_python_fallback(monkeypatch):
@@ -41,6 +67,102 @@ def test_frame_reader_uses_python_fallback(monkeypatch):
 
     monkeypatch.undo()
     importlib.reload(frame_reader)
+
+
+def test_get_frame_reader_keeps_md_format():
+    reader = frame_reader.get_frame_reader(
+        TrajectoryFormat.XYZ, md_format="qmcfc"
+    )
+
+    assert isinstance(reader, frame_reader.XYZFrameReader)
+    assert reader.md_format is MDEngineFormat.QMCFC
+
+
+def test_get_frame_reader_rejects_unsupported_format(monkeypatch):
+    monkeypatch.setattr(
+        frame_reader.BaseFrameReader.logger,
+        "error",
+        lambda *args, **kwargs: None,
+    )
+
+    with pytest.raises(FrameReaderError) as exception:
+        frame_reader.get_frame_reader(TrajectoryFormat.AUTO)
+
+    assert str(exception.value) == (
+        "Invalid TrajectoryFormat given. "
+        "traj_format=<TrajectoryFormat.AUTO: 'auto'>"
+    )
+
+
+@pytest.mark.parametrize(
+    ("traj_format", "attribute", "expected"),
+    [
+        (TrajectoryFormat.XYZ, "pos", [[1.0, 2.0, 3.0]]),
+        (TrajectoryFormat.VEL, "vel", [[1.0, 2.0, 3.0]]),
+        (TrajectoryFormat.FORCE, "forces", [[1.0, 2.0, 3.0]]),
+        (TrajectoryFormat.CHARGE, "charges", [1.0]),
+    ],
+)
+def test_xyz_frame_reader_preserves_qmcfc_handling(
+    traj_format, attribute, expected
+):
+    reader = frame_reader.XYZFrameReader(md_format="qmcfc")
+    if traj_format is TrajectoryFormat.CHARGE:
+        frame_string = "2\n\nX 0.0\nh 1.0"
+    else:
+        frame_string = "2\n\nX 0.0 0.0 0.0\nh 1.0 2.0 3.0"
+
+    frame = reader.read(frame_string, traj_format=traj_format)
+
+    assert frame.n_atoms == 1
+    assert frame.atoms == [Atom("h")]
+    assert np.allclose(getattr(frame, attribute), expected)
+
+
+def test_xyz_frame_reader_rejects_invalid_qmcfc_first_atom():
+    reader = frame_reader.XYZFrameReader(md_format="qmcfc")
+
+    with pytest.raises(FrameReaderError) as exception:
+        reader.read("1\n\nh 0.0 0.0 0.0")
+
+    assert str(exception.value) == (
+        "The first atom in one of the frames is not X. "
+        "Please use PQ (default) md engine instead"
+    )
+
+
+def test_xyz_frame_reader_resets_topology_between_reads():
+    reader = frame_reader.XYZFrameReader()
+    topology = Topology(atoms=[Atom("h")])
+
+    frame = reader.read("1\n\nh 0.0 0.0 0.0", topology=topology)
+    assert frame.topology is topology
+
+    frame = reader.read("1\n\no 1.0 2.0 3.0")
+
+    assert frame.topology is not topology
+    assert frame.atoms == [Atom("o")]
+
+
+def test_xyz_frame_reader_defensive_invalid_format_branch(monkeypatch):
+    class UnknownTrajectoryFormat:
+        XYZ = object()
+        VEL = object()
+        FORCE = object()
+        CHARGE = object()
+
+        def __new__(cls, value):
+            return object()
+
+    monkeypatch.setattr(frame_reader, "TrajectoryFormat", UnknownTrajectoryFormat)
+
+    reader = frame_reader.XYZFrameReader()
+    monkeypatch.setattr(reader.logger, "error", lambda *args, **kwargs: None)
+
+    with pytest.raises(FrameReaderError) as exception:
+        reader.read("", traj_format="unknown")
+
+    assert str(exception.value) == "Invalid TrajectoryFormat given. traj_format='unknown'"
 
 
 class TestFrameReader:
