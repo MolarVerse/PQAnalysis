@@ -3,6 +3,7 @@ A module containing a class to read input files to setup the
 :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
 import logging
+from pathlib import Path
 
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -18,6 +19,8 @@ class RDFInputFileReader(Reader):
     """
     A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
     """
+
+    _moldescriptor_file_default = "moldescriptor.dat"
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
@@ -78,15 +81,14 @@ class RDFInputFileReader(Reader):
         super().check_known_keys(self.required_keys + self.optional_keys)
         super().not_defined_optional_keys(self.optional_keys)
 
+        self._set_default_no_intra_molecular()
+
         if (
             self.no_intra_molecular is True and
-            (self.restart_file is None or self.moldescriptor_file is None)
+            not self._infer_required_topology_files()
         ):
             self.logger.error(
-                (
-                    "The no_intra_molecular key can only be used "
-                    "if both a restart file and a moldescriptor file are given."
-                ),
+                self._missing_topology_files_error_message(),
                 exception=InputFileError,
             )
 
@@ -98,6 +100,146 @@ class RDFInputFileReader(Reader):
                 ),
                 exception=InputFileError,
             )
+
+    def _set_default_no_intra_molecular(self):
+        """
+        Enables no_intra_molecular if both topology files are provided
+        and the keyword was omitted.
+        """
+        if self.no_intra_molecular is not None:
+            return
+
+        if self.restart_file is None or self.moldescriptor_file is None:
+            return
+
+        self._set_inferred_key(self.no_intra_molecular_key, True, "bool")
+        self.logger.info(
+            (
+                "Enabled no_intra_molecular because both restart_file "
+                "and moldescriptor_file are set."
+            )
+        )
+
+    def _infer_required_topology_files(self) -> bool:
+        """
+        Infers missing topology files required by no_intra_molecular.
+        """
+        if self.restart_file is None:
+            restart_file = self._infer_restart_file()
+
+            if restart_file is not None:
+                self._set_inferred_key(
+                    self.restart_file_key,
+                    restart_file,
+                    "str",
+                )
+                self.logger.info(
+                    f"Inferred restart_file='{restart_file}' from traj_files."
+                )
+
+        if self.moldescriptor_file is None:
+            moldescriptor_file = self._infer_moldescriptor_file()
+
+            if moldescriptor_file is not None:
+                self._set_inferred_key(
+                    self.moldescriptor_file_key,
+                    moldescriptor_file,
+                    "str",
+                )
+                self.logger.info(
+                    (
+                        "Inferred moldescriptor_file="
+                        f"'{moldescriptor_file}' from traj_files."
+                    )
+                )
+
+        return (
+            self.restart_file is not None and
+            self.moldescriptor_file is not None
+        )
+
+    def _infer_restart_file(self) -> str | None:
+        """
+        Infers the restart file from the first trajectory filename.
+        """
+        restart_file = self._restart_file_candidate()
+
+        if restart_file is None:
+            return None
+
+        return restart_file if Path(restart_file).is_file() else None
+
+    def _infer_moldescriptor_file(self) -> str | None:
+        """
+        Infers the moldescriptor file from the first trajectory directory.
+        """
+        moldescriptor_file = self._moldescriptor_file_candidate()
+
+        if moldescriptor_file is None:
+            return None
+
+        return moldescriptor_file if Path(moldescriptor_file).is_file() else None
+
+    def _restart_file_candidate(self) -> str | None:
+        """
+        Gets the restart file candidate inferred from the first trajectory.
+        """
+        traj_file = self._first_traj_file()
+
+        if traj_file is None:
+            return None
+
+        return str(Path(traj_file).with_suffix(".rst"))
+
+    def _moldescriptor_file_candidate(self) -> str | None:
+        """
+        Gets the moldescriptor file candidate inferred from the first trajectory.
+        """
+        traj_file = self._first_traj_file()
+
+        if traj_file is None:
+            return None
+
+        return str(Path(traj_file).parent / self._moldescriptor_file_default)
+
+    def _first_traj_file(self) -> str | None:
+        """
+        Gets the first trajectory file from the input file.
+        """
+        traj_files = self.traj_files
+
+        if not traj_files:
+            return None
+
+        return traj_files[0]
+
+    def _missing_topology_files_error_message(self) -> str:
+        """
+        Gets the error message for missing topology files.
+        """
+        traj_file = self._first_traj_file()
+
+        if traj_file is None:
+            return (
+                "The no_intra_molecular key requires both a restart file "
+                "and a moldescriptor file. Could not infer missing files "
+                "because no trajectory files were available."
+            )
+
+        return (
+            "The no_intra_molecular key requires both a restart file "
+            "and a moldescriptor file. Could not infer missing files "
+            f"from trajectory file '{traj_file}'. "
+            f"Tried restart_file='{self._restart_file_candidate()}' "
+            "and moldescriptor_file="
+            f"'{self._moldescriptor_file_candidate()}'."
+        )
+
+    def _set_inferred_key(self, key: str, value, value_type: str):
+        """
+        Sets a value in the input dictionary after it was inferred.
+        """
+        self.dictionary.dict[key] = (value, value_type, "inferred")
 
 
 
@@ -152,17 +294,24 @@ other keywords might be required. For example:
 
 - Basic RDF calculations can be run without a restart file. In that
   case, intra molecular pairs are included.
+- If both :code:`{Reader.restart_file_key}` and
+  :code:`{Reader.moldescriptor_file_key}` are given and
+  :code:`{Reader.no_intra_molecular_key}` is omitted,
+  :code:`{Reader.no_intra_molecular_key}` defaults to :code:`True`.
 - If the :code:`{Reader.no_intra_molecular_key}` key is enabled,
   the :code:`{Reader.restart_file_key}` and
   :code:`{Reader.moldescriptor_file_key}` keys
-  are required in order to exclude intra molecular pairs.
+  are required in order to exclude intra molecular pairs. Missing
+  files are inferred from the first trajectory file if possible:
+  :code:`trajectory.xyz` maps to :code:`trajectory.rst`, and
+  :code:`moldescriptor.dat` is searched in the trajectory directory.
 - If the :code:`{Reader.moldescriptor_file_key}` key is specified,
   the :code:`{Reader.restart_file_key}` key is required in order
   to use the reference residues in any meaningful way.
-- File names are not inferred automatically. Provide
-  :code:`{Reader.restart_file_key}` and
-  :code:`{Reader.moldescriptor_file_key}` explicitly when they are
-  required.
+- Explicitly provided :code:`{Reader.restart_file_key}` and
+  :code:`{Reader.moldescriptor_file_key}` values are used as-is.
+- Inferred and defaulted values are written to the normal PQAnalysis
+  log output.
 - In general, the :code:`{Reader.r_max_key}`,
   :code:`{Reader.n_bins_key}` and :code:`{Reader.delta_r_key}`
   are mutual exclusive, meaning that they can't be specified at

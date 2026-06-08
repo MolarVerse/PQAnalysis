@@ -32,8 +32,10 @@ and an output file. A restart file is not required for this case:
 
 Restart files and moldescriptor files are only needed when the calculation
 requires molecular topology information. For example,
-:code:`no_intra_molecular = True` excludes pairs from the same molecule and
-therefore requires both files:
+:code:`no_intra_molecular = True` excludes pairs from the same molecule.
+If the files are not given explicitly, PQAnalysis tries to infer
+:code:`trajectory.rst` from :code:`trajectory.xyz` and
+:code:`moldescriptor.dat` from the trajectory directory:
 
 .. code-block:: text
 
@@ -42,14 +44,14 @@ therefore requires both files:
     delta_r = 0.05
     out_file = rdf_inter.out
     traj_files = trajectory.xyz
-    restart_file = trajectory.rst
-    moldescriptor_file = moldescriptor.dat
     no_intra_molecular = True
 
-If :code:`no_intra_molecular` is omitted or set to :code:`False`, intra
-molecular pairs are included. File names are not inferred automatically;
-provide :code:`restart_file` and :code:`moldescriptor_file` explicitly when
-they are required.
+Explicit :code:`restart_file` and :code:`moldescriptor_file` values are used
+as-is. If both files are given and :code:`no_intra_molecular` is omitted,
+:code:`no_intra_molecular` defaults to :code:`True`. If
+:code:`no_intra_molecular` is set to :code:`False`, intra molecular pairs are
+included. Inferred and defaulted values are written to the normal PQAnalysis
+log output.
 
 Pure command line tools
 -----------------------
