@@ -5,7 +5,8 @@ on:
     tags:
       - '**'
 
-permissions: write-all
+permissions:
+  contents: read
 
 jobs:
   build:
@@ -15,18 +16,19 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: "3.12"
+        cache: pip
     - name: Install pypa/build
       run: |
-        python3 -m pip install build --user
-        python3 -m pip install twine --user
+        python3 -m pip install --upgrade pip
+        python3 -m pip install build twine
 
-    - name: Build a binary wheel and a source tarball
+    - name: Build source distribution
       run: python3 -m build --sdist
     - name: Store the distribution packages
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -45,7 +47,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -67,9 +69,10 @@ jobs:
         fetch-depth: 0
 
     - name: setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: '3.12'
+        cache: pip
 
     - name: build git-changelog
       run: |
@@ -81,7 +84,7 @@ jobs:
         name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
         echo "previousTag: $name"
         echo "previousTag=$name" >> $GITHUB_ENV
-        echo "::set-output name=previousTag::$name"
+        echo "previousTag=$name" >> $GITHUB_OUTPUT
 
     - name: generate new changelog
       id: generate_changelog
@@ -132,7 +135,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/
@@ -170,7 +173,7 @@ jobs:
 
     steps:
     - name: Download all the dists
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
         path: dist/

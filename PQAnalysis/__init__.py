@@ -13,6 +13,7 @@ from beartype.claw import beartype_this_package
 import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
 
 from PQAnalysis.utils.custom_logging import CustomLogger
+from PQAnalysis.version import __version__
 
 __base_path__ = Path(__file__).parent
 __package_name__ = __name__

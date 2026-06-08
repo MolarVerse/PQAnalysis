@@ -24,9 +24,13 @@ Clone the PQAnalysis GitHub repository and navigate into the directory:
     git clone https://github.com/MolarVerse/PQAnalysis.git
     cd PQAnalysis
 
-Install with pip:
+Install in editable mode with test dependencies:
 
-    pip install .
+    pip install -e ".[test]"
+
+Run the test suite:
+
+    python -m pytest
 
 Use squash merges for pull requests. The pull request title becomes the commit
 message on the target branch, so PR titles must follow

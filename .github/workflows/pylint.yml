@@ -15,37 +15,31 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    permissions: write-all      # Job-level permissions configuration starts here
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
-    - uses: actions/checkout@master
-      with:
-        persist-credentials: false # otherwise, the token used is the GITHUB_TOKEN, instead of your personal access token.
-        fetch-depth: 0 # otherwise, there would be errors pushing refs to the destination repository.
+    - uses: actions/checkout@v4
 
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
-        python-version: 3.x
+        python-version: "3.12"
+        cache: pip
 
     - name: build PQAnalysis
       run: |
-        pip install pylint
-        pip install pylint-django
-        pip install .
+        python -m pip install --upgrade pip
+        python -m pip install -e ".[test]"
 
     - name: Lint with pylint
       id: run_pylint
       run: |
         mkdir -p .github/.pylint_cache
         export PYLINTHOME=$(pwd)/.github/.pylint_cache
-        if ${{ github.event_name == 'pull_request' }}; then
-          pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
-          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
-        elif ${{ github.event_name == 'push' }}; then
-          pylint PQAnalysis --exit-zero --persistent y | tee pylint_output.txt
-          python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
-        fi
+        pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
+        python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
 
     - name: Check if pylint score is higher than 9.75
       id: check_pylint_score
@@ -87,21 +81,4 @@ jobs:
     - if: (success() || failure()) && !github.event.pull_request
       run: |
         cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
-
-    #add changes of .github/.pylint_cache to the commit if it is based on push event
-    - name: Add .github/.pylint_cache to the commit
-      if: (github.event_name == 'push' || github.event.pull_request.merged == true) && github.ref_name != 'main'
-      run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-
-        git add .github/.pylint_cache
-        git commit -m "Add .github/.pylint_cache on push event"
-
-    - name: Push changes
-      if: github.event_name == 'push'
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: ${{ github.ref }}
 
