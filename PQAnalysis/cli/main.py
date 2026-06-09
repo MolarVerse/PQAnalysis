@@ -5,6 +5,7 @@ A command line interface for the PQAnalysis package.
 from PQAnalysis.config import code_base_url
 
 from .xyz2gen import XYZ2GENCLI
+from .traj2extxyz import Traj2ExtXYZCLI
 from .traj2qmcfc import Traj2QMCFCCLI
 from .traj2box import Traj2BoxCLI
 from .rst2xyz import Rst2XYZCLI
@@ -46,6 +47,7 @@ def main():
         Rst2XYZCLI.program_name(): Rst2XYZCLI,
         XYZ2RstCLI.program_name(): XYZ2RstCLI,
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
+        Traj2ExtXYZCLI.program_name(): Traj2ExtXYZCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,
     }
