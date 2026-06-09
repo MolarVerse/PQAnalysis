@@ -23,6 +23,7 @@ from .traj_file.trajectory_writer import TrajectoryWriter
 from .traj_file.frame_reader import (
     BaseFrameReader,
     XYZFrameReader,
+    ExtXYZFrameReader,
     _FrameReader,
     get_frame_reader,
 )

@@ -7,6 +7,7 @@ from .trajectory_writer import TrajectoryWriter
 from .frame_reader import (
     BaseFrameReader,
     XYZFrameReader,
+    ExtXYZFrameReader,
     _FrameReader,
     get_frame_reader,
 )

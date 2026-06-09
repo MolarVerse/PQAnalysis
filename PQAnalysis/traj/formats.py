@@ -38,6 +38,9 @@ class TrajectoryFormat(BaseEnumFormat):
     #: The charge trajectory format.
     CHARGE = "CHARGE"
 
+    #: The extended xyz trajectory format.
+    EXTXYZ = "EXTXYZ"
+
     @classmethod
     def _missing_(cls, values: Any) -> Any:  # pylint: disable=arguments-differ
         """
@@ -90,7 +93,16 @@ class TrajectoryFormat(BaseEnumFormat):
         TrajectoryFormat
             The inferred trajectory format.
         """
+        if (
+            file_path.endswith(".extxyz") or
+            file_path.endswith(".extended.xyz")
+        ):
+            return cls.EXTXYZ
+
         if file_path.endswith(".xyz"):
+            if cls._is_extxyz_file(file_path):
+                return cls.EXTXYZ
+
             return cls.XYZ
 
         if (file_path.endswith(".vel") or file_path.endswith(".velocs")):
@@ -110,6 +122,20 @@ class TrajectoryFormat(BaseEnumFormat):
             ),
             exception=TrajectoryFormatError
         )
+
+    @staticmethod
+    def _is_extxyz_file(file_path: str) -> bool:
+        """
+        Check whether an xyz file uses the extended xyz comment line.
+        """
+        try:
+            with open(file_path, "r", encoding="utf-8") as file:
+                file.readline()
+                comment_line = file.readline().lower()
+        except OSError:
+            return False
+
+        return "properties" in comment_line
 
     def lower(self) -> str:
         """
