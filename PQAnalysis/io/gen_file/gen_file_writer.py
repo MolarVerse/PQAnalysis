@@ -108,9 +108,9 @@ class GenFileWriter(BaseWriter):
         """
         print(self.system.n_atoms, periodicity, file=self.file)
 
-        element_names = self.system.unique_element_names
+        atom_names = self._unique_atom_names()
 
-        print(" ".join(element_names), file=self.file)
+        print(" ".join(atom_names), file=self.file)
 
     def _write_coords(self) -> None:
         """
@@ -123,17 +123,34 @@ class GenFileWriter(BaseWriter):
         - The y-coordinate
         - The z-coordinate
         """
-        element_names = self.system.unique_element_names
+        atom_names = self._unique_atom_names()
+        atom_indices = {
+            atom_name: index
+            for index, atom_name in enumerate(atom_names, start=1)
+        }
+
         for i in range(self.system.n_atoms):
             print(
                 "\t",
                 i + 1,
-                element_names.index(self.system.atoms[i].element_name) + 1,
+                atom_indices[self.system.atoms[i].name],
                 self.system.pos[i, 0],
                 self.system.pos[i, 1],
                 self.system.pos[i, 2],
                 file=self.file
             )
+
+    def _unique_atom_names(self) -> list[str]:
+        """
+        Gets atom names in first-seen order.
+        """
+        atom_names = []
+
+        for atom in self.system.atoms:
+            if atom.name not in atom_names:
+                atom_names.append(atom.name)
+
+        return atom_names
 
     def _write_box_matrix(self) -> None:
         """
