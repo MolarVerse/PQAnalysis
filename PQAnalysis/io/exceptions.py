@@ -14,6 +14,14 @@ class BoxWriterError(PQException):
 
 
 
+class BoxReaderError(PQException):
+
+    """
+    Exception raised for errors related to the BoxReader class
+    """
+
+
+
 class MoldescriptorReaderError(PQException):
 
     """
