@@ -200,7 +200,7 @@ class RestartFileWriter(BaseWriter):
         elif isinstance(atom_counter, int):
             atom_counter = [atom_counter] * frame.n_atoms
         elif atom_counter is None:
-            atom_counter = range(frame.n_atoms)
+            atom_counter = cls._get_default_atom_counter(frame)
 
         residues = frame.topology.residue_ids
 
@@ -232,3 +232,43 @@ class RestartFileWriter(BaseWriter):
             lines.append(line)
 
         return lines
+
+    @classmethod
+    def _get_default_atom_counter(cls, frame: AtomicSystem) -> List[int]:
+        """
+        Returns the default restart-file running indices.
+
+        If moltype information is present in the topology, PQ writes a
+        one-based running index within each contiguous molecule. Without
+        moltype information the historical PQAnalysis zero-based atom counter
+        is kept.
+        """
+        residue_ids = frame.topology.residue_ids
+
+        if len(residue_ids) != frame.n_atoms or not np.any(residue_ids != 0):
+            return list(range(frame.n_atoms))
+
+        if frame.topology.residues:
+            counters = [0] * frame.n_atoms
+
+            for atom_indices in frame.topology.residue_atom_indices:
+                for counter, atom_index in enumerate(atom_indices, start=1):
+                    counters[atom_index] = counter
+
+            if all(counter != 0 for counter in counters):
+                return counters
+
+        counters = []
+        previous_residue_id = None
+        counter = 0
+
+        for residue_id in residue_ids:
+            if residue_id != previous_residue_id:
+                counter = 1
+                previous_residue_id = residue_id
+            else:
+                counter += 1
+
+            counters.append(counter)
+
+        return counters
