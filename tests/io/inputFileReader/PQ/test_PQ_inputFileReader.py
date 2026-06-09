@@ -232,3 +232,116 @@ class TestPQ_inputFileReader:
 
         assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")
         assert filecmp("run-10.rpmd.in", "run-10.rpmd.in.ref")
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_input_file_with_unnumbered_start_file(self):
+        with open("run-08.in", "w", encoding="utf-8") as file:
+            file.write(
+                "start_file = equilibration.rst;\n"
+                "output_file = md-08.out;\n"
+                "restart_file = md-08.rst;\n"
+                "traj_file = md-08.xyz;\n"
+            )
+
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(2)
+
+        with open("run-09.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = md-08.rst;\n"
+                "output_file = md-09.out;\n"
+                "restart_file = md-09.rst;\n"
+                "traj_file = md-09.xyz;\n"
+            )
+
+        with open("run-10.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = md-09.rst;\n"
+                "output_file = md-10.out;\n"
+                "restart_file = md-10.rst;\n"
+                "traj_file = md-10.xyz;\n"
+            )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_parse_start_file_ns_rejects_mismatched_numbered_start_files(self):
+        with open("run-08.in", "w", encoding="utf-8") as file:
+            file.write(
+                "start_file = md-07.rst;\n"
+                "rpmd_start_file = md-08.rpmd.rst;\n"
+                "output_file = md-08.out;\n"
+            )
+
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+
+        with pytest.raises(PQValueError) as exception:
+            input_file_reader._parse_start_file_ns()
+
+        assert str(exception.value) == (
+            "N from start_file (07) and rpmd_start_file (08) do not match."
+        )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_input_file_keeps_unnumbered_start_without_fallback(self):
+        with open("run-08.in", "w", encoding="utf-8") as file:
+            file.write(
+                "start_file = equilibration.rst;\n"
+                "output_file = md-08.out;\n"
+            )
+
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(1)
+
+        with open("run-09.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = equilibration.rst;\n"
+                "output_file = md-09.out;\n"
+            )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_input_file_uses_prefix_for_unnumbered_rpmd_start_file(self):
+        with open("run-08.in", "w", encoding="utf-8") as file:
+            file.write(
+                "start_file = md-07.rst;\n"
+                "rpmd_start_file = equilibration.rpmd.rst;\n"
+                "file_prefix = md-08;\n"
+                "output_file = md-08.out;\n"
+            )
+
+        input_file_reader = InputFileReader("run-08.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(1)
+
+        with open("run-09.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = md-08.rst;\n"
+                "rpmd_start_file = md-08.rpmd.rst;\n"
+                "file_prefix = md-09;\n"
+                "output_file = md-09.out;\n"
+            )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_input_file_with_unnumbered_start_file_and_file_prefix(self):
+        with open("run-01.in", "w", encoding="utf-8") as file:
+            file.write(
+                "start_file = input.rst;\n"
+                "file_prefix = malondialdehyde-md-01;\n"
+            )
+
+        input_file_reader = InputFileReader("run-01.in")
+        input_file_reader.read()
+        input_file_reader.continue_input_file(2)
+
+        with open("run-02.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = malondialdehyde-md-01.rst;\n"
+                "file_prefix = malondialdehyde-md-02;\n"
+            )
+
+        with open("run-03.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "start_file = malondialdehyde-md-02.rst;\n"
+                "file_prefix = malondialdehyde-md-03;\n"
+            )

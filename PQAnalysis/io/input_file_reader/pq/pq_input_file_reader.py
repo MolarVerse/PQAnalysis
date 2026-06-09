@@ -99,7 +99,14 @@ class PQInputFileReader(_OutputFileMixin):
             if the n parsed from the start file does not match the n parsed from the output files
         """
         self.input_file_n = _get_digit_string_from_filename(self.filename)
-        self.start_n = self._parse_start_n()
+        start_file_ns = self._parse_start_file_ns()
+        self.start_n = next(
+            (
+                start_n for start_n in start_file_ns.values()
+                if start_n is not None
+            ),
+            None
+        )
         self.actual_n = self._parse_actual_n()
 
         # check if n from input file name matches n from output files
@@ -110,7 +117,7 @@ class PQInputFileReader(_OutputFileMixin):
             )
 
         # check if n from start file matches n from output files
-        if int(self.start_n) != int(self.actual_n) - 1:
+        if self.start_n is not None and int(self.start_n) != int(self.actual_n) - 1:
             self.logger.error(
                 f"Old n ({self.start_n}) has to be one less than actual n ({self.actual_n}).",
                 exception=PQValueError
@@ -122,7 +129,11 @@ class PQInputFileReader(_OutputFileMixin):
 
         for _ in range(n):
             new_input_file_n = _increase_digit_string(old_input_file_n)
-            new_start_n = _increase_digit_string(old_start_n)
+            new_start_n = (
+                _increase_digit_string(old_start_n)
+                if old_start_n is not None
+                else old_actual_n
+            )
             new_actual_n = _increase_digit_string(old_actual_n)
 
             new_raw_input_file = self.raw_input_file
@@ -143,9 +154,12 @@ class PQInputFileReader(_OutputFileMixin):
             for key in self.start_file_keys:
                 if key in self.dictionary.keys():
 
-                    new_filename = self.dictionary[key][0].replace(
-                        self.start_n, new_start_n
-                    )
+                    if start_file_ns[key] is None:
+                        new_filename = self._continued_start_file(key, new_start_n)
+                    else:
+                        new_filename = self.dictionary[key][0].replace(
+                            start_file_ns[key], new_start_n
+                        )
 
                     new_raw_input_file = new_raw_input_file.replace(
                         self.dictionary[key][0], new_filename
@@ -163,6 +177,50 @@ class PQInputFileReader(_OutputFileMixin):
             old_input_file_n = new_input_file_n
             old_start_n = new_start_n
             old_actual_n = new_actual_n
+
+    def _parse_start_file_ns(self) -> dict[str, str | None]:
+        """
+        Parses the n from the start files.
+
+        If multiple start files define a number, the numbers are compared. If
+        they do not match, a PQValueError is raised. Start files without a
+        parseable number are allowed and are continued from restart output.
+
+        Returns
+        -------
+        dict[str, str | None]
+            n parsed from each start file as a digit string or None if the
+            filename has no parseable digit string
+
+        Raises
+        ------
+        PQValueError
+            if the n from multiple start files do not match
+        """
+        start_file_ns = {}
+
+        for key in self.start_file_keys:
+            if key in self.dictionary.keys():
+                start_file_ns[key] = _get_optional_digit_string_from_filename(
+                    self.dictionary[key][0] + "."
+                )
+
+        n = next(
+            (start_n for start_n in start_file_ns.values() if start_n is not None),
+            None
+        )
+
+        for key, start_n in start_file_ns.items():
+            if start_n is not None and start_n != n:
+                self.logger.error(
+                    (
+                        f"N from start_file ({n}) and "
+                        f"{key} ({start_n}) do not match."
+                    ),
+                    exception=PQValueError
+                )
+
+        return start_file_ns
 
     def _parse_start_n(self) -> str:
         """
@@ -196,6 +254,34 @@ class PQInputFileReader(_OutputFileMixin):
                 )
 
         return n
+
+    def _continued_start_file(self, key: str, n: str) -> str:
+        """
+        Gets the next start file name for an unnumbered start file.
+        """
+        restart_key = "restart_file"
+
+        if key == "rpmd_start_file":
+            restart_key = "rpmd_restart_file"
+
+        if restart_key not in self.dictionary.keys() and key == "start_file":
+            restart_key = "rpmd_restart_file"
+
+        if restart_key not in self.dictionary.keys():
+            if "file_prefix" not in self.dictionary.keys():
+                return self.dictionary[key][0]
+
+            file_prefix = self.dictionary["file_prefix"][0].replace(
+                self.actual_n,
+                n
+            )
+
+            if key == "rpmd_start_file":
+                return f"{file_prefix}.rpmd.rst"
+
+            return f"{file_prefix}.rst"
+
+        return self.dictionary[restart_key][0].replace(self.actual_n, n)
 
     def _parse_actual_n(self) -> str:
         """
@@ -317,7 +403,7 @@ def _get_digit_string_from_filename(filename: str) -> str:
         if filename does not contain a number to be parsed
     """
 
-    if (regex := re.search(r"\d+\.", filename)) is None:
+    if (digit_string := _get_optional_digit_string_from_filename(filename)) is None:
         PQInputFileReader.logger.error(
             (
                 f"Filename {filename} does not contain a number to be "
@@ -325,5 +411,16 @@ def _get_digit_string_from_filename(filename: str) -> str:
             ),
             exception=PQValueError
         )
+
+    return digit_string
+
+
+
+def _get_optional_digit_string_from_filename(filename: str) -> str | None:
+    """
+    Extracts a digit string from a filename if one can be parsed.
+    """
+    if (regex := re.search(r"\d+\.", filename)) is None:
+        return None
 
     return regex.group(0)[:-1]
