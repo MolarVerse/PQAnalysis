@@ -24,11 +24,22 @@ def test_continue_input(test_with_data_dir, capsys):
             '-n',
             '1',
             '--input-format',
-            'qmcfc']):
+            'PQAnalysis']):
             main()
     assert str(
         exception.value
-    ) == "Format InputFileFormat.QMCFC not implemented yet for continuing input file."
+    ) == "Format InputFileFormat.PQANALYSIS not implemented yet for continuing input file."
+
+    with patch('argparse._sys.argv',
+        ['continue_input.py',
+        'run-08.in',
+        '-n',
+        '1',
+        '--input-format',
+        'qmcfc']):
+        main()
+
+    assert filecmp("run-09.in", "run-09.in.ref")
 
     with patch('argparse._sys.argv',
         ['continue_input.py',
