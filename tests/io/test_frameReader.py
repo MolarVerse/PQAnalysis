@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from PQAnalysis.core import Cell, Atom
-from PQAnalysis.io import _FrameReader
+from PQAnalysis.io import ExtXYZFrameReader, _FrameReader
 from PQAnalysis.io.traj_file import _process_lines_py
 import PQAnalysis.io.traj_file.frame_reader as frame_reader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError
@@ -41,6 +41,13 @@ def test_get_frame_reader(traj_format):
     reader = frame_reader.get_frame_reader(traj_format)
 
     assert isinstance(reader, frame_reader.XYZFrameReader)
+
+
+def test_get_frame_reader_extxyz():
+    reader = frame_reader.get_frame_reader(TrajectoryFormat.EXTXYZ)
+
+    assert isinstance(reader, frame_reader.ExtXYZFrameReader)
+    assert isinstance(reader, ExtXYZFrameReader)
 
 
 def test_frame_reader_uses_python_fallback(monkeypatch):
@@ -163,6 +170,236 @@ def test_xyz_frame_reader_defensive_invalid_format_branch(monkeypatch):
         reader.read("", traj_format="unknown")
 
     assert str(exception.value) == "Invalid TrajectoryFormat given. traj_format='unknown'"
+
+
+def test_extxyz_frame_reader_reads_properties_and_metadata():
+    reader = frame_reader.ExtXYZFrameReader()
+    frame_string = (
+        '2\n'
+        'Lattice="10 0 0 0 20 0 0 0 30" '
+        'Properties=species:S:1:pos:R:3:forces:R:3:charge:R:1 '
+        'energy=-1.5 virial="1 0 0 0 2 0 0 0 3" '
+        'stress="4 0 0 0 5 0 0 0 6"\n'
+        'H 0 1 2 0.1 0.2 0.3 -0.1\n'
+        'O 3 4 5 0.4 0.5 0.6 -0.2'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert frame.n_atoms == 2
+    assert frame.atoms == [Atom("h"), Atom("o")]
+    assert np.allclose(frame.pos, [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]])
+    assert np.allclose(frame.forces, [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]])
+    assert np.allclose(frame.charges, [-0.1, -0.2])
+    assert frame.energy == -1.5
+    assert np.allclose(frame.virial, np.diag([1.0, 2.0, 3.0]))
+    assert np.allclose(frame.stress, np.diag([4.0, 5.0, 6.0]))
+    assert frame.cell == Cell(10.0, 20.0, 30.0)
+
+
+def test_extxyz_frame_reader_reads_nep_writer_style_header():
+    reader = frame_reader.ExtXYZFrameReader()
+    frame_string = (
+        '1\n'
+        'energy=-2.0 config_type=nep2xyz '
+        'lattice="2 0 0 0 3 0 0 0 4 " '
+        'properties=species:S:1:pos:R:3:forces:R:3\n'
+        'C 0.0 0.5 1.0 1.0 2.0 3.0'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert frame.atoms == [Atom("c")]
+    assert np.allclose(frame.pos, [[0.0, 0.5, 1.0]])
+    assert np.allclose(frame.forces, [[1.0, 2.0, 3.0]])
+    assert frame.energy == -2.0
+    assert frame.cell == Cell(2.0, 3.0, 4.0)
+
+
+def test_extxyz_frame_reader_reads_spaced_metadata_assignment():
+    reader = frame_reader.ExtXYZFrameReader()
+    frame_string = (
+        '1\n'
+        'Lattice = "4 0 0 0 5 0 0 0 6" '
+        'Properties=species:S:1:pos:R:3:force:R:3 Energy= -1.0\n'
+        'H 0.0 0.5 1.0 1.0 2.0 3.0'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert frame.atoms == [Atom("h")]
+    assert np.allclose(frame.pos, [[0.0, 0.5, 1.0]])
+    assert np.allclose(frame.forces, [[1.0, 2.0, 3.0]])
+    assert frame.energy == -1.0
+    assert frame.cell == Cell(4.0, 5.0, 6.0)
+
+
+def test_extxyz_frame_reader_reads_noncanonical_lattice_vectors():
+    reader = frame_reader.ExtXYZFrameReader()
+    lattice = np.array(
+        [
+            [0.0, 0.0, 5.785795211791992],
+            [5.928857803344727, 0.0, 0.0],
+            [-2.9644289016723633, 8.167890548706055, -2.892897605895996],
+        ]
+    )
+    frame_string = (
+        '1\n'
+        'Lattice="0.0 0.0 5.785795211791992 '
+        '5.928857803344727 0.0 0.0 '
+        '-2.9644289016723633 8.167890548706055 -2.892897605895996" '
+        'Properties=species:S:1:pos:R:3\n'
+        'H 0.0 0.0 0.0'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert np.isclose(frame.cell.volume, abs(np.linalg.det(lattice)))
+
+
+def test_extxyz_frame_reader_rejects_degenerate_lattice_vectors():
+    reader = frame_reader.ExtXYZFrameReader()
+    frame_string = (
+        '1\n'
+        'Lattice="0.0 0.0 0.0 0.0 1.0 0.0 0.0 0.0 1.0" '
+        'Properties=species:S:1:pos:R:3\n'
+        'H 0.0 0.0 0.0'
+    )
+
+    with pytest.raises(FrameReaderError) as exception:
+        reader.read(frame_string)
+
+    assert str(exception.value) == "Invalid Lattice metadata in extended xyz frame."
+
+
+def test_extxyz_frame_reader_preserves_qmcfc_handling():
+    reader = frame_reader.ExtXYZFrameReader(md_format="qmcfc")
+    frame_string = (
+        '2\n'
+        'Properties=species:S:1:pos:R:3:forces:R:3:charge:R:1\n'
+        'X 0 0 0 0 0 0 0.0\n'
+        'H 1 2 3 0.1 0.2 0.3 -0.1'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert frame.n_atoms == 1
+    assert frame.atoms == [Atom("h")]
+    assert np.allclose(frame.pos, [[1.0, 2.0, 3.0]])
+    assert np.allclose(frame.forces, [[0.1, 0.2, 0.3]])
+    assert np.allclose(frame.charges, [-0.1])
+
+
+def test_extxyz_frame_reader_rejects_invalid_format():
+    reader = frame_reader.ExtXYZFrameReader()
+
+    with pytest.raises(FrameReaderError) as exception:
+        reader.read("", traj_format=TrajectoryFormat.XYZ)
+
+    assert str(exception.value) == (
+        "Invalid TrajectoryFormat given. "
+        "traj_format=<TrajectoryFormat.XYZ: 'XYZ'>"
+    )
+
+
+@pytest.mark.parametrize(
+    ("frame_string", "expected", "md_format"),
+    [
+        (
+            "not-an-int\nProperties=species:S:1:pos:R:3\nH 0.0 0.0 0.0",
+            "Invalid number of atoms in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\ncomment\nH 0.0 0.0 0.0",
+            "Extended xyz frame does not define Properties metadata.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R\nH 0.0 0.0 0.0",
+            "Invalid Properties metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:three\nH 0.0 0.0 0.0",
+            "Invalid Properties metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=pos:R:3\n0.0 0.0 0.0",
+            "Extended xyz frame requires species and pos Properties.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:2\nH 0.0 0.0",
+            "Invalid Properties metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            (
+                "1\nProperties=species:S:1:pos:R:3:forces:R:2\n"
+                "H 0.0 0.0 0.0 1.0 2.0"
+            ),
+            "Invalid Properties metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:3",
+            "Invalid atom line in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:3\nH 0.0 0.0",
+            "Invalid atom line in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:3\nH 0.0 0.0 0.0",
+            (
+                "The first atom in one of the frames is not X. "
+                "Please use PQ (default) md engine instead"
+            ),
+            "qmcfc",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:3\nH 0.0 nope 0.0",
+            "Invalid numeric value in extended xyz frame.",
+            "pq",
+        ),
+        (
+            (
+                '1\nLattice="1 2" Properties=species:S:1:pos:R:3\n'
+                "H 0.0 0.0 0.0"
+            ),
+            "Invalid Lattice metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            "1\nProperties=species:S:1:pos:R:3 energy=nope\nH 0.0 0.0 0.0",
+            "Invalid energy metadata in extended xyz frame.",
+            "pq",
+        ),
+        (
+            (
+                '1\nProperties=species:S:1:pos:R:3 virial="1 2"\n'
+                "H 0.0 0.0 0.0"
+            ),
+            "Invalid virial metadata in extended xyz frame.",
+            "pq",
+        ),
+    ],
+)
+def test_extxyz_frame_reader_rejects_invalid_frames(
+    frame_string,
+    expected,
+    md_format,
+):
+    reader = frame_reader.ExtXYZFrameReader(md_format=md_format)
+
+    with pytest.raises(FrameReaderError) as exception:
+        reader.read(frame_string)
+
+    assert str(exception.value) == expected
 
 
 class TestFrameReader:
