@@ -58,6 +58,6 @@ def continue_input_file(
             exception=PQNotImplementedError
         )
 
-    reader = Reader(input_file)
+    reader = Reader(input_file, input_format)
     reader.read()
     reader.continue_input_file(n)

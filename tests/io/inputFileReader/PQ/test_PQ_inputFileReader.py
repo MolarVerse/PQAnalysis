@@ -1,13 +1,15 @@
 import pytest
 
 from filecmp import cmp as filecmp
+from unittest.mock import patch
 
 from ... import pytestmark
 
+from PQAnalysis.io.api import continue_input_file
 from PQAnalysis.io.input_file_reader.pq.pq_input_file_reader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.input_file_reader import PQInputFileReader as InputFileReader
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
-from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.exceptions import PQNotImplementedError, PQValueError
 
 
 
@@ -74,6 +76,72 @@ class TestPQ_inputFileReader:
         assert input_file_reader.format == InputFileFormat("PQ")
         assert input_file_reader.parser.filename == "run-08.in"
         assert input_file_reader.parser.input_format == InputFileFormat("PQ")
+
+        input_file_reader = InputFileReader("run-08.in", "qmcfc")
+
+        assert input_file_reader.filename == "run-08.in"
+        assert input_file_reader.format == InputFileFormat.QMCFC
+        assert input_file_reader.parser.filename == "run-08.in"
+        assert input_file_reader.parser.input_format == InputFileFormat.QMCFC
+
+        with pytest.raises(PQNotImplementedError) as exception:
+            InputFileReader("run-08.in", "pqanalysis")
+        assert str(exception.value) == (
+            "Format InputFileFormat.PQANALYSIS not implemented "
+            "for PQ input file reading."
+        )
+
+    @pytest.mark.parametrize(
+        "example_dir",
+        ["inputFileReader/PQ_input/"],
+        indirect=False
+    )
+    def test_continue_input_file_passes_input_format(self, test_with_data_dir):
+        with patch("PQAnalysis.io.api.Reader") as reader_class:
+            reader = reader_class.return_value
+
+            continue_input_file("run-08.in", 1, "qmcfc")
+
+        reader_class.assert_called_once_with(
+            "run-08.in",
+            InputFileFormat.QMCFC
+        )
+        reader.read.assert_called_once_with()
+        reader.continue_input_file.assert_called_once_with(1)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_qmcfc_input_file(self):
+        with open("run-1.in", "w", encoding="utf-8") as file:
+            file.write(
+                "keyword_set = qmcfc;\n"
+                "jobtype = mm-md;\n"
+                "force-field = on;\n"
+                "cell-list = on; cell-number = 10;\n"
+                "start_file = h2o-qmcf.rst;\n"
+                "output_file = qmcfc-1.out;\n"
+                "info_file = qmcfc-1.info;\n"
+                "energy_file = qmcfc-1.en;\n"
+                "traj_file = qmcfc-1.xyz;\n"
+                "vel_file = qmcfc-1.vel;\n"
+                "restart_file = qmcfc-1.rst;\n"
+            )
+
+        continue_input_file("run-1.in", 1, "qmcfc")
+
+        with open("run-2.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "keyword_set = qmcfc;\n"
+                "jobtype = mm-md;\n"
+                "force-field = on;\n"
+                "cell-list = on; cell-number = 10;\n"
+                "start_file = qmcfc-1.rst;\n"
+                "output_file = qmcfc-2.out;\n"
+                "info_file = qmcfc-2.info;\n"
+                "energy_file = qmcfc-2.en;\n"
+                "traj_file = qmcfc-2.xyz;\n"
+                "vel_file = qmcfc-2.vel;\n"
+                "restart_file = qmcfc-2.rst;\n"
+            )
 
     @pytest.mark.parametrize(
         "example_dir",

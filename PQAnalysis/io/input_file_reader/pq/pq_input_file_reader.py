@@ -8,7 +8,7 @@ import re
 from PQAnalysis.types import PositiveInt
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
 from PQAnalysis.io.input_file_reader.input_file_parser import InputFileParser
-from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.exceptions import PQNotImplementedError, PQValueError
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
@@ -30,17 +30,23 @@ class PQInputFileReader(_OutputFileMixin):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
-    def __init__(self, filename: str):
+    def __init__(
+        self,
+        filename: str,
+        input_format: InputFileFormat | str = InputFileFormat.PQ
+    ):
         """
         Initialize the PQ_InputFileReader class.
 
-        self.format is set to InputFileFormat.PQ.
+        self.format is set to a QMCF input format.
         A parser is created using the InputFileParser class.
 
         Parameters
         ----------
         filename : str
             filename of the input file
+        input_format : InputFileFormat | str, optional
+            the format of the input file, by default InputFileFormat.PQ
         """
 
         ########################
@@ -53,7 +59,17 @@ class PQInputFileReader(_OutputFileMixin):
         self.start_n = None
         self.actual_n = None
 
-        self.format = InputFileFormat.PQ
+        self.format = InputFileFormat(input_format)
+
+        if not InputFileFormat.is_qmcf_type(self.format):
+            self.logger.error(
+                (
+                    f"Format {self.format} not implemented "
+                    "for PQ input file reading."
+                ),
+                exception=PQNotImplementedError
+            )
+
         self.filename = filename
         self.parser = InputFileParser(self.filename, self.format)
 
