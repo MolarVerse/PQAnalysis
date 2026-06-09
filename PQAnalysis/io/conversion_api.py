@@ -2,13 +2,18 @@
 A module containing API functions to convert between different file formats.
 """
 
+import numpy as np
+
 from beartype.typing import List
 
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Atoms, Cell, Residue, Residues
+from PQAnalysis.topology import Topology
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
 
+from .moldescriptor_reader import MoldescriptorReader
+from .restart_file.exceptions import RestartFileWriterError
 from .traj_file import (
     TrajectoryWriter,
     TrajectoryReader,
@@ -157,6 +162,7 @@ def xyz2rst(
     xyz_file: str,
     velocity_file: str | None = None,
     force_file: str | None = None,
+    moldescriptor_file: str | None = None,
     randomize: float = 0.0,
     random_seed: int | None = 0,
     output: str | None = None,
@@ -178,6 +184,9 @@ def xyz2rst(
         The velocity file to be converted. Default is None.
     force_file : str | None
         The force file to be converted. Default is None.
+    moldescriptor_file : str | None
+        The moldescriptor file used to infer restart-file moltypes.
+        Default is None.
     randomize : float, optional
         Randomize the atom order. Default is 0.0.
     output : str | None
@@ -211,6 +220,17 @@ def xyz2rst(
             traj_format="force",
         ).read()[-1].forces
 
+    if moldescriptor_file is not None:
+        reference_residues = MoldescriptorReader(moldescriptor_file).read()
+        system.topology = Topology(
+            atoms=system.atoms,
+            residue_ids=_infer_residue_ids_from_moldescriptor(
+                system.atoms,
+                reference_residues,
+            ),
+            reference_residues=reference_residues,
+        )
+
     if randomize != 0.0:
         system.randomize_positions(stdev=randomize, seed=random_seed)
 
@@ -220,6 +240,56 @@ def xyz2rst(
         md_engine_format=md_format,
         mode=mode,
     )
+
+
+def _infer_residue_ids_from_moldescriptor(
+    atoms: Atoms,
+    reference_residues: Residues,
+) -> np.ndarray:
+    """
+    Infers moltype ids from an atom sequence and moldescriptor residues.
+    """
+    residue_ids = []
+    atom_index = 0
+
+    while atom_index < len(atoms):
+        residue = _find_next_matching_residue(
+            atoms,
+            reference_residues,
+            atom_index,
+        )
+
+        if residue is None:
+            raise RestartFileWriterError(
+                "Could not infer moltype from moldescriptor at "
+                f"atom index {atom_index}."
+            )
+
+        residue_ids += [residue.id] * residue.n_atoms
+        atom_index += residue.n_atoms
+
+    return np.array(residue_ids)
+
+
+def _find_next_matching_residue(
+    atoms: Atoms,
+    reference_residues: Residues,
+    atom_index: int,
+) -> Residue | None:
+    """
+    Finds the residue matching atoms at the current atom index.
+    """
+    for residue in reference_residues:
+        end_index = atom_index + residue.n_atoms
+
+        if end_index > len(atoms):
+            continue
+
+        atom_elements = [atom.element for atom in atoms[atom_index:end_index]]
+        if atom_elements == residue.elements:
+            return residue
+
+    return None
 
 
 @runtime_type_checking

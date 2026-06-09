@@ -1,5 +1,5 @@
 """
-.. _cli.rst2xyz:
+.. _cli.xyz2rst:
 
 Command Line Tool for Converting XYZ Files to Restart Files
 -----------------------------------------------------------
@@ -78,6 +78,15 @@ class XYZ2RstCLI(CLIBase):
         )
 
         parser.add_argument(
+            '--moldescriptor_file',
+            '--moldescriptor-file',
+            dest='moldescriptor_file',
+            type=str,
+            default=None,
+            help='The moldescriptor file used to infer moltypes.'
+        )
+
+        parser.add_argument(
             '--randomize',
             type=float,
             default=0.0,
@@ -101,6 +110,7 @@ class XYZ2RstCLI(CLIBase):
             xyz_file=args.xyz_file,
             velocity_file=args.velocity_file,
             force_file=args.force_file,
+            moldescriptor_file=args.moldescriptor_file,
             randomize=args.randomize,
             output=args.output,
             md_format=args.engine,
