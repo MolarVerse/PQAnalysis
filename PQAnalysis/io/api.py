@@ -45,11 +45,11 @@ def continue_input_file(
     Raises
     ------
     NotImplementedError
-        if the input format is not PQ
+        if the input format is not PQ or QMCFC
     """
     input_format = InputFileFormat(input_format)
 
-    if input_format != InputFileFormat.PQ:
+    if not InputFileFormat.is_qmcf_type(input_format):
         logger.error(
             (
             f"Format {input_format} not implemented "
