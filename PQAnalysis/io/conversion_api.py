@@ -302,3 +302,42 @@ def traj2qmcfc(
         trajectory = reader.read()
 
         writer.write(trajectory)
+
+
+@runtime_type_checking
+def traj2extxyz(
+    trajectory_files: List[str],
+    output: str | None = None,
+    mode: FileWritingMode | str = "w",
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+) -> None:
+    """
+    Converts one or more PQ xyz trajectory files to extended xyz format and
+    prints it to stdout or writes it to a file.
+
+    Parameters
+    ----------
+    trajectory_files : list of str
+        The trajectory file(s) to be converted.
+    output : str, optional
+        The output file. If not specified, the output is printed to stdout.
+    mode : FileWritingMode | str, optional
+        The writing mode, by default "w". The following modes are available:
+        - "w": write
+        - "a": append
+        - "o": overwrite
+    md_format : MDEngineFormat | str, optional
+        The format of the input trajectory. The default is MDEngineFormat.PQ.
+    """
+
+    writer = TrajectoryWriter(filename=output, mode=mode)
+
+    for filename in trajectory_files:
+        reader = TrajectoryReader(
+            filename,
+            md_format=md_format,
+            traj_format="xyz",
+        )
+        trajectory = reader.read()
+
+        writer.write(trajectory, traj_type="extxyz")

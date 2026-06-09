@@ -70,6 +70,7 @@ PQAnalysis = ["grammar/*.lark", "io/traj_file/*.pyx"]
 [project.scripts]
 pqanalysis = "PQAnalysis.cli.main:main"
 traj2box = "PQAnalysis.cli.traj2box:main"
+traj2extxyz = "PQAnalysis.cli.traj2extxyz:main"
 traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
 xyz2rst = "PQAnalysis.cli.xyz2rst:main"
