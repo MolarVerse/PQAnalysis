@@ -78,6 +78,8 @@ class TrajectoryReader(BaseReader):
         self.frame_reader = get_frame_reader(
             self.traj_format, md_format=self.md_format
         )
+        if self.traj_format == TrajectoryFormat.EXTXYZ and topology is None:
+            self.constant_topology = False
 
         # The length of the trajectory
         self.length_of_traj = 0
@@ -478,6 +480,12 @@ class TrajectoryReader(BaseReader):
         for filename in self.filenames:
             n_frames = 0
 
+            if self.traj_format == TrajectoryFormat.EXTXYZ:
+                n_frames_list.append(
+                    self._calculate_number_of_extxyz_frames(filename)
+                )
+                continue
+
             with open(filename, "r", encoding="utf-8") as f:
 
                 lines = f.readlines()
@@ -511,6 +519,56 @@ class TrajectoryReader(BaseReader):
             n_frames_list.append(n_frames)
 
         return n_frames_list
+
+    def _calculate_number_of_extxyz_frames(self, filename: str) -> int:
+        """
+        Calculates the number of frames in an extended xyz trajectory file.
+        """
+        n_frames = 0
+
+        with open(filename, "r", encoding="utf-8") as f:
+            while True:
+                atom_count_line = f.readline()
+                if atom_count_line == "":
+                    break
+
+                if atom_count_line.strip() == "":
+                    continue
+
+                n_atoms = 0
+                try:
+                    n_atoms = int(atom_count_line.split()[0])
+                except (ValueError, IndexError):
+                    self.logger.error(
+                        (
+                            "Invalid number of atoms in the first line "
+                            f"of file {filename}."
+                        ),
+                        exception=TrajectoryReaderError,
+                    )
+
+                if f.readline() == "":
+                    self.logger.error(
+                        (
+                            "The number of lines in the file is not divisible "
+                            f"by the number of atoms {n_atoms} in one frame."
+                        ),
+                        exception=TrajectoryReaderError,
+                    )
+
+                for _ in range(n_atoms):
+                    if f.readline() == "":
+                        self.logger.error(
+                            (
+                                "The number of lines in the file is not divisible "
+                                f"by the number of atoms {n_atoms} in one frame."
+                            ),
+                            exception=TrajectoryReaderError,
+                        )
+
+                n_frames += 1
+
+        return n_frames
 
     @property
     def cells(self) -> list[Cell]:
