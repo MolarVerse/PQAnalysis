@@ -58,5 +58,6 @@ Pure command line tools
 
 - :ref:`continue_input<cli.continue_input>`
 - :ref:`rst2xyz<cli.rst2xyz>`
+- :ref:`traj2extxyz<cli.traj2extxyz>`
 - :ref:`traj2qmcfc<cli.traj2qmcfc>`
 - :ref:`traj2box<cli.traj2box>`

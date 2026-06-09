@@ -4,7 +4,12 @@ import numpy as np
 
 from . import pytestmark
 
-from PQAnalysis.io import TrajectoryWriter, write_trajectory, FileWritingMode
+from PQAnalysis.io import (
+    TrajectoryWriter,
+    read_trajectory,
+    write_trajectory,
+    FileWritingMode,
+)
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
@@ -34,6 +39,54 @@ o     0.0000000000     0.0000000000     1.0000000000
 h     0.0000000000     0.0000000000     0.0000000000
 o     0.0000000000     0.0000000000     1.0000000000
 """
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_roundtrip():
+    atoms = [Atom("h"), Atom("o")]
+    frame = AtomicSystem(
+        atoms=atoms,
+        pos=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]),
+        vel=np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
+        forces=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        charges=np.array([-0.1, -0.2]),
+        energy=-1.5,
+        virial=np.diag([1.0, 2.0, 3.0]),
+        stress=np.diag([4.0, 5.0, 6.0]),
+        cell=Cell(10.0, 11.0, 12.0, 80.0, 85.0, 95.0),
+    )
+
+    write_trajectory(
+        Trajectory([frame]),
+        filename="output.extxyz",
+        traj_type="extxyz",
+    )
+
+    with open("output.extxyz", "r", encoding="utf-8") as file:
+        lines = file.read().splitlines()
+
+    assert lines[0] == "2"
+    assert "Lattice=" in lines[1]
+    assert (
+        'Properties="species:S:1:pos:R:3:vel:R:3:forces:R:3:charge:R:1"'
+        in lines[1]
+    )
+    assert "energy=-1.5000000000" in lines[1]
+    assert "virial=" in lines[1]
+    assert "stress=" in lines[1]
+
+    trajectory = read_trajectory("output.extxyz", traj_format="extxyz")
+    output_frame = trajectory[0]
+
+    assert output_frame.atoms == atoms
+    assert np.allclose(output_frame.pos, frame.pos)
+    assert np.allclose(output_frame.vel, frame.vel)
+    assert np.allclose(output_frame.forces, frame.forces)
+    assert np.allclose(output_frame.charges, frame.charges)
+    assert output_frame.energy == frame.energy
+    assert np.allclose(output_frame.virial, frame.virial)
+    assert np.allclose(output_frame.stress, frame.stress)
+    assert output_frame.cell == frame.cell
 
 
 
@@ -75,6 +128,11 @@ class TestTrajectoryWriter:
         writer._write_header(1)
         captured = capsys.readouterr()
         assert captured.out == "1\n"
+
+        writer.format = MDEngineFormat.QMCFC
+        writer._write_header(1)
+        captured = capsys.readouterr()
+        assert captured.out == "2\n"
 
     def test__write_comment(self, capsys):
 

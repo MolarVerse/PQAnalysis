@@ -70,6 +70,8 @@ class TrajectoryWriter(BaseWriter):
 
         if self.type == TrajectoryFormat.XYZ:
             self._write_positions(trajectory)
+        elif self.type == TrajectoryFormat.EXTXYZ:
+            self._write_extxyz(trajectory)
         elif self.type == TrajectoryFormat.VEL:
             self._write_velocities(trajectory)
         elif self.type == TrajectoryFormat.FORCE:
@@ -91,6 +93,23 @@ class TrajectoryWriter(BaseWriter):
             self._write_header(frame.n_atoms, frame.cell)
             self._write_comment(frame)
             self._write_xyz(frame.pos, frame.atoms)
+
+        self.close()
+
+    def _write_extxyz(self, trajectory: Trajectory) -> None:
+        """
+        Writes the trajectory in extended xyz format.
+
+        Parameters
+        ----------
+        trajectory : Trajectory
+            The trajectory to write.
+        """
+        self.open()
+        for frame in trajectory:
+            print(frame.n_atoms, file=self.file)
+            self._write_extxyz_metadata(frame)
+            self._write_extxyz_values(frame)
 
         self.close()
 
@@ -228,7 +247,101 @@ class TrajectoryWriter(BaseWriter):
                     f"{xyz[i][1]:16.10f} {xyz[i][2]:16.10f}"
                     ),
                     file=self.file
+            )
+
+    def _write_extxyz_metadata(self, frame: AtomicSystem) -> None:
+        """
+        Writes the extended xyz metadata line of the frame.
+
+        Parameters
+        ----------
+        frame : AtomicSystem
+            The frame to write the metadata line of.
+        """
+        metadata = []
+        if frame.cell != Cell():
+            metadata.append(
+                f'Lattice="{self._format_extxyz_values(frame.cell.box_matrix.T)}"'
+            )
+
+        metadata.append(
+            f'Properties="{self._extxyz_properties(frame)}"'
+        )
+
+        if frame.has_energy:
+            metadata.append(f"energy={self._format_extxyz_value(frame.energy)}")
+
+        if frame.has_virial:
+            metadata.append(
+                f'virial="{self._format_extxyz_values(frame.virial)}"'
+            )
+
+        if frame.has_stress:
+            metadata.append(
+                f'stress="{self._format_extxyz_values(frame.stress)}"'
+            )
+
+        print(" ".join(metadata), file=self.file)
+
+    def _extxyz_properties(self, frame: AtomicSystem) -> str:
+        """
+        Returns the extended xyz Properties metadata value for a frame.
+        """
+        properties = ["species:S:1", "pos:R:3"]
+
+        if frame.has_vel:
+            properties.append("vel:R:3")
+
+        if frame.has_forces:
+            properties.append("forces:R:3")
+
+        if frame.has_charges:
+            properties.append("charge:R:1")
+
+        return ":".join(properties)
+
+    def _write_extxyz_values(self, frame: AtomicSystem) -> None:
+        """
+        Writes the atom value lines of an extended xyz frame.
+
+        Parameters
+        ----------
+        frame : AtomicSystem
+            The frame to write.
+        """
+        for i, atom in enumerate(frame.atoms):
+            values = [atom.name]
+            values.extend(self._format_extxyz_value(value) for value in frame.pos[i])
+
+            if frame.has_vel:
+                values.extend(
+                    self._format_extxyz_value(value) for value in frame.vel[i]
                 )
+
+            if frame.has_forces:
+                values.extend(
+                    self._format_extxyz_value(value) for value in frame.forces[i]
+                )
+
+            if frame.has_charges:
+                values.append(self._format_extxyz_value(frame.charges[i]))
+
+            print(" ".join(values), file=self.file)
+
+    def _format_extxyz_values(self, values: Np2DNumberArray) -> str:
+        """
+        Formats a numeric array as a flat extended xyz metadata value.
+        """
+        return " ".join(
+            self._format_extxyz_value(value)
+            for value in values.flatten()
+        )
+
+    def _format_extxyz_value(self, value) -> str:
+        """
+        Formats one extended xyz numeric value.
+        """
+        return f"{float(value):.10f}"
 
     def _write_scalar(
         self,
