@@ -66,6 +66,27 @@ def test_pqanalysis_main():
     main_pqanalysis_traj2extxyz()
 
 
+def test_run_passes_extxyz_profile():
+    args = ArgparseNamespace(
+        trajectory_file=["input.xyz"],
+        output="output.extxyz",
+        engine="PQ",
+        mode="w",
+        extxyz_profile="pq",
+    )
+
+    with mock.patch("PQAnalysis.cli.traj2extxyz.traj2extxyz") as convert:
+        Traj2ExtXYZCLI.run(args)
+
+    convert.assert_called_once_with(
+        ["input.xyz"],
+        "output.extxyz",
+        "w",
+        "PQ",
+        "pq",
+    )
+
+
 @mock.patch(
     "argparse.ArgumentParser.parse_args",
     return_value=ArgparseNamespace(
@@ -73,6 +94,7 @@ def test_pqanalysis_main():
         output="output.extxyz",
         engine="PQ",
         mode="w",
+        extxyz_profile="ase",
         log_file=None,
         logging_level="INFO",
     )
@@ -93,6 +115,7 @@ def main_traj2extxyz(mock_args):
         output="output.extxyz",
         engine="PQ",
         mode="w",
+        extxyz_profile="ase",
         log_file=None,
         logging_level="INFO",
     )
