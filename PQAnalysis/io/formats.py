@@ -10,7 +10,10 @@ from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 
 from .exceptions import (
-    BoxFileFormatError, FileWritingModeError, OutputFileFormatError
+    BoxFileFormatError,
+    ExtXYZProfileError,
+    FileWritingModeError,
+    OutputFileFormatError,
 )
 
 logger = logging.getLogger(__package_name__).getChild("OutputFileFormat")
@@ -249,6 +252,41 @@ class OutputFileFormat(BaseEnumFormat):
             True if the enumeration is equal to the other object, False otherwise.
         """
         return super().__eq__(other) or self.value == str(other)
+
+
+
+class ExtXYZProfile(BaseEnumFormat):
+
+    """
+    An enumeration of supported extended xyz unit conventions.
+    """
+
+    #: ASE/libAtoms-compatible units: eV, eV/Angstrom, eV/Angstrom^3.
+    ASE = "ase"
+
+    #: PQ native units: kcal/mol, kcal/(mol Angstrom), kcal/(mol Angstrom^3).
+    PQ = "pq"
+
+    #: GPUMD NEP training data convention.
+    NEP = "nep"
+
+    @classmethod
+    def _missing_(cls, value: object) -> Any:  # pylint: disable=arguments-differ
+        """
+        This method returns the missing value of the enumeration.
+
+        Parameters
+        ----------
+        value : object
+            The value to be converted to the enumeration.
+
+        Returns
+        -------
+        Any
+            The value to return.
+        """
+
+        return super()._missing_(value, ExtXYZProfileError)
 
 
 

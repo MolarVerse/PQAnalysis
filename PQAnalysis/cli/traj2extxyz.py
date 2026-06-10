@@ -8,6 +8,7 @@ Command Line Tool for Converting PQ Trajectory Files to Extended XYZ
 
 from PQAnalysis.config import code_base_url
 from PQAnalysis.io import traj2extxyz
+from PQAnalysis.io.formats import ExtXYZProfile
 from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
@@ -64,6 +65,17 @@ class Traj2ExtXYZCLI(CLIBase):
 
         parser.parse_engine()
         parser.parse_mode()
+        parser.add_argument(
+            "--extxyz-profile",
+            type=str,
+            choices=ExtXYZProfile.values(),
+            default=ExtXYZProfile.ASE.value,
+            help=(
+                "The extended xyz unit convention. Use 'ase' for eV-based "
+                "external tooling units, 'nep' for GPUMD NEP training data, "
+                "or 'pq' for native PQ units."
+            ),
+        )
 
     @classmethod
     def run(cls, args) -> None:
@@ -80,6 +92,7 @@ class Traj2ExtXYZCLI(CLIBase):
             args.output,
             args.mode,
             args.engine,
+            args.extxyz_profile,
         )
 
 

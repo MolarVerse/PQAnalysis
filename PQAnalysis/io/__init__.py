@@ -4,7 +4,7 @@ and output of molecular dynamics simulations.
 """
 
 # import the formats from the formats module
-from .formats import BoxFileFormat, FileWritingMode, OutputFileFormat
+from .formats import BoxFileFormat, ExtXYZProfile, FileWritingMode, OutputFileFormat
 
 # import the classes from the base module
 from .base import BaseReader, BaseWriter
