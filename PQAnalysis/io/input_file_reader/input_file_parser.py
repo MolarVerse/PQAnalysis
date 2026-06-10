@@ -84,8 +84,10 @@ class InputFileParser(BaseReader):
 
         if self.input_format == InputFileFormat.PQANALYSIS:
             grammar_file = "inputGrammar.lark"
-        elif self.input_format in [InputFileFormat.PQ, InputFileFormat.QMCFC]:
+        elif self.input_format == InputFileFormat.PQ:
             grammar_file = "PQ_inputGrammar.lark"
+        elif self.input_format == InputFileFormat.QMCFC:
+            grammar_file = "QMCFC_inputGrammar.lark"
         else:
             InputDictionary.logger.error(
                 f"Input file format {self.input_format} not supported.",
@@ -99,8 +101,7 @@ class InputFileParser(BaseReader):
             propagate_positions=True,
         )
 
-        with open(self.filename, "r", encoding="utf-8") as file:
-            self.raw_input_file = file.read()
+        self.raw_input_file = _read_input_file(self.filename)
 
         self.tree = parser.parse(self.raw_input_file)
 
@@ -268,6 +269,19 @@ class InputDictionary:
             return False
 
         return self.dict == __value.dict
+
+
+
+def _read_input_file(filename: str) -> str:
+    """
+    Read an input file, accepting legacy QMCFC files with latin-1 comments.
+    """
+    try:
+        with open(filename, "r", encoding="utf-8") as file:
+            return file.read()
+    except UnicodeDecodeError:
+        with open(filename, "r", encoding="latin-1") as file:
+            return file.read()
 
 
 
@@ -521,6 +535,18 @@ class ComposedDatatypesTransformer(Transformer):
             and the line where the token was defined.
         """
         return glob("".join(items).strip()), "glob", str(items[0].end_line)
+
+    def qmcfc_atom(self, items) -> Tuple[str, str, str]:
+        """
+        Transform a QMCFC selector fragment to a string.
+        """
+        return str(items[0]), "str", str(items[0].end_line)
+
+    def qmcfc_list(self, items) -> Tuple[List[str], str, str]:
+        """
+        Transform an unbracketed QMCFC comma-separated value to a list.
+        """
+        return [str(item[0]) for item in items], "list(str)", str(items[0][2])
 
     def key(self, items) -> str:
         """

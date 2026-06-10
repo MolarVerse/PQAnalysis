@@ -63,3 +63,28 @@ def test_continue_input(test_with_data_dir, capsys):
     assert filecmp("run-09.rpmd.in", "run-09.rpmd.in.ref")
     assert filecmp("run-10.rpmd.in", "run-10.rpmd.in.ref")
     assert os.path.exists("run-11.rpmd.in")
+
+
+@pytest.mark.parametrize(
+    "example_dir",
+    ["continue_input"],
+    indirect=False
+)
+def test_continue_input_examples(test_integration_folder):
+    with patch('argparse._sys.argv',
+        ['continue_input.py',
+        'pq/run-08.in',
+        '--input-format',
+        'pq']):
+        main()
+
+    assert filecmp("pq/run-09.in", "pq/run-09.in.ref")
+
+    with patch('argparse._sys.argv',
+        ['continue_input.py',
+        'qmcfc/run-01.in',
+        '--input-format',
+        'qmcfc']):
+        main()
+
+    assert filecmp("qmcfc/run-02.in", "qmcfc/run-02.in.ref")
