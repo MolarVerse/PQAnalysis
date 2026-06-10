@@ -1,0 +1,13 @@
+# PQ continuation example
+jobtype = qm-md;
+nstep = 10000; timestep = 0.5;
+start_file = pq-md-08.rst;
+output_file = pq-md-09.out;
+info_file = pq-md-09.info;
+energy_file = pq-md-09.en;
+traj_file = pq-md-09.xyz;
+vel_file = pq-md-09.vel;
+charge_file = pq-md-09.chrg;
+force_file = pq-md-09.frc;
+restart_file = pq-md-09.rst;
+file_prefix = pq-md-09;
