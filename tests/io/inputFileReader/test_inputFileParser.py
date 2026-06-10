@@ -88,3 +88,44 @@ class TestInputFileParser:
 
         assert input_dictionary["enabled"] == (True, "bool", "1")
         assert input_dictionary["disabled"] == (False, "bool", "2")
+
+    def test_parse_qmcfc_selectors(self, tmp_path):
+        input_file = tmp_path / "qmcfc.in"
+        input_file.write_text(
+            "jobtype = qmcf-md;\n"
+            "nstep = 5000; timestep = 0.2; omega = 3E13;\n"
+            "solute_charge = +2.0;\n"
+            "qm_center = 8:1;\n"
+            "qm_blacklist = 1-6, 9-13, 15-16, 18, 20-48;\n"
+            "qm_whitelist = 7, 14, 17, 19;\n",
+            encoding="utf-8"
+        )
+
+        input_dictionary = InputFileParser(str(input_file), "qmcfc").parse()
+
+        assert input_dictionary["jobtype"] == ("qmcf-md", "str", "1")
+        assert input_dictionary["nstep"] == (5000, "int", "2")
+        assert input_dictionary["timestep"] == (0.2, "float", "2")
+        assert input_dictionary["omega"] == (3e13, "float", "2")
+        assert input_dictionary["solute_charge"] == (2.0, "float", "3")
+        assert input_dictionary["qm_center"] == ("8:1", "str", "4")
+        assert input_dictionary["qm_blacklist"] == (
+            ["1-6", "9-13", "15-16", "18", "20-48"],
+            "list(str)",
+            "5"
+        )
+        assert input_dictionary["qm_whitelist"] == (
+            ["7", "14", "17", "19"],
+            "list(str)",
+            "6"
+        )
+
+    def test_parse_qmcfc_latin1_comments(self, tmp_path):
+        input_file = tmp_path / "qmcfc.in"
+        input_file.write_bytes(b"# force constant in A\xb2*kcal/mol\njobtype = mm-md;\n")
+
+        parser = InputFileParser(str(input_file), "qmcfc")
+        input_dictionary = parser.parse()
+
+        assert "A\u00b2*kcal/mol" in parser.raw_input_file
+        assert input_dictionary["jobtype"] == ("mm-md", "str", "2")
