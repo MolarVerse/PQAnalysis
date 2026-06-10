@@ -5,6 +5,7 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.io import (
+    ExtXYZProfile,
     TrajectoryWriter,
     read_trajectory,
     write_trajectory,
@@ -12,8 +13,10 @@ from PQAnalysis.io import (
 )
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
+from PQAnalysis.io.exceptions import ExtXYZProfileError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
+from PQAnalysis.utils.units import eV, kcal_per_mol
 
 
 
@@ -44,6 +47,8 @@ o     0.0000000000     0.0000000000     1.0000000000
 @pytest.mark.usefixtures("tmpdir")
 def test_write_extxyz_roundtrip():
     atoms = [Atom("h"), Atom("o")]
+    virial = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+    stress = np.array([[9.0, 8.0, 7.0], [6.0, 5.0, 4.0], [3.0, 2.0, 1.0]])
     frame = AtomicSystem(
         atoms=atoms,
         pos=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]),
@@ -51,8 +56,8 @@ def test_write_extxyz_roundtrip():
         forces=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
         charges=np.array([-0.1, -0.2]),
         energy=-1.5,
-        virial=np.diag([1.0, 2.0, 3.0]),
-        stress=np.diag([4.0, 5.0, 6.0]),
+        virial=virial,
+        stress=stress,
         cell=Cell(10.0, 11.0, 12.0, 80.0, 85.0, 95.0),
     )
 
@@ -72,8 +77,8 @@ def test_write_extxyz_roundtrip():
         in lines[1]
     )
     assert "energy=-1.5000000000" in lines[1]
-    assert "virial=" in lines[1]
-    assert "stress=" in lines[1]
+    assert 'virial="1.0000000000 4.0000000000 7.0000000000' in lines[1]
+    assert 'stress="9.0000000000 6.0000000000 3.0000000000' in lines[1]
 
     trajectory = read_trajectory("output.extxyz", traj_format="extxyz")
     output_frame = trajectory[0]
@@ -87,6 +92,91 @@ def test_write_extxyz_roundtrip():
     assert np.allclose(output_frame.virial, frame.virial)
     assert np.allclose(output_frame.stress, frame.stress)
     assert output_frame.cell == frame.cell
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_ase_profile_converts_energy_like_units():
+    from ase.io import read as ase_read
+
+    atoms = [Atom("h"), Atom("o")]
+    frame = AtomicSystem(
+        atoms=atoms,
+        pos=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]),
+        forces=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        energy=-1.5,
+        virial=np.array(
+            [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+        ),
+        stress=np.array(
+            [[9.0, 8.0, 7.0], [6.0, 5.0, 4.0], [3.0, 2.0, 1.0]]
+        ),
+        cell=Cell(10.0, 11.0, 12.0),
+    )
+    conversion_factor = eV / kcal_per_mol
+
+    writer = TrajectoryWriter("ase.extxyz", extxyz_profile=ExtXYZProfile.ASE)
+    writer.write(frame, traj_type="extxyz")
+
+    with open("ase.extxyz", "r", encoding="utf-8") as file:
+        lines = file.read().splitlines()
+
+    assert f"energy={-1.5 * conversion_factor:.10f}" in lines[1]
+    assert f"{1.0 * conversion_factor:.10f}" in lines[2]
+    assert f"{9.0 * conversion_factor:.10f}" in lines[1]
+
+    ase_frame = ase_read("ase.extxyz", index=0)
+    assert np.isclose(ase_frame.calc.results["energy"], -1.5 * conversion_factor)
+    assert np.allclose(
+        ase_frame.calc.results["forces"],
+        frame.forces * conversion_factor,
+    )
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_nep_profile_uses_gpumd_convention():
+    atoms = [Atom("h"), Atom("o")]
+    frame = AtomicSystem(
+        atoms=atoms,
+        pos=np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]]),
+        forces=np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]]),
+        energy=-1.5,
+        virial=np.array(
+            [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]]
+        ),
+        stress=np.array(
+            [[9.0, 8.0, 7.0], [6.0, 5.0, 4.0], [3.0, 2.0, 1.0]]
+        ),
+        cell=Cell(10.0, 11.0, 12.0),
+    )
+    conversion_factor = eV / kcal_per_mol
+
+    writer = TrajectoryWriter("nep.extxyz", extxyz_profile=ExtXYZProfile.NEP)
+    writer.write(frame, traj_type="extxyz")
+
+    with open("nep.extxyz", "r", encoding="utf-8") as file:
+        lines = file.read().splitlines()
+
+    assert lines[1].startswith('lattice="10.0000000000 0.0000000000')
+    assert 'properties="species:S:1:pos:R:3:forces:R:3"' in lines[1]
+    assert "Lattice=" not in lines[1]
+    assert "Properties=" not in lines[1]
+    assert f"energy={-1.5 * conversion_factor:.10f}" in lines[1]
+    assert (
+        f'virial="{1.0 * conversion_factor:.10f} '
+        f"{2.0 * conversion_factor:.10f} "
+        f"{3.0 * conversion_factor:.10f}"
+    ) in lines[1]
+    assert (
+        f'stress="{9.0 * conversion_factor:.10f} '
+        f"{8.0 * conversion_factor:.10f} "
+        f"{7.0 * conversion_factor:.10f}"
+    ) in lines[1]
+    assert (
+        f"H 0.0000000000 0.0000000000 0.0000000000 "
+        f"{1.0 * conversion_factor:.10f} "
+        f"{2.0 * conversion_factor:.10f} "
+        f"{3.0 * conversion_factor:.10f}"
+    ) == lines[2]
 
 
 
@@ -109,12 +199,26 @@ class TestTrajectoryWriter:
         assert writer.filename is None
         assert writer.mode == FileWritingMode.WRITE
         assert writer.format == MDEngineFormat.PQ
+        assert writer.extxyz_profile == ExtXYZProfile.PQ
 
         writer = TrajectoryWriter(engine_format="qmcfc")
         assert writer.format == MDEngineFormat.QMCFC
 
         writer = TrajectoryWriter(engine_format="PQ")
         assert writer.format == MDEngineFormat.PQ
+
+        writer.extxyz_profile = "ASE"
+        assert writer.extxyz_profile == ExtXYZProfile.ASE
+
+        with pytest.raises(ExtXYZProfileError) as exception:
+            TrajectoryWriter(extxyz_profile="notAProfile")
+        assert str(exception.value) == (
+            "\n"
+            "'notaprofile' is not a valid ExtXYZProfile.\n"
+            f"Possible values are: {ExtXYZProfile.member_repr()} "
+            "or their case insensitive string representation: "
+            f"{ExtXYZProfile.value_repr()}"
+        )
 
     def test__write_header(self, capsys):
 

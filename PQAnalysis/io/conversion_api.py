@@ -9,7 +9,7 @@ from beartype.typing import List
 from PQAnalysis.core import Atoms, Cell, Residue, Residues
 from PQAnalysis.topology import Topology
 from PQAnalysis.traj import MDEngineFormat
-from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.io.formats import ExtXYZProfile, FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
 
 from .moldescriptor_reader import MoldescriptorReader
@@ -380,6 +380,7 @@ def traj2extxyz(
     output: str | None = None,
     mode: FileWritingMode | str = "w",
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    extxyz_profile: ExtXYZProfile | str = ExtXYZProfile.ASE,
 ) -> None:
     """
     Converts one or more PQ xyz trajectory files to extended xyz format and
@@ -398,9 +399,16 @@ def traj2extxyz(
         - "o": overwrite
     md_format : MDEngineFormat | str, optional
         The format of the input trajectory. The default is MDEngineFormat.PQ.
+    extxyz_profile : ExtXYZProfile | str, optional
+        The unit convention for the extended xyz output. The default is
+        ExtXYZProfile.ASE.
     """
 
-    writer = TrajectoryWriter(filename=output, mode=mode)
+    writer = TrajectoryWriter(
+        filename=output,
+        mode=mode,
+        extxyz_profile=extxyz_profile,
+    )
 
     for filename in trajectory_files:
         reader = TrajectoryReader(

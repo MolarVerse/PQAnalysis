@@ -811,7 +811,7 @@ class ExtXYZFrameReader(BaseFrameReader):
         try:
             return np.array(
                 [float(value) for value in metadata[key].split()]
-            ).reshape((3, 3))
+            ).reshape((3, 3), order="F")
         except ValueError:
             self.logger.error(
                 f"Invalid {key} metadata in extended xyz frame.",

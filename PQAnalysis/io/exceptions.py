@@ -51,3 +51,11 @@ class OutputFileFormatError(BaseEnumFormatError):
     """
     Exception raised if the given enum is not valid
     """
+
+
+
+class ExtXYZProfileError(BaseEnumFormatError):
+
+    """
+    Exception raised if the given enum is not valid
+    """

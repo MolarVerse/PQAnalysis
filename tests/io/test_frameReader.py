@@ -197,6 +197,28 @@ def test_extxyz_frame_reader_reads_properties_and_metadata():
     assert frame.cell == Cell(10.0, 20.0, 30.0)
 
 
+def test_extxyz_frame_reader_reads_special_matrices_in_column_major_order():
+    reader = frame_reader.ExtXYZFrameReader()
+    frame_string = (
+        '1\n'
+        'Properties=species:S:1:pos:R:3 '
+        'virial="1 4 7 2 5 8 3 6 9" '
+        'stress="9 6 3 8 5 2 7 4 1"\n'
+        'H 0 0 0'
+    )
+
+    frame = reader.read(frame_string)
+
+    assert np.allclose(
+        frame.virial,
+        [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]],
+    )
+    assert np.allclose(
+        frame.stress,
+        [[9.0, 8.0, 7.0], [6.0, 5.0, 4.0], [3.0, 2.0, 1.0]],
+    )
+
+
 def test_extxyz_frame_reader_reads_nep_writer_style_header():
     reader = frame_reader.ExtXYZFrameReader()
     frame_string = (
