@@ -54,56 +54,59 @@ class Selection:
     If the selection object is a Selection object, the selection is copied.
 
     There are several ways to create a selection:
-        - None: all atoms are selected
-        - Atom: the given atom is selected
-        - Element: all atoms with the given element type are selected
-        - Atoms: all atoms in the given list are selected
-        - Elements: all atoms with the given element types are selected
-        - Np1DIntArray: the atoms with the given indices are selected
-        - List[str]: all atoms with the given atom type names are selected
-        - str: the given string is parsed and the atoms selected by the 
-        selection are selected
 
-            This string will be parsed based on a Lark grammar. Which is 
-            defined as follows:
+    - None: all atoms are selected
+    - Atom: the given atom is selected
+    - Element: all atoms with the given element type are selected
+    - Atoms: all atoms in the given list are selected
+    - Elements: all atoms with the given element types are selected
+    - Np1DIntArray: the atoms with the given indices are selected
+    - List[str]: all atoms with the given atom type names are selected
+    - str: the given string is parsed and the atoms selected by the
+      selection are selected.
 
-                - simple word containing only letters and numbers: the
-                atom type with the given name is selected
-                - <integer>: the atom with the given index is selected
-                - <integer1>..<integer2>: the indices from integer1 to integer2 
-                are selected
-                - <integer1>-<integer2>: the indices from integer1 to integer2
-                are selected
-                - <integer1>..<integer2>..<integer3>: the indices from integer1 to
-                integer3 with a step size of integer3 are selected
-                - atom(<atomtype>, <atomic_number>): the atom with the given atom 
-                type and atomic number is selected
-                - atom(<atomtype>, <element_symbol>): the atom with the given atom
-                type and element symbol is selected
-                - elem(<atomic_number>): all atoms with the given element type
-                are selected
-                - elem(<element_symbol>): all atoms with the given element type
-                are selected
-                - `*`: all atoms are selected (same as 'all'), useful if only
-                few atoms should be excluded
+      This string will be parsed based on a Lark grammar, which is
+      defined as follows:
 
-            All of the above statements can be combined with the following operators:
+      - simple word containing only letters and numbers: the atom type
+        with the given name is selected
+      - <integer>: the atom with the given index is selected
+      - <integer1>..<integer2>: the indices from integer1 to integer2
+        are selected
+      - <integer1>-<integer2>: the indices from integer1 to integer2
+        are selected
+      - <integer1>..<integer2>..<integer3>: the indices from integer1 to
+        integer3 with a step size of integer3 are selected
+      - atom(<atomtype>, <atomic_number>): the atom with the given atom
+        type and atomic number is selected
+      - atom(<atomtype>, <element_symbol>): the atom with the given atom
+        type and element symbol is selected
+      - elem(<atomic_number>): all atoms with the given element type
+        are selected
+      - elem(<element_symbol>): all atoms with the given element type
+        are selected
+      - `*`: all atoms are selected (same as 'all'), useful if only
+        few atoms should be excluded
 
-                - ',': the union of the two statements is selected, meaning that
-                the atoms selected by the first statement and the atoms selected
-                by the second statement are selected
-                - '&': the intersection of the two statements is selected, meaning 
-                that only the atoms selected by both statements are selected
-                - '|': the set difference of the two statements is selected, 
-                meaning that only the atoms selected by the first statement are
-                selected, which are not selected by the second statement
+      All of the above statements can be combined with the following
+      operators:
 
-            The operators are evaluated in the following order: '|' -> '&' -> ','
-            This means that the ',' operator has the lowest precedence and the '|' 
-            operator has the highest precedence and therefore binds the strongest.
+      - ',': the union of the two statements is selected, meaning that
+        the atoms selected by the first statement and the atoms selected
+        by the second statement are selected
+      - '&': the intersection of the two statements is selected, meaning
+        that only the atoms selected by both statements are selected
+      - '|': the set difference of the two statements is selected,
+        meaning that only the atoms selected by the first statement are
+        selected, which are not selected by the second statement
 
-            Additionally, parentheses can be used to group statements and change
-            the order of evaluation.
+      The operators are evaluated in the following order:
+      '|' -> '&' -> ','. This means that the ',' operator has the lowest
+      precedence and the '|' operator has the highest precedence and
+      therefore binds the strongest.
+
+      Additionally, parentheses can be used to group statements and
+      change the order of evaluation.
 
 
     Notes
