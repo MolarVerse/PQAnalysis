@@ -23,8 +23,8 @@ cli
        PQAnalysis.cli.rst2xyz
        PQAnalysis.cli.traj2box
        PQAnalysis.cli.traj2qmcfc
+       PQAnalysis.cli.vibrations
        PQAnalysis.cli.xyz2gen
-
 
 
 
