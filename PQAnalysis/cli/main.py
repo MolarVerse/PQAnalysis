@@ -11,6 +11,7 @@ from .traj2box import Traj2BoxCLI
 from .rst2xyz import Rst2XYZCLI
 from .xyz2rst import XYZ2RstCLI
 from .rdf import RDFCLI
+from .vibrations import VibrationsCLI
 from .gen2xyz import GEN2XYZCLI
 from .continue_input import ContinueInputCLI
 from .add_molecules import AddMoleculesCLI
@@ -49,6 +50,7 @@ def main():
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
         Traj2ExtXYZCLI.program_name(): Traj2ExtXYZCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
+        VibrationsCLI.program_name(): VibrationsCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,
     }
 

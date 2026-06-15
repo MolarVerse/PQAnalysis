@@ -1,0 +1,14 @@
+structure_file = h2o.rst
+hessian_file = hessian.dat
+moldescriptor_file = moldescriptor.dat
+out_file = wavenumbers.dat
+normal_modes_file = normal_modes.dat
+modes_prefix = mode
+modes_file = modes.xyz
+modes = [6, 7, 9]
+modes_frames = 8
+modes_amplitude = 0.3
+modes_temperature = 300.0
+modes_threshold = 0.5
+unit = kcal
+hessian_sign = auto
