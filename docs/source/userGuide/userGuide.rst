@@ -4,6 +4,12 @@
 User Guide
 ##########
 
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+
+   inputFile
+
 Command Line Interface
 ======================
 
