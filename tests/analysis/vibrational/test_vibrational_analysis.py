@@ -31,6 +31,7 @@ from .. import pytestmark  # pylint: disable=unused-import
 KCAL_MOL_TO_EV = 0.0433641153087705
 
 
+
 def _ase_signed_wavenumbers(atom_names, atom_masses, atom_coords, hessian):
     """
     Calculate ASE frequencies and map imaginary modes to signed wavenumbers.
@@ -48,6 +49,7 @@ def _ase_signed_wavenumbers(atom_names, atom_masses, atom_coords, hessian):
         -np.abs(frequencies.imag),
         frequencies.real,
     )
+
 
 
 class TestVibrationalAnalysis:
