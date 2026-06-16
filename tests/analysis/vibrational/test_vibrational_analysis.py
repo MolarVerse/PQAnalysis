@@ -12,6 +12,7 @@ from PQAnalysis.analysis.vibrational.vibrational_analysis import (
     mass_weighted_hessian,
     read_hessian_file,
     select_mode_indices,
+    symmetrize_addition,
     wavenumber,
     write_calculate_output,
     write_extxyz_modes,
@@ -27,6 +28,26 @@ from PQAnalysis.io import RestartFileReader
 
 from .. import pytestmark  # pylint: disable=unused-import
 
+KCAL_MOL_TO_EV = 0.0433641153087705
+
+
+def _ase_signed_wavenumbers(atom_names, atom_masses, atom_coords, hessian):
+    """
+    Calculate ASE frequencies and map imaginary modes to signed wavenumbers.
+    """
+    from ase import Atoms
+    from ase.vibrations.data import VibrationsData
+
+    atoms = Atoms(atom_names, positions=atom_coords)
+    atoms.set_masses(atom_masses)
+
+    frequencies = VibrationsData.from_2d(atoms, hessian).get_frequencies()
+
+    return np.where(
+        np.abs(frequencies.imag) > 1.0e-12,
+        -np.abs(frequencies.imag),
+        frequencies.real,
+    )
 
 
 class TestVibrationalAnalysis:
@@ -88,6 +109,65 @@ class TestVibrationalAnalysis:
         assert result.normal_modes.shape == (9, 9)
         assert result.intensities is None
         assert np.all(np.isfinite(result.wavenumbers))
+
+    @pytest.mark.parametrize("example_dir", ["vibrational"], indirect=False)
+    def test_calculate_h2o_matches_ase_reference(self, test_with_data_dir):
+        system = RestartFileReader("h2o.rst").read()
+        hessian = read_hessian_file("hessian.dat")
+        sign_factor = hessian_sign_factor(
+            system.pos,
+            system.atomic_masses,
+            hessian,
+            "auto",
+        )
+
+        result = calculate(system.atomic_masses, system.pos, hessian)
+        ase_hessian = (
+            sign_factor * symmetrize_addition(hessian) * KCAL_MOL_TO_EV
+        )
+        ase_wavenumbers = _ase_signed_wavenumbers(
+            [atom.symbol.capitalize() for atom in system.atoms],
+            system.atomic_masses,
+            system.pos,
+            ase_hessian,
+        )
+
+        np.testing.assert_allclose(
+            result.wavenumbers,
+            ase_wavenumbers,
+            rtol=0.0,
+            atol=1.0e-3,
+        )
+
+    def test_calculate_electronvolt_hessian_matches_ase_reference(self):
+        atom_masses = np.array([1.00794, 1.00794])
+        atom_coords = np.array([[0.0, 0.0, 0.0], [0.74, 0.0, 0.0]])
+        hessian = np.zeros((6, 6))
+        hessian[0, 0] = 1.5
+        hessian[0, 3] = -1.5
+        hessian[3, 0] = -1.5
+        hessian[3, 3] = 1.5
+
+        result = calculate(
+            atom_masses,
+            atom_coords,
+            hessian,
+            unit="ev",
+            hessian_sign="positive",
+        )
+        ase_wavenumbers = _ase_signed_wavenumbers(
+            ["H", "H"],
+            atom_masses,
+            atom_coords,
+            hessian,
+        )
+
+        np.testing.assert_allclose(
+            result.wavenumbers,
+            ase_wavenumbers,
+            rtol=0.0,
+            atol=1.0e-3,
+        )
 
     def test_calculate_validates_shapes(self):
         hessian = np.eye(6)
