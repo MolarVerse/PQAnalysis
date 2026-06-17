@@ -483,6 +483,8 @@ class RDF:
                 else:
                     target_indices = self.target_indices
 
+                target_indices = target_indices[target_indices != reference_index]
+
                 reference_position = frame.pos[reference_index]
                 target_positions = frame.pos[target_indices]
 

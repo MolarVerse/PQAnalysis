@@ -673,6 +673,32 @@ class TestRDF:
         assert np.isfinite(normalized_bins2).all()
         assert np.isfinite(differential_bins).all()
 
+    def test_run_skips_self_pairs_for_overlapping_selections(self):
+        system = AtomicSystem(
+            atoms=[Atom("H"), Atom("H")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+
+        rdf = RDF(Trajectory([system]), ["H"], ["H"], delta_r=0.5, n_bins=4)
+
+        (
+            _bin_middle_points,
+            normalized_bins,
+            integrated_bins,
+            normalized_bins2,
+            differential_bins
+        ) = rdf.run()
+
+        np.testing.assert_allclose(rdf.bins, np.array([0.0, 0.0, 2.0, 0.0]))
+        np.testing.assert_allclose(
+            integrated_bins,
+            np.array([0.0, 0.0, 1.0, 1.0])
+        )
+        assert np.isfinite(normalized_bins).all()
+        assert np.isfinite(normalized_bins2).all()
+        assert np.isfinite(differential_bins).all()
+
     def test_matches_ase_partial_rdf_reference(self):
         from ase import Atoms
         from ase.geometry.rdf import get_rdf as ase_get_rdf
