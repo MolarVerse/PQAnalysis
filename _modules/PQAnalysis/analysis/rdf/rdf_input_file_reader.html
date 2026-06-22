@@ -80,6 +80,7 @@
 <span class="sd">:py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="c1"># local imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
@@ -97,6 +98,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_moldescriptor_file_default</span> <span class="o">=</span> <span class="s2">&quot;moldescriptor.dat&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -157,26 +160,168 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">not_defined_optional_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
-            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_default_no_intra_molecular</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infer_required_topology_files</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="p">(</span>
-                <span class="s2">&quot;The no_intra_molecular key can only be used &quot;</span>
-                <span class="s2">&quot;if both a restart file and a moldescriptor file are given.&quot;</span>
-                <span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_missing_topology_files_error_message</span><span class="p">(),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The moldescriptor_file key can only be &quot;</span>
-                <span class="s2">&quot;used in a meaningful way if a restart file is given.&quot;</span>
+                    <span class="s2">&quot;The moldescriptor_file key can only be &quot;</span>
+                    <span class="s2">&quot;used in a meaningful way if a restart file is given.&quot;</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_default_no_intra_molecular</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Enables no_intra_molecular if both topology files are provided</span>
+<span class="sd">        and the keyword was omitted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_inferred_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="s2">&quot;Enabled no_intra_molecular because both restart_file &quot;</span>
+                <span class="s2">&quot;and moldescriptor_file are set.&quot;</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infer_required_topology_files</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Infers missing topology files required by no_intra_molecular.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">restart_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infer_restart_file</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">restart_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_inferred_key</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">restart_file_key</span><span class="p">,</span>
+                    <span class="n">restart_file</span><span class="p">,</span>
+                    <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Inferred restart_file=&#39;</span><span class="si">{</span><span class="n">restart_file</span><span class="si">}</span><span class="s2">&#39; from traj_files.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">moldescriptor_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infer_moldescriptor_file</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_inferred_key</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="p">,</span>
+                    <span class="n">moldescriptor_file</span><span class="p">,</span>
+                    <span class="s2">&quot;str&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;Inferred moldescriptor_file=&quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">moldescriptor_file</span><span class="si">}</span><span class="s2">&#39; from traj_files.&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">restart_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infer_restart_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Infers the restart file from the first trajectory filename.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">restart_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_restart_file_candidate</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">restart_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">restart_file</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">restart_file</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_infer_moldescriptor_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Infers the moldescriptor file from the first trajectory directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">moldescriptor_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moldescriptor_file_candidate</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">moldescriptor_file</span> <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">moldescriptor_file</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="k">else</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_restart_file_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the restart file candidate inferred from the first trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_traj_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">traj_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">traj_file</span><span class="p">)</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="s2">&quot;.rst&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_moldescriptor_file_candidate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the moldescriptor file candidate inferred from the first trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_traj_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">traj_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">traj_file</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_moldescriptor_file_default</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_first_traj_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the first trajectory file from the input file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_files</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">traj_files</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">traj_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">traj_files</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_topology_files_error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the error message for missing topology files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_traj_file</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">traj_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span>
+                <span class="s2">&quot;The no_intra_molecular key requires both a restart file &quot;</span>
+                <span class="s2">&quot;and a moldescriptor file. Could not infer missing files &quot;</span>
+                <span class="s2">&quot;because no trajectory files were available.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="s2">&quot;The no_intra_molecular key requires both a restart file &quot;</span>
+            <span class="s2">&quot;and a moldescriptor file. Could not infer missing files &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;from trajectory file &#39;</span><span class="si">{</span><span class="n">traj_file</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Tried restart_file=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_restart_file_candidate</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+            <span class="s2">&quot;and moldescriptor_file=&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_moldescriptor_file_candidate</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_set_inferred_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">value_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets a value in the input dictionary after it was inferred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">value_type</span><span class="p">,</span> <span class="s2">&quot;inferred&quot;</span><span class="p">)</span></div>
 
 
 
@@ -230,19 +375,32 @@
 <span class="s2">the analysis. This means that if an optional keyword is specified</span>
 <span class="s2">other keywords might be required. For example:</span>
 
-<span class="s2">- If the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span><span class="s2">` key is specified,</span>
-<span class="s2">the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` and</span>
-<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` keys</span>
-<span class="s2">are required in order to exclude intra molecular pairs.</span>
+<span class="s2">- Basic RDF calculations can be run without a restart file. In that</span>
+<span class="s2">  case, intra molecular pairs are included.</span>
+<span class="s2">- If both :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` and</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` are given and</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span><span class="s2">` is omitted,</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span><span class="s2">` defaults to :code:`True`.</span>
+<span class="s2">- If the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">no_intra_molecular_key</span><span class="si">}</span><span class="s2">` key is enabled,</span>
+<span class="s2">  the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` and</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` keys</span>
+<span class="s2">  are required in order to exclude intra molecular pairs. Missing</span>
+<span class="s2">  files are inferred from the first trajectory file if possible:</span>
+<span class="s2">  :code:`trajectory.xyz` maps to :code:`trajectory.rst`, and</span>
+<span class="s2">  :code:`moldescriptor.dat` is searched in the trajectory directory.</span>
 <span class="s2">- If the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` key is specified,</span>
-<span class="s2">the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` key is required in order</span>
-<span class="s2">use the reference residues in any meaningful way.</span>
+<span class="s2">  the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` key is required in order</span>
+<span class="s2">  to use the reference residues in any meaningful way.</span>
+<span class="s2">- Explicitly provided :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">restart_file_key</span><span class="si">}</span><span class="s2">` and</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">moldescriptor_file_key</span><span class="si">}</span><span class="s2">` values are used as-is.</span>
+<span class="s2">- Inferred and defaulted values are written to the normal PQAnalysis</span>
+<span class="s2">  log output.</span>
 <span class="s2">- In general, the :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">r_max_key</span><span class="si">}</span><span class="s2">`,</span>
-<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="si">}</span><span class="s2">` and :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="si">}</span><span class="s2">`</span>
-<span class="s2">are mutual exclusive, meaning that they can&#39;t be specified at</span>
-<span class="s2">the same time. Furthermore, at least one of</span>
-<span class="s2">:code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins</span><span class="si">}</span><span class="s2">&#39; or :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r</span><span class="si">}</span><span class="s2">` is required</span>
-<span class="s2">(for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="si">}</span><span class="s2">` and :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="si">}</span><span class="s2">`</span>
+<span class="s2">  are mutual exclusive, meaning that they can&#39;t be specified at</span>
+<span class="s2">  the same time. Furthermore, at least one of</span>
+<span class="s2">  :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">n_bins_key</span><span class="si">}</span><span class="s2">` or :code:`</span><span class="si">{</span><span class="n">Reader</span><span class="o">.</span><span class="n">delta_r_key</span><span class="si">}</span><span class="s2">` is required</span>
+<span class="s2">  (for more information see :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`).</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 

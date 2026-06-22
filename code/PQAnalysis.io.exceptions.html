@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -121,8 +122,14 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.BoxFileFormatError" title="PQAnalysis.io.exceptions.BoxFileFormatError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxFileFormatError</span></code></a></p></td>
 <td><p>Exception raised if the given enum is not valid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.BoxWriterError" title="PQAnalysis.io.exceptions.BoxWriterError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxWriterError</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.BoxReaderError" title="PQAnalysis.io.exceptions.BoxReaderError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxReaderError</span></code></a></p></td>
+<td><p>Exception raised for errors related to the BoxReader class</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.BoxWriterError" title="PQAnalysis.io.exceptions.BoxWriterError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxWriterError</span></code></a></p></td>
 <td><p>Exception raised for errors related to the BoxWriter class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.ExtXYZProfileError" title="PQAnalysis.io.exceptions.ExtXYZProfileError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtXYZProfileError</span></code></a></p></td>
+<td><p>Exception raised if the given enum is not valid</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.FileWritingModeError" title="PQAnalysis.io.exceptions.FileWritingModeError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileWritingModeError</span></code></a></p></td>
 <td><p>Exception raised if the given enum is not valid</p></td>
@@ -162,10 +169,40 @@
 </dd></dl>
 
 <dl class="py exception">
+<dt class="sig sig-object py" id="PQAnalysis.io.exceptions.BoxReaderError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BoxReaderError</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/exceptions.html#BoxReaderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.exceptions.BoxReaderError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
+<p>Exception raised for errors related to the BoxReader class</p>
+</dd></dl>
+
+<dl class="py exception">
 <dt class="sig sig-object py" id="PQAnalysis.io.exceptions.BoxWriterError">
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BoxWriterError</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/exceptions.html#BoxWriterError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.exceptions.BoxWriterError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
 <p>Exception raised for errors related to the BoxWriter class</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="PQAnalysis.io.exceptions.ExtXYZProfileError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExtXYZProfileError</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">enum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">object</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/exceptions.html#ExtXYZProfileError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.exceptions.ExtXYZProfileError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.BaseEnumFormatError" title="PQAnalysis.exceptions.BaseEnumFormatError"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEnumFormatError</span></code></a></p>
+<p>Exception raised if the given enum is not valid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> (<em>object</em>) – The value that is not valid.</p></li>
+<li><p><strong>enum</strong> (<em>object</em>) – The enum that is not valid.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py exception">

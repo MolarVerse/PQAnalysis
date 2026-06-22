@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -122,6 +123,278 @@
   <section id="module-PQAnalysis.io.traj_file.frame_reader">
 <span id="frame-reader"></span><h1>frame_reader<a class="headerlink" href="#module-PQAnalysis.io.traj_file.frame_reader" title="Link to this heading"></a></h1>
 <p>A module containing classes for reading a frame from a string.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader" title="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BaseFrameReader</span></code></a></p></td>
+<td><p>Base class for frame readers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader" title="PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtXYZFrameReader</span></code></a></p></td>
+<td><p>A frame reader for extended xyz position frames.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader" title="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">XYZFrameReader</span></code></a></p></td>
+<td><p>This class provides methods for reading a frame from a string.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.get_frame_reader" title="PQAnalysis.io.traj_file.frame_reader.get_frame_reader"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_frame_reader</span></code></a></p></td>
+<td><p>Return the frame reader implementation for a trajectory format.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">BaseFrameReader</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#BaseFrameReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Base class for frame readers.</p>
+<p>Subclasses implement the parsing for a concrete frame format while this
+class provides shared MD-engine handling and topology construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the MD engine. Default is “PQ”.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader.read">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TrajectoryFormat.XYZ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#BaseFrameReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads a frame from a string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.BaseFrameReader</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExtXYZFrameReader</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#ExtXYZFrameReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader" title="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFrameReader</span></code></a></p>
+<p>A frame reader for extended xyz position frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the MD engine. Default is “PQ”.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TrajectoryFormat.EXTXYZ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#ExtXYZFrameReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads an extended xyz frame from a string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.ExtXYZFrameReader</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">XYZFrameReader</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader" title="PQAnalysis.io.traj_file.frame_reader.BaseFrameReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseFrameReader</span></code></a></p>
+<p>This class provides methods for reading a frame from a string.
+The string can be a single frame or a whole trajectory.
+The format of the string can be specified with the format parameter.
+Generally, this class should not be used directly.
+Instead, the <code class="xref py py-class docutils literal notranslate"><span class="pre">TrajectoryReader</span></code>
+class can be used to read a whole trajectory as well as
+a single frame from a file.</p>
+<p>For more information about the format of the string,
+see <a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrajectoryFormat</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the MD engine. Default is “PQ”.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read">
+<span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">topology</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><span class="pre">Topology</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TrajectoryFormat.XYZ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader.read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read" title="Link to this definition"></a></dt>
+<dd><p>Reads a frame from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_string</strong> (<em>str</em>) – The string to read the frame from.</p></li>
+<li><p><strong>topology</strong> (<a class="reference internal" href="PQAnalysis.topology.topology.html#PQAnalysis.topology.topology.Topology" title="PQAnalysis.topology.topology.Topology"><em>Topology</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The topology of the frame. Default is None.</p></li>
+<li><p><strong>traj_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><em>TrajectoryFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the trajectory. Default is TrajectoryFormat.XYZ.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame read from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html#PQAnalysis.io.traj_file.exceptions.FrameReaderError" title="PQAnalysis.io.traj_file.exceptions.FrameReaderError"><strong>FrameReaderError</strong></a> – If the given format is not valid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_charges">
+<span class="sig-name descname"><span class="pre">read_charges</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader.read_charges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_charges" title="Link to this definition"></a></dt>
+<dd><p>Reads the charge values of the atoms in a frame from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame_string</strong> (<em>str</em>) – The string to read the frame from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame read from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_forces">
+<span class="sig-name descname"><span class="pre">read_forces</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader.read_forces"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_forces" title="Link to this definition"></a></dt>
+<dd><p>Reads the forces of the atoms in a frame from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame_string</strong> (<em>str</em>) – The string to read the frame from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame read from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_positions">
+<span class="sig-name descname"><span class="pre">read_positions</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader.read_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_positions" title="Link to this definition"></a></dt>
+<dd><p>Reads the positions of the atoms in a frame from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame_string</strong> (<em>str</em>) – The string to read the frame from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame read from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_velocities">
+<span class="sig-name descname"><span class="pre">read_velocities</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">frame_string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#XYZFrameReader.read_velocities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_velocities" title="Link to this definition"></a></dt>
+<dd><p>Reads the velocities of the atoms in a frame from a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame_string</strong> (<em>str</em>) – The string to read the frame from.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The frame read from the string.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem">AtomicSystem</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.XYZFrameReader</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.frame_reader.get_frame_reader">
+<span class="sig-name descname"><span class="pre">get_frame_reader</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/frame_reader.html#get_frame_reader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.frame_reader.get_frame_reader" title="Link to this definition"></a></dt>
+<dd><p>Return the frame reader implementation for a trajectory format.</p>
+</dd></dl>
+
+</section>
 </section>
 
 

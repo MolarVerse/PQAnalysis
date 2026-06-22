@@ -79,15 +79,18 @@
 <span class="sd">A module containing the TrajectoryWriter class and its associated methods.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWriter</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtXYZProfile</span><span class="p">,</span> <span class="n">FileWritingMode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">TrajectoryFormat</span><span class="p">,</span> <span class="n">MDEngineFormat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">Atom</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.atomic_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span><span class="p">,</span> <span class="n">runtime_type_checking_setter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.units</span><span class="w"> </span><span class="kn">import</span> <span class="n">eV</span><span class="p">,</span> <span class="n">kcal_per_mol</span>
 
 
 
@@ -107,7 +110,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span>
+        <span class="n">extxyz_profile</span><span class="p">:</span> <span class="n">ExtXYZProfile</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
@@ -119,11 +123,15 @@
 <span class="sd">        mode : str, optional</span>
 <span class="sd">            The mode of the file. Either &#39;w&#39; for write, </span>
 <span class="sd">            &#39;a&#39; for append or &#39;o&#39; for overwrite. The default is &#39;w&#39;.</span>
+<span class="sd">        extxyz_profile : ExtXYZProfile | str, optional</span>
+<span class="sd">            The unit convention for extended xyz output. The default is</span>
+<span class="sd">            ExtXYZProfile.PQ.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">FileWritingMode</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">engine_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extxyz_profile</span> <span class="o">=</span> <span class="n">ExtXYZProfile</span><span class="p">(</span><span class="n">extxyz_profile</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TrajectoryWriter.write">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.trajectory_writer.html#PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter.write">[docs]</a>
@@ -151,6 +159,8 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_positions</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">EXTXYZ</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_extxyz</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_velocities</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">FORCE</span><span class="p">:</span>
@@ -173,6 +183,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_header</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_comment</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_xyz</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_extxyz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n">Trajectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the trajectory in extended xyz format.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        trajectory : Trajectory</span>
+<span class="sd">            The trajectory to write.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">trajectory</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_extxyz_metadata</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_write_extxyz_values</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
@@ -310,7 +337,161 @@
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">16.10f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">xyz</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">16.10f</span><span class="si">}</span><span class="s2">&quot;</span>
                     <span class="p">),</span>
                     <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_extxyz_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the extended xyz metadata line of the frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame : AtomicSystem</span>
+<span class="sd">            The frame to write the metadata line of.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span> <span class="o">!=</span> <span class="n">Cell</span><span class="p">():</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_lattice_key</span><span class="p">()</span><span class="si">}</span><span class="s1">=&quot;&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_lattice</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">box_matrix</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
                 <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_properties_key</span><span class="p">()</span><span class="si">}</span><span class="s1">=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_properties</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_energy</span><span class="p">:</span>
+            <span class="n">energy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_extxyz_energy_like</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">energy</span><span class="p">)</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;energy=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">energy</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_virial</span><span class="p">:</span>
+            <span class="n">virial</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_extxyz_energy_like</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">virial</span><span class="p">)</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;virial=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_matrix</span><span class="p">(</span><span class="n">virial</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_stress</span><span class="p">:</span>
+            <span class="n">stress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_extxyz_energy_like</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">stress</span><span class="p">)</span>
+            <span class="n">metadata</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;stress=&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_matrix</span><span class="p">(</span><span class="n">stress</span><span class="p">)</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+            <span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">metadata</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extxyz_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the extended xyz Properties metadata value for a frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;species:S:1&quot;</span><span class="p">,</span> <span class="s2">&quot;pos:R:3&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_vel</span><span class="p">:</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;vel:R:3&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_forces</span><span class="p">:</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;forces:R:3&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_charges</span><span class="p">:</span>
+            <span class="n">properties</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;charge:R:1&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s2">&quot;:&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">properties</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_extxyz_values</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the atom value lines of an extended xyz frame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame : AtomicSystem</span>
+<span class="sd">            The frame to write.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">atom</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_atom_label</span><span class="p">(</span><span class="n">atom</span><span class="p">)]</span>
+            <span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_vel</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">frame</span><span class="o">.</span><span class="n">vel</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_forces</span><span class="p">:</span>
+                <span class="n">forces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert_extxyz_energy_like</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">forces</span><span class="p">)</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">forces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_charges</span><span class="p">:</span>
+                <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">charges</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">values</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_extxyz_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Np2DNumberArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats a 3x3 extended xyz metadata matrix.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gpumd_extxyz_profile</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;F&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_extxyz_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Np2DNumberArray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats extended xyz lattice vectors as ax ay az bx by bz cx cy cz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_format_extxyz_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_convert_extxyz_energy_like</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts PQ energy-like units to the configured extended xyz profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extxyz_profile</span> <span class="o">!=</span> <span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">PQ</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span> <span class="o">*</span> <span class="n">eV</span> <span class="o">/</span> <span class="n">kcal_per_mol</span>
+
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extxyz_lattice_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the lattice metadata key for the configured extxyz profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gpumd_extxyz_profile</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s2">&quot;lattice&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;Lattice&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extxyz_properties_key</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the properties metadata key for the configured extxyz profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gpumd_extxyz_profile</span><span class="p">():</span>
+            <span class="k">return</span> <span class="s2">&quot;properties&quot;</span>
+
+        <span class="k">return</span> <span class="s2">&quot;Properties&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_gpumd_extxyz_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns whether the configured extxyz profile targets GPUMD NEP.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">extxyz_profile</span> <span class="o">==</span> <span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">NEP</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extxyz_atom_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom</span><span class="p">:</span> <span class="n">Atom</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the atom label for the configured extxyz profile.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_gpumd_extxyz_profile</span><span class="p">()</span> <span class="ow">and</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">atom</span><span class="o">.</span><span class="n">symbol</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">atom</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_format_extxyz_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Formats one extended xyz numeric value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_scalar</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -349,7 +530,17 @@
     <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
     <span class="nd">@runtime_type_checking_setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj_type</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_type</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_type</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extxyz_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExtXYZProfile</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ExtXYZProfile: The unit convention for extended xyz output.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_profile</span>
+
+    <span class="nd">@extxyz_profile</span><span class="o">.</span><span class="n">setter</span>
+    <span class="nd">@runtime_type_checking_setter</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extxyz_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extxyz_profile</span><span class="p">:</span> <span class="n">ExtXYZProfile</span> <span class="o">|</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_extxyz_profile</span> <span class="o">=</span> <span class="n">ExtXYZProfile</span><span class="p">(</span><span class="n">extxyz_profile</span><span class="p">)</span></div>
 
 </pre></div>
 

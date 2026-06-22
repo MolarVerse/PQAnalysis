@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">energy_file_reader</a></li>
@@ -131,7 +132,7 @@
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">EnergyFileReader</span></span><span class="sig-paren">(</span>
 
 <dl>
-<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">info_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">use_info_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">engine_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
@@ -160,7 +161,8 @@ the read method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>filename</strong> (<em>str</em>) – The name of the file to read from.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> or </em><em>list</em><em> of </em><em>str</em>) – The name of the file to read from or a list of filenames to read
+from.</p></li>
 <li><p><strong>info_filename</strong> (<em>str</em><em>, </em><em>optional</em>) – The name of the info file to read from, by default None</p></li>
 <li><p><strong>use_info_file</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, the info file is searched for, by default True</p></li>
 <li><p><strong>engine_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the file, by default MDEngineFormat.PQ</p></li>

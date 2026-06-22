@@ -88,6 +88,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseReader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">Np1DIntArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">Atom</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core.atom.element</span><span class="w"> </span><span class="kn">import</span> <span class="n">atomicNumbers</span> <span class="k">as</span> <span class="n">ATOMIC_NUMBERS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.atomic_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystem</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
@@ -139,14 +140,25 @@
 
             <span class="n">coords</span><span class="p">,</span> <span class="n">ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_coords</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">])</span>
 
+            <span class="n">cell_start</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span>
             <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_cell</span><span class="p">(</span>
-                <span class="n">lines</span><span class="p">[</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">+</span> <span class="mi">3</span><span class="p">]</span>
+                <span class="n">lines</span><span class="p">[</span><span class="n">cell_start</span><span class="p">:</span><span class="n">cell_start</span> <span class="o">+</span> <span class="mi">4</span><span class="p">]</span>
             <span class="p">)</span> <span class="k">if</span> <span class="n">is_periodic</span> <span class="k">else</span> <span class="n">Cell</span><span class="p">()</span>
 
-            <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">Atom</span><span class="p">(</span><span class="n">atom_names</span><span class="p">[</span><span class="nb">id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+            <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_atom</span><span class="p">(</span><span class="n">atom_names</span><span class="p">[</span><span class="nb">id</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
 
             <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">coords</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
 
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_atom</span><span class="p">(</span><span class="n">atom_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atom</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a gen atom name, preserving custom labels if needed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">atom_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">ATOMIC_NUMBERS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Atom</span><span class="p">(</span><span class="n">atom_name</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Atom</span><span class="p">(</span><span class="n">atom_name</span><span class="p">,</span> <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                      <span class="n">header</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">PositiveInt</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
@@ -187,7 +199,7 @@
                 <span class="n">exception</span><span class="o">=</span><span class="n">GenFileReaderError</span>
             <span class="p">)</span>
 
-        <span class="n">atom_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">header</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="n">header</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">n_atoms</span><span class="p">,</span> <span class="n">is_periodic</span><span class="p">,</span> <span class="n">atom_names</span>
 
@@ -222,7 +234,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reads the cell block of the gen file.</span>
 
-<span class="sd">        The cell block contains the box matrix in row-major order.</span>
+<span class="sd">        The cell block contains an origin line followed by the box matrix in</span>
+<span class="sd">        row-major order.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -234,8 +247,10 @@
 <span class="sd">        Cell</span>
 <span class="sd">            The cell object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">box_lines</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="k">else</span> <span class="n">lines</span>
+
         <span class="n">box_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">box_lines</span><span class="p">):</span>
             <span class="n">box_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
 
         <span class="c1"># NOTE: The box matrix is stored in row-major order</span>

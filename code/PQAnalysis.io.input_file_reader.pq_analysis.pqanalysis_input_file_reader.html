@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -198,6 +199,24 @@ InputFileParser with the given filename.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="PQAnalysis.io.input_file_reader.exceptions.html#PQAnalysis.io.input_file_reader.exceptions.InputFileError" title="PQAnalysis.io.input_file_reader.exceptions.InputFileError"><strong>InputFileError</strong></a> – if not all required keys are set in the input file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.not_defined_optional_keys">
+<span class="sig-name descname"><span class="pre">not_defined_optional_keys</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">optional_keys</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/pq_analysis/pqanalysis_input_file_reader.html#PQAnalysisInputFileReader.not_defined_optional_keys"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.not_defined_optional_keys" title="Link to this definition"></a></dt>
+<dd><p>Checks if optional keys are set in the input file.
+If not set, it sets them to None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>optional_keys</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – the optional keys</p>
 </dd>
 </dl>
 </dd></dl>

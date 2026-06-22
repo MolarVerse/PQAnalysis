@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -121,10 +122,13 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.BoxFileFormat" title="PQAnalysis.io.formats.BoxFileFormat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BoxFileFormat</span></code></a></p></td>
 <td><p>An enumeration of the supported box file formats.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileWritingMode</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ExtXYZProfile</span></code></a></p></td>
+<td><p>An enumeration of supported extended xyz unit conventions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FileWritingMode</span></code></a></p></td>
 <td><p>An enumeration of the supported file write modes.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputFileFormat</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.formats.OutputFileFormat" title="PQAnalysis.io.formats.OutputFileFormat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputFileFormat</span></code></a></p></td>
 <td><p>An enumeration of the supported output file formats.</p></td>
 </tr>
 </tbody>
@@ -146,6 +150,41 @@
 <dt class="sig sig-object py" id="PQAnalysis.io.formats.BoxFileFormat.VMD">
 <span class="sig-name descname"><span class="pre">VMD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'vmd'</span></em><a class="headerlink" href="#PQAnalysis.io.formats.BoxFileFormat.VMD" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.io.formats.ExtXYZProfile">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ExtXYZProfile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/formats.html#ExtXYZProfile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.formats.ExtXYZProfile" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.formats.html#PQAnalysis.formats.BaseEnumFormat" title="PQAnalysis.formats.BaseEnumFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEnumFormat</span></code></a></p>
+<p>An enumeration of supported extended xyz unit conventions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.formats.ExtXYZProfile.ASE">
+<span class="sig-name descname"><span class="pre">ASE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'ase'</span></em><a class="headerlink" href="#PQAnalysis.io.formats.ExtXYZProfile.ASE" title="Link to this definition"></a></dt>
+<dd><p>eV, eV/Angstrom, eV/Angstrom^3.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ASE/libAtoms-compatible units</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.formats.ExtXYZProfile.NEP">
+<span class="sig-name descname"><span class="pre">NEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nep'</span></em><a class="headerlink" href="#PQAnalysis.io.formats.ExtXYZProfile.NEP" title="Link to this definition"></a></dt>
+<dd><p>GPUMD NEP training data convention.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.io.formats.ExtXYZProfile.PQ">
+<span class="sig-name descname"><span class="pre">PQ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'pq'</span></em><a class="headerlink" href="#PQAnalysis.io.formats.ExtXYZProfile.PQ" title="Link to this definition"></a></dt>
+<dd><p>kcal/mol, kcal/(mol Angstrom), kcal/(mol Angstrom^3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>PQ native units</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 

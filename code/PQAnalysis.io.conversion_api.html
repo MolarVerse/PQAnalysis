@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -127,13 +128,16 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.traj2box" title="PQAnalysis.io.conversion_api.traj2box"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traj2box</span></code></a></p></td>
 <td><p>Converts multiple trajectory files to a box file and prints it to stdout or writes it to a file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.traj2qmcfc" title="PQAnalysis.io.conversion_api.traj2qmcfc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traj2qmcfc</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.traj2extxyz" title="PQAnalysis.io.conversion_api.traj2extxyz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traj2extxyz</span></code></a></p></td>
+<td><p>Converts one or more PQ xyz trajectory files to extended xyz format and prints it to stdout or writes it to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.traj2qmcfc" title="PQAnalysis.io.conversion_api.traj2qmcfc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">traj2qmcfc</span></code></a></p></td>
 <td><p>Converts multiple trajectory files from a PQ format to a QMCFC format and prints it to stdout or writes it to a file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.xyz2gen" title="PQAnalysis.io.conversion_api.xyz2gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz2gen</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.xyz2gen" title="PQAnalysis.io.conversion_api.xyz2gen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz2gen</span></code></a></p></td>
 <td><p>Converts a xyz file to a gen file and prints it to stdout or writes it to a file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.xyz2rst" title="PQAnalysis.io.conversion_api.xyz2rst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz2rst</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.conversion_api.xyz2rst" title="PQAnalysis.io.conversion_api.xyz2rst"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xyz2rst</span></code></a></p></td>
 <td><p>Converts a xyz file to a restart file and prints it to stdout or writes it to a file.</p></td>
 </tr>
 </tbody>
@@ -240,6 +244,38 @@ line contains the information about the box dimensions a, b and c and the box an
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.io.conversion_api.traj2extxyz">
+<span class="sig-name descname"><span class="pre">traj2extxyz</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">trajectory_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">extxyz_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><span class="pre">ExtXYZProfile</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ExtXYZProfile.ASE</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/conversion_api.html#traj2extxyz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.conversion_api.traj2extxyz" title="Link to this definition"></a></dt>
+<dd><p>Converts one or more PQ xyz trajectory files to extended xyz format and
+prints it to stdout or writes it to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectory_files</strong> (<em>list</em><em> of </em><em>str</em>) – The trajectory file(s) to be converted.</p></li>
+<li><p><strong>output</strong> (<em>str</em><em>, </em><em>optional</em>) – The output file. If not specified, the output is printed to stdout.</p></li>
+<li><p><strong>mode</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The writing mode, by default “w”. The following modes are available:
+- “w”: write
+- “a”: append
+- “o”: overwrite</p></li>
+<li><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the input trajectory. The default is MDEngineFormat.PQ.</p></li>
+<li><p><strong>extxyz_profile</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><em>ExtXYZProfile</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The unit convention for the extended xyz output. The default is
+ExtXYZProfile.ASE.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="PQAnalysis.io.conversion_api.traj2qmcfc">
 <span class="sig-name descname"><span class="pre">traj2qmcfc</span></span><span class="sig-paren">(</span>
 
@@ -306,6 +342,7 @@ is inferred from the system, by default None.</p></li>
 <dd><em class="sig-param"><span class="n"><span class="pre">xyz_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">velocity_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">force_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">moldescriptor_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">randomize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
@@ -324,6 +361,8 @@ same line in the format a b c alpha beta gamma.</p>
 <li><p><strong>xyz_file</strong> (<em>str</em>) – The xyz file to be converted.</p></li>
 <li><p><strong>velocity_file</strong> (<em>str</em><em> | </em><em>None</em>) – The velocity file to be converted. Default is None.</p></li>
 <li><p><strong>force_file</strong> (<em>str</em><em> | </em><em>None</em>) – The force file to be converted. Default is None.</p></li>
+<li><p><strong>moldescriptor_file</strong> (<em>str</em><em> | </em><em>None</em>) – The moldescriptor file used to infer restart-file moltypes.
+Default is None.</p></li>
 <li><p><strong>randomize</strong> (<em>float</em><em>, </em><em>optional</em>) – Randomize the atom order. Default is 0.0.</p></li>
 <li><p><strong>output</strong> (<em>str</em><em> | </em><em>None</em>) – The output file. If not specified, the output is printed to stdout.</p></li>
 <li><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the md engine for the output file. The default is MDEngineFormat.PQ.</p></li>

@@ -56,6 +56,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.io.html">io</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.api.html">api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_reader.html">box_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.box_writer.html">box_writer</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.conversion_api.html">conversion_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.energy_file_reader.html">energy_file_reader</a></li>
@@ -143,6 +144,7 @@
 <dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">engine_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">extxyz_profile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><span class="pre">ExtXYZProfile</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ExtXYZProfile.PQ</span></span></em>,</dd>
 </dl>
 
 <span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/trajectory_writer.html#TrajectoryWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter" title="Link to this definition"></a></dt>
@@ -157,6 +159,8 @@ Inherits from BaseWriter. See BaseWriter for more information.</p>
 <li><p><strong>engine_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the md engine for the output file. The default is MDEngineFormat.PQ.</p></li>
 <li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – The mode of the file. Either ‘w’ for write,
 ‘a’ for append or ‘o’ for overwrite. The default is ‘w’.</p></li>
+<li><p><strong>extxyz_profile</strong> (<a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><em>ExtXYZProfile</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The unit convention for extended xyz output. The default is
+ExtXYZProfile.PQ.</p></li>
 </ul>
 </dd>
 </dl>
@@ -177,6 +181,17 @@ Inherits from BaseWriter. See BaseWriter for more information.</p>
 <li><p><strong>trajectory</strong> (<a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><em>Trajectory</em></a><em> | </em><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><em>AtomicSystem</em></a>) – The trajectory to write.</p></li>
 <li><p><strong>traj_type</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><em>TrajectoryFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The type of the data to write to the file. Default is TrajectoryFormat.XYZ.</p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter.extxyz_profile">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">extxyz_profile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile"><span class="pre">ExtXYZProfile</span></a></em><a class="headerlink" href="#PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter.extxyz_profile" title="Link to this definition"></a></dt>
+<dd><p>The unit convention for extended xyz output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile" title="PQAnalysis.io.formats.ExtXYZProfile">ExtXYZProfile</a></p>
 </dd>
 </dl>
 </dd></dl>

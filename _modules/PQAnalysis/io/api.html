@@ -124,11 +124,11 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    NotImplementedError</span>
-<span class="sd">        if the input format is not PQ</span>
+<span class="sd">        if the input format is not PQ or QMCFC</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">input_format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">input_format</span> <span class="o">!=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">is_qmcf_type</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Format </span><span class="si">{</span><span class="n">input_format</span><span class="si">}</span><span class="s2"> not implemented &quot;</span>

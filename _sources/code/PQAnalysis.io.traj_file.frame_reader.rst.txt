@@ -7,10 +7,35 @@ frame_reader
 .. currentmodule:: PQAnalysis.io.traj_file.frame_reader
 
 .. automodule:: PQAnalysis.io.traj_file.frame_reader
-    
+    :members: BaseFrameReader, ExtXYZFrameReader, XYZFrameReader, XYZ_FRAME_READER_TRAJ_FORMATS, get_frame_reader
+    :undoc-members:
+    :show-inheritance:
+    :member-order: groupwise
+
+    Summary
+    -------
+
+    Classes:
+
+    .. autosummary::
+        :nosignatures:
+
+        BaseFrameReader
+        ExtXYZFrameReader
+        XYZFrameReader
+
+    Functions:
+
+    .. autosummary::
+        :nosignatures:
+
+        get_frame_reader
 
 
 
 
 
 
+
+    Reference
+    ---------

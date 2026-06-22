@@ -117,6 +117,9 @@
     <span class="c1">#: The charge trajectory format.</span>
     <span class="n">CHARGE</span> <span class="o">=</span> <span class="s2">&quot;CHARGE&quot;</span>
 
+    <span class="c1">#: The extended xyz trajectory format.</span>
+    <span class="n">EXTXYZ</span> <span class="o">=</span> <span class="s2">&quot;EXTXYZ&quot;</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -171,7 +174,16 @@
 <span class="sd">        TrajectoryFormat</span>
 <span class="sd">            The inferred trajectory format.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.extxyz&quot;</span><span class="p">)</span> <span class="ow">or</span>
+            <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.extended.xyz&quot;</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">EXTXYZ</span>
+
         <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.xyz&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_is_extxyz_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">EXTXYZ</span>
+
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">XYZ</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.vel&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.velocs&quot;</span><span class="p">)):</span>
@@ -192,6 +204,20 @@
             <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryFormatError</span>
         <span class="p">)</span></div>
 
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_extxyz_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check whether an xyz file uses the extended xyz comment line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+                <span class="n">comment_line</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="s2">&quot;properties&quot;</span> <span class="ow">in</span> <span class="n">comment_line</span>
 
 <div class="viewcode-block" id="TrajectoryFormat.lower">
 <a class="viewcode-back" href="../../../code/PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat.lower">[docs]</a>

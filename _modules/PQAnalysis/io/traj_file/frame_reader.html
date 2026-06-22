@@ -1,0 +1,988 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.io.traj_file.frame_reader &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.io.traj_file.frame_reader</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.io.traj_file.frame_reader</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing classes for reading a frame from a string.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shlex</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.atomic_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">ElementNotFoundError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryFormat</span><span class="p">,</span> <span class="n">MDEngineFormat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Topology</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">FrameReaderError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.process_lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_lines_with_atoms</span>  <span class="c1"># pylint: disable=import-error</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._process_lines_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">process_lines_with_atoms</span>
+
+
+
+<div class="viewcode-block" id="BaseFrameReader">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BaseFrameReader</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for frame readers.</span>
+
+<span class="sd">    Subclasses implement the parsing for a concrete frame format while this</span>
+<span class="sd">    class provides shared MD-engine handling and topology construction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        md_format : MDEngineFormat | str, optional</span>
+<span class="sd">            The format of the MD engine. Default is &quot;PQ&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">md_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_format</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="BaseFrameReader.read">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.BaseFrameReader.read">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traj_format</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a frame from a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_qmcfc</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atoms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">value</span><span class="p">:</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the first atom is X for QMCFC. If it is, remove it from the list and array.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        atoms : List[str]</span>
+<span class="sd">            The list of atoms.</span>
+<span class="sd">        value : Np1DNumberArray | Np2DNumberArray</span>
+<span class="sd">            The array of values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[List[str], Np1DNumberArray | Np2DNumberArray]</span>
+<span class="sd">            The list of atoms and the array of values.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FrameReaderError</span>
+<span class="sd">            If the first atom is not X for QMCFC.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">md_format</span> <span class="o">==</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">QMCFC</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;X&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s1">&#39;The first atom in one of the frames is not X. &#39;</span>
+                        <span class="s1">&#39;Please use PQ (default) md engine instead&#39;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+                <span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">value</span><span class="p">,</span> <span class="n">atoms</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_topology</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">atoms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Topology</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the topology of the frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Topology</span>
+<span class="sd">            The topology of the frame.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">topology</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+
+                <span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span>
+                    <span class="n">atoms</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">Atom</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">disable_type_checking</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+
+            <span class="k">except</span> <span class="n">ElementNotFoundError</span><span class="p">:</span>
+
+                <span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span>
+                    <span class="n">atoms</span><span class="o">=</span><span class="p">[</span>
+                        <span class="n">Atom</span><span class="p">(</span>
+                            <span class="n">atom</span><span class="p">,</span>
+                            <span class="n">use_guess_element</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">disable_type_checking</span><span class="o">=</span><span class="kc">True</span>
+                        <span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">topology</span></div>
+
+
+
+<div class="viewcode-block" id="XYZFrameReader">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">XYZFrameReader</span><span class="p">(</span><span class="n">BaseFrameReader</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class provides methods for reading a frame from a string.</span>
+<span class="sd">    The string can be a single frame or a whole trajectory.</span>
+<span class="sd">    The format of the string can be specified with the format parameter.</span>
+<span class="sd">    Generally, this class should not be used directly.</span>
+<span class="sd">    Instead, the :py:class:`~PQAnalysis.io.trajectoryReader.TrajectoryReader`</span>
+<span class="sd">    class can be used to read a whole trajectory as well as</span>
+<span class="sd">    a single frame from a file.</span>
+
+<span class="sd">    For more information about the format of the string,</span>
+<span class="sd">    see :py:class:`~PQAnalysis.traj.formats.TrajectoryFormat`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+<div class="viewcode-block" id="XYZFrameReader.read">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traj_format</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a frame from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame_string : str</span>
+<span class="sd">            The string to read the frame from.</span>
+<span class="sd">        topology : Topology | None, optional</span>
+<span class="sd">            The topology of the frame. Default is None.</span>
+<span class="sd">        traj_format : TrajectoryFormat | str, optional</span>
+<span class="sd">            The format of the trajectory. Default is TrajectoryFormat.XYZ.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The frame read from the string.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FrameReaderError</span>
+<span class="sd">            If the given format is not valid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Note: TrajectoryFormat(format) automatically gives</span>
+        <span class="c1"># an error if format is not a valid TrajectoryFormat</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span>
+
+        <span class="k">if</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_positions</span><span class="p">(</span><span class="n">frame_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_velocities</span><span class="p">(</span><span class="n">frame_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">FORCE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_forces</span><span class="p">(</span><span class="n">frame_string</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span> <span class="ow">is</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">CHARGE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_charges</span><span class="p">(</span><span class="n">frame_string</span><span class="p">)</span>
+
+        <span class="c1"># This should never happen - only for safety</span>
+        <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Invalid TrajectoryFormat given. </span><span class="si">{</span><span class="n">traj_format</span><span class="si">=}</span><span class="s1">&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">FrameReaderError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XYZFrameReader.read_positions">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_positions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the positions of the atoms in a frame from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame_string : str</span>
+<span class="sd">            The string to read the frame from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The frame read from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">splitted_frame_string</span> <span class="o">=</span> <span class="n">frame_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">n_atoms</span><span class="p">,</span> <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_header_line</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span>
+
+        <span class="n">xyz</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_xyz</span><span class="p">(</span><span class="n">splitted_frame_string</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">)</span>
+        <span class="n">xyz</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_qmcfc</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">xyz</span><span class="p">)</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span> <span class="n">pos</span><span class="o">=</span><span class="n">xyz</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XYZFrameReader.read_velocities">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_velocities">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the velocities of the atoms in a frame from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame_string : str</span>
+<span class="sd">            The string to read the frame from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The frame read from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">splitted_frame_string</span> <span class="o">=</span> <span class="n">frame_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">n_atoms</span><span class="p">,</span> <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_header_line</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span>
+
+        <span class="n">vel</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_xyz</span><span class="p">(</span><span class="n">splitted_frame_string</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">)</span>
+        <span class="n">vel</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_qmcfc</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">vel</span><span class="p">)</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span> <span class="n">vel</span><span class="o">=</span><span class="n">vel</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XYZFrameReader.read_forces">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_forces">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_forces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the forces of the atoms in a frame from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame_string : str</span>
+<span class="sd">            The string to read the frame from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The frame read from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">splitted_frame_string</span> <span class="o">=</span> <span class="n">frame_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">n_atoms</span><span class="p">,</span> <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_header_line</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span>
+
+        <span class="n">forces</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_xyz</span><span class="p">(</span><span class="n">splitted_frame_string</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">)</span>
+        <span class="n">forces</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_qmcfc</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">forces</span><span class="p">)</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span> <span class="n">forces</span><span class="o">=</span><span class="n">forces</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XYZFrameReader.read_charges">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.XYZFrameReader.read_charges">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the charge values of the atoms in a frame from a string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        frame_string : str</span>
+<span class="sd">            The string to read the frame from.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AtomicSystem</span>
+<span class="sd">            The frame read from the string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">splitted_frame_string</span> <span class="o">=</span> <span class="n">frame_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">n_atoms</span><span class="p">,</span> <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_header_line</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span>
+
+        <span class="n">charges</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_scalar</span><span class="p">(</span><span class="n">splitted_frame_string</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">)</span>
+        <span class="n">charges</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_qmcfc</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">charges</span><span class="p">)</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span><span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span> <span class="n">charges</span><span class="o">=</span><span class="n">charges</span><span class="p">,</span> <span class="n">cell</span><span class="o">=</span><span class="n">cell</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_header_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header_line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Cell</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the header line of a frame.</span>
+
+<span class="sd">        It reads the number of atoms and the cell information from the header line.</span>
+<span class="sd">        If the header line contains only the number of atoms, the cell is set Cell().</span>
+<span class="sd">        If the header line contains only the number of atoms and the box dimensions,</span>
+<span class="sd">        the cell is set to a Cell object with the given box dimensions and box angles set to 90°.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        header_line : str</span>
+<span class="sd">            The header line to read.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        n_atoms : int</span>
+<span class="sd">            The number of atoms in the frame.</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The cell of the frame.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FrameReaderError</span>
+<span class="sd">            If the header line is not valid. Either it contains too many or too few values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># default value</span>
+        <span class="n">cell</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># default value</span>
+
+        <span class="n">header_line</span> <span class="o">=</span> <span class="n">header_line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">header_line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">header_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">7</span><span class="p">:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">header_line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">header_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="mi">7</span><span class="p">])</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">header_line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Invalid file format in header line of Frame.&#39;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">n_atoms</span><span class="p">,</span> <span class="n">cell</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_xyz</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">splitted_frame_string</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the xyz coordinates and the atom names from the given string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        splitted_frame_string : str</span>
+<span class="sd">            The string to read the xyz coordinates and the atom names from.</span>
+<span class="sd">        n_atoms : int</span>
+<span class="sd">            The number of atoms in the frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xyz : np.array</span>
+<span class="sd">            The xyz coordinates of the atoms.</span>
+<span class="sd">        atoms : list of str</span>
+<span class="sd">            The names of the atoms.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FrameReaderError</span>
+<span class="sd">            If the given string does not contain the correct number of lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">atoms</span><span class="p">,</span> <span class="n">xyz</span> <span class="o">=</span> <span class="n">process_lines_with_atoms</span><span class="p">(</span><span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">2</span><span class="p">:],</span> <span class="n">n_atoms</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">xyz</span><span class="p">,</span> <span class="n">atoms</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Invalid file format in xyz coordinates of Frame.&#39;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_scalar</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">splitted_frame_string</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the scalar values and the atom names from the given string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        splitted_frame_string : str</span>
+<span class="sd">            The string to read the scalar values and the atom names from.</span>
+<span class="sd">        n_atoms : int</span>
+<span class="sd">            The number of atoms in the frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        scalar : np.array</span>
+<span class="sd">            The scalar values of the atoms.</span>
+<span class="sd">        atoms : list of str</span>
+<span class="sd">            The names of the atoms.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FrameReaderError</span>
+<span class="sd">            If the given string does not contain the correct number of lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">scalar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">))</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">splitted_frame_string</span><span class="p">[</span><span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s1">&#39;Invalid file format in scalar values of Frame.&#39;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+                <span class="p">)</span>
+
+            <span class="n">scalar</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">scalar</span><span class="p">,</span> <span class="n">atoms</span></div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_FrameReader</span><span class="p">(</span><span class="n">XYZFrameReader</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Backward-compatible alias for the default xyz-family frame reader.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="ExtXYZFrameReader">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtXYZFrameReader</span><span class="p">(</span><span class="n">BaseFrameReader</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A frame reader for extended xyz position frames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExtXYZFrameReader.read">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader.read">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">frame_string</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">traj_format</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">EXTXYZ</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads an extended xyz frame from a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">traj_format</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">traj_format</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">EXTXYZ</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Invalid TrajectoryFormat given. </span><span class="si">{</span><span class="n">traj_format</span><span class="si">=}</span><span class="s1">&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">topology</span>
+
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">frame_string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_atom_count</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_metadata</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">properties</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_properties</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
+
+        <span class="n">values</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_property_values</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">n_atoms</span><span class="p">,</span> <span class="n">properties</span><span class="p">)</span>
+        <span class="n">values</span><span class="p">,</span> <span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_qmcfc_properties</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">atoms</span><span class="p">)</span>
+
+        <span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_topology</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span>
+            <span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span>
+            <span class="n">pos</span><span class="o">=</span><span class="n">values</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">],</span>
+            <span class="n">vel</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">forces</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">charges</span><span class="o">=</span><span class="n">values</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;charges&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">energy</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_float_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">),</span>
+            <span class="n">virial</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_matrix_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="s2">&quot;virial&quot;</span><span class="p">),</span>
+            <span class="n">stress</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_matrix_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="s2">&quot;stress&quot;</span><span class="p">),</span>
+            <span class="n">cell</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_cell</span><span class="p">(</span><span class="n">metadata</span><span class="p">),</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_atom_count</span><span class="p">(</span>  <span class="c1"># pylint: disable=inconsistent-return-statements</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">line</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the number of atoms from the first line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s1">&#39;Invalid number of atoms in extended xyz frame.&#39;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses extended xyz key-value metadata from the comment line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">shlex</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="n">token</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">]</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">3</span>
+            <span class="k">elif</span> <span class="s2">&quot;=&quot;</span> <span class="ow">in</span> <span class="n">token</span> <span class="ow">and</span> <span class="n">token</span> <span class="o">!=</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">):</span>
+                    <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">metadata</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_properties</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the extxyz Properties metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;properties&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Extended xyz frame does not define Properties metadata.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="n">property_values</span> <span class="o">=</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;properties&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">property_values</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_invalid_properties</span><span class="p">()</span>
+
+        <span class="n">properties</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">column_index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">property_values</span><span class="p">),</span> <span class="mi">3</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">property_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">column_count</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">property_values</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raise_invalid_properties</span><span class="p">()</span>
+
+            <span class="n">properties</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">column_index</span><span class="p">,</span> <span class="n">column_count</span><span class="p">)</span>
+            <span class="n">column_index</span> <span class="o">+=</span> <span class="n">column_count</span>
+
+        <span class="k">if</span> <span class="s2">&quot;species&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span> <span class="ow">or</span> <span class="s2">&quot;pos&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Extended xyz frame requires species and pos Properties.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raise_invalid_properties</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">properties</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_raise_invalid_properties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Raises a consistent error for invalid Properties metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid Properties metadata in extended xyz frame.&quot;</span><span class="p">,</span>
+            <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_property_values</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lines</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads atom and numeric property values from frame lines.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;pos&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+        <span class="p">}</span>
+
+        <span class="n">optional_properties</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;vel&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="s2">&quot;velocity&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;vel&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;forces&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="s2">&quot;charge&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;charges&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;charges&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s2">&quot;charges&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="n">extxyz_name</span><span class="p">,</span> <span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="n">column_count</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optional_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">extxyz_name</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">properties</span><span class="p">[</span><span class="n">extxyz_name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">column_count</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_raise_invalid_properties</span><span class="p">()</span>
+
+                <span class="n">values</span><span class="p">[</span><span class="n">property_name</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_empty_property_array</span><span class="p">(</span>
+                    <span class="n">n_atoms</span><span class="p">,</span>
+                    <span class="n">column_count</span><span class="p">,</span>
+                <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">line_values</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="mi">2</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Invalid atom line in extended xyz frame.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line_values</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_properties_column_count</span><span class="p">(</span><span class="n">properties</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Invalid atom line in extended xyz frame.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+                <span class="p">)</span>
+
+            <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line_values</span><span class="p">[</span><span class="n">properties</span><span class="p">[</span><span class="s2">&quot;species&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+            <span class="n">values</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_numeric_property</span><span class="p">(</span>
+                <span class="n">line_values</span><span class="p">,</span>
+                <span class="n">properties</span><span class="p">[</span><span class="s2">&quot;pos&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">extxyz_name</span><span class="p">,</span> <span class="p">(</span><span class="n">property_name</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="ow">in</span> <span class="n">optional_properties</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">extxyz_name</span> <span class="ow">in</span> <span class="n">properties</span><span class="p">:</span>
+                    <span class="n">values</span><span class="p">[</span><span class="n">property_name</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_numeric_property</span><span class="p">(</span>
+                        <span class="n">line_values</span><span class="p">,</span>
+                        <span class="n">properties</span><span class="p">[</span><span class="n">extxyz_name</span><span class="p">],</span>
+                    <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">atoms</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_qmcfc_properties</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">values</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
+        <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes the QMCFC dummy atom and matching per-atom values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">md_format</span> <span class="o">!=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">QMCFC</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">,</span> <span class="n">atoms</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">atoms</span> <span class="ow">or</span> <span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s1">&#39;The first atom in one of the frames is not X. &#39;</span>
+                    <span class="s1">&#39;Please use PQ (default) md engine instead&#39;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span> <span class="n">atoms</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_properties_column_count</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">properties</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the total number of columns described by Properties metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">column_index</span> <span class="o">+</span> <span class="n">column_count</span>
+            <span class="k">for</span> <span class="n">column_index</span><span class="p">,</span> <span class="n">column_count</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_empty_property_array</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_atoms</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">column_count</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates an empty property array.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">column_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">column_count</span><span class="p">))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_numeric_property</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">line_values</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">property_columns</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a numeric property from atom line values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">column_index</span><span class="p">,</span> <span class="n">column_count</span> <span class="o">=</span> <span class="n">property_columns</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">line_values</span><span class="p">[</span><span class="n">column_index</span><span class="p">:</span><span class="n">column_index</span> <span class="o">+</span> <span class="n">column_count</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid numeric value in extended xyz frame.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">column_count</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cell</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the cell from Lattice metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;lattice&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Cell</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">lattice</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;lattice&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid Lattice metadata in extended xyz frame.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cell_from_lattice</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_cell_from_lattice</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lattice</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Cell</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Builds a cell from the three extended xyz lattice vectors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">,</span> <span class="n">vector_c</span> <span class="o">=</span> <span class="n">lattice</span>
+
+        <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector_a</span><span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector_b</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector_c</span><span class="p">)</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_between</span><span class="p">(</span><span class="n">vector_b</span><span class="p">,</span> <span class="n">vector_c</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_between</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_c</span><span class="p">)</span>
+        <span class="n">gamma</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_angle_between</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Cell</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_angle_between</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vector_a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the angle between two vectors in degrees.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector_a</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">vector_b</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Invalid Lattice metadata in extended xyz frame.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+        <span class="n">cosine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">vector_a</span><span class="p">,</span> <span class="n">vector_b</span><span class="p">)</span> <span class="o">/</span> <span class="n">denominator</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">cosine</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)))</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_float_metadata</span><span class="p">(</span>  <span class="c1"># pylint: disable=inconsistent-return-statements</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a float metadata value if present.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> metadata in extended xyz frame.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_matrix_metadata</span><span class="p">(</span>  <span class="c1"># pylint: disable=inconsistent-return-statements</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads a 3x3 matrix metadata value if present.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> metadata in extended xyz frame.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span>
+            <span class="p">)</span></div>
+
+
+
+<span class="n">XYZ_FRAME_READER_TRAJ_FORMATS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span><span class="p">,</span>
+    <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span><span class="p">,</span>
+    <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">FORCE</span><span class="p">,</span>
+    <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">CHARGE</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_frame_reader">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.traj_file.frame_reader.html#PQAnalysis.io.traj_file.frame_reader.get_frame_reader">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_frame_reader</span><span class="p">(</span>
+    <span class="n">traj_format</span><span class="p">:</span> <span class="n">TrajectoryFormat</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the frame reader implementation for a trajectory format.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">traj_format</span> <span class="o">=</span> <span class="n">TrajectoryFormat</span><span class="p">(</span><span class="n">traj_format</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">traj_format</span> <span class="ow">in</span> <span class="n">XYZ_FRAME_READER_TRAJ_FORMATS</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">XYZFrameReader</span><span class="p">(</span><span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">EXTXYZ</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ExtXYZFrameReader</span><span class="p">(</span><span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">)</span>
+
+    <span class="c1"># This should never happen - only for safety</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;Invalid TrajectoryFormat given. </span><span class="si">{</span><span class="n">traj_format</span><span class="si">=}</span><span class="s1">&#39;</span>
+    <span class="n">BaseFrameReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">FrameReaderError</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">FrameReaderError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -183,7 +183,14 @@
 <span class="sd">            if the n parsed from the start file does not match the n parsed from the output files</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_file_n</span> <span class="o">=</span> <span class="n">_get_digit_string_from_filename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_start_n</span><span class="p">()</span>
+        <span class="n">start_file_ns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_start_file_ns</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">start_n</span> <span class="k">for</span> <span class="n">start_n</span> <span class="ow">in</span> <span class="n">start_file_ns</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">start_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="p">),</span>
+            <span class="kc">None</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_actual_n</span><span class="p">()</span>
 
         <span class="c1"># check if n from input file name matches n from output files</span>
@@ -194,7 +201,7 @@
             <span class="p">)</span>
 
         <span class="c1"># check if n from start file matches n from output files</span>
-        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Old n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="si">}</span><span class="s2">) has to be one less than actual n (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
@@ -206,7 +213,11 @@
 
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">new_input_file_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_input_file_n</span><span class="p">)</span>
-            <span class="n">new_start_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_start_n</span><span class="p">)</span>
+            <span class="n">new_start_n</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_start_n</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">old_start_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">old_actual_n</span>
+            <span class="p">)</span>
             <span class="n">new_actual_n</span> <span class="o">=</span> <span class="n">_increase_digit_string</span><span class="p">(</span><span class="n">old_actual_n</span><span class="p">)</span>
 
             <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span>
@@ -227,9 +238,12 @@
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_file_keys</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 
-                    <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">start_n</span><span class="p">,</span> <span class="n">new_start_n</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">start_file_ns</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_continued_start_file</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">new_start_n</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                            <span class="n">start_file_ns</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">new_start_n</span>
+                        <span class="p">)</span>
 
                     <span class="n">new_raw_input_file</span> <span class="o">=</span> <span class="n">new_raw_input_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_filename</span>
@@ -248,6 +262,50 @@
             <span class="n">old_start_n</span> <span class="o">=</span> <span class="n">new_start_n</span>
             <span class="n">old_actual_n</span> <span class="o">=</span> <span class="n">new_actual_n</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_start_file_ns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parses the n from the start files.</span>
+
+<span class="sd">        If multiple start files define a number, the numbers are compared. If</span>
+<span class="sd">        they do not match, a PQValueError is raised. Start files without a</span>
+<span class="sd">        parseable number are allowed and are continued from restart output.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, str | None]</span>
+<span class="sd">            n parsed from each start file as a digit string or None if the</span>
+<span class="sd">            filename has no parseable digit string</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        PQValueError</span>
+<span class="sd">            if the n from multiple start files do not match</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">start_file_ns</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_file_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">start_file_ns</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_optional_digit_string_from_filename</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">start_n</span> <span class="k">for</span> <span class="n">start_n</span> <span class="ow">in</span> <span class="n">start_file_ns</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">start_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">start_n</span> <span class="ow">in</span> <span class="n">start_file_ns</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">start_n</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">start_n</span> <span class="o">!=</span> <span class="n">n</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;N from start_file (</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">) and &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">start_n</span><span class="si">}</span><span class="s2">) do not match.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">start_file_ns</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_start_n</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -281,6 +339,34 @@
                 <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">n</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_continued_start_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the next start file name for an unnumbered start file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">restart_key</span> <span class="o">=</span> <span class="s2">&quot;restart_file&quot;</span>
+
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;rpmd_start_file&quot;</span><span class="p">:</span>
+            <span class="n">restart_key</span> <span class="o">=</span> <span class="s2">&quot;rpmd_restart_file&quot;</span>
+
+        <span class="k">if</span> <span class="n">restart_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;start_file&quot;</span><span class="p">:</span>
+            <span class="n">restart_key</span> <span class="o">=</span> <span class="s2">&quot;rpmd_restart_file&quot;</span>
+
+        <span class="k">if</span> <span class="n">restart_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;file_prefix&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">file_prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="s2">&quot;file_prefix&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">,</span>
+                <span class="n">n</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;rpmd_start_file&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefix</span><span class="si">}</span><span class="s2">.rpmd.rst&quot;</span>
+
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">file_prefix</span><span class="si">}</span><span class="s2">.rst&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">restart_key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">actual_n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_actual_n</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -403,7 +489,7 @@
 <span class="sd">        if filename does not contain a number to be parsed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">regex</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+\.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">digit_string</span> <span class="o">:=</span> <span class="n">_get_optional_digit_string_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">PQInputFileReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Filename </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> does not contain a number to be &quot;</span>
@@ -411,6 +497,17 @@
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
         <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">digit_string</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_optional_digit_string_from_filename</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extracts a digit string from a filename if one can be parsed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">regex</span> <span class="o">:=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\d+\.&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">regex</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 </pre></div>

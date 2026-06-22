@@ -216,6 +216,23 @@
                 <span class="s2">&quot;Unknown keys were set in the input file! &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;The known keys are: </span><span class="si">{</span><span class="n">known_keys</span><span class="si">}</span><span class="s2">. They will be ignored!&quot;</span>
             <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="PQAnalysisInputFileReader.not_defined_optional_keys">
+<a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.not_defined_optional_keys">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">not_defined_optional_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optional_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks if optional keys are set in the input file.</span>
+<span class="sd">        If not set, it sets them to None.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        optional_keys : List[str]</span>
+<span class="sd">            the optional keys</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">optional_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

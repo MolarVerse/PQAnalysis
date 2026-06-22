@@ -23,6 +23,7 @@ cli
        PQAnalysis.cli.rdf
        PQAnalysis.cli.rst2xyz
        PQAnalysis.cli.traj2box
+       PQAnalysis.cli.traj2extxyz
        PQAnalysis.cli.traj2qmcfc
        PQAnalysis.cli.xyz2gen
        PQAnalysis.cli.xyz2rst

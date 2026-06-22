@@ -79,13 +79,18 @@
 <span class="sd">A module containing API functions to convert between different file formats.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">Residue</span><span class="p">,</span> <span class="n">Residues</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Topology</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDEngineFormat</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExtXYZProfile</span><span class="p">,</span> <span class="n">FileWritingMode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.moldescriptor_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">MoldescriptorReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.restart_file.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RestartFileWriterError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.traj_file</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">TrajectoryWriter</span><span class="p">,</span>
     <span class="n">TrajectoryReader</span><span class="p">,</span>
@@ -245,6 +250,7 @@
     <span class="n">xyz_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">velocity_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">force_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">randomize</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -266,6 +272,9 @@
 <span class="sd">        The velocity file to be converted. Default is None.</span>
 <span class="sd">    force_file : str | None</span>
 <span class="sd">        The force file to be converted. Default is None.</span>
+<span class="sd">    moldescriptor_file : str | None</span>
+<span class="sd">        The moldescriptor file used to infer restart-file moltypes.</span>
+<span class="sd">        Default is None.</span>
 <span class="sd">    randomize : float, optional</span>
 <span class="sd">        Randomize the atom order. Default is 0.0.</span>
 <span class="sd">    output : str | None</span>
@@ -299,6 +308,17 @@
             <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;force&quot;</span><span class="p">,</span>
         <span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">forces</span>
 
+    <span class="k">if</span> <span class="n">moldescriptor_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">reference_residues</span> <span class="o">=</span> <span class="n">MoldescriptorReader</span><span class="p">(</span><span class="n">moldescriptor_file</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">Topology</span><span class="p">(</span>
+            <span class="n">atoms</span><span class="o">=</span><span class="n">system</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
+            <span class="n">residue_ids</span><span class="o">=</span><span class="n">_infer_residue_ids_from_moldescriptor</span><span class="p">(</span>
+                <span class="n">system</span><span class="o">.</span><span class="n">atoms</span><span class="p">,</span>
+                <span class="n">reference_residues</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">reference_residues</span><span class="o">=</span><span class="n">reference_residues</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">if</span> <span class="n">randomize</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">:</span>
         <span class="n">system</span><span class="o">.</span><span class="n">randomize_positions</span><span class="p">(</span><span class="n">stdev</span><span class="o">=</span><span class="n">randomize</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">random_seed</span><span class="p">)</span>
 
@@ -309,6 +329,56 @@
         <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
     <span class="p">)</span></div>
 
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_infer_residue_ids_from_moldescriptor</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">reference_residues</span><span class="p">:</span> <span class="n">Residues</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Infers moltype ids from an atom sequence and moldescriptor residues.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">residue_ids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">atom_index</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="n">atom_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+        <span class="n">residue</span> <span class="o">=</span> <span class="n">_find_next_matching_residue</span><span class="p">(</span>
+            <span class="n">atoms</span><span class="p">,</span>
+            <span class="n">reference_residues</span><span class="p">,</span>
+            <span class="n">atom_index</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">residue</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">RestartFileWriterError</span><span class="p">(</span>
+                <span class="s2">&quot;Could not infer moltype from moldescriptor at &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;atom index </span><span class="si">{</span><span class="n">atom_index</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">residue_ids</span> <span class="o">+=</span> <span class="p">[</span><span class="n">residue</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">*</span> <span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span>
+        <span class="n">atom_index</span> <span class="o">+=</span> <span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">residue_ids</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_find_next_matching_residue</span><span class="p">(</span>
+    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+    <span class="n">reference_residues</span><span class="p">:</span> <span class="n">Residues</span><span class="p">,</span>
+    <span class="n">atom_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Residue</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds the residue matching atoms at the current atom index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">reference_residues</span><span class="p">:</span>
+        <span class="n">end_index</span> <span class="o">=</span> <span class="n">atom_index</span> <span class="o">+</span> <span class="n">residue</span><span class="o">.</span><span class="n">n_atoms</span>
+
+        <span class="k">if</span> <span class="n">end_index</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">atom_elements</span> <span class="o">=</span> <span class="p">[</span><span class="n">atom</span><span class="o">.</span><span class="n">element</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">[</span><span class="n">atom_index</span><span class="p">:</span><span class="n">end_index</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="n">atom_elements</span> <span class="o">==</span> <span class="n">residue</span><span class="o">.</span><span class="n">elements</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">residue</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="traj2box">
@@ -396,6 +466,56 @@
         <span class="n">trajectory</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="traj2extxyz">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.conversion_api.html#PQAnalysis.io.conversion_api.traj2extxyz">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">traj2extxyz</span><span class="p">(</span>
+    <span class="n">trajectory_files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">extxyz_profile</span><span class="p">:</span> <span class="n">ExtXYZProfile</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">ASE</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts one or more PQ xyz trajectory files to extended xyz format and</span>
+<span class="sd">    prints it to stdout or writes it to a file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectory_files : list of str</span>
+<span class="sd">        The trajectory file(s) to be converted.</span>
+<span class="sd">    output : str, optional</span>
+<span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
+<span class="sd">    mode : FileWritingMode | str, optional</span>
+<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
+<span class="sd">        - &quot;w&quot;: write</span>
+<span class="sd">        - &quot;a&quot;: append</span>
+<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the input trajectory. The default is MDEngineFormat.PQ.</span>
+<span class="sd">    extxyz_profile : ExtXYZProfile | str, optional</span>
+<span class="sd">        The unit convention for the extended xyz output. The default is</span>
+<span class="sd">        ExtXYZProfile.ASE.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">TrajectoryWriter</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">output</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">extxyz_profile</span><span class="o">=</span><span class="n">extxyz_profile</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">trajectory_files</span><span class="p">:</span>
+        <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
+            <span class="n">filename</span><span class="p">,</span>
+            <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">,</span>
+            <span class="n">traj_format</span><span class="o">=</span><span class="s2">&quot;xyz&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">trajectory</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">trajectory</span><span class="p">,</span> <span class="n">traj_type</span><span class="o">=</span><span class="s2">&quot;extxyz&quot;</span><span class="p">)</span></div>
 
 </pre></div>
 

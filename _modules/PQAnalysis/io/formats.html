@@ -87,7 +87,10 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">BoxFileFormatError</span><span class="p">,</span> <span class="n">FileWritingModeError</span><span class="p">,</span> <span class="n">OutputFileFormatError</span>
+    <span class="n">BoxFileFormatError</span><span class="p">,</span>
+    <span class="n">ExtXYZProfileError</span><span class="p">,</span>
+    <span class="n">FileWritingModeError</span><span class="p">,</span>
+    <span class="n">OutputFileFormatError</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;OutputFileFormat&quot;</span><span class="p">)</span>
@@ -346,6 +349,44 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 </div>
+
+
+
+
+<div class="viewcode-block" id="ExtXYZProfile">
+<a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ExtXYZProfile</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An enumeration of supported extended xyz unit conventions.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: ASE/libAtoms-compatible units: eV, eV/Angstrom, eV/Angstrom^3.</span>
+    <span class="n">ASE</span> <span class="o">=</span> <span class="s2">&quot;ase&quot;</span>
+
+    <span class="c1">#: PQ native units: kcal/mol, kcal/(mol Angstrom), kcal/(mol Angstrom^3).</span>
+    <span class="n">PQ</span> <span class="o">=</span> <span class="s2">&quot;pq&quot;</span>
+
+    <span class="c1">#: GPUMD NEP training data convention.</span>
+    <span class="n">NEP</span> <span class="o">=</span> <span class="s2">&quot;nep&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method returns the missing value of the enumeration.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        value : object</span>
+<span class="sd">            The value to be converted to the enumeration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Any</span>
+<span class="sd">            The value to return.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_missing_</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ExtXYZProfileError</span><span class="p">)</span></div>
 
 
 
