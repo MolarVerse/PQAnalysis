@@ -6,6 +6,42 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.3.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.3.0) - 2026-06-22
+
+<small>[Compare with v1.2.5](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.5...v1.3.0)</small>
+
+### Continuous Integration
+
+- refresh apt before docs build ([cf48554](https://github.com/MolarVerse/PQAnalysis/commit/cf48554da9212bfb1f9384b70fb5ad36ee6b9812) by Josef M. Gallmetzer).
+- align dev with main ([51a1b1d](https://github.com/MolarVerse/PQAnalysis/commit/51a1b1d09151c5eea2e7277a81799e3a3b50e5a2) by Josef M. Gallmetzer).
+- standardize pull request workflow (#129) ([dad5494](https://github.com/MolarVerse/PQAnalysis/commit/dad549423917daad5bdd7fe0e6c81f89e2bc1e75) by Josef M. Gallmetzer).
+- standardize pull request workflow ([cf62ab4](https://github.com/MolarVerse/PQAnalysis/commit/cf62ab4d18e08471dc63648609f665f97b018cb9) by Josef M. Gallmetzer).
+
+### Features
+
+- add extxyz output profiles ([1c1bc0d](https://github.com/MolarVerse/PQAnalysis/commit/1c1bc0dbc49f3ae8b6013601fc3eb40fc1f17cd4) by Josef M. Gallmetzer).
+- infer moltypes for xyz2rst (#141) ([709047f](https://github.com/MolarVerse/PQAnalysis/commit/709047fb7877edea4fddaa42d9f28dfe4e685ce5) by Josef M. Gallmetzer).
+- convert pq trajectories to extxyz (#139) ([27f58ea](https://github.com/MolarVerse/PQAnalysis/commit/27f58eab2be40ba708e989f7a3375e1bc1b5bc84) by Josef M. Gallmetzer).
+- read extended xyz trajectories (#138) ([bd7e4ae](https://github.com/MolarVerse/PQAnalysis/commit/bd7e4aeb8af2768576b4cfed2a3fe0bdcf9f9e45) by Josef M. Gallmetzer).
+- continue inputs with unnumbered starts (#137) ([c1b7e14](https://github.com/MolarVerse/PQAnalysis/commit/c1b7e149326d0b8575bfa91cee175f642fbf83a1) by Josef M. Gallmetzer).
+- add box file reader (#136) ([1bcfc69](https://github.com/MolarVerse/PQAnalysis/commit/1bcfc69792a78f3b4fcab2d56154484f27cb1201) by Josef M. Gallmetzer).
+- add simulation time utility (#135) ([15b0b4b](https://github.com/MolarVerse/PQAnalysis/commit/15b0b4be42ab48ea5c40dc588c216bacfd0a4128) by Josef M. Gallmetzer).
+- support multiple energy files (#132) ([f6d49c5](https://github.com/MolarVerse/PQAnalysis/commit/f6d49c5cdf125976879a6aa399031fb6af7e82a0) by Josef M. Gallmetzer).
+- infer rdf topology files (#131) ([dfa4b8a](https://github.com/MolarVerse/PQAnalysis/commit/dfa4b8a7fd91d85f9a83873718638728f741562a) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- preserve atom label case in gen conversions (#133) ([0a95159](https://github.com/MolarVerse/PQAnalysis/commit/0a951591732a6c337a536ecb5512fea353cf3344) by Josef M. Gallmetzer).
+- resolve rdf input handling (#114) ([4898f8f](https://github.com/MolarVerse/PQAnalysis/commit/4898f8fef9a11fd2ad62c98510354f0c06c17161) by Stefanie Kröll).
+
+### Code Refactoring
+
+- split trajectory frame reader (#127) ([ff5d156](https://github.com/MolarVerse/PQAnalysis/commit/ff5d156b0f9002a9e1221765a8aa9bb7354960a6) by Josef M. Gallmetzer).
+
+### Tests
+
+- cover release type-checking output (#140) ([272d315](https://github.com/MolarVerse/PQAnalysis/commit/272d315a7fcf8b51ad1e159c68fb136fee9d2e48) by Josef M. Gallmetzer).
+
 ## [v1.2.5](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.2.5) - 2025-02-12
 
 <small>[Compare with v1.2.4](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.4...v1.2.5)</small>
