@@ -85,7 +85,6 @@ html_style = 'css/custom.css'
 html_theme_options = {
     'canonical_url': '',
     'analytics_id': '',  # Provided by Google in your dashboard
-    'display_version': True,
     'prev_next_buttons_location': 'bottom',
     'style_external_links': False,
 
@@ -101,7 +100,7 @@ html_theme_options = {
 
 html_logo = 'logo/PQAnalysis.png'
 # github_url = ''
-# html_baseurl = ''
+html_baseurl = 'https://molarverse.github.io/PQAnalysis/'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
