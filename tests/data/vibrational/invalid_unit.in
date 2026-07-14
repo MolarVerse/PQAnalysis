@@ -1,0 +1,4 @@
+structure_file = h2o.rst
+hessian_file = hessian.dat
+out_file = wavenumbers.dat
+unit = kj
