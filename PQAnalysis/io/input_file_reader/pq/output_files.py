@@ -21,6 +21,8 @@ class _OutputFileMixin:
         "energy_file",
         "info_file",
         "output_file",
+        "temperature_file",
+        "momentum_file",
         "file_prefix",
         "rpmd_restart_file",
         "rpmd_traj_file",

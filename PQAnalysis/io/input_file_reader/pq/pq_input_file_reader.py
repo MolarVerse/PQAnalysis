@@ -30,7 +30,11 @@ class PQInputFileReader(_OutputFileMixin):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
-    def __init__(self, filename: str):
+    def __init__(
+        self,
+        filename: str,
+        input_format: InputFileFormat | str = InputFileFormat.PQ
+    ):
         """
         Initialize the PQ_InputFileReader class.
 
@@ -53,7 +57,12 @@ class PQInputFileReader(_OutputFileMixin):
         self.start_n = None
         self.actual_n = None
 
-        self.format = InputFileFormat.PQ
+        self.format = InputFileFormat(input_format)
+        if not InputFileFormat.is_qmcf_type(self.format):
+            self.logger.error(
+                f"Input file format {self.format} not supported.",
+                exception=PQValueError
+            )
         self.filename = filename
         self.parser = InputFileParser(self.filename, self.format)
 

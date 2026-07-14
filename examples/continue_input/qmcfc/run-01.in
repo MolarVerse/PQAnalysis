@@ -1,0 +1,29 @@
+      jobtype = qmcf-md;
+      nstep = 50000; timestep = 0.2;
+      write_traj = on;
+      output_freq = 2;
+      rcoulomb= 15.0; 
+      density = 0.997; 
+      long_range = rf; ewald_param = 10; epsilon = 78.4;
+      thermostat = berendsen; t_relaxation = 0.1; temp     = 298.15;
+      manostat = berendsen; p_relaxation = 0.5; pressure = 1.01325;
+      virial = atomic;
+      integrator = v-verlet;
+      water_intra = tip3pmtr; 
+      guff_path = . ;
+      noncoulomb = lj; 
+      r_oh_equilibrium = 0.958; alpha_hoh_equilibrium = 109.471519;
+      r_hh_equilibrium = 1.594410;
+      mtr_l_rr = 114.438097512; mtr_l_rt = -163.161567873; mtr_l_tt = 242.114388072;
+      qm_prog = dftbplus; qm_script = dftbplus;  smoothing=exact;
+      rcore = 0.0; rlayer = 3.8; rsmoothing = 3.6;
+
+      start_file   = k-qmcf-00.rst;
+      output_file  = k-qmcf-01.out; 
+      info_file    = k-qmcf-01.info;
+      energy_file  = k-qmcf-01.en; 
+      traj_file    = k-qmcf-01.xyz;
+      vel_file     = k-qmcf-01.vel;
+      charge_file  = k-qmcf-01.chrg;
+      restart_file = k-qmcf-01.rst;
+
