@@ -1,0 +1,7 @@
+window = 100;
+gap = 10;
+out_file = msd_ref_O.dat;
+target_atoms = O;
+FILES
+traj.xyz
+END

@@ -5,6 +5,10 @@ A command line interface for the PQAnalysis package.
 from PQAnalysis.config import code_base_url
 
 from .xyz2gen import XYZ2GENCLI
+from .build_spectrum import BuildSpectrumCLI
+from .check_momentum import CheckMomentumCLI
+from .msd import MSDCLI
+from .vacf import VACFCLI
 from .traj2extxyz import Traj2ExtXYZCLI
 from .traj2qmcfc import Traj2QMCFCCLI
 from .traj2box import Traj2BoxCLI
@@ -42,14 +46,18 @@ def main():
     sub_parser_dict = {
         AddMoleculesCLI.program_name(): AddMoleculesCLI,
         BuildNEPTrajCLI.program_name(): BuildNEPTrajCLI,
+        BuildSpectrumCLI.program_name(): BuildSpectrumCLI,
+        CheckMomentumCLI.program_name(): CheckMomentumCLI,
         ContinueInputCLI.program_name(): ContinueInputCLI,
         GEN2XYZCLI.program_name(): GEN2XYZCLI,
+        MSDCLI.program_name(): MSDCLI,
         RDFCLI.program_name(): RDFCLI,
         Rst2XYZCLI.program_name(): Rst2XYZCLI,
         XYZ2RstCLI.program_name(): XYZ2RstCLI,
         Traj2BoxCLI.program_name(): Traj2BoxCLI,
         Traj2ExtXYZCLI.program_name(): Traj2ExtXYZCLI,
         Traj2QMCFCCLI.program_name(): Traj2QMCFCCLI,
+        VACFCLI.program_name(): VACFCLI,
         VibrationsCLI.program_name(): VibrationsCLI,
         XYZ2GENCLI.program_name(): XYZ2GENCLI,
     }

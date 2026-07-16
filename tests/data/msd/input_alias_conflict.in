@@ -1,0 +1,5 @@
+traj_files = traj.xyz
+target_selection = O
+out_file = msd.dat
+first_frame = 3
+start = 7

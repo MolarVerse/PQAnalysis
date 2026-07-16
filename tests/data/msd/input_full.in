@@ -1,0 +1,10 @@
+traj_files = traj.xyz
+target_selection = O
+out_file = msd.dat
+log_file = msd.log
+window = 50
+gap = 5
+first_frame = 7
+time_step = 0.25
+fit_window = 12
+use_full_atom_info = True

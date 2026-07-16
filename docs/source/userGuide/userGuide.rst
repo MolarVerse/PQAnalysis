@@ -21,6 +21,8 @@ Input file based tools
 For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
 - :ref:`rdf<cli.rdf>`
+- :ref:`msd<cli.msd>`
+- :ref:`vacf<cli.vacf>`
 - :ref:`vibrations<cli.vibrations>`
 
 RDF input files
@@ -85,11 +87,71 @@ The ``moldescriptor_file`` key is optional, but IR intensities require partial c
 
 Mode visualization is optional. ``modes_prefix`` writes one sinusoidal multi-frame XYZ animation per selected mode, for example ``mode-6.xyz``. ``modes_file`` writes one extended XYZ file with mode vectors and metadata, similar to ASE/Jmol vibration output. ``modes`` accepts ``all``, ``nonzero``, ``positive``, one mode number, a list of mode numbers or a range. Explicit mode numbers are one-based. ``modes_frames`` controls animation frames, ``modes_amplitude`` controls fixed-amplitude displacement in Angstrom, and ``modes_threshold`` filters named mode selections in ``cm-1``. ``modes_temperature`` can be used instead for ASE-style energy-scaled animations.
 
+MSD input files
+^^^^^^^^^^^^^^^
+
+Mean square displacement analyses compute the multiple-time-origin MSD of a
+selected atom set with periodic-image unwrapping. If ``time_step`` (in ps) is
+given, the self-diffusion coefficient is obtained from an Einstein-relation
+fit over the trailing ``fit_window`` points and reported in the log output in
+m\ :sup:`2`/s:
+
+.. code-block:: text
+
+    traj_files = trajectory.xyz
+    target_selection = O
+    out_file = msd.dat
+    window = 1000
+    gap = 10
+    time_step = 0.001
+    fit_window = 200
+
+The output file contains the frame lag and the per-axis MSD in Angstrom
+squared, matching the format of the legacy Diffcalc tool. ``window`` must be
+divisible by ``gap``.
+
+VACF input files
+^^^^^^^^^^^^^^^^
+
+Velocity autocorrelation analyses read a velocity trajectory (``.vel``) and
+compute the normalized VACF; with ``spectrum_file`` set, the windowed cosine
+transform yields a vibrational power spectrum in cm\ :sup:`-1`:
+
+.. code-block:: text
+
+    traj_files = trajectory.vel
+    target_selection = all
+    out_file = vacf.dat
+    time_step = 0.001
+    window = 2500
+    gap = 5
+    spectrum_file = spectrum.dat
+    ftsize = 5000
+    window_function = exponential
+    window_param = 4.0
+    window_start = 0.0
+    window_stop = 1.0
+
+Setting ``charge_file`` (static charges) or ``charge_files`` (a charge
+trajectory read in lockstep) switches to the charge-flux autocorrelation
+q\ :sub:`i`\ v\ :sub:`i`, whose spectrum approximates an infrared spectrum.
+``window_function`` accepts ``exponential``, ``hann`` and ``blackman``;
+``method = fft`` selects a faster dense-origin estimator instead of the
+legacy-exact sliding-origin one.
+
 Pure command line tools
 -----------------------
 
+- :ref:`build_spectrum<cli.build_spectrum>`
+- :ref:`check_momentum<cli.check_momentum>`
 - :ref:`continue_input<cli.continue_input>`
 - :ref:`rst2xyz<cli.rst2xyz>`
 - :ref:`traj2extxyz<cli.traj2extxyz>`
 - :ref:`traj2qmcfc<cli.traj2qmcfc>`
 - :ref:`traj2box<cli.traj2box>`
+
+Note that :ref:`check_momentum<cli.check_momentum>` parses velocities in
+single precision: reported momentum norms below roughly 1e-7 times the
+scaled sum of m\ :sub:`i` \|v\ :sub:`i`\| are parsing noise rather than
+physical center of mass drift (the legacy ``equipartition.jl`` tool parses
+in double precision and resolves smaller drift).
