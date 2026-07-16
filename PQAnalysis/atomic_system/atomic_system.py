@@ -7,7 +7,6 @@ import logging
 import sys
 import numpy as np
 
-from scipy.spatial.transform import Rotation
 from beartype.typing import Any
 
 # just for forwardref type hinting
@@ -329,6 +328,10 @@ class AtomicSystem(
             If the system could not be fitted into the positions
             of the AtomicSystem within the maximum number of iterations.
         """
+
+        # Lazy import: scipy.spatial.transform is expensive to import
+        # and only needed when fitting atomic systems.
+        from scipy.spatial.transform import Rotation  # pylint: disable=import-outside-toplevel
 
         if self.cell.is_vacuum:
             raise AtomicSystemError(

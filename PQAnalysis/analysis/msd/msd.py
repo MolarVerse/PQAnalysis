@@ -16,7 +16,6 @@ import logging
 import numpy as np
 
 from beartype.typing import Dict, Tuple
-from scipy.stats import linregress
 from tqdm.auto import tqdm
 
 # local absolute imports
@@ -28,16 +27,21 @@ from PQAnalysis.types import (
     PositiveInt,
     PositiveReal,
 )
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import TrajectoryReader, RawTrajectoryReader
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
 from .exceptions import MSDError
+
+try:
+    from ._msd_kernel import msd_frame_update  # pylint: disable=import-error
+except ModuleNotFoundError:
+    from ._msd_kernel_py import msd_frame_update
 
 #: float: Conversion factor from Angstrom^2/ps to m^2/s.
 ANGSTROM2_PER_PS_TO_M2_PER_S = 1.0e-8
@@ -110,7 +114,11 @@ class MSD:
     object or via a TrajectoryReader object. The
     TrajectoryReader allows for lazy loading of the trajectory,
     which is useful for large trajectories that do not fit into
-    memory.
+    memory. For xyz trajectory files the frames are streamed via
+    the raw-frame fast path
+    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
+    and accumulated with a compiled kernel, which is considerably
+    faster and produces identical results.
     """
 
     _use_full_atom_default = False
@@ -234,21 +242,37 @@ class MSD:
         # Initialize Trajectory iterator/generator #
         ############################################
 
-        if isinstance(traj, TrajectoryReader):
+        self._raw_reader = None
+        self.frame_generator = None
+
+        if (
+            isinstance(traj, TrajectoryReader)
+            and traj.traj_format == TrajectoryFormat.XYZ
+        ):
+            # fast path: lazy loading of the raw frame data from
+            # file(s) without per-frame AtomicSystem construction
+            self._raw_reader = RawTrajectoryReader(
+                traj.filenames,
+                traj_format=traj.traj_format,
+                md_format=traj.md_format,
+            )
+            self.n_frames = self._raw_reader.count_frames()
+            self.first_frame = self._raw_reader.read_first_frame()
+        elif isinstance(traj, TrajectoryReader):
             # lazy loading of trajectory from file(s)
             self.n_frames = sum(traj.calculate_number_of_frames_per_file())
             self.frame_generator = traj.frame_generator()
+            self.first_frame = next(self.frame_generator)
         elif len(traj) > 0:
             # use trajectory object as iterator
             self.n_frames = len(traj)
             self.frame_generator = iter(traj)
+            self.first_frame = next(self.frame_generator)
         else:
             self.logger.error(
                 "Trajectory cannot be of length 0.",
                 exception=MSDError
             )
-
-        self.first_frame = next(self.frame_generator)
 
         if traj.topology is not None:
             self.topology = traj.topology
@@ -459,7 +483,11 @@ class MSD:
             The total MSD (x + y + z) in Angstrom^2.
         """
 
-        self._calculate_msd()
+        if self._raw_reader is not None:
+            self._calculate_msd_raw()
+        else:
+            self._calculate_msd()
+
         return self._finalize_run()
 
     def _calculate_msd(self):
@@ -571,6 +599,112 @@ class MSD:
                 )
 
                 msd[lags] += np.einsum('oax,oax->ox', disp, disp)
+
+        self._msd_accumulator = msd
+
+    def _calculate_msd_raw(self):
+        """
+        Calculates the raw (unnormalized) MSD accumulators using the
+        raw-frame fast path.
+
+        This method is the fast-path counterpart of
+        :py:meth:`_calculate_msd` used when the trajectory is read
+        from xyz file(s): it streams the raw per-frame coordinates via
+        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`
+        (no per-frame AtomicSystem construction) and advances the
+        unwrapping and time origin bookkeeping state with the MSD
+        frame kernel. The box matrix, its inverse and the vacuum flag
+        are loop invariants that are only recomputed when the Cell
+        object yielded by the reader changes identity (the raw reader
+        caches Cell objects, so constant-box trajectories compute them
+        exactly once).
+
+        Raises
+        ------
+        MSDError
+            If a frame does not provide positions for all atoms
+            of the topology.
+        """
+
+        gap = self.gap
+        n_atoms = self.n_atoms
+        n_sel = len(self.target_indices)
+
+        msd = np.zeros((self.window + 1, 3))
+
+        # unwrapped origin coordinates, oldest origin at index 0
+        origins = np.zeros((self.n_origins_max, n_sel, 3))
+
+        # origin bookkeeping state: [n_active, last]
+        state = np.zeros(2, dtype=np.int64)
+
+        indices = np.ascontiguousarray(self.target_indices, dtype=np.int64)
+
+        # per-frame scratch buffers and cumulative unwrapping state
+        pos = np.zeros((n_sel, 3))
+        prev_pos = np.zeros((n_sel, 3))
+        shift = np.zeros((n_sel, 3))
+        unwrapped = np.zeros((n_sel, 3))
+
+        # loop-invariant cell data, recomputed only when the yielded
+        # Cell object changes identity
+        last_cell = None
+        box = np.eye(3)
+        inv_box = np.eye(3)
+        is_vacuum = 1
+
+        counter = 0
+
+        for values, cell in tqdm(
+            self._raw_reader.raw_frame_generator(),
+            total=self.n_frames,
+            disable=not config.with_progress_bar):
+
+            counter += 1
+
+            if values.shape[0] != n_atoms:
+                self.logger.error(
+                    (
+                        f"Frame {counter} of the trajectory does not "
+                        f"provide positions for all {n_atoms} "
+                        "atoms of the topology. Please provide a "
+                        "position trajectory (e.g. .xyz files) with "
+                        "a consistent number of atoms."
+                    ),
+                    exception=MSDError
+                )
+
+            if cell is not last_cell:
+                last_cell = cell
+                is_vacuum = 1 if cell.is_vacuum else 0
+
+                if not is_vacuum:
+                    box = np.ascontiguousarray(
+                        cell.box_matrix, dtype=np.float64
+                    )
+                    inv_box = np.ascontiguousarray(
+                        cell.inverse_box_matrix, dtype=np.float64
+                    )
+
+            msd_frame_update(
+                values,
+                indices,
+                box,
+                inv_box,
+                is_vacuum,
+                pos,
+                prev_pos,
+                shift,
+                unwrapped,
+                origins,
+                msd,
+                state,
+                counter,
+                gap,
+                self.window,
+                self.n_start,
+                self.stop_frame,
+            )
 
         self._msd_accumulator = msd
 
@@ -718,6 +852,10 @@ class MSD:
             The fit results for the keys "x", "y", "z" and
             "total".
         """
+
+        # Lazy import: scipy.stats is expensive to import and only
+        # needed when a diffusion fit is requested.
+        from scipy.stats import linregress  # pylint: disable=import-outside-toplevel
 
         times = lags * time_step
 

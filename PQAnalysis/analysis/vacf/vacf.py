@@ -28,16 +28,25 @@ from PQAnalysis.types import (
     PositiveInt,
     PositiveReal,
 )
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
 from .exceptions import VACFError
+from ._raw_charge_reader import RawChargeTrajectoryReader
+
+try:
+    from ._vacf_kernel import (  # pylint: disable=import-error
+        accumulate_frame,
+        weight_frame,
+    )
+except ModuleNotFoundError:
+    from ._vacf_kernel_py import accumulate_frame, weight_frame
 
 
 
@@ -207,9 +216,28 @@ class VACF:
         # Initialize trajectory iterator/generator #
         ############################################
 
+        self._raw_reader = None
+        self._raw_charge_reader = None
+        self._charge_frame_generator = None
+        self._charge_value_stream = None
+
         if isinstance(traj, TrajectoryReader):
-            self.n_frames = sum(traj.calculate_number_of_frames_per_file())
-            self._frame_generator = traj.frame_generator()
+            if traj.traj_format == TrajectoryFormat.VEL:
+                # additive fast path: stream the raw float32 values of
+                # the velocity trajectory without building an
+                # AtomicSystem per frame (bit-identical values)
+                self._raw_reader = RawTrajectoryReader(
+                    traj.filenames,
+                    traj_format=traj.traj_format,
+                    md_format=traj.md_format,
+                )
+                self.n_frames = self._raw_reader.count_frames()
+                self._frame_generator = None
+            else:
+                self.n_frames = sum(
+                    traj.calculate_number_of_frames_per_file()
+                )
+                self._frame_generator = traj.frame_generator()
         elif len(traj) > 0:
             self.n_frames = len(traj)
             self._frame_generator = iter(traj)
@@ -243,7 +271,11 @@ class VACF:
                 exception=VACFError,
             )
 
-        self._first_frame = next(self._frame_generator)
+        if self._raw_reader is not None:
+            self._first_frame = self._raw_reader.read_first_frame()
+        else:
+            self._first_frame = next(self._frame_generator)
+
         if traj.topology is not None:
             self.topology = traj.topology
         else:
@@ -266,12 +298,16 @@ class VACF:
                 exception=VACFError,
             )
 
+        self._target_indices_intp = np.ascontiguousarray(
+            self.target_indices,
+            dtype=np.intp,
+        )
+
         ##########################
         # Initialize charge mode #
         ##########################
 
         self._static_charges = None
-        self._charge_frame_generator = None
 
         if charges is not None:
             if len(charges) != self.n_atoms:
@@ -317,7 +353,19 @@ class VACF:
             If the number of charge frames does not match the number
             of velocity frames.
         """
-        if isinstance(charge_traj, TrajectoryReader):
+        if (
+            isinstance(charge_traj, TrajectoryReader) and
+            charge_traj.traj_format == TrajectoryFormat.CHARGE
+        ):
+            # additive fast path: stream the raw float64 charge values
+            # without building an AtomicSystem per frame
+            # (bit-identical values)
+            self._raw_charge_reader = RawChargeTrajectoryReader(
+                charge_traj.filenames,
+                md_format=charge_traj.md_format,
+            )
+            n_charge_frames = self._raw_charge_reader.count_frames()
+        elif isinstance(charge_traj, TrajectoryReader):
             n_charge_frames = sum(
                 charge_traj.calculate_number_of_frames_per_file()
             )
@@ -336,6 +384,8 @@ class VACF:
                 ),
                 exception=VACFError,
             )
+
+        self._charge_value_stream = self._charge_values()
 
     @property
     def n_atoms(self) -> int:
@@ -381,6 +431,68 @@ class VACF:
 
         return time, self.vacf
 
+    def _velocities(self) -> Generator[Np2DNumberArray, None, None]:
+        """
+        Returns the (charge weighted) selected velocity stream.
+
+        Dispatches to the raw fast-path stream if the analysis was
+        constructed from a velocity TrajectoryReader and to the
+        AtomicSystem based stream otherwise. Both streams yield
+        bit-identical float64 arrays.
+
+        Returns
+        -------
+        Generator[Np2DNumberArray, None, None]
+            The (charge weighted) selected velocities of all frames.
+        """
+        if self._raw_reader is not None:
+            return self._raw_weighted_velocities()
+
+        return self._weighted_velocities()
+
+    def _raw_weighted_velocities(
+        self
+    ) -> Generator[Np2DNumberArray, None, None]:
+        """
+        Yields the (charge weighted) selected velocities of all frames
+        from the raw fast-path reader.
+
+        The raw float32 values of every frame are cast to float64,
+        reduced to the target selection and weighted with the frame
+        charges - bit-identical to the AtomicSystem based stream of
+        :py:meth:`_weighted_velocities`.
+
+        Yields
+        ------
+        Np2DNumberArray
+            The selected velocities of one frame with shape
+            ``(n_target_atoms, 3)``.
+
+        Raises
+        ------
+        VACFError
+            If a frame does not provide velocities for all atoms.
+        VACFError
+            If a charge frame does not provide charges for all atoms.
+        """
+        n_atoms = self.n_atoms
+        indices = self._target_indices_intp
+
+        for values, _cell in self._raw_reader.raw_frame_generator():
+
+            if values.shape[0] != n_atoms:
+                self.logger.error(
+                    (
+                        "A frame of the velocity trajectory does not "
+                        f"provide velocities for all {n_atoms} "
+                        "atoms. Please provide a velocity trajectory "
+                        "(e.g. .vel files)."
+                    ),
+                    exception=VACFError,
+                )
+
+            yield weight_frame(values, indices, self._frame_charges())
+
     def _weighted_velocities(
         self
     ) -> Generator[Np2DNumberArray, None, None]:
@@ -421,12 +533,47 @@ class VACF:
 
             vel = vel[self.target_indices]
 
-            if self._static_charges is not None:
-                vel = vel * self._static_charges[:, None]
-            elif self._charge_frame_generator is not None:
-                vel = vel * self._next_charges()[:, None]
+            frame_charges = self._frame_charges()
+
+            if frame_charges is not None:
+                vel = vel * frame_charges[:, None]
 
             yield vel
+
+    def _frame_charges(self) -> Np1DNumberArray | None:
+        """
+        Returns the selected charges of the current frame.
+
+        Returns
+        -------
+        Np1DNumberArray | None
+            The static charges, the charges of the next frame of the
+            lockstep charge trajectory or None outside the charge-flux
+            mode.
+        """
+        if self._static_charges is not None:
+            return self._static_charges
+
+        if self._charge_value_stream is not None:
+            return self._next_charges()
+
+        return None
+
+    def _charge_values(self) -> Generator[Np1DNumberArray, None, None]:
+        """
+        Yields the full-system float64 charges of all charge frames.
+
+        Yields
+        ------
+        Np1DNumberArray
+            The charges of one frame of the charge trajectory.
+        """
+        if self._raw_charge_reader is not None:
+            for values, _cell in self._raw_charge_reader.raw_frame_generator():
+                yield values
+        else:
+            for charge_frame in self._charge_frame_generator:
+                yield np.asarray(charge_frame.charges, dtype=np.float64)
 
     def _next_charges(self) -> Np1DNumberArray:
         """
@@ -443,9 +590,9 @@ class VACF:
             If the charge trajectory is exhausted or a charge frame
             does not provide charges for all atoms.
         """
-        charge_frame = next(self._charge_frame_generator, None)
+        charge = next(self._charge_value_stream, None)
 
-        if charge_frame is None:
+        if charge is None:
             self.logger.error(
                 (
                     "The charge trajectory provides fewer frames than "
@@ -453,8 +600,6 @@ class VACF:
                 ),
                 exception=VACFError,
             )
-
-        charge = np.asarray(charge_frame.charges, dtype=np.float64)
 
         if charge.ndim != 1 or charge.shape[0] != self.n_atoms:
             self.logger.error(
@@ -500,48 +645,38 @@ class VACF:
         corr = np.zeros(window_size + 1, dtype=np.float64)
         origin_vel = np.zeros((n_slots, n_target, 3), dtype=np.float64)
         origin_norm = np.zeros(n_slots, dtype=np.float64)
-        origin_frame = np.zeros(n_slots, dtype=np.int64)
+        origin_frame = np.zeros(n_slots, dtype=np.longlong)
         n_active = 0
         n_origins = 0
 
-        for frame_number, vel in enumerate(self._weighted_velocities(), 1):
+        for frame_number, vel in enumerate(self._velocities(), 1):
 
-            if frame_number % gap == 0 and frame_number <= stop_frame:
-                norm = np.sum(vel * vel)
+            spawn = frame_number % gap == 0 and frame_number <= stop_frame
 
-                if norm == 0.0:
-                    self.logger.error(
-                        (
-                            "The aggregate squared velocity norm of the "
-                            f"time origin at frame {frame_number} is "
-                            "zero. The normalized VACF is not defined."
-                        ),
-                        exception=VACFError,
-                    )
-
-                origin_vel[n_active] = vel
-                origin_norm[n_active] = norm
-                origin_frame[n_active] = frame_number
-                n_active += 1
-                n_origins += 1
-
-            if n_active == 0:
-                continue
-
-            scalars = np.einsum(
-                "omd,md->o",
-                origin_vel[:n_active],
+            n_active = accumulate_frame(
+                corr,
+                origin_vel,
+                origin_norm,
+                origin_frame,
+                n_active,
                 vel,
+                frame_number,
+                spawn,
+                window_size,
             )
-            lags = frame_number - origin_frame[:n_active]
-            corr[lags] += scalars / origin_norm[:n_active]
 
-            if lags[0] == window_size:
-                # retire the oldest origin
-                origin_vel[:n_active - 1] = origin_vel[1:n_active]
-                origin_norm[:n_active - 1] = origin_norm[1:n_active]
-                origin_frame[:n_active - 1] = origin_frame[1:n_active]
-                n_active -= 1
+            if n_active < 0:
+                self.logger.error(
+                    (
+                        "The aggregate squared velocity norm of the "
+                        f"time origin at frame {frame_number} is "
+                        "zero. The normalized VACF is not defined."
+                    ),
+                    exception=VACFError,
+                )
+
+            if spawn:
+                n_origins += 1
 
         self.n_origins = n_origins
 
@@ -575,7 +710,7 @@ class VACF:
             If the aggregate squared velocity norm of the trajectory
             is zero.
         """
-        vel = np.stack(list(self._weighted_velocities()))
+        vel = np.stack(list(self._velocities()))
         n_frames = vel.shape[0]
 
         n_fft = 2 * n_frames

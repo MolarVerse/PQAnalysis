@@ -65,7 +65,12 @@ include-package-data = true
 include = ["PQAnalysis*"]
 
 [tool.setuptools.package-data]
-PQAnalysis = ["grammar/*.lark", "io/traj_file/*.pyx"]
+PQAnalysis = [
+    "grammar/*.lark",
+    "io/traj_file/*.pyx",
+    "analysis/msd/*.pyx",
+    "analysis/vacf/*.pyx",
+]
 
 [project.scripts]
 pqanalysis = "PQAnalysis.cli.main:main"
