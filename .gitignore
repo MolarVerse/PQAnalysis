@@ -3,6 +3,13 @@ build/
 **/PQAnalysis.egg-info/
 **/__pycache*
 
+# generated Cython artifacts (the .pyx sources stay tracked)
+*.cpython-*.so
+PQAnalysis/analysis/msd/_msd_kernel.c
+PQAnalysis/analysis/vacf/_vacf_kernel.c
+PQAnalysis/analysis/rdf/_rdf_kernel.c
+PQAnalysis/io/traj_file/_slab_parser.c
+
 _version.py
 **/*.ipynb
 
