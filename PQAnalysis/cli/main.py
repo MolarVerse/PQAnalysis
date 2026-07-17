@@ -4,23 +4,23 @@ A command line interface for the PQAnalysis package.
 
 from PQAnalysis.config import code_base_url
 
-from .xyz2gen import XYZ2GENCLI
-from .build_spectrum import BuildSpectrumCLI
-from .check_momentum import CheckMomentumCLI
-from .msd import MSDCLI
-from .vacf import VACFCLI
-from .traj2extxyz import Traj2ExtXYZCLI
-from .traj2qmcfc import Traj2QMCFCCLI
-from .traj2box import Traj2BoxCLI
-from .rst2xyz import Rst2XYZCLI
-from .xyz2rst import XYZ2RstCLI
-from .rdf import RDFCLI
-from .vibrations import VibrationsCLI
-from .gen2xyz import GEN2XYZCLI
-from .continue_input import ContinueInputCLI
+from ._argument_parser import _ArgumentParser
 from .add_molecules import AddMoleculesCLI
 from .build_nep_traj import BuildNEPTrajCLI
-from ._argument_parser import _ArgumentParser
+from .build_spectrum import BuildSpectrumCLI
+from .check_momentum import CheckMomentumCLI
+from .continue_input import ContinueInputCLI
+from .gen2xyz import GEN2XYZCLI
+from .msd import MSDCLI
+from .rdf import RDFCLI
+from .rst2xyz import Rst2XYZCLI
+from .traj2box import Traj2BoxCLI
+from .traj2extxyz import Traj2ExtXYZCLI
+from .traj2qmcfc import Traj2QMCFCCLI
+from .vacf import VACFCLI
+from .vibrations import VibrationsCLI
+from .xyz2gen import XYZ2GENCLI
+from .xyz2rst import XYZ2RstCLI
 
 __outputdoc__ = """
 

@@ -2,9 +2,12 @@
 Tests for the VACF class.
 """
 
+import sys
+
 import numpy as np
 import pytest
 
+from PQAnalysis import config
 from PQAnalysis.analysis.vacf import VACF
 from PQAnalysis.analysis.vacf.exceptions import VACFError
 from PQAnalysis.atomic_system import AtomicSystem
@@ -15,6 +18,8 @@ from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
 
 # pylint: disable=protected-access
+
+vacf_module = sys.modules[VACF.__module__]
 
 
 
@@ -179,6 +184,53 @@ class TestVACF:
     """
     Tests for the VACF class.
     """
+
+    def test_window_size_default(self):
+        """
+        Without an explicit window_size the class-level default of
+        1000 frames is used.
+        """
+        traj = _make_velocity_trajectory(np.ones((1000, 1, 3)))
+
+        vacf = VACF(traj, time_step=0.1)
+
+        assert vacf.window_size == 1000
+        assert vacf.window_size == VACF._window_size_default
+
+    def test_progress_bar_binds_config_at_call_time(self, monkeypatch):
+        """
+        config.with_progress_bar is set by the CLI after the module
+        import, so it must be read at call time, not bound by value
+        at import time.
+        """
+        captured = {}
+
+        def fake_tqdm(iterable, **kwargs):
+            captured.update(kwargs)
+            return iterable
+
+        monkeypatch.setattr(vacf_module, "tqdm", fake_tqdm)
+
+        rng = np.random.default_rng(42)
+        velocities = rng.standard_normal((6, 2, 3))
+
+        monkeypatch.setattr(config, "with_progress_bar", False)
+        VACF(
+            _make_velocity_trajectory(velocities),
+            window_size=2,
+            time_step=0.1,
+        ).run()
+        assert captured["disable"] is True
+
+        captured.clear()
+
+        monkeypatch.setattr(config, "with_progress_bar", True)
+        VACF(
+            _make_velocity_trajectory(velocities),
+            window_size=2,
+            time_step=0.1,
+        ).run()
+        assert captured["disable"] is False
 
     def test_c0_is_one(self):
         """

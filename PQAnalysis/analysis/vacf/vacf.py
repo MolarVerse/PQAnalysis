@@ -20,8 +20,10 @@ import logging
 # 3rd party imports
 import numpy as np
 from beartype.typing import Generator, Tuple
+from tqdm.auto import tqdm
 
 # local absolute imports
+from PQAnalysis import config
 from PQAnalysis.types import (
     Np1DNumberArray,
     Np2DNumberArray,
@@ -93,6 +95,7 @@ class VACF:
     per-origin norms. The default ``method='direct'`` is legacy-exact.
     """
 
+    _window_size_default = 1000
     _gap_default = 1
     _method_default = "direct"
 
@@ -103,8 +106,8 @@ class VACF:
     def __init__(
         self,
         traj: Trajectory | TrajectoryReader,
-        window_size: PositiveInt,
         time_step: PositiveReal,
+        window_size: PositiveInt | None = None,
         target_species: SelectionCompatible = None,
         gap: PositiveInt | None = None,
         charges: Np1DNumberArray | None = None,
@@ -119,12 +122,13 @@ class VACF:
             The velocity trajectory to analyze. If a TrajectoryReader
             is provided, the trajectory is read lazily frame by frame.
             All frames must provide velocities.
-        window_size : PositiveInt
-            The correlation window length in frames. The correlation
-            function is calculated for the lags ``0..window_size``.
         time_step : PositiveReal
             The time step between two frames in ps. It is only used to
             build the time axis of the results.
+        window_size : PositiveInt | None, optional
+            The correlation window length in frames. The correlation
+            function is calculated for the lags ``0..window_size``,
+            by default None (1000).
         target_species : SelectionCompatible, optional
             The target species of the VACF analysis, by default None
             (all atoms).
@@ -166,7 +170,10 @@ class VACF:
             of atoms.
         """
 
-        self.window_size = window_size
+        self.window_size = (
+            window_size
+            if window_size is not None else self._window_size_default
+        )
         self.time_step = time_step
         self.gap = gap if gap is not None else self._gap_default
         self.method = (
@@ -412,6 +419,10 @@ class VACF:
         """
         Runs the VACF analysis.
 
+        This method will display a progress bar by default.
+        This can be disabled by setting with_progress_bar to
+        False.
+
         Returns
         -------
         time : Np1DNumberArray
@@ -478,7 +489,10 @@ class VACF:
         n_atoms = self.n_atoms
         indices = self._target_indices_intp
 
-        for values, _cell in self._raw_reader.raw_frame_generator():
+        for values, _cell in tqdm(
+            self._raw_reader.raw_frame_generator(),
+            total=self.n_frames,
+            disable=not config.with_progress_bar):
 
             if values.shape[0] != n_atoms:
                 self.logger.error(
@@ -517,7 +531,10 @@ class VACF:
         """
         frames = itertools.chain([self._first_frame], self._frame_generator)
 
-        for frame in frames:
+        for frame in tqdm(
+            frames,
+            total=self.n_frames,
+            disable=not config.with_progress_bar):
             vel = np.asarray(frame.vel, dtype=np.float64)
 
             if vel.ndim != 2 or vel.shape[0] != self.n_atoms:

@@ -2,7 +2,7 @@
 .. _cli.check_momentum:
 
 Command Line Tool for Checking the Total Linear Momentum
----------------------------------------------------------
+========================================================
 
 
 """
@@ -34,7 +34,7 @@ momentum-conserving trajectories.
 """
 
 __epilog__ = "\n"
-__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += "For more information on the command line options of this tool please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.check_momentum.html."
 __epilog__ += "\n"
 __epilog__ += "\n"

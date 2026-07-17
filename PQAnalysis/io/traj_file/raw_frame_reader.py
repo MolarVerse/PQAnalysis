@@ -31,7 +31,7 @@ from beartype.typing import Generator, List, Tuple
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Cell
 from PQAnalysis.traj import TrajectoryFormat, MDEngineFormat
-from PQAnalysis.types import Np2DNumberArray
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -656,7 +656,11 @@ class RawTrajectoryReader(BaseReader):
 
         return cached_cell
 
-    def _strip_dummy_values(self, first_name, values):
+    def _strip_dummy_values(
+        self,
+        first_name: bytes | None,
+        values: Np2DNumberArray | Np1DNumberArray,
+    ) -> Np2DNumberArray | Np1DNumberArray:
         """
         Strips the leading QMCFC dummy atom row from the values.
 

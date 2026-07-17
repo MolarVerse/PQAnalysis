@@ -3,7 +3,7 @@ A module containing different exceptions and warnings for
 the :py:class:`~PQAnalysis.analysis.msd.msd.MSD` class
 """
 
-from PQAnalysis.exceptions import PQException, PQWarning
+from ...exceptions import PQException, PQWarning
 
 
 

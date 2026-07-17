@@ -13,23 +13,34 @@ import logging
 import numpy as np
 
 # 3rd party imports
-from beartype.typing import Tuple
+from beartype.typing import List, Tuple
 from tqdm.auto import tqdm
 
 # local absolute imports
 from PQAnalysis.config import with_progress_bar
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
-from PQAnalysis.core import distance, Cells
-from PQAnalysis.traj import Trajectory, check_trajectory_pbc, check_trajectory_vacuum
+from PQAnalysis.core import distance, Cell, Cells
+from PQAnalysis.traj import (
+    Trajectory,
+    TrajectoryFormat,
+    check_trajectory_pbc,
+    check_trajectory_vacuum,
+)
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import TrajectoryReader, RawTrajectoryReader
+from PQAnalysis.io.traj_file.exceptions import TrajectoryReaderError
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
 from .exceptions import RDFError
+
+try:
+    from ._rdf_kernel import rdf_frame_histogram  # pylint: disable=import-error
+except ModuleNotFoundError:
+    from ._rdf_kernel_py import rdf_frame_histogram
 
 
 
@@ -57,16 +68,27 @@ class RDF:
     trajectory object or via a TrajectoryReader object.
     If a trajectory object is given, it is assumed to 
     have a constant topology over all frames! The main 
-    difference between the two is that the 
+    difference between the two is that the
     TrajectoryReader object allows for lazy loading of
     the trajectory, meaning that the trajectory is only
     loaded frame by frame when needed. This can be useful
     for large trajectories that do not fit into memory.
+
+    For xyz trajectory files without intra-molecular
+    exclusion the frames are streamed via the raw-frame
+    fast path
+    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
+    and accumulated with a compiled distance-histogram
+    kernel, which is considerably faster and produces
+    identical results.
     """
 
     _use_full_atom_default = False
     _no_intra_molecular_default = False
     _r_min_default = 0.0
+
+    #: The chunk size (in bytes) of the buffered header-only cell scan.
+    _CELL_SCAN_CHUNK_SIZE = 16 * 1024 * 1024
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -195,21 +217,38 @@ class RDF:
         # Initialize Trajectory iterator/generator #
         ############################################
 
-        self.cells = traj.cells
+        self._raw_reader = None
+        self.frame_generator = None
 
-        if isinstance(traj, TrajectoryReader):
-            # lazy loading of trajectory from file(s)
-            self.frame_generator = traj.frame_generator()
-        elif len(traj) > 0:
-            # use trajectory object as iterator
-            self.frame_generator = iter(traj)
-        else:
-            self.logger.error(
-                "Trajectory cannot be of length 0.",
-                exception=RDFError
+        if self._use_raw_fast_path(traj):
+            # fast path: lazy loading of the raw frame data from
+            # file(s) without per-frame AtomicSystem construction;
+            # the cells are collected with a cheap header-only scan
+            # that deduplicates repeated boxes
+            self._raw_reader = RawTrajectoryReader(
+                traj.filenames,
+                traj_format=traj.traj_format,
+                md_format=traj.md_format,
             )
+            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
+            self.first_frame = self._raw_reader.read_first_frame()
+        else:
+            self.cells = traj.cells
+            self._setup_cells = self.cells
 
-        self.first_frame = next(self.frame_generator)
+            if isinstance(traj, TrajectoryReader):
+                # lazy loading of trajectory from file(s)
+                self.frame_generator = traj.frame_generator()
+            elif len(traj) > 0:
+                # use trajectory object as iterator
+                self.frame_generator = iter(traj)
+            else:
+                self.logger.error(
+                    "Trajectory cannot be of length 0.",
+                    exception=RDFError
+                )
+
+            self.first_frame = next(self.frame_generator)
         if traj.topology is not None:
             self.topology = traj.topology
         else:
@@ -231,6 +270,168 @@ class RDF:
             self.topology,
             self.use_full_atom_info
         )
+
+    def _use_raw_fast_path(self, traj: Trajectory | TrajectoryReader) -> bool:
+        """
+        Whether the raw-frame fast path is used for the given
+        trajectory input.
+
+        The fast path streams the raw per-frame coordinates via
+        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`
+        and accumulates the distance histogram with a compiled
+        kernel, producing bit-identical results. It is only used for
+        the plain case: a TrajectoryReader input with an xyz
+        trajectory format and no intra-molecular exclusion. All
+        other inputs take the original path.
+
+        Parameters
+        ----------
+        traj : Trajectory | TrajectoryReader
+            The trajectory input of the RDF analysis.
+
+        Returns
+        -------
+        bool
+            True if the raw-frame fast path is used.
+        """
+
+        return (
+            isinstance(traj, TrajectoryReader)
+            and traj.traj_format == TrajectoryFormat.XYZ
+            and not self.no_intra_molecular
+        )
+
+    @classmethod
+    def _scan_cells(cls, filenames: List[str]) -> Tuple[Cells, Cells]:
+        """
+        Collects the cells of the trajectory with a header-only scan.
+
+        This is the fast-path counterpart of the cells full scan of
+        :py:attr:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.cells`
+        with identical semantics: the number of atoms is taken from
+        the first line of the first file and determines the frame
+        stride of all files, frames without box information inherit
+        the cell of the last frame that had one (also across file
+        boundaries) and invalid box headers raise the same error.
+        Instead of building one Cell object per frame, textually
+        identical box headers share a single (deduplicated) Cell
+        object, which makes the scan considerably cheaper for
+        constant-box trajectories.
+
+        Parameters
+        ----------
+        filenames : List[str]
+            The names of the trajectory files to scan.
+
+        Returns
+        -------
+        cells : Cells
+            The cells of all frames of the trajectory (with shared
+            Cell objects for textually identical boxes).
+        unique_cells : Cells
+            The unique cells of the trajectory in order of first
+            appearance. Every computation of the RDF setup over the
+            cells is deduplication invariant (all/any/min over the
+            cells), so the unique cells serve as a cheap stand-in
+            for the full cell list in the setup checks.
+
+        Raises
+        ------
+        TrajectoryReaderError
+            If the box information of a header line is invalid.
+        """
+
+        with open(filenames[0], "r", encoding="utf-8") as file:
+            n_atoms = int(file.readline().split()[0])
+
+        # +2 for the cell/atom_count + comment lines
+        stride = n_atoms + 2
+
+        cells = []
+        unique_cells = []
+        cell_cache = {}
+        last_cell = None
+        vacuum_cell = None
+
+        for filename in filenames:
+            line_number = 0
+            offset = 0
+            pending = b""
+
+            with open(filename, "rb") as file:
+                while True:
+                    chunk = file.read(cls._CELL_SCAN_CHUNK_SIZE)
+                    at_eof = chunk == b""
+
+                    lines = (pending + chunk).split(b"\n")
+
+                    if at_eof:
+                        # a trailing line without a final newline
+                        # counts as a line
+                        if lines[-1] == b"":
+                            lines.pop()
+                    else:
+                        pending = lines.pop()
+
+                    index = offset
+
+                    while index < len(lines):
+                        line_number += 1
+
+                        stripped_line = (
+                            lines[index].decode("utf-8").strip()
+                        )
+                        splitted_line = stripped_line.split()
+
+                        if len(splitted_line) == 1:
+
+                            if last_cell is not None:
+                                cell = last_cell
+                            else:
+                                if vacuum_cell is None:
+                                    vacuum_cell = Cell()
+                                    unique_cells.append(vacuum_cell)
+
+                                cell = vacuum_cell
+
+                        elif len(splitted_line) in (4, 7):
+
+                            key = tuple(splitted_line[1:])
+                            cell = cell_cache.get(key)
+
+                            if cell is None:
+                                cell = Cell(
+                                    *(
+                                        float(value)
+                                        for value in splitted_line[1:]
+                                    )
+                                )
+                                cell_cache[key] = cell
+                                unique_cells.append(cell)
+
+                        else:
+
+                            cls.logger.error(
+                                (
+                                    "Invalid number of arguments for box:"
+                                    f" {len(splitted_line)} encountered in"
+                                    f" file {filename}:{line_number}"
+                                    f" = {stripped_line}"
+                                ),
+                                exception=TrajectoryReaderError,
+                            )
+
+                        cells.append(cell)
+                        last_cell = cell
+
+                        index += stride
+
+                    offset = index - len(lines)
+
+                    if at_eof:
+                        break
+
+        return cells, unique_cells
 
     def _setup_bins(
         self,
@@ -308,7 +509,7 @@ class RDF:
                 n_bins,
                 delta_r,
                 r_min,
-                self.cells
+                self._setup_cells
             )
 
             self.n_bins, self.r_max = self._calculate_n_bins(
@@ -320,10 +521,10 @@ class RDF:
         else:
 
             self.r_max = r_max if r_max is not None else self._infer_r_max(
-                self.cells
+                self._setup_cells
             )
 
-            self.r_max = self._check_r_max(self.r_max, self.cells)
+            self.r_max = self._check_r_max(self.r_max, self._setup_cells)
 
             if n_bins is None:
 
@@ -360,7 +561,8 @@ class RDF:
         """
 
         if not check_trajectory_pbc(
-                self.cells) and not check_trajectory_vacuum(self.cells):
+                self._setup_cells
+        ) and not check_trajectory_vacuum(self._setup_cells):
             self.logger.error(
                 (
                 "The provided trajectory is not fully periodic or "
@@ -375,6 +577,30 @@ class RDF:
     def average_volume(self) -> PositiveReal:
         """PositiveReal: The average volume of the trajectory."""
         return np.mean([cell.volume for cell in self.cells])
+
+    def _calculate_average_volume(self) -> PositiveReal:
+        """
+        Calculates the average volume of the trajectory.
+
+        For the raw-frame fast path the volume of every unique cell
+        is computed only once and broadcast to the full (shared
+        object) cell list before averaging, which is bit-identical
+        to (but much cheaper than) the plain mean over the volumes
+        of all cells of the :py:attr:`average_volume` property. For
+        the original path the property is evaluated as before.
+
+        Returns
+        -------
+        PositiveReal
+            The average volume of the trajectory.
+        """
+
+        if self._raw_reader is None:
+            return self.average_volume
+
+        volumes = {id(cell): cell.volume for cell in self._setup_cells}
+
+        return np.mean([volumes[id(cell)] for cell in self.cells])
 
     @timeit_in_class
     def run(
@@ -417,7 +643,12 @@ class RDF:
         """
 
         self._initialize_run()
-        self._calculate_bins()
+
+        if self._raw_reader is not None:
+            self._calculate_bins_raw()
+        else:
+            self._calculate_bins()
+
         return self._finalize_run()
 
     def _initialize_run(self):
@@ -431,7 +662,7 @@ class RDF:
         combinations of the RDF analysis.
         """
 
-        self._average_volume = self.average_volume
+        self._average_volume = self._calculate_average_volume()
 
         _ref_indices_len = len(self.reference_indices)
 
@@ -500,6 +731,108 @@ class RDF:
                     self.delta_r,
                     self.n_bins
                 )
+
+    def _calculate_bins_raw(self):
+        """
+        Calculates the bins of the RDF analysis using the raw-frame
+        fast path.
+
+        This method is the fast-path counterpart of
+        :py:meth:`_calculate_bins` used when the trajectory is read
+        from xyz file(s) and no intra-molecular exclusion is active:
+        it streams the raw per-frame coordinates via
+        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`
+        (no per-frame AtomicSystem construction) and accumulates the
+        distance histogram with the RDF frame kernel, which
+        replicates the numeric semantics of the original loop bit
+        for bit. The box data of the cell are loop invariants that
+        are only recomputed when the Cell object yielded by the
+        reader changes identity (the raw reader caches Cell objects,
+        so constant-box trajectories compute them exactly once).
+
+        Raises
+        ------
+        RDFError
+            If a frame does not provide positions for all atoms
+            referenced by the selections.
+        """
+
+        hist = np.zeros(self.n_bins, dtype=np.int64)
+
+        reference_indices = np.ascontiguousarray(
+            self.reference_indices, dtype=np.int64
+        )
+        target_indices = np.ascontiguousarray(
+            self.target_indices, dtype=np.int64
+        )
+
+        max_index = int(
+            max(
+                reference_indices.max(initial=-1),
+                target_indices.max(initial=-1),
+            )
+        )
+
+        # loop-invariant cell data, recomputed only when the yielded
+        # Cell object changes identity
+        last_cell = None
+        box_lengths = np.ones(3)
+        box = np.eye(3)
+        inv_box = np.eye(3)
+        is_orthorhombic = 1
+
+        counter = 0
+
+        for values, cell in tqdm(
+            self._raw_reader.raw_frame_generator(),
+            total=self.n_frames,
+            disable=not with_progress_bar):
+
+            counter += 1
+
+            if values.shape[0] <= max_index:
+                self.logger.error(
+                    (
+                    f"Frame {counter} of the trajectory provides "
+                    f"only {values.shape[0]} atoms, but the "
+                    "selections reference the atom index "
+                    f"{max_index}. Please provide a trajectory "
+                    "with a consistent number of atoms."
+                    ),
+                    exception=RDFError
+                )
+
+            if cell is not last_cell:
+                last_cell = cell
+                is_orthorhombic = 1 if (
+                    cell.alpha == 90 and cell.beta == 90 and cell.gamma == 90
+                ) else 0
+
+                box_lengths = np.ascontiguousarray(
+                    cell.box_lengths, dtype=np.float64
+                )
+                box = np.ascontiguousarray(
+                    cell.box_matrix, dtype=np.float64
+                )
+                inv_box = np.ascontiguousarray(
+                    cell.inverse_box_matrix, dtype=np.float64
+                )
+
+            rdf_frame_histogram(
+                values,
+                reference_indices,
+                target_indices,
+                box_lengths,
+                box,
+                inv_box,
+                is_orthorhombic,
+                self.r_min,
+                self.delta_r,
+                self.n_bins,
+                hist,
+            )
+
+        self.bins += hist
 
     def _finalize_run(
         self

@@ -2,9 +2,12 @@
 Tests for the Momentum analysis class.
 """
 
+import sys
+
 import numpy as np
 import pytest
 
+from PQAnalysis import config
 from PQAnalysis.analysis.momentum import Momentum
 from PQAnalysis.analysis.momentum.exceptions import MomentumError
 from PQAnalysis.atomic_system import AtomicSystem
@@ -14,6 +17,10 @@ from PQAnalysis.traj import Trajectory
 
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
+
+# pylint: disable=protected-access
+
+momentum_module = sys.modules[Momentum.__module__]
 
 # hand-computed |P| references for tests/data/momentum/two_frames.vel
 # (velocities are exactly representable in float32, masses
@@ -241,6 +248,58 @@ class TestMomentum:
             function=Momentum,
             traj=Trajectory([system]),
         )
+
+    @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
+    def test_raw_fast_path_matches_in_memory_path(self, test_with_data_dir):  # pylint: disable=unused-argument
+        """
+        A velocity TrajectoryReader dispatches to the raw fast-path
+        stream, which produces bit-identical momentum norms compared
+        to the in-memory AtomicSystem based stream.
+        """
+        momentum = Momentum(
+            TrajectoryReader("gas3.vel", md_format="qmcfc")
+        )
+
+        assert momentum._raw_reader is not None
+
+        raw_norms = momentum.run()
+
+        traj = TrajectoryReader("gas3.vel", md_format="qmcfc").read()
+        in_memory = Momentum(traj)
+
+        assert in_memory._raw_reader is None
+
+        in_memory_norms = in_memory.run()
+
+        assert np.array_equal(raw_norms, in_memory_norms)
+
+    def test_progress_bar_binds_config_at_call_time(self, monkeypatch):
+        """
+        config.with_progress_bar is set by the CLI after the module
+        import, so it must be read at call time, not bound by value
+        at import time.
+        """
+        captured = {}
+
+        def fake_tqdm(iterable, **kwargs):
+            captured.update(kwargs)
+            return iterable
+
+        monkeypatch.setattr(momentum_module, "tqdm", fake_tqdm)
+
+        system = AtomicSystem(
+            atoms=[Atom("H")], vel=np.array([[1.0, 0.0, 0.0]])
+        )
+
+        monkeypatch.setattr(config, "with_progress_bar", False)
+        Momentum(Trajectory([system, system])).run()
+        assert captured["disable"] is True
+
+        captured.clear()
+
+        monkeypatch.setattr(config, "with_progress_bar", True)
+        Momentum(Trajectory([system, system])).run()
+        assert captured["disable"] is False
 
     def test_missing_velocities(self, caplog):
         """

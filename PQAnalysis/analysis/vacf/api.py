@@ -21,9 +21,6 @@ from .vacf_output_file_writer import (
 )
 from .exceptions import VACFError
 
-#: The default correlation window size in frames.
-WINDOW_SIZE_DEFAULT = 1000
-
 
 
 @runtime_type_checking
@@ -167,14 +164,9 @@ def vacf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
             md_format=md_format,
         )
 
-    window_size = input_reader.window
-
-    if window_size is None:
-        window_size = WINDOW_SIZE_DEFAULT
-
     _vacf = VACF(
         traj=traj_reader,
-        window_size=window_size,
+        window_size=input_reader.window,
         time_step=input_reader.time_step,
         target_species=input_reader.target_selection,
         gap=input_reader.gap,

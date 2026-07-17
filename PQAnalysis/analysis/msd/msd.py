@@ -246,8 +246,8 @@ class MSD:
         self.frame_generator = None
 
         if (
-            isinstance(traj, TrajectoryReader)
-            and traj.traj_format == TrajectoryFormat.XYZ
+            isinstance(traj, TrajectoryReader) and
+            traj.traj_format == TrajectoryFormat.XYZ
         ):
             # fast path: lazy loading of the raw frame data from
             # file(s) without per-frame AtomicSystem construction
@@ -562,8 +562,8 @@ class MSD:
             if counter % gap == 0:
 
                 if (
-                    n_active != self.n_origins_max
-                    and counter <= self.stop_frame
+                    n_active != self.n_origins_max and
+                    counter <= self.stop_frame
                 ):
                     # starting stage - add new origin
                     if n_active == 0:

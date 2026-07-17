@@ -2,7 +2,7 @@
 .. _cli.build_spectrum:
 
 Command Line Tool for Broadening Stick Spectra
-----------------------------------------------
+==============================================
 
 
 """
@@ -28,7 +28,7 @@ given directly as a full width at half maximum via --fwhm.
 """
 
 __epilog__ = "\n"
-__epilog__ += "For more information on required and optional input file keys please visit "
+__epilog__ += "For more information on the command line options of this tool please visit "
 __epilog__ += f"{code_base_url}PQAnalysis.cli.build_spectrum.html."
 __epilog__ += "\n"
 __epilog__ += "\n"

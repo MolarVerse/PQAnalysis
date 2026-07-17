@@ -5,18 +5,27 @@ of atoms for every frame of a velocity trajectory. It can be used
 to check a simulation for center of mass drift.
 """
 
+import itertools
 import logging
 
 # 3rd party imports
 import numpy as np
 
+from beartype.typing import Generator
+from tqdm.auto import tqdm
+
 # local absolute imports
-from PQAnalysis.types import Np1DNumberArray, PositiveReal
-from PQAnalysis.traj import Trajectory
+from PQAnalysis import config
+from PQAnalysis.types import (
+    Np1DNumberArray,
+    Np2DNumberArray,
+    PositiveReal,
+)
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
@@ -54,6 +63,14 @@ class Momentum:
     trajectory, meaning that the trajectory is only loaded frame by
     frame when needed. This can be useful for large trajectories
     that do not fit into memory.
+
+    When initialized with a TrajectoryReader of a velocity
+    trajectory, the frames are streamed through the raw fast-path
+    reader
+    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
+    without building an AtomicSystem per frame. The computed
+    momentum norms are bit-identical to the AtomicSystem based
+    stream.
     """
 
     _scale_default = 1e-15
@@ -110,19 +127,41 @@ class Momentum:
 
         self.selection = Selection(selection)
 
-        if isinstance(traj, TrajectoryReader):
+        self._raw_reader = None
+        self.frame_generator = None
+        self._n_frames_total = None
+
+        if (
+            isinstance(traj, TrajectoryReader)
+            and traj.traj_format == TrajectoryFormat.VEL
+        ):
+            # additive fast path: stream the raw float32 values of
+            # the velocity trajectory without building an
+            # AtomicSystem per frame (bit-identical values)
+            self._raw_reader = RawTrajectoryReader(
+                traj.filenames,
+                traj_format=traj.traj_format,
+                md_format=traj.md_format,
+            )
+            self._n_frames_total = self._raw_reader.count_frames()
+            self.first_frame = self._raw_reader.read_first_frame()
+        elif isinstance(traj, TrajectoryReader):
             # lazy loading of trajectory from file(s)
+            self._n_frames_total = sum(
+                traj.calculate_number_of_frames_per_file()
+            )
             self.frame_generator = traj.frame_generator()
+            self.first_frame = next(self.frame_generator)
         elif len(traj) > 0:
             # use trajectory object as iterator
+            self._n_frames_total = len(traj)
             self.frame_generator = iter(traj)
+            self.first_frame = next(self.frame_generator)
         else:
             self.logger.error(
                 "Trajectory cannot be of length 0.",
                 exception=MomentumError
             )
-
-        self.first_frame = next(self.frame_generator)
 
         if traj.topology is not None:
             self.topology = traj.topology
@@ -164,6 +203,10 @@ class Momentum:
         of the selected atoms is accumulated in float64 and the
         scaled norm of the momentum vector is stored.
 
+        This method will display a progress bar by default.
+        This can be disabled by setting with_progress_bar to
+        False.
+
         Returns
         -------
         Np1DNumberArray
@@ -179,10 +222,10 @@ class Momentum:
         norms = []
         selected_masses = self.masses[:, None]
 
-        frame = self.first_frame
-
-        while frame is not None:
-            velocities = np.asarray(frame.vel, dtype=np.float64)
+        for velocities in tqdm(
+            self._velocities(),
+            total=self._n_frames_total,
+            disable=not config.with_progress_bar):
 
             if velocities.shape[0] != self.topology.n_atoms:
                 self.logger.error(
@@ -201,11 +244,34 @@ class Momentum:
 
             norms.append(float(np.linalg.norm(momentum)) * self.scale)
 
-            frame = next(self.frame_generator, None)
-
         self.momentum_norms = np.array(norms, dtype=np.float64)
 
         return self.momentum_norms
+
+    def _velocities(self) -> Generator[Np2DNumberArray, None, None]:
+        """
+        Yields the float64 velocities of all frames.
+
+        Dispatches to the raw fast-path stream if the analysis was
+        constructed from a TrajectoryReader of a velocity trajectory
+        and to the AtomicSystem based stream otherwise. Both streams
+        yield bit-identical float64 arrays.
+
+        Yields
+        ------
+        Np2DNumberArray
+            The velocities of one frame with shape ``(n_atoms, 3)``.
+        """
+        if self._raw_reader is not None:
+            for values, _cell in self._raw_reader.raw_frame_generator():
+                yield np.asarray(values, dtype=np.float64)
+        else:
+            frames = itertools.chain(
+                [self.first_frame], self.frame_generator
+            )
+
+            for frame in frames:
+                yield np.asarray(frame.vel, dtype=np.float64)
 
     @property
     def n_frames(self) -> int:

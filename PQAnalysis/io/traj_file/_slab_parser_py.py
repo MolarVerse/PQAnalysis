@@ -31,6 +31,10 @@ import re
 
 import numpy as np
 
+from beartype.typing import Tuple
+
+from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
+
 try:
     from .process_lines import process_lines  # pylint: disable=import-error
 except ModuleNotFoundError:
@@ -58,6 +62,7 @@ MODE_CHARGE = 1
 _INT_TOKEN_RE = re.compile(rb"[+-]?[0-9]+\Z")
 
 
+
 def _next_line_end(data: bytes, pos: int) -> int:
     """
     Finds the end of the line starting at ``pos``.
@@ -79,12 +84,13 @@ def _next_line_end(data: bytes, pos: int) -> int:
     return data.find(b"\n", pos)
 
 
+
 def scan_header(
     data: bytes,
     offset: int,
     at_eof: bool,
     forced_n_atoms: int = -1,
-) -> tuple:
+) -> Tuple[int, int, bytes | None, bytes | None, int]:
     """
     Scans for the header line of the next frame.
 
@@ -171,6 +177,7 @@ def scan_header(
     return (STATUS_BAD_HEADER, -1, box_bytes, token, body_offset)
 
 
+
 def parse_body(
     data: bytes,
     offset: int,
@@ -178,7 +185,12 @@ def parse_body(
     at_eof: bool,
     want_first_name: bool,
     mode: int,
-) -> tuple:
+) -> Tuple[
+    int,
+    Np2DNumberArray | Np1DNumberArray | None,
+    bytes | None,
+    int,
+]:
     """
     Parses the body (comment line plus atom lines) of a frame.
 
