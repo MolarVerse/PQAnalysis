@@ -10,9 +10,16 @@ of a trajectory as plain numpy arrays together with the corresponding
 It is an additive fast path intended for analyses that only need the
 raw coordinates/velocities per frame (e.g. MSD and VACF) and produces
 bit-identical values compared to
-:py:meth:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator`,
-because it reuses the exact same line parsing routine
-(:py:func:`~PQAnalysis.io.traj_file.process_lines.process_lines`).
+:py:meth:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator`:
+the frames are parsed from large byte chunks by the slab parser
+(:py:mod:`~PQAnalysis.io.traj_file._slab_parser`), whose ``strtof``
+conversions are bitwise identical to the ``sscanf("%f")`` conversions
+of the line parsing routine
+(:py:func:`~PQAnalysis.io.traj_file.process_lines.process_lines`)
+used by the line based readers. When the compiled slab parser is not
+available, the pure Python implementation
+(:py:mod:`~PQAnalysis.io.traj_file._slab_parser_py`), which reuses
+the current per-line machinery, is used instead.
 """
 
 import logging
@@ -33,10 +40,22 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import FrameReaderError, TrajectoryReaderError
 from .frame_reader import XYZFrameReader
 
+# the status/mode constants are shared by both slab parser
+# implementations and defined once in the pure Python module
+from ._slab_parser_py import (
+    MODE_XYZ,
+    STATUS_BAD_HEADER,
+    STATUS_EOF,
+    STATUS_NEED_MORE,
+)
+
 try:
-    from .process_lines import process_lines  # pylint: disable=import-error
+    from ._slab_parser import (  # pylint: disable=import-error
+        parse_body,
+        scan_header,
+    )
 except ModuleNotFoundError:
-    from ._process_lines_py import process_lines
+    from ._slab_parser_py import parse_body, scan_header
 
 #: The trajectory formats supported by the raw fast-path reader.
 RAW_READER_TRAJ_FORMATS = (
@@ -44,6 +63,9 @@ RAW_READER_TRAJ_FORMATS = (
     TrajectoryFormat.VEL,
     TrajectoryFormat.FORCE,
 )
+
+#: The chunk size (in bytes) of the buffered slab reads.
+_CHUNK_SIZE = 8 * 1024 * 1024
 
 
 
@@ -94,6 +116,13 @@ class RawTrajectoryReader(BaseReader):
     # Set up the logger
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
+
+    #: The slab parser body mode of this reader (a name token plus
+    #: three float32 values per atom line).
+    _SLAB_MODE = MODE_XYZ
+
+    #: The error message used when a frame body line cannot be parsed.
+    _BODY_ERROR_MESSAGE = 'Invalid file format in xyz coordinates of Frame.'
 
     @runtime_type_checking
     def __init__(
@@ -223,28 +252,75 @@ class RawTrajectoryReader(BaseReader):
         FrameReaderError
             If a frame of the trajectory is incomplete or its body
             cannot be parsed.
+        ValueError
+            If the atom count of a frame header cannot be parsed as
+            an integer.
         """
 
         strip_dummy_atom = self.md_format == MDEngineFormat.QMCFC
         last_cell = None
 
         for filename in self.filenames:
-            with open(filename, "r", encoding="utf-8") as file:
+            with open(filename, "rb") as file:
+                buffer = b""
+                offset = 0
+                at_eof = False
+                forced_n_atoms = -1
 
                 while True:
-                    header_line = self._next_header_line(file)
+                    (
+                        status,
+                        n_atoms,
+                        box_bytes,
+                        header_token,
+                        body_offset,
+                    ) = scan_header(buffer, offset, at_eof, forced_n_atoms)
 
-                    if header_line is None:
+                    if status == STATUS_EOF:
                         break
 
-                    n_atoms, cell, cell_is_vacuum = self._parse_header_line(
-                        header_line
+                    if status == STATUS_NEED_MORE:
+                        buffer, offset, at_eof = self._refill(
+                            file, buffer, offset
+                        )
+                        continue
+
+                    if status == STATUS_BAD_HEADER:
+                        # replicate the error order of the line based
+                        # header parsing: the box substring is
+                        # validated (and cached) before the atom
+                        # count is converted
+                        self._cell_from_box_bytes(box_bytes)
+
+                        forced_n_atoms = int(header_token.decode("utf-8"))
+
+                        if forced_n_atoms < 0:
+                            raise ValueError(
+                                "Indices for islice() must be None or "
+                                "an integer: 0 <= x <= sys.maxsize."
+                            )
+
+                        continue
+
+                    cell, cell_is_vacuum = self._cell_from_box_bytes(
+                        box_bytes
                     )
 
-                    # comment line + n_atoms atom lines
-                    body_lines = list(islice(file, n_atoms + 1))
-
-                    if len(body_lines) != n_atoms + 1:
+                    try:
+                        (
+                            body_status,
+                            values,
+                            first_name,
+                            next_offset,
+                        ) = parse_body(
+                            buffer,
+                            body_offset,
+                            n_atoms,
+                            at_eof,
+                            strip_dummy_atom,
+                            self._SLAB_MODE,
+                        )
+                    except EOFError:
                         self.logger.error(
                             (
                                 f"Unexpected end of file {filename}: "
@@ -252,16 +328,27 @@ class RawTrajectoryReader(BaseReader):
                             ),
                             exception=FrameReaderError,
                         )
+                    except ValueError:
+                        self.logger.error(
+                            self._BODY_ERROR_MESSAGE,
+                            exception=FrameReaderError,
+                        )
 
-                    values = self._parse_body_lines(body_lines, n_atoms)
+                    if body_status == STATUS_NEED_MORE:
+                        buffer, offset, at_eof = self._refill(
+                            file, buffer, offset
+                        )
+                        continue
 
                     if strip_dummy_atom:
-                        values = self._strip_dummy_atom(body_lines, values)
+                        values = self._strip_dummy_values(first_name, values)
 
                     if cell_is_vacuum and last_cell is not None:
                         cell = last_cell
 
                     last_cell = cell
+                    offset = next_offset
+                    forced_n_atoms = -1
 
                     yield values, cell
 
@@ -497,61 +584,93 @@ class RawTrajectoryReader(BaseReader):
 
         return cell, cell.is_vacuum
 
-    def _parse_body_lines(
-        self,
-        body_lines: List[str],
-        n_atoms: int,
-    ) -> Np2DNumberArray:
+    @staticmethod
+    def _refill(file, buffer: bytes, offset: int) -> Tuple[bytes, int, bool]:
         """
-        Parses the numeric values of the frame body.
+        Reads the next chunk of a file into the parse buffer.
+
+        The already consumed part of the buffer (everything before
+        ``offset``) is dropped and the next chunk is appended, so
+        that a frame spanning a chunk boundary can be re-parsed from
+        its start. When the end of the file is reached, the buffer
+        is terminated with a newline (if it does not already end
+        with one), so that the slab parsers only ever see complete
+        lines.
 
         Parameters
         ----------
-        body_lines : List[str]
-            The lines of the frame body (comment line + atom lines).
-        n_atoms : int
-            The number of atoms in the frame.
+        file : io.BufferedReader
+            The (binary mode) file object to read from.
+        buffer : bytes
+            The current parse buffer.
+        offset : int
+            The offset of the first unconsumed byte of the buffer.
 
         Returns
         -------
-        Np2DNumberArray
-            The (n_atoms, 3) float32 array of values parsed from the
-            atom lines.
+        buffer : bytes
+            The refilled parse buffer.
+        offset : int
+            The new parse offset (always 0).
+        at_eof : bool
+            Whether the end of the file was reached.
+        """
+
+        chunk = file.read(_CHUNK_SIZE)
+        buffer = buffer[offset:] + chunk
+        at_eof = chunk == b""
+
+        if at_eof and buffer != b"" and not buffer.endswith(b"\n"):
+            buffer += b"\n"
+
+        return buffer, 0, at_eof
+
+    def _cell_from_box_bytes(self, box_bytes: bytes) -> Tuple[Cell, bool]:
+        """
+        Returns the (cached) Cell of a raw header box substring.
+
+        Parameters
+        ----------
+        box_bytes : bytes
+            The raw box substring of the header line.
+
+        Returns
+        -------
+        cell : Cell
+            The cell described by the box substring. A vacuum cell
+            if the substring is empty.
+        cell_is_vacuum : bool
+            Whether the cell is a vacuum cell.
 
         Raises
         ------
         FrameReaderError
-            If an atom line cannot be parsed.
+            If the box substring does not contain 0, 3 or 6 values.
         """
 
-        try:
-            return process_lines(body_lines[1:], n_atoms)
-        except ValueError:
-            self.logger.error(
-                'Invalid file format in xyz coordinates of Frame.',
-                exception=FrameReaderError,
-            )
+        cached_cell = self._cell_cache.get(box_bytes)
 
-        return None  # pragma: no cover - logger.error raises
+        if cached_cell is None:
+            cached_cell = self._build_cell(box_bytes.decode("utf-8"))
+            self._cell_cache[box_bytes] = cached_cell
 
-    def _strip_dummy_atom(
-        self,
-        body_lines: List[str],
-        values: Np2DNumberArray,
-    ) -> Np2DNumberArray:
+        return cached_cell
+
+    def _strip_dummy_values(self, first_name, values):
         """
         Strips the leading QMCFC dummy atom row from the values.
 
         Parameters
         ----------
-        body_lines : List[str]
-            The lines of the frame body (comment line + atom lines).
-        values : Np2DNumberArray
+        first_name : bytes | None
+            The raw name token of the first atom line of the frame,
+            or None if the frame has no atom lines.
+        values : numpy.ndarray
             The parsed values of the frame body.
 
         Returns
         -------
-        Np2DNumberArray
+        numpy.ndarray
             The values without the leading dummy atom row.
 
         Raises
@@ -560,9 +679,12 @@ class RawTrajectoryReader(BaseReader):
             If the first atom of the frame is not X.
         """
 
-        first_atom = body_lines[1].split(None, 1)[0]
+        if first_name is None:
+            # a QMCFC frame without any atom row; matches the
+            # IndexError of the line based dummy atom handling
+            raise IndexError('list index out of range')
 
-        if first_atom.upper() != 'X':
+        if first_name.decode("utf-8").upper() != 'X':
             self.logger.error(
                 (
                     'The first atom in one of the frames is not X. '

@@ -3,7 +3,7 @@ import pytest
 
 from PQAnalysis.core import Cell
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.io.traj_file import RawTrajectoryReader, _process_lines_py
+from PQAnalysis.io.traj_file import RawTrajectoryReader, _slab_parser_py
 from PQAnalysis.io.traj_file import raw_frame_reader
 from PQAnalysis.io.traj_file.exceptions import (
     FrameReaderError,
@@ -12,6 +12,41 @@ from PQAnalysis.io.traj_file.exceptions import (
 from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
 
 from . import pytestmark
+
+try:
+    from PQAnalysis.io.traj_file import _slab_parser
+except ModuleNotFoundError:  # pragma: no cover - build-dependent
+    _slab_parser = None
+
+#: Both slab parser implementations (the reader is exercised with
+#: each one via the parser_module fixture).
+PARSER_MODULES = [
+    pytest.param(_slab_parser_py, id="python-fallback"),
+    pytest.param(
+        _slab_parser,
+        id="cython",
+        marks=pytest.mark.skipif(
+            _slab_parser is None,
+            reason="compiled slab parser not available",
+        ),
+    ),
+]
+
+
+
+@pytest.fixture(params=PARSER_MODULES)
+def parser_module(request, monkeypatch):
+    """
+    Runs the test with each slab parser implementation wired into
+    the raw frame reader module.
+    """
+
+    module = request.param
+
+    monkeypatch.setattr(raw_frame_reader, "scan_header", module.scan_header)
+    monkeypatch.setattr(raw_frame_reader, "parse_body", module.parse_body)
+
+    return module
 
 
 
@@ -58,7 +93,7 @@ def assert_raw_stream_matches_frame_generator(
 
 
 
-@pytest.mark.usefixtures("tmpdir")
+@pytest.mark.usefixtures("tmpdir", "parser_module")
 class TestRawTrajectoryReaderEquivalence:
 
     def test_pq_xyz(self):
@@ -221,18 +256,12 @@ class TestRawTrajectoryReaderEquivalence:
         assert raw_frames[0][1].is_vacuum
         assert np.array_equal(raw_frames[0][1].box_matrix, Cell().box_matrix)
 
-    def test_python_fallback_process_lines(self, monkeypatch):
+    def test_exact_values(self):
         with open("tmp.xyz", "w", encoding="utf-8") as file:
             print("2 11.1 12.2 13.3", file=file)
             print("", file=file)
             print("h 1.25 -2.5 3.75", file=file)
             print("o -0.125 0.5 12.25", file=file)
-
-        monkeypatch.setattr(
-            raw_frame_reader,
-            "process_lines",
-            _process_lines_py.process_lines,
-        )
 
         raw_reader = RawTrajectoryReader("tmp.xyz")
         values, cell = next(raw_reader.raw_frame_generator())
@@ -407,7 +436,7 @@ class TestRawTrajectoryReaderCountFrames:
 
 
 
-@pytest.mark.usefixtures("tmpdir")
+@pytest.mark.usefixtures("tmpdir", "parser_module")
 class TestRawTrajectoryReaderErrors:
 
     def test_unsupported_traj_format_raises(self):

@@ -12,6 +12,11 @@ extensions = cythonize(
             include_dirs=[np.get_include()]
         ),
         Extension(
+            'PQAnalysis.io.traj_file._slab_parser',
+            sources=['PQAnalysis/io/traj_file/_slab_parser.pyx'],
+            include_dirs=[np.get_include()]
+        ),
+        Extension(
             'PQAnalysis.analysis.msd._msd_kernel',
             sources=['PQAnalysis/analysis/msd/_msd_kernel.pyx'],
             include_dirs=[np.get_include()]

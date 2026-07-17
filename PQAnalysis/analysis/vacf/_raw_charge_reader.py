@@ -19,18 +19,21 @@ import logging
 from beartype.typing import List
 
 from PQAnalysis.io.base import BaseReader
-from PQAnalysis.io.traj_file.exceptions import FrameReaderError
+from PQAnalysis.io.traj_file._slab_parser_py import MODE_CHARGE
 from PQAnalysis.io.traj_file.raw_frame_reader import RawTrajectoryReader
 from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
-from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
+# The charge body lines are parsed by the shared slab parser of
+# RawTrajectoryReader (MODE_CHARGE). parse_charge_lines remains the
+# reference scalar line parser of the vacf kernels and is re-exported
+# here for the kernel wiring tests.
 try:
-    from ._vacf_kernel import parse_charge_lines  # pylint: disable=import-error
+    from ._vacf_kernel import parse_charge_lines  # pylint: disable=import-error,unused-import
 except ModuleNotFoundError:
-    from ._vacf_kernel_py import parse_charge_lines
+    from ._vacf_kernel_py import parse_charge_lines  # pylint: disable=unused-import
 
 
 
@@ -56,6 +59,13 @@ class RawChargeTrajectoryReader(RawTrajectoryReader):
     # Set up the logger
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
+
+    #: The slab parser body mode of this reader (a name token plus
+    #: exactly one float64 value per atom line).
+    _SLAB_MODE = MODE_CHARGE
+
+    #: The error message used when a frame body line cannot be parsed.
+    _BODY_ERROR_MESSAGE = 'Invalid file format in scalar values of Frame.'
 
     @runtime_type_checking
     def __init__(  # pylint: disable=super-init-not-called
@@ -85,82 +95,3 @@ class RawChargeTrajectoryReader(RawTrajectoryReader):
         self.md_format = MDEngineFormat(md_format)
 
         self._cell_cache = {}
-
-    def _parse_body_lines(
-        self,
-        body_lines: List[str],
-        n_atoms: int,
-    ) -> Np1DNumberArray:
-        """
-        Parses the charge values of the frame body.
-
-        Parameters
-        ----------
-        body_lines : List[str]
-            The lines of the frame body (comment line + atom lines).
-        n_atoms : int
-            The number of atoms in the frame.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The (n_atoms,) float64 array of charge values parsed from
-            the atom lines.
-
-        Raises
-        ------
-        FrameReaderError
-            If an atom line cannot be parsed.
-        """
-
-        try:
-            return parse_charge_lines(body_lines[1:], n_atoms)
-        except ValueError:
-            self.logger.error(
-                'Invalid file format in scalar values of Frame.',
-                exception=FrameReaderError,
-            )
-
-        return None  # pragma: no cover - logger.error raises
-
-    def _strip_dummy_atom(
-        self,
-        body_lines: List[str],
-        values: Np1DNumberArray,
-    ) -> Np1DNumberArray:
-        """
-        Strips the leading QMCFC dummy atom row from the values.
-
-        Same semantics as the base class method, but typed for the
-        one-dimensional charge values of this reader.
-
-        Parameters
-        ----------
-        body_lines : List[str]
-            The lines of the frame body (comment line + atom lines).
-        values : Np1DNumberArray
-            The parsed charge values of the frame body.
-
-        Returns
-        -------
-        Np1DNumberArray
-            The charge values without the leading dummy atom entry.
-
-        Raises
-        ------
-        FrameReaderError
-            If the first atom of the frame is not X.
-        """
-
-        first_atom = body_lines[1].split(None, 1)[0]
-
-        if first_atom.upper() != 'X':
-            self.logger.error(
-                (
-                    'The first atom in one of the frames is not X. '
-                    'Please use PQ (default) md engine instead'
-                ),
-                exception=FrameReaderError,
-            )
-
-        return values[1:]
