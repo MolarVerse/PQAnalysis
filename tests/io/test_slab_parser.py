@@ -12,7 +12,9 @@ buffer handling is additionally exercised with tiny chunk sizes, so
 that every frame spans multiple chunk boundaries.
 """
 
+import importlib
 import os
+import sys
 
 import numpy as np
 import pytest
@@ -456,3 +458,103 @@ class TestSlabParserBenchFileParity:
 
         for values, _ in raw_reader.raw_frame_generator():
             assert np.array_equal(values, next(generator).charges)
+
+
+
+class TestSlabParserPyLowLevel:
+
+    """
+    Directly exercises the pure Python slab parser helpers on hand
+    crafted byte buffers to reach the buffer/EOF edge branches that
+    the end-to-end reader tests do not hit.
+    """
+
+    def test_scan_header_body_line_without_trailing_newline_at_eof(self):
+        # a header line that is the last line of the file and has no
+        # trailing newline: the parser must treat the end of the
+        # buffer as the end of the line (line_end = n_data).
+        status, n_atoms, box_bytes, header_token, next_offset = (
+            _slab_parser_py.scan_header(b"2 11.1 12.2 13.3", 0, True)
+        )
+
+        assert status == _slab_parser_py.STATUS_FRAME
+        assert n_atoms == 2
+        assert box_bytes == b"11.1 12.2 13.3"
+        assert header_token is None
+        # the (virtual) body offset is one past the end of the buffer
+        assert next_offset == len(b"2 11.1 12.2 13.3") + 1
+
+    def test_scan_header_skips_leading_blank_lines(self):
+        # two whitespace-only lines precede the header line and must
+        # be skipped before the header is parsed.
+        status, n_atoms, box_bytes, _, _ = _slab_parser_py.scan_header(
+            b"\n   \n2 11.1 12.2 13.3\n", 0, True
+        )
+
+        assert status == _slab_parser_py.STATUS_FRAME
+        assert n_atoms == 2
+        assert box_bytes == b"11.1 12.2 13.3"
+
+    def test_parse_body_incomplete_comment_line_at_eof_raises(self):
+        # the comment line of the frame has no trailing newline and
+        # the buffer is at EOF: the frame is incomplete.
+        with pytest.raises(EOFError) as exception:
+            _slab_parser_py.parse_body(
+                b"comment-without-newline",
+                0,
+                1,
+                True,
+                False,
+                _slab_parser_py.MODE_XYZ,
+            )
+
+        assert "incomplete frame" in str(exception.value)
+
+
+
+class TestSlabParserPyProcessLinesFallbackImport:
+
+    """
+    Covers the ``except ModuleNotFoundError`` fallback import of
+    ``process_lines`` at the top of the pure Python slab parser
+    module.
+    """
+
+    def test_process_lines_fallback_import(self):
+        # remember the currently wired process_lines implementation so
+        # the module can be restored to exactly this state afterwards.
+        original_module = _slab_parser_py.process_lines.__module__
+
+        target = "PQAnalysis.io.traj_file.process_lines"
+        saved = sys.modules.pop(target, None)
+
+        class _Block:
+
+            def find_spec(self, name, path=None, target=None):  # pylint: disable=unused-argument
+                if name == "PQAnalysis.io.traj_file.process_lines":
+                    raise ModuleNotFoundError(name)
+
+                return None
+
+        blocker = _Block()
+        sys.meta_path.insert(0, blocker)
+
+        try:
+            importlib.reload(_slab_parser_py)
+
+            # with the compiled process_lines blocked, the pure Python
+            # implementation is imported instead.
+            assert _slab_parser_py.process_lines.__module__.endswith(
+                "_process_lines_py"
+            )
+        finally:
+            sys.meta_path.remove(blocker)
+
+            if saved is not None:
+                sys.modules[target] = saved
+
+            importlib.reload(_slab_parser_py)
+
+        # the module is restored to exactly the state the rest of the
+        # test suite relies on.
+        assert _slab_parser_py.process_lines.__module__ == original_module

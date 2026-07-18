@@ -13,7 +13,7 @@ from PQAnalysis.analysis.msd.exceptions import MSDError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging, assert_logging_with_exception
@@ -633,6 +633,59 @@ class TestMSD:
             exception=MSDError,
             function=msd.run,
         )
+
+    def test_extxyz_reader_uses_non_raw_old_path(self, tmp_path):
+        # a TrajectoryReader is only routed to the raw fast path for
+        # plain XYZ trajectories; every other frame-carrying format
+        # (here EXTXYZ) is streamed through the per-frame
+        # AtomicSystem frame_generator (the old non-fast path). The
+        # result has to be identical to running the in-memory
+        # trajectory of the same wrapped coordinates and cell.
+        rng = np.random.default_rng(2024)
+        box = (10.0, 12.0, 14.0)
+        n_frames, n_atoms = 8, 3
+
+        wrapped = rng.uniform(0.0, 5.0, size=(n_frames, n_atoms, 3))
+
+        file = tmp_path / "traj.extxyz"
+        lines = []
+        for frame in wrapped:
+            lines.append(str(n_atoms))
+            lines.append(
+                f'Lattice="{box[0]} 0 0 0 {box[1]} 0 0 0 {box[2]}" '
+                "Properties=species:S:1:pos:R:3"
+            )
+            for atom in frame:
+                lines.append(f"O {atom[0]} {atom[1]} {atom[2]}")
+        file.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        reader = TrajectoryReader(str(file))
+
+        assert reader.traj_format == TrajectoryFormat.EXTXYZ
+
+        msd = MSD(reader, "O", window=2, gap=1)
+
+        # the EXTXYZ reader is not eligible for the raw fast path:
+        # it lands on the elif TrajectoryReader (old) branch that sets
+        # up the per-frame frame_generator instead of a _raw_reader
+        assert msd._raw_reader is None
+        assert msd.frame_generator is not None
+        assert msd.n_frames == n_frames
+
+        _, msd_x, msd_y, msd_z, _ = msd.run()
+
+        cell = Cell(*box, 90, 90, 90)
+        atoms = [Atom("O")] * n_atoms
+        systems = [
+            AtomicSystem(atoms=atoms, pos=frame, cell=cell)
+            for frame in wrapped
+        ]
+        reference = MSD(Trajectory(systems), "O", window=2, gap=1)
+        _, ref_x, ref_y, ref_z, _ = reference.run()
+
+        assert np.allclose(msd_x, ref_x, rtol=1e-5, atol=1e-6)
+        assert np.allclose(msd_y, ref_y, rtol=1e-5, atol=1e-6)
+        assert np.allclose(msd_z, ref_z, rtol=1e-5, atol=1e-6)
 
     def test_velocity_trajectory_rejected(self, caplog):
         # frames of a velocity trajectory carry no positions and

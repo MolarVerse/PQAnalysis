@@ -123,6 +123,44 @@ class TestMSDInputFileReader:
         )
 
     @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_negative_start_injected(self, test_with_data_dir, caplog):
+        # the input file grammar parses literal negative numbers as
+        # strings, so the generic int parsing rejects them before the
+        # dedicated non-negative check is reached. Inject a negative
+        # first_frame value that is already typed as an int directly
+        # into the parsed dictionary so the reader's own
+        # non-negativity guard is exercised.
+        Path("input_negative_injected.in").write_text(
+            (
+                "traj_files = traj.xyz\n"
+                "target_selection = O\n"
+                "out_file = msd.dat\n"
+            ),
+            encoding="utf-8",
+        )
+
+        reader = MSDInputFileReader("input_negative_injected.in")
+
+        # read() rebuilds self.dictionary from parser.parse(), so the
+        # negative int is injected into the dictionary the reader will
+        # actually use by patching parse to return the doctored one
+        dictionary = reader.parser.parse()
+        dictionary["first_frame"] = (-5, "int", "0")
+        reader.parser.parse = lambda: dictionary
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="MSDInputFileReader",
+            logging_level="ERROR",
+            message_to_test=(
+                "The 'first_frame'/'start' value has to be a "
+                "non-negative integer - It actually is -5!"
+            ),
+            exception=InputFileError,
+            function=reader.read,
+        )
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
     def test_zero_time_step(self, test_with_data_dir, caplog):
         # the generic positive-real parsing of the base reader
         # accepts 0.0, so the MSD reader has to reject it itself

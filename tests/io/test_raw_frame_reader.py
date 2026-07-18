@@ -1,3 +1,7 @@
+import importlib
+import logging
+import sys
+
 import numpy as np
 import pytest
 
@@ -489,3 +493,113 @@ class TestRawTrajectoryReaderErrors:
             list(raw_reader.raw_frame_generator())
 
         assert "Invalid file format" in str(exception.value)
+
+    def test_negative_atom_count_raises_value_error(self):
+        # a header count token that is a valid but negative integer
+        # literal (with a valid box, so the box validation passes):
+        # scan_header reports a bad header, the reader converts the
+        # token to an int and rejects the negative count, replicating
+        # the islice() error of the line based reader.
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("-3 11.1 12.2 13.3", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        raw_reader = RawTrajectoryReader("tmp.xyz")
+
+        with pytest.raises(ValueError) as exception:
+            list(raw_reader.raw_frame_generator())
+
+        assert "islice()" in str(exception.value)
+
+    def test_invalid_box_count_raises_frame_reader_error_directly(self):
+        # when ERROR logging is disabled, self.logger.error does not
+        # raise, so the explicit raise after it is reached (the header
+        # box has only two values, which is not 0, 3 or 6).
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("1 11.1 12.2", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        raw_reader = RawTrajectoryReader("tmp.xyz")
+
+        original_level = raw_reader.logger.level
+        raw_reader.logger.setLevel(logging.CRITICAL + 1)
+
+        try:
+            with pytest.raises(FrameReaderError) as exception:
+                list(raw_reader.raw_frame_generator())
+        finally:
+            raw_reader.logger.setLevel(original_level)
+
+        assert "header line" in str(exception.value)
+
+    def test_qmcfc_frame_without_atom_rows_raises_index_error(self):
+        # a QMCFC frame whose header declares zero atoms: the frame
+        # has no atom row, so no first name is available and the dummy
+        # atom stripping fails with the same IndexError as the line
+        # based reader.
+        with open("tmp.vel", "w", encoding="utf-8") as file:
+            print("0 11.1 12.2 13.3", file=file)
+            print("", file=file)
+
+        raw_reader = RawTrajectoryReader(
+            "tmp.vel", md_format=MDEngineFormat.QMCFC
+        )
+
+        with pytest.raises(IndexError) as exception:
+            list(raw_reader.raw_frame_generator())
+
+        assert "list index out of range" in str(exception.value)
+
+
+
+class TestRawFrameReaderSlabParserFallbackImport:
+
+    """
+    Covers the ``except ModuleNotFoundError`` fallback import of
+    ``scan_header``/``parse_body`` from the pure Python slab parser
+    module at the top of the raw frame reader module.
+    """
+
+    def test_slab_parser_fallback_import(self):
+        # remember the currently wired parser functions so the module
+        # can be restored to exactly this state afterwards.
+        original_module = raw_frame_reader.scan_header.__module__
+
+        target = "PQAnalysis.io.traj_file._slab_parser"
+        saved = sys.modules.pop(target, None)
+
+        class _Block:
+
+            def find_spec(self, name, path=None, target=None):  # pylint: disable=unused-argument
+                if name == "PQAnalysis.io.traj_file._slab_parser":
+                    raise ModuleNotFoundError(name)
+
+                return None
+
+        blocker = _Block()
+        sys.meta_path.insert(0, blocker)
+
+        try:
+            importlib.reload(raw_frame_reader)
+
+            # with the compiled slab parser blocked, the pure Python
+            # implementation is imported instead.
+            assert raw_frame_reader.scan_header.__module__.endswith(
+                "_slab_parser_py"
+            )
+            assert raw_frame_reader.parse_body.__module__.endswith(
+                "_slab_parser_py"
+            )
+        finally:
+            sys.meta_path.remove(blocker)
+
+            if saved is not None:
+                sys.modules[target] = saved
+
+            importlib.reload(raw_frame_reader)
+
+        # the module is restored to exactly the state the rest of the
+        # test suite relies on.
+        assert raw_frame_reader.scan_header.__module__ == original_module
