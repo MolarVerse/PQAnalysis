@@ -21,6 +21,7 @@ Input file based tools
 For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
 - :ref:`rdf<cli.rdf>`
+- :ref:`adf<cli.adf>`
 - :ref:`msd<cli.msd>`
 - :ref:`vacf<cli.vacf>`
 - :ref:`vibrations<cli.vibrations>`
@@ -61,6 +62,49 @@ as-is. If both files are given and :code:`no_intra_molecular` is omitted,
 :code:`no_intra_molecular` is set to :code:`False`, intra molecular pairs are
 included. Inferred and defaulted values are written to the normal PQAnalysis
 log output.
+
+ADF input files
+^^^^^^^^^^^^^^^
+
+Angular distribution function analyses histogram the ``j-i-k`` angle at
+a center atom ``i`` spanned by two ligand atoms ``j`` and ``k``. Only a
+trajectory, a reference (center) selection, a target (ligand-1)
+selection and an output file are required:
+
+.. code-block:: text
+
+    reference_selection = O
+    target_selection = H
+    n_angle_bins = 180
+    out_file = adf.out
+    traj_files = trajectory.xyz
+
+A second ligand set can be given with ``target_selection_2`` (it
+defaults to ``target_selection``). ``n_angle_bins`` and ``delta_angle``
+are mutually exclusive ways of setting up the fixed 0 to 180 degree
+angle range. The optional radial gates ``r_min_1``/``r_max_1`` and
+``r_min_2``/``r_max_2`` restrict the ``i-j`` and ``i-k`` distances of
+the counted triplets:
+
+.. code-block:: text
+
+    reference_selection = O
+    target_selection = H
+    target_selection_2 = H
+    delta_angle = 1.0
+    r_min_1 = 0.8
+    r_max_1 = 1.2
+    r_min_2 = 0.8
+    r_max_2 = 1.2
+    out_file = hoh_angle.out
+    traj_files = trajectory.xyz
+
+The output file contains the bin-center angle in degrees, the
+normalized ADF (a probability density whose integral over the angle
+range is one), the raw angle counts and the sine-corrected ADF (the
+plain ADF divided by ``sin(theta)``, again normalized). Ligand pairs
+are counted as ordered pairs, matching the legacy ``thh_tools`` ADF
+tool.
 
 Vibrational analysis input files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

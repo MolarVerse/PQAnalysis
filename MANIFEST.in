@@ -7,3 +7,4 @@ include PQAnalysis/io/traj_file/_slab_parser.pyx
 include PQAnalysis/analysis/msd/_msd_kernel.pyx
 include PQAnalysis/analysis/vacf/_vacf_kernel.pyx
 include PQAnalysis/analysis/rdf/_rdf_kernel.pyx
+include PQAnalysis/analysis/adf/_adf_kernel.pyx

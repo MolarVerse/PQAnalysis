@@ -71,6 +71,7 @@ PQAnalysis = [
     "analysis/msd/*.pyx",
     "analysis/vacf/*.pyx",
     "analysis/rdf/*.pyx",
+    "analysis/adf/*.pyx",
 ]
 
 [project.scripts]
@@ -81,6 +82,7 @@ traj2qmcfc = "PQAnalysis.cli.traj2qmcfc:main"
 rst2xyz = "PQAnalysis.cli.rst2xyz:main"
 xyz2rst = "PQAnalysis.cli.xyz2rst:main"
 continue_input = "PQAnalysis.cli.continue_input:main"
+adf = "PQAnalysis.cli.adf:main"
 rdf = "PQAnalysis.cli.rdf:main"
 msd = "PQAnalysis.cli.msd:main"
 vacf = "PQAnalysis.cli.vacf:main"

@@ -8,6 +8,7 @@ build/
 PQAnalysis/analysis/msd/_msd_kernel.c
 PQAnalysis/analysis/vacf/_vacf_kernel.c
 PQAnalysis/analysis/rdf/_rdf_kernel.c
+PQAnalysis/analysis/adf/_adf_kernel.c
 PQAnalysis/io/traj_file/_slab_parser.c
 
 _version.py
