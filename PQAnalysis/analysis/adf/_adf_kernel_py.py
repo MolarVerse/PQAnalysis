@@ -94,7 +94,7 @@ def _norm(vectors):
     )
 
 
-def adf_frame_histogram(
+def adf_frame_histogram(  # pylint: disable=too-many-arguments,too-many-positional-arguments,too-many-locals,missing-type-doc
     values,
     reference_indices,
     target_indices,

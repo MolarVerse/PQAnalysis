@@ -41,7 +41,7 @@ except ModuleNotFoundError:
 
 
 
-class ADF:
+class ADF:  # pylint: disable=too-many-instance-attributes
 
     """
     A class for calculating the angular distribution function (ADF) of
@@ -102,7 +102,7 @@ class ADF:
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self,
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
