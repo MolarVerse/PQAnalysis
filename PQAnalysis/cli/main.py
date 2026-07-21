@@ -11,6 +11,7 @@ from .build_spectrum import BuildSpectrumCLI
 from .check_momentum import CheckMomentumCLI
 from .continue_input import ContinueInputCLI
 from .gen2xyz import GEN2XYZCLI
+from .green_kubo import GreenKuboCLI
 from .msd import MSDCLI
 from .rdf import RDFCLI
 from .rst2xyz import Rst2XYZCLI
@@ -50,6 +51,7 @@ def main():
         CheckMomentumCLI.program_name(): CheckMomentumCLI,
         ContinueInputCLI.program_name(): ContinueInputCLI,
         GEN2XYZCLI.program_name(): GEN2XYZCLI,
+        GreenKuboCLI.program_name(): GreenKuboCLI,
         MSDCLI.program_name(): MSDCLI,
         RDFCLI.program_name(): RDFCLI,
         Rst2XYZCLI.program_name(): Rst2XYZCLI,

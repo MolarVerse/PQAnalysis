@@ -1,0 +1,12 @@
+traj_files = traj.vel
+target_selection = Ar
+out_file = gk_full.dat
+log_file = gk_full.log
+time_step = 0.002
+window = 600
+gap = 2
+method = direct
+coefficient = diffusion
+fit_start = 0.4
+fit_stop = 0.9
+use_full_atom_info = True

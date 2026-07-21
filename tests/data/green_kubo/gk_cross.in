@@ -1,0 +1,8 @@
+traj_files = traj.vel
+target_selection = Ar
+out_file = gk.dat
+log_file = gk.log
+time_step = 0.002
+window = 800
+fit_start = 0.5
+fit_stop = 1.0

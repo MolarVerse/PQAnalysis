@@ -1,0 +1,6 @@
+traj_files = traj.vel
+target_selection = Ar
+out_file = green_kubo.dat
+log_file = green_kubo.log
+time_step = 0.002
+window = 800

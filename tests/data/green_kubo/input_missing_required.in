@@ -1,0 +1,3 @@
+traj_files = traj.vel
+target_selection = Ar
+out_file = green_kubo.dat

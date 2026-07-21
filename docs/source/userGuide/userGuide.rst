@@ -23,6 +23,7 @@ For more details on the grammar and syntax of the input file see :ref:`inputFile
 - :ref:`rdf<cli.rdf>`
 - :ref:`msd<cli.msd>`
 - :ref:`vacf<cli.vacf>`
+- :ref:`green_kubo<cli.green_kubo>`
 - :ref:`vibrations<cli.vibrations>`
 
 RDF input files
@@ -138,6 +139,37 @@ q\ :sub:`i`\ v\ :sub:`i`, whose spectrum approximates an infrared spectrum.
 ``window_function`` accepts ``exponential``, ``hann`` and ``blackman``;
 ``method = fft`` selects a faster dense-origin estimator instead of the
 legacy-exact sliding-origin one.
+
+Green-Kubo input files
+^^^^^^^^^^^^^^^^^^^^^^
+
+Green-Kubo analyses read a velocity trajectory (``.vel``, velocities in
+Angstrom/s) and obtain the self-diffusion coefficient from the time
+integral of the un-normalized velocity autocorrelation function
+D = (1/3) :math:`\\int_0^\\infty` C\ :sub:`vv`\ (t) dt:
+
+.. code-block:: text
+
+    traj_files = trajectory.vel
+    target_selection = all
+    out_file = green_kubo.dat
+    time_step = 0.001
+    window = 1000
+    method = fft
+    fit_start = 0.5
+    fit_stop = 1.0
+
+The output file contains one row per lag with the columns lag time in ps,
+the un-normalized autocorrelation C\ :sub:`vv` in (Angstrom/s)\ :sup:`2`
+and the running diffusion coefficient D\ :sub:`running` in m\ :sup:`2`/s,
+so that the plateau can be inspected directly. The plateau diffusion
+coefficient is estimated as the mean of D\ :sub:`running` over the
+trailing fit window ``[fit_start, fit_stop]`` (fractions of the
+correlation window), reported with its standard deviation in
+m\ :sup:`2`/s and cm\ :sup:`2`/s in the log output. This reproduces the
+Einstein-MSD self-diffusion coefficient of the same trajectory. ``method``
+accepts ``fft`` (default, Wiener-Khinchin) and ``direct`` (sliding time
+origins); ``coefficient`` currently only accepts ``diffusion``.
 
 Pure command line tools
 -----------------------
