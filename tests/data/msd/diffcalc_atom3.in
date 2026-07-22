@@ -1,0 +1,7 @@
+window = 100;
+gap = 10;
+out_file = msd_ref_atom3.dat;
+target_atoms = 3;
+FILES
+traj.xyz
+END

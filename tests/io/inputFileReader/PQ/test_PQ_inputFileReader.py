@@ -7,6 +7,7 @@ from ... import pytestmark
 from PQAnalysis.io.input_file_reader.pq.pq_input_file_reader import _increase_digit_string, _get_digit_string_from_filename
 from PQAnalysis.io.input_file_reader import PQInputFileReader as InputFileReader
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat
+from PQAnalysis.io import continue_input_file
 from PQAnalysis.exceptions import PQValueError
 
 
@@ -74,6 +75,13 @@ class TestPQ_inputFileReader:
         assert input_file_reader.format == InputFileFormat("PQ")
         assert input_file_reader.parser.filename == "run-08.in"
         assert input_file_reader.parser.input_format == InputFileFormat("PQ")
+
+        with pytest.raises(PQValueError) as exception:
+            InputFileReader("run-08.in", InputFileFormat.PQANALYSIS)
+
+        assert str(exception.value) == (
+            "Input file format InputFileFormat.PQANALYSIS not supported."
+        )
 
     @pytest.mark.parametrize(
         "example_dir",
@@ -261,6 +269,44 @@ class TestPQ_inputFileReader:
                 "output_file = md-10.out;\n"
                 "restart_file = md-10.rst;\n"
                 "traj_file = md-10.xyz;\n"
+            )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_continue_input_file_uses_qmcfc_format(self):
+        with open("run-02.in", "w", encoding="utf-8") as file:
+            file.write(
+                "jobtype = qmcf-md;\n"
+                "qm_center = 8:1;\n"
+                "qm_blacklist = 1-6, 9-13, 15-16, 18, 20-48;\n"
+                "start_file = amy-zn-qmmm-01_mod.rst;\n"
+                "output_file = amy-zn-qmmm-02.out;\n"
+                "info_file = amy-zn-qmmm-02.info;\n"
+                "energy_file = amy-zn-qmmm-02.en;\n"
+                "traj_file = amy-zn-qmmm-02.xyz;\n"
+                "vel_file = amy-zn-qmmm-02.vel;\n"
+                "charge_file = amy-zn-qmmm-02.chrg;\n"
+                "temperature_file = amy-zn-qmmm-02.tmp;\n"
+                "momentum_file = amy-zn-qmmm-02.mom;\n"
+                "restart_file = amy-zn-qmmm-02.rst;\n"
+            )
+
+        continue_input_file("run-02.in", input_format=InputFileFormat.QMCFC)
+
+        with open("run-03.in", "r", encoding="utf-8") as file:
+            assert file.read() == (
+                "jobtype = qmcf-md;\n"
+                "qm_center = 8:1;\n"
+                "qm_blacklist = 1-6, 9-13, 15-16, 18, 20-48;\n"
+                "start_file = amy-zn-qmmm-02.rst;\n"
+                "output_file = amy-zn-qmmm-03.out;\n"
+                "info_file = amy-zn-qmmm-03.info;\n"
+                "energy_file = amy-zn-qmmm-03.en;\n"
+                "traj_file = amy-zn-qmmm-03.xyz;\n"
+                "vel_file = amy-zn-qmmm-03.vel;\n"
+                "charge_file = amy-zn-qmmm-03.chrg;\n"
+                "temperature_file = amy-zn-qmmm-03.tmp;\n"
+                "momentum_file = amy-zn-qmmm-03.mom;\n"
+                "restart_file = amy-zn-qmmm-03.rst;\n"
             )
 
     @pytest.mark.usefixtures("tmpdir")

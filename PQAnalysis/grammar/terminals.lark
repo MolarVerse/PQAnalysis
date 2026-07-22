@@ -10,6 +10,7 @@ BOOL: "true"i | "false"i
 COMMENT: /#.*/ NEWLINE
 
 WORD: ("_"|"-"|"."|LETTER|DIGIT)+
+QMCFC_ATOM.-1: /[^,;#\s]+/
 
 URL: /(https?:\/\/[^;\s]+)/
 

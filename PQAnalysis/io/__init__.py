@@ -20,6 +20,7 @@ from .restart_file.api import read_restart_file
 # import the classes from the traj_file subpackage
 from .traj_file.trajectory_reader import TrajectoryReader
 from .traj_file.trajectory_writer import TrajectoryWriter
+from .traj_file.raw_frame_reader import RawTrajectoryReader
 from .traj_file.frame_reader import (
     BaseFrameReader,
     XYZFrameReader,
@@ -47,6 +48,7 @@ from .topology_file.api import read_topology_file, write_topology_file
 from .info_file_reader import InfoFileReader
 from .energy_file_reader import EnergyFileReader
 from .box_reader import BoxReader, read_box
+from .optimizer_file_reader import OptimizerFileReader, read_optimizer_file
 from .box_writer import BoxWriter
 
 from .input_file_reader import InputFileParser
