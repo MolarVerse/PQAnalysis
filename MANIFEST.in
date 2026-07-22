@@ -3,3 +3,7 @@ include README.md
 include CHANGELOG.md
 recursive-include PQAnalysis/grammar *.lark
 include PQAnalysis/io/traj_file/process_lines.pyx
+include PQAnalysis/io/traj_file/_slab_parser.pyx
+include PQAnalysis/analysis/msd/_msd_kernel.pyx
+include PQAnalysis/analysis/vacf/_vacf_kernel.pyx
+include PQAnalysis/analysis/rdf/_rdf_kernel.pyx

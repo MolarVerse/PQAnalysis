@@ -1,0 +1,2 @@
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+pqenalyzer 0.7.1.dev26+g1d30939e5.d20260611 requires PQAnalysis>=1.0, but you have pqanalysis 0.0.0 which is incompatible.

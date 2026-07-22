@@ -1,0 +1,4 @@
+traj_files = traj.xyz
+target_selection = O
+out_file = msd.dat
+start = -5

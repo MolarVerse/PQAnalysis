@@ -1,0 +1,7 @@
+traj_files = traj.xyz
+target_selection = O
+out_file = msd.dat
+log_file = msd.log
+window = 100
+gap = 10
+time_step = 0.5
