@@ -22,6 +22,14 @@ class BoxReaderError(PQException):
 
 
 
+class OptimizerReaderError(PQException):
+
+    """
+    Exception raised for errors related to the OptimizerFileReader class
+    """
+
+
+
 class MoldescriptorReaderError(PQException):
 
     """
