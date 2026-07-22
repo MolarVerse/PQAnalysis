@@ -24,6 +24,7 @@ io
        PQAnalysis.io.formats
        PQAnalysis.io.info_file_reader
        PQAnalysis.io.moldescriptor_reader
+       PQAnalysis.io.optimizer_file_reader
        PQAnalysis.io.write_api
 
     Subpackages
@@ -39,7 +40,6 @@ io
        PQAnalysis.io.topology_file
        PQAnalysis.io.traj_file
        PQAnalysis.io.virial
-
 
 
 
