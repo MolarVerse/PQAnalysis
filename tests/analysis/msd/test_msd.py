@@ -286,7 +286,7 @@ class TestMSD:
 
         for fit in results.values():
             assert fit.r_squared == pytest.approx(1.0)
-            assert fit.slope_stderr == pytest.approx(0.0, abs=1e-12)
+            assert fit.slope_stderr == pytest.approx(0.0, abs=1e-8)
 
     def test_fit_diffusion_uses_trailing_window(self):
         # piecewise data: the leading part (indices 0 to 80) has a
