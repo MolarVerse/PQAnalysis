@@ -5,6 +5,7 @@ A command line interface for the PQAnalysis package.
 from PQAnalysis.config import code_base_url
 
 from ._argument_parser import _ArgumentParser
+from .adf import ADFCLI
 from .add_molecules import AddMoleculesCLI
 from .build_nep_traj import BuildNEPTrajCLI
 from .build_spectrum import BuildSpectrumCLI
@@ -44,6 +45,7 @@ def main():
     subparsers = parser.add_subparsers(dest='cli_command', )
 
     sub_parser_dict = {
+        ADFCLI.program_name(): ADFCLI,
         AddMoleculesCLI.program_name(): AddMoleculesCLI,
         BuildNEPTrajCLI.program_name(): BuildNEPTrajCLI,
         BuildSpectrumCLI.program_name(): BuildSpectrumCLI,
