@@ -1,0 +1,4 @@
+traj_files = traj.xyz
+reference_selection = O
+target_selection = H
+out_file = adf.out

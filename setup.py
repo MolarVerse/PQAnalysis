@@ -34,6 +34,14 @@ extensions = cythonize(
             # the separate numpy operations it replicates
             extra_compile_args=['-ffp-contract=off']
         ),
+        Extension(
+            'PQAnalysis.analysis.adf._adf_kernel',
+            sources=['PQAnalysis/analysis/adf/_adf_kernel.pyx'],
+            include_dirs=[np.get_include()],
+            # no FMA contraction: the kernel must round exactly like
+            # the separate numpy operations it replicates
+            extra_compile_args=['-ffp-contract=off']
+        ),
     ],
     language_level=3,
 )

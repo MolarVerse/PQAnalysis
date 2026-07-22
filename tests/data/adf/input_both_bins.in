@@ -1,0 +1,6 @@
+traj_files = traj.xyz
+reference_selection = O
+target_selection = H
+n_angle_bins = 180
+delta_angle = 1.0
+out_file = adf.out
