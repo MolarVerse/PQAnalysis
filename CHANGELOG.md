@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.4.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.4.0) - 2026-07-22
+
+<small>[Compare with v1.3.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.3.0...v1.4.0)</small>
+
+### Build
+
+- add conda-forge recipe (#152) ([2a7715e](https://github.com/MolarVerse/PQAnalysis/commit/2a7715e5accfe963c492863074fa53609e2d2e30) by Josef M. Gallmetzer).
+
+### Continuous Integration
+
+- update sigstore release action ([f8c15f6](https://github.com/MolarVerse/PQAnalysis/commit/f8c15f6f3e2d99e55c333da38951da3a3f4fa4f7) by Josef M. Gallmetzer).
+
+### Docs
+
+- fix sphinx build warnings (#149) ([ce0861c](https://github.com/MolarVerse/PQAnalysis/commit/ce0861c85cd288eac406716b81a27674c6d495d8) by Josef M. Gallmetzer).
+
+### Features
+
+- add PQ optimizer output reader (#156) ([bd653f9](https://github.com/MolarVerse/PQAnalysis/commit/bd653f9dbd2c8f5b0455ac8e664c20a441931b67) by Josef M. Gallmetzer).
+- add MSD, VACF, spectrum and momentum analyses (faster than legacy C) (#153) ([f80bd9c](https://github.com/MolarVerse/PQAnalysis/commit/f80bd9c69595b69fbcf82fd6b091fa17732537e3) by Josef M. Gallmetzer).
+- add vibrational analysis workflow (#150) ([58df167](https://github.com/MolarVerse/PQAnalysis/commit/58df167b57b897f8ad643cf7915dfa65e6ab78ba) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- skip self pairs in RDF (#151) ([d5637f9](https://github.com/MolarVerse/PQAnalysis/commit/d5637f946b422839556602347416921a216a3217) by Josef M. Gallmetzer).
+- support qmcfc input continuation (#148) ([a96859d](https://github.com/MolarVerse/PQAnalysis/commit/a96859decac7c42a290a3b67c6e5aee6bdbd0e38) by Josef M. Gallmetzer).
+
+### Tests
+
+- stabilize linear MSD fit tolerance (#158) ([a9d2922](https://github.com/MolarVerse/PQAnalysis/commit/a9d2922b599eedd49935f7dcd11af8fadef2d64d) by Josef M. Gallmetzer).
+
 ## [v1.3.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.3.0) - 2026-06-22
 
 <small>[Compare with v1.2.5](https://github.com/MolarVerse/PQAnalysis/compare/v1.2.5...v1.3.0)</small>
