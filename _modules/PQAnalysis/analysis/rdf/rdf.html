@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/rdf/rdf.html" />
       <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
@@ -90,23 +91,34 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># 3rd party imports</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="c1"># local absolute imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">with_progress_bar</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance</span><span class="p">,</span> <span class="n">Cells</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">check_trajectory_pbc</span><span class="p">,</span> <span class="n">check_trajectory_vacuum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">distance</span><span class="p">,</span> <span class="n">Cell</span><span class="p">,</span> <span class="n">Cells</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Trajectory</span><span class="p">,</span>
+    <span class="n">TrajectoryFormat</span><span class="p">,</span>
+    <span class="n">check_trajectory_pbc</span><span class="p">,</span>
+    <span class="n">check_trajectory_vacuum</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit_in_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span><span class="p">,</span> <span class="n">RawTrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.traj_file.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReaderError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
 
 <span class="c1"># local relative imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDFError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._rdf_kernel</span><span class="w"> </span><span class="kn">import</span> <span class="n">rdf_frame_histogram</span>  <span class="c1"># pylint: disable=import-error</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._rdf_kernel_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">rdf_frame_histogram</span>
 
 
 
@@ -136,16 +148,27 @@
 <span class="sd">    trajectory object or via a TrajectoryReader object.</span>
 <span class="sd">    If a trajectory object is given, it is assumed to </span>
 <span class="sd">    have a constant topology over all frames! The main </span>
-<span class="sd">    difference between the two is that the </span>
+<span class="sd">    difference between the two is that the</span>
 <span class="sd">    TrajectoryReader object allows for lazy loading of</span>
 <span class="sd">    the trajectory, meaning that the trajectory is only</span>
 <span class="sd">    loaded frame by frame when needed. This can be useful</span>
 <span class="sd">    for large trajectories that do not fit into memory.</span>
+
+<span class="sd">    For xyz trajectory files without intra-molecular</span>
+<span class="sd">    exclusion the frames are streamed via the raw-frame</span>
+<span class="sd">    fast path</span>
+<span class="sd">    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)</span>
+<span class="sd">    and accumulated with a compiled distance-histogram</span>
+<span class="sd">    kernel, which is considerably faster and produces</span>
+<span class="sd">    identical results.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">_use_full_atom_default</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_no_intra_molecular_default</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_r_min_default</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+    <span class="c1">#: The chunk size (in bytes) of the buffered header-only cell scan.</span>
+    <span class="n">_CELL_SCAN_CHUNK_SIZE</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
@@ -274,21 +297,38 @@
         <span class="c1"># Initialize Trajectory iterator/generator #</span>
         <span class="c1">############################################</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">cells</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
-            <span class="c1"># lazy loading of trajectory from file(s)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># use trajectory object as iterator</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
-                <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_raw_fast_path</span><span class="p">(</span><span class="n">traj</span><span class="p">):</span>
+            <span class="c1"># fast path: lazy loading of the raw frame data from</span>
+            <span class="c1"># file(s) without per-frame AtomicSystem construction;</span>
+            <span class="c1"># the cells are collected with a cheap header-only scan</span>
+            <span class="c1"># that deduplicates repeated boxes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="n">RawTrajectoryReader</span><span class="p">(</span>
+                <span class="n">traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+                <span class="n">traj_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span><span class="p">,</span>
+                <span class="n">md_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">md_format</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scan_cells</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">read_first_frame</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cells</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">cells</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
+                <span class="c1"># lazy loading of trajectory from file(s)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># use trajectory object as iterator</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span>
         <span class="k">else</span><span class="p">:</span>
@@ -310,6 +350,168 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
         <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_use_raw_fast_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Whether the raw-frame fast path is used for the given</span>
+<span class="sd">        trajectory input.</span>
+
+<span class="sd">        The fast path streams the raw per-frame coordinates via</span>
+<span class="sd">        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`</span>
+<span class="sd">        and accumulates the distance histogram with a compiled</span>
+<span class="sd">        kernel, producing bit-identical results. It is only used for</span>
+<span class="sd">        the plain case: a TrajectoryReader input with an xyz</span>
+<span class="sd">        trajectory format and no intra-molecular exclusion. All</span>
+<span class="sd">        other inputs take the original path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        traj : Trajectory | TrajectoryReader</span>
+<span class="sd">            The trajectory input of the RDF analysis.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the raw-frame fast path is used.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
+            <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span>
+        <span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_scan_cells</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Cells</span><span class="p">,</span> <span class="n">Cells</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Collects the cells of the trajectory with a header-only scan.</span>
+
+<span class="sd">        This is the fast-path counterpart of the cells full scan of</span>
+<span class="sd">        :py:attr:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.cells`</span>
+<span class="sd">        with identical semantics: the number of atoms is taken from</span>
+<span class="sd">        the first line of the first file and determines the frame</span>
+<span class="sd">        stride of all files, frames without box information inherit</span>
+<span class="sd">        the cell of the last frame that had one (also across file</span>
+<span class="sd">        boundaries) and invalid box headers raise the same error.</span>
+<span class="sd">        Instead of building one Cell object per frame, textually</span>
+<span class="sd">        identical box headers share a single (deduplicated) Cell</span>
+<span class="sd">        object, which makes the scan considerably cheaper for</span>
+<span class="sd">        constant-box trajectories.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filenames : List[str]</span>
+<span class="sd">            The names of the trajectory files to scan.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        cells : Cells</span>
+<span class="sd">            The cells of all frames of the trajectory (with shared</span>
+<span class="sd">            Cell objects for textually identical boxes).</span>
+<span class="sd">        unique_cells : Cells</span>
+<span class="sd">            The unique cells of the trajectory in order of first</span>
+<span class="sd">            appearance. Every computation of the RDF setup over the</span>
+<span class="sd">            cells is deduplication invariant (all/any/min over the</span>
+<span class="sd">            cells), so the unique cells serve as a cheap stand-in</span>
+<span class="sd">            for the full cell list in the setup checks.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        TrajectoryReaderError</span>
+<span class="sd">            If the box information of a header line is invalid.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">n_atoms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># +2 for the cell/atom_count + comment lines</span>
+        <span class="n">stride</span> <span class="o">=</span> <span class="n">n_atoms</span> <span class="o">+</span> <span class="mi">2</span>
+
+        <span class="n">cells</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">unique_cells</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">cell_cache</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">last_cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">vacuum_cell</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="n">line_number</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">pending</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">chunk</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_CELL_SCAN_CHUNK_SIZE</span><span class="p">)</span>
+                    <span class="n">at_eof</span> <span class="o">=</span> <span class="n">chunk</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+
+                    <span class="n">lines</span> <span class="o">=</span> <span class="p">(</span><span class="n">pending</span> <span class="o">+</span> <span class="n">chunk</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">at_eof</span><span class="p">:</span>
+                        <span class="c1"># a trailing line without a final newline</span>
+                        <span class="c1"># counts as a line</span>
+                        <span class="k">if</span> <span class="n">lines</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">:</span>
+                            <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">pending</span> <span class="o">=</span> <span class="n">lines</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">offset</span>
+
+                    <span class="k">while</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+                        <span class="n">line_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                        <span class="n">stripped_line</span> <span class="o">=</span> <span class="p">(</span>
+                            <span class="n">lines</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                        <span class="p">)</span>
+                        <span class="n">splitted_line</span> <span class="o">=</span> <span class="n">stripped_line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+
+                            <span class="k">if</span> <span class="n">last_cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">cell</span> <span class="o">=</span> <span class="n">last_cell</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">vacuum_cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                                    <span class="n">vacuum_cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
+                                    <span class="n">unique_cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vacuum_cell</span><span class="p">)</span>
+
+                                <span class="n">cell</span> <span class="o">=</span> <span class="n">vacuum_cell</span>
+
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+
+                            <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+                            <span class="n">cell</span> <span class="o">=</span> <span class="n">cell_cache</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                            <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                                <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(</span>
+                                    <span class="o">*</span><span class="p">(</span>
+                                        <span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                                        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">splitted_line</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                                    <span class="p">)</span>
+                                <span class="p">)</span>
+                                <span class="n">cell_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">cell</span>
+                                <span class="n">unique_cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+
+                        <span class="k">else</span><span class="p">:</span>
+
+                            <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                                <span class="p">(</span>
+                                    <span class="s2">&quot;Invalid number of arguments for box:&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">)</span><span class="si">}</span><span class="s2"> encountered in&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot; file </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">line_number</span><span class="si">}</span><span class="s2">&quot;</span>
+                                    <span class="sa">f</span><span class="s2">&quot; = </span><span class="si">{</span><span class="n">stripped_line</span><span class="si">}</span><span class="s2">&quot;</span>
+                                <span class="p">),</span>
+                                <span class="n">exception</span><span class="o">=</span><span class="n">TrajectoryReaderError</span><span class="p">,</span>
+                            <span class="p">)</span>
+
+                        <span class="n">cells</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cell</span><span class="p">)</span>
+                        <span class="n">last_cell</span> <span class="o">=</span> <span class="n">cell</span>
+
+                        <span class="n">index</span> <span class="o">+=</span> <span class="n">stride</span>
+
+                    <span class="n">offset</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">at_eof</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">cells</span><span class="p">,</span> <span class="n">unique_cells</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_setup_bins</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -387,7 +589,7 @@
                 <span class="n">n_bins</span><span class="p">,</span>
                 <span class="n">delta_r</span><span class="p">,</span>
                 <span class="n">r_min</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span>
             <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_n_bins</span><span class="p">(</span>
@@ -399,10 +601,10 @@
         <span class="k">else</span><span class="p">:</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="n">r_max</span> <span class="k">if</span> <span class="n">r_max</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_infer_r_max</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span>
             <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_r_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_r_max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">n_bins</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
@@ -439,7 +641,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">check_trajectory_pbc</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_trajectory_vacuum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">check_trajectory_vacuum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
                 <span class="s2">&quot;The provided trajectory is not fully periodic or &quot;</span>
@@ -454,6 +657,30 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">average_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;PositiveReal: The average volume of the trajectory.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">cell</span><span class="o">.</span><span class="n">volume</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_average_volume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the average volume of the trajectory.</span>
+
+<span class="sd">        For the raw-frame fast path the volume of every unique cell</span>
+<span class="sd">        is computed only once and broadcast to the full (shared</span>
+<span class="sd">        object) cell list before averaging, which is bit-identical</span>
+<span class="sd">        to (but much cheaper than) the plain mean over the volumes</span>
+<span class="sd">        of all cells of the :py:attr:`average_volume` property. For</span>
+<span class="sd">        the original path the property is evaluated as before.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        PositiveReal</span>
+<span class="sd">            The average volume of the trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_volume</span>
+
+        <span class="n">volumes</span> <span class="o">=</span> <span class="p">{</span><span class="nb">id</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span> <span class="n">cell</span><span class="o">.</span><span class="n">volume</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_cells</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="n">volumes</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">cell</span><span class="p">)]</span> <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">])</span>
 
 <div class="viewcode-block" id="RDF.run">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF.run">[docs]</a>
@@ -498,7 +725,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_run</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_bins</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_bins_raw</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_bins</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_run</span><span class="p">()</span></div>
 
 
@@ -513,7 +745,7 @@
 <span class="sd">        combinations of the RDF analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">average_volume</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_average_volume</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_average_volume</span><span class="p">()</span>
 
         <span class="n">_ref_indices_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">)</span>
 
@@ -565,6 +797,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span>
 
+                <span class="n">target_indices</span> <span class="o">=</span> <span class="n">target_indices</span><span class="p">[</span><span class="n">target_indices</span> <span class="o">!=</span> <span class="n">reference_index</span><span class="p">]</span>
+
                 <span class="n">reference_position</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">reference_index</span><span class="p">]</span>
                 <span class="n">target_positions</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">target_indices</span><span class="p">]</span>
 
@@ -580,6 +814,108 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span><span class="p">,</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span>
                 <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_bins_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the bins of the RDF analysis using the raw-frame</span>
+<span class="sd">        fast path.</span>
+
+<span class="sd">        This method is the fast-path counterpart of</span>
+<span class="sd">        :py:meth:`_calculate_bins` used when the trajectory is read</span>
+<span class="sd">        from xyz file(s) and no intra-molecular exclusion is active:</span>
+<span class="sd">        it streams the raw per-frame coordinates via</span>
+<span class="sd">        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`</span>
+<span class="sd">        (no per-frame AtomicSystem construction) and accumulates the</span>
+<span class="sd">        distance histogram with the RDF frame kernel, which</span>
+<span class="sd">        replicates the numeric semantics of the original loop bit</span>
+<span class="sd">        for bit. The box data of the cell are loop invariants that</span>
+<span class="sd">        are only recomputed when the Cell object yielded by the</span>
+<span class="sd">        reader changes identity (the raw reader caches Cell objects,</span>
+<span class="sd">        so constant-box trajectories compute them exactly once).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RDFError</span>
+<span class="sd">            If a frame does not provide positions for all atoms</span>
+<span class="sd">            referenced by the selections.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">hist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="n">reference_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span>
+        <span class="p">)</span>
+        <span class="n">target_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span>
+        <span class="p">)</span>
+
+        <span class="n">max_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+            <span class="nb">max</span><span class="p">(</span>
+                <span class="n">reference_indices</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+                <span class="n">target_indices</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">initial</span><span class="o">=-</span><span class="mi">1</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># loop-invariant cell data, recomputed only when the yielded</span>
+        <span class="c1"># Cell object changes identity</span>
+        <span class="n">last_cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">box_lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">inv_box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">is_orthorhombic</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">values</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">raw_frame_generator</span><span class="p">(),</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">with_progress_bar</span><span class="p">):</span>
+
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">max_index</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Frame </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> of the trajectory provides &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;only </span><span class="si">{</span><span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> atoms, but the &quot;</span>
+                    <span class="s2">&quot;selections reference the atom index &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">max_index</span><span class="si">}</span><span class="s2">. Please provide a trajectory &quot;</span>
+                    <span class="s2">&quot;with a consistent number of atoms.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">RDFError</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">last_cell</span><span class="p">:</span>
+                <span class="n">last_cell</span> <span class="o">=</span> <span class="n">cell</span>
+                <span class="n">is_orthorhombic</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">cell</span><span class="o">.</span><span class="n">alpha</span> <span class="o">==</span> <span class="mi">90</span> <span class="ow">and</span> <span class="n">cell</span><span class="o">.</span><span class="n">beta</span> <span class="o">==</span> <span class="mi">90</span> <span class="ow">and</span> <span class="n">cell</span><span class="o">.</span><span class="n">gamma</span> <span class="o">==</span> <span class="mi">90</span>
+                <span class="p">)</span> <span class="k">else</span> <span class="mi">0</span>
+
+                <span class="n">box_lengths</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                    <span class="n">cell</span><span class="o">.</span><span class="n">box_lengths</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                <span class="p">)</span>
+                <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                    <span class="n">cell</span><span class="o">.</span><span class="n">box_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                <span class="p">)</span>
+                <span class="n">inv_box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                    <span class="n">cell</span><span class="o">.</span><span class="n">inverse_box_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                <span class="p">)</span>
+
+            <span class="n">rdf_frame_histogram</span><span class="p">(</span>
+                <span class="n">values</span><span class="p">,</span>
+                <span class="n">reference_indices</span><span class="p">,</span>
+                <span class="n">target_indices</span><span class="p">,</span>
+                <span class="n">box_lengths</span><span class="p">,</span>
+                <span class="n">box</span><span class="p">,</span>
+                <span class="n">inv_box</span><span class="p">,</span>
+                <span class="n">is_orthorhombic</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_bins</span><span class="p">,</span>
+                <span class="n">hist</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">+=</span> <span class="n">hist</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_finalize_run</span><span class="p">(</span>
         <span class="bp">self</span>

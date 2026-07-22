@@ -1,0 +1,652 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>vibrational_analysis &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.vibrational.vibrational_analysis.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="vibrational_input_file_reader" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html" />
+    <link rel="prev" title="exceptions" href="PQAnalysis.analysis.vibrational.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.exceptions.html">exceptions</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">vibrational_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html">vibrational_input_file_reader</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a></li>
+      <li class="breadcrumb-item active">vibrational_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.vibrational.vibrational_analysis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.vibrational.vibrational_analysis">
+<span id="vibrational-analysis"></span><h1>vibrational_analysis<a class="headerlink" href="#module-PQAnalysis.analysis.vibrational.vibrational_analysis" title="Link to this heading"></a></h1>
+<p>Numerical routines and file writers for vibrational analysis.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VibrationalAnalysisResult</span></code></a></p></td>
+<td><p>Result container for a vibrational analysis.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate" title="PQAnalysis.analysis.vibrational.vibrational_analysis.calculate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate</span></code></a></p></td>
+<td><p>Calculate wavenumbers, force constants, reduced masses and normal modes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system" title="PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_from_system</span></code></a></p></td>
+<td><p>Calculate vibrational data from an AtomicSystem and Hessian.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.center_to_com" title="PQAnalysis.analysis.vibrational.vibrational_analysis.center_to_com"><code class="xref py py-obj docutils literal notranslate"><span class="pre">center_to_com</span></code></a></p></td>
+<td><p>Translate coordinates to the center of mass.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.force_constant" title="PQAnalysis.analysis.vibrational.vibrational_analysis.force_constant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">force_constant</span></code></a></p></td>
+<td><p>Calculate force constants in mdyn A^-1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.hessian_sign_factor" title="PQAnalysis.analysis.vibrational.vibrational_analysis.hessian_sign_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hessian_sign_factor</span></code></a></p></td>
+<td><p>Resolve a Hessian sign setting into a numeric factor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.inertia_tensor" title="PQAnalysis.analysis.vibrational.vibrational_analysis.inertia_tensor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inertia_tensor</span></code></a></p></td>
+<td><p>Calculate the inertia tensor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.infrared_intensity" title="PQAnalysis.analysis.vibrational.vibrational_analysis.infrared_intensity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infrared_intensity</span></code></a></p></td>
+<td><p>Calculate infrared intensities in km mol^-1.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_coordinates" title="PQAnalysis.analysis.vibrational.vibrational_analysis.internal_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_coordinates</span></code></a></p></td>
+<td><p>Calculate normal modes from a mass-weighted Hessian.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_subspace" title="PQAnalysis.analysis.vibrational.vibrational_analysis.internal_subspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">internal_subspace</span></code></a></p></td>
+<td><p>Calculate the internal-coordinate subspace.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.mass_weighted_hessian" title="PQAnalysis.analysis.vibrational.vibrational_analysis.mass_weighted_hessian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mass_weighted_hessian</span></code></a></p></td>
+<td><p>Symmetrize and mass-weight a Hessian.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.masses_matrix" title="PQAnalysis.analysis.vibrational.vibrational_analysis.masses_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">masses_matrix</span></code></a></p></td>
+<td><p>Create the mass-scaling matrix sqrt(m_i * m_j).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.mode_displacement" title="PQAnalysis.analysis.vibrational.vibrational_analysis.mode_displacement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mode_displacement</span></code></a></p></td>
+<td><p>Scale a mode for display.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file" title="PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_hessian_file</span></code></a></p></td>
+<td><p>Read a plain square Hessian matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.reduced_mass" title="PQAnalysis.analysis.vibrational.vibrational_analysis.reduced_mass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduced_mass</span></code></a></p></td>
+<td><p>Calculate reduced masses from normal-mode normalization factors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.rotational_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.rotational_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotational_modes</span></code></a></p></td>
+<td><p>Calculate normalized rotational modes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices" title="PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">select_mode_indices</span></code></a></p></td>
+<td><p>Select mode indices from a user-facing one-based mode selection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.signed_sqrt" title="PQAnalysis.analysis.vibrational.vibrational_analysis.signed_sqrt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">signed_sqrt</span></code></a></p></td>
+<td><p>Calculate a sign-preserving square root.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.symmetrize_addition" title="PQAnalysis.analysis.vibrational.vibrational_analysis.symmetrize_addition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">symmetrize_addition</span></code></a></p></td>
+<td><p>Symmetrize a matrix by averaging it with its transpose.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.transformation_matrix" title="PQAnalysis.analysis.vibrational.vibrational_analysis.transformation_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transformation_matrix</span></code></a></p></td>
+<td><p>Calculate the external-mode transformation matrix.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.translational_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.translational_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translational_modes</span></code></a></p></td>
+<td><p>Calculate normalized translational modes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.wavenumber" title="PQAnalysis.analysis.vibrational.vibrational_analysis.wavenumber"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavenumber</span></code></a></p></td>
+<td><p>Convert Hessian eigenvalues to wavenumbers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_calculate_output</span></code></a></p></td>
+<td><p>Write the tabular vibrational analysis output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_extxyz_modes</span></code></a></p></td>
+<td><p>Write selected normal modes to one extended XYZ file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_normal_modes</span></code></a></p></td>
+<td><p>Write normal modes in matrix form.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_xyz_modes</span></code></a></p></td>
+<td><p>Write one sinusoidal XYZ trajectory per selected normal mode.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VibrationalAnalysisResult</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">force_constants</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">reduced_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">intensities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#VibrationalAnalysisResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Result container for a vibrational analysis.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.force_constants">
+<span class="sig-name descname"><span class="pre">force_constants</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.force_constants" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.intensities">
+<span class="sig-name descname"><span class="pre">intensities</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.intensities" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.normal_modes">
+<span class="sig-name descname"><span class="pre">normal_modes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.normal_modes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.reduced_masses">
+<span class="sig-name descname"><span class="pre">reduced_masses</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.reduced_masses" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.wavenumbers">
+<span class="sig-name descname"><span class="pre">wavenumbers</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult.wavenumbers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.calculate">
+<span class="sig-name descname"><span class="pre">calculate</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'kcal'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian_sign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><span class="pre">VibrationalAnalysisResult</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#calculate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate" title="Link to this definition"></a></dt>
+<dd><p>Calculate wavenumbers, force constants, reduced masses and normal modes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atom_masses</strong> (<em>np.ndarray</em>) – Atomic masses in amu.</p></li>
+<li><p><strong>atom_coords</strong> (<em>np.ndarray</em>) – Atomic coordinates with shape <code class="docutils literal notranslate"><span class="pre">(n_atoms,</span> <span class="pre">3)</span></code>.</p></li>
+<li><p><strong>hessian</strong> (<em>np.ndarray</em>) – Cartesian Hessian with shape <code class="docutils literal notranslate"><span class="pre">(3</span> <span class="pre">*</span> <span class="pre">n_atoms,</span> <span class="pre">3</span> <span class="pre">*</span> <span class="pre">n_atoms)</span></code>.</p></li>
+<li><p><strong>atom_charges</strong> (<em>np.ndarray</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Atomic charges used to calculate IR intensities, by default None.</p></li>
+<li><p><strong>unit</strong> (<em>str</em><em>, </em><em>optional</em>) – Hessian energy unit. Supported values are <code class="docutils literal notranslate"><span class="pre">kcal</span></code>, <code class="docutils literal notranslate"><span class="pre">hartree</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ev</span></code>, by default <code class="docutils literal notranslate"><span class="pre">kcal</span></code>.</p></li>
+<li><p><strong>hessian_sign</strong> (<em>str</em><em> | </em><em>float</em><em>, </em><em>optional</em>) – Hessian sign convention. Supported values are <code class="docutils literal notranslate"><span class="pre">auto</span></code>, <code class="docutils literal notranslate"><span class="pre">positive</span></code>,
+<code class="docutils literal notranslate"><span class="pre">negative</span></code>, <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">-1</span></code>, by default <code class="docutils literal notranslate"><span class="pre">auto</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system">
+<span class="sig-name descname"><span class="pre">calculate_from_system</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">system</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><span class="pre">AtomicSystem</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'kcal'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian_sign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'auto'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><span class="pre">VibrationalAnalysisResult</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#calculate_from_system"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system" title="Link to this definition"></a></dt>
+<dd><p>Calculate vibrational data from an AtomicSystem and Hessian.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.center_to_com">
+<span class="sig-name descname"><span class="pre">center_to_com</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#center_to_com"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.center_to_com" title="Link to this definition"></a></dt>
+<dd><p>Translate coordinates to the center of mass.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.force_constant">
+<span class="sig-name descname"><span class="pre">force_constant</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">reduced_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#force_constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.force_constant" title="Link to this definition"></a></dt>
+<dd><p>Calculate force constants in mdyn A^-1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.hessian_sign_factor">
+<span class="sig-name descname"><span class="pre">hessian_sign_factor</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian_sign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#hessian_sign_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.hessian_sign_factor" title="Link to this definition"></a></dt>
+<dd><p>Resolve a Hessian sign setting into a numeric factor.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.inertia_tensor">
+<span class="sig-name descname"><span class="pre">inertia_tensor</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#inertia_tensor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.inertia_tensor" title="Link to this definition"></a></dt>
+<dd><p>Calculate the inertia tensor.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.infrared_intensity">
+<span class="sig-name descname"><span class="pre">infrared_intensity</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_charges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">reduced_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#infrared_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.infrared_intensity" title="Link to this definition"></a></dt>
+<dd><p>Calculate infrared intensities in km mol^-1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.internal_coordinates">
+<span class="sig-name descname"><span class="pre">internal_coordinates</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian_mw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#internal_coordinates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Calculate normal modes from a mass-weighted Hessian.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.internal_subspace">
+<span class="sig-name descname"><span class="pre">internal_subspace</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#internal_subspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_subspace" title="Link to this definition"></a></dt>
+<dd><p>Calculate the internal-coordinate subspace.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.mass_weighted_hessian">
+<span class="sig-name descname"><span class="pre">mass_weighted_hessian</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">sign</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#mass_weighted_hessian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.mass_weighted_hessian" title="Link to this definition"></a></dt>
+<dd><p>Symmetrize and mass-weight a Hessian.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.masses_matrix">
+<span class="sig-name descname"><span class="pre">masses_matrix</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#masses_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.masses_matrix" title="Link to this definition"></a></dt>
+<dd><p>Create the mass-scaling matrix sqrt(m_i * m_j).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.mode_displacement">
+<span class="sig-name descname"><span class="pre">mode_displacement</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumber_value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#mode_displacement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.mode_displacement" title="Link to this definition"></a></dt>
+<dd><p>Scale a mode for display.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file">
+<span class="sig-name descname"><span class="pre">read_hessian_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#read_hessian_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file" title="Link to this definition"></a></dt>
+<dd><p>Read a plain square Hessian matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The Hessian file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The square Hessian matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.reduced_mass">
+<span class="sig-name descname"><span class="pre">reduced_mass</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">normalization</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#reduced_mass"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.reduced_mass" title="Link to this definition"></a></dt>
+<dd><p>Calculate reduced masses from normal-mode normalization factors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.rotational_modes">
+<span class="sig-name descname"><span class="pre">rotational_modes</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#rotational_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.rotational_modes" title="Link to this definition"></a></dt>
+<dd><p>Calculate normalized rotational modes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices">
+<span class="sig-name descname"><span class="pre">select_mode_indices</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#select_mode_indices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices" title="Link to this definition"></a></dt>
+<dd><p>Select mode indices from a user-facing one-based mode selection.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.signed_sqrt">
+<span class="sig-name descname"><span class="pre">signed_sqrt</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#signed_sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.signed_sqrt" title="Link to this definition"></a></dt>
+<dd><p>Calculate a sign-preserving square root.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.symmetrize_addition">
+<span class="sig-name descname"><span class="pre">symmetrize_addition</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">hessian</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#symmetrize_addition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.symmetrize_addition" title="Link to this definition"></a></dt>
+<dd><p>Symmetrize a matrix by averaging it with its transpose.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.transformation_matrix">
+<span class="sig-name descname"><span class="pre">transformation_matrix</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#transformation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.transformation_matrix" title="Link to this definition"></a></dt>
+<dd><p>Calculate the external-mode transformation matrix.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.translational_modes">
+<span class="sig-name descname"><span class="pre">translational_modes</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_masses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#translational_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.translational_modes" title="Link to this definition"></a></dt>
+<dd><p>Calculate normalized translational modes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.wavenumber">
+<span class="sig-name descname"><span class="pre">wavenumber</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">eigenvalues</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'kcal'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#wavenumber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.wavenumber" title="Link to this definition"></a></dt>
+<dd><p>Convert Hessian eigenvalues to wavenumbers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output">
+<span class="sig-name descname"><span class="pre">write_calculate_output</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><span class="pre">VibrationalAnalysisResult</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_calculate_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output" title="Link to this definition"></a></dt>
+<dd><p>Write the tabular vibrational analysis output.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes">
+<span class="sig-name descname"><span class="pre">write_extxyz_modes</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'modes.xyz'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">intensities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_extxyz_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes" title="Link to this definition"></a></dt>
+<dd><p>Write selected normal modes to one extended XYZ file.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes">
+<span class="sig-name descname"><span class="pre">write_normal_modes</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_normal_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes" title="Link to this definition"></a></dt>
+<dd><p>Write normal modes in matrix form.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes">
+<span class="sig-name descname"><span class="pre">write_xyz_modes</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_coords</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">atom_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'modes'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">amplitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">n_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-08</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_xyz_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes" title="Link to this definition"></a></dt>
+<dd><p>Write one sinusoidal XYZ trajectory per selected normal mode.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.vibrational.exceptions.html" class="btn btn-neutral float-left" title="exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html" class="btn btn-neutral float-right" title="vibrational_input_file_reader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

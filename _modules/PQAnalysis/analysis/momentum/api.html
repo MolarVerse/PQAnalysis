@@ -1,0 +1,195 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.momentum.api &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/momentum/api.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.momentum.api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.momentum.api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API functions for the momentum analysis.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">SelectionCompatible</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDEngineFormat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveReal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.momentum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Momentum</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.momentum_output_file_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">MomentumDataWriter</span>
+
+
+
+<div class="viewcode-block" id="check_momentum">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.momentum.api.html#PQAnalysis.analysis.momentum.api.check_momentum">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_momentum</span><span class="p">(</span>
+    <span class="n">trajectory_files</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">selection</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">scale</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the total linear momentum norm per frame and write it.</span>
+
+<span class="sd">    Reads the given velocity trajectory file(s) frame by frame,</span>
+<span class="sd">    calculates the norm of the total linear momentum</span>
+<span class="sd">    ``P = sum_i m_i * v_i`` of the selected atoms for every frame and</span>
+<span class="sd">    writes one row per frame containing the one-based frame index and</span>
+<span class="sd">    the scaled momentum norm. This is a port of the legacy</span>
+<span class="sd">    ``equipartition.jl`` tool.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    trajectory_files : str | List[str]</span>
+<span class="sd">        The velocity trajectory file(s) to read.</span>
+<span class="sd">    output : str | None, optional</span>
+<span class="sd">        The output file. If None, the output is printed to stdout,</span>
+<span class="sd">        by default None.</span>
+<span class="sd">    selection : SelectionCompatible, optional</span>
+<span class="sd">        The selection of atoms to include in the total momentum,</span>
+<span class="sd">        by default None (all atoms).</span>
+<span class="sd">    use_full_atom_info : bool, optional</span>
+<span class="sd">        Whether to use the full atom information of the trajectory</span>
+<span class="sd">        for the selection or not, by default False.</span>
+<span class="sd">    scale : PositiveReal | None, optional</span>
+<span class="sd">        The scaling factor applied to the momentum norm before</span>
+<span class="sd">        output, by default None (1e-15, which converts</span>
+<span class="sd">        amu*Angstrom/s to amu*Angstrom/fs).</span>
+<span class="sd">    md_format : MDEngineFormat | str, optional</span>
+<span class="sd">        The format of the trajectory, by default MDEngineFormat.PQ.</span>
+<span class="sd">        Use ``qmcfc`` for legacy trajectories with a leading dummy</span>
+<span class="sd">        &#39;X&#39; atom.</span>
+<span class="sd">    mode : str | FileWritingMode, optional</span>
+<span class="sd">        The writing mode of the output file, by default &quot;w&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Np1DNumberArray</span>
+<span class="sd">        The scaled norms of the total linear momentum, one value</span>
+<span class="sd">        per frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="n">trajectory_files</span><span class="p">,</span> <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">)</span>
+
+    <span class="n">momentum</span> <span class="o">=</span> <span class="n">Momentum</span><span class="p">(</span>
+        <span class="n">reader</span><span class="p">,</span>
+        <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
+        <span class="n">use_full_atom_info</span><span class="o">=</span><span class="n">use_full_atom_info</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">data_writer</span> <span class="o">=</span> <span class="n">MomentumDataWriter</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="n">momentum_norms</span> <span class="o">=</span> <span class="n">momentum</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+    <span class="n">data_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">momentum_norms</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">momentum_norms</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

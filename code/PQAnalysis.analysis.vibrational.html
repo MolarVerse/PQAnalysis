@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis.vibrational &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.vibrational.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="api" href="PQAnalysis.analysis.vibrational.api.html" />
+    <link rel="prev" title="vacf_output_file_writer" href="PQAnalysis.analysis.vacf.vacf_output_file_writer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">analysis.vibrational</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html">vibrational_analysis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html">vibrational_input_file_reader</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+      <li class="breadcrumb-item active">analysis.vibrational</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.vibrational.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.vibrational">
+<span id="analysis-vibrational"></span><h1>analysis.vibrational<a class="headerlink" href="#module-PQAnalysis.analysis.vibrational" title="Link to this heading"></a></h1>
+<p>Vibrational analysis tools.</p>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.vibrational.api.html">api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.vibrational.exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html">vibrational_analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html">vibrational_input_file_reader</a></li>
+</ul>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Classes:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html#PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader" title="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">VibrationalAnalysisInputFileReader</span></code></a></p></td>
+<td><p>A class to read input files for vibrational analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">VibrationalAnalysisResult</span></code></a></p></td>
+<td><p>Result container for a vibrational analysis.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Functions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate" title="PQAnalysis.analysis.vibrational.vibrational_analysis.calculate"><code class="xref py py-func docutils literal notranslate"><span class="pre">calculate</span></code></a></p></td>
+<td><p>Calculate wavenumbers, force constants, reduced masses and normal modes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file" title="PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_hessian_file</span></code></a></p></td>
+<td><p>Read a plain square Hessian matrix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices" title="PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices"><code class="xref py py-func docutils literal notranslate"><span class="pre">select_mode_indices</span></code></a></p></td>
+<td><p>Select mode indices from a user-facing one-based mode selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.api.html#PQAnalysis.analysis.vibrational.api.vibrations" title="PQAnalysis.analysis.vibrational.api.vibrations"><code class="xref py py-func docutils literal notranslate"><span class="pre">vibrations</span></code></a></p></td>
+<td><p>Run vibrational analysis from an input file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_calculate_output</span></code></a></p></td>
+<td><p>Write the tabular vibrational analysis output.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_extxyz_modes</span></code></a></p></td>
+<td><p>Write selected normal modes to one extended XYZ file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_normal_modes</span></code></a></p></td>
+<td><p>Write normal modes in matrix form.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_xyz_modes</span></code></a></p></td>
+<td><p>Write one sinusoidal XYZ trajectory per selected normal mode.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.vacf.vacf_output_file_writer.html" class="btn btn-neutral float-left" title="vacf_output_file_writer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.vibrational.api.html" class="btn btn-neutral float-right" title="api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

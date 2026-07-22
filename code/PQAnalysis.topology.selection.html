@@ -12,6 +12,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.topology.selection.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
@@ -133,8 +134,8 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class for representing a selection.</p>
 <p>If the selection object is a Selection object, the selection is copied.</p>
-<dl>
-<dt>There are several ways to create a selection:</dt><dd><ul class="simple">
+<p>There are several ways to create a selection:</p>
+<ul>
 <li><p>None: all atoms are selected</p></li>
 <li><p>Atom: the given atom is selected</p></li>
 <li><p>Element: all atoms with the given element type are selected</p></li>
@@ -142,56 +143,51 @@
 <li><p>Elements: all atoms with the given element types are selected</p></li>
 <li><p>Np1DIntArray: the atoms with the given indices are selected</p></li>
 <li><p>List[str]: all atoms with the given atom type names are selected</p></li>
-<li><p>str: the given string is parsed and the atoms selected by the</p></li>
-</ul>
-<p>selection are selected</p>
-<blockquote>
-<div><p>This string will be parsed based on a Lark grammar. Which is
+<li><p>str: the given string is parsed and the atoms selected by the
+selection are selected.</p>
+<p>This string will be parsed based on a Lark grammar, which is
 defined as follows:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>simple word containing only letters and numbers: the</p></li>
+<ul class="simple">
+<li><p>simple word containing only letters and numbers: the atom type
+with the given name is selected</p></li>
+<li><p>&lt;integer&gt;: the atom with the given index is selected</p></li>
+<li><p>&lt;integer1&gt;..&lt;integer2&gt;: the indices from integer1 to integer2
+are selected</p></li>
+<li><p>&lt;integer1&gt;-&lt;integer2&gt;: the indices from integer1 to integer2
+are selected</p></li>
+<li><p>&lt;integer1&gt;..&lt;integer2&gt;..&lt;integer3&gt;: the indices from integer1 to
+integer3 with a step size of integer3 are selected</p></li>
+<li><p>atom(&lt;atomtype&gt;, &lt;atomic_number&gt;): the atom with the given atom
+type and atomic number is selected</p></li>
+<li><p>atom(&lt;atomtype&gt;, &lt;element_symbol&gt;): the atom with the given atom
+type and element symbol is selected</p></li>
+<li><p>elem(&lt;atomic_number&gt;): all atoms with the given element type
+are selected</p></li>
+<li><p>elem(&lt;element_symbol&gt;): all atoms with the given element type
+are selected</p></li>
+<li><p><cite>*</cite>: all atoms are selected (same as ‘all’), useful if only
+few atoms should be excluded</p></li>
 </ul>
-<p>atom type with the given name is selected
-- &lt;integer&gt;: the atom with the given index is selected
-- &lt;integer1&gt;..&lt;integer2&gt;: the indices from integer1 to integer2
-are selected
-- &lt;integer1&gt;-&lt;integer2&gt;: the indices from integer1 to integer2
-are selected
-- &lt;integer1&gt;..&lt;integer2&gt;..&lt;integer3&gt;: the indices from integer1 to
-integer3 with a step size of integer3 are selected
-- atom(&lt;atomtype&gt;, &lt;atomic_number&gt;): the atom with the given atom
-type and atomic number is selected
-- atom(&lt;atomtype&gt;, &lt;element_symbol&gt;): the atom with the given atom
-type and element symbol is selected
-- elem(&lt;atomic_number&gt;): all atoms with the given element type
-are selected
-- elem(&lt;element_symbol&gt;): all atoms with the given element type
-are selected
-- <cite>*</cite>: all atoms are selected (same as ‘all’), useful if only
-few atoms should be excluded</p>
-</div></blockquote>
-<p>All of the above statements can be combined with the following operators:</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>‘,’: the union of the two statements is selected, meaning that</p></li>
-</ul>
-<p>the atoms selected by the first statement and the atoms selected
-by the second statement are selected
-- ‘&amp;’: the intersection of the two statements is selected, meaning
-that only the atoms selected by both statements are selected
-- ‘|’: the set difference of the two statements is selected,
+<p>All of the above statements can be combined with the following
+operators:</p>
+<ul class="simple">
+<li><p>‘,’: the union of the two statements is selected, meaning that
+the atoms selected by the first statement and the atoms selected
+by the second statement are selected</p></li>
+<li><p>‘&amp;’: the intersection of the two statements is selected, meaning
+that only the atoms selected by both statements are selected</p></li>
+<li><p>‘|’: the set difference of the two statements is selected,
 meaning that only the atoms selected by the first statement are
-selected, which are not selected by the second statement</p>
-</div></blockquote>
-<p>The operators are evaluated in the following order: ‘|’ -&gt; ‘&amp;’ -&gt; ‘,’
-This means that the ‘,’ operator has the lowest precedence and the ‘|’
-operator has the highest precedence and therefore binds the strongest.</p>
-<p>Additionally, parentheses can be used to group statements and change
-the order of evaluation.</p>
-</div></blockquote>
-</dd>
-</dl>
+selected, which are not selected by the second statement</p></li>
+</ul>
+<p>The operators are evaluated in the following order:
+‘|’ -&gt; ‘&amp;’ -&gt; ‘,’. This means that the ‘,’ operator has the lowest
+precedence and the ‘|’ operator has the highest precedence and
+therefore binds the strongest.</p>
+<p>Additionally, parentheses can be used to group statements and
+change the order of evaluation.</p>
+</li>
+</ul>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
 <p>The atom counting always starts with 0!</p>

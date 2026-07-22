@@ -1,0 +1,387 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>spectrum_broadening &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="spectrum_broadening_output_file_writer" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html" />
+    <link rel="prev" title="exceptions" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html">exceptions</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">spectrum_broadening</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html">spectrum_broadening_output_file_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a></li>
+      <li class="breadcrumb-item active">spectrum_broadening</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.spectrum_broadening.spectrum_broadening">
+<span id="spectrum-broadening"></span><h1>spectrum_broadening<a class="headerlink" href="#module-PQAnalysis.analysis.spectrum_broadening.spectrum_broadening" title="Link to this heading"></a></h1>
+<p>Numerical routines for line broadening of stick spectra.</p>
+<p>A stick spectrum is a list of discrete lines, each given by a
+wavenumber (in cm^-1) and an intensity. Broadening convolves each
+line with a Gaussian (or Lorentzian) kernel on a regular wavenumber
+grid using the peak-height convention: the broadened profile of a
+single line reaches exactly the line intensity at the line position,
+no area normalization is applied. This reproduces the legacy
+<code class="docutils literal notranslate"><span class="pre">build_spectrum.sh</span></code> awk implementation, which calculates
+<code class="docutils literal notranslate"><span class="pre">I(grid)</span> <span class="pre">=</span> <span class="pre">sum_k</span> <span class="pre">I_k</span> <span class="pre">*</span> <span class="pre">exp(-alpha</span> <span class="pre">*</span> <span class="pre">(grid</span> <span class="pre">-</span> <span class="pre">nu_k)^2)</span></code> with a
+default <code class="docutils literal notranslate"><span class="pre">alpha</span></code> of 0.0025 cm^-2 (FWHM of about 33.3 cm^-1) on a
+grid from 10 cm^-1 (inclusive) to 4000 cm^-1 (exclusive) with a step
+of 0.25 cm^-1.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha_from_fwhm</span></code></a></p></td>
+<td><p>Convert a Gaussian full width at half maximum to the exponent alpha.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden"><code class="xref py py-obj docutils literal notranslate"><span class="pre">broaden</span></code></a></p></td>
+<td><p>Broaden a stick spectrum on a wavenumber grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fwhm_from_alpha</span></code></a></p></td>
+<td><p>Convert a Gaussian exponent alpha to the full width at half maximum.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_stick_spectrum</span></code></a></p></td>
+<td><p>Read a two-column stick spectrum file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavenumber_grid</span></code></a></p></td>
+<td><p>Build the regular wavenumber grid of the broadened spectrum.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm">
+<span class="sig-name descname"><span class="pre">alpha_from_fwhm</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">fwhm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/spectrum_broadening/spectrum_broadening.html#alpha_from_fwhm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm" title="Link to this definition"></a></dt>
+<dd><p>Convert a Gaussian full width at half maximum to the exponent alpha.</p>
+<p>The Gaussian kernel is <code class="docutils literal notranslate"><span class="pre">exp(-alpha</span> <span class="pre">*</span> <span class="pre">delta_nu^2)</span></code>, so the full
+width at half maximum is <code class="docutils literal notranslate"><span class="pre">2</span> <span class="pre">*</span> <span class="pre">sqrt(ln(2)</span> <span class="pre">/</span> <span class="pre">alpha)</span></code> and therefore
+<code class="docutils literal notranslate"><span class="pre">alpha</span> <span class="pre">=</span> <span class="pre">4</span> <span class="pre">*</span> <span class="pre">ln(2)</span> <span class="pre">/</span> <span class="pre">fwhm^2</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fwhm</strong> (<em>PositiveReal</em>) – The full width at half maximum in cm^-1.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Gaussian exponent alpha in cm^-2.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html#PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError" title="PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError"><strong>SpectrumBroadeningError</strong></a> – If the full width at half maximum is not positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden">
+<span class="sig-name descname"><span class="pre">broaden</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumbers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">intensities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0025</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gaussian'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/spectrum_broadening/spectrum_broadening.html#broaden"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden" title="Link to this definition"></a></dt>
+<dd><p>Broaden a stick spectrum on a wavenumber grid.</p>
+<p>Each grid point accumulates the contributions of all sticks using
+the peak-height convention. For the Gaussian kernel the broadened
+spectrum is <code class="docutils literal notranslate"><span class="pre">I(g)</span> <span class="pre">=</span> <span class="pre">sum_k</span> <span class="pre">I_k</span> <span class="pre">*</span> <span class="pre">exp(-alpha</span> <span class="pre">*</span> <span class="pre">(g</span> <span class="pre">-</span> <span class="pre">nu_k)^2)</span></code>. For
+the Lorentzian kernel the broadened spectrum is
+<code class="docutils literal notranslate"><span class="pre">I(g)</span> <span class="pre">=</span> <span class="pre">sum_k</span> <span class="pre">I_k</span> <span class="pre">*</span> <span class="pre">gamma^2</span> <span class="pre">/</span> <span class="pre">((g</span> <span class="pre">-</span> <span class="pre">nu_k)^2</span> <span class="pre">+</span> <span class="pre">gamma^2)</span></code> where the
+half width at half maximum <code class="docutils literal notranslate"><span class="pre">gamma</span> <span class="pre">=</span> <span class="pre">sqrt(ln(2)</span> <span class="pre">/</span> <span class="pre">alpha)</span></code> is chosen
+such that both kernels share the same full width at half maximum
+for a given alpha.</p>
+<p>The calculation uses a vectorized outer difference between the grid
+and the stick positions and is chunked along the grid axis to keep
+the memory footprint bounded for large inputs. All accumulation is
+performed in float64.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavenumbers</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a>) – The stick positions in cm^-1.</p></li>
+<li><p><strong>intensities</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a>) – The stick intensities. Must have the same length as the
+stick positions.</p></li>
+<li><p><strong>grid</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a>) – The wavenumber grid in cm^-1.</p></li>
+<li><p><strong>alpha</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – The Gaussian exponent alpha in cm^-2, by default 0.0025.</p></li>
+<li><p><strong>kernel</strong> (<em>str</em><em>, </em><em>optional</em>) – The broadening kernel, either <code class="docutils literal notranslate"><span class="pre">gaussian</span></code> or <code class="docutils literal notranslate"><span class="pre">lorentzian</span></code>,
+by default <code class="docutils literal notranslate"><span class="pre">gaussian</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The broadened intensities on the grid as a float64 array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html#PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError" title="PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError"><strong>SpectrumBroadeningError</strong></a> – If alpha is not positive, the kernel is unknown or the stick
+    positions and intensities have different lengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha">
+<span class="sig-name descname"><span class="pre">fwhm_from_alpha</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/spectrum_broadening/spectrum_broadening.html#fwhm_from_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha" title="Link to this definition"></a></dt>
+<dd><p>Convert a Gaussian exponent alpha to the full width at half maximum.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> (<em>PositiveReal</em>) – The Gaussian exponent alpha in cm^-2.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The full width at half maximum in cm^-1.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html#PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError" title="PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError"><strong>SpectrumBroadeningError</strong></a> – If alpha is not positive.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum">
+<span class="sig-name descname"><span class="pre">read_stick_spectrum</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/spectrum_broadening/spectrum_broadening.html#read_stick_spectrum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum" title="Link to this definition"></a></dt>
+<dd><p>Read a two-column stick spectrum file.</p>
+<p>The file must contain one line per stick with the wavenumber in
+cm^-1 in the first column and the intensity in the second column.
+Blank lines and lines starting with <code class="docutils literal notranslate"><span class="pre">#</span></code> are ignored. Additional
+columns are ignored as well.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – The stick spectrum file to read.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wavenumbers and intensities of the sticks as float64 arrays.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a>, <a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a>]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html#PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError" title="PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError"><strong>SpectrumBroadeningError</strong></a> – If the file does not exist or contains a malformed line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid">
+<span class="sig-name descname"><span class="pre">wavenumber_grid</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumber_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10.0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumber_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Real</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4000.0</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">wavenumber_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.25</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/spectrum_broadening/spectrum_broadening.html#wavenumber_grid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid" title="Link to this definition"></a></dt>
+<dd><p>Build the regular wavenumber grid of the broadened spectrum.</p>
+<p>The grid starts at <code class="docutils literal notranslate"><span class="pre">wavenumber_min</span></code> and increases in steps of
+<code class="docutils literal notranslate"><span class="pre">wavenumber_step</span></code> while staying strictly below <code class="docutils literal notranslate"><span class="pre">wavenumber_max</span></code>,
+exactly like the legacy awk loop
+<code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">(i</span> <span class="pre">=</span> <span class="pre">min;</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">max;</span> <span class="pre">i</span> <span class="pre">+=</span> <span class="pre">step)</span></code>. The default grid therefore
+contains 15960 points from 10.0 cm^-1 to 3999.75 cm^-1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wavenumber_min</strong> (<em>Real</em><em>, </em><em>optional</em>) – The first grid point in cm^-1, by default 10.0.</p></li>
+<li><p><strong>wavenumber_max</strong> (<em>Real</em><em>, </em><em>optional</em>) – The exclusive upper bound of the grid in cm^-1, by default 4000.0.</p></li>
+<li><p><strong>wavenumber_step</strong> (<em>PositiveReal</em><em>, </em><em>optional</em>) – The grid spacing in cm^-1, by default 0.25.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The wavenumber grid as a float64 array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray">Np1DNumberArray</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html#PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError" title="PQAnalysis.analysis.spectrum_broadening.exceptions.SpectrumBroadeningError"><strong>SpectrumBroadeningError</strong></a> – If the step is not positive or the upper bound is not larger
+    than the lower bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_ALPHA">
+<span class="sig-name descname"><span class="pre">DEFAULT_ALPHA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0025</span></em><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_ALPHA" title="Link to this definition"></a></dt>
+<dd><p>Default Gaussian exponent alpha in cm^-2 (legacy <code class="docutils literal notranslate"><span class="pre">BROAD</span></code> setting).</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_MAX">
+<span class="sig-name descname"><span class="pre">DEFAULT_WAVENUMBER_MAX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4000.0</span></em><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_MAX" title="Link to this definition"></a></dt>
+<dd><p>Default (exclusive) last grid point in cm^-1.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_MIN">
+<span class="sig-name descname"><span class="pre">DEFAULT_WAVENUMBER_MIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10.0</span></em><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_MIN" title="Link to this definition"></a></dt>
+<dd><p>Default first grid point in cm^-1.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_STEP">
+<span class="sig-name descname"><span class="pre">DEFAULT_WAVENUMBER_STEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.25</span></em><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.DEFAULT_WAVENUMBER_STEP" title="Link to this definition"></a></dt>
+<dd><p>Default grid spacing in cm^-1.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.KERNELS">
+<span class="sig-name descname"><span class="pre">KERNELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('gaussian',</span> <span class="pre">'lorentzian')</span></em><a class="headerlink" href="#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.KERNELS" title="Link to this definition"></a></dt>
+<dd><p>Supported broadening kernels.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.spectrum_broadening.exceptions.html" class="btn btn-neutral float-left" title="exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html" class="btn btn-neutral float-right" title="spectrum_broadening_output_file_writer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

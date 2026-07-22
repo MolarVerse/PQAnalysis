@@ -1,0 +1,1105 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.vibrational.vibrational_analysis &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.vibrational.vibrational_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.vibrational.vibrational_analysis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Numerical routines and file writers for vibrational analysis.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.atomic_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystem</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VibrationalAnalysisError</span>
+
+<span class="n">LINEAR_ROTATION_RTOL</span> <span class="o">=</span> <span class="mf">1e-6</span>
+<span class="n">SPEED_OF_LIGHT_CM_S</span> <span class="o">=</span> <span class="mf">2.99792458e10</span>
+<span class="n">BOLTZMANN_EV_K</span> <span class="o">=</span> <span class="mf">8.617333262145e-5</span>
+<span class="n">WAVENUMBER_TO_EV</span> <span class="o">=</span> <span class="mf">1.2398419843320026e-4</span>
+<span class="n">MODE_THRESHOLD_CM</span> <span class="o">=</span> <span class="mf">1.0e-8</span>
+
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Open a named output file or yield stdout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
+        <span class="k">return</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">file</span>
+
+
+
+<div class="viewcode-block" id="VibrationalAnalysisResult">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">VibrationalAnalysisResult</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Result container for a vibrational analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">wavenumbers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">force_constants</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">reduced_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">intensities</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+
+<div class="viewcode-block" id="read_hessian_file">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.read_hessian_file">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_hessian_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a plain square Hessian matrix.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The Hessian file.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        The square Hessian matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hessian file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; not found.&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">hessian_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Hessian file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; contains non-numeric data.&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
+
+    <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">hessian_data</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">hessian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">hessian</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Hessian matrix must be square, got shape </span><span class="si">{</span><span class="n">hessian</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">hessian</span></div>
+
+
+
+
+<div class="viewcode-block" id="calculate">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span>
+    <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_charges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;kcal&quot;</span><span class="p">,</span>
+    <span class="n">hessian_sign</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VibrationalAnalysisResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate wavenumbers, force constants, reduced masses and normal modes.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    atom_masses : np.ndarray</span>
+<span class="sd">        Atomic masses in amu.</span>
+<span class="sd">    atom_coords : np.ndarray</span>
+<span class="sd">        Atomic coordinates with shape ``(n_atoms, 3)``.</span>
+<span class="sd">    hessian : np.ndarray</span>
+<span class="sd">        Cartesian Hessian with shape ``(3 * n_atoms, 3 * n_atoms)``.</span>
+<span class="sd">    atom_charges : np.ndarray | None, optional</span>
+<span class="sd">        Atomic charges used to calculate IR intensities, by default None.</span>
+<span class="sd">    unit : str, optional</span>
+<span class="sd">        Hessian energy unit. Supported values are ``kcal``, ``hartree`` and</span>
+<span class="sd">        ``ev``, by default ``kcal``.</span>
+<span class="sd">    hessian_sign : str | float, optional</span>
+<span class="sd">        Hessian sign convention. Supported values are ``auto``, ``positive``,</span>
+<span class="sd">        ``negative``, ``1`` and ``-1``, by default ``auto``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atom_masses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">atom_coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">hessian</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">hessian</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">_check_shapes</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">,</span> <span class="n">atom_coords</span><span class="p">,</span> <span class="n">hessian</span><span class="p">)</span>
+
+    <span class="n">sign_factor</span> <span class="o">=</span> <span class="n">hessian_sign_factor</span><span class="p">(</span>
+        <span class="n">atom_coords</span><span class="p">,</span>
+        <span class="n">atom_masses</span><span class="p">,</span>
+        <span class="n">hessian</span><span class="p">,</span>
+        <span class="n">hessian_sign</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">hessian_mw</span> <span class="o">=</span> <span class="n">mass_weighted_hessian</span><span class="p">(</span>
+        <span class="n">hessian</span><span class="p">,</span>
+        <span class="n">atom_masses</span><span class="p">,</span>
+        <span class="n">sign</span><span class="o">=</span><span class="n">sign_factor</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">,</span> <span class="n">normalization</span> <span class="o">=</span> <span class="n">internal_coordinates</span><span class="p">(</span>
+        <span class="n">atom_coords</span><span class="p">,</span>
+        <span class="n">atom_masses</span><span class="p">,</span>
+        <span class="n">hessian_mw</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">omega</span> <span class="o">=</span> <span class="n">wavenumber</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">)</span>
+    <span class="n">reduced_masses</span> <span class="o">=</span> <span class="n">reduced_mass</span><span class="p">(</span><span class="n">normalization</span><span class="p">)</span>
+    <span class="n">force_constants</span> <span class="o">=</span> <span class="n">force_constant</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">reduced_masses</span><span class="p">)</span>
+
+    <span class="n">intensities</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">atom_charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">atom_charges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">atom_charges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">atom_charges</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">atom_masses</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+                <span class="s2">&quot;The number of atom charges must match the number of atoms.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">intensities</span> <span class="o">=</span> <span class="n">infrared_intensity</span><span class="p">(</span>
+            <span class="n">normal_modes</span><span class="p">,</span>
+            <span class="n">atom_charges</span><span class="p">,</span>
+            <span class="n">reduced_masses</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">VibrationalAnalysisResult</span><span class="p">(</span>
+        <span class="n">wavenumbers</span><span class="o">=</span><span class="n">wavenumbers</span><span class="p">,</span>
+        <span class="n">intensities</span><span class="o">=</span><span class="n">intensities</span><span class="p">,</span>
+        <span class="n">force_constants</span><span class="o">=</span><span class="n">force_constants</span><span class="p">,</span>
+        <span class="n">reduced_masses</span><span class="o">=</span><span class="n">reduced_masses</span><span class="p">,</span>
+        <span class="n">normal_modes</span><span class="o">=</span><span class="n">normal_modes</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="calculate_from_system">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_from_system</span><span class="p">(</span>
+    <span class="n">system</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">,</span>
+    <span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;kcal&quot;</span><span class="p">,</span>
+    <span class="n">hessian_sign</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">atom_charges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VibrationalAnalysisResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate vibrational data from an AtomicSystem and Hessian.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">calculate</span><span class="p">(</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">atomic_masses</span><span class="p">,</span>
+        <span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
+        <span class="n">hessian</span><span class="p">,</span>
+        <span class="n">atom_charges</span><span class="o">=</span><span class="n">atom_charges</span><span class="p">,</span>
+        <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+        <span class="n">hessian_sign</span><span class="o">=</span><span class="n">hessian_sign</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_shapes</span><span class="p">(</span>
+    <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate array shapes before running the numerical analysis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">atom_masses</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;Atom masses must be a one-dimensional array.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">atom_coords</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">atom_masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;Atom coordinates must have shape (n_atoms, 3).&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">expected_hessian_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">atom_masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">atom_masses</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hessian</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">expected_hessian_shape</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;Hessian shape must be &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">expected_hessian_shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">hessian</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="center_to_com">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.center_to_com">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">center_to_com</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translate coordinates to the center of mass.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">center_of_mass</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_coords</span> <span class="o">*</span> <span class="n">atom_masses</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">center_of_mass</span> <span class="o">=</span> <span class="n">center_of_mass</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">atom_coords</span> <span class="o">-</span> <span class="n">center_of_mass</span></div>
+
+
+
+
+<div class="viewcode-block" id="inertia_tensor">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.inertia_tensor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">inertia_tensor</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the inertia tensor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">i_xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">i_yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">z</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">i_zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="n">i_xy</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">i_xz</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">z</span><span class="p">))</span>
+    <span class="n">i_yz</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">atom_masses</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="n">z</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="p">[</span><span class="n">i_xx</span><span class="p">,</span> <span class="n">i_xy</span><span class="p">,</span> <span class="n">i_xz</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">i_xy</span><span class="p">,</span> <span class="n">i_yy</span><span class="p">,</span> <span class="n">i_yz</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">i_xz</span><span class="p">,</span> <span class="n">i_yz</span><span class="p">,</span> <span class="n">i_zz</span><span class="p">],</span>
+        <span class="p">],</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="translational_modes">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.translational_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">translational_modes</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate normalized translational modes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">translation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">atom_masses</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">atom_index</span><span class="p">,</span> <span class="n">mass</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">atom_index</span>
+        <span class="n">translation</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="mi">3</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mass</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="n">norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">translation</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">translation</span> <span class="o">/</span> <span class="n">norms</span></div>
+
+
+
+
+<div class="viewcode-block" id="rotational_modes">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.rotational_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">rotational_modes</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate normalized rotational modes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">atom_coords_cm</span> <span class="o">=</span> <span class="n">center_to_com</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">inertia_tensor</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">))</span>
+
+    <span class="n">x_frame</span> <span class="o">=</span> <span class="n">eigenvectors</span>
+    <span class="n">p_frame</span> <span class="o">=</span> <span class="n">atom_coords_cm</span> <span class="o">@</span> <span class="n">eigenvectors</span>
+    <span class="n">sqrt_masses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+    <span class="n">rotation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">atom_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">rotation</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">sqrt_masses</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">rotation</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">sqrt_masses</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+    <span class="n">rotation</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span>
+            <span class="n">p_frame</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">x_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:][</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">sqrt_masses</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">)</span>
+
+    <span class="n">rotation_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">rotation</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">threshold</span> <span class="o">=</span> <span class="n">LINEAR_ROTATION_RTOL</span> <span class="o">*</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">rotation_norms</span><span class="p">)))</span>
+    <span class="n">keep</span> <span class="o">=</span> <span class="n">rotation_norms</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+    <span class="n">rotation</span> <span class="o">=</span> <span class="n">rotation</span><span class="p">[:,</span> <span class="n">keep</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">rotation</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">rotation</span> <span class="o">=</span> <span class="n">rotation</span> <span class="o">/</span> <span class="n">rotation_norms</span><span class="p">[</span><span class="n">keep</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">rotation</span></div>
+
+
+
+
+<div class="viewcode-block" id="transformation_matrix">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.transformation_matrix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">transformation_matrix</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the external-mode transformation matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">translational_modes</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">),</span>
+            <span class="n">rotational_modes</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">),</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="internal_subspace">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_subspace">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">internal_subspace</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the internal-coordinate subspace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transformation</span> <span class="o">=</span> <span class="n">transformation_matrix</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">)</span>
+    <span class="n">total_modes</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">3</span>
+    <span class="n">external_modes</span> <span class="o">=</span> <span class="n">transformation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">external_modes</span> <span class="o">&gt;=</span> <span class="n">total_modes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">total_modes</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">q_matrix</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;complete&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">q_matrix</span><span class="p">[:,</span> <span class="n">external_modes</span><span class="p">:</span><span class="n">total_modes</span><span class="p">]</span></div>
+
+
+
+
+<div class="viewcode-block" id="internal_coordinates">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.internal_coordinates">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">internal_coordinates</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hessian_mw</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate normal modes from a mass-weighted Hessian.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">transformation</span> <span class="o">=</span> <span class="n">transformation_matrix</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">)</span>
+    <span class="n">transformation</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">transformation</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;complete&quot;</span><span class="p">)</span>
+
+    <span class="n">internal_hessian</span> <span class="o">=</span> <span class="n">transformation</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">hessian_mw</span> <span class="o">@</span> <span class="n">transformation</span>
+    <span class="n">internal_hessian</span> <span class="o">=</span> <span class="n">symmetrize_addition</span><span class="p">(</span><span class="n">internal_hessian</span><span class="p">)</span>
+
+    <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">eigenvectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigh</span><span class="p">(</span><span class="n">internal_hessian</span><span class="p">)</span>
+
+    <span class="n">mass_factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">mass_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">mass_factors</span><span class="p">)</span>
+    <span class="n">eigenvectors_internal</span> <span class="o">=</span> <span class="n">mass_matrix</span> <span class="o">@</span> <span class="n">transformation</span> <span class="o">@</span> <span class="n">eigenvectors</span>
+
+    <span class="n">normalization</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">eigenvectors_internal</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">normal_modes</span> <span class="o">=</span> <span class="n">eigenvectors_internal</span> <span class="o">*</span> <span class="n">normalization</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">return</span> <span class="n">eigenvalues</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">,</span> <span class="n">normalization</span></div>
+
+
+
+
+<div class="viewcode-block" id="symmetrize_addition">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.symmetrize_addition">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">symmetrize_addition</span><span class="p">(</span><span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Symmetrize a matrix by averaging it with its transpose.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">hessian</span> <span class="o">+</span> <span class="n">hessian</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span></div>
+
+
+
+
+<div class="viewcode-block" id="masses_matrix">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.masses_matrix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">masses_matrix</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create the mass-scaling matrix sqrt(m_i * m_j).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">masses_repeat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">masses_repeat</span><span class="p">,</span> <span class="n">masses_repeat</span><span class="p">))</span></div>
+
+
+
+
+<div class="viewcode-block" id="mass_weighted_hessian">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.mass_weighted_hessian">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mass_weighted_hessian</span><span class="p">(</span>
+    <span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">sign</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Symmetrize and mass-weight a Hessian.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">hessian</span> <span class="o">=</span> <span class="n">symmetrize_addition</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">hessian</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hessian</span> <span class="o">/</span> <span class="n">masses_matrix</span><span class="p">(</span><span class="n">atom_masses</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="hessian_sign_factor">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.hessian_sign_factor">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">hessian_sign_factor</span><span class="p">(</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hessian</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">hessian_sign</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resolve a Hessian sign setting into a numeric factor.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hessian_sign</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">hessian_sign</span> <span class="ow">in</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">}:</span>
+            <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">hessian_sign</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">hessian_sign</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;negative&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="n">hessian_mw</span> <span class="o">=</span> <span class="n">mass_weighted_hessian</span><span class="p">(</span><span class="n">hessian</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+            <span class="n">subspace</span> <span class="o">=</span> <span class="n">internal_subspace</span><span class="p">(</span><span class="n">atom_coords</span><span class="p">,</span> <span class="n">atom_masses</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">subspace</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">1.0</span>
+
+            <span class="n">eigenvalues</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigvalsh</span><span class="p">(</span>
+                <span class="n">subspace</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">hessian_mw</span> <span class="o">@</span> <span class="n">subspace</span>
+            <span class="p">)</span>
+            <span class="n">threshold</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span><span class="p">)</span>
+            <span class="n">threshold</span> <span class="o">*=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">))))</span>
+            <span class="n">positive_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">eigenvalues</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="n">negative_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">eigenvalues</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">threshold</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">negative_count</span> <span class="o">&gt;</span> <span class="n">positive_count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span>
+            <span class="k">if</span> <span class="n">positive_count</span> <span class="o">&gt;</span> <span class="n">negative_count</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mf">1.0</span>
+
+            <span class="n">positive_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">[</span><span class="n">eigenvalues</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="n">negative_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">[</span><span class="n">eigenvalues</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">threshold</span><span class="p">])</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mf">1.0</span> <span class="k">if</span> <span class="n">negative_weight</span> <span class="o">&gt;</span> <span class="n">positive_weight</span> <span class="k">else</span> <span class="mf">1.0</span>
+
+    <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+        <span class="s2">&quot;hessian_sign must be auto, positive, negative, 1, or -1.&quot;</span>
+    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="wavenumber">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.wavenumber">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">wavenumber</span><span class="p">(</span><span class="n">eigenvalues</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+               <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;kcal&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert Hessian eigenvalues to wavenumbers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;kcal&quot;</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">4184.0</span> <span class="o">*</span> <span class="mf">1.0e23</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;hartree&quot;</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">2625500.2</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.188972598857892e11</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1000.0</span>
+    <span class="k">elif</span> <span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;ev&quot;</span><span class="p">:</span>
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">96485.307499</span> <span class="o">*</span> <span class="mf">1.0e23</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;Invalid unit. Options are kcal, hartree and ev.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">omega</span> <span class="o">=</span> <span class="n">signed_sqrt</span><span class="p">(</span><span class="n">eigenvalues</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">omega</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">SPEED_OF_LIGHT_CM_S</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">omega</span></div>
+
+
+
+
+<div class="viewcode-block" id="signed_sqrt">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.signed_sqrt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">signed_sqrt</span><span class="p">(</span><span class="n">values</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate a sign-preserving square root.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">values</span><span class="p">))</span></div>
+
+
+
+
+<div class="viewcode-block" id="reduced_mass">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.reduced_mass">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">reduced_mass</span><span class="p">(</span><span class="n">normalization</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate reduced masses from normal-mode normalization factors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">normalization</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+
+
+<div class="viewcode-block" id="force_constant">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.force_constant">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">force_constant</span><span class="p">(</span>
+    <span class="n">omega</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">reduced_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate force constants in mdyn A^-1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">omega</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">reduced_masses</span> <span class="o">/</span> <span class="mf">6.022</span> <span class="o">/</span> <span class="mf">1.0e28</span></div>
+
+
+
+
+<div class="viewcode-block" id="infrared_intensity">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.infrared_intensity">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">infrared_intensity</span><span class="p">(</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_charges</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">reduced_masses</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate infrared intensities in km mol^-1.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">intensities</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">normal_modes</span><span class="p">[:,</span> <span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">intensity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mode</span> <span class="o">*</span> <span class="n">atom_charges</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">0.2081943</span> <span class="o">/</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+            <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">reduced_masses</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">*</span> <span class="mf">42.2561</span>
+        <span class="p">)</span>
+        <span class="n">intensities</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">intensity</span>
+
+    <span class="k">return</span> <span class="n">intensities</span></div>
+
+
+
+
+<div class="viewcode-block" id="write_calculate_output">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_calculate_output</span><span class="p">(</span>
+    <span class="n">result</span><span class="p">:</span> <span class="n">VibrationalAnalysisResult</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write the tabular vibrational analysis output.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">intensities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;# Wavenumbers (cm-1)  Force constants (mdyn A^-1)  &quot;</span>
+                <span class="s2">&quot;Reduced masses (amu)&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">wavenumber_value</span><span class="p">,</span> <span class="n">force_const</span><span class="p">,</span> <span class="n">reduced_mass_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">wavenumbers</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">reduced_masses</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wavenumber_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_const</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduced_mass_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;# Wavenumbers (cm-1)  Intensities (km mol-1)  &quot;</span>
+                <span class="s2">&quot;Force constants (mdyn A^-1)  Reduced masses (amu)&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="p">(</span>
+                <span class="n">wavenumber_value</span><span class="p">,</span>
+                <span class="n">intensity</span><span class="p">,</span>
+                <span class="n">force_const</span><span class="p">,</span>
+                <span class="n">reduced_mass_value</span><span class="p">,</span>
+            <span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">wavenumbers</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">intensities</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">reduced_masses</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wavenumber_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">intensity</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_const</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduced_mass_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="write_normal_modes">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_normal_modes</span><span class="p">(</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write normal modes in matrix form.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">normal_modes</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="select_mode_indices">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.select_mode_indices">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">select_mode_indices</span><span class="p">(</span>
+    <span class="n">wavenumbers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">modes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MODE_THRESHOLD_CM</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Select mode indices from a user-facing one-based mode selection.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">n_modes</span> <span class="o">=</span> <span class="n">wavenumbers</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="k">if</span> <span class="n">modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">modes</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">n_modes</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modes</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">modes</span> <span class="o">=</span> <span class="n">modes</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">modes</span> <span class="o">==</span> <span class="s2">&quot;nonzero&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+            <span class="p">]</span>
+        <span class="k">if</span> <span class="n">modes</span> <span class="o">==</span> <span class="s2">&quot;positive&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">index</span> <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+            <span class="p">]</span>
+
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;modes must be all, nonzero, positive or one-based mode numbers.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">selected_indices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">mode</span> <span class="o">&gt;</span> <span class="n">n_modes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Mode </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> is outside the available range 1..</span><span class="si">{</span><span class="n">n_modes</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">mode_index</span> <span class="o">=</span> <span class="n">mode</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">mode_index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">selected_indices</span><span class="p">:</span>
+            <span class="n">selected_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mode_index</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">selected_indices</span></div>
+
+
+
+
+<div class="viewcode-block" id="write_xyz_modes">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_xyz_modes</span><span class="p">(</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;modes&quot;</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">wavenumbers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">modes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MODE_THRESHOLD_CM</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write one sinusoidal XYZ trajectory per selected normal mode.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_frames</span> <span class="o">=</span> <span class="n">_mode_frame_count</span><span class="p">(</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">_check_mode_writer_settings</span><span class="p">(</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">,</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">_mode_wavenumbers</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">)</span>
+    <span class="n">mode_indices</span> <span class="o">=</span> <span class="n">select_mode_indices</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+    <span class="n">phases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_frames</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">mode_index</span> <span class="ow">in</span> <span class="n">mode_indices</span><span class="p">:</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="n">normal_modes</span><span class="p">[:,</span> <span class="n">mode_index</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">displacement</span> <span class="o">=</span> <span class="n">mode_displacement</span><span class="p">(</span>
+            <span class="n">mode</span><span class="p">,</span>
+            <span class="n">wavenumbers</span><span class="p">[</span><span class="n">mode_index</span><span class="p">],</span>
+            <span class="n">amplitude</span><span class="o">=</span><span class="n">amplitude</span><span class="p">,</span>
+            <span class="n">temperature</span><span class="o">=</span><span class="n">temperature</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">mode_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">frame</span><span class="p">,</span> <span class="n">phase</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">phases</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="n">_mode_comment</span><span class="p">(</span>
+                        <span class="n">mode_index</span><span class="p">,</span>
+                        <span class="n">wavenumbers</span><span class="p">[</span><span class="n">mode_index</span><span class="p">],</span>
+                        <span class="n">frame</span><span class="p">,</span>
+                        <span class="n">n_frames</span><span class="p">,</span>
+                        <span class="n">phase</span><span class="p">,</span>
+                    <span class="p">),</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">atom_name</span><span class="p">,</span> <span class="n">atom_coord</span><span class="p">,</span> <span class="n">atom_mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">atom_names</span><span class="p">,</span>
+                    <span class="n">atom_coords</span><span class="p">,</span>
+                    <span class="n">displacement</span><span class="p">,</span>
+                <span class="p">):</span>
+                    <span class="n">coords</span> <span class="o">=</span> <span class="n">atom_coord</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">*</span> <span class="n">atom_mode</span>
+                    <span class="n">symbol</span> <span class="o">=</span> <span class="n">_xyz_atom_symbol</span><span class="p">(</span><span class="n">atom_name</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                    <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="write_extxyz_modes">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">write_extxyz_modes</span><span class="p">(</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">atom_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;modes.xyz&quot;</span><span class="p">,</span>
+    <span class="n">wavenumbers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">intensities</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">modes</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MODE_THRESHOLD_CM</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write selected normal modes to one extended XYZ file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode threshold must not be negative.&quot;</span><span class="p">)</span>
+
+    <span class="n">n_atoms</span> <span class="o">=</span> <span class="n">atom_coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">_mode_wavenumbers</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">normal_modes</span><span class="p">)</span>
+    <span class="n">mode_indices</span> <span class="o">=</span> <span class="n">select_mode_indices</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">modes</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">mode_index</span> <span class="ow">in</span> <span class="n">mode_indices</span><span class="p">:</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="n">normal_modes</span><span class="p">[:,</span> <span class="n">mode_index</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">_extxyz_comment</span><span class="p">(</span>
+                    <span class="n">mode_index</span><span class="p">,</span>
+                    <span class="n">wavenumbers</span><span class="p">[</span><span class="n">mode_index</span><span class="p">],</span>
+                    <span class="kc">None</span> <span class="k">if</span> <span class="n">intensities</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">intensities</span><span class="p">[</span><span class="n">mode_index</span><span class="p">],</span>
+                <span class="p">),</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">atom_name</span><span class="p">,</span> <span class="n">atom_coord</span><span class="p">,</span> <span class="n">atom_mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">atom_names</span><span class="p">,</span>
+                <span class="n">atom_coords</span><span class="p">,</span>
+                <span class="n">mode</span><span class="p">,</span>
+            <span class="p">):</span>
+                <span class="n">symbol</span> <span class="o">=</span> <span class="n">_xyz_atom_symbol</span><span class="p">(</span><span class="n">atom_name</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_coord</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom_coord</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_coord</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom_mode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom_mode</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">atom_mode</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="mode_displacement">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.mode_displacement">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mode_displacement</span><span class="p">(</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">wavenumber_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">MODE_THRESHOLD_CM</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scale a mode for display.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">temperature</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_scale_mode_to_amplitude</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">temperature</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode temperature must be positive.&quot;</span><span class="p">)</span>
+
+    <span class="n">energy</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">wavenumber_value</span><span class="p">)</span> <span class="o">*</span> <span class="n">WAVENUMBER_TO_EV</span>
+    <span class="k">if</span> <span class="n">energy</span> <span class="o">&lt;=</span> <span class="n">threshold</span> <span class="o">*</span> <span class="n">WAVENUMBER_TO_EV</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_scale_mode_to_amplitude</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mode</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">BOLTZMANN_EV_K</span> <span class="o">*</span> <span class="n">temperature</span> <span class="o">/</span> <span class="n">energy</span><span class="p">)</span></div>
+
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_scale_mode_to_amplitude</span><span class="p">(</span><span class="n">mode</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scale a mode so the largest atomic displacement equals amplitude.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">amplitude</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode amplitude must not be negative.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">amplitude</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="n">max_displacement</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">max_displacement</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mode</span> <span class="o">*</span> <span class="n">amplitude</span> <span class="o">/</span> <span class="n">max_displacement</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mode_wavenumbers</span><span class="p">(</span>
+    <span class="n">wavenumbers</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return mode wavenumbers or a zero placeholder array.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">wavenumbers</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wavenumbers</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">):</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;The number of wavenumbers must match the number of normal modes.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">wavenumbers</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_mode_writer_settings</span><span class="p">(</span>
+    <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Validate mode writer settings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_frames</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span>
+            <span class="s2">&quot;Number of mode frames must be positive.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">amplitude</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode amplitude must not be negative.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">temperature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">temperature</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode temperature must be positive.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">threshold</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode threshold must not be negative.&quot;</span><span class="p">)</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mode_frame_count</span><span class="p">(</span>
+    <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">amplitude</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">step</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an explicit frame count, preserving the legacy step setting.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">n_frames</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">n_frames</span>
+
+    <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">30</span>
+
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VibrationalAnalysisError</span><span class="p">(</span><span class="s2">&quot;Mode step must be positive.&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">amplitude</span> <span class="o">/</span> <span class="n">step</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_mode_comment</span><span class="p">(</span>
+    <span class="n">mode_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">wavenumber_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">frame</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">phase</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build a standard XYZ comment line for one animated mode frame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;mode=</span><span class="si">{</span><span class="n">mode_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;frequency_cm-1=</span><span class="si">{</span><span class="n">wavenumber_value</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2"> &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;frame=</span><span class="si">{</span><span class="n">frame</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> phase=</span><span class="si">{</span><span class="n">phase</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_extxyz_comment</span><span class="p">(</span>
+    <span class="n">mode_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">wavenumber_value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">intensity</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build an extended XYZ comment line for one mode vector image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;Properties=species:S:1:pos:R:3:mode:R:3 &quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;mode=</span><span class="si">{</span><span class="n">mode_index</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> frequency_cm-1=</span><span class="si">{</span><span class="n">wavenumber_value</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">intensity</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">comment</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; IR_intensity=</span><span class="si">{</span><span class="n">intensity</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">return</span> <span class="n">comment</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_xyz_atom_symbol</span><span class="p">(</span><span class="n">atom_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an XYZ/Jmol-friendly atom symbol.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">atom_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;X&quot;</span>
+
+    <span class="n">atom_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">atom_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">atom_name</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;X&quot;</span>
+
+    <span class="k">return</span> <span class="n">atom_name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="n">atom_name</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

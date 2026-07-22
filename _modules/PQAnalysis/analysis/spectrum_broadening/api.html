@@ -1,0 +1,224 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.spectrum_broadening.api &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/spectrum_broadening/api.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.spectrum_broadening.api</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.spectrum_broadening.api</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">API functions for spectrum broadening.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveReal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrumBroadeningError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spectrum_broadening</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEFAULT_ALPHA</span><span class="p">,</span>
+    <span class="n">DEFAULT_WAVENUMBER_MAX</span><span class="p">,</span>
+    <span class="n">DEFAULT_WAVENUMBER_MIN</span><span class="p">,</span>
+    <span class="n">DEFAULT_WAVENUMBER_STEP</span><span class="p">,</span>
+    <span class="n">alpha_from_fwhm</span><span class="p">,</span>
+    <span class="n">broaden</span><span class="p">,</span>
+    <span class="n">read_stick_spectrum</span><span class="p">,</span>
+    <span class="n">wavenumber_grid</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.spectrum_broadening_output_file_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpectrumDataWriter</span>
+
+
+
+<div class="viewcode-block" id="build_spectrum">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.spectrum_broadening.api.html#PQAnalysis.analysis.spectrum_broadening.api.build_spectrum">[docs]</a>
+<span class="nd">@runtime_type_checking</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_spectrum</span><span class="p">(</span>
+    <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">fwhm</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">wavenumber_min</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_MIN</span><span class="p">,</span>
+    <span class="n">wavenumber_max</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_MAX</span><span class="p">,</span>
+    <span class="n">wavenumber_step</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_STEP</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Broaden a two-column stick spectrum file and write the result.</span>
+
+<span class="sd">    Reads a stick spectrum (wavenumber in cm^-1, intensity), broadens</span>
+<span class="sd">    it on a regular wavenumber grid using the peak-height convention</span>
+<span class="sd">    and writes one ``&#39;%8.4f    %16.12e&#39;`` row per grid point. This is</span>
+<span class="sd">    a port of the legacy ``build_spectrum.sh`` awk implementation.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_file : str</span>
+<span class="sd">        The two-column stick spectrum file to read.</span>
+<span class="sd">    output : str | None, optional</span>
+<span class="sd">        The output file. If None, the output is printed to stdout,</span>
+<span class="sd">        by default None.</span>
+<span class="sd">    alpha : PositiveReal | None, optional</span>
+<span class="sd">        The Gaussian exponent alpha in cm^-2. Mutually exclusive with</span>
+<span class="sd">        fwhm, by default None, which corresponds to 0.0025 cm^-2 if</span>
+<span class="sd">        fwhm is not given either.</span>
+<span class="sd">    fwhm : PositiveReal | None, optional</span>
+<span class="sd">        The full width at half maximum in cm^-1 as an alternative way</span>
+<span class="sd">        to specify the broadening width. Mutually exclusive with</span>
+<span class="sd">        alpha, by default None.</span>
+<span class="sd">    wavenumber_min : Real, optional</span>
+<span class="sd">        The first grid point in cm^-1, by default 10.0.</span>
+<span class="sd">    wavenumber_max : Real, optional</span>
+<span class="sd">        The exclusive upper bound of the grid in cm^-1,</span>
+<span class="sd">        by default 4000.0.</span>
+<span class="sd">    wavenumber_step : PositiveReal, optional</span>
+<span class="sd">        The grid spacing in cm^-1, by default 0.25.</span>
+<span class="sd">    kernel : str, optional</span>
+<span class="sd">        The broadening kernel, either ``gaussian`` or ``lorentzian``,</span>
+<span class="sd">        by default ``gaussian``.</span>
+<span class="sd">    mode : str | FileWritingMode, optional</span>
+<span class="sd">        The writing mode of the output file, by default &quot;w&quot;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Tuple[Np1DNumberArray, Np1DNumberArray]</span>
+<span class="sd">        The wavenumber grid and the broadened intensities.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    SpectrumBroadeningError</span>
+<span class="sd">        If both alpha and fwhm are specified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fwhm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SpectrumBroadeningError</span><span class="p">(</span>
+            <span class="s2">&quot;The parameters alpha and fwhm are mutually exclusive. &quot;</span>
+            <span class="s2">&quot;Please specify only one of them.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha_from_fwhm</span><span class="p">(</span><span class="n">fwhm</span><span class="p">)</span> <span class="k">if</span> <span class="n">fwhm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">DEFAULT_ALPHA</span>
+
+    <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">intensities</span> <span class="o">=</span> <span class="n">read_stick_spectrum</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
+
+    <span class="n">grid</span> <span class="o">=</span> <span class="n">wavenumber_grid</span><span class="p">(</span>
+        <span class="n">wavenumber_min</span><span class="o">=</span><span class="n">wavenumber_min</span><span class="p">,</span>
+        <span class="n">wavenumber_max</span><span class="o">=</span><span class="n">wavenumber_max</span><span class="p">,</span>
+        <span class="n">wavenumber_step</span><span class="o">=</span><span class="n">wavenumber_step</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">broadened</span> <span class="o">=</span> <span class="n">broaden</span><span class="p">(</span>
+        <span class="n">wavenumbers</span><span class="p">,</span>
+        <span class="n">intensities</span><span class="p">,</span>
+        <span class="n">grid</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="n">alpha</span><span class="p">,</span>
+        <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">SpectrumDataWriter</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">grid</span><span class="p">,</span> <span class="n">broadened</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">broadened</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

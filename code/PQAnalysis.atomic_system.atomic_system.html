@@ -12,6 +12,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.atomic_system.atomic_system.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
@@ -159,15 +160,14 @@ of atoms (see examples, and the documentation of
 </div>
 <p>Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin,
 _IndexingMixin, _PositionsMixin</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>The _StandardPropertiesMixin contains the standard properties of an atomic</p></li>
+<ul class="simple">
+<li><p>The _StandardPropertiesMixin contains the standard properties of an
+atomic system (i.e. standard getter and setter methods).</p></li>
+<li><p>The _PropertiesMixin contains special properties derived from the
+standard properties</p></li>
+<li><p>The _PositionsMixin contains methods for computing properties based
+on the positions of the atoms</p></li>
 </ul>
-<p>system (i.e. standard getter and setter methods).
-- The _PropertiesMixin contains special properties derived from the standard properties
-- The _PositionsMixin contains methods for computing properties based
-on the positions of the atoms</p>
-</div></blockquote>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>

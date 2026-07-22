@@ -12,6 +12,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.io.exceptions.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../_static/documentation_options.js?v=5929fcd5"></script>
@@ -64,6 +65,7 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.formats.html">formats</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.info_file_reader.html">info_file_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.moldescriptor_reader.html">moldescriptor_reader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.optimizer_file_reader.html">optimizer_file_reader</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.write_api.html">write_api</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.gen_file.html">io.gen_file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.io.input_file_reader.html">io.input_file_reader</a></li>
@@ -137,7 +139,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.MoldescriptorReaderError" title="PQAnalysis.io.exceptions.MoldescriptorReaderError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MoldescriptorReaderError</span></code></a></p></td>
 <td><p>Exception raised for errors related to the MoldescriptorReader class</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.OutputFileFormatError" title="PQAnalysis.io.exceptions.OutputFileFormatError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputFileFormatError</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.OptimizerReaderError" title="PQAnalysis.io.exceptions.OptimizerReaderError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OptimizerReaderError</span></code></a></p></td>
+<td><p>Exception raised for errors related to the OptimizerFileReader class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.io.exceptions.OutputFileFormatError" title="PQAnalysis.io.exceptions.OutputFileFormatError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">OutputFileFormatError</span></code></a></p></td>
 <td><p>Exception raised if the given enum is not valid</p></td>
 </tr>
 </tbody>
@@ -233,6 +238,13 @@
 <em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MoldescriptorReaderError</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/exceptions.html#MoldescriptorReaderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.exceptions.MoldescriptorReaderError" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
 <p>Exception raised for errors related to the MoldescriptorReader class</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="PQAnalysis.io.exceptions.OptimizerReaderError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">OptimizerReaderError</span></span><a class="reference internal" href="../_modules/PQAnalysis/io/exceptions.html#OptimizerReaderError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.exceptions.OptimizerReaderError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
+<p>Exception raised for errors related to the OptimizerFileReader class</p>
 </dd></dl>
 
 <dl class="py exception">

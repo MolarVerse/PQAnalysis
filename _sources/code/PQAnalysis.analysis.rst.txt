@@ -15,7 +15,12 @@ analysis
     .. toctree::
        :maxdepth: 1
 
+       PQAnalysis.analysis.momentum
+       PQAnalysis.analysis.msd
        PQAnalysis.analysis.rdf
+       PQAnalysis.analysis.spectrum_broadening
+       PQAnalysis.analysis.vacf
+       PQAnalysis.analysis.vibrational
 
 
 

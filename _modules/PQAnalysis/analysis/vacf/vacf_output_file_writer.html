@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.vacf.vacf_output_file_writer &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.vacf.vacf_output_file_writer</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.vacf.vacf_output_file_writer</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the classes for writing related to an</span>
+<span class="sd">:py:class:`~PQAnalysis.analysis.vacf.vacf.VACF` analysis to a file.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># 3rd party imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="c1"># local imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWriter</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">__header__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vacf</span><span class="w"> </span><span class="kn">import</span> <span class="n">VACF</span>
+
+
+
+<div class="viewcode-block" id="VACFDataWriter">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VACFDataWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for writing the data of an</span>
+<span class="sd">    :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF`</span>
+<span class="sd">    analysis to a file.</span>
+
+<span class="sd">    The output file is written in the legacy FreqCalc/Fluxfreqcalc</span>
+<span class="sd">    format: one row per lag with the columns lag time in ps and</span>
+<span class="sd">    normalized VACF.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            the filename to write to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VACFDataWriter.write">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter.write">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the data to the file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Tuple[Np1DNumberArray, Np1DNumberArray]</span>
+<span class="sd">            the time axis and correlation function output from the</span>
+<span class="sd">            VACF.run() method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="n">time</span><span class="p">,</span> <span class="n">correlation</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">for</span> <span class="n">time_value</span><span class="p">,</span> <span class="n">correlation_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">correlation</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_value</span><span class="si">:</span><span class="s2">10.6f</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">correlation_value</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="VACFSpectrumDataWriter">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VACFSpectrumDataWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for writing the spectrum of an</span>
+<span class="sd">    :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF`</span>
+<span class="sd">    analysis to a file.</span>
+
+<span class="sd">    The output file is written in the legacy ft.f format: one row per</span>
+<span class="sd">    frequency index with the columns wavenumber in cm^-1 and amplitude.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            the filename to write to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VACFSpectrumDataWriter.write">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter.write">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the spectrum to the file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Tuple[Np1DNumberArray, Np1DNumberArray]</span>
+<span class="sd">            the wavenumbers and amplitudes output from the</span>
+<span class="sd">            :py:func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`</span>
+<span class="sd">            function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">for</span> <span class="n">wavenumber</span><span class="p">,</span> <span class="n">amplitude</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">wavenumbers</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wavenumber</span><span class="si">:</span><span class="s2">13.7f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">amplitude</span><span class="si">:</span><span class="s2">14.10f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="VACFWindowedDataWriter">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VACFWindowedDataWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for writing the windowed (apodized) correlation function of</span>
+<span class="sd">    an :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF` analysis to a</span>
+<span class="sd">    file.</span>
+
+<span class="sd">    The output file is written in the legacy ft.f windowfile format:</span>
+<span class="sd">    one row per lag with the columns lag time in ps and windowed</span>
+<span class="sd">    correlation function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str</span>
+<span class="sd">            the filename to write to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VACFWindowedDataWriter.write">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter.write">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the windowed correlation function to the file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data : Tuple[Np1DNumberArray, Np1DNumberArray]</span>
+<span class="sd">            the time axis and the windowed correlation function output</span>
+<span class="sd">            from the</span>
+<span class="sd">            :py:func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`</span>
+<span class="sd">            function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="n">time</span><span class="p">,</span> <span class="n">correlation</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">for</span> <span class="n">time_value</span><span class="p">,</span> <span class="n">correlation_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">correlation</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">time_value</span><span class="si">:</span><span class="s2">9.4f</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">correlation_value</span><span class="si">:</span><span class="s2">14.10f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+
+<div class="viewcode-block" id="VACFLogWriter">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFLogWriter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VACFLogWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for writing the log (setup parameters) of an</span>
+<span class="sd">    :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF` analysis</span>
+<span class="sd">    to a file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        filename : str | None</span>
+<span class="sd">            the filename to write to if None, the output is printed to stdout</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+<div class="viewcode-block" id="VACFLogWriter.write_before_run">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFLogWriter.write_before_run">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_before_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vacf</span><span class="p">:</span> <span class="n">VACF</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the log before the</span>
+<span class="sd">        :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF`</span>
+<span class="sd">        run() method is called.</span>
+
+<span class="sd">        This includes the general header of PQAnalysis</span>
+<span class="sd">        and the most important setup parameters of the</span>
+<span class="sd">        :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF` analysis.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vacf : VACF</span>
+<span class="sd">            the VACF analysis object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">__header__</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">vacf</span><span class="o">.</span><span class="n">flux</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Charge-flux auto-correlation calculation:&quot;</span><span class="p">,</span>
+                  <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;VACF calculation:&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="c1"># fmt: off</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Window size (frames): </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">window_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Origin gap (frames):  </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Stop frame:           </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">stop_frame</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Time step:            </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">time_step</span><span class="si">}</span><span class="s2"> ps&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Method:               </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="c1"># fmt: on</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Number of frames: </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Number of atoms:  </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;    Target selection:&quot;</span><span class="p">,</span>
+            <span class="n">vacf</span><span class="o">.</span><span class="n">target_selection</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;    total number of atoms in target selection:&quot;</span><span class="p">,</span>
+            <span class="nb">len</span><span class="p">(</span><span class="n">vacf</span><span class="o">.</span><span class="n">target_indices</span><span class="p">),</span>
+            <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="VACFLogWriter.write_after_run">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf_output_file_writer.html#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFLogWriter.write_after_run">[docs]</a>
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_after_run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vacf</span><span class="p">:</span> <span class="n">VACF</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes the log after the</span>
+<span class="sd">        :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF`</span>
+<span class="sd">        run() method is called.</span>
+
+<span class="sd">        This includes the number of time origins and the elapsed time</span>
+<span class="sd">        of the :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF`</span>
+<span class="sd">        run() method.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        vacf : VACF</span>
+<span class="sd">            the VACF analysis object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Number of origins: </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">n_origins</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Elapsed time: </span><span class="si">{</span><span class="n">vacf</span><span class="o">.</span><span class="n">elapsed_time</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

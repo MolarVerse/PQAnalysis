@@ -1,0 +1,1001 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.msd.msd &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/msd/msd.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.msd.msd</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.msd.msd</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the MSD class. The MSD class is used to</span>
+<span class="sd">calculate the mean square displacement (MSD) of a selection</span>
+<span class="sd">of atoms using multiple time origins on a sliding window.</span>
+<span class="sd">The MSD is a measure of the average squared distance</span>
+<span class="sd">particles travel within a given correlation time and gives</span>
+<span class="sd">access to the self-diffusion coefficient via the Einstein</span>
+<span class="sd">relation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">dataclasses</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># 3rd party imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="c1"># local absolute imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">Cell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+    <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="n">PositiveInt</span><span class="p">,</span>
+    <span class="n">PositiveReal</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">TrajectoryFormat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit_in_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span><span class="p">,</span> <span class="n">RawTrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="c1"># local relative imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSDError</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._msd_kernel</span><span class="w"> </span><span class="kn">import</span> <span class="n">msd_frame_update</span>  <span class="c1"># pylint: disable=import-error</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._msd_kernel_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">msd_frame_update</span>
+
+<span class="c1">#: float: Conversion factor from Angstrom^2/ps to m^2/s.</span>
+<span class="n">ANGSTROM2_PER_PS_TO_M2_PER_S</span> <span class="o">=</span> <span class="mf">1.0e-8</span>
+
+
+
+<div class="viewcode-block" id="MSDDiffusionFit">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSDDiffusionFit">[docs]</a>
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSDDiffusionFit</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A container for the result of a linear diffusion fit of an</span>
+<span class="sd">    MSD component.</span>
+
+<span class="sd">    The slope related quantities are given in Angstrom^2/ps,</span>
+<span class="sd">    the diffusion coefficient and its standard error are given</span>
+<span class="sd">    in m^2/s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">slope_stderr</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">intercept</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">r_squared</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">diffusion_coefficient</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">diffusion_coefficient_stderr</span><span class="p">:</span> <span class="nb">float</span></div>
+
+
+
+
+<div class="viewcode-block" id="MSD">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSD">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSD</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for calculating the mean square displacement (MSD)</span>
+<span class="sd">    of a target selection using multiple simultaneously active</span>
+<span class="sd">    time origins.</span>
+
+<span class="sd">    A new time origin is spawned every ``gap`` frames until</span>
+<span class="sd">    ``window // gap`` origins are active. Every frame, each</span>
+<span class="sd">    active origin accumulates the squared displacement of every</span>
+<span class="sd">    selected atom relative to the origin position into the lag</span>
+<span class="sd">    bin given by the frame distance to the origin. Displacements</span>
+<span class="sd">    are unwrapped with a running minimum image convention applied</span>
+<span class="sd">    to the per-frame displacement vectors, so that trajectories</span>
+<span class="sd">    wrapped into the simulation box are handled correctly. When</span>
+<span class="sd">    the oldest origin has covered the full window, it accumulates</span>
+<span class="sd">    its final lag term and is replaced by a new origin (or</span>
+<span class="sd">    dropped without replacement once no new origins may spawn</span>
+<span class="sd">    anymore).</span>
+
+<span class="sd">    This is a port of the ``Diffcalc`` tool of thh_tools and</span>
+<span class="sd">    reproduces its results exactly, including its normalization</span>
+<span class="sd">    convention: every lag bin is divided by the number of</span>
+<span class="sd">    selected atoms times ``total_origins``, where</span>
+<span class="sd">    ``total_origins = stop_frame // gap`` and</span>
+<span class="sd">    ``stop_frame = (n_frames - window) // gap * gap``. Note that</span>
+<span class="sd">    this normalization intentionally follows the legacy code</span>
+<span class="sd">    also for ``n_start &gt; 0``. The legacy boundary case of a</span>
+<span class="sd">    trajectory of exactly ``window`` frames with ``gap == 1`` is</span>
+<span class="sd">    also kept: a single time origin spawns at the first frame</span>
+<span class="sd">    and the final lag bin (``lag == window``), which can never</span>
+<span class="sd">    be sampled, is written as exactly 0.0 (a warning is</span>
+<span class="sd">    emitted). Any shorter trajectory raises an</span>
+<span class="sd">    :py:class:`~PQAnalysis.analysis.msd.exceptions.MSDError`.</span>
+
+<span class="sd">    If a time step is given, the trailing ``fit_window`` points</span>
+<span class="sd">    of the MSD components are fitted linearly to extract</span>
+<span class="sd">    self-diffusion coefficients via the Einstein relation</span>
+<span class="sd">    (slope / (2 * dimensionality), converted to m^2/s).</span>
+
+<span class="sd">    The MSD class can be initialized with either a trajectory</span>
+<span class="sd">    object or via a TrajectoryReader object. The</span>
+<span class="sd">    TrajectoryReader allows for lazy loading of the trajectory,</span>
+<span class="sd">    which is useful for large trajectories that do not fit into</span>
+<span class="sd">    memory. For xyz trajectory files the frames are streamed via</span>
+<span class="sd">    the raw-frame fast path</span>
+<span class="sd">    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)</span>
+<span class="sd">    and accumulated with a compiled kernel, which is considerably</span>
+<span class="sd">    faster and produces identical results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_use_full_atom_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_window_default</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">_gap_default</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">_n_start_default</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">,</span>
+        <span class="n">target_species</span><span class="p">:</span> <span class="n">SelectionCompatible</span><span class="p">,</span>
+        <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">window</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gap</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">fit_window</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        traj : Trajectory | TrajectoryReader</span>
+<span class="sd">            The trajectory to analyze. If a TrajectoryReader is</span>
+<span class="sd">            provided, the trajectory is read frame by frame via</span>
+<span class="sd">            a frame_generator.</span>
+<span class="sd">        target_species : SelectionCompatible</span>
+<span class="sd">            The target species of the MSD analysis.</span>
+<span class="sd">        use_full_atom_info : bool | None, optional</span>
+<span class="sd">            Whether to use the full atom information of the</span>
+<span class="sd">            trajectory or not, by default None (False).</span>
+<span class="sd">        window : PositiveInt | None, optional</span>
+<span class="sd">            The correlation window size in frames,</span>
+<span class="sd">            by default None (1000).</span>
+<span class="sd">        gap : PositiveInt | None, optional</span>
+<span class="sd">            The gap between two time origins in frames,</span>
+<span class="sd">            by default None (10).</span>
+<span class="sd">        n_start : int | None, optional</span>
+<span class="sd">            The first frame (1-based frame counter) at which</span>
+<span class="sd">            processing starts, by default None (0). Frames</span>
+<span class="sd">            before n_start are read (to keep the unwrapping</span>
+<span class="sd">            continuous) but do not contribute to the MSD.</span>
+<span class="sd">        time_step : PositiveReal | None, optional</span>
+<span class="sd">            The time step between two frames in ps. If given,</span>
+<span class="sd">            diffusion coefficients are calculated from a linear</span>
+<span class="sd">            fit of the MSD tail, by default None.</span>
+<span class="sd">        fit_window : PositiveInt | None, optional</span>
+<span class="sd">            The number of trailing MSD points used for the</span>
+<span class="sd">            diffusion fit, by default None (last 20% of the</span>
+<span class="sd">            window).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If n_start is negative.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the window is not a multiple of the gap.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If time_step is not positive.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If fit_window is smaller than 2.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If fit_window is larger than window + 1.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the trajectory is empty.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the target selection is empty.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the trajectory is too short to establish at</span>
+<span class="sd">            least one full window (n_frames &lt; window + gap and</span>
+<span class="sd">            not the legacy single-origin case of exactly</span>
+<span class="sd">            window frames with gap == 1).</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If n_start is larger than stop_frame, so that no</span>
+<span class="sd">            time origin could spawn.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :py:class:`~PQAnalysis.traj.trajectory.Trajectory`</span>
+<span class="sd">        :py:class:`~PQAnalysis.topology.selection.Selection`</span>
+<span class="sd">        :py:class:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">##############</span>
+        <span class="c1"># dummy init #</span>
+        <span class="c1">##############</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_tot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_results</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1">#####################################################</span>
+        <span class="c1"># Initialize parameters with default values if None #</span>
+        <span class="c1">#####################################################</span>
+
+        <span class="k">if</span> <span class="n">use_full_atom_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_default</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="n">use_full_atom_info</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">=</span> <span class="n">window</span> <span class="k">if</span> <span class="n">window</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">=</span> <span class="n">gap</span> <span class="k">if</span> <span class="n">gap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gap_default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span> <span class="o">=</span> <span class="n">n_start</span> <span class="k">if</span> <span class="n">n_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_start_default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="n">time_step</span>
+
+        <span class="k">if</span> <span class="n">fit_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">//</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span> <span class="o">=</span> <span class="n">fit_window</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_parameters</span><span class="p">()</span>
+
+        <span class="c1">############################################</span>
+        <span class="c1"># Initialize Trajectory iterator/generator #</span>
+        <span class="c1">############################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">XYZ</span>
+        <span class="p">):</span>
+            <span class="c1"># fast path: lazy loading of the raw frame data from</span>
+            <span class="c1"># file(s) without per-frame AtomicSystem construction</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="n">RawTrajectoryReader</span><span class="p">(</span>
+                <span class="n">traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+                <span class="n">traj_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span><span class="p">,</span>
+                <span class="n">md_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">md_format</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">read_first_frame</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
+            <span class="c1"># lazy loading of trajectory from file(s)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># use trajectory object as iterator</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span><span class="o">.</span><span class="n">topology</span>
+
+        <span class="c1">################################</span>
+        <span class="c1"># Initialize Selection objects #</span>
+        <span class="c1">################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_species</span> <span class="o">=</span> <span class="n">target_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">target_species</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The target selection does not select any atoms.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="c1">##########################################</span>
+        <span class="c1"># Setup time origin bookkeeping (legacy) #</span>
+        <span class="c1">##########################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_origin_bookkeeping</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Checks the consistency of the setup parameters.</span>
+
+<span class="sd">        This method is called by the __init__ method of the MSD</span>
+<span class="sd">        class after all parameters have been initialized.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If n_start is negative.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the window is not a multiple of the gap.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If time_step is not positive.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If fit_window is smaller than 2.</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If fit_window is larger than window + 1.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;n_start must be a non-negative integer.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The window size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2"> has to be an &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;integer multiple of the gap </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The time_step must be a positive real number.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The fit_window </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span><span class="si">}</span><span class="s2"> must be at &quot;</span>
+                    <span class="s2">&quot;least 2 to perform a linear diffusion fit.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The fit_window </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span><span class="si">}</span><span class="s2"> cannot be larger &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;than window + 1 = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_origin_bookkeeping</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the time origin bookkeeping of the MSD analysis.</span>
+
+<span class="sd">        This method is called by the __init__ method of the MSD</span>
+<span class="sd">        class. It follows the legacy Diffcalc conventions: origins</span>
+<span class="sd">        may only spawn until stop_frame, so that every origin can</span>
+<span class="sd">        cover the full window, and the total number of origins used</span>
+<span class="sd">        for the normalization is stop_frame // gap.</span>
+
+<span class="sd">        One boundary case is kept from the legacy Diffcalc code:</span>
+<span class="sd">        for gap == 1 a trajectory of exactly window frames spawns</span>
+<span class="sd">        a single time origin at the first frame (stop_frame is</span>
+<span class="sd">        clamped from 0 to 1). In this case the final lag bin</span>
+<span class="sd">        (lag == window) can never be sampled and is written as</span>
+<span class="sd">        exactly 0.0, matching the legacy tool. A warning is</span>
+<span class="sd">        emitted, as this zero bin would bias a diffusion fit that</span>
+<span class="sd">        includes it.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If the trajectory is too short to establish at</span>
+<span class="sd">            least one full window (n_frames &lt; window + gap and</span>
+<span class="sd">            not the legacy single-origin case of exactly</span>
+<span class="sd">            window frames with gap == 1).</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If n_start is larger than stop_frame, so that no</span>
+<span class="sd">            time origin could spawn.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_origins_max</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># legacy Diffcalc branch: with gap == 1 a trajectory of</span>
+            <span class="c1"># exactly window frames spawns a single time origin at</span>
+            <span class="c1"># the first frame instead of raising the</span>
+            <span class="c1"># too-short-trajectory error below</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The trajectory contains exactly window = &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2"> frames with a gap of 1. Following &quot;</span>
+                    <span class="s2">&quot;the legacy Diffcalc convention a single time &quot;</span>
+                    <span class="s2">&quot;origin is spawned at the first frame. The final &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;lag bin (lag = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2">) can never be &quot;</span>
+                    <span class="s2">&quot;sampled and is written as exactly 0.0; a &quot;</span>
+                    <span class="s2">&quot;diffusion fit including this bin would be biased.&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_origins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_origins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The trajectory with </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> frames is too &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;short to establish a window of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2"> frames &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;with a gap of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2"> frames. At least &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;window + gap = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2"> frames &quot;</span>
+                    <span class="s2">&quot;are required (or exactly window frames for &quot;</span>
+                    <span class="s2">&quot;gap == 1).&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The starting frame </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_start</span><span class="si">}</span><span class="s2"> is too large: &quot;</span>
+                    <span class="s2">&quot;time origins only spawn at multiples of the gap &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2"> up to stop_frame = (n_frames - window) &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;// gap * gap = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span><span class="si">}</span><span class="s2"> (n_frames = &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s2">, window = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="si">}</span><span class="s2">), so no &quot;</span>
+                    <span class="s2">&quot;time origin could spawn.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="MSD.run">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSD.run">[docs]</a>
+    <span class="nd">@timeit_in_class</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the MSD analysis.</span>
+
+<span class="sd">        This method runs the MSD analysis and returns the lag</span>
+<span class="sd">        indices and the MSD components. If a time step was</span>
+<span class="sd">        given, the diffusion coefficients are calculated from a</span>
+<span class="sd">        linear fit of the MSD tail and stored in the</span>
+<span class="sd">        fit_results attribute.</span>
+
+<span class="sd">        This method will display a progress bar by default.</span>
+<span class="sd">        This can be disabled by setting with_progress_bar to</span>
+<span class="sd">        False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        lags : Np1DNumberArray</span>
+<span class="sd">            The lag indices (in frames) of the MSD analysis,</span>
+<span class="sd">            ranging from 0 to window.</span>
+<span class="sd">        msd_x : Np1DNumberArray</span>
+<span class="sd">            The x-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_y : Np1DNumberArray</span>
+<span class="sd">            The y-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_z : Np1DNumberArray</span>
+<span class="sd">            The z-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_tot : Np1DNumberArray</span>
+<span class="sd">            The total MSD (x + y + z) in Angstrom^2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_msd_raw</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_msd</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_run</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_msd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the raw (unnormalized) MSD accumulators.</span>
+
+<span class="sd">        This method is called by the run method of the MSD</span>
+<span class="sd">        class. It streams over the frames of the trajectory and</span>
+<span class="sd">        accumulates the per-axis squared displacements of all</span>
+<span class="sd">        selected atoms for all active time origins into the</span>
+<span class="sd">        corresponding lag bins. The per-frame displacements are</span>
+<span class="sd">        unwrapped with a running minimum image convention so</span>
+<span class="sd">        that box-wrapped trajectories are handled correctly.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If a frame does not provide positions for all atoms</span>
+<span class="sd">            of the topology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+
+        <span class="n">msd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># unwrapped origin coordinates, oldest origin at index 0</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_origins_max</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">displacements</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">origins</span><span class="p">)</span>
+        <span class="n">n_active</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">last</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># cumulative unwrapping shift of the selected atoms</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">),</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">prev_pos</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">),</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span><span class="p">):</span>
+
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">pos</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">pos</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Frame </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> of the trajectory does not &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;provide positions for all </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;atoms of the topology. Please provide a &quot;</span>
+                        <span class="s2">&quot;position trajectory (e.g. .xyz files) with &quot;</span>
+                        <span class="s2">&quot;a consistent number of atoms.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+                <span class="p">)</span>
+
+            <span class="n">pos</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">prev_pos</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shift</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unwrap_shift</span><span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="n">prev_pos</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="p">)</span>
+
+            <span class="n">prev_pos</span> <span class="o">=</span> <span class="n">pos</span>
+
+            <span class="n">unwrapped</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">+</span> <span class="n">shift</span>
+
+            <span class="k">if</span> <span class="n">counter</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">gap</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">n_active</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_origins_max</span> <span class="ow">and</span>
+                    <span class="n">counter</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span>
+                <span class="p">):</span>
+                    <span class="c1"># starting stage - add new origin</span>
+                    <span class="k">if</span> <span class="n">n_active</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">last</span> <span class="o">=</span> <span class="n">counter</span>
+
+                    <span class="n">origins</span><span class="p">[</span><span class="n">n_active</span><span class="p">]</span> <span class="o">=</span> <span class="n">unwrapped</span>
+                    <span class="n">n_active</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">elif</span> <span class="n">n_active</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">last</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">==</span> <span class="n">counter</span><span class="p">:</span>
+                    <span class="c1"># oldest origin reached the full window:</span>
+                    <span class="c1"># accumulate its final lag term</span>
+                    <span class="n">disp</span> <span class="o">=</span> <span class="n">unwrapped</span> <span class="o">-</span> <span class="n">origins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">msd</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;ax,ax-&gt;x&#39;</span><span class="p">,</span> <span class="n">disp</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
+
+                    <span class="n">origins</span><span class="p">[:</span><span class="n">n_active</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">origins</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n_active</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span><span class="p">:</span>
+                        <span class="c1"># stopping stage - drop without replacement</span>
+                        <span class="n">n_active</span> <span class="o">-=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># running stage - replace by a new origin</span>
+                        <span class="n">origins</span><span class="p">[</span><span class="n">n_active</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">unwrapped</span>
+
+                    <span class="n">last</span> <span class="o">+=</span> <span class="n">gap</span>
+
+            <span class="k">if</span> <span class="n">n_active</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">lags</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">-</span> <span class="n">last</span> <span class="o">-</span> <span class="n">gap</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_active</span><span class="p">)</span>
+
+                <span class="n">disp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span>
+                    <span class="n">unwrapped</span><span class="p">,</span>
+                    <span class="n">origins</span><span class="p">[:</span><span class="n">n_active</span><span class="p">],</span>
+                    <span class="n">out</span><span class="o">=</span><span class="n">displacements</span><span class="p">[:</span><span class="n">n_active</span><span class="p">]</span>
+                <span class="p">)</span>
+
+                <span class="n">msd</span><span class="p">[</span><span class="n">lags</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s1">&#39;oax,oax-&gt;ox&#39;</span><span class="p">,</span> <span class="n">disp</span><span class="p">,</span> <span class="n">disp</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span> <span class="o">=</span> <span class="n">msd</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_msd_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the raw (unnormalized) MSD accumulators using the</span>
+<span class="sd">        raw-frame fast path.</span>
+
+<span class="sd">        This method is the fast-path counterpart of</span>
+<span class="sd">        :py:meth:`_calculate_msd` used when the trajectory is read</span>
+<span class="sd">        from xyz file(s): it streams the raw per-frame coordinates via</span>
+<span class="sd">        :py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`</span>
+<span class="sd">        (no per-frame AtomicSystem construction) and advances the</span>
+<span class="sd">        unwrapping and time origin bookkeeping state with the MSD</span>
+<span class="sd">        frame kernel. The box matrix, its inverse and the vacuum flag</span>
+<span class="sd">        are loop invariants that are only recomputed when the Cell</span>
+<span class="sd">        object yielded by the reader changes identity (the raw reader</span>
+<span class="sd">        caches Cell objects, so constant-box trajectories compute them</span>
+<span class="sd">        exactly once).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        MSDError</span>
+<span class="sd">            If a frame does not provide positions for all atoms</span>
+<span class="sd">            of the topology.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span>
+        <span class="n">n_sel</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">)</span>
+
+        <span class="n">msd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># unwrapped origin coordinates, oldest origin at index 0</span>
+        <span class="n">origins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_origins_max</span><span class="p">,</span> <span class="n">n_sel</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># origin bookkeeping state: [n_active, last]</span>
+        <span class="n">state</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">)</span>
+
+        <span class="c1"># per-frame scratch buffers and cumulative unwrapping state</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sel</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">prev_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sel</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sel</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+        <span class="n">unwrapped</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_sel</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+        <span class="c1"># loop-invariant cell data, recomputed only when the yielded</span>
+        <span class="c1"># Cell object changes identity</span>
+        <span class="n">last_cell</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">inv_box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+        <span class="n">is_vacuum</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">values</span><span class="p">,</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">raw_frame_generator</span><span class="p">(),</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span><span class="p">):</span>
+
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_atoms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Frame </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> of the trajectory does not &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;provide positions for all </span><span class="si">{</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;atoms of the topology. Please provide a &quot;</span>
+                        <span class="s2">&quot;position trajectory (e.g. .xyz files) with &quot;</span>
+                        <span class="s2">&quot;a consistent number of atoms.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">MSDError</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cell</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">last_cell</span><span class="p">:</span>
+                <span class="n">last_cell</span> <span class="o">=</span> <span class="n">cell</span>
+                <span class="n">is_vacuum</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span> <span class="k">else</span> <span class="mi">0</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">is_vacuum</span><span class="p">:</span>
+                    <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                        <span class="n">cell</span><span class="o">.</span><span class="n">box_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                    <span class="p">)</span>
+                    <span class="n">inv_box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+                        <span class="n">cell</span><span class="o">.</span><span class="n">inverse_box_matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span>
+                    <span class="p">)</span>
+
+            <span class="n">msd_frame_update</span><span class="p">(</span>
+                <span class="n">values</span><span class="p">,</span>
+                <span class="n">indices</span><span class="p">,</span>
+                <span class="n">box</span><span class="p">,</span>
+                <span class="n">inv_box</span><span class="p">,</span>
+                <span class="n">is_vacuum</span><span class="p">,</span>
+                <span class="n">pos</span><span class="p">,</span>
+                <span class="n">prev_pos</span><span class="p">,</span>
+                <span class="n">shift</span><span class="p">,</span>
+                <span class="n">unwrapped</span><span class="p">,</span>
+                <span class="n">origins</span><span class="p">,</span>
+                <span class="n">msd</span><span class="p">,</span>
+                <span class="n">state</span><span class="p">,</span>
+                <span class="n">counter</span><span class="p">,</span>
+                <span class="n">gap</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">window</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span> <span class="o">=</span> <span class="n">msd</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finalize_run</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalizes the MSD analysis after running.</span>
+
+<span class="sd">        This method is called by the run method of the MSD</span>
+<span class="sd">        class. It normalizes the raw MSD accumulators by the</span>
+<span class="sd">        number of selected atoms and the total number of time</span>
+<span class="sd">        origins (legacy Diffcalc convention) and performs the</span>
+<span class="sd">        diffusion fit if a time step was given.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        lags : Np1DNumberArray</span>
+<span class="sd">            The lag indices (in frames) of the MSD analysis.</span>
+<span class="sd">        msd_x : Np1DNumberArray</span>
+<span class="sd">            The x-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_y : Np1DNumberArray</span>
+<span class="sd">            The y-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_z : Np1DNumberArray</span>
+<span class="sd">            The z-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_tot : Np1DNumberArray</span>
+<span class="sd">            The total MSD (x + y + z) in Angstrom^2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">norm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_origins</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_msd_accumulator</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">msd_tot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">msd_x</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">msd_y</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">msd_z</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">fit_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_diffusion</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msd_x</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msd_y</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msd_z</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">msd_tot</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fit_window</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lags</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msd_x</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msd_y</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msd_z</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">msd_tot</span>
+        <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of atoms of the MSD analysis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_unwrap_shift</span><span class="p">(</span>
+        <span class="n">displacement</span><span class="p">:</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
+        <span class="n">cell</span><span class="p">:</span> <span class="n">Cell</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np2DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the change of the unwrapping shift vectors</span>
+<span class="sd">        for the given per-frame displacements.</span>
+
+<span class="sd">        The displacement vectors are folded back into the</span>
+<span class="sd">        minimum image convention with respect to the given cell</span>
+<span class="sd">        by subtracting the box matrix multiplied with the</span>
+<span class="sd">        rounded (round-half-even) fractional displacement. For</span>
+<span class="sd">        orthorhombic cells this reduces exactly to the legacy</span>
+<span class="sd">        Diffcalc expression -box * rint(displacement / box).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        displacement : Np2DNumberArray</span>
+<span class="sd">            The per-frame displacement vectors of shape (n, 3).</span>
+<span class="sd">        cell : Cell</span>
+<span class="sd">            The unit cell of the current frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np2DNumberArray</span>
+<span class="sd">            The change of the unwrapping shift vectors of</span>
+<span class="sd">            shape (n, 3).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">displacement</span><span class="p">)</span>
+
+        <span class="n">fractional</span> <span class="o">=</span> <span class="n">displacement</span> <span class="o">@</span> <span class="n">cell</span><span class="o">.</span><span class="n">inverse_box_matrix</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="n">fractional</span><span class="p">)</span> <span class="o">@</span> <span class="n">cell</span><span class="o">.</span><span class="n">box_matrix</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_fit_diffusion</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">lags</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">msd_x</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">msd_y</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">msd_z</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">msd_tot</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">fit_window</span><span class="p">:</span> <span class="n">PositiveInt</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MSDDiffusionFit</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fits the trailing part of the MSD components linearly</span>
+<span class="sd">        and calculates diffusion coefficients.</span>
+
+<span class="sd">        The last fit_window points of every MSD component are</span>
+<span class="sd">        fitted with scipy.stats.linregress. The diffusion</span>
+<span class="sd">        coefficient is calculated from the slope via the</span>
+<span class="sd">        Einstein relation D = slope / (2 * dim) with dim = 1</span>
+<span class="sd">        for the per-axis components and dim = 3 for the total</span>
+<span class="sd">        MSD. The slopes (Angstrom^2/ps) are converted to m^2/s.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lags : Np1DNumberArray</span>
+<span class="sd">            The lag indices (in frames) of the MSD analysis.</span>
+<span class="sd">        msd_x : Np1DNumberArray</span>
+<span class="sd">            The x-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_y : Np1DNumberArray</span>
+<span class="sd">            The y-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_z : Np1DNumberArray</span>
+<span class="sd">            The z-component of the MSD in Angstrom^2.</span>
+<span class="sd">        msd_tot : Np1DNumberArray</span>
+<span class="sd">            The total MSD in Angstrom^2.</span>
+<span class="sd">        time_step : PositiveReal</span>
+<span class="sd">            The time step between two frames in ps.</span>
+<span class="sd">        fit_window : PositiveInt</span>
+<span class="sd">            The number of trailing MSD points used for the fit.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dict[str, MSDDiffusionFit]</span>
+<span class="sd">            The fit results for the keys &quot;x&quot;, &quot;y&quot;, &quot;z&quot; and</span>
+<span class="sd">            &quot;total&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Lazy import: scipy.stats is expensive to import and only</span>
+        <span class="c1"># needed when a diffusion fit is requested.</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">linregress</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+
+        <span class="n">times</span> <span class="o">=</span> <span class="n">lags</span> <span class="o">*</span> <span class="n">time_step</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">dimension</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">msd_x</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">msd_y</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="n">msd_z</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;total&quot;</span><span class="p">,</span> <span class="n">msd_tot</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="p">):</span>
+            <span class="n">fit</span> <span class="o">=</span> <span class="n">linregress</span><span class="p">(</span><span class="n">times</span><span class="p">[</span><span class="o">-</span><span class="n">fit_window</span><span class="p">:],</span> <span class="n">series</span><span class="p">[</span><span class="o">-</span><span class="n">fit_window</span><span class="p">:])</span>
+
+            <span class="n">factor</span> <span class="o">=</span> <span class="n">ANGSTROM2_PER_PS_TO_M2_PER_S</span> <span class="o">/</span> <span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">dimension</span><span class="p">)</span>
+
+            <span class="n">results</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSDDiffusionFit</span><span class="p">(</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">,</span>
+                <span class="n">slope</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">slope</span><span class="p">),</span>
+                <span class="n">slope_stderr</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">stderr</span><span class="p">),</span>
+                <span class="n">intercept</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">intercept</span><span class="p">),</span>
+                <span class="n">r_squared</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">rvalue</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">diffusion_coefficient</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">slope</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span>
+                <span class="n">diffusion_coefficient_stderr</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span> <span class="o">*</span> <span class="n">factor</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">results</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

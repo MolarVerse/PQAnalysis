@@ -1,0 +1,390 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>msd &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.msd.msd.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="msd_input_file_reader" href="PQAnalysis.analysis.msd.msd_input_file_reader.html" />
+    <link rel="prev" title="exceptions" href="PQAnalysis.analysis.msd.exceptions.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html">exceptions</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">msd</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.msd_input_file_reader.html">msd_input_file_reader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.msd_output_file_writer.html">msd_output_file_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+      <li class="breadcrumb-item active">msd</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.msd.msd.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.msd.msd">
+<span id="msd"></span><h1>msd<a class="headerlink" href="#module-PQAnalysis.analysis.msd.msd" title="Link to this heading"></a></h1>
+<p>A module containing the MSD class. The MSD class is used to
+calculate the mean square displacement (MSD) of a selection
+of atoms using multiple time origins on a sliding window.
+The MSD is a measure of the average squared distance
+particles travel within a given correlation time and gives
+access to the self-diffusion coefficient via the Einstein
+relation.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.msd.msd.MSD" title="PQAnalysis.analysis.msd.msd.MSD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MSD</span></code></a></p></td>
+<td><p>A class for calculating the mean square displacement (MSD) of a target selection using multiple simultaneously active time origins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit" title="PQAnalysis.analysis.msd.msd.MSDDiffusionFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MSDDiffusionFit</span></code></a></p></td>
+<td><p>A container for the result of a linear diffusion fit of an MSD component.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSD">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MSD</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">traj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><span class="pre">Trajectory</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader"><span class="pre">TrajectoryReader</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">target_species</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><span class="pre">SelectionCompatible</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">use_full_atom_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">gap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">n_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">time_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PositiveReal</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">fit_window</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><span class="pre">PositiveInt</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/msd/msd.html#MSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSD" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for calculating the mean square displacement (MSD)
+of a target selection using multiple simultaneously active
+time origins.</p>
+<p>A new time origin is spawned every <code class="docutils literal notranslate"><span class="pre">gap</span></code> frames until
+<code class="docutils literal notranslate"><span class="pre">window</span> <span class="pre">//</span> <span class="pre">gap</span></code> origins are active. Every frame, each
+active origin accumulates the squared displacement of every
+selected atom relative to the origin position into the lag
+bin given by the frame distance to the origin. Displacements
+are unwrapped with a running minimum image convention applied
+to the per-frame displacement vectors, so that trajectories
+wrapped into the simulation box are handled correctly. When
+the oldest origin has covered the full window, it accumulates
+its final lag term and is replaced by a new origin (or
+dropped without replacement once no new origins may spawn
+anymore).</p>
+<p>This is a port of the <code class="docutils literal notranslate"><span class="pre">Diffcalc</span></code> tool of thh_tools and
+reproduces its results exactly, including its normalization
+convention: every lag bin is divided by the number of
+selected atoms times <code class="docutils literal notranslate"><span class="pre">total_origins</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">total_origins</span> <span class="pre">=</span> <span class="pre">stop_frame</span> <span class="pre">//</span> <span class="pre">gap</span></code> and
+<code class="docutils literal notranslate"><span class="pre">stop_frame</span> <span class="pre">=</span> <span class="pre">(n_frames</span> <span class="pre">-</span> <span class="pre">window)</span> <span class="pre">//</span> <span class="pre">gap</span> <span class="pre">*</span> <span class="pre">gap</span></code>. Note that
+this normalization intentionally follows the legacy code
+also for <code class="docutils literal notranslate"><span class="pre">n_start</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>. The legacy boundary case of a
+trajectory of exactly <code class="docutils literal notranslate"><span class="pre">window</span></code> frames with <code class="docutils literal notranslate"><span class="pre">gap</span> <span class="pre">==</span> <span class="pre">1</span></code> is
+also kept: a single time origin spawns at the first frame
+and the final lag bin (<code class="docutils literal notranslate"><span class="pre">lag</span> <span class="pre">==</span> <span class="pre">window</span></code>), which can never
+be sampled, is written as exactly 0.0 (a warning is
+emitted). Any shorter trajectory raises an
+<a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSDError</span></code></a>.</p>
+<p>If a time step is given, the trailing <code class="docutils literal notranslate"><span class="pre">fit_window</span></code> points
+of the MSD components are fitted linearly to extract
+self-diffusion coefficients via the Einstein relation
+(slope / (2 * dimensionality), converted to m^2/s).</p>
+<p>The MSD class can be initialized with either a trajectory
+object or via a TrajectoryReader object. The
+TrajectoryReader allows for lazy loading of the trajectory,
+which is useful for large trajectories that do not fit into
+memory. For xyz trajectory files the frames are streamed via
+the raw-frame fast path
+(<a class="reference internal" href="PQAnalysis.io.traj_file.raw_frame_reader.html#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader" title="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawTrajectoryReader</span></code></a>)
+and accumulated with a compiled kernel, which is considerably
+faster and produces identical results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traj</strong> (<a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><em>Trajectory</em></a><em> | </em><a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader"><em>TrajectoryReader</em></a>) – The trajectory to analyze. If a TrajectoryReader is
+provided, the trajectory is read frame by frame via
+a frame_generator.</p></li>
+<li><p><strong>target_species</strong> (<a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionCompatible" title="PQAnalysis.topology.selection.SelectionCompatible"><em>SelectionCompatible</em></a>) – The target species of the MSD analysis.</p></li>
+<li><p><strong>use_full_atom_info</strong> (<em>bool</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Whether to use the full atom information of the
+trajectory or not, by default None (False).</p></li>
+<li><p><strong>window</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The correlation window size in frames,
+by default None (1000).</p></li>
+<li><p><strong>gap</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The gap between two time origins in frames,
+by default None (10).</p></li>
+<li><p><strong>n_start</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The first frame (1-based frame counter) at which
+processing starts, by default None (0). Frames
+before n_start are read (to keep the unwrapping
+continuous) but do not contribute to the MSD.</p></li>
+<li><p><strong>time_step</strong> (<em>PositiveReal</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – The time step between two frames in ps. If given,
+diffusion coefficients are calculated from a linear
+fit of the MSD tail, by default None.</p></li>
+<li><p><strong>fit_window</strong> (<a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.PositiveInt" title="PQAnalysis.types.PositiveInt"><em>PositiveInt</em></a><em> | </em><em>None</em><em>, </em><em>optional</em>) – The number of trailing MSD points used for the
+diffusion fit, by default None (last 20% of the
+window).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If n_start is negative.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If the window is not a multiple of the gap.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If time_step is not positive.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If fit_window is smaller than 2.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If fit_window is larger than window + 1.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If the trajectory is empty.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If the target selection is empty.</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If the trajectory is too short to establish at
+    least one full window (n_frames &lt; window + gap and
+    not the legacy single-origin case of exactly
+    window frames with gap == 1).</p></li>
+<li><p><a class="reference internal" href="PQAnalysis.analysis.msd.exceptions.html#PQAnalysis.analysis.msd.exceptions.MSDError" title="PQAnalysis.analysis.msd.exceptions.MSDError"><strong>MSDError</strong></a> – If n_start is larger than stop_frame, so that no
+    time origin could spawn.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="PQAnalysis.traj.trajectory.html#PQAnalysis.traj.trajectory.Trajectory" title="PQAnalysis.traj.trajectory.Trajectory"><code class="xref py py-class docutils literal notranslate"><span class="pre">Trajectory</span></code></a>, <a class="reference internal" href="PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection" title="PQAnalysis.topology.selection.Selection"><code class="xref py py-class docutils literal notranslate"><span class="pre">Selection</span></code></a>, <a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrajectoryReader</span></code></a></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSD.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/msd/msd.html#MSD.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSD.run" title="Link to this definition"></a></dt>
+<dd><p>Runs the MSD analysis.</p>
+<p>This method runs the MSD analysis and returns the lag
+indices and the MSD components. If a time step was
+given, the diffusion coefficients are calculated from a
+linear fit of the MSD tail and stored in the
+fit_results attribute.</p>
+<p>This method will display a progress bar by default.
+This can be disabled by setting with_progress_bar to
+False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>lags</strong> (<em>Np1DNumberArray</em>) – The lag indices (in frames) of the MSD analysis,
+ranging from 0 to window.</p></li>
+<li><p><strong>msd_x</strong> (<em>Np1DNumberArray</em>) – The x-component of the MSD in Angstrom^2.</p></li>
+<li><p><strong>msd_y</strong> (<em>Np1DNumberArray</em>) – The y-component of the MSD in Angstrom^2.</p></li>
+<li><p><strong>msd_z</strong> (<em>Np1DNumberArray</em>) – The z-component of the MSD in Angstrom^2.</p></li>
+<li><p><strong>msd_tot</strong> (<em>Np1DNumberArray</em>) – The total MSD (x + y + z) in Angstrom^2.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSD.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.MSD</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSD.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSD.n_atoms">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_atoms</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSD.n_atoms" title="Link to this definition"></a></dt>
+<dd><p>The number of atoms of the MSD analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MSDDiffusionFit</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">slope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">slope_stderr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">intercept</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">r_squared</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">diffusion_coefficient</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">diffusion_coefficient_stderr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/msd/msd.html#MSDDiffusionFit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A container for the result of a linear diffusion fit of an
+MSD component.</p>
+<p>The slope related quantities are given in Angstrom^2/ps,
+the diffusion coefficient and its standard error are given
+in m^2/s.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.diffusion_coefficient">
+<span class="sig-name descname"><span class="pre">diffusion_coefficient</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.diffusion_coefficient" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.diffusion_coefficient_stderr">
+<span class="sig-name descname"><span class="pre">diffusion_coefficient_stderr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.diffusion_coefficient_stderr" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.intercept">
+<span class="sig-name descname"><span class="pre">intercept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.intercept" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.label">
+<span class="sig-name descname"><span class="pre">label</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.label" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.r_squared">
+<span class="sig-name descname"><span class="pre">r_squared</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.r_squared" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.slope">
+<span class="sig-name descname"><span class="pre">slope</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.slope" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.MSDDiffusionFit.slope_stderr">
+<span class="sig-name descname"><span class="pre">slope_stderr</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.MSDDiffusionFit.slope_stderr" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd.ANGSTROM2_PER_PS_TO_M2_PER_S">
+<span class="sig-name descname"><span class="pre">ANGSTROM2_PER_PS_TO_M2_PER_S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-08</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd.ANGSTROM2_PER_PS_TO_M2_PER_S" title="Link to this definition"></a></dt>
+<dd><p>Conversion factor from Angstrom^2/ps to m^2/s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.msd.exceptions.html" class="btn btn-neutral float-left" title="exceptions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.msd.msd_input_file_reader.html" class="btn btn-neutral float-right" title="msd_input_file_reader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

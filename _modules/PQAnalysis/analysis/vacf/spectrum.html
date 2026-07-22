@@ -1,0 +1,413 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.vacf.spectrum &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/vacf/spectrum.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.vacf.spectrum</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.vacf.spectrum</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the spectrum functions of the VACF analysis.</span>
+
+<span class="sd">The functions in this module port the legacy ``ft.f`` Fourier</span>
+<span class="sd">transformation tool (``ftvac`` ver. 2.0) of the ``thh_tools``</span>
+<span class="sd">collection. The auto-correlation function is optionally multiplied</span>
+<span class="sd">with a one-sided apodization window, mirrored into an even extension</span>
+<span class="sd">and transformed with a discrete cosine sum. All legacy conventions are</span>
+<span class="sd">replicated exactly - see the notes of :py:func:`vacf_spectrum` for the</span>
+<span class="sd">historical quirks that are kept for backwards compatibility.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VACFError</span>
+
+<span class="n">SPEED_OF_LIGHT_CM_S</span> <span class="o">=</span> <span class="mf">2.99792458e10</span>
+
+<span class="c1">#: The window functions supported by :py:func:`apodization_window`.</span>
+<span class="n">WINDOW_FUNCTIONS</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="s2">&quot;exponential&quot;</span><span class="p">,</span> <span class="s2">&quot;hann&quot;</span><span class="p">,</span> <span class="s2">&quot;blackman&quot;</span><span class="p">)</span>
+
+<span class="c1"># NOTE: the legacy ft.f writes the Blackman coefficients as default-real</span>
+<span class="c1">#       (single precision) FORTRAN literals. The constants are rounded</span>
+<span class="c1">#       to single precision here to replicate the legacy binary bit for</span>
+<span class="c1">#       bit; the plain double precision values would differ by ~1e-8.</span>
+<span class="n">BLACKMAN_A0</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">0.42</span><span class="p">))</span>
+<span class="n">BLACKMAN_A1</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">BLACKMAN_A2</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">0.08</span><span class="p">))</span>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_legacy_nint</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rounds a value to the nearest integer like the FORTRAN ``nint``.</span>
+
+<span class="sd">    Half-way cases are rounded away from zero instead of the banker&#39;s</span>
+<span class="sd">    rounding of the built-in ``round``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    value : float</span>
+<span class="sd">        The value to round.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    int</span>
+<span class="sd">        The rounded value.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">value</span> <span class="o">&gt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">value</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">value</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">))</span>
+
+
+
+<div class="viewcode-block" id="apodization_window">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.spectrum.html#PQAnalysis.analysis.vacf.spectrum.apodization_window">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">apodization_window</span><span class="p">(</span>
+    <span class="n">n_points</span><span class="p">:</span> <span class="n">PositiveInt</span><span class="p">,</span>
+    <span class="n">time_step</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+    <span class="n">window_function</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">window_param</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">window_start</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">window_stop</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the one-sided legacy apodization window.</span>
+
+<span class="sd">    The window replicates the legacy ``ft.f`` window functions exactly.</span>
+<span class="sd">    With the start index ``winsind = nint(window_start / time_step)``</span>
+<span class="sd">    and the end index ``wineind = nint(window_stop / time_step)`` the</span>
+<span class="sd">    window factor of the one-based point ``i`` is one for</span>
+<span class="sd">    ``i &lt;= winsind``, zero for ``i &gt; wineind`` and otherwise:</span>
+
+<span class="sd">    - ``exponential``: ``exp(-window_param * time_step * (i - 1 - winsind))``</span>
+<span class="sd">    - ``hann``: ``(1 - cos(pi * (wineind - i) / (wineind - winsind))) / 2``</span>
+<span class="sd">    - ``blackman``: ``0.42 + 0.5 * cos(pi * (i - 1 - winsind) / wineind)</span>
+<span class="sd">      + 0.08 * cos(2 * pi * (i - 1 - winsind) / wineind)``</span>
+
+<span class="sd">    Note that the legacy ``hann`` and ``blackman`` formulas are</span>
+<span class="sd">    non-standard: the ``hann`` window is mirrored (it rises from the</span>
+<span class="sd">    end of the window range) and the ``blackman`` denominators are</span>
+<span class="sd">    ``wineind`` instead of the window width. Both quirks are replicated</span>
+<span class="sd">    deliberately.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_points : PositiveInt</span>
+<span class="sd">        The number of points of the correlation function.</span>
+<span class="sd">    time_step : PositiveReal</span>
+<span class="sd">        The time step between two points of the correlation function.</span>
+<span class="sd">    window_function : str, optional</span>
+<span class="sd">        The window function, one of ``none``, ``exponential``, ``hann``</span>
+<span class="sd">        and ``blackman``, by default ``none`` (all factors are one).</span>
+<span class="sd">    window_param : PositiveReal, optional</span>
+<span class="sd">        The exponential decay coefficient ``a`` of the ``exponential``</span>
+<span class="sd">        window ``exp(-a * t)``, by default 4.0.</span>
+<span class="sd">    window_start : PositiveReal, optional</span>
+<span class="sd">        The time at which the window starts to decay, by default 0.0.</span>
+<span class="sd">    window_stop : PositiveReal, optional</span>
+<span class="sd">        The time at which the window becomes zero, by default 1000.0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Np1DNumberArray</span>
+<span class="sd">        The window factors for all points.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    VACFError</span>
+<span class="sd">        If the window function is unknown.</span>
+<span class="sd">    VACFError</span>
+<span class="sd">        If the window range is empty or inverted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">window_function</span> <span class="o">=</span> <span class="n">window_function</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">window_function</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">WINDOW_FUNCTIONS</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown window function &#39;</span><span class="si">{</span><span class="n">window_function</span><span class="si">}</span><span class="s2">&#39;. Possible &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;window functions are: </span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">WINDOW_FUNCTIONS</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">window_function</span> <span class="o">==</span> <span class="s2">&quot;none&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_points</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="n">win_start_index</span> <span class="o">=</span> <span class="n">_legacy_nint</span><span class="p">(</span><span class="n">window_start</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span>
+    <span class="n">win_stop_index</span> <span class="o">=</span> <span class="n">_legacy_nint</span><span class="p">(</span><span class="n">window_stop</span> <span class="o">/</span> <span class="n">time_step</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">win_stop_index</span> <span class="o">&lt;=</span> <span class="n">win_start_index</span> <span class="ow">or</span> <span class="n">win_stop_index</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
+            <span class="s2">&quot;The window range is empty: window_stop must resolve to a &quot;</span>
+            <span class="s2">&quot;larger index than window_start and must be positive.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_points</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">window_function</span> <span class="o">==</span> <span class="s2">&quot;exponential&quot;</span><span class="p">:</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+            <span class="o">-</span><span class="n">window_param</span> <span class="o">*</span> <span class="n">time_step</span> <span class="o">*</span> <span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">win_start_index</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="n">window_function</span> <span class="o">==</span> <span class="s2">&quot;hann&quot;</span><span class="p">:</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">win_stop_index</span> <span class="o">-</span> <span class="n">index</span><span class="p">)</span> <span class="o">/</span>
+                <span class="p">(</span><span class="n">win_stop_index</span> <span class="o">-</span> <span class="n">win_start_index</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># blackman</span>
+        <span class="n">phase</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">win_start_index</span><span class="p">)</span> <span class="o">/</span> <span class="n">win_stop_index</span>
+        <span class="n">factors</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">BLACKMAN_A0</span> <span class="o">+</span> <span class="n">BLACKMAN_A1</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phase</span><span class="p">)</span> <span class="o">+</span>
+            <span class="n">BLACKMAN_A2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">phase</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="n">factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">index</span> <span class="o">&lt;=</span> <span class="n">win_start_index</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">factors</span><span class="p">)</span>
+    <span class="n">factors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">index</span> <span class="o">&gt;</span> <span class="n">win_stop_index</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">factors</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">factors</span></div>
+
+
+
+
+<div class="viewcode-block" id="vacf_spectrum">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.spectrum.html#PQAnalysis.analysis.vacf.spectrum.vacf_spectrum">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">vacf_spectrum</span><span class="p">(</span>
+    <span class="n">time</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+    <span class="n">correlation</span><span class="p">:</span> <span class="n">Np1DNumberArray</span><span class="p">,</span>
+    <span class="n">ftsize</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+    <span class="n">window_function</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;none&quot;</span><span class="p">,</span>
+    <span class="n">window_param</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">window_start</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">window_stop</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the legacy cosine-transform spectrum of a correlation</span>
+<span class="sd">    function.</span>
+
+<span class="sd">    The (optionally apodized) correlation function is zero-padded to</span>
+<span class="sd">    ``ftsize`` points and mirrored into an even extension of length</span>
+<span class="sd">    ``2 * ftsize - 1`` centered at index ``ftsize``. The spectrum is</span>
+<span class="sd">    the discrete cosine sum</span>
+
+<span class="sd">    ``spectrum(l) = |0.5 * sum_k cd(k) *</span>
+<span class="sd">    cos(2 * pi * l * (k - ftsize) / (2 * ftsize - 1))|``</span>
+
+<span class="sd">    for ``l = 1..ftsize``, which is evaluated here via the equivalent</span>
+<span class="sd">    real part of the FFT of the circularly shifted even extension.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The frequency axis replicates the historical calibration of the</span>
+<span class="sd">    legacy ``ft.f`` tool: the wavenumber spacing is calculated with a</span>
+<span class="sd">    period of ``2 * (ftsize - 1)`` points although the underlying even</span>
+<span class="sd">    extension has ``2 * ftsize - 1`` points. This slight frequency-axis</span>
+<span class="sd">    mismatch is kept deliberately so that spectra remain comparable</span>
+<span class="sd">    with the historical results. The time step is taken from the first</span>
+<span class="sd">    two entries of the time axis and is assumed to be constant, and the</span>
+<span class="sd">    last spectrum point duplicates its predecessor (a legacy</span>
+<span class="sd">    consequence of evaluating the cosine sum at ``l = ftsize``).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    time : Np1DNumberArray</span>
+<span class="sd">        The equidistant time axis of the correlation function in ps.</span>
+<span class="sd">    correlation : Np1DNumberArray</span>
+<span class="sd">        The correlation function values.</span>
+<span class="sd">    ftsize : PositiveInt, optional</span>
+<span class="sd">        The Fourier transform point size, by default 2000. The</span>
+<span class="sd">        correlation function is zero-padded (or truncated) to this</span>
+<span class="sd">        size.</span>
+<span class="sd">    window_function : str, optional</span>
+<span class="sd">        The apodization window, one of ``none``, ``exponential``,</span>
+<span class="sd">        ``hann`` and ``blackman``, by default ``none``. See</span>
+<span class="sd">        :py:func:`apodization_window`.</span>
+<span class="sd">    window_param : PositiveReal, optional</span>
+<span class="sd">        The exponential window decay coefficient, by default 4.0.</span>
+<span class="sd">    window_start : PositiveReal, optional</span>
+<span class="sd">        The window start time, by default 0.0.</span>
+<span class="sd">    window_stop : PositiveReal, optional</span>
+<span class="sd">        The window stop time, by default 1000.0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    wavenumbers : Np1DNumberArray</span>
+<span class="sd">        The wavenumbers in cm^-1 for the indices ``1..ftsize``.</span>
+<span class="sd">    amplitudes : Np1DNumberArray</span>
+<span class="sd">        The spectrum amplitudes.</span>
+<span class="sd">    windowed_correlation : Np1DNumberArray</span>
+<span class="sd">        The correlation function after applying the apodization window</span>
+<span class="sd">        (equal to the input for the ``none`` window).</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    VACFError</span>
+<span class="sd">        If less than two points are given, the time axis and the</span>
+<span class="sd">        correlation function have different lengths or ftsize is</span>
+<span class="sd">        smaller than two.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">correlation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">correlation</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">correlation</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
+            <span class="s2">&quot;The time axis and the correlation function have to be &quot;</span>
+            <span class="s2">&quot;one-dimensional arrays.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">correlation</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
+            <span class="s2">&quot;The time axis and the correlation function must have the &quot;</span>
+            <span class="s2">&quot;same length.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">time</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
+            <span class="s2">&quot;At least two correlation points are needed to infer the &quot;</span>
+            <span class="s2">&quot;time step.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ftsize</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span><span class="s2">&quot;The ftsize must be at least 2.&quot;</span><span class="p">)</span>
+
+    <span class="n">time_step</span> <span class="o">=</span> <span class="n">time</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">time_step</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span><span class="s2">&quot;The time axis must be strictly increasing.&quot;</span><span class="p">)</span>
+
+    <span class="n">factors</span> <span class="o">=</span> <span class="n">apodization_window</span><span class="p">(</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">correlation</span><span class="p">),</span>
+        <span class="n">time_step</span><span class="p">,</span>
+        <span class="n">window_function</span><span class="o">=</span><span class="n">window_function</span><span class="p">,</span>
+        <span class="n">window_param</span><span class="o">=</span><span class="n">window_param</span><span class="p">,</span>
+        <span class="n">window_start</span><span class="o">=</span><span class="n">window_start</span><span class="p">,</span>
+        <span class="n">window_stop</span><span class="o">=</span><span class="n">window_stop</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">windowed_correlation</span> <span class="o">=</span> <span class="n">correlation</span> <span class="o">*</span> <span class="n">factors</span>
+
+    <span class="n">padded</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">ftsize</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">n_points</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">windowed_correlation</span><span class="p">),</span> <span class="n">ftsize</span><span class="p">)</span>
+    <span class="n">padded</span><span class="p">[:</span><span class="n">n_points</span><span class="p">]</span> <span class="o">=</span> <span class="n">windowed_correlation</span><span class="p">[:</span><span class="n">n_points</span><span class="p">]</span>
+
+    <span class="c1"># even extension [c_1 .. c_ftsize, c_ftsize .. c_2] of length</span>
+    <span class="c1"># 2 * ftsize - 1; its DFT is real and equals the legacy cosine sum</span>
+    <span class="n">extension</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">padded</span><span class="p">,</span> <span class="n">padded</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+    <span class="n">transform</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">transform</span><span class="p">)</span>
+
+    <span class="c1"># the legacy loop runs to l = ftsize, which mirrors back onto the</span>
+    <span class="c1"># rfft bin ftsize - 1 of the odd-length even extension</span>
+    <span class="n">amplitudes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">amplitudes</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">amplitudes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]])</span>
+
+    <span class="n">frequency_spacing</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">time_step</span> <span class="o">*</span> <span class="mf">1.0e-12</span> <span class="o">*</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">ftsize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SPEED_OF_LIGHT_CM_S</span>
+    <span class="p">)</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">ftsize</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">wavenumbers</span> <span class="o">=</span> <span class="n">wavenumbers</span> <span class="o">*</span> <span class="n">frequency_spacing</span>
+
+    <span class="k">return</span> <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">windowed_correlation</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

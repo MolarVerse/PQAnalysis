@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/cli/main.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
@@ -81,18 +82,23 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">.xyz2gen</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZ2GENCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2extxyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2ExtXYZCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2qmcfc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2QMCFCCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2box</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2BoxCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.rst2xyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rst2XYZCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.xyz2rst</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZ2RstCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.rdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDFCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.gen2xyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">GEN2XYZCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.continue_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinueInputCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.add_molecules</span><span class="w"> </span><span class="kn">import</span> <span class="n">AddMoleculesCLI</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.build_nep_traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuildNEPTrajCLI</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.build_spectrum</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuildSpectrumCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.check_momentum</span><span class="w"> </span><span class="kn">import</span> <span class="n">CheckMomentumCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.continue_input</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContinueInputCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.gen2xyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">GEN2XYZCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.msd</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSDCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">RDFCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.rst2xyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rst2XYZCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2box</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2BoxCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2extxyz</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2ExtXYZCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.traj2qmcfc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Traj2QMCFCCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vacf</span><span class="w"> </span><span class="kn">import</span> <span class="n">VACFCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.vibrations</span><span class="w"> </span><span class="kn">import</span> <span class="n">VibrationsCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.xyz2gen</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZ2GENCLI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.xyz2rst</span><span class="w"> </span><span class="kn">import</span> <span class="n">XYZ2RstCLI</span>
 
 <span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 
@@ -120,14 +126,19 @@
     <span class="n">sub_parser_dict</span> <span class="o">=</span> <span class="p">{</span>
         <span class="n">AddMoleculesCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">AddMoleculesCLI</span><span class="p">,</span>
         <span class="n">BuildNEPTrajCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">BuildNEPTrajCLI</span><span class="p">,</span>
+        <span class="n">BuildSpectrumCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">BuildSpectrumCLI</span><span class="p">,</span>
+        <span class="n">CheckMomentumCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">CheckMomentumCLI</span><span class="p">,</span>
         <span class="n">ContinueInputCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">ContinueInputCLI</span><span class="p">,</span>
         <span class="n">GEN2XYZCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">GEN2XYZCLI</span><span class="p">,</span>
+        <span class="n">MSDCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">MSDCLI</span><span class="p">,</span>
         <span class="n">RDFCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">RDFCLI</span><span class="p">,</span>
         <span class="n">Rst2XYZCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">Rst2XYZCLI</span><span class="p">,</span>
         <span class="n">XYZ2RstCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">XYZ2RstCLI</span><span class="p">,</span>
         <span class="n">Traj2BoxCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">Traj2BoxCLI</span><span class="p">,</span>
         <span class="n">Traj2ExtXYZCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">Traj2ExtXYZCLI</span><span class="p">,</span>
         <span class="n">Traj2QMCFCCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">Traj2QMCFCCLI</span><span class="p">,</span>
+        <span class="n">VACFCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">VACFCLI</span><span class="p">,</span>
+        <span class="n">VibrationsCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">VibrationsCLI</span><span class="p">,</span>
         <span class="n">XYZ2GENCLI</span><span class="o">.</span><span class="n">program_name</span><span class="p">():</span> <span class="n">XYZ2GENCLI</span><span class="p">,</span>
     <span class="p">}</span>
 

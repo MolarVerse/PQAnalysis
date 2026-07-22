@@ -17,14 +17,19 @@ cli
 
        PQAnalysis.cli.add_molecules
        PQAnalysis.cli.build_nep_traj
+       PQAnalysis.cli.build_spectrum
+       PQAnalysis.cli.check_momentum
        PQAnalysis.cli.continue_input
        PQAnalysis.cli.gen2xyz
        PQAnalysis.cli.main
+       PQAnalysis.cli.msd
        PQAnalysis.cli.rdf
        PQAnalysis.cli.rst2xyz
        PQAnalysis.cli.traj2box
        PQAnalysis.cli.traj2extxyz
        PQAnalysis.cli.traj2qmcfc
+       PQAnalysis.cli.vacf
+       PQAnalysis.cli.vibrations
        PQAnalysis.cli.xyz2gen
        PQAnalysis.cli.xyz2rst
 

@@ -1,0 +1,237 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis.spectrum_broadening &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.spectrum_broadening.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="api" href="PQAnalysis.analysis.spectrum_broadening.api.html" />
+    <link rel="prev" title="rdf_output_file_writer" href="PQAnalysis.analysis.rdf.rdf_output_file_writer.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">analysis.spectrum_broadening</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html">api</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html">exceptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html">spectrum_broadening</a></li>
+<li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html">spectrum_broadening_output_file_writer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+      <li class="breadcrumb-item active">analysis.spectrum_broadening</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.spectrum_broadening.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.spectrum_broadening">
+<span id="analysis-spectrum-broadening"></span><h1>analysis.spectrum_broadening<a class="headerlink" href="#module-PQAnalysis.analysis.spectrum_broadening" title="Link to this heading"></a></h1>
+<p>A package containing classes and functions to broaden stick spectra.</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrumDataWriter</span></code></dt><dd><p>A class to write broadened spectra to output files.</p>
+</dd>
+</dl>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h2>
+<dl class="simple">
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html#PQAnalysis.analysis.spectrum_broadening.api.build_spectrum" title="PQAnalysis.analysis.spectrum_broadening.api.build_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_spectrum()</span></code></a></dt><dd><p>A function to broaden a stick spectrum file and write the result.</p>
+</dd>
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha_from_fwhm()</span></code></a></dt><dd><p>A function to convert a Gaussian full width at half maximum to
+the exponent alpha.</p>
+</dd>
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">fwhm_from_alpha()</span></code></a></dt><dd><p>A function to convert a Gaussian exponent alpha to the full width
+at half maximum.</p>
+</dd>
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_stick_spectrum()</span></code></a></dt><dd><p>A function to read a two-column stick spectrum file.</p>
+</dd>
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">wavenumber_grid()</span></code></a></dt><dd><p>A function to build the regular wavenumber grid of the broadened
+spectrum.</p>
+</dd>
+<dt><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden"><code class="xref py py-func docutils literal notranslate"><span class="pre">broaden()</span></code></a></dt><dd><p>A function to broaden a stick spectrum on a wavenumber grid.</p>
+</dd>
+</dl>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html">api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.exceptions.html">exceptions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html">spectrum_broadening</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html">spectrum_broadening_output_file_writer</a></li>
+</ul>
+</div>
+</section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Classes:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.SpectrumDataWriter" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.SpectrumDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpectrumDataWriter</span></code></a></p></td>
+<td><p>Class for writing a broadened spectrum to a file.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Functions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.alpha_from_fwhm"><code class="xref py py-func docutils literal notranslate"><span class="pre">alpha_from_fwhm</span></code></a></p></td>
+<td><p>Convert a Gaussian full width at half maximum to the exponent alpha.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden"><code class="xref py py-func docutils literal notranslate"><span class="pre">broaden</span></code></a></p></td>
+<td><p>Broaden a stick spectrum on a wavenumber grid.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html#PQAnalysis.analysis.spectrum_broadening.api.build_spectrum" title="PQAnalysis.analysis.spectrum_broadening.api.build_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_spectrum</span></code></a></p></td>
+<td><p>Broaden a two-column stick spectrum file and write the result.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.fwhm_from_alpha"><code class="xref py py-func docutils literal notranslate"><span class="pre">fwhm_from_alpha</span></code></a></p></td>
+<td><p>Convert a Gaussian exponent alpha to the full width at half maximum.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.read_stick_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_stick_spectrum</span></code></a></p></td>
+<td><p>Read a two-column stick spectrum file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.wavenumber_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">wavenumber_grid</span></code></a></p></td>
+<td><p>Build the regular wavenumber grid of the broadened spectrum.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Data:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-data docutils literal notranslate"><span class="pre">DEFAULT_ALPHA</span></code></p></td>
+<td><p>Convert a string or number to a floating-point number, if possible.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-data docutils literal notranslate"><span class="pre">DEFAULT_WAVENUMBER_MAX</span></code></p></td>
+<td><p>Convert a string or number to a floating-point number, if possible.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-data docutils literal notranslate"><span class="pre">DEFAULT_WAVENUMBER_MIN</span></code></p></td>
+<td><p>Convert a string or number to a floating-point number, if possible.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-data docutils literal notranslate"><span class="pre">DEFAULT_WAVENUMBER_STEP</span></code></p></td>
+<td><p>Convert a string or number to a floating-point number, if possible.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.rdf.rdf_output_file_writer.html" class="btn btn-neutral float-left" title="rdf_output_file_writer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.spectrum_broadening.api.html" class="btn btn-neutral float-right" title="api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

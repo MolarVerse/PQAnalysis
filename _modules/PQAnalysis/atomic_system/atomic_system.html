@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/atomic_system/atomic_system.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
@@ -84,7 +85,6 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
 <span class="c1"># just for forwardref type hinting</span>
@@ -154,11 +154,13 @@
 
 <span class="sd">    Inherits from the Mixins: _PropertiesMixin, _StandardPropertiesMixin,</span>
 <span class="sd">    _IndexingMixin, _PositionsMixin</span>
-<span class="sd">        - The _StandardPropertiesMixin contains the standard properties of an atomic</span>
-<span class="sd">        system (i.e. standard getter and setter methods).</span>
-<span class="sd">        - The _PropertiesMixin contains special properties derived from the standard properties</span>
-<span class="sd">        - The _PositionsMixin contains methods for computing properties based</span>
-<span class="sd">        on the positions of the atoms</span>
+
+<span class="sd">    - The _StandardPropertiesMixin contains the standard properties of an</span>
+<span class="sd">      atomic system (i.e. standard getter and setter methods).</span>
+<span class="sd">    - The _PropertiesMixin contains special properties derived from the</span>
+<span class="sd">      standard properties</span>
+<span class="sd">    - The _PositionsMixin contains methods for computing properties based</span>
+<span class="sd">      on the positions of the atoms</span>
 
 
 <span class="sd">    Examples</span>
@@ -409,6 +411,10 @@
 <span class="sd">            If the system could not be fitted into the positions</span>
 <span class="sd">            of the AtomicSystem within the maximum number of iterations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Lazy import: scipy.spatial.transform is expensive to import</span>
+        <span class="c1"># and only needed when fitting atomic systems.</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.spatial.transform</span><span class="w"> </span><span class="kn">import</span> <span class="n">Rotation</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AtomicSystemError</span><span class="p">(</span>

@@ -1,0 +1,871 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PQAnalysis.analysis.vacf.vacf &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/analysis/vacf/vacf.html" />
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../../../../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PQAnalysis.analysis.vacf.vacf</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PQAnalysis.analysis.vacf.vacf</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the VACF class. The VACF class is used to</span>
+<span class="sd">calculate the normalized velocity auto-correlation function</span>
+<span class="sd">of a target selection of a given velocity trajectory. In the</span>
+<span class="sd">charge-flux mode the atomic velocities are weighted with</span>
+<span class="sd">(possibly time-dependent) atomic partial charges, which turns</span>
+<span class="sd">the auto-correlation function into a charge-flux (current)</span>
+<span class="sd">auto-correlation function.</span>
+
+<span class="sd">The implementation is a port of the legacy ``FreqCalc`` and</span>
+<span class="sd">``Fluxfreqcalc`` tools of the ``thh_tools`` collection. Both</span>
+<span class="sd">legacy tools share the identical sliding-time-origin estimator -</span>
+<span class="sd">they only differ in the charge weighting of the velocities at</span>
+<span class="sd">read time.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># 3rd party imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+
+<span class="c1"># local absolute imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+    <span class="n">Np2DNumberArray</span><span class="p">,</span>
+    <span class="n">PositiveInt</span><span class="p">,</span>
+    <span class="n">PositiveReal</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">TrajectoryFormat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit_in_class</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawTrajectoryReader</span><span class="p">,</span> <span class="n">TrajectoryReader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">__package_name__</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+
+<span class="c1"># local relative imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VACFError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._raw_charge_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">RawChargeTrajectoryReader</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._vacf_kernel</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-error</span>
+        <span class="n">accumulate_frame</span><span class="p">,</span>
+        <span class="n">weight_frame</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._vacf_kernel_py</span><span class="w"> </span><span class="kn">import</span> <span class="n">accumulate_frame</span><span class="p">,</span> <span class="n">weight_frame</span>
+
+
+
+<div class="viewcode-block" id="VACF">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">VACF</span><span class="p">:</span>
+
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class for calculating the normalized velocity (or charge-flux)</span>
+<span class="sd">    auto-correlation function of a target selection of a velocity</span>
+<span class="sd">    trajectory.</span>
+
+<span class="sd">    The auto-correlation function is estimated with sliding time</span>
+<span class="sd">    origins. A new origin is spawned every ``gap`` frames as long as a</span>
+<span class="sd">    full correlation window of ``window_size`` frames can still be</span>
+<span class="sd">    accommodated by the trajectory, i.e. for all origin frames</span>
+<span class="sd">    ``t0 &lt;= stop_frame`` with</span>
+<span class="sd">    ``stop_frame = floor((n_frames - window_size) / gap) * gap``</span>
+<span class="sd">    (frames are counted starting at 1). Like in the legacy tools, a</span>
+<span class="sd">    ``stop_frame`` of exactly zero (i.e. ``n_frames == window_size``)</span>
+<span class="sd">    is reset to one, so that for ``gap == 1`` a single origin is</span>
+<span class="sd">    spawned at the first frame and only the final lag bin of the</span>
+<span class="sd">    correlation function stays zero. Each origin is normalized by</span>
+<span class="sd">    its own aggregate squared velocity norm, so that the correlation</span>
+<span class="sd">    function starts at exactly one:</span>
+
+<span class="sd">    ``C(lag) = (1 / n_origins) * sum_i [sum_j v_j(t0_i + lag) . v_j(t0_i)]</span>
+<span class="sd">    / [sum_j |v_j(t0_i)|^2]``</span>
+
+<span class="sd">    where the sum over ``j`` runs over all selected atoms and the sum</span>
+<span class="sd">    over ``i`` over all time origins. This reproduces the legacy</span>
+<span class="sd">    ``FreqCalc``/``Fluxfreqcalc`` estimator exactly, including the</span>
+<span class="sd">    requirement that ``window_size`` is an integer multiple of ``gap``.</span>
+
+<span class="sd">    In the charge-flux mode (legacy ``Fluxfreqcalc``) every velocity is</span>
+<span class="sd">    replaced by ``q_j(t) * v_j(t)`` at read time, either with static</span>
+<span class="sd">    charges or with a charge trajectory read in lockstep with the</span>
+<span class="sd">    velocity trajectory.</span>
+
+<span class="sd">    Alternatively, a fast estimator based on the Wiener-Khinchin</span>
+<span class="sd">    theorem can be selected with ``method=&#39;fft&#39;``. Note that this is a</span>
+<span class="sd">    slightly different (denser-origin) estimator: every frame serves as</span>
+<span class="sd">    a time origin (the ``gap`` parameter is ignored), each lag is</span>
+<span class="sd">    averaged over its actual number of origins and the normalization is</span>
+<span class="sd">    performed with the aggregate mean squared velocity instead of</span>
+<span class="sd">    per-origin norms. The default ``method=&#39;direct&#39;`` is legacy-exact.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_window_size_default</span> <span class="o">=</span> <span class="mi">1000</span>
+    <span class="n">_gap_default</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">_method_default</span> <span class="o">=</span> <span class="s2">&quot;direct&quot;</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="nd">@runtime_type_checking</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">,</span>
+        <span class="n">time_step</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
+        <span class="n">window_size</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">target_species</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">gap</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">charges</span><span class="p">:</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">charge_traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        traj : Trajectory | TrajectoryReader</span>
+<span class="sd">            The velocity trajectory to analyze. If a TrajectoryReader</span>
+<span class="sd">            is provided, the trajectory is read lazily frame by frame.</span>
+<span class="sd">            All frames must provide velocities.</span>
+<span class="sd">        time_step : PositiveReal</span>
+<span class="sd">            The time step between two frames in ps. It is only used to</span>
+<span class="sd">            build the time axis of the results.</span>
+<span class="sd">        window_size : PositiveInt | None, optional</span>
+<span class="sd">            The correlation window length in frames. The correlation</span>
+<span class="sd">            function is calculated for the lags ``0..window_size``,</span>
+<span class="sd">            by default None (1000).</span>
+<span class="sd">        target_species : SelectionCompatible, optional</span>
+<span class="sd">            The target species of the VACF analysis, by default None</span>
+<span class="sd">            (all atoms).</span>
+<span class="sd">        gap : PositiveInt | None, optional</span>
+<span class="sd">            The spacing between two time origins in frames, by</span>
+<span class="sd">            default None (1). ``window_size`` must be an integer</span>
+<span class="sd">            multiple of ``gap``.</span>
+<span class="sd">        charges : Np1DNumberArray | None, optional</span>
+<span class="sd">            Static atomic partial charges for the charge-flux mode, one</span>
+<span class="sd">            charge per atom of the full system, by default None.</span>
+<span class="sd">        charge_traj : Trajectory | TrajectoryReader | None, optional</span>
+<span class="sd">            A charge trajectory for the charge-flux mode, read in</span>
+<span class="sd">            lockstep with the velocity trajectory, by default None.</span>
+<span class="sd">        method : str | None, optional</span>
+<span class="sd">            The estimator to use, either ``direct`` (legacy-exact</span>
+<span class="sd">            sliding origins) or ``fft`` (denser-origin Wiener-Khinchin</span>
+<span class="sd">            estimator, ignores ``gap``), by default None (``direct``).</span>
+<span class="sd">        use_full_atom_info : bool | None, optional</span>
+<span class="sd">            Whether to use the full atom information for the target</span>
+<span class="sd">            selection, by default None (False).</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the time step is not positive.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the method is unknown.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If both static charges and a charge trajectory are given.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the window size is not an integer multiple of the gap.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the trajectory is too short to place a single time</span>
+<span class="sd">            origin.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the target selection does not select any atoms.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the number of static charges does not match the number</span>
+<span class="sd">            of atoms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">window_size</span>
+            <span class="k">if</span> <span class="n">window_size</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window_size_default</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">=</span> <span class="n">time_step</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">=</span> <span class="n">gap</span> <span class="k">if</span> <span class="n">gap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gap_default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">method</span> <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_default</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The time_step must be a positive real number.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;direct&quot;</span><span class="p">,</span> <span class="s2">&quot;fft&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Unknown method &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                    <span class="s2">&quot;Possible methods are: direct, fft.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">charge_traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;Only one charge source can be used for the &quot;</span>
+                    <span class="s2">&quot;charge-flux mode: either static charges or a &quot;</span>
+                    <span class="s2">&quot;charge trajectory.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The window_size </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="si">}</span><span class="s2"> must be an &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;integer multiple of the gap </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2"> for the &quot;</span>
+                    <span class="s2">&quot;sliding-origin machinery.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_full_atom_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="n">use_full_atom_info</span>
+
+        <span class="c1">############################################</span>
+        <span class="c1"># Initialize trajectory iterator/generator #</span>
+        <span class="c1">############################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_charge_reader</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_frame_generator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_value_stream</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span><span class="p">:</span>
+                <span class="c1"># additive fast path: stream the raw float32 values of</span>
+                <span class="c1"># the velocity trajectory without building an</span>
+                <span class="c1"># AtomicSystem per frame (bit-identical values)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="n">RawTrajectoryReader</span><span class="p">(</span>
+                    <span class="n">traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+                    <span class="n">traj_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span><span class="p">,</span>
+                    <span class="n">md_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">md_format</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_frame_generator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                    <span class="n">traj</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">()</span>
+                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_frame_generator</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">:</span>
+            <span class="c1"># every lag 0..window_size needs at least one origin</span>
+            <span class="n">trajectory_too_short</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># legacy FreqCalc semantics: stop_frame == 0 is reset to 1</span>
+            <span class="c1"># (see the stop_frame property), so a trajectory of exactly</span>
+            <span class="c1"># window_size frames still spawns one origin for gap == 1</span>
+            <span class="n">trajectory_too_short</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+
+        <span class="k">if</span> <span class="n">trajectory_too_short</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The trajectory contains only </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;frame(s), but at least window_size + gap = &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">gap</span><span class="si">}</span><span class="s2"> frames are needed &quot;</span>
+                    <span class="s2">&quot;to place a single time origin (or exactly &quot;</span>
+                    <span class="s2">&quot;window_size frames for the direct method with &quot;</span>
+                    <span class="s2">&quot;gap == 1).&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">read_first_frame</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame_generator</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first_frame</span><span class="o">.</span><span class="n">topology</span>
+
+        <span class="c1">################################</span>
+        <span class="c1"># Initialize Selection objects #</span>
+        <span class="c1">################################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_species</span> <span class="o">=</span> <span class="n">target_species</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">target_species</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;The target selection does not select any atoms.&quot;</span><span class="p">,</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_target_indices_intp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1">##########################</span>
+        <span class="c1"># Initialize charge mode #</span>
+        <span class="c1">##########################</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_static_charges</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;The number of static charges </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">charges</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;does not match the number of atoms &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> of the system.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_static_charges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                <span class="n">charges</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+            <span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">charge_traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_charge_traj</span><span class="p">(</span><span class="n">charge_traj</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">flux</span> <span class="o">=</span> <span class="n">charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">charge_traj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="c1"># result dummy init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vacf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_origins</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_charge_traj</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">charge_traj</span><span class="p">:</span> <span class="n">Trajectory</span> <span class="o">|</span> <span class="n">TrajectoryReader</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets up the lockstep charge trajectory iterator.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        charge_traj : Trajectory | TrajectoryReader</span>
+<span class="sd">            The charge trajectory to read in lockstep with the</span>
+<span class="sd">            velocity trajectory.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the number of charge frames does not match the number</span>
+<span class="sd">            of velocity frames.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">charge_traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">charge_traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">CHARGE</span>
+        <span class="p">):</span>
+            <span class="c1"># additive fast path: stream the raw float64 charge values</span>
+            <span class="c1"># without building an AtomicSystem per frame</span>
+            <span class="c1"># (bit-identical values)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_charge_reader</span> <span class="o">=</span> <span class="n">RawChargeTrajectoryReader</span><span class="p">(</span>
+                <span class="n">charge_traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
+                <span class="n">md_format</span><span class="o">=</span><span class="n">charge_traj</span><span class="o">.</span><span class="n">md_format</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">n_charge_frames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_charge_reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">charge_traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
+            <span class="n">n_charge_frames</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+                <span class="n">charge_traj</span><span class="o">.</span><span class="n">calculate_number_of_frames_per_file</span><span class="p">()</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charge_frame_generator</span> <span class="o">=</span> <span class="n">charge_traj</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_charge_frames</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">charge_traj</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_charge_frame_generator</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">charge_traj</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_charge_frames</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;The charge trajectory contains </span><span class="si">{</span><span class="n">n_charge_frames</span><span class="si">}</span><span class="s2"> &quot;</span>
+                    <span class="s2">&quot;frame(s), but the velocity trajectory contains &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="si">}</span><span class="s2"> frame(s). Both trajectories have &quot;</span>
+                    <span class="s2">&quot;to be in lockstep.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_charge_value_stream</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_values</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of atoms of the VACF analysis.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stop_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The last frame (1-based) at which a time origin is spawned.&quot;&quot;&quot;</span>
+        <span class="n">stop_frame</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+
+        <span class="c1"># legacy FreqCalc reset (process.c): a trajectory of exactly</span>
+        <span class="c1"># window_size frames still spawns a single origin at frame 1</span>
+        <span class="c1"># for gap == 1; the final lag bin then stays zero</span>
+        <span class="k">if</span> <span class="n">stop_frame</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">stop_frame</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">stop_frame</span>
+
+<div class="viewcode-block" id="VACF.run">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF.run">[docs]</a>
+    <span class="nd">@timeit_in_class</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the VACF analysis.</span>
+
+<span class="sd">        This method will display a progress bar by default.</span>
+<span class="sd">        This can be disabled by setting with_progress_bar to</span>
+<span class="sd">        False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        time : Np1DNumberArray</span>
+<span class="sd">            The lag times ``lag * time_step`` for the lags</span>
+<span class="sd">            ``0..window_size``.</span>
+<span class="sd">        vacf : Np1DNumberArray</span>
+<span class="sd">            The normalized (charge-flux weighted) velocity</span>
+<span class="sd">            auto-correlation function; ``vacf[0]`` is exactly one for</span>
+<span class="sd">            the direct method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vacf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_fft</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vacf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_direct</span><span class="p">()</span>
+
+        <span class="n">time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span>
+
+        <span class="k">return</span> <span class="n">time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vacf</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the (charge weighted) selected velocity stream.</span>
+
+<span class="sd">        Dispatches to the raw fast-path stream if the analysis was</span>
+<span class="sd">        constructed from a velocity TrajectoryReader and to the</span>
+<span class="sd">        AtomicSystem based stream otherwise. Both streams yield</span>
+<span class="sd">        bit-identical float64 arrays.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Generator[Np2DNumberArray, None, None]</span>
+<span class="sd">            The (charge weighted) selected velocities of all frames.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_weighted_velocities</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_weighted_velocities</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_raw_weighted_velocities</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields the (charge weighted) selected velocities of all frames</span>
+<span class="sd">        from the raw fast-path reader.</span>
+
+<span class="sd">        The raw float32 values of every frame are cast to float64,</span>
+<span class="sd">        reduced to the target selection and weighted with the frame</span>
+<span class="sd">        charges - bit-identical to the AtomicSystem based stream of</span>
+<span class="sd">        :py:meth:`_weighted_velocities`.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Np2DNumberArray</span>
+<span class="sd">            The selected velocities of one frame with shape</span>
+<span class="sd">            ``(n_target_atoms, 3)``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If a frame does not provide velocities for all atoms.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If a charge frame does not provide charges for all atoms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n_atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_target_indices_intp</span>
+
+        <span class="k">for</span> <span class="n">values</span><span class="p">,</span> <span class="n">_cell</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">raw_frame_generator</span><span class="p">(),</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">n_atoms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;A frame of the velocity trajectory does not &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;provide velocities for all </span><span class="si">{</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;atoms. Please provide a velocity trajectory &quot;</span>
+                        <span class="s2">&quot;(e.g. .vel files).&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">yield</span> <span class="n">weight_frame</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame_charges</span><span class="p">())</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_weighted_velocities</span><span class="p">(</span>
+        <span class="bp">self</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields the (charge weighted) selected velocities of all frames.</span>
+
+<span class="sd">        The velocities are accumulated in float64 even though the</span>
+<span class="sd">        underlying trajectory reader parses them as float32.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Np2DNumberArray</span>
+<span class="sd">            The selected velocities of one frame with shape</span>
+<span class="sd">            ``(n_target_atoms, 3)``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If a frame does not provide velocities for all atoms.</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If a charge frame does not provide charges for all atoms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_first_frame</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame_generator</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+            <span class="n">frames</span><span class="p">,</span>
+            <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span><span class="p">):</span>
+            <span class="n">vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">vel</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">vel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;A frame of the velocity trajectory does not &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;provide velocities for all </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> &quot;</span>
+                        <span class="s2">&quot;atoms. Please provide a velocity trajectory &quot;</span>
+                        <span class="s2">&quot;(e.g. .vel files).&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="n">vel</span> <span class="o">=</span> <span class="n">vel</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">]</span>
+
+            <span class="n">frame_charges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame_charges</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">frame_charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">vel</span> <span class="o">=</span> <span class="n">vel</span> <span class="o">*</span> <span class="n">frame_charges</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
+
+            <span class="k">yield</span> <span class="n">vel</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_frame_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the selected charges of the current frame.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray | None</span>
+<span class="sd">            The static charges, the charges of the next frame of the</span>
+<span class="sd">            lockstep charge trajectory or None outside the charge-flux</span>
+<span class="sd">            mode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_charges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_static_charges</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_value_stream</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_next_charges</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_charge_values</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Yields the full-system float64 charges of all charge frames.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The charges of one frame of the charge trajectory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_charge_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">values</span><span class="p">,</span> <span class="n">_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_charge_reader</span><span class="o">.</span><span class="n">raw_frame_generator</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">values</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">charge_frame</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_charge_frame_generator</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">charge_frame</span><span class="o">.</span><span class="n">charges</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_next_charges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reads the next charge frame of the lockstep charge trajectory.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The selected charges of the next charge frame.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the charge trajectory is exhausted or a charge frame</span>
+<span class="sd">            does not provide charges for all atoms.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">charge</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_charge_value_stream</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">charge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;The charge trajectory provides fewer frames than &quot;</span>
+                    <span class="s2">&quot;the velocity trajectory.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">charge</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">charge</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;A frame of the charge trajectory does not provide &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;charges for all </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2"> atoms. Please &quot;</span>
+                    <span class="s2">&quot;provide a charge trajectory (e.g. .chrg files).&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">charge</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_direct</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the legacy-exact sliding-origin estimator.</span>
+
+<span class="sd">        A new time origin is spawned every ``gap`` frames up to</span>
+<span class="sd">        ``stop_frame``. Every frame each active origin ``i``</span>
+<span class="sd">        contributes ``sum_j v_j(t) . v_j(t0_i) / sum_j |v_j(t0_i)|^2``</span>
+<span class="sd">        to the lag ``t - t0_i``. An origin is retired after it has</span>
+<span class="sd">        contributed to the lag ``window_size``. Finally the correlation</span>
+<span class="sd">        function is divided by the total number of spawned origins.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The normalized auto-correlation function for the lags</span>
+<span class="sd">            ``0..window_size``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the aggregate squared velocity norm of an origin is zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_size</span>
+        <span class="n">gap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap</span>
+        <span class="n">stop_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stop_frame</span>
+
+        <span class="n">n_slots</span> <span class="o">=</span> <span class="n">window_size</span> <span class="o">//</span> <span class="n">gap</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">n_target</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">target_indices</span><span class="p">)</span>
+
+        <span class="n">corr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">origin_vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_slots</span><span class="p">,</span> <span class="n">n_target</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">origin_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_slots</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">origin_frame</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_slots</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">longlong</span><span class="p">)</span>
+        <span class="n">n_active</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">n_origins</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">frame_number</span><span class="p">,</span> <span class="n">vel</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="p">(),</span> <span class="mi">1</span><span class="p">):</span>
+
+            <span class="n">spawn</span> <span class="o">=</span> <span class="n">frame_number</span> <span class="o">%</span> <span class="n">gap</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">frame_number</span> <span class="o">&lt;=</span> <span class="n">stop_frame</span>
+
+            <span class="n">n_active</span> <span class="o">=</span> <span class="n">accumulate_frame</span><span class="p">(</span>
+                <span class="n">corr</span><span class="p">,</span>
+                <span class="n">origin_vel</span><span class="p">,</span>
+                <span class="n">origin_norm</span><span class="p">,</span>
+                <span class="n">origin_frame</span><span class="p">,</span>
+                <span class="n">n_active</span><span class="p">,</span>
+                <span class="n">vel</span><span class="p">,</span>
+                <span class="n">frame_number</span><span class="p">,</span>
+                <span class="n">spawn</span><span class="p">,</span>
+                <span class="n">window_size</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">n_active</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="s2">&quot;The aggregate squared velocity norm of the &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;time origin at frame </span><span class="si">{</span><span class="n">frame_number</span><span class="si">}</span><span class="s2"> is &quot;</span>
+                        <span class="s2">&quot;zero. The normalized VACF is not defined.&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">spawn</span><span class="p">:</span>
+                <span class="n">n_origins</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_origins</span> <span class="o">=</span> <span class="n">n_origins</span>
+
+        <span class="k">return</span> <span class="n">corr</span> <span class="o">/</span> <span class="n">n_origins</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_fft</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the Wiener-Khinchin (FFT) estimator.</span>
+
+<span class="sd">        This is a denser-origin estimator: every frame serves as a time</span>
+<span class="sd">        origin, the raw aggregate auto-correlation</span>
+<span class="sd">        ``S(lag) = sum_t sum_j v_j(t) . v_j(t + lag)`` is calculated</span>
+<span class="sd">        per atom and component via FFT, each lag is divided by its</span>
+<span class="sd">        number of origins ``n_frames - lag`` and the result is</span>
+<span class="sd">        normalized with its lag-zero value, so that ``C(0) = 1``.</span>
+
+<span class="sd">        In contrast to the direct method, the normalization uses the</span>
+<span class="sd">        aggregate mean squared velocity instead of per-origin norms and</span>
+<span class="sd">        the ``gap`` parameter is ignored. All velocities are kept in</span>
+<span class="sd">        memory.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Np1DNumberArray</span>
+<span class="sd">            The normalized auto-correlation function for the lags</span>
+<span class="sd">            ``0..window_size``.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        VACFError</span>
+<span class="sd">            If the aggregate squared velocity norm of the trajectory</span>
+<span class="sd">            is zero.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">vel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="p">()))</span>
+        <span class="n">n_frames</span> <span class="o">=</span> <span class="n">vel</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">n_fft</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_frames</span>
+        <span class="n">spectrum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="n">vel</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">n_fft</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">autocorr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft</span><span class="p">(</span>
+            <span class="n">spectrum</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">spectrum</span><span class="p">),</span>
+            <span class="n">n</span><span class="o">=</span><span class="n">n_fft</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">autocorr</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">n_frames</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span> <span class="o">/</span> <span class="n">counts</span>
+
+        <span class="k">if</span> <span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="p">(</span>
+                    <span class="s2">&quot;The aggregate squared velocity norm of the &quot;</span>
+                    <span class="s2">&quot;trajectory is zero. The normalized VACF is &quot;</span>
+                    <span class="s2">&quot;not defined.&quot;</span>
+                <span class="p">),</span>
+                <span class="n">exception</span><span class="o">=</span><span class="n">VACFError</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_origins</span> <span class="o">=</span> <span class="n">n_frames</span>
+
+        <span class="k">return</span> <span class="n">raw</span> <span class="o">/</span> <span class="n">raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

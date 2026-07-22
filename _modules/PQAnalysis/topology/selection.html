@@ -11,6 +11,7 @@
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/topology/selection.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
@@ -133,56 +134,59 @@
 <span class="sd">    If the selection object is a Selection object, the selection is copied.</span>
 
 <span class="sd">    There are several ways to create a selection:</span>
-<span class="sd">        - None: all atoms are selected</span>
-<span class="sd">        - Atom: the given atom is selected</span>
-<span class="sd">        - Element: all atoms with the given element type are selected</span>
-<span class="sd">        - Atoms: all atoms in the given list are selected</span>
-<span class="sd">        - Elements: all atoms with the given element types are selected</span>
-<span class="sd">        - Np1DIntArray: the atoms with the given indices are selected</span>
-<span class="sd">        - List[str]: all atoms with the given atom type names are selected</span>
-<span class="sd">        - str: the given string is parsed and the atoms selected by the </span>
-<span class="sd">        selection are selected</span>
 
-<span class="sd">            This string will be parsed based on a Lark grammar. Which is </span>
-<span class="sd">            defined as follows:</span>
+<span class="sd">    - None: all atoms are selected</span>
+<span class="sd">    - Atom: the given atom is selected</span>
+<span class="sd">    - Element: all atoms with the given element type are selected</span>
+<span class="sd">    - Atoms: all atoms in the given list are selected</span>
+<span class="sd">    - Elements: all atoms with the given element types are selected</span>
+<span class="sd">    - Np1DIntArray: the atoms with the given indices are selected</span>
+<span class="sd">    - List[str]: all atoms with the given atom type names are selected</span>
+<span class="sd">    - str: the given string is parsed and the atoms selected by the</span>
+<span class="sd">      selection are selected.</span>
 
-<span class="sd">                - simple word containing only letters and numbers: the</span>
-<span class="sd">                atom type with the given name is selected</span>
-<span class="sd">                - &lt;integer&gt;: the atom with the given index is selected</span>
-<span class="sd">                - &lt;integer1&gt;..&lt;integer2&gt;: the indices from integer1 to integer2 </span>
-<span class="sd">                are selected</span>
-<span class="sd">                - &lt;integer1&gt;-&lt;integer2&gt;: the indices from integer1 to integer2</span>
-<span class="sd">                are selected</span>
-<span class="sd">                - &lt;integer1&gt;..&lt;integer2&gt;..&lt;integer3&gt;: the indices from integer1 to</span>
-<span class="sd">                integer3 with a step size of integer3 are selected</span>
-<span class="sd">                - atom(&lt;atomtype&gt;, &lt;atomic_number&gt;): the atom with the given atom </span>
-<span class="sd">                type and atomic number is selected</span>
-<span class="sd">                - atom(&lt;atomtype&gt;, &lt;element_symbol&gt;): the atom with the given atom</span>
-<span class="sd">                type and element symbol is selected</span>
-<span class="sd">                - elem(&lt;atomic_number&gt;): all atoms with the given element type</span>
-<span class="sd">                are selected</span>
-<span class="sd">                - elem(&lt;element_symbol&gt;): all atoms with the given element type</span>
-<span class="sd">                are selected</span>
-<span class="sd">                - `*`: all atoms are selected (same as &#39;all&#39;), useful if only</span>
-<span class="sd">                few atoms should be excluded</span>
+<span class="sd">      This string will be parsed based on a Lark grammar, which is</span>
+<span class="sd">      defined as follows:</span>
 
-<span class="sd">            All of the above statements can be combined with the following operators:</span>
+<span class="sd">      - simple word containing only letters and numbers: the atom type</span>
+<span class="sd">        with the given name is selected</span>
+<span class="sd">      - &lt;integer&gt;: the atom with the given index is selected</span>
+<span class="sd">      - &lt;integer1&gt;..&lt;integer2&gt;: the indices from integer1 to integer2</span>
+<span class="sd">        are selected</span>
+<span class="sd">      - &lt;integer1&gt;-&lt;integer2&gt;: the indices from integer1 to integer2</span>
+<span class="sd">        are selected</span>
+<span class="sd">      - &lt;integer1&gt;..&lt;integer2&gt;..&lt;integer3&gt;: the indices from integer1 to</span>
+<span class="sd">        integer3 with a step size of integer3 are selected</span>
+<span class="sd">      - atom(&lt;atomtype&gt;, &lt;atomic_number&gt;): the atom with the given atom</span>
+<span class="sd">        type and atomic number is selected</span>
+<span class="sd">      - atom(&lt;atomtype&gt;, &lt;element_symbol&gt;): the atom with the given atom</span>
+<span class="sd">        type and element symbol is selected</span>
+<span class="sd">      - elem(&lt;atomic_number&gt;): all atoms with the given element type</span>
+<span class="sd">        are selected</span>
+<span class="sd">      - elem(&lt;element_symbol&gt;): all atoms with the given element type</span>
+<span class="sd">        are selected</span>
+<span class="sd">      - `*`: all atoms are selected (same as &#39;all&#39;), useful if only</span>
+<span class="sd">        few atoms should be excluded</span>
 
-<span class="sd">                - &#39;,&#39;: the union of the two statements is selected, meaning that</span>
-<span class="sd">                the atoms selected by the first statement and the atoms selected</span>
-<span class="sd">                by the second statement are selected</span>
-<span class="sd">                - &#39;&amp;&#39;: the intersection of the two statements is selected, meaning </span>
-<span class="sd">                that only the atoms selected by both statements are selected</span>
-<span class="sd">                - &#39;|&#39;: the set difference of the two statements is selected, </span>
-<span class="sd">                meaning that only the atoms selected by the first statement are</span>
-<span class="sd">                selected, which are not selected by the second statement</span>
+<span class="sd">      All of the above statements can be combined with the following</span>
+<span class="sd">      operators:</span>
 
-<span class="sd">            The operators are evaluated in the following order: &#39;|&#39; -&gt; &#39;&amp;&#39; -&gt; &#39;,&#39;</span>
-<span class="sd">            This means that the &#39;,&#39; operator has the lowest precedence and the &#39;|&#39; </span>
-<span class="sd">            operator has the highest precedence and therefore binds the strongest.</span>
+<span class="sd">      - &#39;,&#39;: the union of the two statements is selected, meaning that</span>
+<span class="sd">        the atoms selected by the first statement and the atoms selected</span>
+<span class="sd">        by the second statement are selected</span>
+<span class="sd">      - &#39;&amp;&#39;: the intersection of the two statements is selected, meaning</span>
+<span class="sd">        that only the atoms selected by both statements are selected</span>
+<span class="sd">      - &#39;|&#39;: the set difference of the two statements is selected,</span>
+<span class="sd">        meaning that only the atoms selected by the first statement are</span>
+<span class="sd">        selected, which are not selected by the second statement</span>
 
-<span class="sd">            Additionally, parentheses can be used to group statements and change</span>
-<span class="sd">            the order of evaluation.</span>
+<span class="sd">      The operators are evaluated in the following order:</span>
+<span class="sd">      &#39;|&#39; -&gt; &#39;&amp;&#39; -&gt; &#39;,&#39;. This means that the &#39;,&#39; operator has the lowest</span>
+<span class="sd">      precedence and the &#39;|&#39; operator has the highest precedence and</span>
+<span class="sd">      therefore binds the strongest.</span>
+
+<span class="sd">      Additionally, parentheses can be used to group statements and</span>
+<span class="sd">      change the order of evaluation.</span>
 
 
 <span class="sd">    Notes</span>
