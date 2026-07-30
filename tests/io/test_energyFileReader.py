@@ -153,6 +153,16 @@ class TestEnergyReader:
         assert energy.info_given == True
         assert energy.units_given == True
 
+        reader = EnergyFileReader("qmmm.en")
+        energy = reader.read()
+        assert energy.data.shape == (13, 1)
+        assert len(energy.info) == 13
+        assert energy.info["N(SM-MOL)"] == 10
+        assert energy.units["N(SM-MOL)"] == "-"
+        assert energy.data[energy.info["N(SM-MOL)"], 0] == 0
+        assert energy.info["MOMENTUM"] == 11
+        assert energy.info["LOOPTIME"] == 12
+
         reader = EnergyFileReader("md-01_noinfo.en")
         energy = reader.read()
         assert np.allclose(energy.data, data_ref)
