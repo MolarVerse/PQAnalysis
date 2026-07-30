@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.4.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.4.1) - 2026-07-30
+
+<small>[Compare with v1.4.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.4.0...v1.4.1)</small>
+
+### Chore
+
+- canonicalize contributor identity ([71dc6af](https://github.com/MolarVerse/PQAnalysis/commit/71dc6af9d9c20c106a877035d053a06f035acf41) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- support single-entry PQ info rows (#160) ([ff24cc7](https://github.com/MolarVerse/PQAnalysis/commit/ff24cc7199e651ec913df13dacad434bb68f5fc2) by Josef M. Gallmetzer).
+
 ## [v1.4.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.4.0) - 2026-07-22
 
 <small>[Compare with v1.3.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.3.0...v1.4.0)</small>
