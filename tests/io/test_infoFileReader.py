@@ -117,3 +117,18 @@ def test_read(test_with_data_dir):
     assert str(
         exception.value
     ) == "Info file md-01.info is not in qmcfc format."
+
+
+@pytest.mark.parametrize("example_dir", ["readEnergyFile"], indirect=False)
+def test_read_pq_info_with_single_entry_row(test_with_data_dir):
+    reader = InfoFileReader("qmmm.info")
+
+    info, units = reader.read()
+
+    assert len(info) == 13
+    assert info["N(SM-MOL)"] == 10
+    assert units["N(SM-MOL)"] == "-"
+    assert info["MOMENTUM"] == 11
+    assert units["MOMENTUM"] == "amuA/fs"
+    assert info["LOOPTIME"] == 12
+    assert units["LOOPTIME"] == "s"
