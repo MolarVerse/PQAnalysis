@@ -117,25 +117,29 @@ class InfoFileReader(BaseReader):
 
             entry_counter = 0
 
-            for line in lines[3:-2]:
-                line = line.split()
+            for raw_line in lines[3:]:
+                if not raw_line.strip():
+                    continue
 
-                if len(line) == 8:
+                if raw_line.lstrip().startswith("-"):
+                    break
 
-                    info[line[1]] = entry_counter
-                    units[line[1]] = line[3]
-                    entry_counter += 1
+                line = raw_line.split()
 
-                    info[line[4]] = entry_counter
-                    units[line[4]] = line[6]
-                    entry_counter += 1
-
-                else:
-
+                if len(line) not in (5, 8):
                     self.logger.error(
                         f"Info file {self.filename} is not in PQ format.",
                         exception=MDEngineFormatError
                     )
+
+                info[line[1]] = entry_counter
+                units[line[1]] = line[3]
+                entry_counter += 1
+
+                if len(line) == 8:
+                    info[line[4]] = entry_counter
+                    units[line[4]] = line[6]
+                    entry_counter += 1
 
         return info, units
 
