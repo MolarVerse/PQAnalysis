@@ -4,7 +4,7 @@ A module containing the classes for writing related to an
 """
 
 # 3rd party imports
-from beartype.typing import Tuple
+from beartype.typing import Sequence, Tuple
 
 # local imports
 from PQAnalysis.types import Np1DNumberArray
@@ -12,12 +12,19 @@ from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.analysis._output_header import format_output_header
+from PQAnalysis.analysis.output import (
+    AnalysisDataWriter,
+    AnalysisTable,
+    VACF_SCHEMA,
+    VACF_SPECTRUM_SCHEMA,
+    VACF_WINDOWED_SCHEMA,
+)
 
 from .vacf import VACF
 
 
 
-class VACFDataWriter(BaseWriter):
+class VACFDataWriter(AnalysisDataWriter):
 
     """
     Class for writing the data of an
@@ -29,24 +36,24 @@ class VACFDataWriter(BaseWriter):
     normalized VACF.
     """
 
-    header = format_output_header(
-        "Normalized correlation function",
-        (
-            ("time", "t", "ps"),
-            ("normalized_correlation", "C(t)∕C(0)", "1"),
-        ),
-    )
+    schema = VACF_SCHEMA
+    header = format_output_header(schema.title, schema.header_columns)
 
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+        self,
+        filename: str,
+        export_files: Sequence[str] | None = None,
+    ) -> None:
         """
         Parameters
         ----------
         filename : str
-            the filename to write to
+            The primary output filename. Its extension selects the format.
+        export_files : Sequence[str] | None, optional
+            Additional output filenames, by default None.
         """
-        self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -59,23 +66,23 @@ class VACFDataWriter(BaseWriter):
             the time axis and correlation function output from the
             VACF.run() method
         """
-        super().open()
-
-        print(self.header, file=self.file)
-
         time, correlation = data
+        table = AnalysisTable.from_columns(self.schema, data)
 
-        for time_value, correlation_value in zip(time, correlation):
-            print(
-                f"{time_value:10.6f}    {correlation_value:12.8f}",
-                file=self.file
-            )
+        def write_native(file):
+            print(self.header, file=file)
 
-        super().close()
+            for time_value, correlation_value in zip(time, correlation):
+                print(
+                    f"{time_value:10.6f}    {correlation_value:12.8f}",
+                    file=file
+                )
+
+        self.write_table(table, write_native)
 
 
 
-class VACFSpectrumDataWriter(BaseWriter):
+class VACFSpectrumDataWriter(AnalysisDataWriter):
 
     """
     Class for writing the spectrum of an
@@ -86,24 +93,24 @@ class VACFSpectrumDataWriter(BaseWriter):
     frequency index with the columns wavenumber in cm^-1 and amplitude.
     """
 
-    header = format_output_header(
-        "VACF spectrum",
-        (
-            ("wavenumber", "ν̃", "cm⁻¹"),
-            ("amplitude", "|Ĉ(ν̃)|", "arbitrary"),
-        ),
-    )
+    schema = VACF_SPECTRUM_SCHEMA
+    header = format_output_header(schema.title, schema.header_columns)
 
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+        self,
+        filename: str,
+        export_files: Sequence[str] | None = None,
+    ) -> None:
         """
         Parameters
         ----------
         filename : str
-            the filename to write to
+            The primary output filename. Its extension selects the format.
+        export_files : Sequence[str] | None, optional
+            Additional output filenames, by default None.
         """
-        self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -117,23 +124,20 @@ class VACFSpectrumDataWriter(BaseWriter):
             :py:func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`
             function
         """
-        super().open()
-
-        print(self.header, file=self.file)
-
         wavenumbers, amplitudes = data
+        table = AnalysisTable.from_columns(self.schema, data)
 
-        for wavenumber, amplitude in zip(wavenumbers, amplitudes):
-            print(
-                f"{wavenumber:13.7f}  {amplitude:14.10f}",
-                file=self.file
-            )
+        def write_native(file):
+            print(self.header, file=file)
 
-        super().close()
+            for wavenumber, amplitude in zip(wavenumbers, amplitudes):
+                print(f"{wavenumber:13.7f}  {amplitude:14.10f}", file=file)
+
+        self.write_table(table, write_native)
 
 
 
-class VACFWindowedDataWriter(BaseWriter):
+class VACFWindowedDataWriter(AnalysisDataWriter):
 
     """
     Class for writing the windowed (apodized) correlation function of
@@ -145,24 +149,24 @@ class VACFWindowedDataWriter(BaseWriter):
     correlation function.
     """
 
-    header = format_output_header(
-        "Windowed correlation function",
-        (
-            ("time", "t", "ps"),
-            ("windowed_correlation", "C(t)w(t)", "1"),
-        ),
-    )
+    schema = VACF_WINDOWED_SCHEMA
+    header = format_output_header(schema.title, schema.header_columns)
 
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+        self,
+        filename: str,
+        export_files: Sequence[str] | None = None,
+    ) -> None:
         """
         Parameters
         ----------
         filename : str
-            the filename to write to
+            The primary output filename. Its extension selects the format.
+        export_files : Sequence[str] | None, optional
+            Additional output filenames, by default None.
         """
-        self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -177,19 +181,19 @@ class VACFWindowedDataWriter(BaseWriter):
             :py:func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`
             function
         """
-        super().open()
-
-        print(self.header, file=self.file)
-
         time, correlation = data
+        table = AnalysisTable.from_columns(self.schema, data)
 
-        for time_value, correlation_value in zip(time, correlation):
-            print(
-                f"{time_value:9.4f}  {correlation_value:14.10f}",
-                file=self.file
-            )
+        def write_native(file):
+            print(self.header, file=file)
 
-        super().close()
+            for time_value, correlation_value in zip(time, correlation):
+                print(
+                    f"{time_value:9.4f}  {correlation_value:14.10f}",
+                    file=file
+                )
+
+        self.write_table(table, write_native)
 
 
 
@@ -235,8 +239,7 @@ class VACFLogWriter(BaseWriter):
             print(file=self.file)
 
         if vacf.flux:
-            print("Charge-flux auto-correlation calculation:",
-                  file=self.file)
+            print("Charge-flux auto-correlation calculation:", file=self.file)
         else:
             print("VACF calculation:", file=self.file)
         print(file=self.file)
@@ -254,11 +257,7 @@ class VACFLogWriter(BaseWriter):
         print(f"    Number of atoms:  {vacf.n_atoms}", file=self.file)
         print(file=self.file)
 
-        print(
-            "    Target selection:",
-            vacf.target_selection,
-            file=self.file
-        )
+        print("    Target selection:", vacf.target_selection, file=self.file)
         print(
             "    total number of atoms in target selection:",
             len(vacf.target_indices),
