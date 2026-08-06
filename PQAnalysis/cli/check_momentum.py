@@ -26,7 +26,7 @@ velocity trajectories) the default scaling factor of 1e-15 converts
 the momentum norm from amu*Angstrom/s to amu*Angstrom/fs.
 
 Note that the velocities are parsed from file in single precision, so
-reported norms below roughly 1e-7 * sum_i m_i * |v_i| * scale are
+reported norms below roughly 1e-7 * sum_i m_i * norm(v_i) * scale are
 parsing noise, not physical center of mass drift. The legacy
 equipartition.jl tool parses the velocities in double precision and
 therefore resolves correspondingly smaller drift for
@@ -40,6 +40,10 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 __doc__ += __outputdoc__
+__doc__ += (
+    "\nFor column definitions and units see "
+    ":ref:`total-momentum output <analysis-output-momentum>`.\n"
+)
 
 
 
