@@ -41,6 +41,7 @@ The ideal-gas pair count for the shell is
 :math:`E_i = \rho_T N_R N_F \Delta V_i`.
 
 .. list-table:: RDF ``out_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 24 48 20
 
@@ -83,6 +84,7 @@ MSD
 The ``msd`` command writes the legacy Diffcalc layout to ``out_file``.
 
 .. list-table:: MSD ``out_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 32 40 20
 
@@ -121,6 +123,7 @@ The ``vacf`` command can write three two-column files. Correlations are
 normalized by their zero-lag value, including charge-weighted correlations.
 
 .. list-table:: VACF ``out_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
 
@@ -138,6 +141,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - Dimensionless
 
 .. list-table:: VACF ``spectrum_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
 
@@ -156,6 +160,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - Arbitrary units
 
 .. list-table:: VACF ``windowed_out_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
 
@@ -181,6 +186,7 @@ The ``build_spectrum`` command writes two columns to ``--output`` or standard
 output.
 
 .. list-table:: ``build_spectrum`` output columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
 
@@ -208,6 +214,7 @@ The ``check_momentum`` command writes two columns to ``--output`` or standard
 output.
 
 .. list-table:: ``check_momentum`` output columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
 
@@ -240,6 +247,7 @@ charges, the IR-intensity column is inserted as column 2 and the table has four
 columns. The file's ``FIELDS`` and ``UNITS`` lines reflect the selected layout.
 
 .. list-table:: Vibrational ``out_file`` columns
+   :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 34 38 20
 
