@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .rdf import RDF
 
@@ -22,7 +23,24 @@ class RDFDataWriter(BaseWriter):
     Class for writing the data of an 
     :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
     analysis to a file.
+
+    Each row contains five columns: bin-center distance in Angstrom,
+    radial distribution function, cumulative coordination number,
+    density-normalized shell population in Angstrom^3 and ideal-gas
+    pair-count residual. See :ref:`RDF output files <analysis-output-rdf>`
+    for the exact definitions and normalization formulas.
     """
+
+    header = format_output_header(
+        "Radial distribution function",
+        (
+            ("r_i", "rᵢ", "Å"),
+            ("g_r_i", "g(rᵢ)", "1"),
+            ("N_r_i", "N(rᵢ)", "1"),
+            ("g_r_i_dV_i", "g(rᵢ)ΔVᵢ", "Å³"),
+            ("H_i_minus_E_i", "Hᵢ−Eᵢ", "pairs"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -51,9 +69,14 @@ class RDFDataWriter(BaseWriter):
         ----------
         data : Tuple[Np1DNumberArray, Np1DNumberArray,
             Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
-            the data output from the RadialDistributionFunction.run() method
+            The bin centers, radial distribution function, cumulative
+            coordination number, density-normalized shell population and
+            ideal-gas pair-count residual returned by
+            :py:meth:`~PQAnalysis.analysis.rdf.rdf.RDF.run`.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for i in range(len(data[0])):
             print(

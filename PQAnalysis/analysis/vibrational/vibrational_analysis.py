@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .exceptions import VibrationalAnalysisError
 
@@ -544,9 +545,15 @@ def write_calculate_output(
     with _output_stream(filename) as file:
         if result.intensities is None:
             print(
-                "# Wavenumbers (cm-1)  Force constants (mdyn A^-1)  "
-                "Reduced masses (amu)",
-                file=file,
+                format_output_header(
+                    "Vibrational analysis",
+                    (
+                        ("wavenumber", "ν̃ⱼ", "cm⁻¹"),
+                        ("force_constant", "kⱼ", "mdyn·Å⁻¹"),
+                        ("reduced_mass", "μⱼ", "amu"),
+                    ),
+                ),
+                file=file
             )
             for wavenumber_value, force_const, reduced_mass_value in zip(
                 result.wavenumbers,
@@ -561,9 +568,16 @@ def write_calculate_output(
                 )
         else:
             print(
-                "# Wavenumbers (cm-1)  Intensities (km mol-1)  "
-                "Force constants (mdyn A^-1)  Reduced masses (amu)",
-                file=file,
+                format_output_header(
+                    "Vibrational analysis",
+                    (
+                        ("wavenumber", "ν̃ⱼ", "cm⁻¹"),
+                        ("ir_intensity", "Iⱼᴵᴿ", "km·mol⁻¹"),
+                        ("force_constant", "kⱼ", "mdyn·Å⁻¹"),
+                        ("reduced_mass", "μⱼ", "amu"),
+                    ),
+                ),
+                file=file
             )
             for (
                 wavenumber_value,
@@ -591,9 +605,26 @@ def write_normal_modes(
     filename: str | None = None,
 ) -> None:
     """
-    Write normal modes in matrix form.
+    Write normal modes in matrix form with one labeled column per mode.
     """
     with _output_stream(filename) as file:
+        mode_labels = " ".join(
+            f"mode_{index}" for index in range(1, normal_modes.shape[1] + 1)
+        )
+        mode_symbols = " ".join(
+            f"e(α,{index})" for index in range(1, normal_modes.shape[1] + 1)
+        )
+        units = " ".join("1" for _ in range(normal_modes.shape[1]))
+        print(
+            "# PQAnalysis: Normal-mode matrix\n"
+            "# ELEMENT e(α,j)\n"
+            "# ROWS α=x₁,y₁,z₁,…\n"
+            f"# FIELDS {mode_labels}\n"
+            f"# SYMBOLS {mode_symbols}\n"
+            f"# UNITS {units}",
+            file=file,
+        )
+
         for row in normal_modes:
             print(" ".join(str(value) for value in row), file=file)
 

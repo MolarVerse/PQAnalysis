@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .vacf import VACF
 
@@ -27,6 +28,14 @@ class VACFDataWriter(BaseWriter):
     format: one row per lag with the columns lag time in ps and
     normalized VACF.
     """
+
+    header = format_output_header(
+        "Normalized correlation function",
+        (
+            ("time", "t", "ps"),
+            ("normalized_correlation", "C(t)∕C(0)", "1"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -52,6 +61,8 @@ class VACFDataWriter(BaseWriter):
         """
         super().open()
 
+        print(self.header, file=self.file)
+
         time, correlation = data
 
         for time_value, correlation_value in zip(time, correlation):
@@ -74,6 +85,14 @@ class VACFSpectrumDataWriter(BaseWriter):
     The output file is written in the legacy ft.f format: one row per
     frequency index with the columns wavenumber in cm^-1 and amplitude.
     """
+
+    header = format_output_header(
+        "VACF spectrum",
+        (
+            ("wavenumber", "ν̃", "cm⁻¹"),
+            ("amplitude", "|Ĉ(ν̃)|", "arbitrary"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -100,6 +119,8 @@ class VACFSpectrumDataWriter(BaseWriter):
         """
         super().open()
 
+        print(self.header, file=self.file)
+
         wavenumbers, amplitudes = data
 
         for wavenumber, amplitude in zip(wavenumbers, amplitudes):
@@ -123,6 +144,14 @@ class VACFWindowedDataWriter(BaseWriter):
     one row per lag with the columns lag time in ps and windowed
     correlation function.
     """
+
+    header = format_output_header(
+        "Windowed correlation function",
+        (
+            ("time", "t", "ps"),
+            ("windowed_correlation", "C(t)w(t)", "1"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -149,6 +178,8 @@ class VACFWindowedDataWriter(BaseWriter):
             function
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         time, correlation = data
 

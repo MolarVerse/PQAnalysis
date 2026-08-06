@@ -8,6 +8,7 @@ from PQAnalysis.io import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 
 
@@ -22,6 +23,14 @@ class MomentumDataWriter(BaseWriter):
     of the total linear momentum of that frame, reproducing the
     legacy ``equipartition.jl`` output layout.
     """
+
+    header = format_output_header(
+        "Total linear momentum",
+        (
+            ("frame", "n", "1"),
+            ("scaled_momentum_norm", "s‖P(n)‖", "scale-dependent"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(
@@ -54,6 +63,8 @@ class MomentumDataWriter(BaseWriter):
             method.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for frame_index, norm in enumerate(data, start=1):
             print(f"{frame_index}  {norm:.12e}", file=self.file)

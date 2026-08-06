@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .msd import MSD
 
@@ -27,6 +28,16 @@ class MSDDataWriter(BaseWriter):
     one row per lag index with the columns lag index, MSD in x,
     MSD in y and MSD in z (all in Angstrom^2).
     """
+
+    header = format_output_header(
+        "Mean squared displacement",
+        (
+            ("lag", "k", "frames"),
+            ("msd_x", "⟨Δx(k)²⟩", "Å²"),
+            ("msd_y", "⟨Δy(k)²⟩", "Å²"),
+            ("msd_z", "⟨Δz(k)²⟩", "Å²"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -58,6 +69,8 @@ class MSDDataWriter(BaseWriter):
             the data output from the MSD.run() method
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         lags, msd_x, msd_y, msd_z, _ = data
 

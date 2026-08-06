@@ -9,6 +9,7 @@ User Guide
    :maxdepth: 1
 
    inputFile
+   analysisOutputFiles
 
 Command Line Interface
 ======================
@@ -19,6 +20,8 @@ Input file based tools
 ----------------------
 
 For more details on the grammar and syntax of the input file see :ref:`inputFile`.
+For the columns, units and normalization conventions of analysis output files,
+see :ref:`analysisOutputFiles`.
 
 - :ref:`rdf<cli.rdf>`
 - :ref:`msd<cli.msd>`

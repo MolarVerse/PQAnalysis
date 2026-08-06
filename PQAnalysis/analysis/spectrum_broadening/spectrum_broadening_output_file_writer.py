@@ -10,6 +10,7 @@ from PQAnalysis.io import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 
 
@@ -22,6 +23,14 @@ class SpectrumDataWriter(BaseWriter):
     that grid point in the legacy ``'%8.4f    %16.12e'`` format of
     ``build_spectrum.sh``.
     """
+
+    header = format_output_header(
+        "Broadened spectrum",
+        (
+            ("wavenumber", "ν̃", "cm⁻¹"),
+            ("intensity", "I(ν̃)", "input-dependent"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(
@@ -54,6 +63,8 @@ class SpectrumDataWriter(BaseWriter):
             :py:func:`~PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden`.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for grid_point, intensity in zip(data[0], data[1]):
             print(f"{grid_point:8.4f}    {intensity:16.12e}", file=self.file)

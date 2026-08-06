@@ -25,6 +25,9 @@ stick position and no area normalization is applied. The default
 Gaussian exponent alpha of 0.0025 cm^-2 corresponds to a full width
 at half maximum of about 33.3 cm^-1. Alternatively, the width can be
 given directly as a full width at half maximum via --fwhm.
+
+The output contains the wavenumber grid and broadened intensity,
+in that order.
 """
 
 __epilog__ = "\n"
@@ -34,6 +37,10 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 __doc__ += __outputdoc__
+__doc__ += (
+    "\nFor column definitions and units see "
+    ":ref:`broadened-spectrum output <analysis-output-spectrum>`.\n"
+)
 
 
 
