@@ -15,6 +15,12 @@ from PQAnalysis.analysis.spectrum_broadening.exceptions import (
 
 from .. import pytestmark  # pylint: disable=unused-import
 
+SPECTRUM_HEADER_LINES = [
+    "# PQAnalysis: Broadened spectrum\n",
+    "# FIELDS nu_tilde I_b(nu_tilde)\n",
+    "# UNITS cm^-1 input-dependent\n",
+]
+
 
 
 class TestBuildSpectrumAPI:
@@ -52,8 +58,8 @@ class TestBuildSpectrumAPI:
         with open("spectrum.dat", encoding="utf-8") as file:
             reference_lines = file.readlines()
 
-        assert lines[0] == "# wavenumber_cm^-1  broadened_intensity\n"
-        numeric_lines = lines[1:]
+        assert lines[:len(SPECTRUM_HEADER_LINES)] == SPECTRUM_HEADER_LINES
+        numeric_lines = lines[len(SPECTRUM_HEADER_LINES):]
 
         assert len(numeric_lines) == len(reference_lines)
 
@@ -86,7 +92,7 @@ class TestBuildSpectrumAPI:
         expected_second = 2.0 * np.exp(-0.0025 * (10.5 - 15.0)**2)
 
         assert captured.out == (
-            "# wavenumber_cm^-1  broadened_intensity\n"
+            "".join(SPECTRUM_HEADER_LINES) +
             f" 10.0000    {expected_first:16.12e}\n"
             f" 10.5000    {expected_second:16.12e}\n"
         )
@@ -144,7 +150,7 @@ class TestSpectrumDataWriter:
             lines = file.readlines()
 
         assert lines == [
-            "# wavenumber_cm^-1  broadened_intensity\n",
+            *SPECTRUM_HEADER_LINES,
             " 10.0000    1.918547669503e+00\n",
             "3999.7500    0.000000000000e+00\n",
         ]

@@ -26,9 +26,15 @@ class TestRDFDataWriter:
         RDFDataWriter(str(out_file)).write(data)
 
         assert out_file.read_text(encoding="utf-8") == (
-            "# r_Angstrom  g_r  coordination_number  "
-            "shell_population_Angstrom^3  pair_count_residual\n"
+            "# PQAnalysis: Radial distribution function\n"
+            "# FIELDS r_i g(r_i) N(r_i) g(r_i)*DeltaV_i H_i-E_i\n"
+            "# UNITS Angstrom 1 1 Angstrom^3 pairs\n"
             "0.5 1.25 2.0 3.5 -0.75\n"
+        )
+
+        np.testing.assert_allclose(
+            np.loadtxt(out_file, ndmin=2),
+            np.array([[0.5, 1.25, 2.0, 3.5, -0.75]]),
         )
 
 

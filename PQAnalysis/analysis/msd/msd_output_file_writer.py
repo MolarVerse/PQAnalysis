@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .msd import MSD
 
@@ -28,9 +29,14 @@ class MSDDataWriter(BaseWriter):
     MSD in y and MSD in z (all in Angstrom^2).
     """
 
-    header = (
-        "# lag_frames  msd_x_Angstrom^2  msd_y_Angstrom^2  "
-        "msd_z_Angstrom^2"
+    header = format_output_header(
+        "Mean squared displacement",
+        (
+            ("k", "frames"),
+            ("MSD_x(k)", "Angstrom^2"),
+            ("MSD_y(k)", "Angstrom^2"),
+            ("MSD_z(k)", "Angstrom^2"),
+        ),
     )
 
     @runtime_type_checking

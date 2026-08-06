@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .rdf import RDF
 
@@ -30,9 +31,15 @@ class RDFDataWriter(BaseWriter):
     for the exact definitions and normalization formulas.
     """
 
-    header = (
-        "# r_Angstrom  g_r  coordination_number  "
-        "shell_population_Angstrom^3  pair_count_residual"
+    header = format_output_header(
+        "Radial distribution function",
+        (
+            ("r_i", "Angstrom"),
+            ("g(r_i)", "1"),
+            ("N(r_i)", "1"),
+            ("g(r_i)*DeltaV_i", "Angstrom^3"),
+            ("H_i-E_i", "pairs"),
+        ),
     )
 
     @runtime_type_checking
