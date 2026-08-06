@@ -21,3 +21,14 @@ dl.py.class {
         margin-bottom: 0.0em;
     }
 }
+
+.wy-table-responsive table.analysis-output-columns {
+    min-width: 640px;
+    width: 100%;
+}
+
+.wy-table-responsive table.analysis-output-columns th,
+.wy-table-responsive table.analysis-output-columns td {
+    vertical-align: top;
+    white-space: normal;
+}
