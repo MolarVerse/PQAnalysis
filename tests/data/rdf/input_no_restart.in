@@ -1,5 +1,5 @@
 traj_files = traj.xyz
 reference_selection = C
 target_selection = C
-out_file = rdf.dat
+out_file = rdf.out
 delta_r = 0.05

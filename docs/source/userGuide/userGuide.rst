@@ -39,7 +39,7 @@ and an output file. A restart file is not required for this case:
     reference_selection = H
     target_selection = O
     delta_r = 0.05
-    out_file = rdf.dat
+    out_file = rdf.out
     traj_files = trajectory.xyz
 
 Restart files and moldescriptor files are only needed when the calculation
@@ -54,7 +54,7 @@ If the files are not given explicitly, PQAnalysis tries to infer
     reference_selection = H
     target_selection = O
     delta_r = 0.05
-    out_file = rdf_inter.dat
+    out_file = rdf_inter.out
     traj_files = trajectory.xyz
     no_intra_molecular = True
 

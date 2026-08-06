@@ -4,12 +4,13 @@
 Analysis Output Files
 #####################
 
-PQAnalysis analysis commands write whitespace-separated text files. Use the
-``.dat`` extension for tabular analysis output; custom filenames remain
-supported. Column numbers in this reference are one-based. Every tabular output
-starts with a machine-readable ``#`` comment that names its columns. Numeric
-rows retain the legacy ordering and formatting, so readers such as
-``numpy.loadtxt`` continue to work without special options.
+PQAnalysis analysis commands write whitespace-separated text files. The
+filename extension does not select or change the analysis output format;
+``.out``, ``.dat``, ``.txt`` and extensionless names are all accepted. Column
+numbers in this reference are one-based. Every tabular output starts with a
+machine-readable ``#`` comment that names its columns. Numeric rows retain the
+legacy ordering and formatting, so readers such as ``numpy.loadtxt`` continue
+to work without special options.
 
 Log files are labeled, human-readable text and are not described as columnar
 data here.
