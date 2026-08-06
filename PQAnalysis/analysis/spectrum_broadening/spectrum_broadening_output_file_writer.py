@@ -27,8 +27,8 @@ class SpectrumDataWriter(BaseWriter):
     header = format_output_header(
         "Broadened spectrum",
         (
-            ("nu_tilde", "cm^-1"),
-            ("I_b(nu_tilde)", "input-dependent"),
+            ("wavenumber", "ν̃", "cm⁻¹"),
+            ("intensity", "I(ν̃)", "input-dependent"),
         ),
     )
 

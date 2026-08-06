@@ -548,9 +548,9 @@ def write_calculate_output(
                 format_output_header(
                     "Vibrational analysis",
                     (
-                        ("nu_tilde_j", "cm^-1"),
-                        ("k_j", "mdyn*Angstrom^-1"),
-                        ("mu_j", "amu"),
+                        ("wavenumber", "ν̃ⱼ", "cm⁻¹"),
+                        ("force_constant", "kⱼ", "mdyn·Å⁻¹"),
+                        ("reduced_mass", "μⱼ", "amu"),
                     ),
                 ),
                 file=file
@@ -571,10 +571,10 @@ def write_calculate_output(
                 format_output_header(
                     "Vibrational analysis",
                     (
-                        ("nu_tilde_j", "cm^-1"),
-                        ("I_j^IR", "km*mol^-1"),
-                        ("k_j", "mdyn*Angstrom^-1"),
-                        ("mu_j", "amu"),
+                        ("wavenumber", "ν̃ⱼ", "cm⁻¹"),
+                        ("ir_intensity", "Iⱼᴵᴿ", "km·mol⁻¹"),
+                        ("force_constant", "kⱼ", "mdyn·Å⁻¹"),
+                        ("reduced_mass", "μⱼ", "amu"),
                     ),
                 ),
                 file=file
@@ -611,12 +611,16 @@ def write_normal_modes(
         mode_labels = " ".join(
             f"mode_{index}" for index in range(1, normal_modes.shape[1] + 1)
         )
+        mode_symbols = " ".join(
+            f"e(α,{index})" for index in range(1, normal_modes.shape[1] + 1)
+        )
         units = " ".join("1" for _ in range(normal_modes.shape[1]))
         print(
             "# PQAnalysis: Normal-mode matrix\n"
-            "# ELEMENT e_(alpha,j)\n"
-            "# ROWS alpha=x_1,y_1,z_1,...\n"
+            "# ELEMENT e(α,j)\n"
+            "# ROWS α=x₁,y₁,z₁,…\n"
             f"# FIELDS {mode_labels}\n"
+            f"# SYMBOLS {mode_symbols}\n"
             f"# UNITS {units}",
             file=file,
         )

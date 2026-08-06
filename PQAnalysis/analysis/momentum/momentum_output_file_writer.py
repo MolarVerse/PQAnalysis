@@ -27,8 +27,8 @@ class MomentumDataWriter(BaseWriter):
     header = format_output_header(
         "Total linear momentum",
         (
-            ("n", "1"),
-            ("s*|P(n)|", "scale-dependent"),
+            ("frame", "n", "1"),
+            ("scaled_momentum_norm", "s‖P(n)‖", "scale-dependent"),
         ),
     )
 

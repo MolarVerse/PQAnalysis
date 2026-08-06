@@ -63,7 +63,8 @@ class TestVACFDataWriter:
 
         assert _read_lines("vacf.dat") == [
             "# PQAnalysis: Normalized correlation function",
-            "# FIELDS t C(t)/C(0)",
+            "# FIELDS time normalized_correlation",
+            "# SYMBOLS t C(t)∕C(0)",
             "# UNITS ps 1",
             "  0.000000      1.00000000",
             "  0.002000      0.81100607",
@@ -91,8 +92,9 @@ class TestVACFSpectrumDataWriter:
 
         assert _read_lines("spectrum.dat") == [
             "# PQAnalysis: VACF spectrum",
-            "# FIELDS nu_tilde |C_hat(nu_tilde)|",
-            "# UNITS cm^-1 arbitrary",
+            "# FIELDS wavenumber amplitude",
+            "# SYMBOLS ν̃ |Ĉ(ν̃)|",
+            "# UNITS cm⁻¹ arbitrary",
             "   32.7023623    0.0904911818",
             "   65.4047245    0.4871028398",
         ]
@@ -117,7 +119,8 @@ class TestVACFWindowedDataWriter:
 
         assert _read_lines("windowed.dat") == [
             "# PQAnalysis: Windowed correlation function",
-            "# FIELDS t C_w(t)",
+            "# FIELDS time windowed_correlation",
+            "# SYMBOLS t C(t)w(t)",
             "# UNITS ps 1",
             "   0.0000    1.0000000000",
             "   0.0020    0.8110060700",

@@ -1,6 +1,7 @@
 # PQAnalysis: Radial distribution function
-# FIELDS r_i g(r_i) N(r_i) g(r_i)*DeltaV_i H_i-E_i
-# UNITS Angstrom 1 1 Angstrom^3 pairs
+# FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
+# SYMBOLS rᵢ g(rᵢ) N(rᵢ) g(rᵢ)ΔVᵢ Hᵢ−Eᵢ
+# UNITS Å 1 1 Å³ pairs
 0.5 0.0 0.0 0.0 -0.05026548245743666
 1.5 25.578472996911767 1.5 750.0000000000005 8.648141622797944
 2.5 0.0 1.5 0.0 -0.9550441666912965

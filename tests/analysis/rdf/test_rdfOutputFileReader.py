@@ -27,8 +27,9 @@ class TestRDFDataWriter:
 
         assert out_file.read_text(encoding="utf-8") == (
             "# PQAnalysis: Radial distribution function\n"
-            "# FIELDS r_i g(r_i) N(r_i) g(r_i)*DeltaV_i H_i-E_i\n"
-            "# UNITS Angstrom 1 1 Angstrom^3 pairs\n"
+            "# FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i\n"
+            "# SYMBOLS rᵢ g(rᵢ) N(rᵢ) g(rᵢ)ΔVᵢ Hᵢ−Eᵢ\n"
+            "# UNITS Å 1 1 Å³ pairs\n"
             "0.5 1.25 2.0 3.5 -0.75\n"
         )
 
