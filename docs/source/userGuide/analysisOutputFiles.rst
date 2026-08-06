@@ -8,14 +8,24 @@ PQAnalysis analysis commands write whitespace-separated text files. The
 filename extension does not select or change the analysis output format;
 ``.out``, ``.dat``, ``.txt`` and extensionless names are all accepted. Column
 numbers in this reference are one-based. Every tabular output starts with a
-compact ``#`` metadata block. ``FIELDS`` lists one whitespace-free scientific
-symbol per numeric column and ``UNITS`` lists the corresponding units in the
-same order. Compound units use ``*`` so each unit remains one token. Symbols
-use ASCII spellings such as ``nu_tilde`` and ``DeltaV`` to keep the files
-portable; the tables below give their full quantities and definitions. Numeric
-rows retain the legacy ordering and formatting. Readers such as
-``numpy.loadtxt`` ignore the comment block automatically and continue to work
-without special options.
+compact UTF-8 ``#`` metadata block. ``FIELDS`` lists one stable ASCII identifier
+per numeric column, ``SYMBOLS`` gives the corresponding scientific notation in
+Unicode, and ``UNITS`` lists the units in the same order. Values remain single
+whitespace-free tokens; compound units use a middle dot. Examples include
+``ν̃``, ``Å``, ``Å³`` and ``cm⁻¹``. The tables below give the full quantities
+and definitions. Numeric rows retain the legacy ordering and formatting.
+Readers such as ``numpy.loadtxt`` ignore the comment block automatically and
+continue to work without special options.
+
+For example, an RDF data file begins with
+
+.. code-block:: text
+
+   # PQAnalysis: Radial distribution function
+   # FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
+   # SYMBOLS rᵢ g(rᵢ) N(rᵢ) g(rᵢ)ΔVᵢ Hᵢ−Eᵢ
+   # UNITS Å 1 1 Å³ pairs
+   0.5 0.0 0.0 0.0 -0.05026548245743666
 
 Log files are labeled, human-readable text and are not described as columnar
 data here.
@@ -245,6 +255,7 @@ normal-mode representations.
 Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
 columns. The file's ``FIELDS`` and ``UNITS`` lines reflect the selected layout.
+The accompanying ``SYMBOLS`` line provides the Unicode scientific notation.
 
 .. list-table:: Vibrational ``out_file`` columns
    :class: analysis-output-columns

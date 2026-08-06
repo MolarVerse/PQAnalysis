@@ -32,10 +32,10 @@ class MSDDataWriter(BaseWriter):
     header = format_output_header(
         "Mean squared displacement",
         (
-            ("k", "frames"),
-            ("MSD_x(k)", "Angstrom^2"),
-            ("MSD_y(k)", "Angstrom^2"),
-            ("MSD_z(k)", "Angstrom^2"),
+            ("lag", "k", "frames"),
+            ("msd_x", "⟨Δx(k)²⟩", "Å²"),
+            ("msd_y", "⟨Δy(k)²⟩", "Å²"),
+            ("msd_z", "⟨Δz(k)²⟩", "Å²"),
         ),
     )
 

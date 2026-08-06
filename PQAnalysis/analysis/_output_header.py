@@ -8,7 +8,7 @@ from collections.abc import Sequence
 
 def format_output_header(
     title: str,
-    columns: Sequence[tuple[str, str]],
+    columns: Sequence[tuple[str, str, str]],
 ) -> str:
     """
     Build a compact metadata block describing a columnar output file.
@@ -17,23 +17,26 @@ def format_output_header(
     ----------
     title : str
         Human-readable name of the output.
-    columns : Sequence[tuple[str, str]]
-        Field symbol and unit for each column, in output order. Symbols and
-        units must not contain whitespace.
+    columns : Sequence[tuple[str, str, str]]
+        ASCII field identifier, scientific Unicode symbol and unit for each
+        column, in output order. Values must not contain whitespace.
 
     Returns
     -------
     str
-        A title followed by machine-readable ``FIELDS`` and ``UNITS`` comment
-        lines. Standard numerical readers treat every line as a comment.
+        A title followed by machine-readable ``FIELDS``, human-readable
+        ``SYMBOLS`` and ``UNITS`` comment lines. Standard numerical readers
+        treat every line as a comment.
     """
-    fields = " ".join(field for field, _ in columns)
-    units = " ".join(unit for _, unit in columns)
+    fields = " ".join(field for field, _, _ in columns)
+    symbols = " ".join(symbol for _, symbol, _ in columns)
+    units = " ".join(unit for _, _, unit in columns)
 
     return "\n".join(
         (
             f"# PQAnalysis: {title}",
             f"# FIELDS {fields}",
+            f"# SYMBOLS {symbols}",
             f"# UNITS {units}",
         )
     )

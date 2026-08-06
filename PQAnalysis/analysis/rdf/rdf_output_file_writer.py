@@ -34,11 +34,11 @@ class RDFDataWriter(BaseWriter):
     header = format_output_header(
         "Radial distribution function",
         (
-            ("r_i", "Angstrom"),
-            ("g(r_i)", "1"),
-            ("N(r_i)", "1"),
-            ("g(r_i)*DeltaV_i", "Angstrom^3"),
-            ("H_i-E_i", "pairs"),
+            ("r_i", "rᵢ", "Å"),
+            ("g_r_i", "g(rᵢ)", "1"),
+            ("N_r_i", "N(rᵢ)", "1"),
+            ("g_r_i_dV_i", "g(rᵢ)ΔVᵢ", "Å³"),
+            ("H_i_minus_E_i", "Hᵢ−Eᵢ", "pairs"),
         ),
     )
 

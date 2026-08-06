@@ -17,8 +17,9 @@ from .. import pytestmark  # pylint: disable=unused-import
 
 SPECTRUM_HEADER_LINES = [
     "# PQAnalysis: Broadened spectrum\n",
-    "# FIELDS nu_tilde I_b(nu_tilde)\n",
-    "# UNITS cm^-1 input-dependent\n",
+    "# FIELDS wavenumber intensity\n",
+    "# SYMBOLS ν̃ I(ν̃)\n",
+    "# UNITS cm⁻¹ input-dependent\n",
 ]
 
 

@@ -32,8 +32,8 @@ class VACFDataWriter(BaseWriter):
     header = format_output_header(
         "Normalized correlation function",
         (
-            ("t", "ps"),
-            ("C(t)/C(0)", "1"),
+            ("time", "t", "ps"),
+            ("normalized_correlation", "C(t)∕C(0)", "1"),
         ),
     )
 
@@ -89,8 +89,8 @@ class VACFSpectrumDataWriter(BaseWriter):
     header = format_output_header(
         "VACF spectrum",
         (
-            ("nu_tilde", "cm^-1"),
-            ("|C_hat(nu_tilde)|", "arbitrary"),
+            ("wavenumber", "ν̃", "cm⁻¹"),
+            ("amplitude", "|Ĉ(ν̃)|", "arbitrary"),
         ),
     )
 
@@ -148,8 +148,8 @@ class VACFWindowedDataWriter(BaseWriter):
     header = format_output_header(
         "Windowed correlation function",
         (
-            ("t", "ps"),
-            ("C_w(t)", "1"),
+            ("time", "t", "ps"),
+            ("windowed_correlation", "C(t)w(t)", "1"),
         ),
     )
 
