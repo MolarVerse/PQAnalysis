@@ -23,6 +23,8 @@ class MomentumDataWriter(BaseWriter):
     legacy ``equipartition.jl`` output layout.
     """
 
+    header = "# frame_index  scaled_momentum_norm"
+
     @runtime_type_checking
     def __init__(
         self,
@@ -54,6 +56,8 @@ class MomentumDataWriter(BaseWriter):
             method.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for frame_index, norm in enumerate(data, start=1):
             print(f"{frame_index}  {norm:.12e}", file=self.file)

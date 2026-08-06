@@ -277,7 +277,9 @@ For the vibrational analysis input file several keys are available.
     * - {VibrationalAnalysisInputFileReader.hessian_file_key}
       - The plain square Hessian matrix file.
     * - {Reader.out_file_key}
-      - The tabular output file.
+      - The tabular output file. See
+        :ref:`vibrational-analysis output <analysis-output-vibrations>`
+        for its columns and the optional mode-file layouts.
 
 .. list-table:: Optional keys
     :header-rows: 1

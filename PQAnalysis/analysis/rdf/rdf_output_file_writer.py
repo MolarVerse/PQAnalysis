@@ -22,7 +22,18 @@ class RDFDataWriter(BaseWriter):
     Class for writing the data of an 
     :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF`
     analysis to a file.
+
+    Each row contains five columns: bin-center distance in Angstrom,
+    radial distribution function, cumulative coordination number,
+    density-normalized shell population in Angstrom^3 and ideal-gas
+    pair-count residual. See :ref:`RDF output files <analysis-output-rdf>`
+    for the exact definitions and normalization formulas.
     """
+
+    header = (
+        "# r_Angstrom  g_r  coordination_number  "
+        "shell_population_Angstrom^3  pair_count_residual"
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -51,9 +62,14 @@ class RDFDataWriter(BaseWriter):
         ----------
         data : Tuple[Np1DNumberArray, Np1DNumberArray,
             Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
-            the data output from the RadialDistributionFunction.run() method
+            The bin centers, radial distribution function, cumulative
+            coordination number, density-normalized shell population and
+            ideal-gas pair-count residual returned by
+            :py:meth:`~PQAnalysis.analysis.rdf.rdf.RDF.run`.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for i in range(len(data[0])):
             print(

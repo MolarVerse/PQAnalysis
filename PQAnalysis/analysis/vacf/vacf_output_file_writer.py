@@ -28,6 +28,8 @@ class VACFDataWriter(BaseWriter):
     normalized VACF.
     """
 
+    header = "# time_ps  normalized_correlation"
+
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
@@ -52,6 +54,8 @@ class VACFDataWriter(BaseWriter):
         """
         super().open()
 
+        print(self.header, file=self.file)
+
         time, correlation = data
 
         for time_value, correlation_value in zip(time, correlation):
@@ -74,6 +78,8 @@ class VACFSpectrumDataWriter(BaseWriter):
     The output file is written in the legacy ft.f format: one row per
     frequency index with the columns wavenumber in cm^-1 and amplitude.
     """
+
+    header = "# wavenumber_cm^-1  amplitude_arb"
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -100,6 +106,8 @@ class VACFSpectrumDataWriter(BaseWriter):
         """
         super().open()
 
+        print(self.header, file=self.file)
+
         wavenumbers, amplitudes = data
 
         for wavenumber, amplitude in zip(wavenumbers, amplitudes):
@@ -123,6 +131,8 @@ class VACFWindowedDataWriter(BaseWriter):
     one row per lag with the columns lag time in ps and windowed
     correlation function.
     """
+
+    header = "# time_ps  windowed_correlation"
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -149,6 +159,8 @@ class VACFWindowedDataWriter(BaseWriter):
             function
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         time, correlation = data
 

@@ -19,6 +19,10 @@ radial distribution function (RDF) of given
 trajectory file(s). This is an input file based tool,
 so that the input file can be used to specify the
 parameters of the RDF calculation.
+
+The data file contains the bin-center distance, radial distribution
+function, cumulative coordination number, density-normalized shell
+population and ideal-gas pair-count residual, in that order.
 """
 
 __epilog__ = "\n"
@@ -33,6 +37,10 @@ __doc__ += "RDF analysis and its input file options "
 __doc__ += "please visit "
 __doc__ += ":py:class:`PQAnalysis.analysis.rdf.rdf.RDF` "
 __doc__ += "and :py:mod:`PQAnalysis.analysis.rdf.rdf_input_file_reader`\n"
+__doc__ += (
+    "For column definitions, units and normalization formulas see "
+    ":ref:`RDF output files <analysis-output-rdf>`.\n"
+)
 __doc__ += input_keys_documentation
 
 

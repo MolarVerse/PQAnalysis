@@ -23,6 +23,8 @@ class SpectrumDataWriter(BaseWriter):
     ``build_spectrum.sh``.
     """
 
+    header = "# wavenumber_cm^-1  broadened_intensity"
+
     @runtime_type_checking
     def __init__(
         self,
@@ -54,6 +56,8 @@ class SpectrumDataWriter(BaseWriter):
             :py:func:`~PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden`.
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         for grid_point, intensity in zip(data[0], data[1]):
             print(f"{grid_point:8.4f}    {intensity:16.12e}", file=self.file)

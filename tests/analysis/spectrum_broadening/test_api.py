@@ -52,13 +52,16 @@ class TestBuildSpectrumAPI:
         with open("spectrum.dat", encoding="utf-8") as file:
             reference_lines = file.readlines()
 
-        assert len(lines) == len(reference_lines)
+        assert lines[0] == "# wavenumber_cm^-1  broadened_intensity\n"
+        numeric_lines = lines[1:]
+
+        assert len(numeric_lines) == len(reference_lines)
 
         # the vast majority of the lines must be byte-identical to the
         # legacy output; the remaining ones only differ in the last
         # digit of the mantissa or in the subnormal underflow region
         identical = sum(
-            1 for line, reference_line in zip(lines, reference_lines)
+            1 for line, reference_line in zip(numeric_lines, reference_lines)
             if line == reference_line
         )
         assert identical >= 15900
@@ -83,6 +86,7 @@ class TestBuildSpectrumAPI:
         expected_second = 2.0 * np.exp(-0.0025 * (10.5 - 15.0)**2)
 
         assert captured.out == (
+            "# wavenumber_cm^-1  broadened_intensity\n"
             f" 10.0000    {expected_first:16.12e}\n"
             f" 10.5000    {expected_second:16.12e}\n"
         )
@@ -140,6 +144,7 @@ class TestSpectrumDataWriter:
             lines = file.readlines()
 
         assert lines == [
+            "# wavenumber_cm^-1  broadened_intensity\n",
             " 10.0000    1.918547669503e+00\n",
             "3999.7500    0.000000000000e+00\n",
         ]

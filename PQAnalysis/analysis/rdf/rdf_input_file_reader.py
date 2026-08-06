@@ -259,7 +259,7 @@ For the RDF analysis input file several keys are available of which some are req
     * - {Reader.target_selection_key}
         - The selection string to select the target atoms. For more details see :py:class:`~PQAnalysis.topology.selection.Selection`.
     * - {Reader.out_file_key}
-        - The output file to write the RDF data to.
+        - The output file to write the RDF data to; see :ref:`RDF output files <analysis-output-rdf>` for its columns, units and normalization formulas.
 
 .. list-table:: Optional keys
     :header-rows: 1

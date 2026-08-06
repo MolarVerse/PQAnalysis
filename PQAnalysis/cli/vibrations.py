@@ -19,6 +19,10 @@ __outputdoc__ = """
 This command line tool calculates vibrational frequencies, force constants,
 reduced masses, normal modes and optional IR intensities from a structure file
 and a Hessian file.
+
+The main table contains signed wavenumbers, optional IR intensities,
+force constants and reduced masses. Optional files contain the
+normal-mode matrix or XYZ mode representations.
 """
 
 __epilog__ = "\n"
@@ -28,6 +32,10 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 __doc__ += __outputdoc__
+__doc__ += (
+    "For column and mode-file definitions see "
+    ":ref:`vibrational-analysis output <analysis-output-vibrations>`.\n"
+)
 __doc__ += input_keys_documentation
 
 

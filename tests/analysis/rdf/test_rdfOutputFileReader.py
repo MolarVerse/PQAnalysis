@@ -14,6 +14,25 @@ from ...conftest import assert_logging_with_exception
 
 
 
+class TestRDFDataWriter:
+
+    def test_write_with_column_header(self, tmp_path):
+        data = tuple(
+            np.array([value], dtype=float)
+            for value in (0.5, 1.25, 2.0, 3.5, -0.75)
+        )
+        out_file = tmp_path / "rdf.dat"
+
+        RDFDataWriter(str(out_file)).write(data)
+
+        assert out_file.read_text(encoding="utf-8") == (
+            "# r_Angstrom  g_r  coordination_number  "
+            "shell_population_Angstrom^3  pair_count_residual\n"
+            "0.5 1.25 2.0 3.5 -0.75\n"
+        )
+
+
+
 class TestRDFLogWriter:
 
     def test__type_checking(self, caplog):

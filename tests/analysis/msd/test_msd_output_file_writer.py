@@ -73,8 +73,10 @@ class TestMSDDataWriter:
 
         writer.write(data)
 
-        # exactly the legacy Diffcalc output format
+        # the numeric rows preserve the legacy Diffcalc output format
         assert out_file.read_text(encoding="utf-8") == (
+            "# lag_frames  msd_x_Angstrom^2  msd_y_Angstrom^2  "
+            "msd_z_Angstrom^2\n"
             "       0      0.00000000     0.00000000     0.00000000\n"
             "       1      0.08081983     0.09092513     0.09018468\n"
         )
