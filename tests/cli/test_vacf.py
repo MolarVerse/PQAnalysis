@@ -60,3 +60,39 @@ class TestVACFCLI:
         vacf_cli.main()
 
         assert called == [("vacf.in", MDEngineFormat.QMCFC)]
+
+    def test_main_dispatches_repeated_exports(self, monkeypatch):
+        called = []
+        monkeypatch.setattr(
+            vacf_cli,
+            "vacf",
+            lambda input_file, engine, **kwargs: called.append(
+                (input_file, engine, kwargs)
+            ),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "vacf",
+                "vacf.in",
+                "--export",
+                "vacf.csv",
+                "--export",
+                "vacf.xvg",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        vacf_cli.main()
+
+        assert called == [
+            (
+                "vacf.in",
+                MDEngineFormat.PQ,
+                {
+                    "export_files": ["vacf.csv", "vacf.xvg"]
+                },
+            )
+        ]

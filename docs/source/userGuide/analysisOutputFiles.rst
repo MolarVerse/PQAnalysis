@@ -4,18 +4,45 @@
 Analysis Output Files
 #####################
 
-PQAnalysis analysis commands write whitespace-separated text files. The
-filename extension does not select or change the analysis output format;
-``.out``, ``.dat``, ``.txt`` and extensionless names are all accepted. Column
-numbers in this reference are one-based. Every tabular output starts with a
-compact UTF-8 ``#`` metadata block. ``FIELDS`` lists one stable ASCII identifier
-per numeric column, ``SYMBOLS`` gives the corresponding scientific notation in
-Unicode, and ``UNITS`` lists the units in the same order. Values remain single
-whitespace-free tokens; compound units use a middle dot. Examples include
-``ν̃``, ``Å``, ``Å³`` and ``cm⁻¹``. The tables below give the full quantities
-and definitions. Numeric rows retain the legacy ordering and formatting.
-Readers such as ``numpy.loadtxt`` ignore the comment block automatically and
-continue to work without special options.
+PQAnalysis analysis commands can write native text, CSV, TSV or XVG tables. The
+output filename selects the format:
+
+.. list-table:: Analysis output formats
+   :header-rows: 1
+   :widths: 18 30 52
+
+   * - Extension
+     - Format
+     - Intended use
+   * - ``.csv``
+     - Comma-separated values
+     - Excel, LibreOffice Calc, pandas and other table tools
+   * - ``.tsv``
+     - Tab-separated values
+     - Spreadsheets and tables whose values may later contain commas
+   * - ``.xvg``
+     - Grace XY data with plot directives
+     - Direct inspection with xmgrace
+   * - Any other extension
+     - Native PQAnalysis text
+     - Self-describing scientific data and legacy workflows
+
+This means that ``out_file table.csv`` in an RDF, MSD, VACF or vibrations input
+file writes CSV directly. Names ending in ``.dat``, ``.out``, ``.txt`` or no
+extension retain the native format.
+
+Native format
+=============
+
+Column numbers in this reference are one-based. Every native tabular output
+starts with a compact UTF-8 ``#`` metadata block. ``FIELDS`` lists one stable
+ASCII identifier per numeric column, ``SYMBOLS`` gives the corresponding
+scientific notation in Unicode, and ``UNITS`` lists the units in the same
+order. Values remain single whitespace-free tokens; compound units use a
+middle dot. Examples include ``ν̃``, ``Å``, ``Å³`` and ``cm⁻¹``. The tables
+below give the full quantities and definitions. Numeric rows retain the legacy
+ordering and formatting. Readers such as ``numpy.loadtxt`` ignore the comment
+block automatically and continue to work without special options.
 
 For example, an RDF data file begins with
 
@@ -29,6 +56,95 @@ For example, an RDF data file begins with
 
 Log files are labeled, human-readable text and are not described as columnar
 data here.
+
+CSV and TSV
+===========
+
+CSV and TSV files contain one header row followed by numeric rows. The header
+uses the stable identifiers from the native ``FIELDS`` line, for example:
+
+.. code-block:: text
+
+   r_i,g_r_i,N_r_i,g_r_i_dV_i,H_i_minus_E_i
+   0.5,0.0,0.0,0.0,-0.05026548245743666
+
+These files open directly in Excel and LibreOffice Calc and can be read as
+ordinary CSV or TSV. Scientific symbols, units and definitions are documented
+by the field identifier in the tables below.
+
+XVG and xmgrace
+===============
+
+XVG files contain Grace ``@`` directives and one or more XY data sets. They can
+be opened directly with ``xmgrace rdf.xvg``; PQAnalysis does not launch the GUI
+itself. The default quick plots are:
+
+.. list-table:: Default XVG plots
+   :header-rows: 1
+   :widths: 34 28 38
+
+   * - Analysis table
+     - x axis
+     - y data sets
+   * - RDF
+     - ``r_i``
+     - ``g_r_i``
+   * - MSD
+     - ``lag``
+     - ``msd_x``, ``msd_y``, ``msd_z``
+   * - VACF or windowed correlation
+     - ``time``
+     - Correlation value
+   * - VACF or broadened spectrum
+     - ``wavenumber``
+     - Amplitude or intensity
+   * - Total momentum
+     - ``frame``
+     - ``scaled_momentum_norm``
+   * - Vibrations without IR intensities
+     - One-based mode index
+     - ``wavenumber``
+   * - Vibrations with IR intensities
+     - ``wavenumber``
+     - ``ir_intensity``
+
+Additional outputs
+==================
+
+All tabular analysis CLIs accept repeatable ``--export FILE`` options. The
+primary output is still controlled by ``out_file`` or ``--output``; every
+export filename independently selects its format.
+
+.. code-block:: console
+
+   $ pqanalysis rdf rdf.in \
+       --export rdf.csv \
+       --export rdf.tsv \
+       --export rdf.xvg
+
+The same option is available for ``msd``, ``vacf``, ``build_spectrum``,
+``check_momentum`` and ``vibrations``. For VACF, ``--export`` represents the
+main correlation table. The configured ``spectrum_file`` and
+``windowed_out_file`` select their own formats from their filenames.
+
+Converting existing output
+==========================
+
+The converter reads native, CSV or TSV analysis tables and can create several
+outputs in one command:
+
+.. code-block:: console
+
+   $ pqanalysis convert rdf.dat \
+       -o rdf.csv \
+       -o rdf.tsv \
+       -o rdf.xvg
+
+Input format is detected from the file content rather than its extension, so a
+CSV table named ``table.dat`` can still be converted. Exact ``FIELDS`` headers
+restore the known scientific schema and XVG plot preset. ``--x FIELD`` and
+repeatable ``--y FIELD`` options override the default XVG projection. Input and
+output paths, and all output paths, must be distinct.
 
 .. _analysis-output-rdf:
 
