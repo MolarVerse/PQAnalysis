@@ -35,12 +35,21 @@ class TestVibrationalAnalysisAPI:
 
         assert output.is_file()
         assert normal_modes.is_file()
-        assert output.read_text(
-            encoding="utf-8"
-        ).startswith("# wavenumber_cm^-1  IR_intensity_km_mol^-1")
-        assert normal_modes.read_text(
-            encoding="utf-8"
-        ).startswith("# columns: mode_1  mode_2  mode_3")
+        assert output.read_text(encoding="utf-8").splitlines()[:3] == [
+            "# PQAnalysis: Vibrational analysis",
+            "# FIELDS nu_tilde_j I_j^IR k_j mu_j",
+            "# UNITS cm^-1 km*mol^-1 mdyn*Angstrom^-1 amu",
+        ]
+        assert normal_modes.read_text(encoding="utf-8").splitlines()[:5] == [
+            "# PQAnalysis: Normal-mode matrix",
+            "# ELEMENT e_(alpha,j)",
+            "# ROWS alpha=x_1,y_1,z_1,...",
+            (
+                "# FIELDS mode_1 mode_2 mode_3 mode_4 mode_5 mode_6 "
+                "mode_7 mode_8 mode_9"
+            ),
+            "# UNITS 1 1 1 1 1 1 1 1 1",
+        ]
 
     @pytest.mark.parametrize("example_dir", ["vibrational"], indirect=False)
     def test_vibrations_with_mode_output(self, test_with_data_dir):

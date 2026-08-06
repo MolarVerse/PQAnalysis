@@ -10,6 +10,7 @@ from PQAnalysis.io import BaseWriter
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 
 
@@ -23,7 +24,13 @@ class SpectrumDataWriter(BaseWriter):
     ``build_spectrum.sh``.
     """
 
-    header = "# wavenumber_cm^-1  broadened_intensity"
+    header = format_output_header(
+        "Broadened spectrum",
+        (
+            ("nu_tilde", "cm^-1"),
+            ("I_b(nu_tilde)", "input-dependent"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(

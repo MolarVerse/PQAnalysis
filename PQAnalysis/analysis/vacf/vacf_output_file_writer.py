@@ -11,6 +11,7 @@ from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
 
 from .vacf import VACF
 
@@ -28,7 +29,13 @@ class VACFDataWriter(BaseWriter):
     normalized VACF.
     """
 
-    header = "# time_ps  normalized_correlation"
+    header = format_output_header(
+        "Normalized correlation function",
+        (
+            ("t", "ps"),
+            ("C(t)/C(0)", "1"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -79,7 +86,13 @@ class VACFSpectrumDataWriter(BaseWriter):
     frequency index with the columns wavenumber in cm^-1 and amplitude.
     """
 
-    header = "# wavenumber_cm^-1  amplitude_arb"
+    header = format_output_header(
+        "VACF spectrum",
+        (
+            ("nu_tilde", "cm^-1"),
+            ("|C_hat(nu_tilde)|", "arbitrary"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
@@ -132,7 +145,13 @@ class VACFWindowedDataWriter(BaseWriter):
     correlation function.
     """
 
-    header = "# time_ps  windowed_correlation"
+    header = format_output_header(
+        "Windowed correlation function",
+        (
+            ("t", "ps"),
+            ("C_w(t)", "1"),
+        ),
+    )
 
     @runtime_type_checking
     def __init__(self, filename: str) -> None:

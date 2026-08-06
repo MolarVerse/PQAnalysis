@@ -8,9 +8,14 @@ PQAnalysis analysis commands write whitespace-separated text files. The
 filename extension does not select or change the analysis output format;
 ``.out``, ``.dat``, ``.txt`` and extensionless names are all accepted. Column
 numbers in this reference are one-based. Every tabular output starts with a
-machine-readable ``#`` comment that names its columns. Numeric rows retain the
-legacy ordering and formatting, so readers such as ``numpy.loadtxt`` continue
-to work without special options.
+compact ``#`` metadata block. ``FIELDS`` lists one whitespace-free scientific
+symbol per numeric column and ``UNITS`` lists the corresponding units in the
+same order. Compound units use ``*`` so each unit remains one token. Symbols
+use ASCII spellings such as ``nu_tilde`` and ``DeltaV`` to keep the files
+portable; the tables below give their full quantities and definitions. Numeric
+rows retain the legacy ordering and formatting. Readers such as
+``numpy.loadtxt`` ignore the comment block automatically and continue to work
+without special options.
 
 Log files are labeled, human-readable text and are not described as columnar
 data here.
@@ -232,7 +237,7 @@ normal-mode representations.
 
 Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
-columns. The file's ``#`` header reflects the selected layout.
+columns. The file's ``FIELDS`` and ``UNITS`` lines reflect the selected layout.
 
 .. list-table:: Vibrational ``out_file`` columns
    :header-rows: 1
@@ -262,10 +267,11 @@ columns. The file's ``#`` header reflects the selected layout.
 ``normal_modes_file``
 ---------------------
 
-This file contains the normal-mode matrix. Its ``# columns:`` header labels
-each column as ``mode_1``, ``mode_2`` and so on. Rows are Cartesian coordinates
-in atom order (x, y, z for each atom), and columns are modes in the same order
-as the rows of ``out_file``. Values are normalized Cartesian mode components.
+This file contains the normal-mode matrix. Its metadata identifies the matrix
+element as :math:`e_{\alpha j}`, the row order as ``x_1,y_1,z_1,...``, and each
+column as ``mode_1``, ``mode_2`` and so on. Columns are modes in the same order
+as the rows of ``out_file``. Values are dimensionless normalized Cartesian mode
+components.
 
 ``modes_prefix``
 ----------------
