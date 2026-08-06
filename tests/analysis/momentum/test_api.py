@@ -42,6 +42,7 @@ class TestCheckMomentumAPI:
             lines = file.readlines()
 
         assert lines == [
+            "# frame_index  scaled_momentum_norm\n",
             f"1  {momentum_norms[0]:.12e}\n",
             f"2  {momentum_norms[1]:.12e}\n",
         ]
@@ -61,6 +62,7 @@ class TestCheckMomentumAPI:
         captured = capsys.readouterr()
 
         assert captured.out == (
+            "# frame_index  scaled_momentum_norm\n"
             f"1  {momentum_norms[0]:.12e}\n"
             f"2  {momentum_norms[1]:.12e}\n"
         )
@@ -86,6 +88,7 @@ class TestMomentumDataWriter:
             lines = file.readlines()
 
         assert lines == [
+            "# frame_index  scaled_momentum_norm\n",
             "1  1.871482266947e-14\n",
             "2  0.000000000000e+00\n",
         ]

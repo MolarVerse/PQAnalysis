@@ -613,14 +613,10 @@ class RDF:
         """
         Runs the RDF analysis.
 
-        This method runs the RDF analysis and returns the 
-        middle points of the bins of the RDF analysis, the
-        normalized bins of the RDF analysis based on the 
-        spherical shell model, the integrated bins of the
-        RDF analysis, the normalized bins of the RDF 
-        analysis based on the number of atoms in the 
-        system and the differential bins of the RDF 
-        analysis based on the spherical shell model.
+        This method runs the RDF analysis and returns the five arrays
+        written by :py:class:`~PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter`.
+        See :ref:`RDF output files <analysis-output-rdf>` for their exact
+        definitions and normalization formulas.
 
         This method will display a progress bar by default.
         This can be disabled by setting with_progress_bar to False.
@@ -628,18 +624,15 @@ class RDF:
         Returns
         -------
         bin_middle_points : Np1DNumberArray
-            The middle points of the bins of the RDF analysis.
+            The bin-center distances in Angstrom.
         normalized_bins : Np1DNumberArray
-            The normalized bins of the RDF analysis based 
-            on the spherical shell model.
+            The dimensionless radial distribution function ``g(r)``.
         integrated_bins : Np1DNumberArray
-            The integrated bins of the RDF analysis.
+            The cumulative coordination number.
         normalized_bins2 : Np1DNumberArray
-            The normalized bins of the RDF analysis based
-            on the number of atoms in the system.
+            The density-normalized shell population in Angstrom^3.
         differential_bins : Np1DNumberArray
-            The differential bins of the RDF analysis based
-            on the spherical shell model.
+            The pair-count residual relative to the ideal-gas shell count.
         """
 
         self._initialize_run()
@@ -845,25 +838,24 @@ class RDF:
         Finalizes the RDF analysis after running.
 
         This method is called by the run method of the RDF class.
-        It finalizes the RDF analysis after running by calculating
-        the normalized bins of the RDF analysis based on the 
-        spherical shell model, the integrated bins of the RDF 
-        analysis, the normalized bins of the RDF analysis based
-        on the number of atoms in the system and the differential
-        bins of the RDF analysis based on the spherical shell model.
+        It finalizes the RDF analysis after running by calculating the
+        radial distribution function, cumulative coordination number,
+        density-normalized shell population and ideal-gas pair-count
+        residual. See :ref:`RDF output files <analysis-output-rdf>` for
+        their exact definitions.
 
         Returns
         -------
         bin_middle_points : Np1DNumberArray
-            The middle points of the bins of the RDF analysis.
+            The bin-center distances in Angstrom.
         normalized_bins : Np1DNumberArray
-            The normalized bins of the RDF analysis based on the spherical shell model.
+            The dimensionless radial distribution function ``g(r)``.
         integrated_bins : Np1DNumberArray
-            The integrated bins of the RDF analysis.
+            The cumulative coordination number.
         normalized_bins2 : Np1DNumberArray
-            The normalized bins of the RDF analysis based on the number of atoms in the system.
+            The density-normalized shell population in Angstrom^3.
         differential_bins : Np1DNumberArray
-            The differential bins of the RDF analysis based on the spherical shell model.
+            The pair-count residual relative to the ideal-gas shell count.
         """
 
         if self.no_intra_molecular:
@@ -877,7 +869,8 @@ class RDF:
             self.delta_r,
             target_density,
             len(self.reference_indices),
-            self.n_frames
+            self.n_frames,
+            self.r_min,
         )
 
         self.normalized_bins = self.bins / norm
@@ -1142,7 +1135,8 @@ class RDF:
         delta_r: PositiveReal,
         target_density: PositiveReal,
         n_reference_indices: int,
-        n_frames: int
+        n_frames: int,
+        r_min: PositiveReal = 0.0,
     ) -> Np1DNumberArray:
         """
         Calculates the normalization of the RDF analysis 
@@ -1160,6 +1154,8 @@ class RDF:
             The number of reference indices of the RDF analysis.
         n_frames : int
             The number of frames of the RDF analysis.
+        r_min : PositiveReal, optional
+            The lower edge of the first shell in Angstrom, by default 0.0.
 
         Returns
         -------
@@ -1167,14 +1163,12 @@ class RDF:
             The normalization of the RDF analysis.
         """
 
-        surface_prefactor = 4.0 / 3.0 * np.pi
+        volume_prefactor = 4.0 / 3.0 * np.pi
 
-        small_radius_range = np.arange(0, n_bins)
-        large_radius_range = np.arange(1, n_bins + 1)
-        delta_radius_range = large_radius_range**3 - small_radius_range**3
-
-        delta_volume = delta_r**3 * delta_radius_range
-        volume = surface_prefactor * delta_volume
+        small_radius_range = r_min + np.arange(n_bins) * delta_r
+        large_radius_range = small_radius_range + delta_r
+        delta_volume = large_radius_range**3 - small_radius_range**3
+        volume = volume_prefactor * delta_volume
 
         return volume * target_density * n_reference_indices * n_frames
 

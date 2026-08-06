@@ -28,6 +28,11 @@ class MSDDataWriter(BaseWriter):
     MSD in y and MSD in z (all in Angstrom^2).
     """
 
+    header = (
+        "# lag_frames  msd_x_Angstrom^2  msd_y_Angstrom^2  "
+        "msd_z_Angstrom^2"
+    )
+
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
@@ -58,6 +63,8 @@ class MSDDataWriter(BaseWriter):
             the data output from the MSD.run() method
         """
         super().open()
+
+        print(self.header, file=self.file)
 
         lags, msd_x, msd_y, msd_z, _ = data
 

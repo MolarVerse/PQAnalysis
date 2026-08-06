@@ -9,6 +9,7 @@ User Guide
    :maxdepth: 1
 
    inputFile
+   analysisOutputFiles
 
 Command Line Interface
 ======================
@@ -19,6 +20,8 @@ Input file based tools
 ----------------------
 
 For more details on the grammar and syntax of the input file see :ref:`inputFile`.
+For the columns, units and normalization conventions of analysis output files,
+see :ref:`analysisOutputFiles`.
 
 - :ref:`rdf<cli.rdf>`
 - :ref:`msd<cli.msd>`
@@ -36,7 +39,7 @@ and an output file. A restart file is not required for this case:
     reference_selection = H
     target_selection = O
     delta_r = 0.05
-    out_file = rdf.out
+    out_file = rdf.dat
     traj_files = trajectory.xyz
 
 Restart files and moldescriptor files are only needed when the calculation
@@ -51,7 +54,7 @@ If the files are not given explicitly, PQAnalysis tries to infer
     reference_selection = H
     target_selection = O
     delta_r = 0.05
-    out_file = rdf_inter.out
+    out_file = rdf_inter.dat
     traj_files = trajectory.xyz
     no_intra_molecular = True
 
