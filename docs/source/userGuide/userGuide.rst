@@ -5,7 +5,8 @@
 User Guide
 ==========
 
-This compatibility page points to the current task-oriented documentation:
+The former user-guide URL is retained for compatibility. Current documentation
+is organized by task:
 
 * :doc:`../getting-started`: installation, first RDF calculation and outputs
 * :doc:`../analyses/index`: estimators, assumptions and interpretation

@@ -1,8 +1,8 @@
 Package Reference
 =================
 
-Start with the :doc:`functions` page for callable analysis, numerical and I/O
-interfaces. This page maps the principal data types and generated module
+The :doc:`functions` page documents callable analysis, numerical and I/O
+interfaces. The tables below map principal data types to the generated module
 reference.
 
 Core types
