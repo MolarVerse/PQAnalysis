@@ -1,50 +1,125 @@
 .. _inputFile:
 
-##########
-Input File
-##########
+Analysis Input Files
+====================
 
-The general parsing of the input file is based on a Lark grammar implementation (For more details see `Lark Grammar <https://lark-parser.readthedocs.io>`_). Any input file must be based on the following definitions of input key and value pairs:
+RDF, MSD, VACF and vibrational analyses use a compact key-value format parsed
+with `Lark <https://lark-parser.readthedocs.io/>`_. Each analysis documents its
+required and optional keys in the generated command and input-reader reference.
 
-.. note::
-   There are two different types of input key and value pairs. The first type is the key and value pairs that are defined in line seperated by a :code:`=` e.g:
+Inline statements
+-----------------
 
-    .. code-block:: bash
-    
-        key = value
+An inline statement assigns one value to one key:
 
-    The second type are so called multiline statements where in the first line the key is defined and in the following lines the values assigned to the key. The multiline statements must be closed by an :code:`END` statement. The following example shows a multiline statement:
+.. code-block:: text
 
-    .. code-block:: bash
+   key = value
 
-        key
-        value1
-        value2
-        END
+Several assignments may share a line when separated by commas:
 
-    It is important to note that multiline statements are always parsed as list/array like values. This means, if the documentation of the key states that the value is not a list or array, an inlined statement must be used.
+.. code-block:: text
 
-.. note::
-    In general, all keys are case-insensitive as well as the closing statement :code:`END` of a multiline statement. The values are case-sensitive. Furthermore, all keys and values are stripped from leading and trailing whitespaces and :code:`#` can be used to include comments (including inline comments). Inline statements using :code:`key = value` can also be used multiple times in one line separated by a :code:`,` to define multiple key and value pairs in one line e.g.:
+   window = 1000, gap = 10, time_step = 0.001
 
-    .. code-block:: bash
+Use separate lines for scientific input files unless a compact generated file
+is required; one assignment per line is easier to review and diff.
 
-        key1 = value1, key2 = value2
+Multiline lists
+---------------
 
-.. note::
-    The values are read as strings and are converted to the correct type based on the documentation of the key (if possible). In general, the user should not worry about the type of the value as the parser will try to convert the value to the correct type. If the conversion fails, an error will be raised. The following examples show the conversion of the values:
+A key followed by values on subsequent lines creates a list. Terminate the
+list with ``END``:
 
-    * :code:`True` and :code:`False` are converted to :code:`bool` (case-insensitive) 
-    * :code:`1` is converted to :code:`int` following possible conversions to :code:`float`
-    * :code:`1.0` is converted to :code:`float` 
-    * :code:`any-kind-of_string` is converted to :code:`str`
-    * :code:`[1, 2, 3]` is converted to :code:`list` following possible (all values have to be of the   same type)
-    * :code:`1..4` is converted to :code:`range` range(1, 4)
-    * :code:`1-4` same as :code:`1..4` 
-    * :code:`1..3..10` is converted to :code:`range` range(1, 10, 3), please note that the step size is always the middle value in contrast to the python syntax
-    * :code:`1-3-10` same as :code:`1..3..10`
-    * :code:`file_0*.text` is treated as a list of files matching the pattern (For more details see the `glob package <https://docs.python.org/3/library/glob.html>`_)
+.. code-block:: text
 
+   traj_files
+   trajectory-001.xyz
+   trajectory-002.xyz
+   trajectory-003.xyz
+   END
 
+Multiline syntax always produces a list-like value. Use inline syntax for keys
+that accept only a scalar.
 
+Comments and case
+-----------------
 
+Keys are case-insensitive. The closing ``END`` token must be uppercase. Values
+remain case-sensitive because they may contain filenames or selection
+expressions. Leading and trailing whitespace is ignored. ``#`` starts a
+comment, including at the end of a statement:
+
+.. code-block:: text
+
+   target_selection = O  # oxygen atoms
+
+Value conversion
+----------------
+
+The parser converts strings to the type required by each documented key.
+Common forms include:
+
+.. list-table:: Input value forms
+   :header-rows: 1
+   :widths: 30 30 40
+
+   * - Input
+     - Parsed form
+     - Notes
+   * - ``True`` or ``False``
+     - Boolean
+     - Case-insensitive
+   * - ``1``
+     - Integer
+     - May also satisfy a real-valued key
+   * - ``1.0``
+     - Floating-point number
+     - Scientific notation is accepted where numeric keys permit it
+   * - ``[1, 2, 3]``
+     - List
+     - Elements must have compatible types
+   * - ``1..4`` or ``1-4``
+     - ``range(1, 4)``
+     - The stop value follows Python's exclusive convention
+   * - ``1..3..10`` or ``1-3-10``
+     - ``range(1, 10, 3)``
+     - The middle value is the step
+   * - ``frame-*.xyz``
+     - Matching file list
+     - Expanded with Python glob semantics
+
+Filenames
+---------
+
+Relative filenames are interpreted from the command's working directory. The
+ordinary filename grammar accepts letters, digits, ``_``, ``-`` and ``.``;
+``*`` provides glob matching. For a portable analysis directory, keep the
+input file and its referenced data together and run the command from that
+directory.
+
+Complete example
+----------------
+
+.. code-block:: text
+
+   # oxygen-hydrogen radial distribution
+   traj_files
+   run-001.xyz
+   run-002.xyz
+   END
+
+   reference_selection = O
+   target_selection = H
+   delta_r = 0.05
+   r_max = 8.0
+   out_file = rdf.dat
+
+Run it with:
+
+.. code-block:: console
+
+   $ pqanalysis rdf rdf.in
+
+See :doc:`../analyses/index` for analysis-specific examples and
+:doc:`analysisOutputFiles` for output formats and scientific schemas.
