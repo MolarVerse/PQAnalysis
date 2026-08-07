@@ -20,6 +20,9 @@ file(s) using multiple time origins on a sliding
 window. This is an input file based tool, so that
 the input file can be used to specify the parameters
 of the MSD calculation.
+
+The data file contains the frame lag followed by the x, y and z
+mean squared displacement components, in that order.
 """
 
 __epilog__ = "\n"
@@ -34,6 +37,10 @@ __doc__ += "MSD analysis and its input file options "
 __doc__ += "please visit "
 __doc__ += ":py:class:`PQAnalysis.analysis.msd.msd.MSD` "
 __doc__ += "and :py:mod:`PQAnalysis.analysis.msd.msd_input_file_reader`\n"
+__doc__ += (
+    "For column definitions and units see "
+    ":ref:`MSD output files <analysis-output-msd>`.\n"
+)
 __doc__ += input_keys_documentation
 
 
@@ -68,6 +75,7 @@ class MSDCLI(CLIBase):
         """
         parser.parse_input_file()
         parser.parse_engine()
+        parser.parse_export_files()
 
     @classmethod
     def run(cls, args):
@@ -79,7 +87,11 @@ class MSDCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        msd(args.input_file, args.engine)
+        export_kwargs = {}
+        if args.export_files is not None:
+            export_kwargs['export_files'] = args.export_files
+
+        msd(args.input_file, args.engine, **export_kwargs)
 
 
 

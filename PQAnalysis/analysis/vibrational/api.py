@@ -5,6 +5,7 @@ API functions for vibrational analysis.
 from pathlib import Path
 
 import numpy as np
+from beartype.typing import Sequence
 
 from PQAnalysis.io import MoldescriptorReader, RestartFileReader, read_trajectory
 from PQAnalysis.type_checking import runtime_type_checking
@@ -23,9 +24,21 @@ from .vibrational_input_file_reader import VibrationalAnalysisInputFileReader
 
 
 @runtime_type_checking
-def vibrations(input_file: str) -> None:
+def vibrations(
+    input_file: str,
+    export_files: Sequence[str] | None = None,
+) -> None:
     """
     Run vibrational analysis from an input file.
+
+    Parameters
+    ----------
+    input_file : str
+        Vibrational analysis input file.
+    export_files : Sequence[str] | None, optional
+        Additional outputs for the main vibrational table. ``.csv``,
+        ``.tsv`` and ``.xvg`` select those formats; other extensions use
+        native PQAnalysis text.
     """
     input_reader = VibrationalAnalysisInputFileReader(input_file)
     input_reader.read()
@@ -45,7 +58,11 @@ def vibrations(input_file: str) -> None:
         atom_charges=atom_charges,
     )
 
-    write_calculate_output(result, input_reader.out_file)
+    write_calculate_output(
+        result,
+        input_reader.out_file,
+        export_files=export_files,
+    )
 
     if input_reader.normal_modes_file is not None:
         write_normal_modes(result.normal_modes, input_reader.normal_modes_file)
