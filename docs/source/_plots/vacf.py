@@ -35,7 +35,7 @@ correlation_axis.set_title(
     "(a) Normalized velocity autocorrelation",
     loc="left",
     fontsize=9.5,
-    fontweight="semibold",
+    fontweight="bold",
     pad=8,
 )
 correlation_axis.set_xlabel("Lag time, t / ps")
@@ -52,7 +52,7 @@ spectrum_axis.set_title(
     "(b) Hann-window cosine-transform spectrum",
     loc="left",
     fontsize=9.5,
-    fontweight="semibold",
+    fontweight="bold",
     pad=8,
 )
 spectrum_axis.set_xlabel("Wavenumber, ν̃ / cm⁻¹")

@@ -3,9 +3,9 @@
 Development
 ===========
 
-PQAnalysis uses a ``dev`` integration branch and releases from ``main``. This
-section documents the code boundaries and evidence required to extend the
-package, not only the mechanics of opening a pull request.
+PQAnalysis integrates changes on ``dev`` and releases from ``main``. The guides
+define package boundaries, implementation contracts, validation evidence and
+release operations.
 
 Extension path
 --------------
