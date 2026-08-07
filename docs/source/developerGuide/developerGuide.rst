@@ -60,13 +60,15 @@ Check internal and external links separately:
 The API reference is generated from package modules when Sphinx starts. Do not
 hand-edit generated files under ``docs/source/code`` unless the generator or
 its templates are being changed. User-facing scientific conventions belong in
-the curated analysis, data and reference pages.
+the maintained analysis, data and reference pages.
 
 Documentation structure
 -----------------------
 
 * ``getting-started.rst`` provides the shortest working path.
 * ``analyses/`` explains physical definitions, inputs and interpretation.
+* ``_plots/`` contains executable Matplotlib figures built from documented
+  analytic models or versioned validation fixtures.
 * ``data/`` covers file grammar, trajectories, selections and conversion.
 * ``reference/`` indexes CLI and Python interfaces.
 * ``userGuide/analysisOutputFiles.rst`` is the canonical output-schema source.
@@ -75,7 +77,8 @@ Documentation structure
 Every analysis guide should state the physical quantity, assumptions, units,
 minimal input, output fields and interpretation limits. Keep duplicated option
 tables in generated API documentation rather than copying them into several
-manual pages.
+manual pages. Figure captions must identify their data source and distinguish
+analytic schematics, validation fixtures and physical benchmark results.
 
 Pull requests
 -------------

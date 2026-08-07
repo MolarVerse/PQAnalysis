@@ -5,32 +5,12 @@ PQAnalysis separates simulation data, analysis configuration and output-table
 serialization. File extensions select output formats, while input content and
 explicit engine options determine how trajectories are read.
 
-.. grid:: 1 2 2 2
-   :gutter: 2
+This section covers four interfaces:
 
-   .. grid-item-card:: Analysis input files
-      :link: ../userGuide/inputFile
-      :link-type: doc
-
-      Key-value grammar, scalar values, lists and comments.
-
-   .. grid-item-card:: Output tables
-      :link: ../userGuide/analysisOutputFiles
-      :link-type: doc
-
-      Native metadata, CSV, TSV, XVG, columns, units and normalization.
-
-   .. grid-item-card:: Command-line conversion
-      :link: ../reference/cli
-      :link-type: doc
-
-      Convert analysis tables, structures, trajectories and box data.
-
-   .. grid-item-card:: I/O API
-      :link: ../reference/api
-      :link-type: doc
-
-      Readers, writers, formats and trajectory objects for Python workflows.
+* :ref:`inputFile` defines the key-value grammar.
+* :ref:`analysisOutputFiles` defines table fields, symbols and units.
+* :doc:`../reference/cli` documents table, structure and trajectory conversion.
+* :doc:`../reference/api` identifies readers, writers and trajectory objects.
 
 Analysis configuration
 ----------------------
