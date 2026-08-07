@@ -66,18 +66,18 @@ scientific kernels as the command line:
    rdf("rdf.in", export_files=["rdf.csv"])
    table = read_analysis_table("rdf.csv")
 
-The :doc:`function index <reference/functions>` exposes analysis workflows,
-numerical methods, scientific-table operations and simulation-file I/O without
-requiring navigation through the generated module tree.
+The :doc:`function index <reference/functions>` groups analysis workflows,
+numerical methods, scientific-table operations and simulation-file I/O by
+task.
 
 Development
 -----------
 
 New methods follow a documented path from estimator and validation evidence to
 the public API, CLI and schema-backed output. See
-:doc:`Adding an Analysis <developerGuide/adding-analysis>` for the complete
-implementation checklist and :doc:`Architecture <developerGuide/architecture>`
-for package ownership boundaries.
+:doc:`Adding an Analysis <developerGuide/adding-analysis>` for the required
+implementation steps and :doc:`Architecture <developerGuide/architecture>` for
+package ownership boundaries.
 
 .. toctree::
    :hidden:
