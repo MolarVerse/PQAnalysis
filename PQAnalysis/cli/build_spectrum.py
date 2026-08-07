@@ -73,6 +73,7 @@ class BuildSpectrumCLI(CLIBase):
             The parser to which the arguments should be added.
         """
         parser.parse_output_file()
+        parser.parse_export_files()
 
         parser.add_argument(
             'input_file',
@@ -154,17 +155,21 @@ class BuildSpectrumCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        build_spectrum(
-            input_file=args.input_file,
-            output=args.output,
-            alpha=args.alpha,
-            fwhm=args.fwhm,
-            wavenumber_min=args.wavenumber_min,
-            wavenumber_max=args.wavenumber_max,
-            wavenumber_step=args.wavenumber_step,
-            kernel='lorentzian' if args.lorentzian else 'gaussian',
-            mode=args.mode,
-        )
+        kwargs = {
+            'input_file': args.input_file,
+            'output': args.output,
+            'alpha': args.alpha,
+            'fwhm': args.fwhm,
+            'wavenumber_min': args.wavenumber_min,
+            'wavenumber_max': args.wavenumber_max,
+            'wavenumber_step': args.wavenumber_step,
+            'kernel': 'lorentzian' if args.lorentzian else 'gaussian',
+            'mode': args.mode,
+        }
+        if args.export_files is not None:
+            kwargs['export_files'] = args.export_files
+
+        build_spectrum(**kwargs)
 
 
 

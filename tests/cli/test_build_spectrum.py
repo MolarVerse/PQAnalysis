@@ -104,3 +104,29 @@ class TestBuildSpectrumCLI:
                 "mode": FileWritingMode("w"),
             }
         ]
+
+    def test_main_dispatches_repeated_exports(self, monkeypatch):
+        called = []
+        monkeypatch.setattr(
+            build_spectrum_cli,
+            "build_spectrum",
+            lambda **kwargs: called.append(kwargs),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "build_spectrum",
+                "lines.dat",
+                "--export",
+                "spectrum.csv",
+                "--export",
+                "spectrum.xvg",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        build_spectrum_cli.main()
+
+        assert called[0]["export_files"] == ["spectrum.csv", "spectrum.xvg"]

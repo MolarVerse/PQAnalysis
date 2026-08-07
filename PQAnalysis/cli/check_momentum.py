@@ -76,6 +76,7 @@ class CheckMomentumCLI(CLIBase):
             The parser to which the arguments should be added.
         """
         parser.parse_output_file()
+        parser.parse_export_files()
 
         parser.parse_trajectory_file()
 
@@ -120,15 +121,19 @@ class CheckMomentumCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        check_momentum(
-            trajectory_files=args.trajectory_file,
-            output=args.output,
-            selection=args.selection,
-            use_full_atom_info=args.use_full_atom_info,
-            scale=args.scale,
-            md_format=args.engine,
-            mode=args.mode,
-        )
+        kwargs = {
+            'trajectory_files': args.trajectory_file,
+            'output': args.output,
+            'selection': args.selection,
+            'use_full_atom_info': args.use_full_atom_info,
+            'scale': args.scale,
+            'md_format': args.engine,
+            'mode': args.mode,
+        }
+        if args.export_files is not None:
+            kwargs['export_files'] = args.export_files
+
+        check_momentum(**kwargs)
 
 
 
