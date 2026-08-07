@@ -294,7 +294,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
    * - 1
      - Wavenumber
      - Legacy cosine-transform frequency axis
-     - cm\ :sup:`-1`
+     - cm⁻¹
    * - 2
      - Spectrum amplitude
      - Absolute cosine-transform amplitude of the optionally windowed

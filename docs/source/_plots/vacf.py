@@ -6,7 +6,7 @@ import numpy as np
 from _style import COLORS, PROJECT_ROOT, apply_style
 
 
-apply_style((7.2, 5.1))
+apply_style((6.2, 5.5))
 
 correlation = np.loadtxt(PROJECT_ROOT / "tests/data/vacf/vacf_ref.dat")
 spectrum = np.loadtxt(
@@ -31,8 +31,15 @@ correlation_axis.axhline(
     linestyle=":",
     linewidth=1.0,
 )
-correlation_axis.set_xlabel(r"Lag time $t$ / ps")
-correlation_axis.set_ylabel(r"$C_v(t)$")
+correlation_axis.set_title(
+    "(a) Normalized velocity autocorrelation",
+    loc="left",
+    fontsize=9.5,
+    fontweight="semibold",
+    pad=8,
+)
+correlation_axis.set_xlabel("Lag time, t / ps")
+correlation_axis.set_ylabel("Cᵥᵥ(t)")
 correlation_axis.set_xlim(correlation[0, 0], correlation[-1, 0])
 correlation_axis.set_ylim(-1.05, 1.05)
 
@@ -41,10 +48,17 @@ spectrum_axis.plot(
     spectrum[:, 1],
     color=COLORS["orange"],
 )
-spectrum_axis.set_xlabel(r"Wavenumber $\tilde{\nu}$ / $\mathrm{cm}^{-1}$")
-spectrum_axis.set_ylabel("Amplitude / a.u.")
+spectrum_axis.set_title(
+    "(b) Hann-window cosine-transform spectrum",
+    loc="left",
+    fontsize=9.5,
+    fontweight="semibold",
+    pad=8,
+)
+spectrum_axis.set_xlabel("Wavenumber, ν̃ / cm⁻¹")
+spectrum_axis.set_ylabel("|Ĉ(ν̃)| / a.u.")
 spectrum_axis.set_xlim(0.0, 4000.0)
 spectrum_axis.set_ylim(bottom=0.0)
 
-figure.tight_layout()
+figure.tight_layout(h_pad=1.4)
 plt.show()
