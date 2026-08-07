@@ -25,7 +25,7 @@ Choose by input data
      - :math:`\langle |\mathbf{r}(t)-\mathbf{r}(0)|^2\rangle`
    * - VACF
      - Velocities and frame time step
-     - Normalized :math:`C_v(t)` and its spectrum
+     - Normalized :math:`C_{vv}(t)` and its spectrum
    * - Vibrations
      - Structure, masses and Cartesian Hessian
      - Normal-mode wavenumbers and force constants
