@@ -19,18 +19,24 @@ Install with pip:
 
 ## Development
 
-Clone the PQAnalysis GitHub repository and navigate into the directory:
+Clone the repository and install the development, test and documentation
+dependencies in an isolated environment:
 
     git clone https://github.com/MolarVerse/PQAnalysis.git
     cd PQAnalysis
+    python -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -e ".[dev,test,docs]"
 
-Install in editable mode with test dependencies:
+Run the test suite with both debug and release runtime type checking:
 
-    pip install -e ".[test]"
+    bash pytest.sh
 
-Run the test suite:
-
-    python -m pytest
+The [developer documentation](https://molarverse.github.io/PQAnalysis/developerGuide/developerGuide.html)
+covers package architecture, adding an analysis, scientific validation and the
+tag-driven release process. The
+[function index](https://molarverse.github.io/PQAnalysis/reference/functions.html)
+lists the supported Python entry points directly.
 
 Use squash merges for pull requests. The pull request title becomes the commit
 message on the target branch, so PR titles must follow
