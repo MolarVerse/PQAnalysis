@@ -6,9 +6,12 @@ velocities lose memory of their initial direction:
 
 .. math::
 
-   C_v(t) =
+   C_{vv}(t) =
    \frac{\left\langle \sum_i \mathbf{v}_i(0)\cdot\mathbf{v}_i(t)\right\rangle}
         {\left\langle \sum_i \mathbf{v}_i(0)\cdot\mathbf{v}_i(0)\right\rangle}.
+
+The brackets denote an average over admissible time origins, and the sum runs
+over the selected atoms. This normalization gives :math:`C_{vv}(0)=1`.
 
 PQAnalysis can transform the correlation to a wavenumber-domain spectrum. If
 static or time-dependent partial charges are supplied, it correlates
