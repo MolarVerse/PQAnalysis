@@ -10,6 +10,7 @@ DOCS_DIR = SOURCE_DIR.parent
 PROJECT_ROOT = DOCS_DIR.parent
 
 sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(SOURCE_DIR / "_plots"))
 
 project = "PQAnalysis"
 author = "the PQAnalysis authors"
@@ -33,9 +34,9 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.inheritance_diagram",
     "sphinx_sitemap",
+    "matplotlib.sphinxext.plot_directive",
     "myst_parser",
     "sphinx_copybutton",
-    "sphinx_design",
 ]
 
 napoleon_google_docstring = True
@@ -59,6 +60,11 @@ add_module_names = False
 
 copybutton_prompt_text = r">>> |\.\.\. |\$ "
 copybutton_prompt_is_regexp = True
+
+plot_formats = [("svg", 96)]
+plot_html_show_formats = False
+plot_html_show_source_link = False
+plot_include_source = False
 
 templates_path = ["_templates"]
 source_suffix = {

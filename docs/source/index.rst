@@ -26,47 +26,31 @@ XVG. Repeat ``--export`` to write several formats in the same run.
 
    $ pqanalysis rdf rdf.in --export rdf.csv --export rdf.xvg
 
-Documentation
--------------
+Analysis methods
+----------------
 
-.. grid:: 1 2 3 3
-   :gutter: 2
+.. list-table:: Implemented observables
+   :header-rows: 1
+   :widths: 24 38 38
 
-   .. grid-item-card:: Getting started
-      :link: getting-started
-      :link-type: doc
-
-      Install PQAnalysis and run a first radial-distribution calculation.
-
-   .. grid-item-card:: Analyses
-      :link: analyses/index
-      :link-type: doc
-
-      RDF, MSD, VACF, spectra, normal modes and momentum diagnostics.
-
-   .. grid-item-card:: Data and conversion
-      :link: data/index
-      :link-type: doc
-
-      Input syntax, trajectories, selections and scientific table formats.
-
-   .. grid-item-card:: Command line
-      :link: reference/cli
-      :link-type: doc
-
-      Analysis, conversion and trajectory command reference.
-
-   .. grid-item-card:: Python API
-      :link: reference/api
-      :link-type: doc
-
-      Curated entry points and the complete generated package reference.
-
-   .. grid-item-card:: Development
-      :link: developerGuide/developerGuide
-      :link-type: doc
-
-      Branching, tests, documentation checks and contribution conventions.
+   * - Method
+     - Required data
+     - Reported quantity
+   * - :doc:`Radial distribution <analyses/rdf>`
+     - Positions and periodic cell
+     - :math:`g_{AB}(r)` and cumulative coordination
+   * - :doc:`Mean square displacement <analyses/msd>`
+     - Positions and periodic cell
+     - Cartesian MSD and diffusion fits
+   * - :doc:`VACF and spectra <analyses/vacf>`
+     - Velocities, sampling interval and optional charges
+     - Normalized correlation and wavenumber spectrum
+   * - :doc:`Vibrational analysis <analyses/vibrations>`
+     - Structure, masses and Cartesian Hessian
+     - Normal modes, wavenumbers and optional IR intensities
+   * - :doc:`Momentum diagnostic <analyses/momentum>`
+     - Velocities and atomic masses
+     - Frame-resolved total linear momentum
 
 Scientific output
 -----------------
@@ -83,8 +67,8 @@ Unicode symbols and units describe the physical quantities.
    # UNITS Å 1 1 Å³ pairs
    0.5 0.0 0.0 0.0 -0.05026548245743666
 
-See :ref:`analysisOutputFiles` for every column, normalization convention and
-conversion path.
+See :ref:`analysisOutputFiles` for column definitions, normalization
+conventions and conversion behavior.
 
 .. toctree::
    :hidden:

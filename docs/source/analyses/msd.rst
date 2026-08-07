@@ -13,6 +13,16 @@ origins according to
 Coordinates are unwrapped with the periodic cell before displacements are
 accumulated.
 
+Estimator and fit interval
+--------------------------
+
+.. plot:: _plots/msd.py
+   :alt: Cartesian and total mean square displacement with a linear fit
+   :caption: Bundled oxygen-atom validation fixture with a 0.5 ps frame
+      interval. The dashed line fits the final 20 total-MSD samples and
+      illustrates fit-window selection; the fixture is not a material
+      diffusion benchmark.
+
 Minimal input
 -------------
 

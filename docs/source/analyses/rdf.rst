@@ -14,6 +14,15 @@ where :math:`H_i` is the eligible pair count, :math:`\rho_T` the target number
 density, :math:`N_R` the number of reference atoms, :math:`N_F` the number of
 frames and :math:`\Delta V_i` the spherical-shell volume.
 
+Structural interpretation
+-------------------------
+
+.. plot:: _plots/rdf.py
+   :alt: Radial distribution function and cumulative coordination number
+   :caption: Analytic schematic, not simulation output. The shaded interval
+      ends at the first minimum. The lower panel evaluates
+      N(r) = 4πρ∫₀ʳ g(s)s² ds with ρ = 0.0334 Å⁻³.
+
 Minimal input
 -------------
 

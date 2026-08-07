@@ -24,44 +24,24 @@ and are the simplest integration points:
 Package areas
 -------------
 
-.. grid:: 1 2 3 3
-   :gutter: 2
+.. list-table:: Generated package reference
+   :header-rows: 1
+   :widths: 34 66
 
-   .. grid-item-card:: Analysis API
-      :link: ../code/PQAnalysis.analysis
-      :link-type: doc
+   * - Package
+     - Scope
+   * - :doc:`Analysis <../code/PQAnalysis.analysis>`
+     - Calculations, input readers, result models and output writers
+   * - :doc:`Input and output <../code/PQAnalysis.io>`
+     - Trajectory, restart, topology and simulation-file readers and writers
+   * - :doc:`Trajectories <../code/PQAnalysis.traj>`
+     - Engine formats, trajectory containers and high-level operations
+   * - :doc:`Atomic systems <../code/PQAnalysis.atomic_system>`
+     - Coordinates, cells and topology-bearing systems
+   * - :doc:`Topology and selection <../code/PQAnalysis.topology>`
+     - Selections, residues, bonded topology and SHAKE definitions
+   * - :doc:`Package index <../code/PQAnalysis>`
+     - Generated module hierarchy
 
-      Calculations, input readers, result models and output writers.
-
-   .. grid-item-card:: Input and output
-      :link: ../code/PQAnalysis.io
-      :link-type: doc
-
-      Trajectory, restart, topology and simulation-file readers and writers.
-
-   .. grid-item-card:: Trajectories
-      :link: ../code/PQAnalysis.traj
-      :link-type: doc
-
-      Engine formats, trajectory containers and high-level operations.
-
-   .. grid-item-card:: Atomic systems
-      :link: ../code/PQAnalysis.atomic_system
-      :link-type: doc
-
-      Atomic coordinates, cells and topology-bearing systems.
-
-   .. grid-item-card:: Topology and selection
-      :link: ../code/PQAnalysis.topology
-      :link-type: doc
-
-      Selections, residues, bonded topology and SHAKE definitions.
-
-   .. grid-item-card:: Complete package index
-      :link: ../code/PQAnalysis
-      :link-type: doc
-
-      Every generated module, class, function and exception.
-
-Use the curated analysis guides for physical conventions and the generated
-reference for signatures and implementation-level details.
+Use the analysis guides for physical conventions and the generated reference
+for signatures and implementation details.

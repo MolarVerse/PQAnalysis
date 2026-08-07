@@ -71,29 +71,8 @@ requested explicitly with ``--mode o``.
 Next steps
 ----------
 
-.. grid:: 1 2 2 2
-   :gutter: 2
-
-   .. grid-item-card:: Select an analysis
-      :link: analyses/index
-      :link-type: doc
-
-      Compare structural, transport, spectral and diagnostic calculations.
-
-   .. grid-item-card:: Input and data
-      :link: data/index
-      :link-type: doc
-
-      Learn the input grammar, trajectory conventions and output formats.
-
-   .. grid-item-card:: Command reference
-      :link: reference/cli
-      :link-type: doc
-
-      Inspect every command, positional argument and optional flag.
-
-   .. grid-item-card:: Python API
-      :link: reference/api
-      :link-type: doc
-
-      Integrate analyses and readers into Python workflows.
+* :doc:`analyses/index` compares the physical observables and required data.
+* :doc:`data/index` defines input grammar, trajectory conventions and table
+  formats.
+* :doc:`reference/cli` lists commands and options.
+* :doc:`reference/api` identifies the Python analysis and I/O entry points.
