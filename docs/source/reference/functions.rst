@@ -3,10 +3,10 @@
 Function Index
 ==============
 
-This page lists the callable Python interfaces intended for direct use. The
-analysis wrappers accept the same input files as their command-line
-counterparts. Lower-level numerical functions operate on arrays or PQAnalysis
-objects and do not parse command-line arguments.
+Callable Python interfaces are grouped below by task. Analysis wrappers accept
+the same input files as their command-line counterparts. Lower-level numerical
+functions operate on arrays or PQAnalysis objects and do not parse command-line
+arguments.
 
 Analysis workflows
 ------------------

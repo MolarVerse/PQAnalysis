@@ -56,6 +56,12 @@ img.plot-directive + figcaption {
     overflow-x: auto;
 }
 
+@media (max-width: 44rem), (max-height: 32rem) {
+    .back-to-top {
+        display: none;
+    }
+}
+
 @media (max-width: 44rem) {
     article table.autosummary,
     article table.pq-record-table {
