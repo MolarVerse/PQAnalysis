@@ -7,7 +7,7 @@ velocities and Hessians, then produces documented scientific tables for
 structural, transport and vibrational observables.
 
 :doc:`Get started <getting-started>` | :doc:`Choose an analysis <analyses/index>` |
-:doc:`Work with data <data/index>` | :doc:`Command reference <reference/cli>`
+:doc:`Python functions <reference/functions>` | :doc:`Develop PQAnalysis <developerGuide/developerGuide>`
 
 Quick start
 -----------
@@ -30,6 +30,7 @@ Analysis methods
 ----------------
 
 .. list-table:: Implemented observables
+   :class: pq-record-table pq-method-table
    :header-rows: 1
    :widths: 24 38 38
 
@@ -52,31 +53,47 @@ Analysis methods
      - Velocities and atomic masses
      - Frame-resolved total linear momentum
 
-Scientific output
------------------
+Python interface
+----------------
 
-Native analysis tables retain their established numeric layout and add a
-compact UTF-8 metadata header. Stable ASCII field names support scripts while
-Unicode symbols and units describe the physical quantities.
+The public analysis functions use the same validated input readers and
+scientific kernels as the command line:
 
-.. code-block:: text
+.. code-block:: python
 
-   # PQAnalysis: Radial distribution function
-   # FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
-   # SYMBOLS rᵢ g(rᵢ) N(rᵢ) g(rᵢ)ΔVᵢ Hᵢ−Eᵢ
-   # UNITS Å 1 1 Å³ pairs
-   0.5 0.0 0.0 0.0 -0.05026548245743666
+   from PQAnalysis.analysis import rdf, read_analysis_table
 
-See :ref:`analysisOutputFiles` for column definitions, normalization
-conventions and conversion behavior.
+   rdf("rdf.in", export_files=["rdf.csv"])
+   table = read_analysis_table("rdf.csv")
+
+The :doc:`function index <reference/functions>` exposes analysis workflows,
+numerical methods, scientific-table operations and simulation-file I/O without
+requiring navigation through the generated module tree.
+
+Development
+-----------
+
+New methods follow a documented path from estimator and validation evidence to
+the public API, CLI and schema-backed output. See
+:doc:`Adding an Analysis <developerGuide/adding-analysis>` for the complete
+implementation checklist and :doc:`Architecture <developerGuide/architecture>`
+for package ownership boundaries.
 
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Documentation
+   :caption: Use PQAnalysis
 
    getting-started
    analyses/index
-   data/index
-   reference/index
-   Development <developerGuide/developerGuide>
+   Python Functions <reference/functions>
+   Command Line <reference/cli>
+   Files and Formats <data/index>
+   Package Reference <reference/api>
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Develop PQAnalysis
+
+   developerGuide/developerGuide

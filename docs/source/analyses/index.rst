@@ -10,6 +10,7 @@ Choose by input data
 --------------------
 
 .. list-table:: Analysis inputs and primary observables
+   :class: pq-record-table pq-observable-table
    :header-rows: 1
    :widths: 24 32 44
 
@@ -34,7 +35,8 @@ Choose by input data
 
 The method pages define each estimator, its assumptions and its interpretation
 limits. File columns and units are specified once in
-:ref:`analysisOutputFiles`.
+:ref:`analysisOutputFiles`. Programmatic entry points are listed in the
+:doc:`../reference/functions`.
 
 .. toctree::
    :hidden:

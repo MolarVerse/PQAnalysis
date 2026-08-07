@@ -1,5 +1,5 @@
-Data and Conversion
-===================
+Files and Formats
+=================
 
 PQAnalysis separates simulation data, analysis configuration and output-table
 serialization. File extensions select output formats, while input content and
