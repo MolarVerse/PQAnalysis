@@ -45,9 +45,9 @@ dev = [
 ]
 docs = [
     "furo>=2024.8.6,<2027",
+    "matplotlib>=3.9,<4",
     "sphinx>=8,<9",
     "sphinx-copybutton>=0.5,<1",
-    "sphinx-design>=0.6,<1",
     "sphinx-sitemap",
     "breathe",
     "myst-parser",
