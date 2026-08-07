@@ -44,9 +44,11 @@ dev = [
     "yapf",
 ]
 docs = [
-    "sphinx>=7,<9",
+    "furo>=2024.8.6,<2027",
+    "sphinx>=8,<9",
+    "sphinx-copybutton>=0.5,<1",
+    "sphinx-design>=0.6,<1",
     "sphinx-sitemap",
-    "sphinx-rtd-theme",
     "breathe",
     "myst-parser",
     "better-apidoc",
@@ -95,4 +97,6 @@ gen2xyz = "PQAnalysis.cli.gen2xyz:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
+"Documentation" = "https://molarverse.github.io/PQAnalysis/"
+"Repository" = "https://github.com/MolarVerse/PQAnalysis"
 "PQ" = "https://github.com/MolarVerse/PQ"
