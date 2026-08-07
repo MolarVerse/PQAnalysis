@@ -5,7 +5,7 @@ PQAnalysis separates simulation data, analysis configuration and output-table
 serialization. File extensions select output formats, while input content and
 explicit engine options determine how trajectories are read.
 
-This section covers four interfaces:
+Four file contracts govern analysis workflows:
 
 * :ref:`inputFile` defines the key-value grammar.
 * :ref:`analysisOutputFiles` defines table fields, symbols and units.
