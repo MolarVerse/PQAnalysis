@@ -62,7 +62,7 @@ def write_restart_file(
     mode: FileWritingMode | str = 'w'
 ) -> None:
     """
-    API function for reading a restart file.
+    Write an atomic system to a restart file.
 
     Parameters
     ----------

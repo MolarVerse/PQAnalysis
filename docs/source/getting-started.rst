@@ -72,7 +72,9 @@ Next steps
 ----------
 
 * :doc:`analyses/index` compares the physical observables and required data.
-* :doc:`data/index` defines input grammar, trajectory conventions and table
-  formats.
+* :doc:`reference/functions` lists public Python workflows and numerical
+  functions.
 * :doc:`reference/cli` lists commands and options.
 * :doc:`reference/api` identifies the Python analysis and I/O entry points.
+* :doc:`developerGuide/developerGuide` documents architecture, extension and
+  validation.
