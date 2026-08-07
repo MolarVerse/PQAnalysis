@@ -6,6 +6,15 @@ eigenvectors define normal modes and its eigenvalues determine signed
 wavenumbers. Negative wavenumbers represent imaginary modes associated with
 negative curvature of the potential-energy surface.
 
+Internal-mode spectrum
+----------------------
+
+.. plot:: _plots/vibrations.py
+   :alt: Infrared stick spectrum for the water validation fixture
+   :caption: IR stick spectrum calculated by PQAnalysis from the bundled H₂O
+      structure, Hessian and partial-charge fixtures. Only internal modes above
+      100 cm⁻¹ are shown; translational and rotational modes are omitted.
+
 Minimal input
 -------------
 

@@ -15,6 +15,15 @@ static or time-dependent partial charges are supplied, it correlates
 :math:`q_i\mathbf{v}_i` instead, producing a charge-flux spectrum that
 approximates an infrared spectrum.
 
+Correlation and spectrum
+------------------------
+
+.. plot:: _plots/vacf.py
+   :alt: Velocity autocorrelation function and its Hann-window spectrum
+   :caption: Bundled VACF validation fixture and its Hann-window cosine
+      transform. Spectrum amplitudes are reported in arbitrary units; the
+      displayed range is limited to 4000 cm⁻¹.
+
 Minimal input
 -------------
 
