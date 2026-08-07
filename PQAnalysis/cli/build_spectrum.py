@@ -25,6 +25,9 @@ stick position and no area normalization is applied. The default
 Gaussian exponent alpha of 0.0025 cm^-2 corresponds to a full width
 at half maximum of about 33.3 cm^-1. Alternatively, the width can be
 given directly as a full width at half maximum via --fwhm.
+
+The output contains the wavenumber grid and broadened intensity,
+in that order.
 """
 
 __epilog__ = "\n"
@@ -34,6 +37,10 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 __doc__ += __outputdoc__
+__doc__ += (
+    "\nFor column definitions and units see "
+    ":ref:`broadened-spectrum output <analysis-output-spectrum>`.\n"
+)
 
 
 
@@ -66,6 +73,7 @@ class BuildSpectrumCLI(CLIBase):
             The parser to which the arguments should be added.
         """
         parser.parse_output_file()
+        parser.parse_export_files()
 
         parser.add_argument(
             'input_file',
@@ -147,17 +155,21 @@ class BuildSpectrumCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        build_spectrum(
-            input_file=args.input_file,
-            output=args.output,
-            alpha=args.alpha,
-            fwhm=args.fwhm,
-            wavenumber_min=args.wavenumber_min,
-            wavenumber_max=args.wavenumber_max,
-            wavenumber_step=args.wavenumber_step,
-            kernel='lorentzian' if args.lorentzian else 'gaussian',
-            mode=args.mode,
-        )
+        kwargs = {
+            'input_file': args.input_file,
+            'output': args.output,
+            'alpha': args.alpha,
+            'fwhm': args.fwhm,
+            'wavenumber_min': args.wavenumber_min,
+            'wavenumber_max': args.wavenumber_max,
+            'wavenumber_step': args.wavenumber_step,
+            'kernel': 'lorentzian' if args.lorentzian else 'gaussian',
+            'mode': args.mode,
+        }
+        if args.export_files is not None:
+            kwargs['export_files'] = args.export_files
+
+        build_spectrum(**kwargs)
 
 
 

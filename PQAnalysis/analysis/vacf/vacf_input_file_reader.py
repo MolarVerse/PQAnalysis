@@ -316,10 +316,9 @@ For the VACF analysis input file several keys are available of which some are re
 
 Note
 ----
-The VACF output file follows the legacy FreqCalc format: one row per
-lag with the columns lag time in ps and normalized VACF. The spectrum
-output file follows the legacy ft.f format: one row per frequency
-index with the columns wavenumber in cm^-1 and amplitude.
+The output files follow the legacy FreqCalc and ft.f formats. See
+:ref:`VACF output files <analysis-output-vacf>` for the columns and units
+of the correlation, spectrum and optional windowed-correlation files.
 
 """
 

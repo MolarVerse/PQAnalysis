@@ -4,19 +4,25 @@ A module containing the classes for writing related to an
 """
 
 # 3rd party imports
-from beartype.typing import Tuple
+from beartype.typing import Sequence, Tuple
 
 # local imports
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.analysis._output_header import format_output_header
+from PQAnalysis.analysis.output import (
+    AnalysisDataWriter,
+    AnalysisTable,
+    MSD_SCHEMA,
+)
 
 from .msd import MSD
 
 
 
-class MSDDataWriter(BaseWriter):
+class MSDDataWriter(AnalysisDataWriter):
 
     """
     Class for writing the data of an
@@ -28,25 +34,33 @@ class MSDDataWriter(BaseWriter):
     MSD in y and MSD in z (all in Angstrom^2).
     """
 
+    schema = MSD_SCHEMA
+    header = format_output_header(schema.title, schema.header_columns)
+
     @runtime_type_checking
-    def __init__(self, filename: str) -> None:
+    def __init__(
+        self,
+        filename: str,
+        export_files: Sequence[str] | None = None,
+    ) -> None:
         """
         Parameters
         ----------
         filename : str
-            the filename to write to
+            The primary output filename. Its extension selects the format.
+        export_files : Sequence[str] | None, optional
+            Additional output filenames, by default None.
         """
-        self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, export_files=export_files)
 
     @runtime_type_checking
     def write(
         self,
         data: Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]
+                    Np1DNumberArray,
+                    Np1DNumberArray,
+                    Np1DNumberArray,
+                    Np1DNumberArray]
     ):
         """
         Writes the data to the file.
@@ -57,20 +71,25 @@ class MSDDataWriter(BaseWriter):
             Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
             the data output from the MSD.run() method
         """
-        super().open()
-
         lags, msd_x, msd_y, msd_z, _ = data
+        table = AnalysisTable.from_columns(
+            self.schema,
+            (lags, msd_x, msd_y, msd_z),
+        )
 
-        for i, lag in enumerate(lags):
-            print(
-                (
-                    f"{int(lag):8d}    {msd_x[i]:12.8f}   "
-                    f"{msd_y[i]:12.8f}   {msd_z[i]:12.8f}"
-                ),
-                file=self.file
-            )
+        def write_native(file):
+            print(self.header, file=file)
 
-        super().close()
+            for i, lag in enumerate(lags):
+                print(
+                    (
+                        f"{int(lag):8d}    {msd_x[i]:12.8f}   "
+                        f"{msd_y[i]:12.8f}   {msd_z[i]:12.8f}"
+                    ),
+                    file=file
+                )
+
+        self.write_table(table, write_native)
 
 
 
@@ -131,11 +150,7 @@ class MSDLogWriter(BaseWriter):
         print(f"    Number of atoms:  {msd.n_atoms}", file=self.file)
         print(file=self.file)
 
-        print(
-            "    Target selection:",
-            msd.target_selection,
-            file=self.file
-        )
+        print("    Target selection:", msd.target_selection, file=self.file)
         print(
             "    total number of atoms in target selection:",
             len(msd.target_indices),
@@ -144,10 +159,7 @@ class MSDLogWriter(BaseWriter):
         print(file=self.file)
 
         if msd.time_step is not None:
-            print(
-                f"    Time step:  {msd.time_step} ps",
-                file=self.file
-            )
+            print(f"    Time step:  {msd.time_step} ps", file=self.file)
             print(
                 f"    Fit window: last {msd.fit_window} points",
                 file=self.file
@@ -182,8 +194,10 @@ class MSDLogWriter(BaseWriter):
         super().open()
 
         if msd.fit_results is not None:
-            print("    Diffusion coefficients (Einstein relation):",
-                file=self.file)
+            print(
+                "    Diffusion coefficients (Einstein relation):",
+                file=self.file
+            )
             print(file=self.file)
 
             for label in ("x", "y", "z", "total"):

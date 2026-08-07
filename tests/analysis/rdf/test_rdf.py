@@ -219,7 +219,8 @@ def test__integration():
 
 
 
-def test__norm():
+@pytest.mark.parametrize("r_min", [0.0, 3.0])
+def test__norm(r_min):
     n_bins = 5
     n_frames = 10
     n_reference_indices = 3
@@ -231,17 +232,48 @@ def test__norm():
         delta_r,
         target_density,
         n_reference_indices,
-        n_frames
+        n_frames,
+        r_min,
     )
 
-    help_1 = np.arange(0, n_bins)
-    help_2 = np.arange(1, n_bins + 1)
-    norm_ref = (help_2**3 - help_1**3) * delta_r**3 * 4 / 3 * np.pi
+    inner_radii = r_min + np.arange(n_bins) * delta_r
+    outer_radii = inner_radii + delta_r
+    norm_ref = (outer_radii**3 - inner_radii**3) * 4 / 3 * np.pi
 
     assert np.allclose(
         norm,
         norm_ref * target_density * n_reference_indices * n_frames
     )
+
+
+
+def test_run_normalizes_shells_from_nonzero_r_min():
+    cell = Cell(10.0, 10.0, 10.0)
+    trajectory = Trajectory([
+        AtomicSystem(
+            atoms=[Atom("H"), Atom("O")],
+            pos=np.array([[0.0, 0.0, 0.0], [1.5, 0.0, 0.0]]),
+            cell=cell,
+        )
+    ])
+
+    centers, rdf_values, coordination, shell_population, residual = RDF(
+        trajectory,
+        "H",
+        "O",
+        n_bins=1,
+        delta_r=1.0,
+        r_min=1.0,
+    ).run()
+
+    shell_volume = 4.0 / 3.0 * np.pi * (2.0**3 - 1.0**3)
+    expected_count = shell_volume / cell.volume
+
+    assert np.allclose(centers, [1.5])
+    assert np.allclose(rdf_values, [1.0 / expected_count])
+    assert np.allclose(coordination, [1.0])
+    assert np.allclose(shell_population, [cell.volume])
+    assert np.allclose(residual, [1.0 - expected_count])
 
 
 

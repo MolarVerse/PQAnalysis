@@ -73,8 +73,12 @@ class TestMSDDataWriter:
 
         writer.write(data)
 
-        # exactly the legacy Diffcalc output format
+        # the numeric rows preserve the legacy Diffcalc output format
         assert out_file.read_text(encoding="utf-8") == (
+            "# PQAnalysis: Mean squared displacement\n"
+            "# FIELDS lag msd_x msd_y msd_z\n"
+            "# SYMBOLS k ⟨Δx(k)²⟩ ⟨Δy(k)²⟩ ⟨Δz(k)²⟩\n"
+            "# UNITS frames Å² Å² Å²\n"
             "       0      0.00000000     0.00000000     0.00000000\n"
             "       1      0.08081983     0.09092513     0.09018468\n"
         )
