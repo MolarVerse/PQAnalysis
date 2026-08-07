@@ -75,9 +75,13 @@ by the field identifier in the tables below.
 XVG and xmgrace
 ===============
 
-XVG files contain Grace ``@`` directives and one or more XY data sets. They can
-be opened directly with ``xmgrace rdf.xvg``; PQAnalysis does not launch the GUI
-itself. The default quick plots are:
+XVG files contain Grace ``@`` directives and standard XY data-set blocks. They
+can be opened directly with ``xmgrace rdf.xvg``; PQAnalysis does not launch the
+GUI itself. Each original analysis-table column is stored as one Grace data set
+with the selected x axis. Columns outside the selected quick plot are retained
+as hidden Grace sets. PQAnalysis metadata records the original schema and plot
+projection, making its XVG output fully convertible back to native, CSV, TSV or
+XVG without losing analysis columns. The default quick plots are:
 
 .. list-table:: Default XVG plots
    :header-rows: 1
@@ -130,8 +134,8 @@ main correlation table. The configured ``spectrum_file`` and
 Converting existing output
 ==========================
 
-The converter reads native, CSV or TSV analysis tables and can create several
-outputs in one command:
+The converter reads native, CSV, TSV or PQAnalysis-generated XVG analysis
+tables and can create several outputs in one command:
 
 .. code-block:: console
 
@@ -140,11 +144,24 @@ outputs in one command:
        -o rdf.tsv \
        -o rdf.xvg
 
+The conversion also works in the other direction:
+
+.. code-block:: console
+
+   $ pqanalysis convert rdf.xvg \
+       -o rdf.out \
+       -o rdf.csv
+
 Input format is detected from the file content rather than its extension, so a
-CSV table named ``table.dat`` can still be converted. Exact ``FIELDS`` headers
-restore the known scientific schema and XVG plot preset. ``--x FIELD`` and
-repeatable ``--y FIELD`` options override the default XVG projection. Input and
-output paths, and all output paths, must be distinct.
+CSV table named ``table.dat`` or an XVG table named ``table.out`` can still be
+converted. Exact ``FIELDS`` headers restore the known scientific schema and XVG
+plot preset. ``--x FIELD`` and repeatable ``--y FIELD`` options override the
+default XVG projection without removing unplotted data from the XVG file. Input
+and output paths, and all output paths, must be distinct.
+
+By default, conversion stops with an error naming the existing file if any
+output path already exists. No requested output is written in that case. Use
+``--mode o`` only to request replacement explicitly.
 
 .. _analysis-output-rdf:
 

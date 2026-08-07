@@ -10,9 +10,9 @@ from ._cli_base import CLIBase
 
 __outputdoc__ = """
 
-Convert a native PQAnalysis, CSV or TSV analysis table into one or
-more output files. The output extension selects CSV, TSV, XVG or the
-native self-describing text format.
+Convert a native PQAnalysis, CSV, TSV or PQAnalysis XVG analysis table
+into one or more output files. The output extension selects CSV, TSV,
+XVG or the native self-describing text format.
 """
 
 __epilog__ = "\n"
