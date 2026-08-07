@@ -101,3 +101,29 @@ class TestCheckMomentumCLI:
                 "mode": FileWritingMode("w"),
             }
         ]
+
+    def test_main_dispatches_repeated_exports(self, monkeypatch):
+        called = []
+        monkeypatch.setattr(
+            check_momentum_cli,
+            "check_momentum",
+            lambda **kwargs: called.append(kwargs),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "check_momentum",
+                "run-01.vel",
+                "--export",
+                "momentum.tsv",
+                "--export",
+                "momentum.xvg",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        check_momentum_cli.main()
+
+        assert called[0]["export_files"] == ["momentum.tsv", "momentum.xvg"]

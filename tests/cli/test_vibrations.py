@@ -35,3 +35,36 @@ class TestVibrationsCLI:
         vibrations_cli.main()
 
         assert called == ["input.in"]
+
+    def test_main_dispatches_repeated_exports(self, monkeypatch):
+        called = []
+        monkeypatch.setattr(
+            vibrations_cli,
+            "vibrations",
+            lambda input_file, **kwargs: called.append((input_file, kwargs)),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "vibrations",
+                "input.in",
+                "--export",
+                "vibrations.csv",
+                "--export",
+                "vibrations.xvg",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        vibrations_cli.main()
+
+        assert called == [
+            (
+                "input.in",
+                {
+                    "export_files": ["vibrations.csv", "vibrations.xvg"]
+                },
+            )
+        ]

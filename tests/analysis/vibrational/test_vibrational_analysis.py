@@ -284,13 +284,26 @@ class TestVibrationalAnalysis:
 
         write_calculate_output(result)
 
-        assert capsys.readouterr(
-        ).out.startswith("# Wavenumbers (cm-1)  Force constants")
+        assert capsys.readouterr().out.splitlines()[:4] == [
+            "# PQAnalysis: Vibrational analysis",
+            "# FIELDS wavenumber force_constant reduced_mass",
+            "# SYMBOLS ν̃ⱼ kⱼ μⱼ",
+            "# UNITS cm⁻¹ mdyn·Å⁻¹ amu",
+        ]
 
     def test_write_normal_modes_stdout(self, capsys):
         write_normal_modes(np.eye(2))
 
-        assert capsys.readouterr().out.splitlines()[0] == "1.0 0.0"
+        assert capsys.readouterr().out.splitlines()[:8] == [
+            "# PQAnalysis: Normal-mode matrix",
+            "# ELEMENT e(α,j)",
+            "# ROWS α=x₁,y₁,z₁,…",
+            "# FIELDS mode_1 mode_2",
+            "# SYMBOLS e(α,1) e(α,2)",
+            "# UNITS 1 1",
+            "1.0 0.0",
+            "0.0 1.0",
+        ]
 
     def test_write_xyz_modes(self, tmpdir):  # pylint: disable=unused-argument
         normal_modes = np.eye(6)

@@ -210,9 +210,8 @@ For the MSD analysis input file several keys are available of which some are req
 
 Note
 ----
-The MSD output file follows the legacy Diffcalc format: one row per
-lag index with the columns lag index, MSD in x, MSD in y and MSD in z
-(all in Angstrom^2).
+The MSD output file follows the legacy Diffcalc format. See
+:ref:`MSD output files <analysis-output-msd>` for its columns and units.
 
 """
 

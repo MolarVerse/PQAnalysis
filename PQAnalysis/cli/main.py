@@ -10,6 +10,7 @@ from .build_nep_traj import BuildNEPTrajCLI
 from .build_spectrum import BuildSpectrumCLI
 from .check_momentum import CheckMomentumCLI
 from .continue_input import ContinueInputCLI
+from .convert import ConvertCLI
 from .gen2xyz import GEN2XYZCLI
 from .msd import MSDCLI
 from .rdf import RDFCLI
@@ -49,6 +50,7 @@ def main():
         BuildSpectrumCLI.program_name(): BuildSpectrumCLI,
         CheckMomentumCLI.program_name(): CheckMomentumCLI,
         ContinueInputCLI.program_name(): ContinueInputCLI,
+        ConvertCLI.program_name(): ConvertCLI,
         GEN2XYZCLI.program_name(): GEN2XYZCLI,
         MSDCLI.program_name(): MSDCLI,
         RDFCLI.program_name(): RDFCLI,

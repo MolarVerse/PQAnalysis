@@ -4,7 +4,7 @@ API functions for spectrum broadening.
 
 from numbers import Real
 
-from beartype.typing import Tuple
+from beartype.typing import Sequence, Tuple
 
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
@@ -36,6 +36,7 @@ def build_spectrum(
     wavenumber_step: PositiveReal = DEFAULT_WAVENUMBER_STEP,
     kernel: str = "gaussian",
     mode: str | FileWritingMode = "w",
+    export_files: Sequence[str] | None = None,
 ) -> Tuple[Np1DNumberArray, Np1DNumberArray]:
     """
     Broaden a two-column stick spectrum file and write the result.
@@ -72,6 +73,9 @@ def build_spectrum(
         by default ``gaussian``.
     mode : str | FileWritingMode, optional
         The writing mode of the output file, by default "w".
+    export_files : Sequence[str] | None, optional
+        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
+        those formats; other extensions use native PQAnalysis text.
 
     Returns
     -------
@@ -108,6 +112,10 @@ def build_spectrum(
         kernel=kernel,
     )
 
-    SpectrumDataWriter(output, mode=mode).write((grid, broadened))
+    SpectrumDataWriter(
+        output,
+        mode=mode,
+        export_files=export_files,
+    ).write((grid, broadened))
 
     return grid, broadened

@@ -2,14 +2,21 @@
 Numerical routines and file writers for vibrational analysis.
 """
 
-from contextlib import contextmanager
+from collections.abc import Sequence
 from dataclasses import dataclass
-import sys
 from pathlib import Path
 
 import numpy as np
 
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.analysis._output_header import format_output_header
+from PQAnalysis.analysis.output import (
+    AnalysisDataWriter,
+    AnalysisTable,
+    VIBRATIONAL_IR_SCHEMA,
+    VIBRATIONAL_SCHEMA,
+    normal_mode_schema,
+)
 
 from .exceptions import VibrationalAnalysisError
 
@@ -18,20 +25,6 @@ SPEED_OF_LIGHT_CM_S = 2.99792458e10
 BOLTZMANN_EV_K = 8.617333262145e-5
 WAVENUMBER_TO_EV = 1.2398419843320026e-4
 MODE_THRESHOLD_CM = 1.0e-8
-
-
-
-@contextmanager
-def _output_stream(filename: str | None):
-    """
-    Open a named output file or yield stdout.
-    """
-    if filename is None:
-        yield sys.stdout
-        return
-
-    with open(filename, "w", encoding="utf-8") as file:
-        yield file
 
 
 
@@ -537,16 +530,36 @@ def infrared_intensity(
 def write_calculate_output(
     result: VibrationalAnalysisResult,
     filename: str | None = None,
+    export_files: Sequence[str] | None = None,
 ) -> None:
     """
     Write the tabular vibrational analysis output.
+
+    Parameters
+    ----------
+    result : VibrationalAnalysisResult
+        Calculated wavenumbers, force constants, reduced masses and optional
+        IR intensities.
+    filename : str | None, optional
+        Primary output filename, or None for stdout.
+    export_files : Sequence[str] | None, optional
+        Additional output filenames, by default None.
     """
-    with _output_stream(filename) as file:
-        if result.intensities is None:
+    if result.intensities is None:
+        schema = VIBRATIONAL_SCHEMA
+        table = AnalysisTable.from_columns(
+            schema,
+            (
+                result.wavenumbers,
+                result.force_constants,
+                result.reduced_masses,
+            ),
+        )
+
+        def write_native(file):
             print(
-                "# Wavenumbers (cm-1)  Force constants (mdyn A^-1)  "
-                "Reduced masses (amu)",
-                file=file,
+                format_output_header(schema.title, schema.header_columns),
+                file=file
             )
             for wavenumber_value, force_const, reduced_mass_value in zip(
                 result.wavenumbers,
@@ -559,11 +572,22 @@ def write_calculate_output(
                     f"{reduced_mass_value:<8.8e}",
                     file=file,
                 )
-        else:
+    else:
+        schema = VIBRATIONAL_IR_SCHEMA
+        table = AnalysisTable.from_columns(
+            schema,
+            (
+                result.wavenumbers,
+                result.intensities,
+                result.force_constants,
+                result.reduced_masses,
+            ),
+        )
+
+        def write_native(file):
             print(
-                "# Wavenumbers (cm-1)  Intensities (km mol-1)  "
-                "Force constants (mdyn A^-1)  Reduced masses (amu)",
-                file=file,
+                format_output_header(schema.title, schema.header_columns),
+                file=file
             )
             for (
                 wavenumber_value,
@@ -584,18 +608,54 @@ def write_calculate_output(
                     file=file,
                 )
 
+    writer = AnalysisDataWriter(filename, export_files=export_files)
+    writer.write_table(table, write_native)
+
 
 
 def write_normal_modes(
     normal_modes: np.ndarray,
     filename: str | None = None,
+    export_files: Sequence[str] | None = None,
 ) -> None:
     """
-    Write normal modes in matrix form.
+    Write normal modes in matrix form with one labeled column per mode.
+
+    Parameters
+    ----------
+    normal_modes : numpy.ndarray
+        Matrix with Cartesian components in rows and modes in columns.
+    filename : str | None, optional
+        Primary output filename, or None for stdout.
+    export_files : Sequence[str] | None, optional
+        Additional output filenames, by default None.
     """
-    with _output_stream(filename) as file:
+    schema = normal_mode_schema(normal_modes.shape[1])
+    table = AnalysisTable(schema=schema, data=normal_modes)
+
+    def write_native(file):
+        mode_labels = " ".join(
+            f"mode_{index}" for index in range(1, normal_modes.shape[1] + 1)
+        )
+        mode_symbols = " ".join(
+            f"e(α,{index})" for index in range(1, normal_modes.shape[1] + 1)
+        )
+        units = " ".join("1" for _ in range(normal_modes.shape[1]))
+        print(
+            "# PQAnalysis: Normal-mode matrix\n"
+            "# ELEMENT e(α,j)\n"
+            "# ROWS α=x₁,y₁,z₁,…\n"
+            f"# FIELDS {mode_labels}\n"
+            f"# SYMBOLS {mode_symbols}\n"
+            f"# UNITS {units}",
+            file=file,
+        )
+
         for row in normal_modes:
             print(" ".join(str(value) for value in row), file=file)
+
+    writer = AnalysisDataWriter(filename, export_files=export_files)
+    writer.write_table(table, write_native)
 
 
 

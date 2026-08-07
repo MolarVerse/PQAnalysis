@@ -24,6 +24,10 @@ the legacy cosine-transform spectrum of the VACF is
 calculated. This is an input file based tool, so that
 the input file can be used to specify the parameters
 of the VACF calculation.
+
+The primary data file contains lag time and normalized correlation.
+Optional files contain the wavenumber spectrum and the windowed
+correlation used to calculate it.
 """
 
 __epilog__ = "\n"
@@ -38,6 +42,10 @@ __doc__ += "VACF analysis and its input file options "
 __doc__ += "please visit "
 __doc__ += ":py:class:`PQAnalysis.analysis.vacf.vacf.VACF` "
 __doc__ += "and :py:mod:`PQAnalysis.analysis.vacf.vacf_input_file_reader`\n"
+__doc__ += (
+    "For column definitions and units see "
+    ":ref:`VACF output files <analysis-output-vacf>`.\n"
+)
 __doc__ += input_keys_documentation
 
 
@@ -72,6 +80,7 @@ class VACFCLI(CLIBase):
         """
         parser.parse_input_file()
         parser.parse_engine()
+        parser.parse_export_files()
 
     @classmethod
     def run(cls, args):
@@ -83,7 +92,11 @@ class VACFCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        vacf(args.input_file, args.engine)
+        export_kwargs = {}
+        if args.export_files is not None:
+            export_kwargs['export_files'] = args.export_files
+
+        vacf(args.input_file, args.engine, **export_kwargs)
 
 
 

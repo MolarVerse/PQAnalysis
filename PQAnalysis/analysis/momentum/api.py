@@ -2,7 +2,7 @@
 API functions for the momentum analysis.
 """
 
-from beartype.typing import List
+from beartype.typing import List, Sequence
 
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.io.formats import FileWritingMode
@@ -25,6 +25,7 @@ def check_momentum(
     scale: PositiveReal | None = None,
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     mode: str | FileWritingMode = "w",
+    export_files: Sequence[str] | None = None,
 ) -> Np1DNumberArray:
     """
     Calculate the total linear momentum norm per frame and write it.
@@ -59,6 +60,9 @@ def check_momentum(
         'X' atom.
     mode : str | FileWritingMode, optional
         The writing mode of the output file, by default "w".
+    export_files : Sequence[str] | None, optional
+        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
+        those formats; other extensions use native PQAnalysis text.
 
     Returns
     -------
@@ -75,7 +79,11 @@ def check_momentum(
         scale=scale,
     )
 
-    data_writer = MomentumDataWriter(output, mode=mode)
+    data_writer = MomentumDataWriter(
+        output,
+        mode=mode,
+        export_files=export_files,
+    )
 
     momentum_norms = momentum.run()
 

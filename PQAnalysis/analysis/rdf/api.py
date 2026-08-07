@@ -2,6 +2,8 @@
 This module provides API functions for the radial distribution function (RDF) analysis.
 """
 
+from beartype.typing import Sequence
+
 from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
@@ -14,7 +16,11 @@ from .rdf_output_file_writer import RDFDataWriter, RDFLogWriter
 
 
 @runtime_type_checking
-def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
+def rdf(
+    input_file: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    export_files: Sequence[str] | None = None,
+):
     """
     Calculates the radial distribution function (RDF) using a given input file.
 
@@ -34,6 +40,9 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         the format of the input trajectory. Default is "PQ".
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
+    export_files : Sequence[str] | None, optional
+        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
+        those formats; other extensions use native PQAnalysis text.
     """
 
     md_format = MDEngineFormat(md_format)
@@ -64,9 +73,7 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         )
 
     traj_reader = TrajectoryReader(
-        input_reader.traj_files,
-        md_format=md_format,
-        topology=topology
+        input_reader.traj_files, md_format=md_format, topology=topology
     )
 
     _rdf = RDF(
@@ -81,7 +88,10 @@ def rdf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         r_min=input_reader.r_min,
     )
 
-    data_writer = RDFDataWriter(input_reader.out_file)
+    data_writer = RDFDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
     log_writer = RDFLogWriter(input_reader.log_file)
     log_writer.write_before_run(_rdf)
 

@@ -134,6 +134,25 @@ class _ArgumentParser(argparse.ArgumentParser):
             'The output file. If not specified, the output is printed to stdout.'
         )
 
+    def parse_export_files(self):
+        """
+        Add a repeatable option for additional analysis-table exports.
+
+        The output format is selected from the filename extension.
+        """
+        super().add_argument(
+            '--export',
+            dest='export_files',
+            action='append',
+            default=None,
+            metavar='FILE',
+            help=(
+                'Write an additional analysis table. Repeat for multiple '
+                'outputs. The .csv, .tsv and .xvg extensions select those '
+                'formats; other extensions use native PQAnalysis text.'
+            ),
+        )
+
     def parse_engine(self):
         """
         The parse_engine method adds the engine argument to the parser.
