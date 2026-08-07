@@ -59,13 +59,18 @@ class VibrationsCLI(CLIBase):
         Adds the arguments to the parser.
         """
         parser.parse_input_file()
+        parser.parse_export_files()
 
     @classmethod
     def run(cls, args) -> None:
         """
         Runs the command line tool.
         """
-        vibrations(args.input_file)
+        export_kwargs = {}
+        if args.export_files is not None:
+            export_kwargs['export_files'] = args.export_files
+
+        vibrations(args.input_file, **export_kwargs)
 
 
 

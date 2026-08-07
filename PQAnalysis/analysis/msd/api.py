@@ -2,6 +2,8 @@
 This module provides API functions for the mean square displacement (MSD) analysis.
 """
 
+from beartype.typing import Sequence
+
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
@@ -13,7 +15,11 @@ from .msd_output_file_writer import MSDDataWriter, MSDLogWriter
 
 
 @runtime_type_checking
-def msd(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
+def msd(
+    input_file: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    export_files: Sequence[str] | None = None,
+):
     """
     Calculates the mean square displacement (MSD) using a given input file.
 
@@ -33,6 +39,9 @@ def msd(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         the format of the input trajectory. Default is "PQ".
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
+    export_files : Sequence[str] | None, optional
+        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
+        those formats; other extensions use native PQAnalysis text.
     """
 
     md_format = MDEngineFormat(md_format)
@@ -41,8 +50,7 @@ def msd(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     input_reader.read()
 
     traj_reader = TrajectoryReader(
-        input_reader.traj_files,
-        md_format=md_format
+        input_reader.traj_files, md_format=md_format
     )
 
     _msd = MSD(
@@ -56,7 +64,10 @@ def msd(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         fit_window=input_reader.fit_window,
     )
 
-    data_writer = MSDDataWriter(input_reader.out_file)
+    data_writer = MSDDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
     log_writer = MSDLogWriter(input_reader.log_file)
     log_writer.write_before_run(_msd)
 

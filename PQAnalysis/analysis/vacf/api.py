@@ -4,6 +4,7 @@ function (VACF) analysis.
 """
 
 import numpy as np
+from beartype.typing import Sequence
 
 from PQAnalysis.io import TrajectoryReader
 from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
@@ -111,7 +112,11 @@ def read_static_charges(
 
 
 @runtime_type_checking
-def vacf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
+def vacf(
+    input_file: str,
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    export_files: Sequence[str] | None = None,
+):
     """
     Calculates the velocity auto-correlation function (VACF) using a
     given input file.
@@ -136,6 +141,10 @@ def vacf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
         the format of the input trajectory. Default is "PQ".
         For more information on the supported formats please visit
         :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.
+    export_files : Sequence[str] | None, optional
+        Additional outputs for the main correlation table. ``.csv``,
+        ``.tsv`` and ``.xvg`` select those formats; other extensions use
+        native PQAnalysis text.
     """
 
     md_format = MDEngineFormat(md_format)
@@ -144,8 +153,7 @@ def vacf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
     input_reader.read()
 
     traj_reader = TrajectoryReader(
-        input_reader.traj_files,
-        md_format=md_format
+        input_reader.traj_files, md_format=md_format
     )
 
     charges = None
@@ -178,7 +186,10 @@ def vacf(input_file: str, md_format: MDEngineFormat | str = MDEngineFormat.PQ):
 
     # all output writers are constructed before the run so that a
     # pre-existing output file aborts before the expensive analysis
-    data_writer = VACFDataWriter(input_reader.out_file)
+    data_writer = VACFDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
     log_writer = VACFLogWriter(input_reader.log_file)
 
     spectrum_writer = None

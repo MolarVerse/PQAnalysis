@@ -75,6 +75,7 @@ class RDFCLI(CLIBase):
         """
         parser.parse_input_file()
         parser.parse_engine()
+        parser.parse_export_files()
 
     @classmethod
     def run(cls, args):
@@ -86,7 +87,11 @@ class RDFCLI(CLIBase):
         args : argparse.Namespace
             The arguments parsed by the parser.
         """
-        rdf(args.input_file, args.engine)
+        export_kwargs = {}
+        if args.export_files is not None:
+            export_kwargs['export_files'] = args.export_files
+
+        rdf(args.input_file, args.engine, **export_kwargs)
 
 
 
