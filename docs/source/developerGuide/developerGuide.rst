@@ -1,117 +1,124 @@
 .. _developerGuide:
 
-###############
-Developer Guide
-###############
+Development
+===========
 
-This section includes information for developers who want to contribute to the project. It includes information about the project structure, how to run the tests, and how to build the documentation. It also includes information about the project's coding style and how to contribute to the project.
+PQAnalysis integrates changes on ``dev`` and releases from ``main``. The guides
+define package boundaries, implementation contracts, validation evidence and
+release operations.
 
-*****************
-Coding Guidelines
-*****************
+Extension path
+--------------
 
-The project follows the `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_ coding style. The project uses `setuptools <https://setuptools.readthedocs.io/en/latest/>`_ for packaging and distribution. The project uses `Sphinx <http://www.sphinx-doc.org/en/master/>`_ for documentation. The project uses `pytest <https://docs.pytest.org/en/latest/>`_ for testing. The project uses `Gitflow <http://nvie.com/posts/a-successful-git-branching-model/>`_ for branching.
+.. list-table:: Analysis implementation path
+   :class: pq-record-table pq-extension-table
+   :header-rows: 1
+   :widths: 24 38 38
 
-In order to contribute to the project, it is important to follow the coding style and guidelines used by the project, therefore please read ALL of the following sections carefully.
+   * - Stage
+     - Primary location
+     - Contract
+   * - Scientific method
+     - ``PQAnalysis/analysis/<name>/``
+     - Estimator, normalization, units and result shape
+   * - Python interface
+     - ``PQAnalysis/analysis/<name>/api.py``
+     - Validated orchestration shared with the CLI
+   * - Command line
+     - ``PQAnalysis/cli/<name>.py``
+     - Arguments and dispatch, without duplicate computation
+   * - Scientific output
+     - ``PQAnalysis/analysis/_output_schemas.py``
+     - Stable fields, symbols, units and plot projection
+   * - Evidence
+     - ``tests/analysis/<name>/`` and ``tests/data/<name>/``
+     - Analytical, independent, parity and end-to-end tests
 
-*****************
-How to Contribute
-*****************
+.. toctree::
+   :maxdepth: 1
 
-For any contributor willing to contribute to the project, it is important to understand the branching model used by the project. The project uses the `Gitflow <http://nvie.com/posts/a-successful-git-branching-model/>`_ branching model. Pull requests should stay small and reviewer-readable. In order to contribute to the project please follow the following steps:
+   architecture
+   adding-analysis
+   validation
+   release
 
+Local environment
+-----------------
 
-    #. Fork the project on Github. (not necessary if you are a member of the project)
+Install the package with development, test and documentation dependencies in an
+isolated environment:
 
-    #. Clone your fork locally:
-    
-        .. code:: bash
+.. code-block:: console
 
-            $ git clone https://github.com/MolarVerse/PQAnalysis.git
+   $ git clone https://github.com/MolarVerse/PQAnalysis.git
+   $ cd PQAnalysis
+   $ python -m venv .venv
+   $ source .venv/bin/activate
+   $ python -m pip install -e ".[dev,test,docs]"
 
-    #. Initialize git flow with the following settings (if not specified default settings are used)
+Quality gates
+-------------
 
-        .. code:: bash
+``pytest.sh`` runs the suite with debug runtime type checking and repeats it
+with release settings:
 
-            [master] main
-            [develop] dev
-            [version tag prefix] v
+.. code-block:: console
 
-    #. Create a feature branch for your contribution:
-    
-        .. code:: bash
+   $ bash pytest.sh
+   $ bash pytest.sh tests/analysis/rdf -q
 
-            $ git flow feature start <feature_branch_name>
+Run pylint against the package and retain a score above the CI threshold of
+9.75:
 
+.. code-block:: console
 
-    #. Commit your changes to your feature branch and publish your feature branch:
-    
-        .. code:: bash
+   $ python -m pylint PQAnalysis --persistent n
 
-            $ git add <files>
-            $ git commit -m "fix: describe the bug fix"
-            $ git flow feature publish <feature_branch_name>
-    
-    #. Create a pull request on Github.
+Public Python interfaces use NumPy-style docstrings. Document parameters,
+returns, raised exceptions, units and array shapes. Inspect coverage with:
 
-    #. Use a short Conventional Commits title for the pull request, for example ``feat: add a new analysis command`` or ``fix(io): handle missing trajectory data``. This title is validated by CI.
+.. code-block:: console
 
-    #. Once your pull request is approved and all required checks pass, it will be merged into the develop branch. If the pull request is squash merged, use the pull request title as the squash commit message.
+   $ docstr-coverage PQAnalysis
 
-    #. Optional: enable the local commit-message hook for earlier feedback:
-
-        .. code:: bash
-
-            $ git config core.hooksPath .githooks
-
-*************
 Documentation
-*************
+-------------
 
-Please make sure that all code is well documented. The project uses `Sphinx <http://www.sphinx-doc.org/en/master/>`_ for documentation. The documentation of this webpage is autogenerated from the docstrings of the implemented code, thus it is important to make sure that all docstrings are correct and informative. 
+Build the complete documentation and check links with warnings treated as
+errors:
 
-.. attention::
+.. code-block:: console
 
-    The project uses `numpydoc <https://numpydoc.readthedocs.io/en/latest/>`_ for docstring formatting. Please make sure that all docstrings are formatted correctly.
+   $ python -m sphinx -E -W --keep-going \
+       -b html docs/source docs/build/html
+   $ python -m sphinx -E -W --keep-going \
+       -b linkcheck docs/source docs/build/linkcheck
 
-In order to install all the dependencies required for building the documentation, use the following command:
+The API reference is generated from package modules when Sphinx starts. Do not
+hand-edit generated files under ``docs/source/code``. Add public callables to
+:doc:`../reference/functions`, and put implementation-level guidance in this
+development section.
 
-.. code:: bash
+Executable figures under ``docs/source/_plots`` must be deterministic. Captions
+must distinguish analytic schematics, versioned validation fixtures and
+physical benchmark results.
 
-    $ pip install -e ".[docs]" # install the project with the documentation dependencies
+Pull requests
+-------------
 
-To build the documentation, use the following command:
+Feature and fix pull requests normally target ``dev``. Release pull requests
+merge ``dev`` into ``main``. Use a Conventional Commits PR title, such as
+``feat: add a new analysis command`` or
+``fix(io): handle missing trajectory data``; the title becomes the squash-merge
+commit message.
 
-.. code:: bash
+Enable the optional local commit-message hook with:
 
-    $ cd docs
+.. code-block:: console
 
-    $ make html
+   $ git config core.hooksPath .githooks
 
-In order to view the documentation, open the following file in a web browser:
-
-.. code:: bash
-
-    $ open build/html/index.html
-
-For the CI/CD pipeline, the a documentation coverage of 99.9% is required. Please make sure that all implemented features are correctly documented. To evaluate the documentation coverage, use the following command:
-
-.. code:: bash
-
-    $ docstr-coverage PQAnalysis
-
-*******
-Testing
-*******
-
-The project uses `pytest <https://docs.pytest.org/en/latest/>`_ for testing. Before creating a pull request, please make sure that all tests pass and ensure a high quality of code coverage. In order to run the tests, use the following command:
-
-.. code:: bash
-
-    $ pip install -e ".[test]" # install the project with the test dependencies
-
-    $ python -m pytest
-
-The testing framework will run all tests and provide automatically generated coverage reports. Not only should all tests pass, but the coverage should be as close to 100% as possible. Furthermore, the project automatically uses doctest, so please make sure that all examples included in the doc strings of the implemented features are correct otherwise the tests will fail.
-
-Last, if any additional dependencies are required for testing, please add them to the ``pyproject.toml`` file under the ``[project.optional-dependencies]`` section.
+Before requesting review, run the focused tests for the modified ownership
+boundary and every relevant strict documentation build. Pull requests and
+``dev`` pushes build documentation without deploying it; deployment occurs
+from ``main``.

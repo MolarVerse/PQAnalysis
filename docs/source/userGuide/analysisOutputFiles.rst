@@ -1,8 +1,7 @@
 .. _analysisOutputFiles:
 
-#####################
 Analysis Output Files
-#####################
+=====================
 
 PQAnalysis analysis commands can write native text, CSV, TSV or XVG tables. The
 output filename selects the format:
@@ -27,7 +26,7 @@ output filename selects the format:
      - Native PQAnalysis text
      - Self-describing scientific data and legacy workflows
 
-This means that ``out_file table.csv`` in an RDF, MSD, VACF or vibrations input
+This means that ``out_file = table.csv`` in an RDF, MSD, VACF or vibrations input
 file writes CSV directly. Names ending in ``.dat``, ``.out``, ``.txt`` or no
 extension retain the native format.
 
@@ -295,7 +294,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
    * - 1
      - Wavenumber
      - Legacy cosine-transform frequency axis
-     - cm\ :sup:`-1`
+     - cm⁻¹
    * - 2
      - Spectrum amplitude
      - Absolute cosine-transform amplitude of the optionally windowed

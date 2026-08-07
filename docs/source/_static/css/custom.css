@@ -1,34 +1,181 @@
-@import url("theme.css");
-
-.wy-nav-content {
-    max-width: 80%;
+:root {
+    --pq-plot-background: #fff;
 }
 
-dl.py.class {
-    dt.sig.sig-object.py {
-        display: block !important;
+.sidebar-brand {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+}
+
+.sidebar-logo-container {
+    display: flex;
+    flex: 0 0 4.5rem;
+    align-items: center;
+    margin: 0;
+}
+
+.sidebar-logo {
+    width: 4.5rem;
+    margin: 0;
+}
+
+.sidebar-brand-text {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0;
+}
+
+code.literal {
+    border-radius: 2px;
+}
+
+figure:has(> img.plot-directive) {
+    margin-block: 1.5rem 2rem;
+}
+
+img.plot-directive {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--color-foreground-border);
+    background: var(--pq-plot-background);
+}
+
+img.plot-directive + figcaption {
+    margin-top: 0.65rem;
+    color: var(--color-foreground-secondary);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    text-align: left;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+@media (max-width: 44rem), (max-height: 32rem) {
+    .back-to-top {
+        display: none;
     }
 }
 
-.py.property {
-    display: block !important;
-}
+@media (max-width: 44rem) {
+    article table.autosummary,
+    article table.pq-record-table {
+        display: block;
+        width: 100%;
+    }
 
-.sig.sig-object.py dl {
-    margin-block-end: 0.0em;
+    table.autosummary,
+    table.autosummary tbody,
+    table.autosummary tr,
+    table.autosummary td,
+    table.pq-record-table,
+    table.pq-record-table tbody,
+    table.pq-record-table tr,
+    table.pq-record-table td {
+        display: block;
+        width: 100%;
+    }
 
-    & dd {
-        margin-bottom: 0.0em;
+    table.autosummary,
+    table.pq-record-table {
+        border: 0;
+    }
+
+    table.autosummary tr,
+    table.pq-record-table tr {
+        padding-block: 0.7rem;
+        border-bottom: 1px solid var(--color-foreground-border);
+    }
+
+    table.autosummary td,
+    table.pq-record-table td {
+        padding: 0.2rem 0;
+        border: 0;
+    }
+
+    table.autosummary td:first-child,
+    table.pq-record-table td:first-child {
+        font-weight: 650;
+    }
+
+    table.autosummary td:last-child {
+        color: var(--color-foreground-secondary);
+    }
+
+    table.pq-record-table thead {
+        display: none;
+    }
+
+    table.pq-record-table td:not(:first-child)::before {
+        display: block;
+        margin-top: 0.35rem;
+        color: var(--color-foreground-secondary);
+        font-size: 0.75rem;
+        font-weight: 650;
+        text-transform: uppercase;
+    }
+
+    table.pq-method-table td:nth-child(2)::before,
+    table.pq-observable-table td:nth-child(2)::before {
+        content: "Required data";
+    }
+
+    table.pq-method-table td:nth-child(3)::before,
+    table.pq-observable-table td:nth-child(3)::before {
+        content: "Reported quantity";
+    }
+
+    table.pq-extension-table td:nth-child(2)::before {
+        content: "Primary location";
+    }
+
+    table.pq-extension-table td:nth-child(3)::before {
+        content: "Contract";
+    }
+
+    table.pq-package-table td:nth-child(2)::before {
+        content: "Responsibility";
+    }
+
+    table.pq-validation-table td:nth-child(2)::before {
+        content: "Purpose";
+    }
+
+    table.pq-validation-table td:nth-child(3)::before {
+        content: "Suitable reference";
+    }
+
+    table.pq-types-table td:nth-child(2)::before {
+        content: "Role";
+    }
+
+    table.pq-package-reference-table td:nth-child(2)::before {
+        content: "Scope";
     }
 }
 
-.wy-table-responsive table.analysis-output-columns {
+@media (max-width: 24rem) {
+    article h1 {
+        font-size: 2rem;
+    }
+}
+
+table.analysis-output-columns {
     min-width: 640px;
     width: 100%;
 }
 
-.wy-table-responsive table.analysis-output-columns th,
-.wy-table-responsive table.analysis-output-columns td {
+table.analysis-output-columns th,
+table.analysis-output-columns td {
     vertical-align: top;
     white-space: normal;
+}
+
+.pq-command-table td:first-child {
+    white-space: nowrap;
 }
