@@ -19,6 +19,7 @@ from PQAnalysis.analysis.output import (
     read_analysis_table,
 )
 from PQAnalysis.analysis.rdf.rdf_output_file_writer import RDFDataWriter
+from PQAnalysis.io.exceptions import FileWritingModeError
 
 
 
@@ -183,13 +184,23 @@ def test_rdf_xvg_uses_scientific_plot_preset(tmp_path, rdf_table):
     assert '@    title "Radial distribution function"' in text
     assert '@    xaxis label "r [\\cE\\C]"' in text
     assert '@    yaxis label "g(r)"' in text
-    assert '@    s0 legend "g(r)"' in text
-    assert "0.25 0.0\n0.75 1.5\n" in text
-    assert "&" not in text
+    assert "# PQAnalysis-XVG: 1" in text
+    assert "# XVG_X_FIELD r_i" in text
+    assert "# XVG_Y_FIELDS g_r_i" in text
+    assert '@    s1 legend "g(r)"' in text
+    assert "@    s0 hidden true" in text
+    assert text.count("@type xy") == 5
+    assert text.count("\n&\n") == 5
+    assert "@target G0.S0\n@type xy\n0.25 0.25\n0.75 0.75\n&" in text
+    assert "@target G0.S1\n@type xy\n0.25 0.0\n0.75 1.5\n&" in text
+
+    restored = read_analysis_table(str(output_file))
+    assert restored.schema == rdf_table.schema
+    np.testing.assert_allclose(restored.data, rdf_table.data)
 
 
 
-def test_multiseries_xvg_separates_data_sets(tmp_path):
+def test_multiseries_xvg_preserves_all_columns(tmp_path):
     output_file = tmp_path / "msd.xvg"
     table = AnalysisTable.from_columns(
         MSD_SCHEMA,
@@ -204,10 +215,17 @@ def test_multiseries_xvg_separates_data_sets(tmp_path):
     AnalysisTableWriter(str(output_file)).write(table)
 
     text = output_file.read_text(encoding="utf-8")
-    assert text.count("\n&\n") == 2
-    assert '@    s0 legend "x"' in text
-    assert '@    s1 legend "y"' in text
-    assert '@    s2 legend "z"' in text
+    assert text.count("@type xy") == 4
+    assert text.count("\n&\n") == 4
+    assert '@    s1 legend "x"' in text
+    assert '@    s2 legend "y"' in text
+    assert '@    s3 legend "z"' in text
+    assert "@    s0 hidden true" in text
+    assert "@    s1 hidden true" not in text
+
+    restored = read_analysis_table(str(output_file))
+    assert restored.schema == table.schema
+    np.testing.assert_allclose(restored.data, table.data)
 
 
 
@@ -224,8 +242,48 @@ def test_custom_xvg_projection_uses_grace_safe_scientific_labels(
     text = output_file.read_text(encoding="utf-8")
     label = r"g(r\si\N)DeltaV\si\N [\cE\C\S3\N]"
     assert f'@    yaxis label "{label}"' in text
-    assert f'@    s0 legend "{label}"' in text
-    assert "ᵢ" not in text
+    assert f'@    s3 legend "{label}"' in text
+    assert "@    s3 hidden true" not in text
+    assert "# SYMBOLS rᵢ g(rᵢ)" in text
+    assert all(
+        "ᵢ" not in line for line in text.splitlines() if line.startswith("@")
+    )
+
+    restored = read_analysis_table(str(output_file))
+    assert restored.schema.plot.y_fields == ("g_r_i_dV_i", )
+    np.testing.assert_allclose(restored.data, rdf_table.data)
+
+
+
+def test_xvg_round_trip_with_synthetic_row_axis(tmp_path):
+    output_file = tmp_path / "modes.xvg"
+    table = AnalysisTable(
+        schema=normal_mode_schema(2),
+        data=np.array(((0.25, -0.5), (0.75, 0.5))),
+    )
+
+    AnalysisTableWriter(str(output_file)).write(table)
+
+    text = output_file.read_text(encoding="utf-8")
+    assert "# XVG_X_FIELD @row" in text
+    assert "@target G0.S0\n@type xy\n1 0.25\n2 0.75\n&" in text
+    assert "@target G0.S1\n@type xy\n1 -0.5\n2 0.5\n&" in text
+    restored = read_analysis_table(str(output_file))
+    assert restored.schema == table.schema
+    np.testing.assert_allclose(restored.data, table.data)
+
+
+
+def test_xvg_is_detected_without_xvg_extension(tmp_path, rdf_table):
+    xvg_file = tmp_path / "rdf.xvg"
+    disguised_file = tmp_path / "rdf.out"
+    AnalysisTableWriter(str(xvg_file)).write(rdf_table)
+    xvg_file.rename(disguised_file)
+
+    restored = read_analysis_table(str(disguised_file))
+
+    assert restored.schema == rdf_table.schema
+    np.testing.assert_allclose(restored.data, rdf_table.data)
 
 
 
@@ -237,6 +295,128 @@ def test_invalid_xvg_projection_does_not_create_output(tmp_path, rdf_table):
         writer.write(rdf_table, y_fields=("missing", ))
 
     assert not output_file.exists()
+
+
+
+def test_duplicate_xvg_y_fields_do_not_create_output(tmp_path, rdf_table):
+    output_file = tmp_path / "rdf.xvg"
+    writer = AnalysisTableWriter(str(output_file))
+
+    with pytest.raises(AnalysisOutputError, match="must be distinct"):
+        writer.write(rdf_table, y_fields=("g_r_i", "g_r_i"))
+
+    assert not output_file.exists()
+
+
+
+@pytest.mark.parametrize(
+    ("contents", "message"),
+    (
+        (
+            "# Conventional XVG\n@target G0.S0\n@type xy\n0.0 1.0\n&\n",
+            "does not contain reversible PQAnalysis table metadata",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x y\n"
+            "# SYMBOLS x y\n"
+            "# UNITS 1 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS y\n"
+            "@target G0.S0\n"
+            "@type xy\n"
+            "0.0 0.0\n"
+            "&\n",
+            "inconsistent FIELDS",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x y\n"
+            "# SYMBOLS x y\n"
+            "# UNITS 1 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS y\n"
+            "@target G0.S0\n"
+            "@type xy\n"
+            "9.0 0.0\n"
+            "&\n"
+            "@target G0.S1\n"
+            "@type xy\n"
+            "9.0 1.0\n"
+            "&\n",
+            "inconsistent x-axis",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x y\n"
+            "# SYMBOLS x y\n"
+            "# UNITS 1 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS y\n"
+            "@target G0.S0\n"
+            "@type xy\n"
+            "0.0 0.0\n"
+            "&\n"
+            "@target G0.S1\n"
+            "@type xy\n"
+            "1.0 1.0\n"
+            "&\n",
+            "inconsistent x-axis",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x\n"
+            "# SYMBOLS x\n"
+            "# UNITS 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS x\n"
+            "@target G0.S0\n"
+            "@type xy\n"
+            "0.0 0.0\n",
+            "complete XY data-set blocks",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x\n"
+            "# SYMBOLS x\n"
+            "# UNITS 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS x\n"
+            "@target G0.S1\n"
+            "@type xy\n"
+            "0.0 0.0\n"
+            "&\n",
+            "sequential Grace sets",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x\n"
+            "# SYMBOLS x\n"
+            "# UNITS 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS x\n"
+            "@target G0.S0\n"
+            "@type xydy\n"
+            "0.0 0.0\n"
+            "&\n",
+            "must use XY data sets",
+        ),
+    ),
+)
+def test_reader_rejects_nonreversible_or_malformed_xvg(
+    tmp_path, contents, message
+):
+    input_file = tmp_path / "broken.xvg"
+    input_file.write_text(contents, encoding="utf-8")
+
+    with pytest.raises(AnalysisOutputError, match=message):
+        read_analysis_table(str(input_file))
 
 
 
@@ -258,6 +438,26 @@ def test_convert_writes_multiple_outputs(tmp_path, rdf_table):
 
 
 
+@pytest.mark.parametrize("input_suffix", ("out", "csv", "tsv", "xvg"))
+@pytest.mark.parametrize("output_suffix", ("dat", "csv", "tsv", "xvg"))
+def test_convert_supports_every_format_direction(
+    tmp_path,
+    rdf_table,
+    input_suffix,
+    output_suffix,
+):
+    input_file = tmp_path / f"input.{input_suffix}"
+    output_file = tmp_path / f"output.{output_suffix}"
+    AnalysisTableWriter(str(input_file)).write(rdf_table)
+
+    convert_analysis_output(str(input_file), (str(output_file), ))
+
+    restored = read_analysis_table(str(output_file))
+    assert restored.schema == rdf_table.schema
+    np.testing.assert_allclose(restored.data, rdf_table.data)
+
+
+
 def test_convert_validates_all_outputs_before_writing(tmp_path, rdf_table):
     input_file = tmp_path / "rdf.dat"
     csv_file = tmp_path / "rdf.csv"
@@ -273,6 +473,27 @@ def test_convert_validates_all_outputs_before_writing(tmp_path, rdf_table):
 
     assert not csv_file.exists()
     assert not xvg_file.exists()
+
+
+
+def test_convert_rejects_existing_output_before_writing(tmp_path, rdf_table):
+    input_file = tmp_path / "rdf.dat"
+    new_file = tmp_path / "rdf.tsv"
+    existing_file = tmp_path / "rdf.csv"
+    AnalysisTableWriter(str(input_file)).write(rdf_table)
+    existing_file.write_text("existing data\n", encoding="utf-8")
+
+    with pytest.raises(
+        FileWritingModeError,
+        match=r"File .*rdf\.csv already exists",
+    ):
+        convert_analysis_output(
+            str(input_file),
+            (str(new_file), str(existing_file)),
+        )
+
+    assert not new_file.exists()
+    assert existing_file.read_text(encoding="utf-8") == "existing data\n"
 
 
 
