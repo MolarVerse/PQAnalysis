@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.cli.vibrations &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -97,6 +97,10 @@
 <span class="s2">This command line tool calculates vibrational frequencies, force constants,</span>
 <span class="s2">reduced masses, normal modes and optional IR intensities from a structure file</span>
 <span class="s2">and a Hessian file.</span>
+
+<span class="s2">The main table contains signed wavenumbers, optional IR intensities,</span>
+<span class="s2">force constants and reduced masses. Optional files contain the</span>
+<span class="s2">normal-mode matrix or XYZ mode representations.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -106,6 +110,10 @@
 <span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
+    <span class="s2">&quot;For column and mode-file definitions see &quot;</span>
+    <span class="s2">&quot;:ref:`vibrational-analysis output &lt;analysis-output-vibrations&gt;`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 
 
@@ -135,7 +143,8 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span></div>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_export_files</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="VibrationsCLI.run">
@@ -145,7 +154,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the command line tool.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">vibrations</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">)</span></div>
+        <span class="n">export_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">&#39;export_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
+
+        <span class="n">vibrations</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="o">**</span><span class="n">export_kwargs</span><span class="p">)</span></div>
 </div>
 
 

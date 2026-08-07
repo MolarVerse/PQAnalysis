@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>output &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/code/PQAnalysis.analysis.output.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="analysis.momentum" href="PQAnalysis.analysis.momentum.html" />
+    <link rel="prev" title="analysis" href="PQAnalysis.analysis.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../userGuide/userGuide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.html">analysis.spectrum_broadening</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vacf.html">analysis.vacf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.vibrational.html">analysis.vibrational</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.atomic_system.html">atomic_system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.core.html">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.io.html">io</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.physical_data.html">physical_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.tools.html">tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.topology.html">topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.traj.html">traj</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PQAnalysis.utils.html">utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.html">Submodules</a></li>
+          <li class="breadcrumb-item"><a href="PQAnalysis.analysis.html">analysis</a></li>
+      <li class="breadcrumb-item active">output</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/PQAnalysis.analysis.output.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-PQAnalysis.analysis.output">
+<span id="output"></span><h1>output<a class="headerlink" href="#module-PQAnalysis.analysis.output" title="Link to this heading"></a></h1>
+<p>Read, write and convert self-describing analysis tables.</p>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>Exceptions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputError" title="PQAnalysis.analysis.output.AnalysisOutputError"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalysisOutputError</span></code></a></p></td>
+<td><p>Raised when an analysis table cannot be read, written or converted.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Classes:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p></td>
+<td><p>Base writer that preserves native formatting and adds table exports.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalysisOutputFormat</span></code></a></p></td>
+<td><p>Supported analysis-table output formats.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalysisTable</span></code></a></p></td>
+<td><p>A validated numerical table with scientific column metadata.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTableWriter" title="PQAnalysis.analysis.output.AnalysisTableWriter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AnalysisTableWriter</span></code></a></p></td>
+<td><p>Write an <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisTable</span></code></a> using a suffix-selected format.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Functions:</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.convert_analysis_output" title="PQAnalysis.analysis.output.convert_analysis_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_analysis_output</span></code></a></p></td>
+<td><p>Convert one analysis table to one or more output files.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.infer_output_format" title="PQAnalysis.analysis.output.infer_output_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_output_format</span></code></a></p></td>
+<td><p>Infer a requested output format from a recognized filename suffix.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.read_analysis_table" title="PQAnalysis.analysis.output.read_analysis_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_analysis_table</span></code></a></p></td>
+<td><p>Read native, CSV, TSV or XVG analysis data by content.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.output.write_analysis_table" title="PQAnalysis.analysis.output.write_analysis_table"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_analysis_table</span></code></a></p></td>
+<td><p>Write an analysis table to an open text stream.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code>: <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisColumn</span></code>, <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a>, <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputError" title="PQAnalysis.analysis.output.AnalysisOutputError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AnalysisOutputError</span></code></a>, <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisOutputFormat</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisPlotPreset</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSchema</span></code>, <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisTable</span></code></a>, <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTableWriter" title="PQAnalysis.analysis.output.AnalysisTableWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisTableWriter</span></code></a>, <code class="xref py py-data docutils literal notranslate"><span class="pre">BROADENED_SPECTRUM_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">MOMENTUM_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">MSD_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">RDF_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">VACF_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">VACF_SPECTRUM_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">VACF_WINDOWED_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">VIBRATIONAL_IR_SCHEMA</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">VIBRATIONAL_SCHEMA</span></code>, <a class="reference internal" href="#PQAnalysis.analysis.output.convert_analysis_output" title="PQAnalysis.analysis.output.convert_analysis_output"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_analysis_output</span></code></a>, <a class="reference internal" href="#PQAnalysis.analysis.output.infer_output_format" title="PQAnalysis.analysis.output.infer_output_format"><code class="xref py py-func docutils literal notranslate"><span class="pre">infer_output_format</span></code></a>, <code class="xref py py-func docutils literal notranslate"><span class="pre">normal_mode_schema</span></code>, <a class="reference internal" href="#PQAnalysis.analysis.output.read_analysis_table" title="PQAnalysis.analysis.output.read_analysis_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_analysis_table</span></code></a>, <a class="reference internal" href="#PQAnalysis.analysis.output.write_analysis_table" title="PQAnalysis.analysis.output.write_analysis_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_analysis_table</span></code></a></p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+<dl class="py exception">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnalysisOutputError</span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisOutputError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.exceptions.html#PQAnalysis.exceptions.PQException" title="PQAnalysis.exceptions.PQException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQException</span></code></a></p>
+<p>Raised when an analysis table cannot be read, written or converted.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisDataWriter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnalysisDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<p>Base writer that preserves native formatting and adds table exports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em><em> | </em><em>None</em>) – Primary output path, or None for native text on stdout.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em> | </em><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em>, </em><em>optional</em>) – Output writing mode, by default <code class="docutils literal notranslate"><span class="pre">w</span></code>.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional distinct output paths, by default None.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisDataWriter.write_table">
+<span class="sig-name descname"><span class="pre">write_table</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><span class="pre">AnalysisTable</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">native_writer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">StringIO</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisDataWriter.write_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisDataWriter.write_table" title="Link to this definition"></a></dt>
+<dd><p>Write the primary file and all requested additional exports.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputFormat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnalysisOutputFormat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisOutputFormat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>Supported analysis-table output formats.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputFormat.CSV">
+<span class="sig-name descname"><span class="pre">CSV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'csv'</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputFormat.CSV" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputFormat.NATIVE">
+<span class="sig-name descname"><span class="pre">NATIVE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'native'</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputFormat.NATIVE" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputFormat.TSV">
+<span class="sig-name descname"><span class="pre">TSV</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'tsv'</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputFormat.TSV" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisOutputFormat.XVG">
+<span class="sig-name descname"><span class="pre">XVG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'xvg'</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisOutputFormat.XVG" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTable">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnalysisTable</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnalysisSchema</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisTable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTable" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A validated numerical table with scientific column metadata.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTable.from_columns">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_columns</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">schema</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AnalysisSchema</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">columns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Real</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><span class="pre">AnalysisTable</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisTable.from_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTable.from_columns" title="Link to this definition"></a></dt>
+<dd><p>Build a table from equally sized one-dimensional columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTable.column">
+<span class="sig-name descname"><span class="pre">column</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisTable.column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTable.column" title="Link to this definition"></a></dt>
+<dd><p>Return one data column selected by its stable field identifier.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTable.data">
+<span class="sig-name descname"><span class="pre">data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTable.data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTable.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTable.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTableWriter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">AnalysisTableWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisTableWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTableWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<p>Write an <a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisTable</span></code></a> using a suffix-selected format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – Output path whose suffix selects the format.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em> | </em><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em>, </em><em>optional</em>) – Output writing mode, by default <code class="docutils literal notranslate"><span class="pre">w</span></code>. Append mode is only
+valid for native text.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.AnalysisTableWriter.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><span class="pre">AnalysisTable</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">x_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">y_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#AnalysisTableWriter.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.AnalysisTableWriter.write" title="Link to this definition"></a></dt>
+<dd><p>Write a table and close the output stream.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.convert_analysis_output">
+<span class="sig-name descname"><span class="pre">convert_analysis_output</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">input_file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">x_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">y_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><span class="pre">FileWritingMode</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'w'</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#convert_analysis_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.convert_analysis_output" title="Link to this definition"></a></dt>
+<dd><p>Convert one analysis table to one or more output files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_file</strong> (<em>str</em>) – Native, CSV, TSV or PQAnalysis XVG input table.</p></li>
+<li><p><strong>output_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>]</em>) – Distinct output paths. Each suffix selects its format.</p></li>
+<li><p><strong>x_field</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – XVG x-axis field override, by default None.</p></li>
+<li><p><strong>y_fields</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – XVG y-axis fields, by default None.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em> | </em><a class="reference internal" href="PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode" title="PQAnalysis.io.formats.FileWritingMode"><em>FileWritingMode</em></a><em>, </em><em>optional</em>) – Output writing mode, by default <code class="docutils literal notranslate"><span class="pre">w</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.infer_output_format">
+<span class="sig-name descname"><span class="pre">infer_output_format</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><span class="pre">AnalysisOutputFormat</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#infer_output_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.infer_output_format" title="Link to this definition"></a></dt>
+<dd><p>Infer a requested output format from a recognized filename suffix.</p>
+<p>Unrecognized suffixes and stdout retain the native PQAnalysis format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em> | </em><em>None</em>) – Requested output filename, or None for stdout.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Format selected from the case-insensitive suffix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat">AnalysisOutputFormat</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.read_analysis_table">
+<span class="sig-name descname"><span class="pre">read_analysis_table</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><span class="pre">AnalysisTable</span></a></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#read_analysis_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.read_analysis_table" title="Link to this definition"></a></dt>
+<dd><p>Read native, CSV, TSV or XVG analysis data by content.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Input table. Its extension is not used for format detection.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Numeric data and reconstructed scientific schema.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable">AnalysisTable</a></p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputError" title="PQAnalysis.analysis.output.AnalysisOutputError"><strong>AnalysisOutputError</strong></a> – If metadata, headers or numeric rows are malformed.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.output.write_analysis_table">
+<span class="sig-name descname"><span class="pre">write_analysis_table</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><span class="pre">AnalysisTable</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TextIO</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">StringIO</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">output_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><span class="pre">AnalysisOutputFormat</span></a></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">x_field</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">y_fields</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/output.html#write_analysis_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.output.write_analysis_table" title="Link to this definition"></a></dt>
+<dd><p>Write an analysis table to an open text stream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> (<a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><em>AnalysisTable</em></a>) – Validated data and scientific schema.</p></li>
+<li><p><strong>file</strong> (<em>TextIO</em>) – Open UTF-8 text stream.</p></li>
+<li><p><strong>output_format</strong> (<a class="reference internal" href="#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><em>AnalysisOutputFormat</em></a>) – Format to write.</p></li>
+<li><p><strong>x_field</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – XVG x-axis field override, by default None.</p></li>
+<li><p><strong>y_fields</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – XVG y-axis fields, by default None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="PQAnalysis.analysis.html" class="btn btn-neutral float-left" title="analysis" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="PQAnalysis.analysis.momentum.html" class="btn btn-neutral float-right" title="analysis.momentum" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

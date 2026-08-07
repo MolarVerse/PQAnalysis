@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.spectrum_broadening.api &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -82,7 +82,7 @@
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
@@ -116,6 +116,7 @@
     <span class="n">wavenumber_step</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_STEP</span><span class="p">,</span>
     <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broaden a two-column stick spectrum file and write the result.</span>
@@ -152,6 +153,9 @@
 <span class="sd">        by default ``gaussian``.</span>
 <span class="sd">    mode : str | FileWritingMode, optional</span>
 <span class="sd">        The writing mode of the output file, by default &quot;w&quot;.</span>
+<span class="sd">    export_files : Sequence[str] | None, optional</span>
+<span class="sd">        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select</span>
+<span class="sd">        those formats; other extensions use native PQAnalysis text.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -188,7 +192,11 @@
         <span class="n">kernel</span><span class="o">=</span><span class="n">kernel</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">SpectrumDataWriter</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">grid</span><span class="p">,</span> <span class="n">broadened</span><span class="p">))</span>
+    <span class="n">SpectrumDataWriter</span><span class="p">(</span>
+        <span class="n">output</span><span class="p">,</span>
+        <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span>
+        <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">,</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">((</span><span class="n">grid</span><span class="p">,</span> <span class="n">broadened</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">grid</span><span class="p">,</span> <span class="n">broadened</span></div>
 

@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>rdf &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a><ul class="current">
@@ -232,27 +233,20 @@ box vectors.</p>
 <dt class="sig sig-object py" id="PQAnalysis.analysis.rdf.rdf.RDF.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><span class="pre">Np1DNumberArray</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/rdf/rdf.html#RDF.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.rdf.rdf.RDF.run" title="Link to this definition"></a></dt>
 <dd><p>Runs the RDF analysis.</p>
-<p>This method runs the RDF analysis and returns the
-middle points of the bins of the RDF analysis, the
-normalized bins of the RDF analysis based on the
-spherical shell model, the integrated bins of the
-RDF analysis, the normalized bins of the RDF
-analysis based on the number of atoms in the
-system and the differential bins of the RDF
-analysis based on the spherical shell model.</p>
+<p>This method runs the RDF analysis and returns the five arrays
+written by <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf_output_file_writer.html#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter" title="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDFDataWriter</span></code></a>.
+See <a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-rdf"><span class="std std-ref">RDF output files</span></a> for their exact
+definitions and normalization formulas.</p>
 <p>This method will display a progress bar by default.
 This can be disabled by setting with_progress_bar to False.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><ul class="simple">
-<li><p><strong>bin_middle_points</strong> (<em>Np1DNumberArray</em>) – The middle points of the bins of the RDF analysis.</p></li>
-<li><p><strong>normalized_bins</strong> (<em>Np1DNumberArray</em>) – The normalized bins of the RDF analysis based
-on the spherical shell model.</p></li>
-<li><p><strong>integrated_bins</strong> (<em>Np1DNumberArray</em>) – The integrated bins of the RDF analysis.</p></li>
-<li><p><strong>normalized_bins2</strong> (<em>Np1DNumberArray</em>) – The normalized bins of the RDF analysis based
-on the number of atoms in the system.</p></li>
-<li><p><strong>differential_bins</strong> (<em>Np1DNumberArray</em>) – The differential bins of the RDF analysis based
-on the spherical shell model.</p></li>
+<li><p><strong>bin_middle_points</strong> (<em>Np1DNumberArray</em>) – The bin-center distances in Angstrom.</p></li>
+<li><p><strong>normalized_bins</strong> (<em>Np1DNumberArray</em>) – The dimensionless radial distribution function <code class="docutils literal notranslate"><span class="pre">g(r)</span></code>.</p></li>
+<li><p><strong>integrated_bins</strong> (<em>Np1DNumberArray</em>) – The cumulative coordination number.</p></li>
+<li><p><strong>normalized_bins2</strong> (<em>Np1DNumberArray</em>) – The density-normalized shell population in Angstrom^3.</p></li>
+<li><p><strong>differential_bins</strong> (<em>Np1DNumberArray</em>) – The pair-count residual relative to the ideal-gas shell count.</p></li>
 </ul>
 </p>
 </dd>

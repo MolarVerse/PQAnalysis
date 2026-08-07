@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.cli.vacf &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -102,6 +102,10 @@
 <span class="s2">calculated. This is an input file based tool, so that</span>
 <span class="s2">the input file can be used to specify the parameters</span>
 <span class="s2">of the VACF calculation.</span>
+
+<span class="s2">The primary data file contains lag time and normalized correlation.</span>
+<span class="s2">Optional files contain the wavenumber spectrum and the windowed</span>
+<span class="s2">correlation used to calculate it.</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -116,6 +120,10 @@
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;please visit &quot;</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;:py:class:`PQAnalysis.analysis.vacf.vacf.VACF` &quot;</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;and :py:mod:`PQAnalysis.analysis.vacf.vacf_input_file_reader`</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
+    <span class="s2">&quot;For column definitions and units see &quot;</span>
+    <span class="s2">&quot;:ref:`VACF output files &lt;analysis-output-vacf&gt;`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 
 
@@ -156,7 +164,8 @@
 <span class="sd">            The parser to which the arguments should be added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span>
-        <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span></div>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_export_files</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="VACFCLI.run">
@@ -171,7 +180,11 @@
 <span class="sd">        args : argparse.Namespace</span>
 <span class="sd">            The arguments parsed by the parser.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">vacf</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span></div>
+        <span class="n">export_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">&#39;export_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
+
+        <span class="n">vacf</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="o">**</span><span class="n">export_kwargs</span><span class="p">)</span></div>
 </div>
 
 

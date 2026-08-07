@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.vibrational.vibrational_analysis &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -80,14 +80,21 @@
 <span class="sd">Numerical routines and file writers for vibrational analysis.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.atomic_system</span><span class="w"> </span><span class="kn">import</span> <span class="n">AtomicSystem</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis._output_header</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_output_header</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.output</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AnalysisDataWriter</span><span class="p">,</span>
+    <span class="n">AnalysisTable</span><span class="p">,</span>
+    <span class="n">VIBRATIONAL_IR_SCHEMA</span><span class="p">,</span>
+    <span class="n">VIBRATIONAL_SCHEMA</span><span class="p">,</span>
+    <span class="n">normal_mode_schema</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">VibrationalAnalysisError</span>
 
@@ -96,20 +103,6 @@
 <span class="n">BOLTZMANN_EV_K</span> <span class="o">=</span> <span class="mf">8.617333262145e-5</span>
 <span class="n">WAVENUMBER_TO_EV</span> <span class="o">=</span> <span class="mf">1.2398419843320026e-4</span>
 <span class="n">MODE_THRESHOLD_CM</span> <span class="o">=</span> <span class="mf">1.0e-8</span>
-
-
-
-<span class="nd">@contextmanager</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Open a named output file or yield stdout.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span>
-        <span class="k">return</span>
-
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="k">yield</span> <span class="n">file</span>
 
 
 
@@ -677,16 +670,36 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">write_calculate_output</span><span class="p">(</span>
     <span class="n">result</span><span class="p">:</span> <span class="n">VibrationalAnalysisResult</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write the tabular vibrational analysis output.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    result : VibrationalAnalysisResult</span>
+<span class="sd">        Calculated wavenumbers, force constants, reduced masses and optional</span>
+<span class="sd">        IR intensities.</span>
+<span class="sd">    filename : str | None, optional</span>
+<span class="sd">        Primary output filename, or None for stdout.</span>
+<span class="sd">    export_files : Sequence[str] | None, optional</span>
+<span class="sd">        Additional output filenames, by default None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">intensities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">intensities</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">VIBRATIONAL_SCHEMA</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AnalysisTable</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span>
+            <span class="n">schema</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">wavenumbers</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">reduced_masses</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">write_native</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;# Wavenumbers (cm-1)  Force constants (mdyn A^-1)  &quot;</span>
-                <span class="s2">&quot;Reduced masses (amu)&quot;</span><span class="p">,</span>
-                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="n">format_output_header</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">header_columns</span><span class="p">),</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="n">wavenumber_value</span><span class="p">,</span> <span class="n">force_const</span><span class="p">,</span> <span class="n">reduced_mass_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">wavenumbers</span><span class="p">,</span>
@@ -699,11 +712,22 @@
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduced_mass_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
                 <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">schema</span> <span class="o">=</span> <span class="n">VIBRATIONAL_IR_SCHEMA</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AnalysisTable</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span>
+            <span class="n">schema</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">wavenumbers</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">intensities</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">reduced_masses</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">write_native</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;# Wavenumbers (cm-1)  Intensities (km mol-1)  &quot;</span>
-                <span class="s2">&quot;Force constants (mdyn A^-1)  Reduced masses (amu)&quot;</span><span class="p">,</span>
-                <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+                <span class="n">format_output_header</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">header_columns</span><span class="p">),</span>
+                <span class="n">file</span><span class="o">=</span><span class="n">file</span>
             <span class="p">)</span>
             <span class="k">for</span> <span class="p">(</span>
                 <span class="n">wavenumber_value</span><span class="p">,</span>
@@ -722,7 +746,10 @@
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force_const</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="se">\t</span><span class="s2">&quot;</span>
                     <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduced_mass_value</span><span class="si">:</span><span class="s2">&lt;8.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
-                <span class="p">)</span></div>
+                <span class="p">)</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">AnalysisDataWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">write_native</span><span class="p">)</span></div>
 
 
 
@@ -732,13 +759,46 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">write_normal_modes</span><span class="p">(</span>
     <span class="n">normal_modes</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write normal modes in matrix form.</span>
+<span class="sd">    Write normal modes in matrix form with one labeled column per mode.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    normal_modes : numpy.ndarray</span>
+<span class="sd">        Matrix with Cartesian components in rows and modes in columns.</span>
+<span class="sd">    filename : str | None, optional</span>
+<span class="sd">        Primary output filename, or None for stdout.</span>
+<span class="sd">    export_files : Sequence[str] | None, optional</span>
+<span class="sd">        Additional output filenames, by default None.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">with</span> <span class="n">_output_stream</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">normal_mode_schema</span><span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">AnalysisTable</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">normal_modes</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_native</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+        <span class="n">mode_labels</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;mode_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">mode_symbols</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;e(α,</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;1&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">normal_modes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;# PQAnalysis: Normal-mode matrix</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;# ELEMENT e(α,j)</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;# ROWS α=x₁,y₁,z₁,…</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;# FIELDS </span><span class="si">{</span><span class="n">mode_labels</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;# SYMBOLS </span><span class="si">{</span><span class="n">mode_symbols</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;# UNITS </span><span class="si">{</span><span class="n">units</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
+        <span class="p">)</span>
+
         <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">normal_modes</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span></div>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">AnalysisDataWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">write_native</span><span class="p">)</span></div>
 
 
 

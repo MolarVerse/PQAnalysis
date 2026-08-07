@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>vibrations &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -58,6 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.build_spectrum.html">build_spectrum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.check_momentum.html">check_momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.continue_input.html">continue_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.convert.html">convert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.gen2xyz.html">gen2xyz</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.main.html">main</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.msd.html">msd</a></li>
@@ -118,6 +119,10 @@
 <p>This command line tool calculates vibrational frequencies, force constants,
 reduced masses, normal modes and optional IR intensities from a structure file
 and a Hessian file.</p>
+<p>The main table contains signed wavenumbers, optional IR intensities,
+force constants and reduced masses. Optional files contain the
+normal-mode matrix or XYZ mode representations.
+For column and mode-file definitions see <a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-vibrations"><span class="std std-ref">vibrational-analysis output</span></a>.</p>
 <p>For the vibrational analysis input file several keys are available.</p>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Required keys</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
@@ -134,7 +139,9 @@ and a Hessian file.</p>
 <td><p>The plain square Hessian matrix file.</p></td>
 </tr>
 <tr class="row-even"><td><p>out_file</p></td>
-<td><p>The tabular output file.</p></td>
+<td><p>The tabular output file. See
+<a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-vibrations"><span class="std std-ref">vibrational-analysis output</span></a>
+for its columns and the optional mode-file layouts.</p></td>
 </tr>
 </tbody>
 </table>

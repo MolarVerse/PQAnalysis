@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>rdf_output_file_writer &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a><ul class="current">
@@ -130,14 +131,29 @@
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RDFDataWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/rdf/rdf_output_file_writer.html#RDFDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">RDFDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/rdf/rdf_output_file_writer.html#RDFDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p>
 <p>Class for writing the data of an
 <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a>
 analysis to a file.</p>
+<p>Each row contains five columns: bin-center distance in Angstrom,
+radial distribution function, cumulative coordination number,
+density-normalized shell population in Angstrom^3 and ideal-gas
+pair-count residual. See <a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-rdf"><span class="std std-ref">RDF output files</span></a>
+for the exact definitions and normalization formulas.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the filename to write to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The primary output filename. Its extension selects the format.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -153,10 +169,23 @@ analysis to a file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<em>Tuple</em><em>[</em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>, </em><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np1DNumberArray" title="PQAnalysis.types.Np1DNumberArray"><em>Np1DNumberArray</em></a><em>,</em>) – Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]
-the data output from the RadialDistributionFunction.run() method</p>
+The bin centers, radial distribution function, cumulative
+coordination number, density-normalized shell population and
+ideal-gas pair-count residual returned by
+<a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF.run" title="PQAnalysis.analysis.rdf.rdf.RDF.run"><code class="xref py py-meth docutils literal notranslate"><span class="pre">run()</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter.header">
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#</span> <span class="pre">PQAnalysis:</span> <span class="pre">Radial</span> <span class="pre">distribution</span> <span class="pre">function\n#</span> <span class="pre">FIELDS</span> <span class="pre">r_i</span> <span class="pre">g_r_i</span> <span class="pre">N_r_i</span> <span class="pre">g_r_i_dV_i</span> <span class="pre">H_i_minus_E_i\n#</span> <span class="pre">SYMBOLS</span> <span class="pre">rᵢ</span> <span class="pre">g(rᵢ)</span> <span class="pre">N(rᵢ)</span> <span class="pre">g(rᵢ)ΔVᵢ</span> <span class="pre">Hᵢ−Eᵢ\n#</span> <span class="pre">UNITS</span> <span class="pre">Å</span> <span class="pre">1</span> <span class="pre">1</span> <span class="pre">Å³</span> <span class="pre">pairs'</span></em><a class="headerlink" href="#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AnalysisSchema(title='Radial</span> <span class="pre">distribution</span> <span class="pre">function',</span> <span class="pre">columns=(AnalysisColumn(field='r_i',</span> <span class="pre">symbol='rᵢ',</span> <span class="pre">unit='Å'),</span> <span class="pre">AnalysisColumn(field='g_r_i',</span> <span class="pre">symbol='g(rᵢ)',</span> <span class="pre">unit='1'),</span> <span class="pre">AnalysisColumn(field='N_r_i',</span> <span class="pre">symbol='N(rᵢ)',</span> <span class="pre">unit='1'),</span> <span class="pre">AnalysisColumn(field='g_r_i_dV_i',</span> <span class="pre">symbol='g(rᵢ)ΔVᵢ',</span> <span class="pre">unit='Å³'),</span> <span class="pre">AnalysisColumn(field='H_i_minus_E_i',</span> <span class="pre">symbol='Hᵢ−Eᵢ',</span> <span class="pre">unit='pairs')),</span> <span class="pre">plot=AnalysisPlotPreset(x_field='r_i',</span> <span class="pre">y_fields=('g_r_i',),</span> <span class="pre">x_label='r</span> <span class="pre">[\\cE\\C]',</span> <span class="pre">y_label='g(r)',</span> <span class="pre">legends=('g(r)',)))</span></em><a class="headerlink" href="#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

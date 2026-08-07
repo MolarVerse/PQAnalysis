@@ -9,6 +9,14 @@ analysis
 
 
 
+    Submodules
+    ----------
+
+    .. toctree::
+       :maxdepth: 1
+
+       PQAnalysis.analysis.output
+
     Subpackages
     -----------
 

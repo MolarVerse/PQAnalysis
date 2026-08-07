@@ -55,7 +55,7 @@ analysis.vibrational
        * - :func:`write_extxyz_modes <PQAnalysis.analysis.vibrational.vibrational_analysis.write_extxyz_modes>`
          - Write selected normal modes to one extended XYZ file.
        * - :func:`write_normal_modes <PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes>`
-         - Write normal modes in matrix form.
+         - Write normal modes in matrix form with one labeled column per mode.
        * - :func:`write_xyz_modes <PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes>`
          - Write one sinusoidal XYZ trajectory per selected normal mode.
     

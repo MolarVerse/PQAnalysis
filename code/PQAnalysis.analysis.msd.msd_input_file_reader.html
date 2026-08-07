@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>msd_input_file_reader &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.api.html">api</a></li>
@@ -193,9 +194,8 @@ Default is the last 20% of the window. It has to be at least
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The MSD output file follows the legacy Diffcalc format: one row per
-lag index with the columns lag index, MSD in x, MSD in y and MSD in z
-(all in Angstrom^2).</p>
+<p>The MSD output file follows the legacy Diffcalc format. See
+<a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-msd"><span class="std std-ref">MSD output files</span></a> for its columns and units.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>vacf &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -58,6 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.build_spectrum.html">build_spectrum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.check_momentum.html">check_momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.continue_input.html">continue_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.convert.html">convert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.gen2xyz.html">gen2xyz</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.main.html">main</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.msd.html">msd</a></li>
@@ -124,8 +125,12 @@ time-dependent atomic partial charges. Optionally,
 the legacy cosine-transform spectrum of the VACF is
 calculated. This is an input file based tool, so that
 the input file can be used to specify the parameters
-of the VACF calculation.
-For more information on the general the VACF analysis and its input file options please visit <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQAnalysis.analysis.vacf.vacf.VACF</span></code></a> and <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf_input_file_reader.html#module-PQAnalysis.analysis.vacf.vacf_input_file_reader" title="PQAnalysis.analysis.vacf.vacf_input_file_reader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PQAnalysis.analysis.vacf.vacf_input_file_reader</span></code></a></p>
+of the VACF calculation.</p>
+<p>The primary data file contains lag time and normalized correlation.
+Optional files contain the wavenumber spectrum and the windowed
+correlation used to calculate it.
+For more information on the general the VACF analysis and its input file options please visit <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">PQAnalysis.analysis.vacf.vacf.VACF</span></code></a> and <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf_input_file_reader.html#module-PQAnalysis.analysis.vacf.vacf_input_file_reader" title="PQAnalysis.analysis.vacf.vacf_input_file_reader"><code class="xref py py-mod docutils literal notranslate"><span class="pre">PQAnalysis.analysis.vacf.vacf_input_file_reader</span></code></a>
+For column definitions and units see <a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-vacf"><span class="std std-ref">VACF output files</span></a>.</p>
 <p>For the VACF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see <a class="reference internal" href="../userGuide/inputFile.html#inputfile"><span class="std std-ref">Input File</span></a>.</p>
 <table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Required keys</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
@@ -222,10 +227,9 @@ together with spectrum_file.</p></td>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The VACF output file follows the legacy FreqCalc format: one row per
-lag with the columns lag time in ps and normalized VACF. The spectrum
-output file follows the legacy ft.f format: one row per frequency
-index with the columns wavenumber in cm^-1 and amplitude.</p>
+<p>The output files follow the legacy FreqCalc and ft.f formats. See
+<a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-vacf"><span class="std std-ref">VACF output files</span></a> for the columns and units
+of the correlation, spectrum and optional windowed-correlation files.</p>
 </div>
 </section>
 <section id="summary">

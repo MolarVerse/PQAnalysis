@@ -1,0 +1,627 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Output Files &mdash; PQAnalysis  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
+      <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+
+  
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/userGuide/analysisOutputFiles.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Developer Guide" href="../developerGuide/developerGuide.html" />
+    <link rel="prev" title="Input File" href="inputFile.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            PQAnalysis
+              <img src="../_static/PQAnalysis.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="userGuide.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="inputFile.html">Input File</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Analysis Output Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developerGuide/developerGuide.html">Developer Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/PQAnalysis.html">Submodules</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/PQAnalysis.html#subpackages">Subpackages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/PQAnalysis.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code/PQAnalysis.html#reference">Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">PQAnalysis</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="userGuide.html">User Guide</a></li>
+      <li class="breadcrumb-item active">Analysis Output Files</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/userGuide/analysisOutputFiles.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="analysis-output-files">
+<span id="analysisoutputfiles"></span><h1>Analysis Output Files<a class="headerlink" href="#analysis-output-files" title="Link to this heading"></a></h1>
+<p>PQAnalysis analysis commands can write native text, CSV, TSV or XVG tables. The
+output filename selects the format:</p>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Analysis output formats</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 18.0%" />
+<col style="width: 30.0%" />
+<col style="width: 52.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Extension</p></th>
+<th class="head"><p>Format</p></th>
+<th class="head"><p>Intended use</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.csv</span></code></p></td>
+<td><p>Comma-separated values</p></td>
+<td><p>Excel, LibreOffice Calc, pandas and other table tools</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">.tsv</span></code></p></td>
+<td><p>Tab-separated values</p></td>
+<td><p>Spreadsheets and tables whose values may later contain commas</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">.xvg</span></code></p></td>
+<td><p>Grace XY data with plot directives</p></td>
+<td><p>Direct inspection with xmgrace</p></td>
+</tr>
+<tr class="row-odd"><td><p>Any other extension</p></td>
+<td><p>Native PQAnalysis text</p></td>
+<td><p>Self-describing scientific data and legacy workflows</p></td>
+</tr>
+</tbody>
+</table>
+<p>This means that <code class="docutils literal notranslate"><span class="pre">out_file</span> <span class="pre">table.csv</span></code> in an RDF, MSD, VACF or vibrations input
+file writes CSV directly. Names ending in <code class="docutils literal notranslate"><span class="pre">.dat</span></code>, <code class="docutils literal notranslate"><span class="pre">.out</span></code>, <code class="docutils literal notranslate"><span class="pre">.txt</span></code> or no
+extension retain the native format.</p>
+<section id="native-format">
+<h2>Native format<a class="headerlink" href="#native-format" title="Link to this heading"></a></h2>
+<p>Column numbers in this reference are one-based. Every native tabular output
+starts with a compact UTF-8 <code class="docutils literal notranslate"><span class="pre">#</span></code> metadata block. <code class="docutils literal notranslate"><span class="pre">FIELDS</span></code> lists one stable
+ASCII identifier per numeric column, <code class="docutils literal notranslate"><span class="pre">SYMBOLS</span></code> gives the corresponding
+scientific notation in Unicode, and <code class="docutils literal notranslate"><span class="pre">UNITS</span></code> lists the units in the same
+order. Values remain single whitespace-free tokens; compound units use a
+middle dot. Examples include <code class="docutils literal notranslate"><span class="pre">ν̃</span></code>, <code class="docutils literal notranslate"><span class="pre">Å</span></code>, <code class="docutils literal notranslate"><span class="pre">Å³</span></code> and <code class="docutils literal notranslate"><span class="pre">cm⁻¹</span></code>. The tables
+below give the full quantities and definitions. Numeric rows retain the legacy
+ordering and formatting. Readers such as <code class="docutils literal notranslate"><span class="pre">numpy.loadtxt</span></code> ignore the comment
+block automatically and continue to work without special options.</p>
+<p>For example, an RDF data file begins with</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span># PQAnalysis: Radial distribution function
+# FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
+# SYMBOLS rᵢ g(rᵢ) N(rᵢ) g(rᵢ)ΔVᵢ Hᵢ−Eᵢ
+# UNITS Å 1 1 Å³ pairs
+0.5 0.0 0.0 0.0 -0.05026548245743666
+</pre></div>
+</div>
+<p>Log files are labeled, human-readable text and are not described as columnar
+data here.</p>
+</section>
+<section id="csv-and-tsv">
+<h2>CSV and TSV<a class="headerlink" href="#csv-and-tsv" title="Link to this heading"></a></h2>
+<p>CSV and TSV files contain one header row followed by numeric rows. The header
+uses the stable identifiers from the native <code class="docutils literal notranslate"><span class="pre">FIELDS</span></code> line, for example:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>r_i,g_r_i,N_r_i,g_r_i_dV_i,H_i_minus_E_i
+0.5,0.0,0.0,0.0,-0.05026548245743666
+</pre></div>
+</div>
+<p>These files open directly in Excel and LibreOffice Calc and can be read as
+ordinary CSV or TSV. Scientific symbols, units and definitions are documented
+by the field identifier in the tables below.</p>
+</section>
+<section id="xvg-and-xmgrace">
+<h2>XVG and xmgrace<a class="headerlink" href="#xvg-and-xmgrace" title="Link to this heading"></a></h2>
+<p>XVG files contain Grace <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> directives and standard XY data-set blocks. They
+can be opened directly with <code class="docutils literal notranslate"><span class="pre">xmgrace</span> <span class="pre">rdf.xvg</span></code>; PQAnalysis does not launch the
+GUI itself. Each original analysis-table column is stored as one Grace data set
+with the selected x axis. Columns outside the selected quick plot are retained
+as hidden Grace sets. PQAnalysis metadata records the original schema and plot
+projection, making its XVG output fully convertible back to native, CSV, TSV or
+XVG without losing analysis columns. The default quick plots are:</p>
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Default XVG plots</span><a class="headerlink" href="#id2" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 28.0%" />
+<col style="width: 38.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Analysis table</p></th>
+<th class="head"><p>x axis</p></th>
+<th class="head"><p>y data sets</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>RDF</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">r_i</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">g_r_i</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>MSD</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">lag</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">msd_x</span></code>, <code class="docutils literal notranslate"><span class="pre">msd_y</span></code>, <code class="docutils literal notranslate"><span class="pre">msd_z</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>VACF or windowed correlation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">time</span></code></p></td>
+<td><p>Correlation value</p></td>
+</tr>
+<tr class="row-odd"><td><p>VACF or broadened spectrum</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">wavenumber</span></code></p></td>
+<td><p>Amplitude or intensity</p></td>
+</tr>
+<tr class="row-even"><td><p>Total momentum</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">frame</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scaled_momentum_norm</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Vibrations without IR intensities</p></td>
+<td><p>One-based mode index</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">wavenumber</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Vibrations with IR intensities</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">wavenumber</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ir_intensity</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="additional-outputs">
+<h2>Additional outputs<a class="headerlink" href="#additional-outputs" title="Link to this heading"></a></h2>
+<p>All tabular analysis CLIs accept repeatable <code class="docutils literal notranslate"><span class="pre">--export</span> <span class="pre">FILE</span></code> options. The
+primary output is still controlled by <code class="docutils literal notranslate"><span class="pre">out_file</span></code> or <code class="docutils literal notranslate"><span class="pre">--output</span></code>; every
+export filename independently selects its format.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pqanalysis<span class="w"> </span>rdf<span class="w"> </span>rdf.in<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--export<span class="w"> </span>rdf.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--export<span class="w"> </span>rdf.tsv<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--export<span class="w"> </span>rdf.xvg
+</pre></div>
+</div>
+<p>The same option is available for <code class="docutils literal notranslate"><span class="pre">msd</span></code>, <code class="docutils literal notranslate"><span class="pre">vacf</span></code>, <code class="docutils literal notranslate"><span class="pre">build_spectrum</span></code>,
+<code class="docutils literal notranslate"><span class="pre">check_momentum</span></code> and <code class="docutils literal notranslate"><span class="pre">vibrations</span></code>. For VACF, <code class="docutils literal notranslate"><span class="pre">--export</span></code> represents the
+main correlation table. The configured <code class="docutils literal notranslate"><span class="pre">spectrum_file</span></code> and
+<code class="docutils literal notranslate"><span class="pre">windowed_out_file</span></code> select their own formats from their filenames.</p>
+</section>
+<section id="converting-existing-output">
+<h2>Converting existing output<a class="headerlink" href="#converting-existing-output" title="Link to this heading"></a></h2>
+<p>The converter reads native, CSV, TSV or PQAnalysis-generated XVG analysis
+tables and can create several outputs in one command:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pqanalysis<span class="w"> </span>convert<span class="w"> </span>rdf.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>rdf.csv<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>rdf.tsv<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>rdf.xvg
+</pre></div>
+</div>
+<p>The conversion also works in the other direction:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pqanalysis<span class="w"> </span>convert<span class="w"> </span>rdf.xvg<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>rdf.out<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span>rdf.csv
+</pre></div>
+</div>
+<p>Input format is detected from the file content rather than its extension, so a
+CSV table named <code class="docutils literal notranslate"><span class="pre">table.dat</span></code> or an XVG table named <code class="docutils literal notranslate"><span class="pre">table.out</span></code> can still be
+converted. Exact <code class="docutils literal notranslate"><span class="pre">FIELDS</span></code> headers restore the known scientific schema and XVG
+plot preset. <code class="docutils literal notranslate"><span class="pre">--x</span> <span class="pre">FIELD</span></code> and repeatable <code class="docutils literal notranslate"><span class="pre">--y</span> <span class="pre">FIELD</span></code> options override the
+default XVG projection without removing unplotted data from the XVG file. Input
+and output paths, and all output paths, must be distinct.</p>
+<p>By default, conversion stops with an error naming the existing file if any
+output path already exists. No requested output is written in that case. Use
+<code class="docutils literal notranslate"><span class="pre">--mode</span> <span class="pre">o</span></code> only to request replacement explicitly.</p>
+</section>
+<section id="rdf">
+<span id="analysis-output-rdf"></span><h2>RDF<a class="headerlink" href="#rdf" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">rdf</span></code> command writes five columns to <code class="docutils literal notranslate"><span class="pre">out_file</span></code>. For bin <span class="math notranslate nohighlight">\(i\)</span>, let
+<span class="math notranslate nohighlight">\(H_i\)</span> be the number of eligible reference-target pairs accumulated over
+all frames, <span class="math notranslate nohighlight">\(N_R\)</span> the number of reference atoms, <span class="math notranslate nohighlight">\(N_F\)</span> the number
+of frames and <span class="math notranslate nohighlight">\(\rho_T\)</span> the effective target number density. The bin edges
+and spherical-shell volume are</p>
+<div class="math notranslate nohighlight">
+\[r_i^- = r_{\min} + i\,\Delta r, \qquad
+r_i^+ = r_i^- + \Delta r, \qquad
+\Delta V_i = \frac{4\pi}{3}\left((r_i^+)^3 - (r_i^-)^3\right).\]</div>
+<p>The ideal-gas pair count for the shell is
+<span class="math notranslate nohighlight">\(E_i = \rho_T N_R N_F \Delta V_i\)</span>.</p>
+<table class="analysis-output-columns docutils align-default" id="id3">
+<caption><span class="caption-text">RDF <code class="docutils literal notranslate"><span class="pre">out_file</span></code> columns</span><a class="headerlink" href="#id3" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 24.0%" />
+<col style="width: 48.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Bin-center distance</p></td>
+<td><p><span class="math notranslate nohighlight">\(r_i = (r_i^- + r_i^+) / 2\)</span></p></td>
+<td><p>Angstrom</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Radial distribution function</p></td>
+<td><p><span class="math notranslate nohighlight">\(g_i = H_i / E_i\)</span></p></td>
+<td><p>Dimensionless</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Cumulative coordination number</p></td>
+<td><p><span class="math notranslate nohighlight">\(\sum_{j=0}^{i} H_j / (N_R N_F)\)</span>, the average number of
+eligible target atoms per reference atom up to <span class="math notranslate nohighlight">\(r_i^+\)</span></p></td>
+<td><p>Dimensionless</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Density-normalized shell population</p></td>
+<td><p><span class="math notranslate nohighlight">\(H_i / (\rho_T N_R N_F) = g_i\Delta V_i\)</span></p></td>
+<td><p>Angstrom<sup>3</sup></p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Ideal-gas pair-count residual</p></td>
+<td><p><span class="math notranslate nohighlight">\(H_i - E_i\)</span>; positive values are an excess and negative values
+are a deficit relative to the ideal-gas shell count</p></td>
+<td><p>Pair count</p></td>
+</tr>
+</tbody>
+</table>
+<p>Self pairs are excluded. When <code class="docutils literal notranslate"><span class="pre">no_intra_molecular</span></code> is enabled, pairs from the
+same molecule are excluded from <span class="math notranslate nohighlight">\(H_i\)</span> and from the effective target
+density.</p>
+</section>
+<section id="msd">
+<span id="analysis-output-msd"></span><h2>MSD<a class="headerlink" href="#msd" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">msd</span></code> command writes the legacy Diffcalc layout to <code class="docutils literal notranslate"><span class="pre">out_file</span></code>.</p>
+<table class="analysis-output-columns docutils align-default" id="id4">
+<caption><span class="caption-text">MSD <code class="docutils literal notranslate"><span class="pre">out_file</span></code> columns</span><a class="headerlink" href="#id4" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 32.0%" />
+<col style="width: 40.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Lag index</p></td>
+<td><p>Frame lag from zero through <code class="docutils literal notranslate"><span class="pre">window</span></code></p></td>
+<td><p>Frames</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathrm{MSD}_x\)</span></p></td>
+<td><p>Mean squared displacement along x</p></td>
+<td><p>Angstrom<sup>2</sup></p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathrm{MSD}_y\)</span></p></td>
+<td><p>Mean squared displacement along y</p></td>
+<td><p>Angstrom<sup>2</sup></p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p><span class="math notranslate nohighlight">\(\mathrm{MSD}_z\)</span></p></td>
+<td><p>Mean squared displacement along z</p></td>
+<td><p>Angstrom<sup>2</sup></p></td>
+</tr>
+</tbody>
+</table>
+<p>The total MSD is the sum of columns 2 through 4. It is returned by the Python
+API but is not repeated in the file. If <code class="docutils literal notranslate"><span class="pre">time_step</span></code> is provided, multiply
+column 1 by it to obtain lag time in ps. The fitted diffusion coefficients are
+written to <code class="docutils literal notranslate"><span class="pre">log_file</span></code>, not <code class="docutils literal notranslate"><span class="pre">out_file</span></code>.</p>
+</section>
+<section id="vacf-and-charge-flux-correlation">
+<span id="analysis-output-vacf"></span><h2>VACF and charge-flux correlation<a class="headerlink" href="#vacf-and-charge-flux-correlation" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">vacf</span></code> command can write three two-column files. Correlations are
+normalized by their zero-lag value, including charge-weighted correlations.</p>
+<table class="analysis-output-columns docutils align-default" id="id5">
+<caption><span class="caption-text">VACF <code class="docutils literal notranslate"><span class="pre">out_file</span></code> columns</span><a class="headerlink" href="#id5" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 42.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Lag time</p></td>
+<td><p>Frame lag multiplied by <code class="docutils literal notranslate"><span class="pre">time_step</span></code></p></td>
+<td><p>ps</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Normalized correlation</p></td>
+<td><p>VACF, or charge-flux autocorrelation when charges are supplied</p></td>
+<td><p>Dimensionless</p></td>
+</tr>
+</tbody>
+</table>
+<table class="analysis-output-columns docutils align-default" id="id6">
+<caption><span class="caption-text">VACF <code class="docutils literal notranslate"><span class="pre">spectrum_file</span></code> columns</span><a class="headerlink" href="#id6" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 42.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Wavenumber</p></td>
+<td><p>Legacy cosine-transform frequency axis</p></td>
+<td><p>cm<sup>-1</sup></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Spectrum amplitude</p></td>
+<td><p>Absolute cosine-transform amplitude of the optionally windowed
+normalized correlation</p></td>
+<td><p>Arbitrary units</p></td>
+</tr>
+</tbody>
+</table>
+<table class="analysis-output-columns docutils align-default" id="id7">
+<caption><span class="caption-text">VACF <code class="docutils literal notranslate"><span class="pre">windowed_out_file</span></code> columns</span><a class="headerlink" href="#id7" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 42.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Lag time</p></td>
+<td><p>Same axis as <code class="docutils literal notranslate"><span class="pre">out_file</span></code></p></td>
+<td><p>ps</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Windowed correlation</p></td>
+<td><p>Column 2 of <code class="docutils literal notranslate"><span class="pre">out_file</span></code> multiplied by the selected apodization window</p></td>
+<td><p>Dimensionless</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="broadened-spectrum">
+<span id="analysis-output-spectrum"></span><h2>Broadened spectrum<a class="headerlink" href="#broadened-spectrum" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">build_spectrum</span></code> command writes two columns to <code class="docutils literal notranslate"><span class="pre">--output</span></code> or standard
+output.</p>
+<table class="analysis-output-columns docutils align-default" id="id8">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">build_spectrum</span></code> output columns</span><a class="headerlink" href="#id8" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 42.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Wavenumber</p></td>
+<td><p>Regular output grid from <code class="docutils literal notranslate"><span class="pre">--min</span></code> to the exclusive <code class="docutils literal notranslate"><span class="pre">--max</span></code></p></td>
+<td><p>cm<sup>-1</sup></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Broadened intensity</p></td>
+<td><p>Sum of the Gaussian or Lorentzian peak-height profiles</p></td>
+<td><p>Same as the input intensities</p></td>
+</tr>
+</tbody>
+</table>
+<p>The broadening uses a peak-height convention and does not normalize peak area.</p>
+</section>
+<section id="total-linear-momentum">
+<span id="analysis-output-momentum"></span><h2>Total linear momentum<a class="headerlink" href="#total-linear-momentum" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">check_momentum</span></code> command writes two columns to <code class="docutils literal notranslate"><span class="pre">--output</span></code> or standard
+output.</p>
+<table class="analysis-output-columns docutils align-default" id="id9">
+<caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">check_momentum</span></code> output columns</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 42.0%" />
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Definition</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Frame index</p></td>
+<td><p>One-based index across all input trajectory files</p></td>
+<td><p>Frames</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Scaled momentum norm</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scale</span></code> multiplied by <span class="math notranslate nohighlight">\(\left|\sum_i m_i\mathbf{v}_i\right|\)</span></p></td>
+<td><p>Set by <code class="docutils literal notranslate"><span class="pre">--scale</span></code>; default is amu Angstrom fs<sup>-1</sup></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="vibrational-analysis">
+<span id="analysis-output-vibrations"></span><h2>Vibrational analysis<a class="headerlink" href="#vibrational-analysis" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">vibrations</span></code> command writes one required table and up to three optional
+normal-mode representations.</p>
+<section id="out-file">
+<h3><code class="docutils literal notranslate"><span class="pre">out_file</span></code><a class="headerlink" href="#out-file" title="Link to this heading"></a></h3>
+<p>Without a <code class="docutils literal notranslate"><span class="pre">moldescriptor_file</span></code>, the table has three columns. With partial
+charges, the IR-intensity column is inserted as column 2 and the table has four
+columns. The file’s <code class="docutils literal notranslate"><span class="pre">FIELDS</span></code> and <code class="docutils literal notranslate"><span class="pre">UNITS</span></code> lines reflect the selected layout.
+The accompanying <code class="docutils literal notranslate"><span class="pre">SYMBOLS</span></code> line provides the Unicode scientific notation.</p>
+<table class="analysis-output-columns docutils align-default" id="id10">
+<caption><span class="caption-text">Vibrational <code class="docutils literal notranslate"><span class="pre">out_file</span></code> columns</span><a class="headerlink" href="#id10" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 8.0%" />
+<col style="width: 34.0%" />
+<col style="width: 38.0%" />
+<col style="width: 20.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Quantity</p></th>
+<th class="head"><p>Availability</p></th>
+<th class="head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Signed wavenumber</p></td>
+<td><p>Always; negative values represent imaginary modes</p></td>
+<td><p>cm<sup>-1</sup></p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>IR intensity</p></td>
+<td><p>Only with partial charges</p></td>
+<td><p>km mol<sup>-1</sup></p></td>
+</tr>
+<tr class="row-even"><td><p>2 or 3</p></td>
+<td><p>Force constant</p></td>
+<td><p>Always</p></td>
+<td><p>mdyn Angstrom<sup>-1</sup></p></td>
+</tr>
+<tr class="row-odd"><td><p>3 or 4</p></td>
+<td><p>Reduced mass</p></td>
+<td><p>Always</p></td>
+<td><p>amu</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="normal-modes-file">
+<h3><code class="docutils literal notranslate"><span class="pre">normal_modes_file</span></code><a class="headerlink" href="#normal-modes-file" title="Link to this heading"></a></h3>
+<p>This file contains the normal-mode matrix. Its metadata identifies the matrix
+element as <span class="math notranslate nohighlight">\(e_{\alpha j}\)</span>, the row order as <code class="docutils literal notranslate"><span class="pre">x_1,y_1,z_1,...</span></code>, and each
+column as <code class="docutils literal notranslate"><span class="pre">mode_1</span></code>, <code class="docutils literal notranslate"><span class="pre">mode_2</span></code> and so on. Columns are modes in the same order
+as the rows of <code class="docutils literal notranslate"><span class="pre">out_file</span></code>. Values are dimensionless normalized Cartesian mode
+components.</p>
+</section>
+<section id="modes-prefix">
+<h3><code class="docutils literal notranslate"><span class="pre">modes_prefix</span></code><a class="headerlink" href="#modes-prefix" title="Link to this heading"></a></h3>
+<p>One multi-frame XYZ animation named <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;-&lt;mode&gt;.xyz</span></code> is written per
+selected mode. Each atom row contains species, x, y and z in Angstrom. The XYZ
+comment records the one-based mode number, wavenumber in cm<sup>-1</sup>, frame
+number and sinusoidal phase.</p>
+</section>
+<section id="modes-file">
+<h3><code class="docutils literal notranslate"><span class="pre">modes_file</span></code><a class="headerlink" href="#modes-file" title="Link to this heading"></a></h3>
+<p>This extended XYZ file contains one image per selected mode. The atom columns
+are species, equilibrium x/y/z coordinates in Angstrom and normalized mode
+x/y/z components. The comment declares
+<code class="docutils literal notranslate"><span class="pre">Properties=species:S:1:pos:R:3:mode:R:3</span></code> and records the one-based mode
+number, wavenumber and optional IR intensity.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="inputFile.html" class="btn btn-neutral float-left" title="Input File" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../developerGuide/developerGuide.html" class="btn btn-neutral float-right" title="Developer Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Jakob Gamper, Josef M. Gallmetzer, Clarissa A. Seidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

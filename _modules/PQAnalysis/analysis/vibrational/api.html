@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.vibrational.api &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -83,6 +83,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">MoldescriptorReader</span><span class="p">,</span> <span class="n">RestartFileReader</span><span class="p">,</span> <span class="n">read_trajectory</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
@@ -103,9 +104,21 @@
 <div class="viewcode-block" id="vibrations">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.api.html#PQAnalysis.analysis.vibrational.api.vibrations">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">vibrations</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vibrations</span><span class="p">(</span>
+    <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run vibrational analysis from an input file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    input_file : str</span>
+<span class="sd">        Vibrational analysis input file.</span>
+<span class="sd">    export_files : Sequence[str] | None, optional</span>
+<span class="sd">        Additional outputs for the main vibrational table. ``.csv``,</span>
+<span class="sd">        ``.tsv`` and ``.xvg`` select those formats; other extensions use</span>
+<span class="sd">        native PQAnalysis text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">input_reader</span> <span class="o">=</span> <span class="n">VibrationalAnalysisInputFileReader</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
     <span class="n">input_reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -125,7 +138,11 @@
         <span class="n">atom_charges</span><span class="o">=</span><span class="n">atom_charges</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="n">write_calculate_output</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">out_file</span><span class="p">)</span>
+    <span class="n">write_calculate_output</span><span class="p">(</span>
+        <span class="n">result</span><span class="p">,</span>
+        <span class="n">input_reader</span><span class="o">.</span><span class="n">out_file</span><span class="p">,</span>
+        <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">normal_modes_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">write_normal_modes</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">normal_modes</span><span class="p">,</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">normal_modes_file</span><span class="p">)</span>

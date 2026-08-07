@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>msd_output_file_writer &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="PQAnalysis.analysis.msd.api.html">api</a></li>
@@ -130,8 +131,15 @@
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MSDDataWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/msd/msd_output_file_writer.html#MSDDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">MSDDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/msd/msd_output_file_writer.html#MSDDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p>
 <p>Class for writing the data of an
 <a class="reference internal" href="PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSD" title="PQAnalysis.analysis.msd.msd.MSD"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSD</span></code></a>
 analysis to a file.</p>
@@ -140,7 +148,10 @@ one row per lag index with the columns lag index, MSD in x,
 MSD in y and MSD in z (all in Angstrom^2).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the filename to write to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The primary output filename. Its extension selects the format.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -160,6 +171,16 @@ the data output from the MSD.run() method</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter.header">
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#</span> <span class="pre">PQAnalysis:</span> <span class="pre">Mean</span> <span class="pre">squared</span> <span class="pre">displacement\n#</span> <span class="pre">FIELDS</span> <span class="pre">lag</span> <span class="pre">msd_x</span> <span class="pre">msd_y</span> <span class="pre">msd_z\n#</span> <span class="pre">SYMBOLS</span> <span class="pre">k</span> <span class="pre">⟨Δx(k)²⟩</span> <span class="pre">⟨Δy(k)²⟩</span> <span class="pre">⟨Δz(k)²⟩\n#</span> <span class="pre">UNITS</span> <span class="pre">frames</span> <span class="pre">Å²</span> <span class="pre">Å²</span> <span class="pre">Å²'</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AnalysisSchema(title='Mean</span> <span class="pre">squared</span> <span class="pre">displacement',</span> <span class="pre">columns=(AnalysisColumn(field='lag',</span> <span class="pre">symbol='k',</span> <span class="pre">unit='frames'),</span> <span class="pre">AnalysisColumn(field='msd_x',</span> <span class="pre">symbol='⟨Δx(k)²⟩',</span> <span class="pre">unit='Å²'),</span> <span class="pre">AnalysisColumn(field='msd_y',</span> <span class="pre">symbol='⟨Δy(k)²⟩',</span> <span class="pre">unit='Å²'),</span> <span class="pre">AnalysisColumn(field='msd_z',</span> <span class="pre">symbol='⟨Δz(k)²⟩',</span> <span class="pre">unit='Å²')),</span> <span class="pre">plot=AnalysisPlotPreset(x_field='lag',</span> <span class="pre">y_fields=('msd_x',</span> <span class="pre">'msd_y',</span> <span class="pre">'msd_z'),</span> <span class="pre">x_label='Lag</span> <span class="pre">[frames]',</span> <span class="pre">y_label='MSD</span> <span class="pre">[\\cE\\C\\S2\\N]',</span> <span class="pre">legends=('x',</span> <span class="pre">'y',</span> <span class="pre">'z')))</span></em><a class="headerlink" href="#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>vibrational_analysis &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
@@ -193,7 +194,7 @@
 <td><p>Write selected normal modes to one extended XYZ file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_normal_modes</span></code></a></p></td>
-<td><p>Write normal modes in matrix form.</p></td>
+<td><p>Write normal modes in matrix form with one labeled column per mode.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes" title="PQAnalysis.analysis.vibrational.vibrational_analysis.write_xyz_modes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_xyz_modes</span></code></a></p></td>
 <td><p>Write one sinusoidal XYZ trajectory per selected normal mode.</p></td>
@@ -554,10 +555,21 @@
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">result</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><span class="pre">VibrationalAnalysisResult</span></a></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 </dl>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_calculate_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_calculate_output" title="Link to this definition"></a></dt>
 <dd><p>Write the tabular vibrational analysis output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result</strong> (<a class="reference internal" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><em>VibrationalAnalysisResult</em></a>) – Calculated wavenumbers, force constants, reduced masses and optional
+IR intensities.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Primary output filename, or None for stdout.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -586,10 +598,20 @@
 <dl>
 <dd><em class="sig-param"><span class="n"><span class="pre">normal_modes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
 </dl>
 
 <span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vibrational/vibrational_analysis.html#write_normal_modes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vibrational.vibrational_analysis.write_normal_modes" title="Link to this definition"></a></dt>
-<dd><p>Write normal modes in matrix form.</p>
+<dd><p>Write normal modes in matrix form with one labeled column per mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>normal_modes</strong> (<em>numpy.ndarray</em>) – Matrix with Cartesian components in rows and modes in columns.</p></li>
+<li><p><strong>filename</strong> (<em>str</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Primary output filename, or None for stdout.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>check_momentum &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -58,6 +58,7 @@
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.build_spectrum.html">build_spectrum</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">check_momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.continue_input.html">continue_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.convert.html">convert</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.gen2xyz.html">gen2xyz</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.main.html">main</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.cli.msd.html">msd</a></li>
@@ -124,11 +125,12 @@ scaled momentum norm is written. With velocities in Angstrom/s (PQ
 velocity trajectories) the default scaling factor of 1e-15 converts
 the momentum norm from amu*Angstrom/s to amu*Angstrom/fs.</p>
 <p>Note that the velocities are parsed from file in single precision, so
-reported norms below roughly 1e-7 * sum_i m_i * <a href="#id1"><span class="problematic" id="id2">|v_i|</span></a> * scale are
+reported norms below roughly 1e-7 * sum_i m_i * norm(v_i) * scale are
 parsing noise, not physical center of mass drift. The legacy
 equipartition.jl tool parses the velocities in double precision and
 therefore resolves correspondingly smaller drift for
 momentum-conserving trajectories.</p>
+<p>For column definitions and units see <a class="reference internal" href="../userGuide/analysisOutputFiles.html#analysis-output-momentum"><span class="std std-ref">total-momentum output</span></a>.</p>
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>

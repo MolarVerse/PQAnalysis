@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>vacf_output_file_writer &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -51,6 +51,7 @@
 <li class="toctree-l1"><a class="reference internal" href="PQAnalysis.html">Submodules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="PQAnalysis.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="PQAnalysis.analysis.html">analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.output.html">output</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.momentum.html">analysis.momentum</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.msd.html">analysis.msd</a></li>
 <li class="toctree-l3"><a class="reference internal" href="PQAnalysis.analysis.rdf.html">analysis.rdf</a></li>
@@ -137,8 +138,15 @@
 <h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFDataWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p>
 <p>Class for writing the data of an
 <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACF</span></code></a>
 analysis to a file.</p>
@@ -147,7 +155,10 @@ format: one row per lag with the columns lag time in ps and
 normalized VACF.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the filename to write to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The primary output filename. Its extension selects the format.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -167,6 +178,16 @@ VACF.run() method</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter.header">
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#</span> <span class="pre">PQAnalysis:</span> <span class="pre">Normalized</span> <span class="pre">correlation</span> <span class="pre">function\n#</span> <span class="pre">FIELDS</span> <span class="pre">time</span> <span class="pre">normalized_correlation\n#</span> <span class="pre">SYMBOLS</span> <span class="pre">t</span> <span class="pre">C(t)∕C(0)\n#</span> <span class="pre">UNITS</span> <span class="pre">ps</span> <span class="pre">1'</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AnalysisSchema(title='Normalized</span> <span class="pre">correlation</span> <span class="pre">function',</span> <span class="pre">columns=(AnalysisColumn(field='time',</span> <span class="pre">symbol='t',</span> <span class="pre">unit='ps'),</span> <span class="pre">AnalysisColumn(field='normalized_correlation',</span> <span class="pre">symbol='C(t)∕C(0)',</span> <span class="pre">unit='1')),</span> <span class="pre">plot=AnalysisPlotPreset(x_field='time',</span> <span class="pre">y_fields=('normalized_correlation',),</span> <span class="pre">x_label='t</span> <span class="pre">[ps]',</span> <span class="pre">y_label='C(t)</span> <span class="pre">/</span> <span class="pre">C(0)',</span> <span class="pre">legends=('C(t)</span> <span class="pre">/</span> <span class="pre">C(0)',)))</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -230,8 +251,15 @@ and the most important setup parameters of the
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFSpectrumDataWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFSpectrumDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFSpectrumDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFSpectrumDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p>
 <p>Class for writing the spectrum of an
 <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACF</span></code></a>
 analysis to a file.</p>
@@ -239,7 +267,10 @@ analysis to a file.</p>
 frequency index with the columns wavenumber in cm^-1 and amplitude.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the filename to write to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The primary output filename. Its extension selects the format.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -261,12 +292,29 @@ function</p>
 </dl>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter.header">
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#</span> <span class="pre">PQAnalysis:</span> <span class="pre">VACF</span> <span class="pre">spectrum\n#</span> <span class="pre">FIELDS</span> <span class="pre">wavenumber</span> <span class="pre">amplitude\n#</span> <span class="pre">SYMBOLS</span> <span class="pre">ν̃</span> <span class="pre">|Ĉ(ν̃)|\n#</span> <span class="pre">UNITS</span> <span class="pre">cm⁻¹</span> <span class="pre">arbitrary'</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AnalysisSchema(title='VACF</span> <span class="pre">spectrum',</span> <span class="pre">columns=(AnalysisColumn(field='wavenumber',</span> <span class="pre">symbol='ν̃',</span> <span class="pre">unit='cm⁻¹'),</span> <span class="pre">AnalysisColumn(field='amplitude',</span> <span class="pre">symbol='|Ĉ(ν̃)|',</span> <span class="pre">unit='arbitrary')),</span> <span class="pre">plot=AnalysisPlotPreset(x_field='wavenumber',</span> <span class="pre">y_fields=('amplitude',),</span> <span class="pre">x_label='Wavenumber</span> <span class="pre">[cm\\S-1\\N]',</span> <span class="pre">y_label='Amplitude</span> <span class="pre">[a.u.]',</span> <span class="pre">legends=('Amplitude',)))</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFSpectrumDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFWindowedDataWriter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFWindowedDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="PQAnalysis.io.base.html#PQAnalysis.io.base.BaseWriter" title="PQAnalysis.io.base.BaseWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriter</span></code></a></p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">VACFWindowedDataWriter</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">export_files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/analysis/vacf/vacf_output_file_writer.html#VACFWindowedDataWriter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter" title="PQAnalysis.analysis.output.AnalysisDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisDataWriter</span></code></a></p>
 <p>Class for writing the windowed (apodized) correlation function of
 an <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACF</span></code></a> analysis to a
 file.</p>
@@ -275,7 +323,10 @@ one row per lag with the columns lag time in ps and windowed
 correlation function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – the filename to write to</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<em>str</em>) – The primary output filename. Its extension selects the format.</p></li>
+<li><p><strong>export_files</strong> (<em>Sequence</em><em>[</em><em>str</em><em>] </em><em>| </em><em>None</em><em>, </em><em>optional</em>) – Additional output filenames, by default None.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -297,6 +348,16 @@ function</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter.header">
+<span class="sig-name descname"><span class="pre">header</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'#</span> <span class="pre">PQAnalysis:</span> <span class="pre">Windowed</span> <span class="pre">correlation</span> <span class="pre">function\n#</span> <span class="pre">FIELDS</span> <span class="pre">time</span> <span class="pre">windowed_correlation\n#</span> <span class="pre">SYMBOLS</span> <span class="pre">t</span> <span class="pre">C(t)w(t)\n#</span> <span class="pre">UNITS</span> <span class="pre">ps</span> <span class="pre">1'</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter.header" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter.schema">
+<span class="sig-name descname"><span class="pre">schema</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AnalysisSchema</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">AnalysisSchema(title='Windowed</span> <span class="pre">correlation</span> <span class="pre">function',</span> <span class="pre">columns=(AnalysisColumn(field='time',</span> <span class="pre">symbol='t',</span> <span class="pre">unit='ps'),</span> <span class="pre">AnalysisColumn(field='windowed_correlation',</span> <span class="pre">symbol='C(t)w(t)',</span> <span class="pre">unit='1')),</span> <span class="pre">plot=AnalysisPlotPreset(x_field='time',</span> <span class="pre">y_fields=('windowed_correlation',),</span> <span class="pre">x_label='t</span> <span class="pre">[ps]',</span> <span class="pre">y_label='C(t)w(t)',</span> <span class="pre">legends=('Windowed</span> <span class="pre">correlation',)))</span></em><a class="headerlink" href="#PQAnalysis.analysis.vacf.vacf_output_file_writer.VACFWindowedDataWriter.schema" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

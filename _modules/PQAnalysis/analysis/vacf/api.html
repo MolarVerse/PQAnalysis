@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.vacf.api &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -82,6 +82,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrajectoryReader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDEngineFormat</span><span class="p">,</span> <span class="n">TrajectoryFormat</span>
@@ -194,7 +195,11 @@
 <div class="viewcode-block" id="vacf">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vacf.api.html#PQAnalysis.analysis.vacf.api.vacf">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">vacf</span><span class="p">(</span><span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vacf</span><span class="p">(</span>
+    <span class="n">input_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
+    <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the velocity auto-correlation function (VACF) using a</span>
 <span class="sd">    given input file.</span>
@@ -219,6 +224,10 @@
 <span class="sd">        the format of the input trajectory. Default is &quot;PQ&quot;.</span>
 <span class="sd">        For more information on the supported formats please visit</span>
 <span class="sd">        :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.</span>
+<span class="sd">    export_files : Sequence[str] | None, optional</span>
+<span class="sd">        Additional outputs for the main correlation table. ``.csv``,</span>
+<span class="sd">        ``.tsv`` and ``.xvg`` select those formats; other extensions use</span>
+<span class="sd">        native PQAnalysis text.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">md_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_format</span><span class="p">)</span>
@@ -227,8 +236,7 @@
     <span class="n">input_reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
     <span class="n">traj_reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span>
-        <span class="n">input_reader</span><span class="o">.</span><span class="n">traj_files</span><span class="p">,</span>
-        <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span>
+        <span class="n">input_reader</span><span class="o">.</span><span class="n">traj_files</span><span class="p">,</span> <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span>
     <span class="p">)</span>
 
     <span class="n">charges</span> <span class="o">=</span> <span class="kc">None</span>
@@ -261,7 +269,10 @@
 
     <span class="c1"># all output writers are constructed before the run so that a</span>
     <span class="c1"># pre-existing output file aborts before the expensive analysis</span>
-    <span class="n">data_writer</span> <span class="o">=</span> <span class="n">VACFDataWriter</span><span class="p">(</span><span class="n">input_reader</span><span class="o">.</span><span class="n">out_file</span><span class="p">)</span>
+    <span class="n">data_writer</span> <span class="o">=</span> <span class="n">VACFDataWriter</span><span class="p">(</span>
+        <span class="n">input_reader</span><span class="o">.</span><span class="n">out_file</span><span class="p">,</span>
+        <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">log_writer</span> <span class="o">=</span> <span class="n">VACFLogWriter</span><span class="p">(</span><span class="n">input_reader</span><span class="o">.</span><span class="n">log_file</span><span class="p">)</span>
 
     <span class="n">spectrum_writer</span> <span class="o">=</span> <span class="kc">None</span>

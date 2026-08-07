@@ -20,6 +20,7 @@ cli
        PQAnalysis.cli.build_spectrum
        PQAnalysis.cli.check_momentum
        PQAnalysis.cli.continue_input
+       PQAnalysis.cli.convert
        PQAnalysis.cli.gen2xyz
        PQAnalysis.cli.main
        PQAnalysis.cli.msd

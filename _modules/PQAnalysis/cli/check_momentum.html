@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.cli.check_momentum &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -104,7 +104,7 @@
 <span class="s2">the momentum norm from amu*Angstrom/s to amu*Angstrom/fs.</span>
 
 <span class="s2">Note that the velocities are parsed from file in single precision, so</span>
-<span class="s2">reported norms below roughly 1e-7 * sum_i m_i * |v_i| * scale are</span>
+<span class="s2">reported norms below roughly 1e-7 * sum_i m_i * norm(v_i) * scale are</span>
 <span class="s2">parsing noise, not physical center of mass drift. The legacy</span>
 <span class="s2">equipartition.jl tool parses the velocities in double precision and</span>
 <span class="s2">therefore resolves correspondingly smaller drift for</span>
@@ -118,6 +118,10 @@
 <span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
+    <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">For column definitions and units see &quot;</span>
+    <span class="s2">&quot;:ref:`total-momentum output &lt;analysis-output-momentum&gt;`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="p">)</span>
 
 
 
@@ -157,6 +161,7 @@
 <span class="sd">            The parser to which the arguments should be added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">parse_export_files</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_trajectory_file</span><span class="p">()</span>
 
@@ -204,15 +209,19 @@
 <span class="sd">        args : argparse.Namespace</span>
 <span class="sd">            The arguments parsed by the parser.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">check_momentum</span><span class="p">(</span>
-            <span class="n">trajectory_files</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">trajectory_file</span><span class="p">,</span>
-            <span class="n">output</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
-            <span class="n">selection</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">selection</span><span class="p">,</span>
-            <span class="n">use_full_atom_info</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">use_full_atom_info</span><span class="p">,</span>
-            <span class="n">scale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
-            <span class="n">md_format</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span>
-            <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;trajectory_files&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">trajectory_file</span><span class="p">,</span>
+            <span class="s1">&#39;output&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
+            <span class="s1">&#39;selection&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">selection</span><span class="p">,</span>
+            <span class="s1">&#39;use_full_atom_info&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">use_full_atom_info</span><span class="p">,</span>
+            <span class="s1">&#39;scale&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+            <span class="s1">&#39;md_format&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span>
+            <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">,</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;export_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
+
+        <span class="n">check_momentum</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
 

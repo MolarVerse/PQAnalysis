@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.msd.msd_output_file_writer &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -82,13 +82,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># 3rd party imports</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="c1"># local imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Np1DNumberArray</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseWriter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">__header__</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis._output_header</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_output_header</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.output</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AnalysisDataWriter</span><span class="p">,</span>
+    <span class="n">AnalysisTable</span><span class="p">,</span>
+    <span class="n">MSD_SCHEMA</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">.msd</span><span class="w"> </span><span class="kn">import</span> <span class="n">MSD</span>
 
@@ -96,7 +102,7 @@
 
 <div class="viewcode-block" id="MSDDataWriter">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd_output_file_writer.html#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">MSDDataWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MSDDataWriter</span><span class="p">(</span><span class="n">AnalysisDataWriter</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for writing the data of an</span>
@@ -108,16 +114,24 @@
 <span class="sd">    MSD in y and MSD in z (all in Angstrom^2).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">MSD_SCHEMA</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="n">format_output_header</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">header_columns</span><span class="p">)</span>
+
     <span class="nd">@runtime_type_checking</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
-<span class="sd">            the filename to write to</span>
+<span class="sd">            The primary output filename. Its extension selects the format.</span>
+<span class="sd">        export_files : Sequence[str] | None, optional</span>
+<span class="sd">            Additional output filenames, by default None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MSDDataWriter.write">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd_output_file_writer.html#PQAnalysis.analysis.msd.msd_output_file_writer.MSDDataWriter.write">[docs]</a>
@@ -125,10 +139,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span>
-        <span class="n">Np1DNumberArray</span><span class="p">,</span>
-        <span class="n">Np1DNumberArray</span><span class="p">,</span>
-        <span class="n">Np1DNumberArray</span><span class="p">,</span>
-        <span class="n">Np1DNumberArray</span><span class="p">]</span>
+                    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+                    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+                    <span class="n">Np1DNumberArray</span><span class="p">,</span>
+                    <span class="n">Np1DNumberArray</span><span class="p">]</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Writes the data to the file.</span>
@@ -139,20 +153,25 @@
 <span class="sd">            Np1DNumberArray, Np1DNumberArray, Np1DNumberArray]</span>
 <span class="sd">            the data output from the MSD.run() method</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
-
         <span class="n">lags</span><span class="p">,</span> <span class="n">msd_x</span><span class="p">,</span> <span class="n">msd_y</span><span class="p">,</span> <span class="n">msd_z</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">AnalysisTable</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">lags</span><span class="p">,</span> <span class="n">msd_x</span><span class="p">,</span> <span class="n">msd_y</span><span class="p">,</span> <span class="n">msd_z</span><span class="p">),</span>
+        <span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">lag</span><span class="p">)</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">msd_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">   &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msd_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">msd_z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="p">),</span>
-                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
-            <span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">write_native</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">lag</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lags</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span>
+                    <span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">lag</span><span class="p">)</span><span class="si">:</span><span class="s2">8d</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">msd_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">   &quot;</span>
+                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">msd_y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">   </span><span class="si">{</span><span class="n">msd_z</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">:</span><span class="s2">12.8f</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">),</span>
+                    <span class="n">file</span><span class="o">=</span><span class="n">file</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">write_native</span><span class="p">)</span></div>
 </div>
 
 
@@ -219,11 +238,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Number of atoms:  </span><span class="si">{</span><span class="n">msd</span><span class="o">.</span><span class="n">n_atoms</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span>
-            <span class="s2">&quot;    Target selection:&quot;</span><span class="p">,</span>
-            <span class="n">msd</span><span class="o">.</span><span class="n">target_selection</span><span class="p">,</span>
-            <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
-        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    Target selection:&quot;</span><span class="p">,</span> <span class="n">msd</span><span class="o">.</span><span class="n">target_selection</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="s2">&quot;    total number of atoms in target selection:&quot;</span><span class="p">,</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">msd</span><span class="o">.</span><span class="n">target_indices</span><span class="p">),</span>
@@ -232,10 +247,7 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">msd</span><span class="o">.</span><span class="n">time_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;    Time step:  </span><span class="si">{</span><span class="n">msd</span><span class="o">.</span><span class="n">time_step</span><span class="si">}</span><span class="s2"> ps&quot;</span><span class="p">,</span>
-                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
-            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;    Time step:  </span><span class="si">{</span><span class="n">msd</span><span class="o">.</span><span class="n">time_step</span><span class="si">}</span><span class="s2"> ps&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;    Fit window: last </span><span class="si">{</span><span class="n">msd</span><span class="o">.</span><span class="n">fit_window</span><span class="si">}</span><span class="s2"> points&quot;</span><span class="p">,</span>
                 <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
@@ -273,8 +285,10 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">msd</span><span class="o">.</span><span class="n">fit_results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    Diffusion coefficients (Einstein relation):&quot;</span><span class="p">,</span>
-                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;    Diffusion coefficients (Einstein relation):&quot;</span><span class="p">,</span>
+                <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span>
+            <span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">,</span> <span class="s2">&quot;total&quot;</span><span class="p">):</span>

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PQAnalysis.analysis.rdf.rdf &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=3e08eec4" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
 
   
@@ -695,14 +695,10 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Runs the RDF analysis.</span>
 
-<span class="sd">        This method runs the RDF analysis and returns the </span>
-<span class="sd">        middle points of the bins of the RDF analysis, the</span>
-<span class="sd">        normalized bins of the RDF analysis based on the </span>
-<span class="sd">        spherical shell model, the integrated bins of the</span>
-<span class="sd">        RDF analysis, the normalized bins of the RDF </span>
-<span class="sd">        analysis based on the number of atoms in the </span>
-<span class="sd">        system and the differential bins of the RDF </span>
-<span class="sd">        analysis based on the spherical shell model.</span>
+<span class="sd">        This method runs the RDF analysis and returns the five arrays</span>
+<span class="sd">        written by :py:class:`~PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter`.</span>
+<span class="sd">        See :ref:`RDF output files &lt;analysis-output-rdf&gt;` for their exact</span>
+<span class="sd">        definitions and normalization formulas.</span>
 
 <span class="sd">        This method will display a progress bar by default.</span>
 <span class="sd">        This can be disabled by setting with_progress_bar to False.</span>
@@ -710,18 +706,15 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bin_middle_points : Np1DNumberArray</span>
-<span class="sd">            The middle points of the bins of the RDF analysis.</span>
+<span class="sd">            The bin-center distances in Angstrom.</span>
 <span class="sd">        normalized_bins : Np1DNumberArray</span>
-<span class="sd">            The normalized bins of the RDF analysis based </span>
-<span class="sd">            on the spherical shell model.</span>
+<span class="sd">            The dimensionless radial distribution function ``g(r)``.</span>
 <span class="sd">        integrated_bins : Np1DNumberArray</span>
-<span class="sd">            The integrated bins of the RDF analysis.</span>
+<span class="sd">            The cumulative coordination number.</span>
 <span class="sd">        normalized_bins2 : Np1DNumberArray</span>
-<span class="sd">            The normalized bins of the RDF analysis based</span>
-<span class="sd">            on the number of atoms in the system.</span>
+<span class="sd">            The density-normalized shell population in Angstrom^3.</span>
 <span class="sd">        differential_bins : Np1DNumberArray</span>
-<span class="sd">            The differential bins of the RDF analysis based</span>
-<span class="sd">            on the spherical shell model.</span>
+<span class="sd">            The pair-count residual relative to the ideal-gas shell count.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_run</span><span class="p">()</span>
@@ -928,25 +921,24 @@
 <span class="sd">        Finalizes the RDF analysis after running.</span>
 
 <span class="sd">        This method is called by the run method of the RDF class.</span>
-<span class="sd">        It finalizes the RDF analysis after running by calculating</span>
-<span class="sd">        the normalized bins of the RDF analysis based on the </span>
-<span class="sd">        spherical shell model, the integrated bins of the RDF </span>
-<span class="sd">        analysis, the normalized bins of the RDF analysis based</span>
-<span class="sd">        on the number of atoms in the system and the differential</span>
-<span class="sd">        bins of the RDF analysis based on the spherical shell model.</span>
+<span class="sd">        It finalizes the RDF analysis after running by calculating the</span>
+<span class="sd">        radial distribution function, cumulative coordination number,</span>
+<span class="sd">        density-normalized shell population and ideal-gas pair-count</span>
+<span class="sd">        residual. See :ref:`RDF output files &lt;analysis-output-rdf&gt;` for</span>
+<span class="sd">        their exact definitions.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bin_middle_points : Np1DNumberArray</span>
-<span class="sd">            The middle points of the bins of the RDF analysis.</span>
+<span class="sd">            The bin-center distances in Angstrom.</span>
 <span class="sd">        normalized_bins : Np1DNumberArray</span>
-<span class="sd">            The normalized bins of the RDF analysis based on the spherical shell model.</span>
+<span class="sd">            The dimensionless radial distribution function ``g(r)``.</span>
 <span class="sd">        integrated_bins : Np1DNumberArray</span>
-<span class="sd">            The integrated bins of the RDF analysis.</span>
+<span class="sd">            The cumulative coordination number.</span>
 <span class="sd">        normalized_bins2 : Np1DNumberArray</span>
-<span class="sd">            The normalized bins of the RDF analysis based on the number of atoms in the system.</span>
+<span class="sd">            The density-normalized shell population in Angstrom^3.</span>
 <span class="sd">        differential_bins : Np1DNumberArray</span>
-<span class="sd">            The differential bins of the RDF analysis based on the spherical shell model.</span>
+<span class="sd">            The pair-count residual relative to the ideal-gas shell count.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_intra_molecular</span><span class="p">:</span>
@@ -960,7 +952,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">delta_r</span><span class="p">,</span>
             <span class="n">target_density</span><span class="p">,</span>
             <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reference_indices</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_min</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">normalized_bins</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bins</span> <span class="o">/</span> <span class="n">norm</span>
@@ -1225,7 +1218,8 @@
         <span class="n">delta_r</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
         <span class="n">target_density</span><span class="p">:</span> <span class="n">PositiveReal</span><span class="p">,</span>
         <span class="n">n_reference_indices</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-        <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span>
+        <span class="n">n_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">r_min</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the normalization of the RDF analysis </span>
@@ -1243,6 +1237,8 @@
 <span class="sd">            The number of reference indices of the RDF analysis.</span>
 <span class="sd">        n_frames : int</span>
 <span class="sd">            The number of frames of the RDF analysis.</span>
+<span class="sd">        r_min : PositiveReal, optional</span>
+<span class="sd">            The lower edge of the first shell in Angstrom, by default 0.0.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1250,14 +1246,12 @@
 <span class="sd">            The normalization of the RDF analysis.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">surface_prefactor</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">/</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">volume_prefactor</span> <span class="o">=</span> <span class="mf">4.0</span> <span class="o">/</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
 
-        <span class="n">small_radius_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_bins</span><span class="p">)</span>
-        <span class="n">large_radius_range</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_bins</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">delta_radius_range</span> <span class="o">=</span> <span class="n">large_radius_range</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">small_radius_range</span><span class="o">**</span><span class="mi">3</span>
-
-        <span class="n">delta_volume</span> <span class="o">=</span> <span class="n">delta_r</span><span class="o">**</span><span class="mi">3</span> <span class="o">*</span> <span class="n">delta_radius_range</span>
-        <span class="n">volume</span> <span class="o">=</span> <span class="n">surface_prefactor</span> <span class="o">*</span> <span class="n">delta_volume</span>
+        <span class="n">small_radius_range</span> <span class="o">=</span> <span class="n">r_min</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_bins</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_r</span>
+        <span class="n">large_radius_range</span> <span class="o">=</span> <span class="n">small_radius_range</span> <span class="o">+</span> <span class="n">delta_r</span>
+        <span class="n">delta_volume</span> <span class="o">=</span> <span class="n">large_radius_range</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">small_radius_range</span><span class="o">**</span><span class="mi">3</span>
+        <span class="n">volume</span> <span class="o">=</span> <span class="n">volume_prefactor</span> <span class="o">*</span> <span class="n">delta_volume</span>
 
         <span class="k">return</span> <span class="n">volume</span> <span class="o">*</span> <span class="n">target_density</span> <span class="o">*</span> <span class="n">n_reference_indices</span> <span class="o">*</span> <span class="n">n_frames</span>
 
