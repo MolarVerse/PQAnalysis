@@ -1,62 +1,49 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
 name: Docs
 
 on:
-  # Runs on pushes targeting the default branch
   push:
-    branches: 
-      - '*'
-
-  # Allows you to run this workflow manually from the Actions tab
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
   workflow_dispatch:
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write
-  pages: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  # Build job
-  build:
+  build-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
         with:
-          python-version: 3.12
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
           cache: pip
-
-      - name: Requirements
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-sphinx
-          python -m pip install --upgrade pip
-          python -m pip install -e ".[docs]"
-
-      - name: Build
-        run: |
-          cd docs
-          make clean
-          rm -f source/code/*
-          bash autodoc.sh
-          make html
-          cd build/html
-          touch .nojekyll
-        shell: bash
-
-      # Deployment job
-      - name: deploy
-        uses: JamesIves/github-pages-deploy-action@releases/v4
+      - name: Install the package and documentation dependencies
+        run: python -m pip install -e ".[docs]"
+      - name: Build the documentation
+        run: python -m sphinx -W --keep-going -b html docs/source docs/build/html
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
         with:
-          branch: gh-pages # The branch the action should deploy to.
-          folder: docs/build/html # The folder the action should deploy.
-        if: github.ref_name == 'main' # Only deploy on pushes to the main branch
+          path: docs/build/html
+
+  deploy-docs:
+    needs: build-docs
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
