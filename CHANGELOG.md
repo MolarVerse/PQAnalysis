@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.5.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.5.0) - 2026-08-07
+
+<small>[Compare with v1.4.1](https://github.com/MolarVerse/PQAnalysis/compare/v1.4.1...v1.5.0)</small>
+
+### Features
+
+- make XVG analysis exports reversible ([1b24af6](https://github.com/MolarVerse/PQAnalysis/commit/1b24af62b33511ff999af6ac02992d238b3ce123) by Josef M. Gallmetzer).
+- add analysis table exports ([36c80ba](https://github.com/MolarVerse/PQAnalysis/commit/36c80bad0298557406b7b14b8f5e7e4f53391d52) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- keep analysis tables readable ([55c9146](https://github.com/MolarVerse/PQAnalysis/commit/55c9146f62993425af950e11380897ea19defd40) by Josef M. Gallmetzer).
+- preserve existing output filenames ([ed63dcd](https://github.com/MolarVerse/PQAnalysis/commit/ed63dcdf4520318fff2b12279e42187969ca2d9a) by Josef M. Gallmetzer).
+- document analysis output columns ([92b9c25](https://github.com/MolarVerse/PQAnalysis/commit/92b9c25081579a77ac9be940bc1da53418f779f4) by Josef M. Gallmetzer).
+
+### Style
+
+- use Unicode analysis symbols ([27fc148](https://github.com/MolarVerse/PQAnalysis/commit/27fc148696b7cff200a202c48a5bbd3727b3ae7b) by Josef M. Gallmetzer).
+- format analysis output headers ([3f98af4](https://github.com/MolarVerse/PQAnalysis/commit/3f98af4fab2f0b7c82e9b2af18e4d7a8c5554875) by Josef M. Gallmetzer).
+
 ## [v1.4.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.4.1) - 2026-07-30
 
 <small>[Compare with v1.4.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.4.0...v1.4.1)</small>
