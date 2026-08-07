@@ -22,10 +22,12 @@ Correlation and spectrum
 ------------------------
 
 .. plot:: _plots/vacf.py
-   :alt: Velocity autocorrelation function and its Hann-window spectrum
-   :caption: Bundled VACF validation fixture and its Hann-window cosine
-      transform. Spectrum amplitudes are reported in arbitrary units; the
-      displayed range is limited to 4000 cm⁻¹.
+   :alt: Analytical normalized VACF with a negative correlation lobe and its
+      Hann-window spectrum
+   :caption: Analytical two-mode VACF and its PQAnalysis Hann-window cosine
+      transform. The 300 and 1400 cm⁻¹ modes use Gaussian decay times of
+      0.075 and 0.035 ps, respectively. The correlation and spectrum are
+      normalized to unit maxima.
 
 Minimal input
 -------------
