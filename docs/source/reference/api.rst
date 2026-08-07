@@ -1,30 +1,38 @@
-Python API
-==========
+Package Reference
+=================
 
-The public analysis wrappers accept the same input files as the command line
-and are the simplest integration points:
+Start with the :doc:`functions` page for callable analysis, numerical and I/O
+interfaces. This page maps the principal data types and generated module
+reference.
 
-.. list-table:: Analysis entry points
+Core types
+----------
+
+.. list-table:: Principal data types
+   :class: pq-record-table pq-types-table
    :header-rows: 1
    :widths: 34 66
 
-   * - Function
-     - Purpose
-   * - :func:`PQAnalysis.analysis.rdf.api.rdf`
-     - Radial distribution analysis
-   * - :func:`PQAnalysis.analysis.msd.api.msd`
-     - Mean square displacement analysis
-   * - :func:`PQAnalysis.analysis.vacf.api.vacf`
-     - Velocity or charge-flux correlation analysis
-   * - :func:`PQAnalysis.analysis.vibrational.api.vibrations`
-     - Vibrational analysis from a structure and Hessian
-   * - :func:`PQAnalysis.analysis.momentum.api.check_momentum`
-     - Frame-resolved total linear momentum
+   * - Type
+     - Role
+   * - :class:`PQAnalysis.atomic_system.AtomicSystem`
+     - One structure with coordinates, cell and topology
+   * - :class:`PQAnalysis.traj.Trajectory`
+     - Ordered atomic-system frames
+   * - :class:`PQAnalysis.topology.Topology`
+     - Atoms, residues, molecular identity and bonded topology
+   * - :class:`PQAnalysis.topology.Selection`
+     - Atom selection parser and index resolution
+   * - :class:`PQAnalysis.analysis.output.AnalysisTable`
+     - Numerical analysis data coupled to scientific column metadata
+   * - :class:`PQAnalysis.analysis.output.AnalysisSchema`
+     - Stable fields, symbols, units and plot defaults
 
 Package areas
 -------------
 
 .. list-table:: Generated package reference
+   :class: pq-record-table pq-package-reference-table
    :header-rows: 1
    :widths: 34 66
 
@@ -43,5 +51,5 @@ Package areas
    * - :doc:`Package index <../code/PQAnalysis>`
      - Generated module hierarchy
 
-Use the analysis guides for physical conventions and the generated reference
-for signatures and implementation details.
+Use the analysis guides for physical conventions, the function index for
+callable workflows and the generated reference for implementation details.
