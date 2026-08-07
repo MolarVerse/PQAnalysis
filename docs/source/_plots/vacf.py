@@ -1,18 +1,34 @@
-"""VACF and Hann-window spectrum from the validation fixture."""
+"""Analytical damped VACF and its PQAnalysis spectrum."""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from _style import COLORS, PROJECT_ROOT, apply_style
+from PQAnalysis.analysis.vacf.spectrum import vacf_spectrum
+
+from _style import COLORS, apply_style
 
 
 apply_style((6.2, 5.5))
 
-correlation = np.loadtxt(PROJECT_ROOT / "tests/data/vacf/vacf_ref.dat")
-spectrum = np.loadtxt(
-    PROJECT_ROOT / "tests/data/vacf/spectrum_hann_ref.dat"
+time = np.arange(0.0, 0.3005, 0.0005)
+correlation = (
+    0.85 * np.exp(-(time / 0.075) ** 2)
+    * np.cos(2.0 * np.pi * 9.0 * time)
+    + 0.15 * np.exp(-(time / 0.035) ** 2)
+    * np.cos(2.0 * np.pi * 42.0 * time)
 )
-spectrum = spectrum[spectrum[:, 0] <= 4000.0]
+
+wavenumbers, amplitudes, _ = vacf_spectrum(
+    time,
+    correlation,
+    ftsize=4096,
+    window_function="hann",
+    window_stop=float(time[-1]),
+)
+display_range = wavenumbers <= 4000.0
+wavenumbers = wavenumbers[display_range]
+amplitudes = amplitudes[display_range]
+amplitudes /= amplitudes.max()
 
 figure, (correlation_axis, spectrum_axis) = plt.subplots(
     2,
@@ -21,8 +37,8 @@ figure, (correlation_axis, spectrum_axis) = plt.subplots(
 )
 
 correlation_axis.plot(
-    correlation[:, 0],
-    correlation[:, 1],
+    time,
+    correlation,
     color=COLORS["blue"],
 )
 correlation_axis.axhline(
@@ -32,7 +48,7 @@ correlation_axis.axhline(
     linewidth=1.0,
 )
 correlation_axis.set_title(
-    "(a) Normalized velocity autocorrelation",
+    "(a) Normalized damped VACF",
     loc="left",
     fontsize=9.5,
     fontweight="bold",
@@ -40,25 +56,25 @@ correlation_axis.set_title(
 )
 correlation_axis.set_xlabel("Lag time, t / ps")
 correlation_axis.set_ylabel("Cᵥᵥ(t)")
-correlation_axis.set_xlim(correlation[0, 0], correlation[-1, 0])
-correlation_axis.set_ylim(-1.05, 1.05)
+correlation_axis.set_xlim(time[0], time[-1])
+correlation_axis.set_ylim(-0.65, 1.05)
 
 spectrum_axis.plot(
-    spectrum[:, 0],
-    spectrum[:, 1],
+    wavenumbers,
+    amplitudes,
     color=COLORS["orange"],
 )
 spectrum_axis.set_title(
-    "(b) Hann-window cosine-transform spectrum",
+    "(b) Hann-window spectrum",
     loc="left",
     fontsize=9.5,
     fontweight="bold",
     pad=8,
 )
 spectrum_axis.set_xlabel("Wavenumber, ν̃ / cm⁻¹")
-spectrum_axis.set_ylabel("|Ĉ(ν̃)| / a.u.")
+spectrum_axis.set_ylabel("Relative amplitude")
 spectrum_axis.set_xlim(0.0, 4000.0)
-spectrum_axis.set_ylim(bottom=0.0)
+spectrum_axis.set_ylim(0.0, 1.05)
 
 figure.tight_layout(h_pad=1.4)
 plt.show()
