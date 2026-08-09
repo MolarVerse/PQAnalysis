@@ -42,6 +42,14 @@ and an output file. A restart file is not required for this case:
     out_file = rdf.out
     traj_files = trajectory.xyz
 
+For a file-backed periodic orthorhombic trajectory, this minimal form with
+``delta_r`` alone and the default ``r_min = 0`` uses the legacy-compatible
+RDF path. Coordinates are parsed directly as float64, while ``delta_r`` is
+represented as float32 as it was by the legacy C input reader. Histogram
+binning and all five output columns preserve the legacy arithmetic order.
+Explicit ``r_max`` or ``n_bins`` values, triclinic cells, vacuum trajectories
+and intra-molecular exclusion use the general PQAnalysis RDF definition.
+
 Restart files and moldescriptor files are only needed when the calculation
 requires molecular topology information. For example,
 :code:`no_intra_molecular = True` excludes pairs from the same molecule.
