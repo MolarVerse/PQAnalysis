@@ -35,8 +35,8 @@ def msd_frame_update(
     """
     Advances the running MSD state by one trajectory frame.
 
-    The selected rows of ``values`` are gathered into ``pos`` (exact
-    float32 -> float64 conversion). For every frame after the first
+    The selected rows of ``values`` are gathered into float64 ``pos``.
+    For every frame after the first
     one the per-frame displacement ``pos - prev_pos`` is folded back
     into the minimum image convention and the resulting change is
     accumulated into ``shift`` (skipped for vacuum cells). The
@@ -50,7 +50,7 @@ def msd_frame_update(
 
     Parameters
     ----------
-    values : np.float32 array of shape (n_atoms, 3), C-contiguous
+    values : np.float32 or np.float64 array of shape (n_atoms, 3), C-contiguous
         The raw frame values (positions) of all atoms of the frame.
     indices : np.int64 array of shape (n_sel,)
         The indices of the selected atoms.
@@ -98,7 +98,7 @@ def msd_frame_update(
         may spawn.
     """
 
-    # gather the selected positions (exact float32 -> float64)
+    # gather the selected positions into the float64 scratch array
     pos[:] = values[indices]
 
     if counter > 1 and not is_vacuum:
