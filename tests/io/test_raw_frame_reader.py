@@ -100,6 +100,33 @@ def assert_raw_stream_matches_frame_generator(
 @pytest.mark.usefixtures("tmpdir", "parser_module")
 class TestRawTrajectoryReaderEquivalence:
 
+    def test_float64_values_are_parsed_without_float32_rounding(
+        self,
+        tmp_path,
+    ):
+        filename = tmp_path / "precise.xyz"
+        filename.write_text(
+            "1\n\nH 1.00000005960464477539062501 0.1 -0.0\n",
+            encoding="utf-8",
+        )
+
+        values, _ = next(
+            RawTrajectoryReader(
+                str(filename),
+                dtype="float64",
+            ).raw_frame_generator()
+        )
+
+        assert values.dtype == np.float64
+        assert values[0, 0] == float("1.00000005960464477539062501")
+        assert values[0, 0] != float(
+            np.float32("1.00000005960464477539062501")
+        )
+
+    def test_invalid_dtype(self):
+        with pytest.raises(ValueError, match="dtype must be either"):
+            RawTrajectoryReader("tmp.xyz", dtype="float16")
+
     def test_pq_xyz(self):
         with open("tmp.xyz", "w", encoding="utf-8") as file:
             print("2 11.1 12.2 13.3", file=file)
