@@ -9,10 +9,13 @@ window = 100, gap = 5, time_step = 0.002 ps and target_atoms = 1-8,
 and spectra with ftsize = 256 for all window functions with
 windowparam = 20.0, winon = 0.02 and winoff = 0.15.
 
-The tolerances account for the float32 parsing of PQAnalysis (the
-legacy tools parse in double precision) and for the printing precision
-of the reference files.
+The raw analysis path parses the trajectories directly in float64, as
+the legacy tools do. The remaining tolerance is set by the eight-decimal
+printing precision of the reference correlation files.
 """
+
+import hashlib
+import sys
 
 import numpy as np
 import pytest
@@ -28,6 +31,8 @@ from PQAnalysis.traj import TrajectoryFormat
 
 from .. import pytestmark  # pylint: disable=unused-import
 
+vacf_module = sys.modules[VACF.__module__]
+
 VEL_FILES = ["traj_1.vel", "traj_2.vel"]
 CHARGE_FILES = ["traj_1.chrg", "traj_2.chrg"]
 
@@ -35,6 +40,16 @@ WINDOW_SIZE = 100
 GAP = 5
 TIME_STEP = 0.002
 FTSIZE = 256
+
+#: Half a unit in the last place printed by the legacy correlation
+#: files (eight digits after the decimal point), with a small margin.
+CORRELATION_ATOL = 5.1e-9
+
+#: SHA-256 of the little-endian float64 correlation values emitted by
+#: the original FreqCalc code compiled with -O2 and printed as C99 hex.
+VACF_FLOAT64_SHA256 = (
+    "b3e90415f65043bfe15d608c18b595d681b325d83fdcc3faed42bdc899560e33"
+)
 
 SPECTRUM_KWARGS = {
     "none": {},
@@ -75,6 +90,13 @@ def _run_vacf(**kwargs):
     return analysis.run()
 
 
+def _float64_sha256(values):
+    """Returns a platform-independent digest of float64 result bits."""
+    array = np.asarray(values, dtype="<f8")
+
+    return hashlib.sha256(array.tobytes(order="C")).hexdigest()
+
+
 
 class TestVACFLegacyParity:
 
@@ -95,9 +117,12 @@ class TestVACFLegacyParity:
         assert np.allclose(
             correlation,
             reference[:, 1],
-            rtol=1e-5,
-            atol=1e-8,
+            rtol=0.0,
+            atol=CORRELATION_ATOL,
         )
+
+        if vacf_module.direct_origin_norms is not None:
+            assert _float64_sha256(correlation) == VACF_FLOAT64_SHA256
 
     @pytest.mark.parametrize("example_dir", ["vacf"], indirect=False)
     def test_fluxfreqcalc_static_parity(self, test_with_data_dir):  # pylint: disable=unused-argument
@@ -113,8 +138,8 @@ class TestVACFLegacyParity:
         assert np.allclose(
             correlation,
             reference[:, 1],
-            rtol=1e-5,
-            atol=1e-8,
+            rtol=0.0,
+            atol=CORRELATION_ATOL,
         )
 
     @pytest.mark.parametrize("example_dir", ["vacf"], indirect=False)
@@ -135,8 +160,8 @@ class TestVACFLegacyParity:
         assert np.allclose(
             correlation,
             reference[:, 1],
-            rtol=1e-5,
-            atol=1e-8,
+            rtol=0.0,
+            atol=CORRELATION_ATOL,
         )
 
     @pytest.mark.parametrize(

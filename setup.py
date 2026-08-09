@@ -24,7 +24,10 @@ extensions = cythonize(
         Extension(
             'PQAnalysis.analysis.vacf._vacf_kernel',
             sources=['PQAnalysis/analysis/vacf/_vacf_kernel.pyx'],
-            include_dirs=[np.get_include()]
+            include_dirs=[np.get_include()],
+            # Only the explicit fma calls may fuse operations. This
+            # keeps the optimized FreqCalc arithmetic reproducible.
+            extra_compile_args=['-ffp-contract=off']
         ),
         Extension(
             'PQAnalysis.analysis.rdf._rdf_kernel',
