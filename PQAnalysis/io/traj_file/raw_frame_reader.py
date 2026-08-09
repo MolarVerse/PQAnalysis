@@ -8,16 +8,13 @@ of a trajectory as plain numpy arrays together with the corresponding
 :py:class:`~PQAnalysis.atomic_system.atomic_system.AtomicSystem` or
 :py:class:`~PQAnalysis.core.atom.atom.Atom` objects for every frame.
 It is an additive fast path intended for analyses that only need the
-raw coordinates/velocities per frame (e.g. MSD and VACF) and produces
-bit-identical values compared to
-:py:meth:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator`:
-the frames are parsed from large byte chunks by the slab parser
-(:py:mod:`~PQAnalysis.io.traj_file._slab_parser`), whose ``strtof``
-conversions are bitwise identical to the ``sscanf("%f")`` conversions
-of the line parsing routine
-(:py:func:`~PQAnalysis.io.traj_file.process_lines.process_lines`)
-used by the line based readers. When the compiled slab parser is not
-available, the pure Python implementation
+raw coordinates or velocities per frame (e.g. MSD and VACF). The
+frames are parsed from large byte chunks by the slab parser
+(:py:mod:`~PQAnalysis.io.traj_file._slab_parser`). Its default
+``float32`` mode is bit-identical to the line-based trajectory reader;
+the optional ``float64`` mode instead preserves the precision of the
+text with direct ``strtod`` conversions. When the compiled slab parser
+is not available, the pure Python implementation
 (:py:mod:`~PQAnalysis.io.traj_file._slab_parser_py`), which reuses
 the current per-line machinery, is used instead.
 """
@@ -44,6 +41,7 @@ from .frame_reader import XYZFrameReader
 # implementations and defined once in the pure Python module
 from ._slab_parser_py import (
     MODE_XYZ,
+    MODE_XYZ64,
     STATUS_BAD_HEADER,
     STATUS_EOF,
     STATUS_NEED_MORE,
@@ -80,9 +78,9 @@ class RawTrajectoryReader(BaseReader):
     this reader does not construct AtomicSystem/Atom objects per frame.
     Instead, :py:meth:`raw_frame_generator` yields
     ``(values, cell)`` tuples, where ``values`` is the ``(n_atoms, 3)``
-    float32 array of the frame body (positions, velocities or forces,
-    depending on the trajectory format) and ``cell`` is the unit cell
-    of the frame.
+    array of the frame body (positions, velocities or forces,
+    depending on the trajectory format) in the configured precision
+    and ``cell`` is the unit cell of the frame.
 
     The reader follows the exact same semantics as
     :py:meth:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator`:
@@ -117,8 +115,8 @@ class RawTrajectoryReader(BaseReader):
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
-    #: The slab parser body mode of this reader (a name token plus
-    #: three float32 values per atom line).
+    #: The default slab parser body mode of this reader (a name token
+    #: plus three float32 values per atom line).
     _SLAB_MODE = MODE_XYZ
 
     #: The error message used when a frame body line cannot be parsed.
@@ -130,6 +128,7 @@ class RawTrajectoryReader(BaseReader):
         filename: str | List[str],
         traj_format: TrajectoryFormat | str = TrajectoryFormat.AUTO,
         md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+        dtype: str = "float32",
     ) -> None:
         """
         Parameters
@@ -144,12 +143,25 @@ class RawTrajectoryReader(BaseReader):
             FORCE are supported by this reader.
         md_format : MDEngineFormat | str, optional
             The format of the MD engine. Default is MDEngineFormat.PQ.
+        dtype : {"float32", "float64"}, optional
+            Numeric precision of xyz-family frame values. ``float32``
+            preserves the established trajectory-reader behavior;
+            ``float64`` parses directly with ``strtod``. Default is
+            ``float32``.
 
         Raises
         ------
         TrajectoryReaderError
             If the trajectory format is not an xyz-family format.
+        ValueError
+            If dtype is not ``float32`` or ``float64``.
         """
+        if dtype not in {"float32", "float64"}:
+            raise ValueError(
+                "dtype must be either 'float32' or 'float64', "
+                f"got {dtype!r}."
+            )
+
         super().__init__(filename)
 
         if not self.multiple_files:
@@ -168,6 +180,13 @@ class RawTrajectoryReader(BaseReader):
             )
 
         self.md_format = MDEngineFormat(md_format)
+
+        self.dtype = dtype
+        self._slab_mode = (
+            MODE_XYZ64
+            if self._SLAB_MODE == MODE_XYZ and dtype == "float64"
+            else self._SLAB_MODE
+        )
 
         # Cache of Cell objects keyed by the box substring of the
         # header line, so that unchanged boxes reuse the same Cell
@@ -230,12 +249,13 @@ class RawTrajectoryReader(BaseReader):
         A generator that yields the raw data of the trajectory frames.
 
         For every frame a tuple ``(values, cell)`` is yielded, where
-        ``values`` is the ``(n_atoms, 3)`` float32 array parsed from
-        the frame body (positions, velocities or forces, depending on
-        the trajectory format) and ``cell`` is the unit cell of the
-        frame. The values and cells are bit-identical to the ones
-        produced by
-        :py:meth:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator`.
+        ``values`` is the ``(n_atoms, 3)`` array parsed from the frame
+        body (positions, velocities or forces, depending on the
+        trajectory format) and ``cell`` is the unit cell of the frame.
+        The array dtype is selected at construction. In ``float32``
+        mode the values and cells are bit-identical to those produced
+        by the line-based trajectory reader; ``float64`` mode retains
+        additional digits present in the source text.
 
         The generator always starts at the first frame of the
         trajectory, so it can be restarted by simply calling this
@@ -318,7 +338,7 @@ class RawTrajectoryReader(BaseReader):
                             n_atoms,
                             at_eof,
                             strip_dummy_atom,
-                            self._SLAB_MODE,
+                            self._slab_mode,
                         )
                     except EOFError:
                         self.logger.error(
