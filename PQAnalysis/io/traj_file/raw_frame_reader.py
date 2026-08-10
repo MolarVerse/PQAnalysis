@@ -22,13 +22,20 @@ the current per-line machinery, is used instead.
 import logging
 
 from itertools import islice
+from os.path import getsize
+
+import numpy as np
 
 from beartype.typing import Generator, List, Tuple
 
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Cell
 from PQAnalysis.traj import TrajectoryFormat, MDEngineFormat
-from PQAnalysis.types import Np1DNumberArray, Np2DNumberArray
+from PQAnalysis.types import (
+    Np1DNumberArray,
+    Np2DNumberArray,
+    NpnDNumberArray,
+)
 from PQAnalysis.io.base import BaseReader
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -50,10 +57,11 @@ from ._slab_parser_py import (
 try:
     from ._slab_parser import (  # pylint: disable=import-error
         parse_body,
+        parse_xyz_frames,
         scan_header,
     )
 except ModuleNotFoundError:
-    from ._slab_parser_py import parse_body, scan_header
+    from ._slab_parser_py import parse_body, parse_xyz_frames, scan_header
 
 #: The trajectory formats supported by the raw fast-path reader.
 RAW_READER_TRAJ_FORMATS = (
@@ -183,8 +191,7 @@ class RawTrajectoryReader(BaseReader):
 
         self.dtype = dtype
         self._slab_mode = (
-            MODE_XYZ64
-            if self._SLAB_MODE == MODE_XYZ and dtype == "float64"
+            MODE_XYZ64 if self._SLAB_MODE == MODE_XYZ and dtype == "float64"
             else self._SLAB_MODE
         )
 
@@ -242,9 +249,7 @@ class RawTrajectoryReader(BaseReader):
         return None  # pragma: no cover - logger.error raises
 
     @runtime_type_checking
-    def raw_frame_generator(
-        self
-    ) -> Generator[Tuple[Np2DNumberArray, Cell]]:
+    def raw_frame_generator(self) -> Generator[Tuple[Np2DNumberArray, Cell]]:
         """
         A generator that yields the raw data of the trajectory frames.
 
@@ -322,9 +327,7 @@ class RawTrajectoryReader(BaseReader):
 
                         continue
 
-                    cell, cell_is_vacuum = self._cell_from_box_bytes(
-                        box_bytes
-                    )
+                    cell, cell_is_vacuum = self._cell_from_box_bytes(box_bytes)
 
                     try:
                         (
@@ -372,6 +375,147 @@ class RawTrajectoryReader(BaseReader):
 
                     yield values, cell
 
+    # The checks stay together so every compatibility failure has one fallback.
+    # pylint: disable-next=too-complex,too-many-locals,too-many-return-statements,too-many-branches,too-many-statements
+    def try_read_all_frames(
+        self,
+        expected_n_atoms: int,
+        max_bytes: int,
+        expected_n_frames: int | None = None,
+        include_cells: bool = True,
+    ) -> Tuple[NpnDNumberArray, List[Cell]] | None:
+        """
+        Read a fixed-topology xyz-family trajectory as one batch.
+
+        The peak input-buffer and numeric-array working set must fit below
+        ``max_bytes``. If it does not, or if the file requires one of the
+        permissive line-reader compatibility paths, ``None`` is returned and
+        the caller can use :meth:`raw_frame_generator` instead.
+
+        Numeric tokens are converted by the same slab-parser routines as
+        the streaming path. The returned values therefore have identical
+        float32 or float64 bit patterns in the same frame order.
+
+        Parameters
+        ----------
+        expected_n_atoms : int
+            Number of physical atoms expected after QMCFC dummy removal.
+        max_bytes : int
+            Maximum combined size of the input byte buffers and output
+            value arrays.
+        expected_n_frames : int | None, optional
+            Expected total frame count, used as an additional consistency
+            check when the caller already knows it.
+        include_cells : bool, optional
+            Build the per-frame cell list. When false, unique box headers are
+            still validated but the returned cell list is empty.
+
+        Returns
+        -------
+        tuple or None
+            ``(values, cells)`` with values shaped
+            ``(n_frames, expected_n_atoms, 3)``, or ``None`` when the
+            bounded batch path cannot be used.
+        """
+        if self._slab_mode not in {MODE_XYZ, MODE_XYZ64}:
+            return None
+
+        if expected_n_atoms < 0 or max_bytes <= 0:
+            return None
+
+        input_bytes = sum(getsize(filename) for filename in self.filenames)
+        if input_bytes > max_bytes:
+            return None
+
+        strip_dummy_atom = self.md_format == MDEngineFormat.QMCFC
+        raw_n_atoms = expected_n_atoms + int(strip_dummy_atom)
+        frame_size = raw_n_atoms + 2
+        buffers = []
+        frame_counts = []
+        output_bytes = 0
+        itemsize = 4 if self.dtype == "float32" else 8
+
+        single_file_count = (
+            expected_n_frames if expected_n_frames is not None and
+            len(self.filenames) == 1 else None
+        )
+
+        for filename in self.filenames:
+            with open(filename, "rb") as file:
+                data = file.read()
+
+            if data and not data.endswith(b"\n"):
+                data += b"\n"
+                input_bytes += 1
+
+            if single_file_count is None:
+                n_lines = data.count(b"\n")
+                n_frames, remainder = divmod(n_lines, frame_size)
+                if remainder != 0:
+                    return None
+            else:
+                n_frames = single_file_count
+
+            output_bytes += (n_frames * expected_n_atoms * 3 * itemsize)
+            peak_output_bytes = output_bytes * (
+                2 if len(self.filenames) > 1 else 1
+            )
+            if input_bytes + peak_output_bytes > max_bytes:
+                return None
+
+            buffers.append(data)
+            frame_counts.append(n_frames)
+
+        if (
+            expected_n_frames is not None and
+            sum(frame_counts) != expected_n_frames
+        ):
+            return None
+
+        value_batches = []
+        cells = []
+        last_cell = None
+
+        try:
+            for data, n_frames in zip(buffers, frame_counts):
+                values, box_headers, first_names = parse_xyz_frames(
+                    data,
+                    n_frames,
+                    raw_n_atoms,
+                    strip_dummy_atom,
+                    self._slab_mode,
+                )
+
+                if strip_dummy_atom:
+                    for first_name in first_names:
+                        self._validate_dummy_name(first_name)
+
+                if include_cells:
+                    for box_bytes in box_headers:
+                        cell, cell_is_vacuum = self._cell_from_box_bytes(
+                            box_bytes
+                        )
+
+                        if cell_is_vacuum and last_cell is not None:
+                            cell = last_cell
+
+                        last_cell = cell
+                        cells.append(cell)
+                else:
+                    for box_bytes in dict.fromkeys(box_headers):
+                        self._cell_from_box_bytes(box_bytes)
+
+                value_batches.append(values)
+        except (EOFError, ValueError):
+            return None
+
+        if len(value_batches) == 1:
+            all_values = value_batches[0]
+        else:
+            all_values = np.concatenate(value_batches, axis=0)
+
+        return all_values, cells
+
     def count_frames(self) -> int:
         """
         Counts the number of frames of the trajectory.
@@ -396,8 +540,7 @@ class RawTrajectoryReader(BaseReader):
         """
 
         return sum(
-            self._count_frames_in_file(filename)
-            for filename in self.filenames
+            self._count_frames_in_file(filename) for filename in self.filenames
         )
 
     def _count_frames_in_file(self, filename: str) -> int:
@@ -703,9 +846,15 @@ class RawTrajectoryReader(BaseReader):
             If the first atom of the frame is not X.
         """
 
+        self._validate_dummy_name(first_name)
+
+        return values[1:]
+
+    def _validate_dummy_name(self, first_name: bytes | None) -> None:
+        """Validate the leading QMCFC dummy atom name."""
         if first_name is None:
-            # a QMCFC frame without any atom row; matches the
-            # IndexError of the line based dummy atom handling
+            # A QMCFC frame without any atom row matches the IndexError
+            # raised by the line-based dummy atom handling.
             raise IndexError('list index out of range')
 
         if first_name.decode("utf-8").upper() != 'X':
@@ -716,5 +865,3 @@ class RawTrajectoryReader(BaseReader):
                 ),
                 exception=FrameReaderError,
             )
-
-        return values[1:]

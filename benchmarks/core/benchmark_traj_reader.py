@@ -3,6 +3,7 @@ import pytest
 from PQAnalysis.io.traj_file import RawTrajectoryReader, TrajectoryReader
 
 
+
 def _write_raw_trajectory(path, n_frames=2000, n_atoms=100):
     lines = []
 
@@ -86,6 +87,7 @@ class BenchmarkTrajReader:
         benchmark(read_frames)
 
 
+
 @pytest.mark.benchmark(group="RawTrajectoryReader")
 class BenchmarkRawTrajReader:
 
@@ -109,3 +111,19 @@ class BenchmarkRawTrajReader:
         reader = RawTrajectoryReader(filename, dtype="float64")
 
         benchmark(self._consume, reader)
+
+    def benchmark_float64_batch(self, benchmark, tmp_path):
+        filename = _write_raw_trajectory(tmp_path / "raw-batch-f64.xyz")
+        reader = RawTrajectoryReader(filename, dtype="float64")
+
+        def read_batch():
+            batch = reader.try_read_all_frames(
+                expected_n_atoms=100,
+                expected_n_frames=2000,
+                max_bytes=512 * 1024 * 1024,
+            )
+            assert batch is not None
+            values, _cells = batch
+            return values[0, 0, 0]
+
+        benchmark(read_batch)
