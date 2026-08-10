@@ -287,8 +287,7 @@ class MSD:
             self.first_frame = next(self.frame_generator)
         else:
             self.logger.error(
-                "Trajectory cannot be of length 0.",
-                exception=MSDError
+                "Trajectory cannot be of length 0.", exception=MSDError
             )
 
         if traj.topology is not None:
@@ -304,8 +303,7 @@ class MSD:
         self.target_selection = Selection(target_species)
 
         self.target_indices = self.target_selection.select(
-            self.topology,
-            self.use_full_atom_info
+            self.topology, self.use_full_atom_info
         )
 
         if len(self.target_indices) == 0:
@@ -343,8 +341,7 @@ class MSD:
 
         if self.n_start < 0:
             self.logger.error(
-                "n_start must be a non-negative integer.",
-                exception=MSDError
+                "n_start must be a non-negative integer.", exception=MSDError
             )
 
         if self.window % self.gap != 0:
@@ -468,10 +465,10 @@ class MSD:
     def run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Runs the MSD analysis.
 
@@ -531,9 +528,7 @@ class MSD:
         msd = np.zeros((self.window + 1, 3))
 
         # unwrapped origin coordinates, oldest origin at index 0
-        origins = np.zeros(
-            (self.n_origins_max, len(self.target_indices), 3)
-        )
+        origins = np.zeros((self.n_origins_max, len(self.target_indices), 3))
         displacements = np.zeros_like(origins)
         n_active = 0
         last = 0
@@ -546,7 +541,8 @@ class MSD:
         for frame in tqdm(
             itertools.chain([self.first_frame], self.frame_generator),
             total=self.n_frames,
-            disable=not config.with_progress_bar):
+            disable=not config.with_progress_bar
+        ):
 
             counter += 1
 
@@ -632,10 +628,7 @@ class MSD:
         ):
             return
 
-        if (
-            can_stream_exact and
-            self._calculate_msd_raw_exact_streaming()
-        ):
+        if (can_stream_exact and self._calculate_msd_raw_exact_streaming()):
             return
 
         self._calculate_msd_raw_streaming()
@@ -658,11 +651,14 @@ class MSD:
         last_cell = None
         box_lengths = None
 
-        for counter, (values, cell) in enumerate(tqdm(
-            self._raw_reader.raw_frame_generator(),
-            total=self.n_frames,
-            disable=not config.with_progress_bar,
-        ), 1):
+        for counter, (values, cell) in enumerate(
+            tqdm(
+                self._raw_reader.raw_frame_generator(),
+                total=self.n_frames,
+                disable=not config.with_progress_bar,
+            ),
+            1
+        ):
             if values.shape[0] != n_atoms:
                 self.logger.error(
                     (
@@ -746,8 +742,7 @@ class MSD:
         n_sel = len(self.target_indices)
         itemsize = np.dtype(np.float64).itemsize
         n_bytes = itemsize * (
-            2 * self.n_frames * n_sel * 3 +
-            self.n_frames * 3 +
+            2 * self.n_frames * n_sel * 3 + self.n_frames * 3 +
             n_workers * len(origin_indices) * n_sel * 3
         )
 
@@ -757,8 +752,7 @@ class MSD:
         """Whether the exact orthorhombic batch kernel is available."""
         if (
             direct_msd_boundary_states is None or
-            direct_msd_image_steps is None or
-            direct_msd_lag_range is None or
+            direct_msd_image_steps is None or direct_msd_lag_range is None or
             msd_frame_update.__module__ != direct_msd_lag_range.__module__
         ):
             return False
@@ -767,55 +761,113 @@ class MSD:
 
         return n_bytes <= self._direct_batch_max_bytes
 
+    # This orchestrates bounded loading, geometry validation and exact kernels.
+    # pylint: disable-next=too-complex,too-many-locals,too-many-branches,too-many-statements
     def _calculate_msd_raw_batch(self) -> bool:
         """Runs the exact parallel Diffcalc kernel for orthorhombic data."""
         n_atoms = self.n_atoms
         n_sel = len(self.target_indices)
         indices = np.ascontiguousarray(self.target_indices, dtype=np.int64)
-        positions = np.empty((self.n_frames, n_sel, 3), dtype=np.float64)
         boxes = np.empty((self.n_frames, 3), dtype=np.float64)
         reference_box = None
         last_cell = None
         box_lengths = None
+        all_atoms_selected = np.array_equal(
+            indices,
+            np.arange(n_atoms, dtype=np.int64),
+        )
+        selection_bytes = (
+            0 if all_atoms_selected else self.n_frames * n_sel * 3 *
+            np.dtype(np.float64).itemsize
+        )
+        reader_max_bytes = self._direct_batch_max_bytes - selection_bytes
+        batch = None
 
-        for frame_index, (values, cell) in enumerate(tqdm(
-            self._raw_reader.raw_frame_generator(),
-            total=self.n_frames,
-            disable=not config.with_progress_bar,
-        )):
-            if values.shape[0] != n_atoms:
-                self.logger.error(
-                    (
-                        f"Frame {frame_index + 1} of the trajectory does "
-                        f"not provide positions for all {n_atoms} atoms "
-                        "of the topology. Please provide a position "
-                        "trajectory (e.g. .xyz files) with a consistent "
-                        "number of atoms."
-                    ),
-                    exception=MSDError,
+        if reader_max_bytes > 0:
+            batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=n_atoms,
+                expected_n_frames=self.n_frames,
+                max_bytes=reader_max_bytes,
+            )
+
+        if batch is not None:
+            raw_positions, cells = batch
+            positions = (
+                raw_positions if all_atoms_selected else
+                np.ascontiguousarray(raw_positions[:, indices, :])
+            )
+            batch = None
+
+            if not all_atoms_selected:
+                del raw_positions
+
+            for frame_index, cell in enumerate(cells):
+                if cell is not last_cell:
+                    last_cell = cell
+
+                    if cell.is_vacuum or not np.array_equal(
+                        cell.box_angles,
+                        np.array([90, 90, 90]),
+                    ):
+                        return False
+
+                    box_lengths = np.asarray(
+                        cell.box_lengths,
+                        dtype=np.float64,
+                    )
+
+                    if reference_box is None:
+                        reference_box = box_lengths.copy()
+                    elif not np.array_equal(box_lengths, reference_box):
+                        return False
+
+                boxes[frame_index] = box_lengths
+        else:
+            positions = np.empty(
+                (self.n_frames, n_sel, 3),
+                dtype=np.float64,
+            )
+
+            for frame_index, (values, cell) in enumerate(
+                tqdm(
+                    self._raw_reader.raw_frame_generator(),
+                    total=self.n_frames,
+                    disable=not config.with_progress_bar,
                 )
+            ):
+                if values.shape[0] != n_atoms:
+                    self.logger.error(
+                        (
+                            f"Frame {frame_index + 1} of the trajectory does "
+                            f"not provide positions for all {n_atoms} atoms "
+                            "of the topology. Please provide a position "
+                            "trajectory (e.g. .xyz files) with a consistent "
+                            "number of atoms."
+                        ),
+                        exception=MSDError,
+                    )
 
-            if cell is not last_cell:
-                last_cell = cell
+                if cell is not last_cell:
+                    last_cell = cell
 
-                if cell.is_vacuum or not np.array_equal(
-                    cell.box_angles,
-                    np.array([90, 90, 90]),
-                ):
-                    return False
+                    if cell.is_vacuum or not np.array_equal(
+                        cell.box_angles,
+                        np.array([90, 90, 90]),
+                    ):
+                        return False
 
-                box_lengths = np.asarray(
-                    cell.box_lengths,
-                    dtype=np.float64,
-                )
+                    box_lengths = np.asarray(
+                        cell.box_lengths,
+                        dtype=np.float64,
+                    )
 
-                if reference_box is None:
-                    reference_box = box_lengths.copy()
-                elif not np.array_equal(box_lengths, reference_box):
-                    return False
+                    if reference_box is None:
+                        reference_box = box_lengths.copy()
+                    elif not np.array_equal(box_lengths, reference_box):
+                        return False
 
-            positions[frame_index] = values[indices]
-            boxes[frame_index] = box_lengths
+                positions[frame_index] = values[indices]
+                boxes[frame_index] = box_lengths
 
         origin_indices, boundaries, _ = self._raw_batch_shape()
         image_steps = direct_msd_image_steps(positions, boxes)
@@ -850,12 +902,9 @@ class MSD:
                     int(start),
                     int(stop),
                     boundary_states,
-                )
-                for start, stop in zip(
+                ) for start, stop in zip(
                     origin_boundaries[:-1],
-                    origin_boundaries[1:],
-                )
-                if start < stop
+                    origin_boundaries[1:], ) if start < stop
             ]
 
             for future in futures:
@@ -996,10 +1045,10 @@ class MSD:
     def _finalize_run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Finalizes the MSD analysis after running.
 
@@ -1046,13 +1095,7 @@ class MSD:
                 self.fit_window
             )
 
-        return (
-            self.lags,
-            self.msd_x,
-            self.msd_y,
-            self.msd_z,
-            self.msd_tot
-        )
+        return (self.lags, self.msd_x, self.msd_y, self.msd_z, self.msd_tot)
 
     @property
     def n_atoms(self) -> int:
@@ -1061,8 +1104,7 @@ class MSD:
 
     @staticmethod
     def _unwrap_shift(
-        displacement: Np2DNumberArray,
-        cell: Cell
+        displacement: Np2DNumberArray, cell: Cell
     ) -> Np2DNumberArray:
         """
         Calculates the change of the unwrapping shift vectors
