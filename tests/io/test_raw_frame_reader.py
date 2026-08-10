@@ -49,6 +49,11 @@ def parser_module(request, monkeypatch):
 
     monkeypatch.setattr(raw_frame_reader, "scan_header", module.scan_header)
     monkeypatch.setattr(raw_frame_reader, "parse_body", module.parse_body)
+    monkeypatch.setattr(
+        raw_frame_reader,
+        "parse_xyz_frames",
+        module.parse_xyz_frames,
+    )
 
     return module
 
@@ -119,9 +124,8 @@ class TestRawTrajectoryReaderEquivalence:
 
         assert values.dtype == np.float64
         assert values[0, 0] == float("1.00000005960464477539062501")
-        assert values[0, 0] != float(
-            np.float32("1.00000005960464477539062501")
-        )
+        assert values[0,
+                      0] != float(np.float32("1.00000005960464477539062501"))
 
     def test_invalid_dtype(self):
         with pytest.raises(ValueError, match="dtype must be either"):
@@ -385,6 +389,156 @@ class TestRawTrajectoryReaderFirstFrame:
             raw_reader.read_first_frame()
 
         assert "does not contain any frames" in str(exception.value)
+
+
+
+@pytest.mark.usefixtures("tmpdir", "parser_module")
+class TestRawTrajectoryReaderBatch:
+
+    def test_batch_matches_stream_and_inherits_cells(self):
+        with open("tmp1.xyz", "w", encoding="utf-8") as file:
+            for offset in (0.0, 10.0):
+                print("2 11.1 12.2 13.3", file=file)
+                print("", file=file)
+                print(f"h {offset + 1.0} 2.0 3.0", file=file)
+                print(f"o {offset + 4.0} 5.0 6.0", file=file)
+
+        with open("tmp2.xyz", "w", encoding="utf-8") as file:
+            print("2", file=file)
+            print("", file=file)
+            print("h 21.0 22.0 23.0", file=file)
+            print("o 24.0 25.0 26.0", file=file)
+
+        reader = RawTrajectoryReader(
+            ["tmp1.xyz", "tmp2.xyz"],
+            dtype="float64",
+        )
+        streamed = list(reader.raw_frame_generator())
+        batch = reader.try_read_all_frames(
+            expected_n_atoms=2,
+            expected_n_frames=3,
+            max_bytes=1024 * 1024,
+        )
+
+        assert batch is not None
+        values, cells = batch
+        expected = np.stack([frame_values for frame_values, _ in streamed])
+
+        assert values.dtype == np.float64
+        assert np.array_equal(values, expected)
+        assert len(cells) == len(streamed)
+
+        for cell, (_, expected_cell) in zip(cells, streamed):
+            assert np.array_equal(cell.box_matrix, expected_cell.box_matrix)
+
+        assert cells[-1] is cells[-2]
+
+    def test_batch_strips_qmcfc_dummy_rows(self):
+        with open("tmp.vel", "w", encoding="utf-8") as file:
+            for dummy_name, offset in (("X", 0.0), ("x", 10.0)):
+                print("2", file=file)
+                print("", file=file)
+                print(f"{dummy_name} 0.0 0.0 0.0", file=file)
+                print(f"h {offset + 1.0} 2.0 3.0", file=file)
+
+        reader = RawTrajectoryReader(
+            "tmp.vel",
+            md_format=MDEngineFormat.QMCFC,
+            dtype="float64",
+        )
+        batch = reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024 * 1024,
+        )
+
+        assert batch is not None
+        values, _ = batch
+        assert np.array_equal(
+            values,
+            np.array([
+                [[1.0, 2.0, 3.0]],
+                [[11.0, 2.0, 3.0]],
+            ]),
+        )
+
+    def test_batch_respects_memory_cap(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("1", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1,
+        ) is None
+
+    def test_batch_accounts_for_multifile_peak_memory(self):
+        content = "1\n\nh 1.0 2.0 3.0"
+
+        for filename in ("tmp1.xyz", "tmp2.xyz"):
+            with open(filename, "w", encoding="utf-8") as file:
+                file.write(content)
+
+        reader = RawTrajectoryReader(
+            ["tmp1.xyz", "tmp2.xyz"],
+            dtype="float64",
+        )
+        input_bytes = 2 * len(content.encode("utf-8")) + 2
+        output_bytes = 2 * 1 * 3 * np.dtype(np.float64).itemsize
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=input_bytes + output_bytes,
+        ) is None
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=input_bytes + 2 * output_bytes,
+        ) is not None
+
+    def test_batch_rejects_unsupported_body_mode(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+        reader._slab_mode = -1
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024,
+        ) is None
+
+    def test_batch_rejects_multifile_frame_count_mismatch(self):
+        for filename in ("tmp1.xyz", "tmp2.xyz"):
+            with open(filename, "w", encoding="utf-8") as file:
+                print("1", file=file)
+                print("", file=file)
+                print("H 0 0 0", file=file)
+
+        reader = RawTrajectoryReader(
+            ["tmp1.xyz", "tmp2.xyz"],
+            dtype="float64",
+        )
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            expected_n_frames=3,
+            max_bytes=1024,
+        ) is None
+
+    def test_batch_returns_none_for_malformed_body(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("1", file=file)
+            print("", file=file)
+            print("H invalid 0 0", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024,
+        ) is None
 
 
 

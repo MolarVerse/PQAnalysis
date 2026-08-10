@@ -8,6 +8,8 @@ to check a simulation for center of mass drift.
 import itertools
 import logging
 
+from os.path import getsize
+
 # 3rd party imports
 import numpy as np
 
@@ -21,7 +23,7 @@ from PQAnalysis.types import (
     Np2DNumberArray,
     PositiveReal,
 )
-from PQAnalysis.traj import Trajectory, TrajectoryFormat
+from PQAnalysis.traj import MDEngineFormat, Trajectory, TrajectoryFormat
 from PQAnalysis.topology import Selection, SelectionCompatible
 from PQAnalysis.utils import timeit_in_class
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -34,10 +36,14 @@ from .exceptions import MomentumError
 
 try:
     from ._momentum_kernel import (  # pylint: disable=import-error
+        legacy_momentum_file,
         legacy_momentum_norm,
     )
 except ModuleNotFoundError:
-    from ._momentum_kernel_py import legacy_momentum_norm
+    from ._momentum_kernel_py import (
+        legacy_momentum_norm,
+    )
+    legacy_momentum_file = None  # pylint: disable=invalid-name
 
 
 
@@ -75,6 +81,7 @@ class Momentum:
 
     _scale_default = 1e-15
     _use_full_atom_default = False
+    _batch_max_bytes = 512 * 1024 * 1024
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
@@ -132,8 +139,8 @@ class Momentum:
         self._n_frames_total = None
 
         if (
-            isinstance(traj, TrajectoryReader)
-            and traj.traj_format == TrajectoryFormat.VEL
+            isinstance(traj, TrajectoryReader) and
+            traj.traj_format == TrajectoryFormat.VEL
         ):
             # Legacy-compatible fast path: parse float64 velocity values
             # without building an AtomicSystem per frame.
@@ -143,7 +150,6 @@ class Momentum:
                 md_format=traj.md_format,
                 dtype="float64",
             )
-            self._n_frames_total = self._raw_reader.count_frames()
             self.first_frame = self._raw_reader.read_first_frame()
         elif isinstance(traj, TrajectoryReader):
             # lazy loading of trajectory from file(s)
@@ -159,8 +165,7 @@ class Momentum:
             self.first_frame = next(self.frame_generator)
         else:
             self.logger.error(
-                "Trajectory cannot be of length 0.",
-                exception=MomentumError
+                "Trajectory cannot be of length 0.", exception=MomentumError
             )
 
         if traj.topology is not None:
@@ -187,8 +192,8 @@ class Momentum:
         if any(mass is None for mass in masses):
             self.logger.error(
                 (
-                "The mass of at least one selected atom is unknown. "
-                "The total momentum cannot be calculated."
+                    "The mass of at least one selected atom is unknown. "
+                    "The total momentum cannot be calculated."
                 ),
                 exception=MomentumError
             )
@@ -222,20 +227,31 @@ class Momentum:
             If a frame does not contain velocity information for all
             atoms of the topology.
         """
+        if self._raw_reader is not None:
+            batch_norms = self._run_raw_file_batch()
+
+            if batch_norms is not None:
+                self._n_frames_total = batch_norms.shape[0]
+                self.momentum_norms = batch_norms
+                return self.momentum_norms
+
+            self._n_frames_total = self._raw_reader.count_frames()
+
         norms = []
         selected_masses = self.masses[:, None]
 
         for velocities in tqdm(
             self._velocities(),
             total=self._n_frames_total,
-            disable=not config.with_progress_bar):
+            disable=not config.with_progress_bar
+        ):
 
             if velocities.shape[0] != self.topology.n_atoms:
                 self.logger.error(
                     (
-                    "The trajectory does not contain velocity "
-                    "information for all atoms. Please provide a "
-                    "velocity trajectory."
+                        "The trajectory does not contain velocity "
+                        "information for all atoms. Please provide a "
+                        "velocity trajectory."
                     ),
                     exception=MomentumError
                 )
@@ -249,8 +265,7 @@ class Momentum:
                 )
             else:
                 momentum = np.sum(
-                    selected_masses * velocities[self.indices],
-                    axis=0
+                    selected_masses * velocities[self.indices], axis=0
                 )
                 norm = float(np.linalg.norm(momentum)) * self.scale
 
@@ -259,6 +274,59 @@ class Momentum:
         self.momentum_norms = np.array(norms, dtype=np.float64)
 
         return self.momentum_norms
+
+    # Keep parsing and metadata validation in one all-or-fallback transaction.
+    # pylint: disable-next=too-complex
+    def _run_raw_file_batch(self) -> Np1DNumberArray | None:
+        """Parse and reduce bounded velocity files in one pass."""
+        if legacy_momentum_file is None:
+            return None
+
+        input_bytes = sum(
+            getsize(filename) for filename in self._raw_reader.filenames
+        )
+        if input_bytes > self._batch_max_bytes:
+            return None
+
+        strip_first = self._raw_reader.md_format == MDEngineFormat.QMCFC
+        norm_batches = []
+
+        for filename in self._raw_reader.filenames:
+            with open(filename, "rb") as file:
+                data = file.read()
+
+            if data and not data.endswith(b"\n"):
+                data += b"\n"
+                input_bytes += 1
+
+                if input_bytes > self._batch_max_bytes:
+                    return None
+
+            try:
+                norms, box_headers, first_names = legacy_momentum_file(
+                    data,
+                    self.topology.n_atoms,
+                    strip_first,
+                    self.indices,
+                    self.masses,
+                    float(self.scale),
+                )
+            except (EOFError, ValueError):
+                return None
+
+            if strip_first:
+                for first_name in first_names:
+                    self._raw_reader._validate_dummy_name(first_name)  # pylint: disable=protected-access
+
+            for box_bytes in box_headers:
+                self._raw_reader._cell_from_box_bytes(box_bytes)  # pylint: disable=protected-access
+
+            norm_batches.append(norms)
+
+        if len(norm_batches) == 1:
+            return norm_batches[0]
+
+        return np.concatenate(norm_batches)
 
     def _velocities(self) -> Generator[Np2DNumberArray, None, None]:
         """
@@ -277,9 +345,7 @@ class Momentum:
             for values, _cell in self._raw_reader.raw_frame_generator():
                 yield np.asarray(values, dtype=np.float64)
         else:
-            frames = itertools.chain(
-                [self.first_frame], self.frame_generator
-            )
+            frames = itertools.chain([self.first_frame], self.frame_generator)
 
             for frame in frames:
                 yield np.asarray(frame.vel, dtype=np.float64)

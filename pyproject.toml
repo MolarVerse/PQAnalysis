@@ -40,6 +40,9 @@ test = [
     "coverage",
     "docstr-coverage",
 ]
+benchmark = [
+    "pytest-benchmark",
+]
 dev = [
     "yapf",
 ]

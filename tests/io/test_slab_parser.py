@@ -107,6 +107,11 @@ def parser_module(request, monkeypatch):
 
     monkeypatch.setattr(raw_frame_reader, "scan_header", module.scan_header)
     monkeypatch.setattr(raw_frame_reader, "parse_body", module.parse_body)
+    monkeypatch.setattr(
+        raw_frame_reader,
+        "parse_xyz_frames",
+        module.parse_xyz_frames,
+    )
 
     return module
 
@@ -124,6 +129,7 @@ def write_xyz(filename, frames, header="{n} 11.1 12.2 13.3"):
 
             for line in frame:
                 print(line, file=file)
+
 
 
 def assert_matches_frame_generator(filenames, **kwargs):
@@ -166,8 +172,7 @@ class TestSlabParserAdversarialFloats:
         lines = [
             f"a{i} {values[i % len(values)]} "
             f"{values[(i + 1) % len(values)]} "
-            f"{values[(i + 2) % len(values)]}"
-            for i in range(len(values))
+            f"{values[(i + 2) % len(values)]}" for i in range(len(values))
         ]
 
         # one file with all lines in one frame and one file with one
@@ -179,9 +184,7 @@ class TestSlabParserAdversarialFloats:
         assert_matches_frame_generator(["tmp1.xyz", "tmp2.xyz"])
 
     def test_charge_values_bitwise_identical(self):
-        lines = [
-            f"a{i} {value}" for i, value in enumerate(ADVERSARIAL_VALUES)
-        ]
+        lines = [f"a{i} {value}" for i, value in enumerate(ADVERSARIAL_VALUES)]
 
         write_xyz("tmp1.chrg", [lines, lines])
         write_xyz("tmp2.chrg", [[line] for line in lines])
@@ -225,9 +228,7 @@ class TestSlabParserAdversarialFloats:
 class TestSlabParserChunkBoundaries:
 
     @pytest.mark.parametrize("chunk_size", [1, 3, 7, 17, 64, 256])
-    def test_frames_spanning_chunk_boundaries(
-        self, chunk_size, monkeypatch
-    ):
+    def test_frames_spanning_chunk_boundaries(self, chunk_size, monkeypatch):
         frames = [
             ["h 1.2345678 -2.3456789 3.4567891", "o 4.0 5.0 6.0"],
             ["h 2.2345678 -3.3456789 4.4567891", "o 5.0 6.0 7.0"],
@@ -275,9 +276,7 @@ class TestSlabParserChunkBoundaries:
         assert len(raw_frames) == 3
 
         for values, _ in raw_frames:
-            assert np.array_equal(
-                values, np.array([-0.89076318, 0.44538159])
-            )
+            assert np.array_equal(values, np.array([-0.89076318, 0.44538159]))
 
     def test_file_without_trailing_newline(self, monkeypatch):
         monkeypatch.setattr(raw_frame_reader, "_CHUNK_SIZE", 5)
@@ -403,6 +402,78 @@ class TestSlabParserErrors:
 
 
 
+class TestSlabBatchParserErrors:
+
+    """Validation branches of the pure-Python batch parser."""
+
+    def test_rejects_unsupported_mode(self):
+        with pytest.raises(ValueError, match="only xyz-family"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                0,
+                0,
+                False,
+                _slab_parser_py.MODE_CHARGE,
+            )
+
+    @pytest.mark.parametrize(
+        "n_frames,n_atoms,strip_first",
+        [(-1, 0, False), (0, -1, False), (0, 0, True)],
+    )
+    def test_rejects_invalid_shape(self, n_frames, n_atoms, strip_first):
+        with pytest.raises(ValueError, match="Invalid batch shape"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                n_frames,
+                n_atoms,
+                strip_first,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_missing_expected_frame(self):
+        with pytest.raises(EOFError, match="incomplete frame"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_invalid_atom_count(self):
+        with pytest.raises(ValueError, match="Invalid frame atom count"):
+            _slab_parser_py.parse_xyz_frames(
+                b"not-an-integer\n\n",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_changed_atom_count(self):
+        with pytest.raises(ValueError, match="does not match the batch"):
+            _slab_parser_py.parse_xyz_frames(
+                b"2\n\nH 0 0 0\nH 0 0 0\n",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_extra_frame(self):
+        frame = b"1\n\nH 0 0 0\n"
+
+        with pytest.raises(ValueError, match="more frames than expected"):
+            _slab_parser_py.parse_xyz_frames(
+                frame + frame,
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+
+
 class TestSlabParserContract:
 
     def test_status_and_mode_constants_are_shared(self):
@@ -417,8 +488,7 @@ class TestSlabParserContract:
             _slab_parser.STATUS_NEED_MORE == _slab_parser_py.STATUS_NEED_MORE
         )
         assert (
-            _slab_parser.STATUS_BAD_HEADER
-            == _slab_parser_py.STATUS_BAD_HEADER
+            _slab_parser.STATUS_BAD_HEADER == _slab_parser_py.STATUS_BAD_HEADER
         )
         assert _slab_parser.MODE_XYZ == _slab_parser_py.MODE_XYZ
         assert _slab_parser.MODE_XYZ64 == _slab_parser_py.MODE_XYZ64
@@ -442,9 +512,7 @@ class TestSlabParserBenchFileParity:
         bench_dir = os.environ["PQANALYSIS_SLAB_BENCH_DIR"]
 
         for name in ("traj.xyz", "traj.vel"):
-            assert_matches_frame_generator(
-                [os.path.join(bench_dir, name)]
-            )
+            assert_matches_frame_generator([os.path.join(bench_dir, name)])
 
     def test_bench_charge_parity(self):
         bench_dir = os.environ["PQANALYSIS_SLAB_BENCH_DIR"]
