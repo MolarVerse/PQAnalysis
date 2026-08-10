@@ -4,10 +4,15 @@ Tests for the check_momentum CLI.
 
 import sys
 
+import numpy as np
+import pytest
+
 from PQAnalysis.cli import check_momentum as check_momentum_cli
 from PQAnalysis.cli.check_momentum import CheckMomentumCLI
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
+
+from ..analysis.momentum.test_momentum import GAS3_LEGACY_NORMS
 
 
 
@@ -127,3 +132,30 @@ class TestCheckMomentumCLI:
         check_momentum_cli.main()
 
         assert called[0]["export_files"] == ["momentum.tsv", "momentum.xvg"]
+
+    @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
+    def test_main_writes_bitwise_legacy_output(
+        self,
+        test_with_data_dir,
+        monkeypatch,
+    ):
+        """The real CLI writes float64 values that round-trip exactly."""
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "check_momentum",
+                "gas3.vel",
+                "--output",
+                "momentum.dat",
+                "--engine",
+                "qmcfc",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        check_momentum_cli.main()
+
+        stored = np.loadtxt("momentum.dat", comments="#", usecols=1)
+        assert np.array_equal(stored, GAS3_LEGACY_NORMS)

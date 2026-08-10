@@ -32,6 +32,13 @@ from PQAnalysis.type_checking import runtime_type_checking
 # local relative imports
 from .exceptions import MomentumError
 
+try:
+    from ._momentum_kernel import (  # pylint: disable=import-error
+        legacy_momentum_norm,
+    )
+except ModuleNotFoundError:
+    from ._momentum_kernel_py import legacy_momentum_norm
+
 
 
 class Momentum:
@@ -47,14 +54,6 @@ class Momentum:
     the default scaling factor of 1e-15 converts the momentum norm
     from amu*Angstrom/s to amu*Angstrom/fs.
 
-    Note that the velocities are parsed from file in single precision
-    by the TrajectoryReader, so reported norms below roughly
-    ``1e-7 * sum_i m_i * |v_i| * scale`` are parsing noise, not
-    physical center of mass drift. The legacy ``equipartition.jl``
-    tool parses the velocities in double precision and therefore
-    resolves correspondingly smaller drift for momentum-conserving
-    trajectories.
-
     The Momentum class can be initialized with either a trajectory
     object or via a TrajectoryReader object. If a trajectory object
     is given, it is assumed to have a constant topology over all
@@ -64,13 +63,14 @@ class Momentum:
     frame when needed. This can be useful for large trajectories
     that do not fit into memory.
 
-    When initialized with a TrajectoryReader of a velocity
-    trajectory, the frames are streamed through the raw fast-path
-    reader
+    When initialized with a TrajectoryReader of a velocity trajectory,
+    frames are parsed directly in float64 through the raw fast-path reader
     (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
-    without building an AtomicSystem per frame. The computed
-    momentum norms are bit-identical to the AtomicSystem based
-    stream.
+    without building an AtomicSystem per frame. Atom-order accumulation,
+    the three-component norm and scaling reproduce the operation order of
+    the legacy ``equipartition.jl`` tool. Trajectory objects and other
+    trajectory formats retain the precision and general NumPy semantics
+    of their supplied velocity arrays.
     """
 
     _scale_default = 1e-15
@@ -135,13 +135,13 @@ class Momentum:
             isinstance(traj, TrajectoryReader)
             and traj.traj_format == TrajectoryFormat.VEL
         ):
-            # additive fast path: stream the raw float32 values of
-            # the velocity trajectory without building an
-            # AtomicSystem per frame (bit-identical values)
+            # Legacy-compatible fast path: parse float64 velocity values
+            # without building an AtomicSystem per frame.
             self._raw_reader = RawTrajectoryReader(
                 traj.filenames,
                 traj_format=traj.traj_format,
                 md_format=traj.md_format,
+                dtype="float64",
             )
             self._n_frames_total = self._raw_reader.count_frames()
             self.first_frame = self._raw_reader.read_first_frame()
@@ -168,9 +168,12 @@ class Momentum:
         else:
             self.topology = self.first_frame.topology
 
-        self.indices = self.selection.select(
-            self.topology,
-            self.use_full_atom_info
+        self.indices = np.ascontiguousarray(
+            self.selection.select(
+                self.topology,
+                self.use_full_atom_info,
+            ),
+            dtype=np.int64,
         )
 
         if len(self.indices) == 0:
@@ -190,7 +193,7 @@ class Momentum:
                 exception=MomentumError
             )
 
-        self.masses = np.asarray(masses, dtype=np.float64)
+        self.masses = np.ascontiguousarray(masses, dtype=np.float64)
 
         self.momentum_norms = np.array([])
 
@@ -237,12 +240,21 @@ class Momentum:
                     exception=MomentumError
                 )
 
-            momentum = np.sum(
-                selected_masses * velocities[self.indices],
-                axis=0
-            )
+            if self._raw_reader is not None:
+                norm = legacy_momentum_norm(
+                    velocities,
+                    self.indices,
+                    self.masses,
+                    float(self.scale),
+                )
+            else:
+                momentum = np.sum(
+                    selected_masses * velocities[self.indices],
+                    axis=0
+                )
+                norm = float(np.linalg.norm(momentum)) * self.scale
 
-            norms.append(float(np.linalg.norm(momentum)) * self.scale)
+            norms.append(norm)
 
         self.momentum_norms = np.array(norms, dtype=np.float64)
 
@@ -250,12 +262,11 @@ class Momentum:
 
     def _velocities(self) -> Generator[Np2DNumberArray, None, None]:
         """
-        Yields the float64 velocities of all frames.
+        Yields the velocities of all frames as float64 arrays.
 
-        Dispatches to the raw fast-path stream if the analysis was
-        constructed from a TrajectoryReader of a velocity trajectory
-        and to the AtomicSystem based stream otherwise. Both streams
-        yield bit-identical float64 arrays.
+        The raw fast path receives values parsed directly as float64.
+        Other inputs are widened from the precision stored by their
+        trajectory objects.
 
         Yields
         ------

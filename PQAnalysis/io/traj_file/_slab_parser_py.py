@@ -56,6 +56,9 @@ MODE_XYZ = 0
 #: Body mode: charge lines with a name token and exactly one float64
 #: value per line.
 MODE_CHARGE = 1
+#: Body mode: xyz-family lines with a name token and three float64
+#: values per line.
+MODE_XYZ64 = 2
 
 #: The integer literals accepted by the fast atom count parsing
 #: (mirroring C ``strtol`` with base 10 on a fully consumed token).
@@ -213,7 +216,7 @@ def parse_body(
         Whether to extract the name token of the first atom line
         (needed for the QMCFC dummy atom check).
     mode : int
-        The body mode, either :py:data:`MODE_XYZ` or
+        The body mode: :py:data:`MODE_XYZ`, :py:data:`MODE_XYZ64` or
         :py:data:`MODE_CHARGE`.
 
     Returns
@@ -222,9 +225,10 @@ def parse_body(
         :py:data:`STATUS_FRAME` or :py:data:`STATUS_NEED_MORE`.
     values : numpy.ndarray | None
         The parsed values of the frame body: a ``(n_atoms, 3)``
-        float32 array for :py:data:`MODE_XYZ` or a ``(n_atoms,)``
-        float64 array for :py:data:`MODE_CHARGE`. None unless the
-        status is :py:data:`STATUS_FRAME`.
+        float32 array for :py:data:`MODE_XYZ`, a ``(n_atoms, 3)``
+        float64 array for :py:data:`MODE_XYZ64` or a ``(n_atoms,)``
+        float64 array for :py:data:`MODE_CHARGE`. None unless the status
+        is :py:data:`STATUS_FRAME`.
     first_name : bytes | None
         The name token of the first atom line if requested and the
         frame has at least one atom line, otherwise None.
@@ -279,6 +283,16 @@ def parse_body(
             data[start:end].decode("utf-8") for start, end in line_bounds
         ]
         values = process_lines(lines, n_atoms)
+    elif mode == MODE_XYZ64:
+        values = np.empty((n_atoms, 3), dtype=np.float64)
+
+        for i, (start, end) in enumerate(line_bounds):
+            fields = data[start:end].split()
+
+            if len(fields) < 4:
+                raise ValueError("Could not parse line")
+
+            values[i] = [float(value) for value in fields[1:4]]
     else:
         values = np.empty(n_atoms, dtype=np.float64)
 

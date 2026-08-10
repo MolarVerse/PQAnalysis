@@ -25,12 +25,10 @@ scaled momentum norm is written. With velocities in Angstrom/s (PQ
 velocity trajectories) the default scaling factor of 1e-15 converts
 the momentum norm from amu*Angstrom/s to amu*Angstrom/fs.
 
-Note that the velocities are parsed from file in single precision, so
-reported norms below roughly 1e-7 * sum_i m_i * norm(v_i) * scale are
-parsing noise, not physical center of mass drift. The legacy
-equipartition.jl tool parses the velocities in double precision and
-therefore resolves correspondingly smaller drift for
-momentum-conserving trajectories.
+File-backed velocity trajectories are parsed in double precision. The
+atom-order accumulation, vector norm and scaling reproduce the arithmetic
+order of the legacy equipartition.jl tool, including momentum residuals
+near the float64 noise floor.
 """
 
 __epilog__ = "\n"

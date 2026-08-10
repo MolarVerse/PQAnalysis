@@ -9,7 +9,10 @@ from PQAnalysis.analysis.momentum import MomentumDataWriter, check_momentum
 
 from .. import pytestmark  # pylint: disable=unused-import
 
-from .test_momentum import TWO_FRAMES_NORMS
+from .test_momentum import (
+    TWO_FRAMES_NORMS,
+    TWO_FRAMES_SCALED_NORMS,
+)
 
 
 
@@ -32,11 +35,7 @@ class TestCheckMomentumAPI:
             md_format="qmcfc",
         )
 
-        assert np.allclose(
-            momentum_norms,
-            np.array(TWO_FRAMES_NORMS) * 1e-15,
-            rtol=1e-12,
-        )
+        assert np.array_equal(momentum_norms, TWO_FRAMES_SCALED_NORMS)
 
         with open("momentum.dat", encoding="utf-8") as file:
             lines = file.readlines()
@@ -46,9 +45,14 @@ class TestCheckMomentumAPI:
             "# FIELDS frame scaled_momentum_norm\n",
             "# SYMBOLS n s‖P(n)‖\n",
             "# UNITS 1 scale-dependent\n",
-            f"1  {momentum_norms[0]:.12e}\n",
-            f"2  {momentum_norms[1]:.12e}\n",
+            f"1  {momentum_norms[0]:.16e}\n",
+            f"2  {momentum_norms[1]:.16e}\n",
         ]
+
+        stored_norms = np.loadtxt(
+            "momentum.dat", comments="#", usecols=1
+        )
+        assert np.array_equal(stored_norms, TWO_FRAMES_SCALED_NORMS)
 
     @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
     def test_check_momentum_to_stdout(self, test_with_data_dir, capsys):  # pylint: disable=unused-argument
@@ -69,8 +73,8 @@ class TestCheckMomentumAPI:
             "# FIELDS frame scaled_momentum_norm\n"
             "# SYMBOLS n s‖P(n)‖\n"
             "# UNITS 1 scale-dependent\n"
-            f"1  {momentum_norms[0]:.12e}\n"
-            f"2  {momentum_norms[1]:.12e}\n"
+            f"1  {momentum_norms[0]:.16e}\n"
+            f"2  {momentum_norms[1]:.16e}\n"
         )
         assert np.allclose(momentum_norms, TWO_FRAMES_NORMS, rtol=1e-12)
 
@@ -98,6 +102,6 @@ class TestMomentumDataWriter:
             "# FIELDS frame scaled_momentum_norm\n",
             "# SYMBOLS n s‖P(n)‖\n",
             "# UNITS 1 scale-dependent\n",
-            "1  1.871482266947e-14\n",
-            "2  0.000000000000e+00\n",
+            "1  1.8714822669470000e-14\n",
+            "2  0.0000000000000000e+00\n",
         ]

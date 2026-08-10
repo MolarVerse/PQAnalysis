@@ -11,14 +11,10 @@ from the byte buffer: newlines are located with ``memchr`` and the
 numeric tokens are converted in place with ``strtol``/``strtof``/
 ``strtod`` without decoding or splitting the lines.
 
-The float32 values of the xyz-family atom lines are parsed with
-``strtof`` (single rounding), which is bitwise identical to the
-``sscanf("%f")`` conversion of
-:py:func:`~PQAnalysis.io.traj_file.process_lines.process_lines` used
-by the line based readers. The float64 charge values and the (cached)
-box values of the header line are parsed with ``strtod``/``float``,
-matching the correctly rounded ``float`` conversions of the line
-based readers.
+The default float32 xyz values are parsed with ``strtof`` (single
+rounding), which is bitwise identical to the ``sscanf("%f")``
+conversion of the line-based readers. The float64 xyz mode and charge
+values are parsed directly with ``strtod`` so no precision is discarded.
 """
 
 import numpy as np
@@ -28,6 +24,7 @@ from libc.string cimport memchr
 from PQAnalysis.io.traj_file._slab_parser_py import (
     MODE_CHARGE,
     MODE_XYZ,
+    MODE_XYZ64,
     STATUS_BAD_HEADER,
     STATUS_EOF,
     STATUS_FRAME,
@@ -43,6 +40,7 @@ cdef extern from "<stdlib.h>":
 # _slab_parser_py (the single source of truth for their values)
 cdef int _MODE_XYZ = MODE_XYZ
 cdef int _MODE_CHARGE = MODE_CHARGE
+cdef int _MODE_XYZ64 = MODE_XYZ64
 
 
 cdef inline bint _is_space(char c) nogil:
@@ -174,7 +172,8 @@ def parse_body(
     want_first_name : bool
         Whether to extract the name token of the first atom line.
     mode : int
-        The body mode, either ``MODE_XYZ`` or ``MODE_CHARGE``.
+        The body mode: ``MODE_XYZ``, ``MODE_XYZ64`` or
+        ``MODE_CHARGE``.
 
     Returns
     -------
@@ -232,6 +231,10 @@ def parse_body(
 
     if mode == _MODE_XYZ:
         values, first_name = _parse_xyz_lines(
+            data, pos, n_atoms, want_first_name
+        )
+    elif mode == _MODE_XYZ64:
+        values, first_name = _parse_xyz64_lines(
             data, pos, n_atoms, want_first_name
         )
     else:
@@ -298,6 +301,66 @@ cdef _parse_xyz_lines(
                 raise ValueError("Could not parse line")
 
             value = strtof(base + p, &endptr)
+
+            if <const char*> endptr == base + p:
+                raise ValueError("Could not parse line")
+
+            out[i, j] = value
+            p = <const char*> endptr - base
+
+        p = line_end + 1
+
+    return values, first_name
+
+
+cdef _parse_xyz64_lines(
+    bytes data,
+    Py_ssize_t pos,
+    Py_ssize_t n_atoms,
+    bint want_first_name,
+):
+    """Parse xyz-family atom lines directly into a float64 array."""
+    cdef const char* base = data
+    cdef Py_ssize_t n_data = len(data)
+
+    values = np.empty((n_atoms, 3), dtype=np.float64)
+
+    cdef double[:, ::1] out = values
+    cdef Py_ssize_t p = pos
+    cdef Py_ssize_t line_end, tok_start, i, j
+    cdef const char* found
+    cdef char* endptr
+    cdef double value
+
+    first_name = None
+
+    for i in range(n_atoms):
+        # guaranteed by the pre-scan of parse_body
+        found = <const char*> memchr(base + p, c'\n', n_data - p)
+        line_end = found - base
+
+        while p < line_end and _is_space(base[p]):
+            p += 1
+
+        if p == line_end:
+            raise ValueError("Could not parse line")
+
+        tok_start = p
+
+        while p < line_end and not _is_space(base[p]):
+            p += 1
+
+        if want_first_name and i == 0:
+            first_name = data[tok_start:p]
+
+        for j in range(3):
+            while p < line_end and _is_space(base[p]):
+                p += 1
+
+            if p == line_end:
+                raise ValueError("Could not parse line")
+
+            value = strtod(base + p, &endptr)
 
             if <const char*> endptr == base + p:
                 raise ValueError("Could not parse line")

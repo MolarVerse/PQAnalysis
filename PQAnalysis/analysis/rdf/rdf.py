@@ -8,6 +8,7 @@ of finding a particle at a distance r from another particle.
 
 import itertools
 import logging
+import math
 
 # 3rd party imports
 import numpy as np
@@ -38,9 +39,15 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RDFError
 
 try:
-    from ._rdf_kernel import rdf_frame_histogram  # pylint: disable=import-error
+    from ._rdf_kernel import (  # pylint: disable=import-error
+        legacy_rdf_frame_histogram,
+        rdf_frame_histogram,
+    )
 except ModuleNotFoundError:
-    from ._rdf_kernel_py import rdf_frame_histogram
+    from ._rdf_kernel_py import (
+        legacy_rdf_frame_histogram,
+        rdf_frame_histogram,
+    )
 
 
 
@@ -74,13 +81,16 @@ class RDF:
     loaded frame by frame when needed. This can be useful
     for large trajectories that do not fit into memory.
 
-    For xyz trajectory files without intra-molecular
-    exclusion the frames are streamed via the raw-frame
+    For xyz trajectory files without intra-molecular exclusion the
+    frames are streamed in float64 via the raw-frame
     fast path
     (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
     and accumulated with a compiled distance-histogram
-    kernel, which is considerably faster and produces
-    identical results.
+    kernel. A periodic orthorhombic calculation specified by
+    ``delta_r`` alone, with the default ``r_min = 0``, reproduces the
+    numeric operation order of the legacy ``thh_tools/RDF`` program.
+    Other geometries and explicit radial ranges use the general
+    PQAnalysis RDF semantics.
     """
 
     _use_full_atom_default = False
@@ -93,7 +103,7 @@ class RDF:
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(
+    def __init__(  # pylint: disable=too-many-branches
         self,
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
@@ -178,6 +188,8 @@ class RDF:
 
         self._average_volume = 0.0
         self._reference_density = 0.0
+        self.delta_r, self.n_bins, self.r_max = 0.0, 0, 0.0
+        self.bin_middle_points, self.bins = np.array([]), np.array([])
         self.target_index_combinations = []
         self.normalized_bins = np.array([])
         self.integrated_bins = np.array([])
@@ -229,6 +241,7 @@ class RDF:
                 traj.filenames,
                 traj_format=traj.traj_format,
                 md_format=traj.md_format,
+                dtype="float64",
             )
             self.cells, self._setup_cells = self._scan_cells(traj.filenames)
             self.first_frame = self._raw_reader.read_first_frame()
@@ -254,11 +267,11 @@ class RDF:
         else:
             self.topology = self.first_frame.topology
 
-        self._setup_bins(
+        self._setup_analysis_bins(
             n_bins=n_bins,
             delta_r=delta_r,
             r_max=r_max,
-            r_min=self.r_min
+            r_min=self.r_min,
         )
 
         self.reference_indices = self.reference_selection.select(
@@ -299,6 +312,51 @@ class RDF:
             isinstance(traj, TrajectoryReader)
             and traj.traj_format == TrajectoryFormat.XYZ
             and not self.no_intra_molecular
+        )
+
+    def _use_legacy_rdf(
+        self,
+        n_bins: PositiveInt | None,
+        delta_r: PositiveReal | None,
+        r_max: PositiveReal | None,
+    ) -> bool:
+        """Whether the input can reproduce the legacy RDF calculation."""
+        return (
+            self._raw_reader is not None
+            and n_bins is None
+            and delta_r is not None
+            and r_max is None
+            and self.r_min == 0.0
+            and all(not cell.is_vacuum for cell in self._setup_cells)
+            and all(
+                np.array_equal(cell.box_angles, np.array([90, 90, 90]))
+                for cell in self._setup_cells
+            )
+        )
+
+    def _setup_analysis_bins(
+        self,
+        n_bins: PositiveInt | None,
+        delta_r: PositiveReal | None,
+        r_max: PositiveReal | None,
+        r_min: PositiveReal,
+    ):
+        """Selects legacy-compatible or general RDF bin semantics."""
+        self._legacy_rdf = self._use_legacy_rdf(
+            n_bins=n_bins,
+            delta_r=delta_r,
+            r_max=r_max,
+        )
+
+        if self._legacy_rdf:
+            self._setup_legacy_bins(delta_r)
+            return
+
+        self._setup_bins(
+            n_bins=n_bins,
+            delta_r=delta_r,
+            r_max=r_max,
+            r_min=r_min,
         )
 
     @classmethod
@@ -432,6 +490,21 @@ class RDF:
                         break
 
         return cells, unique_cells
+
+    def _setup_legacy_bins(self, delta_r: PositiveReal):
+        """Sets bins with the scalar semantics of ``thh_tools/RDF``."""
+        self.r_min = 0.0
+        self.delta_r = float(np.float32(delta_r))
+        self.n_bins = max(
+            int(max(cell.box_lengths) / 2.0 / self.delta_r)
+            for cell in self.cells
+        )
+        self.r_max = self.delta_r * self.n_bins
+        self.bin_middle_points = np.array([
+            (float(np.float32(index)) + 0.5) * self.delta_r
+            for index in range(self.n_bins)
+        ])
+        self.bins = np.zeros(self.n_bins)
 
     def _setup_bins(
         self,
@@ -582,7 +655,9 @@ class RDF:
         """
         Calculates the average volume of the trajectory.
 
-        For the raw-frame fast path the volume of every unique cell
+        The legacy-compatible path sums orthorhombic ``x*y*z`` volumes
+        in frame order, preserving the C implementation's rounding.
+        For the other raw-frame paths the volume of every unique cell
         is computed only once and broadcast to the full (shared
         object) cell list before averaging, which is bit-identical
         to (but much cheaper than) the plain mean over the volumes
@@ -594,6 +669,17 @@ class RDF:
         PositiveReal
             The average volume of the trajectory.
         """
+
+        if self._legacy_rdf:
+            volume = 0.0
+
+            for cell in self.cells:
+                length_x = float(cell.box_lengths[0])
+                length_y = float(cell.box_lengths[1])
+                length_z = float(cell.box_lengths[2])
+                volume = volume + (length_x * length_y) * length_z
+
+            return volume / float(self.n_frames)
 
         if self._raw_reader is None:
             return self.average_volume
@@ -811,19 +897,30 @@ class RDF:
                     cell.inverse_box_matrix, dtype=np.float64
                 )
 
-            rdf_frame_histogram(
-                values,
-                reference_indices,
-                target_indices,
-                box_lengths,
-                box,
-                inv_box,
-                is_orthorhombic,
-                self.r_min,
-                self.delta_r,
-                self.n_bins,
-                hist,
-            )
+            if self._legacy_rdf:
+                legacy_rdf_frame_histogram(
+                    values,
+                    reference_indices,
+                    target_indices,
+                    box_lengths,
+                    self.delta_r,
+                    self.n_bins,
+                    hist,
+                )
+            else:
+                rdf_frame_histogram(
+                    values,
+                    reference_indices,
+                    target_indices,
+                    box_lengths,
+                    box,
+                    inv_box,
+                    is_orthorhombic,
+                    self.r_min,
+                    self.delta_r,
+                    self.n_bins,
+                    hist,
+                )
 
         self.bins += hist
 
@@ -857,6 +954,9 @@ class RDF:
         differential_bins : Np1DNumberArray
             The pair-count residual relative to the ideal-gas shell count.
         """
+
+        if self._legacy_rdf:
+            return self._finalize_legacy_run()
 
         if self.no_intra_molecular:
             target_density = len(self.target_index_combinations[0])
@@ -893,6 +993,53 @@ class RDF:
             self.integrated_bins,
             self.normalized_bins2,
             self.differential_bins
+        )
+
+    def _finalize_legacy_run(self):
+        """Finalizes with the scalar operation order of legacy RDF."""
+        n_reference = float(len(self.reference_indices))
+        n_target = float(len(self.target_indices))
+        n_frames = float(self.n_frames)
+        target_density = n_target / self._average_volume
+        pi = 3.1415926535897932384626433832795028841971693993751058209749445923078
+
+        self.normalized_bins = np.empty(self.n_bins, dtype=np.float64)
+        self.integrated_bins = np.empty(self.n_bins, dtype=np.float64)
+        self.normalized_bins2 = np.empty(self.n_bins, dtype=np.float64)
+        self.differential_bins = np.empty(self.n_bins, dtype=np.float64)
+
+        integration = 0.0
+
+        for index in range(self.n_bins):
+            inner_radius = float(index) * self.delta_r
+            outer_radius = (float(index) + 1.0) * self.delta_r
+            shell = (
+                math.pow(outer_radius, 3.0) -
+                math.pow(inner_radius, 3.0)
+            )
+            norm = 4.0 / 3.0
+            norm = norm * pi
+            norm = norm * target_density
+            norm = norm * shell
+            norm = norm * n_reference
+            norm = norm * n_frames
+
+            count = float(self.bins[index])
+            integration = integration + count / n_reference / n_frames
+
+            self.normalized_bins[index] = count / norm
+            self.integrated_bins[index] = integration
+            self.normalized_bins2[index] = (
+                count / target_density / n_reference / n_frames
+            )
+            self.differential_bins[index] = count - norm
+
+        return (
+            self.bin_middle_points,
+            self.normalized_bins,
+            self.integrated_bins,
+            self.normalized_bins2,
+            self.differential_bins,
         )
 
     @property

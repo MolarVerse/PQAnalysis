@@ -2,59 +2,51 @@
 """
 Cython kernels for the hot loops of the VACF analysis.
 
-The kernels keep the exact numeric semantics of the analysis: the
-velocities are parsed as float32 by the trajectory readers and all
-accumulation is performed in float64. A numpy fallback with identical
-signatures lives in
+The kernels accept float32 or float64 raw trajectory values and perform
+all weighting and accumulation in float64. A numpy fallback with
+identical signatures lives in
 :py:mod:`PQAnalysis.analysis.vacf._vacf_kernel_py` and is used when
 this extension is not available.
 
-The per-origin dot products of :py:func:`accumulate_frame` are
-accumulated in float64 with a fixed 4-way unrolled summation order.
-The numpy fallback uses ``np.einsum``/``np.sum`` (SIMD/pairwise
-summation) instead, so kernel and fallback can differ by floating
-point rounding on the order of the machine epsilon - far below the
-parity tolerances of the analysis. All other kernels are bitwise
+The direct-estimator kernels reproduce the atom-major xyz operation
+order of optimized FreqCalc with explicit fused multiply-adds. The
+numpy fallback uses ``np.einsum``/``np.sum`` instead, so compiled and
+fallback results can differ by floating point rounding on the order of
+the machine epsilon. All parser and weighting kernels are bitwise
 identical to the fallback.
 """
 
 import numpy as np
+cimport numpy as np
 
+from libc.math cimport fma
 from libc.stdio cimport sscanf
 from libc.string cimport memcpy, memmove
 
 
+ctypedef fused input_float_t:
+    np.float32_t
+    np.float64_t
 
-cdef inline double _dot(
+
+
+cdef inline double _legacy_dot(
     const double* a,
     const double* b,
-    Py_ssize_t n,
+    Py_ssize_t n_atoms,
 ) noexcept nogil:
-    """
-    Dot product of two float64 buffers of length ``n``.
+    """FreqCalc's atom-major xyz accumulation with explicit FMA."""
+    cdef double result = 0.0
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t offset
 
-    The summation is 4-way unrolled with a fixed combination order
-    ``(s0 + s1) + (s2 + s3)`` so that the result is deterministic on
-    every platform.
-    """
-    cdef double s0 = 0.0
-    cdef double s1 = 0.0
-    cdef double s2 = 0.0
-    cdef double s3 = 0.0
-    cdef Py_ssize_t k = 0
+    for atom in range(n_atoms):
+        offset = atom * 3
+        result = fma(a[offset], b[offset], result)
+        result = fma(a[offset + 1], b[offset + 1], result)
+        result = fma(a[offset + 2], b[offset + 2], result)
 
-    while k + 4 <= n:
-        s0 = s0 + a[k] * b[k]
-        s1 = s1 + a[k + 1] * b[k + 1]
-        s2 = s2 + a[k + 2] * b[k + 2]
-        s3 = s3 + a[k + 3] * b[k + 3]
-        k = k + 4
-
-    while k < n:
-        s0 = s0 + a[k] * b[k]
-        k = k + 1
-
-    return (s0 + s1) + (s2 + s3)
+    return result
 
 
 def accumulate_frame(
@@ -119,7 +111,7 @@ def accumulate_frame(
     cdef long long lag
 
     if spawn:
-        norm = _dot(v, v, n)
+        norm = _legacy_dot(v, v, m)
 
         if norm == 0.0:
             return -1
@@ -133,7 +125,7 @@ def accumulate_frame(
         return 0
 
     for o in range(n_active):
-        scalar = _dot(buffer + o * n, v, n)
+        scalar = _legacy_dot(buffer + o * n, v, m)
         lag = frame_number - origin_frame[o]
         corr[lag] += scalar / origin_norm[o]
 
@@ -150,23 +142,74 @@ def accumulate_frame(
     return n_active
 
 
+def direct_origin_norms(
+    const double[:, :, ::1] values,
+    const long long[::1] origin_indices,
+):
+    """Calculates origin norms with optimized FreqCalc arithmetic."""
+    cdef Py_ssize_t n_origins = origin_indices.shape[0]
+    cdef Py_ssize_t n_atoms = values.shape[1]
+    cdef Py_ssize_t origin_index
+    cdef Py_ssize_t origin
+
+    result_array = np.empty(n_origins, dtype=np.float64)
+    cdef double[::1] result = result_array
+
+    with nogil:
+        for origin_index in range(n_origins):
+            origin = <Py_ssize_t> origin_indices[origin_index]
+            result[origin_index] = _legacy_dot(
+                &values[origin, 0, 0],
+                &values[origin, 0, 0],
+                n_atoms,
+            )
+
+    return result_array
+
+
+def direct_correlate_lag_range(
+    const double[:, :, ::1] values,
+    const long long[::1] origin_indices,
+    const double[::1] norms,
+    Py_ssize_t lag_start,
+    Py_ssize_t lag_stop,
+    double[::1] correlation,
+):
+    """Calculates disjoint lags with optimized FreqCalc arithmetic."""
+    cdef Py_ssize_t n_origins = origin_indices.shape[0]
+    cdef Py_ssize_t n_atoms = values.shape[1]
+    cdef Py_ssize_t lag
+    cdef Py_ssize_t origin_index
+    cdef Py_ssize_t origin
+
+    with nogil:
+        for lag in range(lag_start, lag_stop):
+            correlation[lag] = 0.0
+
+            for origin_index in range(n_origins):
+                origin = <Py_ssize_t> origin_indices[origin_index]
+                correlation[lag] += _legacy_dot(
+                    &values[origin, 0, 0],
+                    &values[origin + lag, 0, 0],
+                    n_atoms,
+                ) / norms[origin_index]
+
+
 def weight_frame(
-    const float[:, ::1] values,
+    const input_float_t[:, ::1] values,
     const Py_ssize_t[::1] indices,
     charges,
 ):
     """
     Builds the (charge weighted) selected float64 velocities of a
-    frame from the raw float32 values of the trajectory reader.
+    frame from raw float32 or float64 trajectory values.
 
     Bitwise identical to
-    ``np.asarray(values, dtype=np.float64)[indices] * charges[:, None]``
-    (the float32 -> float64 cast is exact and the weighting is a
-    plain elementwise IEEE product).
+    ``np.asarray(values, dtype=np.float64)[indices] * charges[:, None]``.
 
     Parameters
     ----------
-    values : np.ndarray of float32, shape (n_atoms, 3)
+    values : np.ndarray of float32 or float64, shape (n_atoms, 3)
         The raw values of the frame.
     indices : np.ndarray of intp, shape (n_target,)
         The indices of the selected atoms.
