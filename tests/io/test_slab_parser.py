@@ -402,6 +402,78 @@ class TestSlabParserErrors:
 
 
 
+class TestSlabBatchParserErrors:
+
+    """Validation branches of the pure-Python batch parser."""
+
+    def test_rejects_unsupported_mode(self):
+        with pytest.raises(ValueError, match="only xyz-family"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                0,
+                0,
+                False,
+                _slab_parser_py.MODE_CHARGE,
+            )
+
+    @pytest.mark.parametrize(
+        "n_frames,n_atoms,strip_first",
+        [(-1, 0, False), (0, -1, False), (0, 0, True)],
+    )
+    def test_rejects_invalid_shape(self, n_frames, n_atoms, strip_first):
+        with pytest.raises(ValueError, match="Invalid batch shape"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                n_frames,
+                n_atoms,
+                strip_first,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_missing_expected_frame(self):
+        with pytest.raises(EOFError, match="incomplete frame"):
+            _slab_parser_py.parse_xyz_frames(
+                b"",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_invalid_atom_count(self):
+        with pytest.raises(ValueError, match="Invalid frame atom count"):
+            _slab_parser_py.parse_xyz_frames(
+                b"not-an-integer\n\n",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_changed_atom_count(self):
+        with pytest.raises(ValueError, match="does not match the batch"):
+            _slab_parser_py.parse_xyz_frames(
+                b"2\n\nH 0 0 0\nH 0 0 0\n",
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+    def test_rejects_extra_frame(self):
+        frame = b"1\n\nH 0 0 0\n"
+
+        with pytest.raises(ValueError, match="more frames than expected"):
+            _slab_parser_py.parse_xyz_frames(
+                frame + frame,
+                1,
+                1,
+                False,
+                _slab_parser_py.MODE_XYZ64,
+            )
+
+
+
 class TestSlabParserContract:
 
     def test_status_and_mode_constants_are_shared(self):

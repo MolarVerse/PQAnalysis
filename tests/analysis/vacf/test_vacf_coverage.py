@@ -308,6 +308,19 @@ class TestRawFrameAtomMismatch:
             function=analysis.run,
         )
 
+    def test_raw_batch_respects_weighted_selection_memory_cap(self, tmp_path):
+        filename = str(tmp_path / "weighted.vel")
+        _write_vel_file(filename, n_atoms=2, n_frames=20)
+        analysis = VACF(
+            TrajectoryReader(filename),
+            window_size=5,
+            time_step=0.1,
+            charges=np.ones(2),
+        )
+        analysis._direct_batch_max_bytes = 1
+
+        assert analysis._try_raw_velocity_batch() is None
+
 
 
 class TestChargeStreamGuards:
