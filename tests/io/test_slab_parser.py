@@ -421,6 +421,7 @@ class TestSlabParserContract:
             == _slab_parser_py.STATUS_BAD_HEADER
         )
         assert _slab_parser.MODE_XYZ == _slab_parser_py.MODE_XYZ
+        assert _slab_parser.MODE_XYZ64 == _slab_parser_py.MODE_XYZ64
         assert _slab_parser.MODE_CHARGE == _slab_parser_py.MODE_CHARGE
 
 
