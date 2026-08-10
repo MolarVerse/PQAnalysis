@@ -52,6 +52,7 @@ KERNELS = [
 ]
 
 
+
 def _random_frames(n_frames, n_atoms, spread, seed):
     """
     Builds float32 frames of uniformly distributed positions.
@@ -62,9 +63,9 @@ def _random_frames(n_frames, n_atoms, spread, seed):
         np.asarray(
             rng.uniform(0.0, spread, size=(n_atoms, 3)),
             dtype=np.float32,
-        )
-        for _ in range(n_frames)
+        ) for _ in range(n_frames)
     ]
+
 
 
 def _drive_kernel(kernel, frames, cells, r_min, delta_r, n_bins):
@@ -101,6 +102,7 @@ def _drive_kernel(kernel, frames, cells, r_min, delta_r, n_bins):
     return hist
 
 
+
 def _assert_kernel_equivalence(cells, r_min=0.0, delta_r=0.05, n_bins=200):
     """
     Runs both kernels over the same frames and asserts that the
@@ -115,14 +117,14 @@ def _assert_kernel_equivalence(cells, r_min=0.0, delta_r=0.05, n_bins=200):
         _drive_kernel(kernel, frames, cells, r_min, delta_r, n_bins)
         for kernel in (
             _rdf_kernel.rdf_frame_histogram,
-            _rdf_kernel_py.rdf_frame_histogram,
-        )
+            _rdf_kernel_py.rdf_frame_histogram, )
     ]
 
     assert np.array_equal(histograms[0], histograms[1])
 
     # both kernels must have accumulated a non-trivial histogram
     assert histograms[0].sum() > 0
+
 
 
 def _write_trajectory(path, positions, headers):
@@ -141,6 +143,7 @@ def _write_trajectory(path, positions, headers):
     return str(path)
 
 
+
 def _write_random_trajectory(path, n_frames=25, n_atoms=16, seed=4242):
     """
     Writes a constant orthorhombic box xyz trajectory file.
@@ -151,6 +154,7 @@ def _write_random_trajectory(path, n_frames=25, n_atoms=16, seed=4242):
     headers = [" 12.0 12.0 12.0"] * n_frames
 
     return _write_trajectory(path, positions, headers)
+
 
 
 def _write_npt_trajectory(path, n_frames=24, n_atoms=16, seed=99):
@@ -175,6 +179,7 @@ def _write_npt_trajectory(path, n_frames=24, n_atoms=16, seed=99):
     return _write_trajectory(path, positions, headers)
 
 
+
 def _run_rdf(traj, **kwargs):
     """
     Runs an RDF analysis and returns its stacked output arrays.
@@ -183,6 +188,7 @@ def _run_rdf(traj, **kwargs):
     results = np.column_stack(analysis.run())
 
     return analysis, results
+
 
 
 class TestRDFKernelEquivalence:
@@ -214,9 +220,7 @@ class TestRDFKernelEquivalence:
         for i in range(40):
             factor = 1.0 + 0.02 * ((i // 5) % 4)
             if (i // 5) % 2 == 0:
-                cells.append(
-                    Cell(11.0 * factor, 13.0 * factor, 17.0 * factor)
-                )
+                cells.append(Cell(11.0 * factor, 13.0 * factor, 17.0 * factor))
             else:
                 cells.append(
                     Cell(
@@ -249,15 +253,14 @@ class TestRDFKernelEquivalence:
         cells = [Cell(20.0, 20.0, 20.0)]
 
         histograms = [
-            _drive_kernel(kernel, frames, cells, 0.0, 0.25, 40)
-            for kernel in (
+            _drive_kernel(kernel, frames, cells, 0.0, 0.25, 40) for kernel in (
                 _rdf_kernel.rdf_frame_histogram,
-                _rdf_kernel_py.rdf_frame_histogram,
-            )
+                _rdf_kernel_py.rdf_frame_histogram, )
         ]
 
         assert np.array_equal(histograms[0], histograms[1])
         assert histograms[0].sum() > 0
+
 
 
 class TestRDFFastPath:
@@ -354,9 +357,7 @@ class TestRDFFastPath:
         assert rdf_fast.n_frames == 50
 
         traj = TrajectoryReader([filename1, filename2]).read()
-        _rdf_memory, results_memory = _run_rdf(
-            traj, delta_r=0.1, r_max=5.0
-        )
+        _rdf_memory, results_memory = _run_rdf(traj, delta_r=0.1, r_max=5.0)
 
         assert np.array_equal(results_fast, results_memory)
 
@@ -413,6 +414,7 @@ class TestRDFFastPath:
             "raw_frame_generator",
             _truncated_generator,
         )
+        monkeypatch.setattr(rdf_fast, "_batch_max_bytes", 0)
 
         assert_logging_with_exception(
             caplog=caplog,
@@ -435,6 +437,7 @@ class TestRDFFastPath:
             "PQAnalysis.analysis.rdf._rdf_kernel",
             "PQAnalysis.analysis.rdf._rdf_kernel_py",
         )
+
 
 
 class TestScanCells:

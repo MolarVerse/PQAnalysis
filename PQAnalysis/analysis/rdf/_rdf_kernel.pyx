@@ -176,83 +176,82 @@ def rdf_frame_histogram(
     cdef double reject = (r_min + delta_r * n_bins_d) * (1.0 + 1e-9) + 1e-9
     cdef double reject_sq = reject * reject
 
-    for i in range(n_ref):
-        ref_index = reference_indices[i]
-        row = <Py_ssize_t> ref_index
-        ref_x = values[row, 0]
-        ref_y = values[row, 1]
-        ref_z = values[row, 2]
+    with nogil:
+        for i in range(n_ref):
+            ref_index = reference_indices[i]
+            row = <Py_ssize_t> ref_index
+            ref_x = values[row, 0]
+            ref_y = values[row, 1]
+            ref_z = values[row, 2]
 
-        for j in range(n_tgt):
-            if target_indices[j] == ref_index:
-                continue
+            for j in range(n_tgt):
+                if target_indices[j] == ref_index:
+                    continue
 
-            row = <Py_ssize_t> target_indices[j]
+                row = <Py_ssize_t> target_indices[j]
 
-            # Pair displacement at the source-array precision, widened
-            # to float64 for imaging and distance evaluation.
-            delta_x = values[row, 0] - ref_x
-            delta_y = values[row, 1] - ref_y
-            delta_z = values[row, 2] - ref_z
+                # Pair displacement at the source-array precision,
+                # widened to float64 for imaging and distance evaluation.
+                delta_x = values[row, 0] - ref_x
+                delta_y = values[row, 1] - ref_y
+                delta_z = values[row, 2] - ref_z
 
-            dx = <double> delta_x
-            dy = <double> delta_y
-            dz = <double> delta_z
+                dx = <double> delta_x
+                dy = <double> delta_y
+                dz = <double> delta_z
 
-            if is_orthorhombic:
-                # d - L * rint(d / L); for |d| <= L/2 the rounded
-                # quotient is exactly 0 and d is unchanged
-                if use_half_box_shortcut:
-                    if fabs(dx) > half_x:
+                if is_orthorhombic:
+                    # d - L * rint(d / L); for |d| <= L/2 the rounded
+                    # quotient is exactly 0 and d is unchanged
+                    if use_half_box_shortcut:
+                        if fabs(dx) > half_x:
+                            dx = dx - length_x * rint(dx / length_x)
+                        if fabs(dy) > half_y:
+                            dy = dy - length_y * rint(dy / length_y)
+                        if fabs(dz) > half_z:
+                            dz = dz - length_z * rint(dz / length_z)
+                    else:
                         dx = dx - length_x * rint(dx / length_x)
-                    if fabs(dy) > half_y:
                         dy = dy - length_y * rint(dy / length_y)
-                    if fabs(dz) > half_z:
                         dz = dz - length_z * rint(dz / length_z)
                 else:
-                    dx = dx - length_x * rint(dx / length_x)
-                    dy = dy - length_y * rint(dy / length_y)
-                    dz = dz - length_z * rint(dz / length_z)
-            else:
-                # fractional = d @ inv_box.T
-                f0 = dx * i00 + dy * i01 + dz * i02
-                f1 = dx * i10 + dy * i11 + dz * i12
-                f2 = dx * i20 + dy * i21 + dz * i22
+                    # fractional = d @ inv_box.T
+                    f0 = dx * i00 + dy * i01 + dz * i02
+                    f1 = dx * i10 + dy * i11 + dz * i12
+                    f2 = dx * i20 + dy * i21 + dz * i22
 
-                f0 -= rint(f0)
-                f1 -= rint(f1)
-                f2 -= rint(f2)
+                    f0 -= rint(f0)
+                    f1 -= rint(f1)
+                    f2 -= rint(f2)
 
-                # d = fractional @ box.T
-                dx = f0 * b00 + f1 * b01 + f2 * b02
-                dy = f0 * b10 + f1 * b11 + f2 * b12
-                dz = f0 * b20 + f1 * b21 + f2 * b22
+                    # d = fractional @ box.T
+                    dx = f0 * b00 + f1 * b01 + f2 * b02
+                    dy = f0 * b10 + f1 * b11 + f2 * b12
+                    dz = f0 * b20 + f1 * b21 + f2 * b22
 
-            dist_sq = (dx * dx + dy * dy) + dz * dz
+                dist_sq = (dx * dx + dy * dy) + dz * dz
 
-            if dist_sq > reject_sq:
-                continue
+                if dist_sq > reject_sq:
+                    continue
 
-            dist = sqrt(dist_sq)
+                dist = sqrt(dist_sq)
 
-            shifted = dist - r_min
-            quotient = shifted / delta_r
-            bin_index = floor(quotient)
-            fraction = quotient - bin_index
+                shifted = dist - r_min
+                quotient = shifted / delta_r
+                bin_index = floor(quotient)
+                fraction = quotient - bin_index
 
-            # the plain floor of the quotient equals np.floor_divide
-            # whenever the quotient is safely away from an integer
-            # (|quotient| < 2^33 bounds the rounding error of the
-            # division by 2^-20); otherwise take the exact replica
-            if not (
-                fraction > 1e-6
-                and fraction < 0.999999
-                and fabs(quotient) < 8.589934592e9
-            ):
-                bin_index = _floor_divide(shifted, delta_r)
+                # The plain floor equals np.floor_divide away from an
+                # integer; otherwise take the exact replica.
+                if not (
+                    fraction > 1e-6
+                    and fraction < 0.999999
+                    and fabs(quotient) < 8.589934592e9
+                ):
+                    bin_index = _floor_divide(shifted, delta_r)
 
-            if bin_index >= 0.0 and bin_index < n_bins_d:
-                hist[<Py_ssize_t> bin_index] += 1
+                if bin_index >= 0.0 and bin_index < n_bins_d:
+                    hist[<Py_ssize_t> bin_index] += 1
 
 
 def legacy_rdf_frame_histogram(
@@ -285,41 +284,42 @@ def legacy_rdf_frame_histogram(
 
     cutoff = cutoff / 2.0
 
-    for i in range(n_ref):
-        ref_index = reference_indices[i]
-        ref_row = <Py_ssize_t> ref_index
-        ref_x = values[ref_row, 0]
-        ref_y = values[ref_row, 1]
-        ref_z = values[ref_row, 2]
+    with nogil:
+        for i in range(n_ref):
+            ref_index = reference_indices[i]
+            ref_row = <Py_ssize_t> ref_index
+            ref_x = values[ref_row, 0]
+            ref_y = values[ref_row, 1]
+            ref_z = values[ref_row, 2]
 
-        for j in range(n_tgt):
-            target_index = target_indices[j]
+            for j in range(n_tgt):
+                target_index = target_indices[j]
 
-            if target_index == ref_index:
-                continue
+                if target_index == ref_index:
+                    continue
 
-            target_row = <Py_ssize_t> target_index
-            target_x = values[target_row, 0]
-            target_y = values[target_row, 1]
-            target_z = values[target_row, 2]
+                target_row = <Py_ssize_t> target_index
+                target_x = values[target_row, 0]
+                target_y = values[target_row, 1]
+                target_z = values[target_row, 2]
 
-            image_x = target_x + length_x * c_round(
-                (ref_x - target_x) / length_x
-            )
-            image_y = target_y + length_y * c_round(
-                (ref_y - target_y) / length_y
-            )
-            image_z = target_z + length_z * c_round(
-                (ref_z - target_z) / length_z
-            )
+                image_x = target_x + length_x * c_round(
+                    (ref_x - target_x) / length_x
+                )
+                image_y = target_y + length_y * c_round(
+                    (ref_y - target_y) / length_y
+                )
+                image_z = target_z + length_z * c_round(
+                    (ref_z - target_z) / length_z
+                )
 
-            dx = ref_x - image_x
-            dy = ref_y - image_y
-            dz = ref_z - image_z
-            distance = sqrt((dx * dx + dy * dy) + dz * dz)
+                dx = ref_x - image_x
+                dy = ref_y - image_y
+                dz = ref_z - image_z
+                distance = sqrt((dx * dx + dy * dy) + dz * dz)
 
-            if distance <= cutoff:
-                bin_index = <Py_ssize_t> floor(distance / delta_r)
+                if distance <= cutoff:
+                    bin_index = <Py_ssize_t> floor(distance / delta_r)
 
-                if bin_index >= 0 and bin_index < n_bins:
-                    hist[bin_index] += 1
+                    if bin_index >= 0 and bin_index < n_bins:
+                        hist[bin_index] += 1
