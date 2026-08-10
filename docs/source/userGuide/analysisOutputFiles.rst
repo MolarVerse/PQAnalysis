@@ -354,7 +354,8 @@ Total linear momentum
 =====================
 
 The ``check_momentum`` command writes two columns to ``--output`` or standard
-output.
+output. Native output uses 17 significant digits for the momentum norm, so
+reading the value as float64 preserves the calculated bit pattern.
 
 .. list-table:: ``check_momentum`` output columns
    :class: analysis-output-columns

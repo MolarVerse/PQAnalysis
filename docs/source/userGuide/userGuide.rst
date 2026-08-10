@@ -161,8 +161,8 @@ Pure command line tools
 - :ref:`traj2qmcfc<cli.traj2qmcfc>`
 - :ref:`traj2box<cli.traj2box>`
 
-Note that :ref:`check_momentum<cli.check_momentum>` parses velocities in
-single precision: reported momentum norms below roughly 1e-7 times the
-scaled sum of m\ :sub:`i` \|v\ :sub:`i`\| are parsing noise rather than
-physical center of mass drift (the legacy ``equipartition.jl`` tool parses
-in double precision and resolves smaller drift).
+:ref:`check_momentum<cli.check_momentum>` parses file-backed velocity
+trajectories directly in float64 and preserves the atom-order arithmetic of
+the legacy ``equipartition.jl`` tool. This resolves conserved-momentum
+residuals at the float64 noise floor instead of the former float32 parsing
+floor.

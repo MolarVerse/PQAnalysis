@@ -22,6 +22,14 @@ extensions = cythonize(
             include_dirs=[np.get_include()]
         ),
         Extension(
+            'PQAnalysis.analysis.momentum._momentum_kernel',
+            sources=['PQAnalysis/analysis/momentum/_momentum_kernel.pyx'],
+            include_dirs=[np.get_include()],
+            # Julia rounds every multiply and add separately in the
+            # equipartition loop.
+            extra_compile_args=['-ffp-contract=off']
+        ),
+        Extension(
             'PQAnalysis.analysis.vacf._vacf_kernel',
             sources=['PQAnalysis/analysis/vacf/_vacf_kernel.pyx'],
             include_dirs=[np.get_include()],
