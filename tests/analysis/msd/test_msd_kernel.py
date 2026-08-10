@@ -364,6 +364,7 @@ class TestMSDFastPathKernels:
         self,
         cell_mode,
         tmp_path,
+        monkeypatch,
     ):
         filename = str(tmp_path / f"{cell_mode}.xyz")
         self._write_fallback_trajectory(filename, cell_mode)
@@ -373,6 +374,14 @@ class TestMSDFastPathKernels:
             "O",
             window=20,
             gap=5,
+        )
+
+        assert msd_fast._calculate_msd_raw_batch() is False
+
+        monkeypatch.setattr(
+            msd_fast._raw_reader,
+            "try_read_all_frames",
+            lambda **_kwargs: None,
         )
 
         assert msd_fast._calculate_msd_raw_batch() is False
