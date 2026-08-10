@@ -245,6 +245,183 @@ def parse_body(
     return (STATUS_FRAME, values, first_name, scan)
 
 
+def parse_xyz_frames(
+    bytes data,
+    Py_ssize_t n_frames,
+    Py_ssize_t n_atoms,
+    bint strip_first,
+    int mode,
+):
+    """Parse a complete fixed-topology xyz-family file in one call.
+
+    The numeric token conversions and frame order are identical to
+    repeated :func:`parse_body` calls, but all frame values are written
+    directly into one three-dimensional NumPy array.
+    """
+    if mode != _MODE_XYZ and mode != _MODE_XYZ64:
+        raise ValueError("Batch parsing supports only xyz-family data.")
+
+    if n_frames < 0 or n_atoms < 0 or (strip_first and n_atoms == 0):
+        raise ValueError("Invalid batch shape.")
+
+    cdef Py_ssize_t n_output_atoms = n_atoms - <Py_ssize_t> strip_first
+
+    if mode == _MODE_XYZ:
+        values = np.empty(
+            (n_frames, n_output_atoms, 3),
+            dtype=np.float32,
+        )
+    else:
+        values = np.empty(
+            (n_frames, n_output_atoms, 3),
+            dtype=np.float64,
+        )
+
+    cdef float[:, :, ::1] out32
+    cdef double[:, :, ::1] out64
+
+    if mode == _MODE_XYZ:
+        out32 = values
+    else:
+        out64 = values
+
+    box_headers = []
+    first_names = []
+
+    cdef const char* base = data
+    cdef Py_ssize_t n_data = len(data)
+    cdef Py_ssize_t pos = 0
+    cdef Py_ssize_t line_end
+    cdef Py_ssize_t scan
+    cdef Py_ssize_t token_start
+    cdef Py_ssize_t token_end
+    cdef Py_ssize_t box_start
+    cdef Py_ssize_t name_start
+    cdef Py_ssize_t name_end
+    cdef Py_ssize_t frame
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t output_atom
+    cdef Py_ssize_t component
+    cdef const char* found
+    cdef char* endptr
+    cdef long frame_atoms
+    cdef float value32
+    cdef double value64
+
+    for frame in range(n_frames):
+        # Skip blank lines before the frame header.
+        while True:
+            if pos >= n_data:
+                raise EOFError("incomplete frame")
+
+            found = <const char*> memchr(base + pos, c'\n', n_data - pos)
+            if found == NULL:
+                raise EOFError("incomplete frame")
+
+            line_end = found - base
+            scan = pos
+
+            while scan < line_end and _is_space(base[scan]):
+                scan += 1
+
+            if scan < line_end:
+                break
+
+            pos = line_end + 1
+
+        token_start = scan
+        while scan < line_end and not _is_space(base[scan]):
+            scan += 1
+        token_end = scan
+
+        while scan < line_end and _is_space(base[scan]):
+            scan += 1
+        box_start = scan
+
+        frame_atoms = strtol(base + token_start, &endptr, 10)
+        if (
+            <const char*> endptr != base + token_end
+            or frame_atoms < 0
+        ):
+            raise ValueError("Invalid frame atom count.")
+
+        if frame_atoms != n_atoms:
+            raise ValueError("Frame atom count does not match the batch.")
+
+        box_headers.append(data[box_start:line_end])
+        pos = line_end + 1
+
+        # Comment line.
+        found = <const char*> memchr(base + pos, c'\n', n_data - pos)
+        if found == NULL:
+            raise EOFError("incomplete frame")
+        pos = (found - base) + 1
+
+        # Check completeness before parsing any atom row, matching
+        # parse_body's error ordering for truncated frames.
+        scan = pos
+        for atom in range(n_atoms):
+            found = <const char*> memchr(base + scan, c'\n', n_data - scan)
+            if found == NULL:
+                raise EOFError("incomplete frame")
+            scan = (found - base) + 1
+
+        for atom in range(n_atoms):
+            found = <const char*> memchr(base + pos, c'\n', n_data - pos)
+            line_end = found - base
+
+            while pos < line_end and _is_space(base[pos]):
+                pos += 1
+
+            if pos == line_end:
+                raise ValueError("Could not parse line")
+
+            name_start = pos
+            while pos < line_end and not _is_space(base[pos]):
+                pos += 1
+            name_end = pos
+
+            if strip_first and atom == 0:
+                first_names.append(data[name_start:name_end])
+
+            output_atom = atom - <Py_ssize_t> strip_first
+
+            for component in range(3):
+                while pos < line_end and _is_space(base[pos]):
+                    pos += 1
+
+                if pos == line_end:
+                    raise ValueError("Could not parse line")
+
+                if mode == _MODE_XYZ:
+                    value32 = strtof(base + pos, &endptr)
+                else:
+                    value64 = strtod(base + pos, &endptr)
+
+                if <const char*> endptr == base + pos:
+                    raise ValueError("Could not parse line")
+
+                if not strip_first or atom > 0:
+                    if mode == _MODE_XYZ:
+                        out32[frame, output_atom, component] = value32
+                    else:
+                        out64[frame, output_atom, component] = value64
+
+                pos = <const char*> endptr - base
+
+            pos = line_end + 1
+
+        pos = scan
+
+    while pos < n_data and _is_space(base[pos]):
+        pos += 1
+
+    if pos != n_data:
+        raise ValueError("File contains more frames than expected.")
+
+    return values, box_headers, first_names
+
+
 cdef _parse_xyz_lines(
     bytes data,
     Py_ssize_t pos,

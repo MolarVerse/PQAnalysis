@@ -279,9 +279,7 @@ def parse_body(
         first_name = first_fields[0] if first_fields else b""
 
     if mode == MODE_XYZ:
-        lines = [
-            data[start:end].decode("utf-8") for start, end in line_bounds
-        ]
+        lines = [data[start:end].decode("utf-8") for start, end in line_bounds]
         values = process_lines(lines, n_atoms)
     elif mode == MODE_XYZ64:
         values = np.empty((n_atoms, 3), dtype=np.float64)
@@ -305,3 +303,111 @@ def parse_body(
             values[i] = float(fields[1])
 
     return (STATUS_FRAME, values, first_name, scan)
+
+
+
+# The batch parser deliberately keeps the complete frame grammar in one loop.
+# pylint: disable-next=too-complex,too-many-locals
+def parse_xyz_frames(
+    data: bytes,
+    n_frames: int,
+    n_atoms: int,
+    strip_first: bool,
+    mode: int,
+):
+    """
+    Parse a complete fixed-topology xyz-family file into one array.
+
+    This is the bounded-memory batch counterpart of repeated
+    :func:`scan_header` and :func:`parse_body` calls. It preserves the
+    same token conversions and frame order while avoiding one NumPy
+    allocation per frame.
+
+    Parameters
+    ----------
+    data : bytes
+        Complete file contents terminated by a newline.
+    n_frames : int
+        Number of frames expected in ``data``.
+    n_atoms : int
+        Number of atom rows expected in every frame, including a leading
+        dummy row when ``strip_first`` is true.
+    strip_first : bool
+        Remove the first atom row of every frame and return its name token
+        for validation by the caller.
+    mode : int
+        Either :data:`MODE_XYZ` or :data:`MODE_XYZ64`.
+
+    Returns
+    -------
+    tuple
+        ``(values, box_headers, first_names)``. ``values`` has shape
+        ``(n_frames, n_atoms - strip_first, 3)``.
+
+    Raises
+    ------
+    EOFError
+        If a frame is incomplete.
+    ValueError
+        If a header or atom row is malformed, or a frame has a different
+        atom count.
+    """
+    if mode not in {MODE_XYZ, MODE_XYZ64}:
+        raise ValueError("Batch parsing supports only xyz-family data.")
+
+    if n_frames < 0 or n_atoms < 0 or (strip_first and n_atoms == 0):
+        raise ValueError("Invalid batch shape.")
+
+    dtype = np.float32 if mode == MODE_XYZ else np.float64
+    n_output_atoms = n_atoms - int(strip_first)
+    values = np.empty(
+        (n_frames, n_output_atoms, 3),
+        dtype=dtype,
+    )
+    box_headers = []
+    first_names = []
+    offset = 0
+
+    for frame_index in range(n_frames):
+        status, frame_atoms, box_bytes, token, body_offset = scan_header(
+            data,
+            offset,
+            True,
+        )
+
+        if status == STATUS_EOF:
+            raise EOFError("incomplete frame")
+
+        if status == STATUS_BAD_HEADER:
+            try:
+                frame_atoms = int(token.decode("utf-8"))
+            except ValueError as exception:
+                raise ValueError("Invalid frame atom count.") from exception
+
+        if frame_atoms != n_atoms:
+            raise ValueError("Frame atom count does not match the batch.")
+
+        status, frame_values, first_name, offset = parse_body(
+            data,
+            body_offset,
+            n_atoms,
+            True,
+            strip_first,
+            mode,
+        )
+
+        if status != STATUS_FRAME:  # pragma: no cover - at_eof is true
+            raise EOFError("incomplete frame")
+
+        if strip_first:
+            first_names.append(first_name)
+            frame_values = frame_values[1:]
+
+        values[frame_index] = frame_values
+        box_headers.append(box_bytes)
+
+    status, _, _, _, _ = scan_header(data, offset, True)
+    if status != STATUS_EOF:
+        raise ValueError("File contains more frames than expected.")
+
+    return values, box_headers, first_names
