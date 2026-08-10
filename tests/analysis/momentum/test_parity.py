@@ -25,11 +25,11 @@ try:
 except ModuleNotFoundError:
     legacy_momentum_norm_compiled = None
 
-
 KERNELS = [legacy_momentum_norm_py]
 
 if legacy_momentum_norm_compiled is not None:
     KERNELS.append(legacy_momentum_norm_compiled)
+
 
 
 @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
@@ -41,11 +41,28 @@ def test_full_precision_equipartition_parity(
 ):
     """Every legacy gas-frame result matches at the float64 bit level."""
     monkeypatch.setattr(momentum_module, "legacy_momentum_norm", kernel)
+    monkeypatch.setattr(Momentum, "_batch_max_bytes", 0)
 
-    analysis = Momentum(
-        TrajectoryReader("gas3.vel", md_format="qmcfc")
-    )
+    analysis = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc"))
     actual = analysis.run()
 
     assert analysis._raw_reader.dtype == "float64"  # pylint: disable=protected-access
     assert np.array_equal(actual, GAS3_LEGACY_NORMS)
+
+
+
+@pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
+def test_fused_file_path_matches_streaming(
+    test_with_data_dir,
+    monkeypatch,
+):
+    """Fused parsing preserves every exact streaming result bit."""
+    if momentum_module.legacy_momentum_file is None:
+        pytest.skip("compiled fused parser not available")
+
+    fused = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc")).run()
+
+    monkeypatch.setattr(Momentum, "_batch_max_bytes", 0)
+    streamed = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc")).run()
+
+    assert np.array_equal(fused, streamed)
