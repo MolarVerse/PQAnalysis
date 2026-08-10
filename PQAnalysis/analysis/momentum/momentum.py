@@ -282,9 +282,10 @@ class Momentum:
         if legacy_momentum_file is None:
             return None
 
-        if sum(
+        input_bytes = sum(
             getsize(filename) for filename in self._raw_reader.filenames
-        ) > self._batch_max_bytes:
+        )
+        if input_bytes > self._batch_max_bytes:
             return None
 
         strip_first = self._raw_reader.md_format == MDEngineFormat.QMCFC
@@ -296,6 +297,10 @@ class Momentum:
 
             if data and not data.endswith(b"\n"):
                 data += b"\n"
+                input_bytes += 1
+
+                if input_bytes > self._batch_max_bytes:
+                    return None
 
             try:
                 norms, box_headers, first_names = legacy_momentum_file(

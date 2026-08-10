@@ -66,3 +66,67 @@ def test_fused_file_path_matches_streaming(
     streamed = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc")).run()
 
     assert np.array_equal(fused, streamed)
+
+
+
+def test_fused_multifile_path_matches_streaming_without_final_newlines(
+    tmp_path,
+    monkeypatch,
+):
+    """Multi-file concatenation preserves bits and counts sentinels."""
+    if momentum_module.legacy_momentum_file is None:
+        pytest.skip("compiled fused parser not available")
+
+    content = "1\n\nH 1.0 2.0 3.0"
+    paths = []
+
+    for index in range(2):
+        path = tmp_path / f"part-{index}.vel"
+        path.write_text(content, encoding="utf-8")
+        paths.append(path)
+
+    filenames = [str(path) for path in paths]
+    fused = Momentum(TrajectoryReader(filenames)).run()
+
+    monkeypatch.setattr(Momentum, "_batch_max_bytes", 0)
+    streamed = Momentum(TrajectoryReader(filenames)).run()
+
+    assert np.array_equal(fused, streamed)
+
+    analysis = Momentum(TrajectoryReader(filenames))
+    input_bytes = sum(path.stat().st_size for path in paths)
+    monkeypatch.setattr(analysis, "_batch_max_bytes", input_bytes)
+
+    assert analysis._run_raw_file_batch() is None
+
+
+
+@pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
+def test_fused_parser_error_falls_back_to_streaming(
+    test_with_data_dir,
+    monkeypatch,
+):
+    """A fused-parser incompatibility retains the streaming result."""
+
+    def reject_batch(*_args):
+        raise ValueError("unsupported input")
+
+    monkeypatch.setattr(momentum_module, "legacy_momentum_file", reject_batch)
+
+    actual = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc")).run()
+
+    assert np.array_equal(actual, GAS3_LEGACY_NORMS)
+
+
+
+@pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
+def test_missing_fused_parser_falls_back_to_streaming(
+    test_with_data_dir,
+    monkeypatch,
+):
+    """An installation without the fused extension uses streaming."""
+    monkeypatch.setattr(momentum_module, "legacy_momentum_file", None)
+
+    actual = Momentum(TrajectoryReader("gas3.vel", md_format="qmcfc")).run()
+
+    assert np.array_equal(actual, GAS3_LEGACY_NORMS)
