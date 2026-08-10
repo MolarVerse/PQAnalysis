@@ -361,6 +361,33 @@ class TestRDFFastPath:
 
         assert np.array_equal(results_fast, results_memory)
 
+    def test_batch_parallel_frames_match_in_memory(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = _write_random_trajectory(tmp_path / "traj.xyz")
+        monkeypatch.setattr(RDF, "_batch_pairs_per_worker", 1)
+        monkeypatch.setattr(RDF, "_batch_max_workers", 2)
+        monkeypatch.setattr(rdf_module, "cpu_count", lambda: 2)
+
+        rdf_parallel, results_parallel = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+        _rdf_memory, results_memory = _run_rdf(
+            TrajectoryReader(filename).read(),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+
+        assert np.array_equal(results_parallel, results_memory)
+        assert rdf_parallel.bins.sum() > 0
+
     def test_dispatch_restrictions(self, tmp_path):
         filename = _write_random_trajectory(tmp_path / "traj.xyz")
 

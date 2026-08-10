@@ -497,6 +497,49 @@ class TestRawTrajectoryReaderBatch:
             max_bytes=input_bytes + 2 * output_bytes,
         ) is not None
 
+    def test_batch_rejects_unsupported_body_mode(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+        reader._slab_mode = -1
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024,
+        ) is None
+
+    def test_batch_rejects_multifile_frame_count_mismatch(self):
+        for filename in ("tmp1.xyz", "tmp2.xyz"):
+            with open(filename, "w", encoding="utf-8") as file:
+                print("1", file=file)
+                print("", file=file)
+                print("H 0 0 0", file=file)
+
+        reader = RawTrajectoryReader(
+            ["tmp1.xyz", "tmp2.xyz"],
+            dtype="float64",
+        )
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            expected_n_frames=3,
+            max_bytes=1024,
+        ) is None
+
+    def test_batch_returns_none_for_malformed_body(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("1", file=file)
+            print("", file=file)
+            print("H invalid 0 0", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024,
+        ) is None
+
 
 
 @pytest.mark.usefixtures("tmpdir")
