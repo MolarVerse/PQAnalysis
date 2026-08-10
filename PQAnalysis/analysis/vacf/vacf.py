@@ -17,6 +17,9 @@ read time.
 import itertools
 import logging
 
+from concurrent.futures import ThreadPoolExecutor
+from os import cpu_count
+
 # 3rd party imports
 import numpy as np
 from beartype.typing import Generator, Tuple
@@ -27,6 +30,7 @@ from PQAnalysis import config
 from PQAnalysis.types import (
     Np1DNumberArray,
     Np2DNumberArray,
+    NpnDNumberArray,
     PositiveInt,
     PositiveReal,
 )
@@ -45,10 +49,15 @@ from ._raw_charge_reader import RawChargeTrajectoryReader
 try:
     from ._vacf_kernel import (  # pylint: disable=import-error
         accumulate_frame,
+        direct_correlate_lag_range,
+        direct_origin_norms,
         weight_frame,
     )
 except ModuleNotFoundError:
     from ._vacf_kernel_py import accumulate_frame, weight_frame
+
+    direct_correlate_lag_range = None
+    direct_origin_norms = None
 
 
 
@@ -98,6 +107,8 @@ class VACF:
     _window_size_default = 1000
     _gap_default = 1
     _method_default = "direct"
+    _direct_batch_max_bytes = 512 * 1024 * 1024
+    _direct_batch_max_workers = 16
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
@@ -176,9 +187,8 @@ class VACF:
         )
         self.time_step = time_step
         self.gap = gap if gap is not None else self._gap_default
-        self.method = (
-            method if method is not None else self._method_default
-        ).lower()
+        self.method = (method
+                       if method is not None else self._method_default).lower()
 
         if self.time_step <= 0.0:
             self.logger.error(
@@ -230,20 +240,18 @@ class VACF:
 
         if isinstance(traj, TrajectoryReader):
             if traj.traj_format == TrajectoryFormat.VEL:
-                # additive fast path: stream the raw float32 values of
-                # the velocity trajectory without building an
-                # AtomicSystem per frame (bit-identical values)
+                # Stream directly parsed float64 velocities without
+                # building an AtomicSystem per frame.
                 self._raw_reader = RawTrajectoryReader(
                     traj.filenames,
                     traj_format=traj.traj_format,
                     md_format=traj.md_format,
+                    dtype="float64",
                 )
                 self.n_frames = self._raw_reader.count_frames()
                 self._frame_generator = None
             else:
-                self.n_frames = sum(
-                    traj.calculate_number_of_frames_per_file()
-                )
+                self.n_frames = sum(traj.calculate_number_of_frames_per_file())
                 self._frame_generator = traj.frame_generator()
         elif len(traj) > 0:
             self.n_frames = len(traj)
@@ -449,7 +457,9 @@ class VACF:
         Dispatches to the raw fast-path stream if the analysis was
         constructed from a velocity TrajectoryReader and to the
         AtomicSystem based stream otherwise. Both streams yield
-        bit-identical float64 arrays.
+        float64 arrays; the raw file path retains all digits from the
+        source text while the standard reader follows its established
+        float32 parsing behavior.
 
         Returns
         -------
@@ -468,10 +478,8 @@ class VACF:
         Yields the (charge weighted) selected velocities of all frames
         from the raw fast-path reader.
 
-        The raw float32 values of every frame are cast to float64,
-        reduced to the target selection and weighted with the frame
-        charges - bit-identical to the AtomicSystem based stream of
-        :py:meth:`_weighted_velocities`.
+        The raw values are parsed directly as float64, reduced to the
+        target selection and weighted with the frame charges.
 
         Yields
         ------
@@ -507,14 +515,13 @@ class VACF:
 
             yield weight_frame(values, indices, self._frame_charges())
 
-    def _weighted_velocities(
-        self
-    ) -> Generator[Np2DNumberArray, None, None]:
+    def _weighted_velocities(self) -> Generator[Np2DNumberArray, None, None]:
         """
         Yields the (charge weighted) selected velocities of all frames.
 
-        The velocities are accumulated in float64 even though the
-        underlying trajectory reader parses them as float32.
+        The velocities are converted to float64 before accumulation.
+        A standard file-backed TrajectoryReader currently stores its
+        parsed xyz-family values as float32.
 
         Yields
         ------
@@ -532,9 +539,8 @@ class VACF:
         frames = itertools.chain([self._first_frame], self._frame_generator)
 
         for frame in tqdm(
-            frames,
-            total=self.n_frames,
-            disable=not config.with_progress_bar):
+            frames, total=self.n_frames, disable=not config.with_progress_bar
+        ):
             vel = np.asarray(frame.vel, dtype=np.float64)
 
             if vel.ndim != 2 or vel.shape[0] != self.n_atoms:
@@ -652,6 +658,146 @@ class VACF:
         VACFError
             If the aggregate squared velocity norm of an origin is zero.
         """
+        if self._can_run_direct_batch():
+            return self._run_direct_batch()
+
+        return self._run_direct_streaming()
+
+    def _can_run_direct_batch(self) -> bool:
+        """Whether the exact parallel direct kernel fits its memory cap."""
+        if (
+            direct_origin_norms is None or
+            direct_correlate_lag_range is None or
+            accumulate_frame.__module__ != direct_origin_norms.__module__
+        ):
+            return False
+
+        n_values = self.n_frames * len(self.target_indices) * 3
+
+        return n_values * np.dtype(np.float64).itemsize <= (
+            self._direct_batch_max_bytes
+        )
+
+    def _run_direct_batch(self) -> Np1DNumberArray:
+        """Runs the exact direct estimator over parallel lag ranges."""
+        velocities = self._try_raw_velocity_batch()
+
+        if velocities is None:
+            velocities = np.empty(
+                (self.n_frames, len(self.target_indices), 3),
+                dtype=np.float64,
+            )
+
+            for frame_index, velocity in enumerate(self._velocities()):
+                velocities[frame_index] = velocity
+
+        origin_indices = np.arange(
+            self.gap - 1,
+            self.stop_frame,
+            self.gap,
+            dtype=np.longlong,
+        )
+        norms = direct_origin_norms(velocities, origin_indices)
+
+        zero_norm = np.flatnonzero(norms == 0.0)
+
+        if zero_norm.size:
+            frame_number = int(origin_indices[zero_norm[0]] + 1)
+            self.logger.error(
+                (
+                    "The aggregate squared velocity norm of the "
+                    f"time origin at frame {frame_number} is zero. "
+                    "The normalized VACF is not defined."
+                ),
+                exception=VACFError,
+            )
+
+        corr = np.zeros(self.window_size + 1, dtype=np.float64)
+        n_valid_lags = min(
+            self.window_size + 1,
+            self.n_frames - int(origin_indices[-1]),
+        )
+        n_workers = min(
+            self._direct_batch_max_workers,
+            cpu_count() or 1,
+            n_valid_lags,
+        )
+        boundaries = np.linspace(
+            0,
+            n_valid_lags,
+            n_workers + 1,
+            dtype=np.intp,
+        )
+
+        with ThreadPoolExecutor(max_workers=n_workers) as executor:
+            futures = [
+                executor.submit(
+                    direct_correlate_lag_range,
+                    velocities,
+                    origin_indices,
+                    norms,
+                    int(start),
+                    int(stop),
+                    corr,
+                )
+                for start, stop in zip(boundaries[:-1], boundaries[1:])
+                if start < stop
+            ]
+
+            for future in futures:
+                future.result()
+
+        self.n_origins = len(origin_indices)
+
+        return corr / self.n_origins
+
+    def _try_raw_velocity_batch(self) -> NpnDNumberArray | None:
+        """Parse an unweighted or statically weighted raw batch."""
+        if self._raw_reader is None or self._charge_value_stream is not None:
+            return None
+
+        n_target = len(self.target_indices)
+        all_atoms_selected = np.array_equal(
+            self._target_indices_intp,
+            np.arange(self.n_atoms, dtype=np.intp),
+        )
+        needs_copy = not all_atoms_selected or self._static_charges is not None
+        selection_bytes = (
+            self.n_frames * n_target * 3 *
+            np.dtype(np.float64).itemsize if needs_copy else 0
+        )
+        reader_max_bytes = self._direct_batch_max_bytes - selection_bytes
+
+        if reader_max_bytes <= 0:
+            return None
+
+        batch = self._raw_reader.try_read_all_frames(
+            expected_n_atoms=self.n_atoms,
+            expected_n_frames=self.n_frames,
+            max_bytes=reader_max_bytes,
+            include_cells=False,
+        )
+
+        if batch is None:
+            return None
+
+        values, _cells = batch
+
+        if all_atoms_selected and self._static_charges is None:
+            return values
+
+        velocities = np.ascontiguousarray(
+            values[:, self._target_indices_intp, :],
+            dtype=np.float64,
+        )
+
+        if self._static_charges is not None:
+            velocities *= self._static_charges[None, :, None]
+
+        return velocities
+
+    def _run_direct_streaming(self) -> Np1DNumberArray:
+        """Runs the bounded-memory frame-streaming direct estimator."""
         window_size = self.window_size
         gap = self.gap
         stop_frame = self.stop_frame

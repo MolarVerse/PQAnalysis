@@ -22,8 +22,7 @@ Run the diagnostic
        --output momentum.dat
 
 The default scale of ``1e-15`` converts PQ velocity-trajectory values from
-amu Angstrom s\ :sup:`-1` to amu Angstrom fs\ :sup:`-1`. Use ``--scale`` when
-the input convention differs.
+amu·Å·s⁻¹ to amu·Å·fs⁻¹. Use ``--scale`` when the input convention differs.
 
 Interpretation
 --------------
@@ -33,9 +32,11 @@ systematic increase can indicate center-of-mass drift. Oscillatory or noisy
 behavior must be interpreted relative to the total mass, velocity scale and
 numerical precision.
 
-PQ velocity trajectories are parsed in single precision. Norms below roughly
-``1e-7 * sum_i(m_i * |v_i|) * scale`` are therefore parsing noise rather than
-resolved physical drift.
+File-backed PQ and QMCFC velocity trajectories are parsed directly as float64.
+The compatibility path multiplies and sums atoms in the same order as the
+legacy ``equipartition.jl`` calculation. Native output uses 17 significant
+digits, so reloading it as float64 preserves each calculated value exactly.
+Trajectory objects use the numerical precision already stored in the object.
 
 See :ref:`analysis-output-momentum` for the output schema. Python workflows
 can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use

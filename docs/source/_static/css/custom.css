@@ -58,7 +58,7 @@ img.plot-directive + figcaption {
 
 @media (max-width: 44rem), (max-height: 32rem) {
     .back-to-top {
-        display: none;
+        display: none !important;
     }
 }
 

@@ -3,9 +3,9 @@
 Development
 ===========
 
-PQAnalysis integrates changes on ``dev`` and releases from ``main``. The guides
-define package boundaries, implementation contracts, validation evidence and
-release operations.
+PQAnalysis integrates feature and fix branches on ``dev`` and releases from
+``main``. The pages below define package ownership, extension steps,
+validation requirements and release operations.
 
 Extension path
 --------------
@@ -26,7 +26,7 @@ Extension path
      - Validated orchestration shared with the CLI
    * - Command line
      - ``PQAnalysis/cli/<name>.py``
-     - Arguments and dispatch, without duplicate computation
+     - Arguments and dispatch without duplicate computation
    * - Scientific output
      - ``PQAnalysis/analysis/_output_schemas.py``
      - Stable fields, symbols, units and plot projection
@@ -45,8 +45,8 @@ Extension path
 Local environment
 -----------------
 
-Install the package with development, test and documentation dependencies in an
-isolated environment:
+Install development, test and documentation dependencies in an isolated
+environment:
 
 .. code-block:: console
 
@@ -67,7 +67,7 @@ with release settings:
    $ bash pytest.sh
    $ bash pytest.sh tests/analysis/rdf -q
 
-Run pylint against the package and retain a score above the CI threshold of
+Run Pylint against the package and retain a score above the CI threshold of
 9.75:
 
 .. code-block:: console
@@ -84,8 +84,7 @@ returns, raised exceptions, units and array shapes. Inspect coverage with:
 Documentation
 -------------
 
-Build the complete documentation and check links with warnings treated as
-errors:
+Build HTML and check external links with warnings treated as errors:
 
 .. code-block:: console
 
@@ -96,21 +95,22 @@ errors:
 
 The API reference is generated from package modules when Sphinx starts. Do not
 hand-edit generated files under ``docs/source/code``. Add public callables to
-:doc:`../reference/functions`, and put implementation-level guidance in this
+:doc:`../reference/functions`, and keep implementation guidance in this
 development section.
 
 Executable figures under ``docs/source/_plots`` must be deterministic. Captions
-must distinguish analytic schematics, versioned validation fixtures and
-physical benchmark results.
+must identify analytical models, versioned validation fixtures and physical
+benchmark results correctly.
 
 Pull requests
 -------------
 
 Feature and fix pull requests normally target ``dev``. Release pull requests
-merge ``dev`` into ``main``. Use a Conventional Commits PR title, such as
+merge ``dev`` into ``main``. Use a Conventional Commits title, such as
 ``feat: add a new analysis command`` or
-``fix(io): handle missing trajectory data``; the title becomes the squash-merge
-commit message.
+``fix(io): handle missing trajectory data``; CI validates the title. Keep each
+commit scoped and reviewable because multi-commit pull requests may retain
+their individual commits.
 
 Enable the optional local commit-message hook with:
 
@@ -118,7 +118,6 @@ Enable the optional local commit-message hook with:
 
    $ git config core.hooksPath .githooks
 
-Before requesting review, run the focused tests for the modified ownership
-boundary and every relevant strict documentation build. Pull requests and
-``dev`` pushes build documentation without deploying it; deployment occurs
-from ``main``.
+Before review, run the focused tests for every modified ownership boundary and
+the relevant strict documentation builds. Pull requests and ``dev`` pushes
+build documentation without deploying it; deployment occurs from ``main``.

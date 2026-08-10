@@ -43,9 +43,10 @@ tag-driven release process. The
 [function index](https://molarverse.github.io/PQAnalysis/reference/functions.html)
 lists the supported Python entry points directly.
 
-Use squash merges for pull requests. The pull request title becomes the commit
-message on the target branch, so PR titles must follow
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+Pull request titles must follow
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/); CI
+validates them. Keep individual commits scoped because multi-commit pull
+requests may retain their commit history:
 
     feat: add a new analysis command
     fix(io): handle missing trajectory data

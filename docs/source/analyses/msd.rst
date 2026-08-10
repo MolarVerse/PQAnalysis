@@ -45,11 +45,15 @@ Minimal input
 in ps and enables diffusion fitting; ``fit_window`` selects the trailing
 points used by that fit.
 
+File-backed orthorhombic trajectories use a bounded compatibility path that
+preserves the Diffcalc operation order. Unsupported cells or inputs return to
+the general streaming implementation.
+
 Interpretation
 --------------
 
-The output contains the lag index and the x, y and z components in
-Angstrom squared. Their sum is the total three-dimensional MSD. In an
+The output contains the lag index and the x, y and z components in Å². Their
+sum is the total three-dimensional MSD. In an
 isotropic diffusive regime,
 
 .. math::
@@ -58,7 +62,7 @@ isotropic diffusive regime,
 
 PQAnalysis also fits each Cartesian component with the corresponding
 one-dimensional factor. The resulting coefficients, uncertainties and
-:math:`R^2` values are written to the log file in m\ :sup:`2`/s. A fit is
+:math:`R^2` values are written to the log file in m²·s⁻¹. A fit is
 physically meaningful only over a linear diffusive interval; short-time
 ballistic motion and poorly sampled long lags should not be included blindly.
 

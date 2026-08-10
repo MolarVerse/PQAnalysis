@@ -44,6 +44,17 @@ species RDF. They are required when ``no_intra_molecular = True`` is used to
 exclude pairs belonging to the same molecule. PQAnalysis can infer the usual
 PQ companion filenames when they are beside the trajectory.
 
+Legacy-compatible arithmetic
+----------------------------
+
+For a file-backed periodic orthorhombic trajectory, specifying ``delta_r``
+alone with the default ``r_min = 0`` selects the legacy-compatible RDF path.
+Coordinates are parsed as float64; histogram binning and all five output
+columns preserve the corrected legacy C operation order. Explicit ``r_max`` or
+``n_bins``, triclinic or vacuum cells, and intramolecular exclusion use the
+general PQAnalysis path. The minimal example above sets ``r_max`` explicitly
+and therefore uses the general path.
+
 Interpretation
 --------------
 

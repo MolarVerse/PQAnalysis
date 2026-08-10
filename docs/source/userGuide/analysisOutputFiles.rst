@@ -194,7 +194,7 @@ The ideal-gas pair count for the shell is
    * - 1
      - Bin-center distance
      - :math:`r_i = (r_i^- + r_i^+) / 2`
-     - Angstrom
+     - Å
    * - 2
      - Radial distribution function
      - :math:`g_i = H_i / E_i`
@@ -207,7 +207,7 @@ The ideal-gas pair count for the shell is
    * - 4
      - Density-normalized shell population
      - :math:`H_i / (\rho_T N_R N_F) = g_i\Delta V_i`
-     - Angstrom\ :sup:`3`
+     - Å³
    * - 5
      - Ideal-gas pair-count residual
      - :math:`H_i - E_i`; positive values are an excess and negative values
@@ -241,15 +241,15 @@ The ``msd`` command writes the legacy Diffcalc layout to ``out_file``.
    * - 2
      - :math:`\mathrm{MSD}_x`
      - Mean squared displacement along x
-     - Angstrom\ :sup:`2`
+     - Å²
    * - 3
      - :math:`\mathrm{MSD}_y`
      - Mean squared displacement along y
-     - Angstrom\ :sup:`2`
+     - Å²
    * - 4
      - :math:`\mathrm{MSD}_z`
      - Mean squared displacement along z
-     - Angstrom\ :sup:`2`
+     - Å²
 
 The total MSD is the sum of columns 2 through 4. It is returned by the Python
 API but is not repeated in the file. If ``time_step`` is provided, multiply
@@ -339,7 +339,7 @@ output.
    * - 1
      - Wavenumber
      - Regular output grid from ``--min`` to the exclusive ``--max``
-     - cm\ :sup:`-1`
+     - cm⁻¹
    * - 2
      - Broadened intensity
      - Sum of the Gaussian or Lorentzian peak-height profiles
@@ -353,7 +353,8 @@ Total linear momentum
 =====================
 
 The ``check_momentum`` command writes two columns to ``--output`` or standard
-output.
+output. Native output uses 17 significant digits for the momentum norm, so
+reading the value as float64 preserves the calculated bit pattern.
 
 .. list-table:: ``check_momentum`` output columns
    :class: analysis-output-columns
@@ -371,7 +372,7 @@ output.
    * - 2
      - Scaled momentum norm
      - ``scale`` multiplied by :math:`\left|\sum_i m_i\mathbf{v}_i\right|`
-     - Set by ``--scale``; default is amu Angstrom fs\ :sup:`-1`
+     - Set by ``--scale``; default is amu·Å·fs⁻¹
 
 .. _analysis-output-vibrations:
 
@@ -401,15 +402,15 @@ The accompanying ``SYMBOLS`` line provides the Unicode scientific notation.
    * - 1
      - Signed wavenumber
      - Always; negative values represent imaginary modes
-     - cm\ :sup:`-1`
+     - cm⁻¹
    * - 2
      - IR intensity
      - Only with partial charges
-     - km mol\ :sup:`-1`
+     - km·mol⁻¹
    * - 2 or 3
      - Force constant
      - Always
-     - mdyn Angstrom\ :sup:`-1`
+     - mdyn·Å⁻¹
    * - 3 or 4
      - Reduced mass
      - Always
@@ -428,15 +429,15 @@ components.
 ----------------
 
 One multi-frame XYZ animation named ``<prefix>-<mode>.xyz`` is written per
-selected mode. Each atom row contains species, x, y and z in Angstrom. The XYZ
-comment records the one-based mode number, wavenumber in cm\ :sup:`-1`, frame
+selected mode. Each atom row contains species, x, y and z in Å. The XYZ
+comment records the one-based mode number, wavenumber in cm⁻¹, frame
 number and sinusoidal phase.
 
 ``modes_file``
 --------------
 
 This extended XYZ file contains one image per selected mode. The atom columns
-are species, equilibrium x/y/z coordinates in Angstrom and normalized mode
+are species, equilibrium x/y/z coordinates in Å and normalized mode
 x/y/z components. The comment declares
 ``Properties=species:S:1:pos:R:3:mode:R:3`` and records the one-based mode
 number, wavenumber and optional IR intensity.

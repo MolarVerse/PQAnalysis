@@ -104,11 +104,11 @@ def accumulate_frame(
 def weight_frame(values, indices, charges):
     """
     Builds the (charge weighted) selected float64 velocities of a
-    frame from the raw float32 values of the trajectory reader.
+    frame from raw float32 or float64 trajectory values.
 
     Parameters
     ----------
-    values : np.ndarray of float32, shape (n_atoms, 3)
+    values : np.ndarray of float32 or float64, shape (n_atoms, 3)
         The raw values of the frame.
     indices : np.ndarray of intp, shape (n_target,)
         The indices of the selected atoms.

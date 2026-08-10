@@ -60,9 +60,10 @@ reference precision and expected magnitude. Record relaxed tolerances next to
 the assertion. Do not use one package-wide tolerance for observables with
 different scales.
 
-Fast kernels may accumulate values in a different order from NumPy fallbacks.
-Their parity tolerance should cover the expected floating-point summation
-difference, not unrelated algorithmic changes.
+Compatibility kernels that claim fixed-bit legacy behavior must preserve the
+legacy operation order and pass the corresponding exact oracle. General
+kernels may accumulate values in a different order from NumPy fallbacks; their
+parity tolerance should cover only the expected summation difference.
 
 Test commands
 -------------
@@ -81,6 +82,28 @@ Run the complete suite before review:
 .. code-block:: console
 
    $ bash pytest.sh
+
+Performance validation
+----------------------
+
+File-backed VACF, MSD, RDF and momentum analyses use bounded compiled paths.
+An optimized path must return to its streaming fallback when its memory or
+input-shape requirements are not met. Parallel work may divide independent lag
+ranges or frames, or use private integer histograms. It must not reorder a
+floating-point reduction covered by a fixed-bit compatibility guarantee.
+
+Install the benchmark dependency and run the focused suite with:
+
+.. code-block:: console
+
+   $ python -m pip install -e ".[test,benchmark]"
+   $ pytest -c benchmarks/pytest.ini benchmarks --benchmark-only
+
+Store the parent result with ``--benchmark-json=baseline.json`` and compare a
+changed branch with ``--benchmark-compare=baseline.json``. Record input size,
+selection, window, gap, host and median wall time. Runtime thresholds do not
+belong in CI because runner load is variable; compiled, fallback and fixed-bit
+tests remain mandatory regardless of benchmark results.
 
 Documentation figures
 ---------------------
