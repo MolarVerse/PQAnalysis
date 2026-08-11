@@ -451,7 +451,13 @@ class TestRawTrajectoryReaderBatch:
             pass
 
         reader = RawTrajectoryReader(
-            ["tmp1.xyz", "empty.xyz", "tmp2.xyz"],
+            [
+                "empty.xyz",
+                "tmp1.xyz",
+                "empty.xyz",
+                "tmp2.xyz",
+                "empty.xyz",
+            ],
             dtype="float64",
         )
         streamed = list(reader.raw_frame_generator())
@@ -476,6 +482,24 @@ class TestRawTrajectoryReaderBatch:
         assert box_lengths.dtype == np.float64
         assert box_lengths.shape == (3, 3)
         assert np.array_equal(box_lengths, expected_box_lengths)
+
+    def test_empty_batch_preserves_array_shapes(self):
+        with open("empty.xyz", "w", encoding="utf-8"):
+            pass
+
+        reader = RawTrajectoryReader("empty.xyz", dtype="float64")
+        batch = reader.try_read_all_frames(
+            expected_n_atoms=2,
+            expected_n_frames=0,
+            max_bytes=1024,
+            include_cells=False,
+            include_box_lengths=True,
+        )
+
+        assert batch is not None
+        values, box_lengths = batch
+        assert values.shape == (0, 2, 3)
+        assert box_lengths.shape == (0, 3)
 
     @pytest.mark.parametrize(
         "header",

@@ -4,7 +4,11 @@ This is a collection of analysis subpackages.
 
 from typing import TYPE_CHECKING, Any
 
-from PQAnalysis._lazy_import import public_dir, resolve_export
+from PQAnalysis._lazy_import import (
+    preserve_shadowed_exports,
+    public_dir,
+    resolve_export,
+)
 
 if TYPE_CHECKING:  # pragma: no cover
     from .momentum import Momentum, check_momentum
@@ -68,3 +72,7 @@ def __getattr__(name: str) -> Any:
 
 def __dir__() -> list[str]:
     return public_dir(globals(), _EXPORTS)
+
+
+
+preserve_shadowed_exports(globals())
