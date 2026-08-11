@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from PQAnalysis._lazy_import import public_dir, resolve_export
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .common import __header__, print_header
     from .decorators import (
         count_decorator,

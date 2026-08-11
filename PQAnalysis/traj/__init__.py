@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from PQAnalysis._lazy_import import public_dir, resolve_export
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .api import check_trajectory_pbc, check_trajectory_vacuum
     from .exceptions import (
         MDEngineFormatError,

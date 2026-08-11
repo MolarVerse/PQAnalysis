@@ -548,6 +548,12 @@ class TestRDFFastPath:
         assert rdf_batch._raw_batch is None
         assert rdf_batch.bins.sum() > 0
 
+        first_bins = rdf_batch.bins.copy()
+
+        assert rdf_batch._calculate_bins_raw_batch() is True
+        assert len(batch_reads) == 2
+        assert np.array_equal(rdf_batch.bins, 2 * first_bins)
+
     def test_failed_batch_prefetch_streams_without_retry(
         self,
         tmp_path,

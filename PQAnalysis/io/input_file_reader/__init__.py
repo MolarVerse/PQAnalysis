@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from PQAnalysis._lazy_import import public_dir, resolve_export
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from .formats import InputFileFormat
     from .input_file_parser import InputDictionary, InputFileParser
     from .pq.pq_input_file_reader import PQInputFileReader
