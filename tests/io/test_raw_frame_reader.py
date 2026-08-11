@@ -447,8 +447,11 @@ class TestRawTrajectoryReaderBatch:
             print("", file=file)
             print("h 7.0 8.0 9.0", file=file)
 
+        with open("empty.xyz", "w", encoding="utf-8"):
+            pass
+
         reader = RawTrajectoryReader(
-            ["tmp1.xyz", "tmp2.xyz"],
+            ["tmp1.xyz", "empty.xyz", "tmp2.xyz"],
             dtype="float64",
         )
         streamed = list(reader.raw_frame_generator())
@@ -471,11 +474,31 @@ class TestRawTrajectoryReaderBatch:
 
         assert np.array_equal(values, expected_values)
         assert box_lengths.dtype == np.float64
+        assert box_lengths.shape == (3, 3)
         assert np.array_equal(box_lengths, expected_box_lengths)
 
     @pytest.mark.parametrize(
         "header",
-        ["", " 10.0 12.0 14.0 80.0 90.0 90.0"],
+        [
+            pytest.param("", id="initial-vacuum"),
+            pytest.param(" 10.0 12.0", id="two-lengths"),
+            pytest.param(" 10.0 12.0 14.0 90.0", id="four-values"),
+            pytest.param(
+                " 10.0 12.0 14.0 90.0 90.0 90.0 1.0",
+                id="seven-values",
+            ),
+            pytest.param(" 0.0 12.0 14.0", id="zero-length"),
+            pytest.param(" invalid 12.0 14.0", id="non-numeric"),
+            pytest.param(
+                " 10.0 12.0 14.0 80.0 90.0 90.0",
+                id="triclinic",
+            ),
+            pytest.param(
+                " 10.0 12.0 14.0 90.0 90.0 89.999999999",
+                id="near-orthorhombic",
+            ),
+            pytest.param(" 1e34 1e34 1e34", id="excessive-volume"),
+        ],
     )
     def test_box_length_batch_rejects_unsupported_cells(self, header):
         with open("tmp.xyz", "w", encoding="utf-8") as file:
@@ -532,6 +555,38 @@ class TestRawTrajectoryReaderBatch:
             expected_n_atoms=1,
             max_bytes=1,
         ) is None
+
+    def test_box_length_batch_accepts_exact_memory_cap(self):
+        content = "1 10 11 12\n\nH 1 2 3"
+
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            file.write(content)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+        exact_bytes = (
+            len(content.encode("utf-8")) + 1 +
+            2 * 3 * np.dtype(np.float64).itemsize
+        )
+        kwargs = {
+            "expected_n_atoms": 1,
+            "include_cells": False,
+            "include_box_lengths": True,
+        }
+
+        assert reader.try_read_all_frames(
+            max_bytes=exact_bytes - 1,
+            **kwargs,
+        ) is None
+
+        batch = reader.try_read_all_frames(
+            max_bytes=exact_bytes,
+            **kwargs,
+        )
+
+        assert batch is not None
+        values, box_lengths = batch
+        assert np.array_equal(values, [[[1.0, 2.0, 3.0]]])
+        assert np.array_equal(box_lengths, [[10.0, 11.0, 12.0]])
 
     def test_batch_rejects_multiple_cell_outputs(self):
         with open("tmp.xyz", "w", encoding="utf-8") as file:
