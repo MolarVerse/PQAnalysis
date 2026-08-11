@@ -16,6 +16,7 @@ import pytest
 
 from PQAnalysis.analysis.rdf import RDF, rdf
 from PQAnalysis.analysis.rdf._rdf_kernel_py import (
+    legacy_rdf_batch_histogram as legacy_rdf_batch_histogram_py,
     legacy_rdf_frame_histogram as legacy_rdf_frame_histogram_py,
 )
 from PQAnalysis.io import TrajectoryReader
@@ -26,9 +27,11 @@ rdf_module = importlib.import_module("PQAnalysis.analysis.rdf.rdf")
 
 try:
     from PQAnalysis.analysis.rdf._rdf_kernel import (  # pylint: disable=import-error
+        legacy_rdf_batch_histogram as legacy_rdf_batch_histogram_compiled,
         legacy_rdf_frame_histogram as legacy_rdf_frame_histogram_compiled,
     )
 except ModuleNotFoundError:
+    legacy_rdf_batch_histogram_compiled = None
     legacy_rdf_frame_histogram_compiled = None
 
 
@@ -39,10 +42,15 @@ RDF_HISTOGRAM_SHA256 = (
     "80acbcf723e83519c568f63be37d712a5ff0ae6afce9352f900d4aaf949c3499"
 )
 
-KERNELS = [legacy_rdf_frame_histogram_py]
+KERNELS = [(legacy_rdf_frame_histogram_py, legacy_rdf_batch_histogram_py)]
 
 if legacy_rdf_frame_histogram_compiled is not None:
-    KERNELS.append(legacy_rdf_frame_histogram_compiled)
+    KERNELS.append(
+        (
+            legacy_rdf_frame_histogram_compiled,
+            legacy_rdf_batch_histogram_compiled,
+        )
+    )
 
 
 def _float64_sha256(values):
@@ -58,13 +66,19 @@ def _int64_sha256(values):
 
 
 @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
-@pytest.mark.parametrize("kernel", KERNELS)
+@pytest.mark.parametrize(("frame_kernel", "batch_kernel"), KERNELS)
 def test_full_precision_legacy_parity(
     test_with_data_dir,
     monkeypatch,
-    kernel,
+    frame_kernel,
+    batch_kernel,
 ):
-    monkeypatch.setattr(rdf_module, "legacy_rdf_frame_histogram", kernel)
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_frame_histogram", frame_kernel
+    )
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_batch_histogram", batch_kernel
+    )
 
     analysis = RDF(
         TrajectoryReader("traj.xyz"),
@@ -82,9 +96,19 @@ def test_full_precision_legacy_parity(
     assert _float64_sha256(np.column_stack(result)) == RDF_FLOAT64_SHA256
 
 
-@pytest.mark.parametrize("kernel", KERNELS)
-def test_float64_coordinate_controls_boundary_bin(tmp_path, monkeypatch, kernel):
-    monkeypatch.setattr(rdf_module, "legacy_rdf_frame_histogram", kernel)
+@pytest.mark.parametrize(("frame_kernel", "batch_kernel"), KERNELS)
+def test_float64_coordinate_controls_boundary_bin(
+    tmp_path,
+    monkeypatch,
+    frame_kernel,
+    batch_kernel,
+):
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_frame_histogram", frame_kernel
+    )
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_batch_histogram", batch_kernel
+    )
 
     trajectory = tmp_path / "boundary.xyz"
     trajectory.write_text(
