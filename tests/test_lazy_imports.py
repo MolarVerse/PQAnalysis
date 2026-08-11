@@ -1,8 +1,21 @@
 """Regression tests for deferred package and CLI imports."""
 
+import importlib
 import json
 import subprocess
 import sys
+
+
+PACKAGE_NAMES = (
+    "PQAnalysis.analysis",
+    "PQAnalysis.core",
+    "PQAnalysis.io",
+    "PQAnalysis.io.input_file_reader",
+    "PQAnalysis.io.traj_file",
+    "PQAnalysis.topology",
+    "PQAnalysis.traj",
+    "PQAnalysis.utils",
+)
 
 
 
@@ -80,20 +93,11 @@ print(json.dumps({
 
 def test_all_declared_lazy_exports_resolve():
     completed = _run_python(
-        """
+        f"""
 import importlib
 import json
 
-package_names = (
-    "PQAnalysis.analysis",
-    "PQAnalysis.core",
-    "PQAnalysis.io",
-    "PQAnalysis.io.input_file_reader",
-    "PQAnalysis.io.traj_file",
-    "PQAnalysis.topology",
-    "PQAnalysis.traj",
-    "PQAnalysis.utils",
-)
+package_names = {PACKAGE_NAMES!r}
 failures = []
 for package_name in package_names:
     package = importlib.import_module(package_name)
@@ -108,3 +112,11 @@ print(json.dumps(failures))
     )
 
     assert json.loads(completed.stdout) == []
+
+
+
+def test_declared_lazy_exports_are_visible_to_dir():
+    for package_name in PACKAGE_NAMES:
+        package = importlib.import_module(package_name)
+
+        assert set(package.__all__).issubset(dir(package))
