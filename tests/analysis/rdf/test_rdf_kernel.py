@@ -22,7 +22,7 @@ from PQAnalysis.analysis import RDF
 from PQAnalysis.analysis.rdf import _rdf_kernel_py
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.core import Cell
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import TrajectoryReaderError
 
 from .. import pytestmark  # pylint: disable=unused-import
@@ -505,6 +505,48 @@ class TestRDFFastPath:
 
         assert np.array_equal(results_parallel, results_memory)
         assert rdf_parallel.bins.sum() > 0
+
+    def test_batch_is_shared_by_setup_and_histogram(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = _write_random_trajectory(tmp_path / "traj.xyz")
+        original_read_batch = RawTrajectoryReader.try_read_all_frames
+        batch_reads = []
+
+        def read_batch(reader, *args, **kwargs):
+            batch_reads.append(reader.filenames)
+            return original_read_batch(reader, *args, **kwargs)
+
+        def reject_cell_scan(*_args, **_kwargs):
+            raise AssertionError("batch-compatible input must not be rescanned")
+
+        monkeypatch.setattr(
+            RawTrajectoryReader,
+            "try_read_all_frames",
+            read_batch,
+        )
+        monkeypatch.setattr(RDF, "_scan_cells", reject_cell_scan)
+
+        rdf_batch = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "H",
+            delta_r=0.1,
+        )
+
+        assert len(batch_reads) == 1
+        assert rdf_batch._raw_batch is not None
+
+        rdf_batch.run()
+
+        assert len(batch_reads) == 1
+        assert rdf_batch._raw_batch is None
+        assert rdf_batch.bins.sum() > 0
 
     @pytest.mark.parametrize(
         "write_file",
