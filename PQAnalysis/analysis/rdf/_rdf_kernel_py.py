@@ -14,9 +14,9 @@ binned with ``np.floor_divide``/``np.bincount`` exactly as in
 :py:meth:`PQAnalysis.analysis.rdf.rdf.RDF._add_to_bins`, so its
 results are bit-identical to that implementation.
 
-The separate :func:`legacy_rdf_frame_histogram` function preserves the
-operation order of the legacy ``thh_tools/RDF`` C loop for file-backed
-orthorhombic trajectories.
+The separate :func:`legacy_rdf_frame_histogram` and
+:func:`legacy_rdf_batch_histogram` functions preserve the operation order of
+the legacy ``thh_tools/RDF`` C loop for file-backed orthorhombic trajectories.
 """
 
 import math
@@ -172,3 +172,30 @@ def legacy_rdf_frame_histogram(
                 # the returned histogram.
                 if 0 <= bin_index < n_bins:
                     hist[bin_index] += 1
+
+
+def legacy_rdf_batch_histogram(
+    values,
+    reference_indices,
+    target_indices,
+    box_lengths,
+    delta_r,
+    n_bins,
+    hist,
+):
+    """Accumulates a frame batch with the legacy RDF operation order."""
+    if len(box_lengths) != len(values):
+        raise ValueError(
+            "The number of RDF boxes must match the number of frames."
+        )
+
+    for frame_values, frame_box_lengths in zip(values, box_lengths):
+        legacy_rdf_frame_histogram(
+            frame_values,
+            reference_indices,
+            target_indices,
+            frame_box_lengths,
+            delta_r,
+            n_bins,
+            hist,
+        )

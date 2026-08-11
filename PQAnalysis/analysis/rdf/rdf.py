@@ -43,18 +43,20 @@ from .exceptions import RDFError
 
 try:
     from ._rdf_kernel import (  # pylint: disable=import-error
+        legacy_rdf_batch_histogram,
         legacy_rdf_frame_histogram,
         rdf_frame_histogram,
     )
 except ModuleNotFoundError:
     from ._rdf_kernel_py import (
+        legacy_rdf_batch_histogram,
         legacy_rdf_frame_histogram,
         rdf_frame_histogram,
     )
 
 
 
-# The flat argument list keeps the threaded worker allocation-free per frame.
+# The flat argument list keeps the threaded worker setup compact.
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-locals
 def _raw_histogram_range(
     values,
@@ -67,9 +69,24 @@ def _raw_histogram_range(
     delta_r,
     n_bins,
     use_legacy,
+    legacy_box_lengths,
 ):
     """Calculate a private exact histogram over a frame range."""
     hist = np.zeros(n_bins, dtype=np.int64)
+
+    if use_legacy:
+        legacy_rdf_batch_histogram(
+            values[start:stop],
+            reference_indices,
+            target_indices,
+            legacy_box_lengths[start:stop],
+            delta_r,
+            n_bins,
+            hist,
+        )
+
+        return hist
+
     last_cell = None
     box_lengths = np.ones(3)
     box = np.eye(3)
@@ -97,30 +114,19 @@ def _raw_histogram_range(
                 dtype=np.float64,
             )
 
-        if use_legacy:
-            legacy_rdf_frame_histogram(
-                values[frame_index],
-                reference_indices,
-                target_indices,
-                box_lengths,
-                delta_r,
-                n_bins,
-                hist,
-            )
-        else:
-            rdf_frame_histogram(
-                values[frame_index],
-                reference_indices,
-                target_indices,
-                box_lengths,
-                box,
-                inv_box,
-                is_orthorhombic,
-                r_min,
-                delta_r,
-                n_bins,
-                hist,
-            )
+        rdf_frame_histogram(
+            values[frame_index],
+            reference_indices,
+            target_indices,
+            box_lengths,
+            box,
+            inv_box,
+            is_orthorhombic,
+            r_min,
+            delta_r,
+            n_bins,
+            hist,
+        )
 
     return hist
 
@@ -1006,6 +1012,14 @@ class RDF:
 
         values, _cells = batch
         cells = self.cells
+        legacy_box_lengths = None
+
+        if self._legacy_rdf:
+            legacy_box_lengths = np.ascontiguousarray(
+                [cell.box_lengths for cell in cells],
+                dtype=np.float64,
+            )
+
         reference_indices = np.ascontiguousarray(
             self.reference_indices,
             dtype=np.int64,
@@ -1046,6 +1060,7 @@ class RDF:
                 self.delta_r,
                 self.n_bins,
                 self._legacy_rdf,
+                legacy_box_lengths,
             )
             for start, stop in zip(boundaries[:-1], boundaries[1:])
             if start < stop
