@@ -1026,8 +1026,7 @@ class RDF:
         self._raw_batch = None
 
         if batch is not None:
-            # A later run may load a fresh batch. RDF instances are reusable,
-            # even though each run has to read the trajectory again.
+            # A later calculation must read a fresh trajectory batch.
             self._raw_batch_attempted = False
 
         if batch is None and not self._raw_batch_attempted:

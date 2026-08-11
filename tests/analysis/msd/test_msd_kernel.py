@@ -449,6 +449,54 @@ class TestMSDFastPathKernels:
         )
         assert np.array_equal(result_batch, result_stream)
 
+    def test_exact_window_batch_handles_empty_file_and_inherited_cell(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        first = tmp_path / "first.xyz"
+        empty = tmp_path / "empty.xyz"
+        inherited = tmp_path / "inherited.xyz"
+
+        first.write_text(
+            "1 10.0 11.0 12.0\n\nO 1.0 2.0 3.0\n"
+            "1 10.0 11.0 12.0\n\nO 2.0 2.0 3.0\n",
+            encoding="utf-8",
+        )
+        empty.write_text("", encoding="utf-8")
+        inherited.write_text(
+            "1\n\nO 3.0 2.0 3.0\n",
+            encoding="utf-8",
+        )
+        filenames = [str(first), str(empty), str(inherited)]
+
+        msd_batch = MSD(
+            TrajectoryReader(filenames),
+            "O",
+            window=3,
+            gap=1,
+        )
+        result_batch = np.column_stack(msd_batch.run())
+
+        msd_stream = MSD(
+            TrajectoryReader(filenames),
+            "O",
+            window=3,
+            gap=1,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run())
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
+        assert np.array_equal(result_batch[-1, 1:], np.zeros(4))
+
     def test_active_kernel_is_a_known_implementation(self):
         # the msd module must have wired up either the Cython kernel
         # or the numpy fallback via the try-import

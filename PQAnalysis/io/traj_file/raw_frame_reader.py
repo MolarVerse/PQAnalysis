@@ -563,7 +563,10 @@ class RawTrajectoryReader(BaseReader):
         box_headers: List[bytes],
         cache: dict[bytes, Tuple[float, float, float]],
         inherited: Tuple[float, float, float] | None,
-    ) -> Tuple[Np2DNumberArray, Tuple[float, float, float]] | None:
+    ) -> Tuple[
+        Np2DNumberArray,
+        Tuple[float, float, float] | None,
+    ] | None:
         """Parse exact box lengths without constructing Cell matrices."""
         frame_box_lengths = []
         last_box_lengths = inherited
@@ -606,7 +609,12 @@ class RawTrajectoryReader(BaseReader):
             last_box_lengths = box_lengths
             frame_box_lengths.append(box_lengths)
 
-        return np.asarray(frame_box_lengths, dtype=np.float64), last_box_lengths
+        box_lengths = np.asarray(
+            frame_box_lengths,
+            dtype=np.float64,
+        ).reshape((-1, 3))
+
+        return box_lengths, last_box_lengths
 
     def count_frames(self) -> int:
         """

@@ -548,6 +548,66 @@ class TestRDFFastPath:
         assert rdf_batch._raw_batch is None
         assert rdf_batch.bins.sum() > 0
 
+    def test_failed_batch_prefetch_streams_without_retry(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = _write_random_trajectory(tmp_path / "traj.xyz")
+        original_read_batch = RawTrajectoryReader.try_read_all_frames
+        batch_limits = []
+
+        def read_batch(reader, *args, **kwargs):
+            batch_limits.append(kwargs["max_bytes"])
+            return original_read_batch(reader, *args, **kwargs)
+
+        monkeypatch.setattr(
+            RawTrajectoryReader,
+            "try_read_all_frames",
+            read_batch,
+        )
+        monkeypatch.setattr(RDF, "_batch_max_bytes", 1)
+
+        rdf_stream, results_stream = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+        _rdf_memory, results_memory = _run_rdf(
+            TrajectoryReader(filename).read(),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+
+        assert batch_limits == [1]
+        assert rdf_stream._raw_batch is None
+        assert np.array_equal(rdf_stream.bins, _rdf_memory.bins)
+        assert np.array_equal(results_stream, results_memory)
+
+    def test_single_frame_batch_matches_in_memory(self, tmp_path):
+        filename = _write_random_trajectory(
+            tmp_path / "single-frame.xyz",
+            n_frames=1,
+        )
+
+        rdf_batch, results_batch = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+        rdf_memory, results_memory = _run_rdf(
+            TrajectoryReader(filename).read(),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+
+        assert np.array_equal(rdf_batch.bins, rdf_memory.bins)
+        assert np.array_equal(results_batch, results_memory)
+        assert rdf_batch.bins.sum() > 0
+
     @pytest.mark.parametrize(
         "write_file",
         [_write_random_trajectory, _write_orthorhombic_npt_trajectory],
