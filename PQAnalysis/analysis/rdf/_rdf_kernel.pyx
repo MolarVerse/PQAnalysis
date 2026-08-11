@@ -254,7 +254,7 @@ def rdf_frame_histogram(
                     hist[<Py_ssize_t> bin_index] += 1
 
 
-def legacy_rdf_frame_histogram(
+cdef inline void _legacy_rdf_accumulate(
     const np.float64_t[:, ::1] values,
     const np.int64_t[::1] reference_indices,
     const np.int64_t[::1] target_indices,
@@ -262,8 +262,7 @@ def legacy_rdf_frame_histogram(
     double delta_r,
     long long n_bins,
     np.int64_t[::1] hist,
-):
-    """Accumulates one frame with the legacy RDF operation order."""
+) noexcept nogil:
     cdef Py_ssize_t n_ref = reference_indices.shape[0]
     cdef Py_ssize_t n_tgt = target_indices.shape[0]
     cdef Py_ssize_t i, j, ref_row, target_row, bin_index
@@ -284,42 +283,94 @@ def legacy_rdf_frame_histogram(
 
     cutoff = cutoff / 2.0
 
+    for i in range(n_ref):
+        ref_index = reference_indices[i]
+        ref_row = <Py_ssize_t> ref_index
+        ref_x = values[ref_row, 0]
+        ref_y = values[ref_row, 1]
+        ref_z = values[ref_row, 2]
+
+        for j in range(n_tgt):
+            target_index = target_indices[j]
+
+            if target_index == ref_index:
+                continue
+
+            target_row = <Py_ssize_t> target_index
+            target_x = values[target_row, 0]
+            target_y = values[target_row, 1]
+            target_z = values[target_row, 2]
+
+            image_x = target_x + length_x * c_round(
+                (ref_x - target_x) / length_x
+            )
+            image_y = target_y + length_y * c_round(
+                (ref_y - target_y) / length_y
+            )
+            image_z = target_z + length_z * c_round(
+                (ref_z - target_z) / length_z
+            )
+
+            dx = ref_x - image_x
+            dy = ref_y - image_y
+            dz = ref_z - image_z
+            distance = sqrt((dx * dx + dy * dy) + dz * dz)
+
+            if distance <= cutoff:
+                bin_index = <Py_ssize_t> floor(distance / delta_r)
+
+                if bin_index >= 0 and bin_index < n_bins:
+                    hist[bin_index] += 1
+
+
+def legacy_rdf_frame_histogram(
+    const np.float64_t[:, ::1] values,
+    const np.int64_t[::1] reference_indices,
+    const np.int64_t[::1] target_indices,
+    const np.float64_t[::1] box_lengths,
+    double delta_r,
+    long long n_bins,
+    np.int64_t[::1] hist,
+):
+    """Accumulates one frame with the legacy RDF operation order."""
     with nogil:
-        for i in range(n_ref):
-            ref_index = reference_indices[i]
-            ref_row = <Py_ssize_t> ref_index
-            ref_x = values[ref_row, 0]
-            ref_y = values[ref_row, 1]
-            ref_z = values[ref_row, 2]
+        _legacy_rdf_accumulate(
+            values,
+            reference_indices,
+            target_indices,
+            box_lengths,
+            delta_r,
+            n_bins,
+            hist,
+        )
 
-            for j in range(n_tgt):
-                target_index = target_indices[j]
 
-                if target_index == ref_index:
-                    continue
+def legacy_rdf_batch_histogram(
+    const np.float64_t[:, :, ::1] values,
+    const np.int64_t[::1] reference_indices,
+    const np.int64_t[::1] target_indices,
+    const np.float64_t[:, ::1] box_lengths,
+    double delta_r,
+    long long n_bins,
+    np.int64_t[::1] hist,
+):
+    """Accumulates a frame batch with the legacy RDF operation order."""
+    cdef Py_ssize_t n_frames = values.shape[0]
+    cdef Py_ssize_t frame_index
 
-                target_row = <Py_ssize_t> target_index
-                target_x = values[target_row, 0]
-                target_y = values[target_row, 1]
-                target_z = values[target_row, 2]
+    if box_lengths.shape[0] != n_frames:
+        raise ValueError(
+            "The number of RDF boxes must match the number of frames."
+        )
 
-                image_x = target_x + length_x * c_round(
-                    (ref_x - target_x) / length_x
-                )
-                image_y = target_y + length_y * c_round(
-                    (ref_y - target_y) / length_y
-                )
-                image_z = target_z + length_z * c_round(
-                    (ref_z - target_z) / length_z
-                )
-
-                dx = ref_x - image_x
-                dy = ref_y - image_y
-                dz = ref_z - image_z
-                distance = sqrt((dx * dx + dy * dy) + dz * dz)
-
-                if distance <= cutoff:
-                    bin_index = <Py_ssize_t> floor(distance / delta_r)
-
-                    if bin_index >= 0 and bin_index < n_bins:
-                        hist[bin_index] += 1
+    with nogil:
+        for frame_index in range(n_frames):
+            _legacy_rdf_accumulate(
+                values[frame_index],
+                reference_indices,
+                target_indices,
+                box_lengths[frame_index],
+                delta_r,
+                n_bins,
+                hist,
+            )
