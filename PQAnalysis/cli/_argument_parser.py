@@ -9,14 +9,14 @@ the most common methods are implemented here.
 
 import logging
 import argparse
-import argcomplete
+import os
 
-from beartype.typing import Sequence
+from collections.abc import Sequence
 from rich_argparse import ArgumentDefaultsRichHelpFormatter
 
 import PQAnalysis.config as config  # pylint: disable=consider-using-from-import # here needed to set the config attributes
 
-from PQAnalysis.utils.common import __header__
+from PQAnalysis.utils.common import print_header
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.version import __version__
@@ -78,12 +78,17 @@ class _ArgumentParser(argparse.ArgumentParser):
         argparse.Namespace
             The parsed arguments.
         """
+        print_header()
+
         self._parse_progress()
         self._parse_version()
         self._parse_log_file()
         self._parse_logging_level()
 
-        argcomplete.autocomplete(self)
+        if "_ARGCOMPLETE" in os.environ:
+            import argcomplete  # pylint: disable=import-outside-toplevel
+
+            argcomplete.autocomplete(self)
         args = super().parse_args(args, namespace)
 
         config.with_progress_bar = args.progress

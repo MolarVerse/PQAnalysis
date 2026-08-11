@@ -5,7 +5,7 @@ A module containing classes for reading a trajectory from a file.
 # 3rd party modules
 import logging
 from beartype.typing import List, Generator
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # Local absolute imports
 from PQAnalysis.config import with_progress_bar

@@ -4,7 +4,7 @@ A module containing different format types of the trajectory.
 
 import logging
 
-from beartype.typing import Any
+from typing import Any
 
 from PQAnalysis.formats import BaseEnumFormat
 from PQAnalysis.utils.custom_logging import setup_logger
