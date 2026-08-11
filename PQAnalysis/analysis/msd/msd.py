@@ -633,16 +633,37 @@ class MSD:
 
         self._calculate_msd_raw_streaming()
 
+    @staticmethod
+    def _orthorhombic_box_lengths(cell):
+        """Return float64 box lengths for a non-vacuum orthorhombic cell."""
+        angles = cell.box_angles
+
+        if not (
+            angles[0] == 90.0 and angles[1] == 90.0 and
+            angles[2] == 90.0
+        ):
+            return None
+
+        box_lengths = np.asarray(cell.box_lengths, dtype=np.float64)
+        volume = (
+            float(box_lengths[0]) * float(box_lengths[1])
+            * float(box_lengths[2])
+        )
+
+        if volume > 1e100:
+            return None
+
+        return box_lengths
+
     def _calculate_msd_raw_exact_streaming(self) -> bool:
         """Runs the one-pass exact Diffcalc kernel for orthorhombic data."""
         n_atoms = self.n_atoms
-        n_sel = len(self.target_indices)
         indices = np.ascontiguousarray(self.target_indices, dtype=np.int64)
-        pos = np.zeros((n_sel, 3), dtype=np.float64)
+        pos = np.zeros((len(indices), 3), dtype=np.float64)
         prev_pos = np.zeros_like(pos)
         image_steps = np.zeros_like(pos)
         origins = np.zeros(
-            (self.n_origins_max, n_sel, 3),
+            (self.n_origins_max, len(indices), 3),
             dtype=np.float64,
         )
         images = np.zeros_like(origins)
@@ -673,17 +694,12 @@ class MSD:
 
             if cell is not last_cell:
                 last_cell = cell
+                box_lengths = self._orthorhombic_box_lengths(cell)
 
-                if cell.is_vacuum or not np.array_equal(
-                    cell.box_angles,
-                    np.array([90, 90, 90]),
-                ):
+                if box_lengths is None:
                     return False
 
-                box_lengths = np.ascontiguousarray(
-                    cell.box_lengths,
-                    dtype=np.float64,
-                )
+                box_lengths = np.ascontiguousarray(box_lengths)
 
             legacy_msd_frame_update(
                 values,
@@ -768,10 +784,6 @@ class MSD:
         n_atoms = self.n_atoms
         n_sel = len(self.target_indices)
         indices = np.ascontiguousarray(self.target_indices, dtype=np.int64)
-        boxes = np.empty((self.n_frames, 3), dtype=np.float64)
-        reference_box = None
-        last_cell = None
-        box_lengths = None
         all_atoms_selected = np.array_equal(
             indices,
             np.arange(n_atoms, dtype=np.int64),
@@ -788,10 +800,12 @@ class MSD:
                 expected_n_atoms=n_atoms,
                 expected_n_frames=self.n_frames,
                 max_bytes=reader_max_bytes,
+                include_cells=False,
+                include_box_lengths=True,
             )
 
         if batch is not None:
-            raw_positions, cells = batch
+            raw_positions, boxes = batch
             positions = (
                 raw_positions if all_atoms_selected else
                 np.ascontiguousarray(raw_positions[:, indices, :])
@@ -800,33 +814,14 @@ class MSD:
 
             if not all_atoms_selected:
                 del raw_positions
-
-            for frame_index, cell in enumerate(cells):
-                if cell is not last_cell:
-                    last_cell = cell
-
-                    if cell.is_vacuum or not np.array_equal(
-                        cell.box_angles,
-                        np.array([90, 90, 90]),
-                    ):
-                        return False
-
-                    box_lengths = np.asarray(
-                        cell.box_lengths,
-                        dtype=np.float64,
-                    )
-
-                    if reference_box is None:
-                        reference_box = box_lengths.copy()
-                    elif not np.array_equal(box_lengths, reference_box):
-                        return False
-
-                boxes[frame_index] = box_lengths
         else:
             positions = np.empty(
                 (self.n_frames, n_sel, 3),
                 dtype=np.float64,
             )
+            boxes = np.empty((self.n_frames, 3), dtype=np.float64)
+            last_cell = None
+            box_lengths = None
 
             for frame_index, (values, cell) in enumerate(
                 tqdm(
@@ -849,21 +844,9 @@ class MSD:
 
                 if cell is not last_cell:
                     last_cell = cell
+                    box_lengths = self._orthorhombic_box_lengths(cell)
 
-                    if cell.is_vacuum or not np.array_equal(
-                        cell.box_angles,
-                        np.array([90, 90, 90]),
-                    ):
-                        return False
-
-                    box_lengths = np.asarray(
-                        cell.box_lengths,
-                        dtype=np.float64,
-                    )
-
-                    if reference_box is None:
-                        reference_box = box_lengths.copy()
-                    elif not np.array_equal(box_lengths, reference_box):
+                    if box_lengths is None:
                         return False
 
                 positions[frame_index] = values[indices]

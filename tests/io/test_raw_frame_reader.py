@@ -433,6 +433,65 @@ class TestRawTrajectoryReaderBatch:
 
         assert cells[-1] is cells[-2]
 
+    def test_batch_returns_exact_orthorhombic_box_lengths(self):
+        with open("tmp1.xyz", "w", encoding="utf-8") as file:
+            print("1 11.100000000000001 12.2 13.3 90 90.0 9e1", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        with open("tmp2.xyz", "w", encoding="utf-8") as file:
+            print("1", file=file)
+            print("", file=file)
+            print("h 4.0 5.0 6.0", file=file)
+            print("1 14.4 15.5 16.6", file=file)
+            print("", file=file)
+            print("h 7.0 8.0 9.0", file=file)
+
+        reader = RawTrajectoryReader(
+            ["tmp1.xyz", "tmp2.xyz"],
+            dtype="float64",
+        )
+        streamed = list(reader.raw_frame_generator())
+        batch = reader.try_read_all_frames(
+            expected_n_atoms=1,
+            expected_n_frames=3,
+            max_bytes=1024 * 1024,
+            include_cells=False,
+            include_box_lengths=True,
+        )
+
+        assert batch is not None
+        values, box_lengths = batch
+        expected_values = np.stack([
+            frame_values for frame_values, _cell in streamed
+        ])
+        expected_box_lengths = np.stack([
+            cell.box_lengths for _values, cell in streamed
+        ])
+
+        assert np.array_equal(values, expected_values)
+        assert box_lengths.dtype == np.float64
+        assert np.array_equal(box_lengths, expected_box_lengths)
+
+    @pytest.mark.parametrize(
+        "header",
+        ["", " 10.0 12.0 14.0 80.0 90.0 90.0"],
+    )
+    def test_box_length_batch_rejects_unsupported_cells(self, header):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print(f"1{header}", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+
+        assert reader.try_read_all_frames(
+            expected_n_atoms=1,
+            max_bytes=1024,
+            include_cells=False,
+            include_box_lengths=True,
+        ) is None
+
     def test_batch_strips_qmcfc_dummy_rows(self):
         with open("tmp.vel", "w", encoding="utf-8") as file:
             for dummy_name, offset in (("X", 0.0), ("x", 10.0)):
@@ -473,6 +532,24 @@ class TestRawTrajectoryReaderBatch:
             expected_n_atoms=1,
             max_bytes=1,
         ) is None
+
+    def test_batch_rejects_multiple_cell_outputs(self):
+        with open("tmp.xyz", "w", encoding="utf-8") as file:
+            print("1", file=file)
+            print("", file=file)
+            print("h 1.0 2.0 3.0", file=file)
+
+        reader = RawTrajectoryReader("tmp.xyz", dtype="float64")
+
+        with pytest.raises(
+            ValueError,
+            match="include_cells and include_box_lengths are mutually exclusive",
+        ):
+            reader.try_read_all_frames(
+                expected_n_atoms=1,
+                max_bytes=1024,
+                include_box_lengths=True,
+            )
 
     def test_batch_accounts_for_multifile_peak_memory(self):
         content = "1\n\nh 1.0 2.0 3.0"

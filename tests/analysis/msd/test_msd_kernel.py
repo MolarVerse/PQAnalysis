@@ -299,14 +299,26 @@ class TestMSDFastPathKernels:
             for frame_index in range(n_frames):
                 if cell_mode == "vacuum":
                     file.write(f"{n_atoms}\n\n")
+                elif cell_mode == "triclinic":
+                    file.write(
+                        f"{n_atoms} 10.0 12.0 14.0 80.0 95.0 103.0\n\n"
+                    )
                 else:
                     box = 10.0 if frame_index < n_frames // 2 else 11.0
                     file.write(f"{n_atoms} {box} 12.0 14.0\n\n")
 
                 for atom_index, name in enumerate(names):
-                    x = 0.01 * frame_index + 0.1 * atom_index
-                    file.write(f"{name} {x:.12f} {x + 0.2:.12f} "
-                               f"{x + 0.4:.12f}\n")
+                    displacement = 0.73 * frame_index + 0.1 * atom_index
+                    if cell_mode == "changing-box":
+                        x = displacement % box
+                        y = (1.1 * displacement + 0.2) % 12.0
+                        z = (0.8 * displacement + 0.4) % 14.0
+                    else:
+                        x = displacement
+                        y = displacement + 0.2
+                        z = displacement + 0.4
+
+                    file.write(f"{name} {x:.12f} {y:.12f} {z:.12f}\n")
 
     @staticmethod
     def _read_float64_trajectory(filename):
@@ -359,7 +371,7 @@ class TestMSDFastPathKernels:
             result_fast, result_reference, rtol=0.0, atol=1e-12
         )
 
-    @pytest.mark.parametrize("cell_mode", ["vacuum", "changing-box"])
+    @pytest.mark.parametrize("cell_mode", ["vacuum", "triclinic"])
     def test_exact_batch_falls_back_for_unsupported_cells(
         self,
         cell_mode,
@@ -402,6 +414,40 @@ class TestMSDFastPathKernels:
             rtol=0.0,
             atol=1e-12,
         )
+
+    def test_exact_batch_supports_changing_orthorhombic_cells(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = str(tmp_path / "changing-box.xyz")
+        self._write_fallback_trajectory(filename, "changing-box")
+
+        msd_batch = MSD(
+            TrajectoryReader(filename),
+            "O",
+            window=20,
+            gap=5,
+        )
+        result_batch = np.column_stack(msd_batch.run()[1:])
+
+        msd_stream = MSD(
+            TrajectoryReader(filename),
+            "O",
+            window=20,
+            gap=5,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run()[1:])
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
 
     def test_active_kernel_is_a_known_implementation(self):
         # the msd module must have wired up either the Cython kernel

@@ -383,7 +383,9 @@ class RawTrajectoryReader(BaseReader):
         max_bytes: int,
         expected_n_frames: int | None = None,
         include_cells: bool = True,
-    ) -> Tuple[NpnDNumberArray, List[Cell]] | None:
+        *,
+        include_box_lengths: bool = False,
+    ) -> Tuple[NpnDNumberArray, List[Cell] | Np2DNumberArray] | None:
         """
         Read a fixed-topology xyz-family trajectory as one batch.
 
@@ -409,14 +411,27 @@ class RawTrajectoryReader(BaseReader):
         include_cells : bool, optional
             Build the per-frame cell list. When false, unique box headers are
             still validated but the returned cell list is empty.
+        include_box_lengths : bool, optional
+            Return per-frame orthorhombic box lengths as a float64 array
+            instead of Cell objects. Explicit triclinic boxes and a vacuum
+            cell without a preceding periodic cell are not compatible with
+            this mode and cause the bounded batch path to return ``None``.
+            This option requires ``include_cells=False``.
 
         Returns
         -------
         tuple or None
-            ``(values, cells)`` with values shaped
-            ``(n_frames, expected_n_atoms, 3)``, or ``None`` when the
-            bounded batch path cannot be used.
+            ``(values, cell_data)`` with values shaped
+            ``(n_frames, expected_n_atoms, 3)``. ``cell_data`` is either the
+            Cell list or, when requested, an ``(n_frames, 3)`` float64 box
+            length array. Returns ``None`` when the bounded batch path cannot
+            be used.
         """
+        if include_cells and include_box_lengths:
+            raise ValueError(
+                "include_cells and include_box_lengths are mutually exclusive"
+            )
+
         if self._slab_mode not in {MODE_XYZ, MODE_XYZ64}:
             return None
 
@@ -456,7 +471,11 @@ class RawTrajectoryReader(BaseReader):
             else:
                 n_frames = single_file_count
 
-            output_bytes += (n_frames * expected_n_atoms * 3 * itemsize)
+            output_bytes += n_frames * expected_n_atoms * 3 * itemsize
+
+            if include_box_lengths:
+                output_bytes += n_frames * 3 * np.dtype(np.float64).itemsize
+
             peak_output_bytes = output_bytes * (
                 2 if len(self.filenames) > 1 else 1
             )
@@ -473,8 +492,11 @@ class RawTrajectoryReader(BaseReader):
             return None
 
         value_batches = []
+        box_length_batches = []
+        box_length_cache = {}
         cells = []
         last_cell = None
+        last_box_lengths = None
 
         try:
             for data, n_frames in zip(buffers, frame_counts):
@@ -501,6 +523,18 @@ class RawTrajectoryReader(BaseReader):
 
                         last_cell = cell
                         cells.append(cell)
+                elif include_box_lengths:
+                    parsed_box_lengths = self._parse_orthorhombic_box_lengths(
+                        box_headers,
+                        box_length_cache,
+                        last_box_lengths,
+                    )
+
+                    if parsed_box_lengths is None:
+                        return None
+
+                    box_lengths, last_box_lengths = parsed_box_lengths
+                    box_length_batches.append(box_lengths)
                 else:
                     for box_bytes in dict.fromkeys(box_headers):
                         self._cell_from_box_bytes(box_bytes)
@@ -514,7 +548,65 @@ class RawTrajectoryReader(BaseReader):
         else:
             all_values = np.concatenate(value_batches, axis=0)
 
-        return all_values, cells
+        if not include_box_lengths:
+            return all_values, cells
+
+        if len(box_length_batches) == 1:
+            all_box_lengths = box_length_batches[0]
+        else:
+            all_box_lengths = np.concatenate(box_length_batches, axis=0)
+
+        return all_values, all_box_lengths
+
+    @staticmethod
+    def _parse_orthorhombic_box_lengths(
+        box_headers: List[bytes],
+        cache: dict[bytes, Tuple[float, float, float]],
+        inherited: Tuple[float, float, float] | None,
+    ) -> Tuple[Np2DNumberArray, Tuple[float, float, float]] | None:
+        """Parse exact box lengths without constructing Cell matrices."""
+        frame_box_lengths = []
+        last_box_lengths = inherited
+
+        for box_bytes in box_headers:
+            box_lengths = cache.get(box_bytes)
+
+            if box_lengths is None:
+                box_values = tuple(
+                    float(value) for value in box_bytes.split()
+                )
+
+                if len(box_values) == 0:
+                    if last_box_lengths is None:
+                        return None
+
+                    frame_box_lengths.append(last_box_lengths)
+                    continue
+
+                if len(box_values) not in {3, 6}:
+                    return None
+
+                if len(box_values) == 6 and box_values[3:] != (
+                    90.0,
+                    90.0,
+                    90.0,
+                ):
+                    return None
+
+                box_lengths = box_values[:3]
+
+                if (
+                    0.0 in box_lengths or
+                    (box_lengths[0] * box_lengths[1]) * box_lengths[2] > 1e100
+                ):
+                    return None
+
+                cache[box_bytes] = box_lengths
+
+            last_box_lengths = box_lengths
+            frame_box_lengths.append(box_lengths)
+
+        return np.asarray(frame_box_lengths, dtype=np.float64), last_box_lengths
 
     def count_frames(self) -> int:
         """

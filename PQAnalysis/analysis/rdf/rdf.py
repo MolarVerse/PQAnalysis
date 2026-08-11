@@ -314,21 +314,12 @@ class RDF:
         ############################################
 
         self._raw_reader = None
+        self._raw_batch = None
+        self._raw_batch_attempted = False
         self.frame_generator = None
 
         if self._use_raw_fast_path(traj):
-            # fast path: lazy loading of the raw frame data from
-            # file(s) without per-frame AtomicSystem construction;
-            # the cells are collected with a cheap header-only scan
-            # that deduplicates repeated boxes
-            self._raw_reader = RawTrajectoryReader(
-                traj.filenames,
-                traj_format=traj.traj_format,
-                md_format=traj.md_format,
-                dtype="float64",
-            )
-            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
-            self.first_frame = self._raw_reader.read_first_frame()
+            self._initialize_raw_fast_path(traj)
         else:
             self.cells = traj.cells
             self._setup_cells = self.cells
@@ -394,6 +385,32 @@ class RDF:
             traj.traj_format == TrajectoryFormat.XYZ and
             not self.no_intra_molecular
         )
+
+    def _initialize_raw_fast_path(self, traj: TrajectoryReader):
+        """Initialize raw input and reuse a compatible batch for setup."""
+        self._raw_reader = RawTrajectoryReader(
+            traj.filenames,
+            traj_format=traj.traj_format,
+            md_format=traj.md_format,
+            dtype="float64",
+        )
+        self.first_frame = self._raw_reader.read_first_frame()
+
+        if not rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
+            self._raw_batch_attempted = True
+            self._raw_batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.first_frame.n_atoms,
+                max_bytes=self._batch_max_bytes,
+            )
+
+        if self._raw_batch is None:
+            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
+            return
+
+        _values, self.cells = self._raw_batch
+        self._setup_cells = list({
+            id(cell): cell for cell in self.cells
+        }.values())
 
     def _use_legacy_rdf(
         self,
@@ -1000,12 +1017,26 @@ class RDF:
         if rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
             return False
 
-        batch = self._raw_reader.try_read_all_frames(
-            expected_n_atoms=self.n_atoms,
-            expected_n_frames=self.n_frames,
-            max_bytes=self._batch_max_bytes,
-            include_cells=False,
-        )
+        if self._batch_max_bytes <= 0:
+            self._raw_batch = None
+            self._raw_batch_attempted = False
+            return False
+
+        batch = self._raw_batch
+        self._raw_batch = None
+
+        if batch is not None:
+            # A later run may load a fresh batch. RDF instances are reusable,
+            # even though each run has to read the trajectory again.
+            self._raw_batch_attempted = False
+
+        if batch is None and not self._raw_batch_attempted:
+            batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.n_atoms,
+                expected_n_frames=self.n_frames,
+                max_bytes=self._batch_max_bytes,
+                include_cells=False,
+            )
 
         if batch is None:
             return False
