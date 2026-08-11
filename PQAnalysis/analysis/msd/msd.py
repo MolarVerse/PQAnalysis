@@ -19,7 +19,7 @@ from os import cpu_count
 import numpy as np
 
 from beartype.typing import Dict, Tuple
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
 from PQAnalysis import config
