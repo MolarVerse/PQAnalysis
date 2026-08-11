@@ -8,7 +8,6 @@ import os
 import time
 
 from pathlib import Path
-from beartype.claw import beartype_this_package
 
 import PQAnalysis.config as config  # pylint: disable=consider-using-from-import
 
@@ -28,6 +27,8 @@ __beartype_level__ = os.getenv(
 )
 
 if __beartype_level__.upper() == "DEBUG":
+    from beartype.claw import beartype_this_package
+
     beartype_this_package()
 
 #################

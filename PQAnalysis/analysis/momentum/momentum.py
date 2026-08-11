@@ -14,7 +14,7 @@ from os.path import getsize
 import numpy as np
 
 from beartype.typing import Generator
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
 from PQAnalysis import config

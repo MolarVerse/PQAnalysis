@@ -18,7 +18,7 @@ import numpy as np
 
 # 3rd party imports
 from beartype.typing import List, Tuple
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
 from PQAnalysis.config import with_progress_bar
