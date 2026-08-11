@@ -29,6 +29,40 @@ def _run_python(source: str) -> subprocess.CompletedProcess[str]:
 
 
 
+def _run_cli_and_list_loaded(arguments: list[str]) -> dict:
+    completed = _run_python(
+        f"""
+import contextlib
+import io
+import json
+import sys
+import PQAnalysis.cli.main as cli_main
+
+sys.argv = ["pqanalysis", *{arguments!r}]
+try:
+    with contextlib.redirect_stdout(io.StringIO()):
+        with contextlib.redirect_stderr(io.StringIO()):
+            cli_main.main()
+except SystemExit as exception:
+    exit_code = exception.code
+else:
+    exit_code = 0
+
+command_modules = [
+    f"PQAnalysis.cli{{module_name}}"
+    for module_name, _, _ in cli_main._COMMANDS.values()
+]
+print(json.dumps({{
+    "exit_code": exit_code,
+    "loaded": sorted(name for name in command_modules if name in sys.modules),
+}}))
+"""
+    )
+
+    return json.loads(completed.stdout)
+
+
+
 def test_cli_main_import_is_silent_and_does_not_load_commands():
     completed = _run_python(
         """
@@ -49,6 +83,22 @@ print(json.dumps(sorted(name for name in command_modules if name in sys.modules)
 
 
 
+def test_root_help_does_not_load_deferred_commands():
+    assert _run_cli_and_list_loaded(["--help"]) == {
+        "exit_code": 0,
+        "loaded": [],
+    }
+
+
+
+def test_subcommand_help_loads_only_selected_cli_module():
+    assert _run_cli_and_list_loaded(["rdf", "--help"]) == {
+        "exit_code": 0,
+        "loaded": ["PQAnalysis.cli.rdf"],
+    }
+
+
+
 def test_analysis_star_import_preserves_function_exports():
     completed = _run_python(
         """
@@ -57,6 +107,31 @@ import json
 namespace = {}
 exec("from PQAnalysis.analysis import *", namespace)
 print(json.dumps({name: callable(namespace[name]) for name in ("msd", "rdf", "vacf")}))
+"""
+    )
+
+    assert json.loads(completed.stdout) == {
+        "msd": True,
+        "rdf": True,
+        "vacf": True,
+    }
+
+
+
+def test_direct_analysis_submodule_imports_do_not_shadow_api_functions():
+    completed = _run_python(
+        """
+import importlib
+import json
+
+analysis = importlib.import_module("PQAnalysis.analysis")
+for name in ("msd", "rdf", "vacf"):
+    importlib.import_module(f"PQAnalysis.analysis.{name}")
+
+print(json.dumps({
+    name: callable(getattr(analysis, name))
+    for name in ("msd", "rdf", "vacf")
+}))
 """
     )
 

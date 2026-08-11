@@ -449,7 +449,7 @@ class TestMSDFastPathKernels:
         )
         assert np.array_equal(result_batch, result_stream)
 
-    def test_exact_window_batch_handles_empty_file_and_inherited_cell(
+    def test_exact_window_batch_handles_empty_files_and_inherited_cell(
         self,
         tmp_path,
         monkeypatch,
@@ -471,7 +471,13 @@ class TestMSDFastPathKernels:
             "1\n\nO 3.0 2.0 3.0\n",
             encoding="utf-8",
         )
-        filenames = [str(first), str(empty), str(inherited)]
+        filenames = [
+            str(empty),
+            str(first),
+            str(empty),
+            str(inherited),
+            str(empty),
+        ]
 
         msd_batch = MSD(
             TrajectoryReader(filenames),
@@ -496,6 +502,51 @@ class TestMSDFastPathKernels:
         )
         assert np.array_equal(result_batch, result_stream)
         assert np.array_equal(result_batch[-1, 1:], np.zeros(4))
+
+    def test_exact_batch_matches_streaming_at_half_box_ties(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = tmp_path / "half-box.xyz"
+        lines = []
+
+        for frame_index in range(9):
+            box_x = 10.0 if frame_index % 2 == 0 else 12.0
+            position_x = 0.0 if frame_index % 2 == 0 else box_x / 2.0
+            lines.extend((
+                f"1 {box_x} 11.0 13.0",
+                "",
+                f"O {position_x} 0.0 0.0",
+            ))
+
+        filename.write_text("\n".join(lines), encoding="utf-8")
+
+        msd_batch = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=4,
+            gap=2,
+        )
+        result_batch = np.column_stack(msd_batch.run())
+
+        msd_stream = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=4,
+            gap=2,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run())
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
 
     def test_active_kernel_is_a_known_implementation(self):
         # the msd module must have wired up either the Cython kernel

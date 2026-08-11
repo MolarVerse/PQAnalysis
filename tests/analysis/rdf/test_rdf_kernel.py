@@ -614,6 +614,39 @@ class TestRDFFastPath:
         assert np.array_equal(results_batch, results_memory)
         assert rdf_batch.bins.sum() > 0
 
+    def test_single_atom_self_selection_excludes_diagonal(self, tmp_path):
+        filename = _write_trajectory(
+            tmp_path / "single-atom.xyz",
+            np.array([
+                [[0.0, 0.0, 0.0]],
+                [[1.0, 0.0, 0.0]],
+                [[2.0, 0.0, 0.0]],
+            ]),
+            [" 10.0 10.0 10.0"] * 3,
+        )
+
+        rdf_batch = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "O",
+            delta_r=0.5,
+            r_max=4.0,
+        )
+        results_batch = np.column_stack(rdf_batch.run())
+
+        rdf_stream = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "O",
+            delta_r=0.5,
+            r_max=4.0,
+        )
+        rdf_stream._batch_max_bytes = 0
+        results_stream = np.column_stack(rdf_stream.run())
+
+        assert np.array_equal(rdf_batch.bins, np.zeros(rdf_batch.n_bins))
+        assert np.array_equal(results_batch, results_stream)
+
     @pytest.mark.parametrize(
         "write_file",
         [_write_random_trajectory, _write_orthorhombic_npt_trajectory],
