@@ -83,6 +83,10 @@ html_static_path = ["_static"]
 html_css_files = ["css/custom.css"]
 html_baseurl = "https://molarverse.github.io/PQAnalysis/"
 
+# the deployed site is flat under html_baseurl, so the sitemap must not
+# prefix the language or version (the sphinx-sitemap default scheme)
+sitemap_url_scheme = "{link}"
+
 html_theme_options = {
     "sidebar_hide_name": False,
     "light_css_variables": {

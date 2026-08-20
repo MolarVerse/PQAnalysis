@@ -90,7 +90,7 @@ Simulation-support commands
    * - :ref:`add_molecules <cli.add_molecules>`
      - Add molecular structures to an existing system
    * - :ref:`build_nep_traj <cli.build_nep_traj>`
-     - Assemble a trajectory from nudged-elastic-band data
+     - Build Neuroevolution Potential (NEP) training and test trajectories
 
 Commands refuse unsafe output replacement by default. Consult each generated
 reference page for its supported writing modes and format-specific options.

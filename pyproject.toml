@@ -52,7 +52,6 @@ docs = [
     "sphinx>=8,<9",
     "sphinx-copybutton>=0.5,<1",
     "sphinx-sitemap",
-    "breathe",
     "myst-parser",
     "better-apidoc",
     "six",
