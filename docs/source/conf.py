@@ -11,6 +11,7 @@ PROJECT_ROOT = DOCS_DIR.parent
 
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(SOURCE_DIR / "_plots"))
+sys.path.insert(0, str(SOURCE_DIR / "_ext"))
 
 project = "PQAnalysis"
 author = "the PQAnalysis authors"
@@ -35,6 +36,7 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinx_sitemap",
     "matplotlib.sphinxext.plot_directive",
+    "pq_cli_tables",
     "myst_parser",
     "sphinx_copybutton",
 ]
