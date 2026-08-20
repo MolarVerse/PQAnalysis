@@ -65,8 +65,10 @@ Existing analysis tables can be converted later:
 
    $ pqanalysis convert rdf.dat -o rdf.csv -o rdf.xvg
 
-PQAnalysis refuses to overwrite an existing output unless replacement is
-requested explicitly with ``--mode o``.
+PQAnalysis refuses to overwrite an existing output file. Conversion and
+support tools such as ``convert`` accept ``--mode o`` to request
+replacement explicitly; the input-file driven analyses have no overwrite
+flag, so move or delete the old output first.
 
 Next steps
 ----------

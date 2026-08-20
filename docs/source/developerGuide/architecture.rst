@@ -65,7 +65,7 @@ compatibility or an explicit deprecation path.
 Numerical kernels
 -----------------
 
-RDF, MSD and VACF use compiled Cython kernels when available and NumPy/Python
+RDF, MSD, VACF and momentum use compiled Cython kernels when available and NumPy/Python
 fallbacks otherwise. The compiled and fallback implementations must keep the
 same signature, normalization and edge-case behavior. A kernel change therefore
 requires tests of both implementations and a direct parity test between them.
