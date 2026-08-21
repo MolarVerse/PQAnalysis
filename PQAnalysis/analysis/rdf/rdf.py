@@ -18,7 +18,7 @@ import numpy as np
 
 # 3rd party imports
 from beartype.typing import List, Tuple
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
 from PQAnalysis.config import with_progress_bar
@@ -43,18 +43,20 @@ from .exceptions import RDFError
 
 try:
     from ._rdf_kernel import (  # pylint: disable=import-error
+        legacy_rdf_batch_histogram,
         legacy_rdf_frame_histogram,
         rdf_frame_histogram,
     )
 except ModuleNotFoundError:
     from ._rdf_kernel_py import (
+        legacy_rdf_batch_histogram,
         legacy_rdf_frame_histogram,
         rdf_frame_histogram,
     )
 
 
 
-# The flat argument list keeps the threaded worker allocation-free per frame.
+# The flat argument list keeps the threaded worker setup compact.
 # pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-locals
 def _raw_histogram_range(
     values,
@@ -67,9 +69,24 @@ def _raw_histogram_range(
     delta_r,
     n_bins,
     use_legacy,
+    legacy_box_lengths,
 ):
     """Calculate a private exact histogram over a frame range."""
     hist = np.zeros(n_bins, dtype=np.int64)
+
+    if use_legacy:
+        legacy_rdf_batch_histogram(
+            values[start:stop],
+            reference_indices,
+            target_indices,
+            legacy_box_lengths[start:stop],
+            delta_r,
+            n_bins,
+            hist,
+        )
+
+        return hist
+
     last_cell = None
     box_lengths = np.ones(3)
     box = np.eye(3)
@@ -97,30 +114,19 @@ def _raw_histogram_range(
                 dtype=np.float64,
             )
 
-        if use_legacy:
-            legacy_rdf_frame_histogram(
-                values[frame_index],
-                reference_indices,
-                target_indices,
-                box_lengths,
-                delta_r,
-                n_bins,
-                hist,
-            )
-        else:
-            rdf_frame_histogram(
-                values[frame_index],
-                reference_indices,
-                target_indices,
-                box_lengths,
-                box,
-                inv_box,
-                is_orthorhombic,
-                r_min,
-                delta_r,
-                n_bins,
-                hist,
-            )
+        rdf_frame_histogram(
+            values[frame_index],
+            reference_indices,
+            target_indices,
+            box_lengths,
+            box,
+            inv_box,
+            is_orthorhombic,
+            r_min,
+            delta_r,
+            n_bins,
+            hist,
+        )
 
     return hist
 
@@ -308,21 +314,12 @@ class RDF:
         ############################################
 
         self._raw_reader = None
+        self._raw_batch = None
+        self._raw_batch_attempted = False
         self.frame_generator = None
 
         if self._use_raw_fast_path(traj):
-            # fast path: lazy loading of the raw frame data from
-            # file(s) without per-frame AtomicSystem construction;
-            # the cells are collected with a cheap header-only scan
-            # that deduplicates repeated boxes
-            self._raw_reader = RawTrajectoryReader(
-                traj.filenames,
-                traj_format=traj.traj_format,
-                md_format=traj.md_format,
-                dtype="float64",
-            )
-            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
-            self.first_frame = self._raw_reader.read_first_frame()
+            self._initialize_raw_fast_path(traj)
         else:
             self.cells = traj.cells
             self._setup_cells = self.cells
@@ -388,6 +385,32 @@ class RDF:
             traj.traj_format == TrajectoryFormat.XYZ and
             not self.no_intra_molecular
         )
+
+    def _initialize_raw_fast_path(self, traj: TrajectoryReader):
+        """Initialize raw input and reuse a compatible batch for setup."""
+        self._raw_reader = RawTrajectoryReader(
+            traj.filenames,
+            traj_format=traj.traj_format,
+            md_format=traj.md_format,
+            dtype="float64",
+        )
+        self.first_frame = self._raw_reader.read_first_frame()
+
+        if not rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
+            self._raw_batch_attempted = True
+            self._raw_batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.first_frame.n_atoms,
+                max_bytes=self._batch_max_bytes,
+            )
+
+        if self._raw_batch is None:
+            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
+            return
+
+        _values, self.cells = self._raw_batch
+        self._setup_cells = list({
+            id(cell): cell for cell in self.cells
+        }.values())
 
     def _use_legacy_rdf(
         self,
@@ -994,18 +1017,39 @@ class RDF:
         if rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
             return False
 
-        batch = self._raw_reader.try_read_all_frames(
-            expected_n_atoms=self.n_atoms,
-            expected_n_frames=self.n_frames,
-            max_bytes=self._batch_max_bytes,
-            include_cells=False,
-        )
+        if self._batch_max_bytes <= 0:
+            self._raw_batch = None
+            self._raw_batch_attempted = False
+            return False
+
+        batch = self._raw_batch
+        self._raw_batch = None
+
+        if batch is not None:
+            # A later calculation must read a fresh trajectory batch.
+            self._raw_batch_attempted = False
+
+        if batch is None and not self._raw_batch_attempted:
+            batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.n_atoms,
+                expected_n_frames=self.n_frames,
+                max_bytes=self._batch_max_bytes,
+                include_cells=False,
+            )
 
         if batch is None:
             return False
 
         values, _cells = batch
         cells = self.cells
+        legacy_box_lengths = None
+
+        if self._legacy_rdf:
+            legacy_box_lengths = np.ascontiguousarray(
+                [cell.box_lengths for cell in cells],
+                dtype=np.float64,
+            )
+
         reference_indices = np.ascontiguousarray(
             self.reference_indices,
             dtype=np.int64,
@@ -1046,6 +1090,7 @@ class RDF:
                 self.delta_r,
                 self.n_bins,
                 self._legacy_rdf,
+                legacy_box_lengths,
             )
             for start, stop in zip(boundaries[:-1], boundaries[1:])
             if start < stop

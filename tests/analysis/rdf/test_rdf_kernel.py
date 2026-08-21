@@ -22,7 +22,7 @@ from PQAnalysis.analysis import RDF
 from PQAnalysis.analysis.rdf import _rdf_kernel_py
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.core import Cell
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
 from PQAnalysis.io.traj_file.exceptions import TrajectoryReaderError
 
 from .. import pytestmark  # pylint: disable=unused-import
@@ -43,6 +43,29 @@ KERNELS = [
     pytest.param(_rdf_kernel_py.rdf_frame_histogram, id="python-fallback"),
     pytest.param(
         _rdf_kernel.rdf_frame_histogram if _rdf_kernel is not None else None,
+        id="cython",
+        marks=pytest.mark.skipif(
+            _rdf_kernel is None,
+            reason="Cython _rdf_kernel extension not built",
+        ),
+    ),
+]
+
+LEGACY_KERNELS = [
+    pytest.param(
+        _rdf_kernel_py.legacy_rdf_frame_histogram,
+        _rdf_kernel_py.legacy_rdf_batch_histogram,
+        id="python-fallback",
+    ),
+    pytest.param(
+        (
+            _rdf_kernel.legacy_rdf_frame_histogram
+            if _rdf_kernel is not None else None
+        ),
+        (
+            _rdf_kernel.legacy_rdf_batch_histogram
+            if _rdf_kernel is not None else None
+        ),
         id="cython",
         marks=pytest.mark.skipif(
             _rdf_kernel is None,
@@ -180,6 +203,27 @@ def _write_npt_trajectory(path, n_frames=24, n_atoms=16, seed=99):
 
 
 
+def _write_orthorhombic_npt_trajectory(
+    path,
+    n_frames=25,
+    n_atoms=16,
+    seed=101,
+):
+    """Writes an NPT-like trajectory with changing orthorhombic boxes."""
+    rng = np.random.default_rng(seed)
+    positions = rng.uniform(0.0, 12.0, size=(n_frames, n_atoms, 3))
+    headers = []
+
+    for index in range(n_frames):
+        factor = 1.0 + 0.01 * (index % 5)
+        headers.append(
+            f" {12.0 * factor} {13.0 * factor} {14.0 * factor}"
+        )
+
+    return _write_trajectory(path, positions, headers)
+
+
+
 def _run_rdf(traj, **kwargs):
     """
     Runs an RDF analysis and returns its stacked output arrays.
@@ -260,6 +304,80 @@ class TestRDFKernelEquivalence:
 
         assert np.array_equal(histograms[0], histograms[1])
         assert histograms[0].sum() > 0
+
+    @pytest.mark.parametrize(("frame_kernel", "batch_kernel"), LEGACY_KERNELS)
+    @pytest.mark.parametrize("changing_box", [False, True])
+    def test_legacy_batch_matches_frame_kernel(
+        self,
+        frame_kernel,
+        batch_kernel,
+        changing_box,
+    ):
+        rng = np.random.default_rng(20260811)
+        values = np.ascontiguousarray(
+            rng.uniform(0.0, 14.0, size=(31, 30, 3)),
+            dtype=np.float64,
+        )
+        reference_indices = np.arange(0, 30, 2, dtype=np.int64)
+        target_indices = np.arange(0, 30, 3, dtype=np.int64)
+        box_lengths = np.full((31, 3), (12.0, 14.0, 16.0))
+
+        if changing_box:
+            box_lengths *= (
+                1.0 + 0.01 * np.arange(31, dtype=np.float64)[:, None]
+            )
+
+        expected = np.zeros(160, dtype=np.int64)
+        actual = np.zeros_like(expected)
+
+        for frame_values, frame_box_lengths in zip(values, box_lengths):
+            frame_kernel(
+                frame_values,
+                reference_indices,
+                target_indices,
+                frame_box_lengths,
+                0.05,
+                len(expected),
+                expected,
+            )
+
+        batch_kernel(
+            values,
+            reference_indices,
+            target_indices,
+            np.ascontiguousarray(box_lengths),
+            0.05,
+            len(actual),
+            actual,
+        )
+
+        assert np.array_equal(actual, expected)
+        assert actual.sum() > 0
+
+    @pytest.mark.parametrize(("_frame_kernel", "batch_kernel"), LEGACY_KERNELS)
+    def test_legacy_batch_rejects_mismatched_boxes(
+        self,
+        _frame_kernel,
+        batch_kernel,
+    ):
+        values = np.zeros((2, 2, 3), dtype=np.float64)
+        box_lengths = np.ones((1, 3), dtype=np.float64)
+        indices = np.arange(2, dtype=np.int64)
+        hist = np.zeros(2, dtype=np.int64)
+
+        with pytest.raises(
+            ValueError,
+            match="number of RDF boxes must match",
+        ):
+            batch_kernel(
+                values,
+                indices,
+                indices,
+                box_lengths,
+                0.5,
+                len(hist),
+                hist,
+            )
 
 
 
@@ -387,6 +505,194 @@ class TestRDFFastPath:
 
         assert np.array_equal(results_parallel, results_memory)
         assert rdf_parallel.bins.sum() > 0
+
+    def test_batch_is_shared_by_setup_and_histogram(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = _write_random_trajectory(tmp_path / "traj.xyz")
+        original_read_batch = RawTrajectoryReader.try_read_all_frames
+        batch_reads = []
+
+        def read_batch(reader, *args, **kwargs):
+            batch_reads.append(reader.filenames)
+            return original_read_batch(reader, *args, **kwargs)
+
+        def reject_cell_scan(*_args, **_kwargs):
+            raise AssertionError("batch-compatible input must not be rescanned")
+
+        monkeypatch.setattr(
+            RawTrajectoryReader,
+            "try_read_all_frames",
+            read_batch,
+        )
+        monkeypatch.setattr(RDF, "_scan_cells", reject_cell_scan)
+
+        rdf_batch = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "H",
+            delta_r=0.1,
+        )
+
+        assert len(batch_reads) == 1
+        assert rdf_batch._raw_batch is not None
+
+        rdf_batch.run()
+
+        assert len(batch_reads) == 1
+        assert rdf_batch._raw_batch is None
+        assert rdf_batch.bins.sum() > 0
+
+        first_bins = rdf_batch.bins.copy()
+
+        assert rdf_batch._calculate_bins_raw_batch() is True
+        assert len(batch_reads) == 2
+        assert np.array_equal(rdf_batch.bins, 2 * first_bins)
+
+    def test_failed_batch_prefetch_streams_without_retry(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = _write_random_trajectory(tmp_path / "traj.xyz")
+        original_read_batch = RawTrajectoryReader.try_read_all_frames
+        batch_limits = []
+
+        def read_batch(reader, *args, **kwargs):
+            batch_limits.append(kwargs["max_bytes"])
+            return original_read_batch(reader, *args, **kwargs)
+
+        monkeypatch.setattr(
+            RawTrajectoryReader,
+            "try_read_all_frames",
+            read_batch,
+        )
+        monkeypatch.setattr(RDF, "_batch_max_bytes", 1)
+
+        rdf_stream, results_stream = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+        _rdf_memory, results_memory = _run_rdf(
+            TrajectoryReader(filename).read(),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+
+        assert batch_limits == [1]
+        assert rdf_stream._raw_batch is None
+        assert np.array_equal(rdf_stream.bins, _rdf_memory.bins)
+        assert np.array_equal(results_stream, results_memory)
+
+    def test_single_frame_batch_matches_in_memory(self, tmp_path):
+        filename = _write_random_trajectory(
+            tmp_path / "single-frame.xyz",
+            n_frames=1,
+        )
+
+        rdf_batch, results_batch = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+        rdf_memory, results_memory = _run_rdf(
+            TrajectoryReader(filename).read(),
+            delta_r=0.1,
+            r_max=5.0,
+        )
+
+        assert np.array_equal(rdf_batch.bins, rdf_memory.bins)
+        assert np.array_equal(results_batch, results_memory)
+        assert rdf_batch.bins.sum() > 0
+
+    def test_single_atom_self_selection_excludes_diagonal(self, tmp_path):
+        filename = _write_trajectory(
+            tmp_path / "single-atom.xyz",
+            np.array([
+                [[0.0, 0.0, 0.0]],
+                [[1.0, 0.0, 0.0]],
+                [[2.0, 0.0, 0.0]],
+            ]),
+            [" 10.0 10.0 10.0"] * 3,
+        )
+
+        rdf_batch = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "O",
+            delta_r=0.5,
+            r_max=4.0,
+        )
+        results_batch = np.column_stack(rdf_batch.run())
+
+        rdf_stream = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "O",
+            delta_r=0.5,
+            r_max=4.0,
+        )
+        rdf_stream._batch_max_bytes = 0
+        results_stream = np.column_stack(rdf_stream.run())
+
+        assert np.array_equal(rdf_batch.bins, np.zeros(rdf_batch.n_bins))
+        assert np.array_equal(results_batch, results_stream)
+
+    @pytest.mark.parametrize(
+        "write_file",
+        [_write_random_trajectory, _write_orthorhombic_npt_trajectory],
+    )
+    def test_legacy_batch_uses_one_native_call_per_worker(
+        self,
+        tmp_path,
+        monkeypatch,
+        write_file,
+    ):
+        if _rdf_kernel is None:
+            pytest.skip("Cython _rdf_kernel extension not built")
+
+        filename = write_file(tmp_path / "traj.xyz")
+        calls = []
+        batch_kernel = rdf_module.legacy_rdf_batch_histogram
+
+        def record_batch(*args):
+            calls.append(args[0].shape[0])
+            batch_kernel(*args)
+
+        monkeypatch.setattr(
+            rdf_module, "legacy_rdf_batch_histogram", record_batch
+        )
+        monkeypatch.setattr(RDF, "_batch_pairs_per_worker", 1)
+        monkeypatch.setattr(RDF, "_batch_max_workers", 2)
+        monkeypatch.setattr(rdf_module, "cpu_count", lambda: 2)
+
+        rdf_batch, results_batch = _run_rdf(
+            TrajectoryReader(filename),
+            delta_r=0.1,
+        )
+
+        rdf_stream = RDF(
+            TrajectoryReader(filename),
+            "O",
+            "H",
+            delta_r=0.1,
+        )
+        rdf_stream._batch_max_bytes = 0
+        results_stream = np.column_stack(rdf_stream.run())
+
+        assert rdf_batch._legacy_rdf
+        assert sorted(calls) == [12, 13]
+        assert np.array_equal(rdf_batch.bins, rdf_stream.bins)
+        assert np.array_equal(results_batch, results_stream)
 
     def test_dispatch_restrictions(self, tmp_path):
         filename = _write_random_trajectory(tmp_path / "traj.xyz")

@@ -23,7 +23,7 @@ from os import cpu_count
 # 3rd party imports
 import numpy as np
 from beartype.typing import Generator, Tuple
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
 from PQAnalysis import config

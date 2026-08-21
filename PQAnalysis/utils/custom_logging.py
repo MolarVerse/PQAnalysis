@@ -10,8 +10,7 @@ import os
 import shutil
 import sys
 import types
-
-from beartype.typing import Any
+from typing import Any
 
 from PQAnalysis.config import log_file_name, use_log_file
 from PQAnalysis.utils import print_header
