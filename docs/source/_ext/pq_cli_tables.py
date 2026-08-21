@@ -17,8 +17,15 @@ Table rows use the form ``name -- purpose`` or
 while the command name and its cross reference come from the code.
 """
 
+import ast
 import contextlib
+import functools
+import importlib
 import io
+
+from pathlib import Path
+
+import PQAnalysis.cli as cli_module
 
 from docutils import nodes
 from docutils.parsers.rst import directives
@@ -31,32 +38,68 @@ logger = logging.getLogger(__name__)
 _ROW_SEPARATOR = " -- "
 
 
+@functools.lru_cache(maxsize=1)
 def _registered_commands():
     """
     Returns the registered command names from the PQAnalysis CLI.
 
-    The import prints the PQAnalysis header to stdout, which is
-    swallowed so that it does not clutter the Sphinx build output.
+    The dispatcher module is read with :py:mod:`ast` instead of being
+    imported: during the documentation build the api-doc generator
+    imports the package itself, so importing the dispatcher here can
+    observe a partially initialized module whose class attributes do
+    not exist yet. The class names of the dispatch table and their
+    defining modules are therefore taken from the source, and only the
+    individual command modules are imported to read their program
+    names. Importing a command module prints the PQAnalysis header to
+    stdout, which is swallowed so that it does not clutter the build
+    output.
 
     Returns
     -------
     set[str]
         The names of all registered ``pqanalysis`` subcommands.
+
+    Raises
+    ------
+    RuntimeError
+        If no command could be read from the dispatcher module.
     """
-    with contextlib.redirect_stdout(io.StringIO()):
-        from PQAnalysis.cli.main import (  # pylint: disable=import-outside-toplevel
-            main,  # noqa: F401  (imported for its side-effect free module)
-        )
-        import PQAnalysis.cli.main as cli_main  # pylint: disable=import-outside-toplevel
+    main_source = Path(cli_module.__file__).with_name("main.py")
+    tree = ast.parse(main_source.read_text(encoding="utf-8"))
+
+    modules_of_class = {}
+    dispatched_classes = set()
+
+    for node in ast.walk(tree):
+        # 'from .rdf import RDFCLI' -> {'RDFCLI': 'rdf'}
+        if isinstance(node, ast.ImportFrom) and node.module:
+            for alias in node.names:
+                modules_of_class[alias.asname or alias.name] = node.module
+
+        # 'RDFCLI.program_name(): RDFCLI' inside the dispatch table
+        if isinstance(node, ast.Attribute) and node.attr == "program_name":
+            if isinstance(node.value, ast.Name):
+                dispatched_classes.add(node.value.id)
 
     commands = set()
 
-    for attribute_name in dir(cli_main):
-        attribute = getattr(cli_main, attribute_name)
+    with contextlib.redirect_stdout(io.StringIO()):
+        for class_name in dispatched_classes:
+            module_name = modules_of_class.get(class_name)
 
-        if attribute_name.endswith("CLI") and hasattr(
-                attribute, "program_name"):
-            commands.add(attribute.program_name())
+            if module_name is None:
+                continue
+
+            module = importlib.import_module(
+                f"{cli_module.__name__}.{module_name}"
+            )
+            commands.add(getattr(module, class_name).program_name())
+
+    if not commands:
+        raise RuntimeError(
+            "the pq-cli-table extension could not read any command from "
+            f"{main_source}; the dispatch table format may have changed"
+        )
 
     return commands
 
