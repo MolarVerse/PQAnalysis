@@ -90,6 +90,7 @@ package ownership boundaries.
    Command Line <reference/cli>
    Files and Formats <data/index>
    Package Reference <reference/api>
+   references
 
 .. toctree::
    :hidden:
