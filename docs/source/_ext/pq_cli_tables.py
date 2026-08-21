@@ -3,8 +3,8 @@ A small Sphinx extension that keeps the command-line reference in sync
 with the code.
 
 The ``pq-cli-table`` directive renders a list-table of commands. Every
-command name in the table body is validated against the registry in
-:py:mod:`PQAnalysis.cli.main` at build time, so a renamed or removed
+command name in the table body is validated against the dispatch
+table of :py:mod:`PQAnalysis.cli.main` at build time, so a renamed or removed
 command fails the documentation build instead of leaving a stale table
 row. The ``pq-cli-covered`` directive marks commands that are documented
 in prose instead of a table. After the build has read every page, the
@@ -18,10 +18,7 @@ while the command name and its cross reference come from the code.
 """
 
 import ast
-import contextlib
 import functools
-import importlib
-import io
 
 from pathlib import Path
 
@@ -37,22 +34,20 @@ logger = logging.getLogger(__name__)
 
 _ROW_SEPARATOR = " -- "
 
+#: the name of the dispatch table in PQAnalysis.cli.main
+_REGISTRY_NAME = "_COMMANDS"
+
 
 @functools.lru_cache(maxsize=1)
 def _registered_commands():
     """
     Returns the registered command names from the PQAnalysis CLI.
 
-    The dispatcher module is read with :py:mod:`ast` instead of being
-    imported: during the documentation build the api-doc generator
-    imports the package itself, so importing the dispatcher here can
-    observe a partially initialized module whose class attributes do
-    not exist yet. The class names of the dispatch table and their
-    defining modules are therefore taken from the source, and only the
-    individual command modules are imported to read their program
-    names. Importing a command module prints the PQAnalysis header to
-    stdout, which is swallowed so that it does not clutter the build
-    output.
+    The dispatch table is read from the source of the dispatcher module
+    with :py:mod:`ast` instead of importing it. During the documentation
+    build the api-doc generator imports the package itself, so an import
+    here can observe a partially initialized module; reading the source
+    is independent of import order and needs no import at all.
 
     Returns
     -------
@@ -62,43 +57,37 @@ def _registered_commands():
     Raises
     ------
     RuntimeError
-        If no command could be read from the dispatcher module.
+        If the dispatch table could not be read from the dispatcher.
     """
     main_source = Path(cli_module.__file__).with_name("main.py")
     tree = ast.parse(main_source.read_text(encoding="utf-8"))
 
-    modules_of_class = {}
-    dispatched_classes = set()
-
-    for node in ast.walk(tree):
-        # 'from .rdf import RDFCLI' -> {'RDFCLI': 'rdf'}
-        if isinstance(node, ast.ImportFrom) and node.module:
-            for alias in node.names:
-                modules_of_class[alias.asname or alias.name] = node.module
-
-        # 'RDFCLI.program_name(): RDFCLI' inside the dispatch table
-        if isinstance(node, ast.Attribute) and node.attr == "program_name":
-            if isinstance(node.value, ast.Name):
-                dispatched_classes.add(node.value.id)
-
     commands = set()
 
-    with contextlib.redirect_stdout(io.StringIO()):
-        for class_name in dispatched_classes:
-            module_name = modules_of_class.get(class_name)
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
 
-            if module_name is None:
-                continue
+        targets = {
+            target.id
+            for target in node.targets if isinstance(target, ast.Name)
+        }
 
-            module = importlib.import_module(
-                f"{cli_module.__name__}.{module_name}"
-            )
-            commands.add(getattr(module, class_name).program_name())
+        if _REGISTRY_NAME not in targets:
+            continue
+
+        if not isinstance(node.value, ast.Dict):
+            continue
+
+        for key in node.value.keys:
+            if isinstance(key, ast.Constant) and isinstance(key.value, str):
+                commands.add(key.value)
 
     if not commands:
         raise RuntimeError(
-            "the pq-cli-table extension could not read any command from "
-            f"{main_source}; the dispatch table format may have changed"
+            f"the pq-cli-table extension could not read {_REGISTRY_NAME} "
+            f"from {main_source}; the dispatch table format may have "
+            "changed and the command tables can no longer be validated"
         )
 
     return commands
