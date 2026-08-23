@@ -122,36 +122,59 @@ class CustomLogger(logging.Logger):
         self._original_log(level, msg, args, extra, **kwargs)
 
         if level in [logging.CRITICAL, logging.ERROR]:
+            self._raise(msg, exception)
 
-            exception = exception or Exception
+    def _raise(self, msg: Any, exception: Exception | None = None) -> None:
+        """
+        Raises the exception belonging to a logged error.
 
-            if self.isEnabledFor(logging.DEBUG):
-                back_tb = None
+        The exception is raised independently of the logging level, so
+        that raising the level of a logger cannot turn an error into a
+        silent no-op.
 
-                try:
-                    raise exception  # pylint: disable=broad-exception-raised
-                except exception:  # pylint: disable=broad-except
-                    traceback = sys.exc_info()[2]
-                    back_frame = traceback.tb_frame.f_back
+        Parameters
+        ----------
+        msg : Any
+            The message of the exception.
+        exception : Exception, optional
+            The exception to raise, by default None. If None, a generic
+            Exception is raised.
 
-                    back_tb = types.TracebackType(
-                        tb_next=None,
-                        tb_frame=back_frame,
-                        tb_lasti=back_frame.f_lasti,
-                        tb_lineno=back_frame.f_lineno
-                    )
+        Raises
+        ------
+        exception
+            always.
+        """
 
-                raise exception(msg).with_traceback(back_tb)
+        exception = exception or Exception
 
-            def exception_hook(exc_type, exc_value, exc_traceback):
-                """
-                A custom exception hook that ignores the CustomLoggerException.
-                """
-                if isinstance(exc_type, PQException):
-                    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+        if self.isEnabledFor(logging.DEBUG):
+            back_tb = None
 
-            sys.excepthook = exception_hook
-            raise exception(msg)  # pylint: disable=broad-exception-raised
+            try:
+                raise exception  # pylint: disable=broad-exception-raised
+            except exception:  # pylint: disable=broad-except
+                traceback = sys.exc_info()[2]
+                back_frame = traceback.tb_frame.f_back
+
+                back_tb = types.TracebackType(
+                    tb_next=None,
+                    tb_frame=back_frame,
+                    tb_lasti=back_frame.f_lasti,
+                    tb_lineno=back_frame.f_lineno
+                )
+
+            raise exception(msg).with_traceback(back_tb)
+
+        def exception_hook(exc_type, exc_value, exc_traceback):
+            """
+            A custom exception hook that ignores the CustomLoggerException.
+            """
+            if isinstance(exc_type, PQException):
+                sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+        sys.excepthook = exception_hook
+        raise exception(msg)  # pylint: disable=broad-exception-raised
 
     def _original_log(
         self, level: Any, msg: Any, args: Any, extra=None, **kwargs
@@ -208,6 +231,8 @@ class CustomLogger(logging.Logger):
         """
         if self.isEnabledFor(logging.ERROR):
             self._log(logging.ERROR, msg, args, exception=exception, **kwargs)
+        else:
+            self._raise(msg, exception)
 
     def original_error(self, msg: Any, *args, **kwargs) -> None:
         """
@@ -261,6 +286,8 @@ class CustomLogger(logging.Logger):
                 exception=exception,
                 **kwargs
             )
+        else:
+            self._raise(msg, exception)
 
     def original_critical(self, msg: Any, *args, **kwargs) -> None:
         """
