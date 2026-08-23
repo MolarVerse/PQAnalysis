@@ -822,6 +822,7 @@ class MSD:
             boxes = np.empty((self.n_frames, 3), dtype=np.float64)
             last_cell = None
             box_lengths = None
+            n_read = 0
 
             for frame_index, (values, cell) in enumerate(
                 tqdm(
@@ -851,6 +852,19 @@ class MSD:
 
                 positions[frame_index] = values[indices]
                 boxes[frame_index] = box_lengths
+                n_read = frame_index + 1
+
+            if n_read != self.n_frames:
+                self.logger.error(
+                    (
+                        f"The position trajectory yielded {n_read} "
+                        f"frame(s), but {self.n_frames} frame(s) were "
+                        "expected from the frame count of the trajectory "
+                        "file(s). Please check them for surplus blank "
+                        "lines or incomplete frames."
+                    ),
+                    exception=MSDError,
+                )
 
         origin_indices, boundaries, _ = self._raw_batch_shape()
         image_steps = direct_msd_image_steps(positions, boxes)
