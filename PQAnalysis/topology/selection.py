@@ -480,9 +480,9 @@ class SelectionTransformer(Transformer):
         int
             The unsigned integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
-    def INT(self, items: List[Token] | Token) -> int:  # pylint: disable=invalid-name
+    def INT(self, items: Token | List[Token]) -> int:  # pylint: disable=invalid-name
         """
         Returns the integer of the given token.
 
@@ -496,7 +496,7 @@ class SelectionTransformer(Transformer):
         int
             The integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
     def atomtype(self, items: Any) -> Np1DIntArray:
         """
