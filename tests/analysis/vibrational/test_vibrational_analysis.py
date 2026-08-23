@@ -8,9 +8,11 @@ import pytest
 from PQAnalysis.analysis.vibrational.vibrational_analysis import (
     calculate,
     hessian_sign_factor,
+    internal_subspace,
     mode_displacement,
     mass_weighted_hessian,
     read_hessian_file,
+    rotational_modes,
     select_mode_indices,
     symmetrize_addition,
     wavenumber,
@@ -240,6 +242,35 @@ class TestVibrationalAnalysis:
         assert str(
             exception.value
         ) == "hessian_sign must be auto, positive, negative, 1, or -1."
+
+    def test_linear_molecule_off_origin_keeps_two_rotations(self):
+        axis = np.array([1.0, 1.0, 1.0]) / np.sqrt(3.0)
+        masses = np.array([12.011, 15.999])
+        coords = np.array([np.zeros(3), 1.128 * axis])
+        coords = coords - np.sum(
+            coords * masses[:, None], axis=0
+        ) / np.sum(masses)
+        shifted = coords + np.array([1.0, 2.0, 3.0])
+
+        block = 1200.0 * np.outer(axis, axis)
+        hessian = np.zeros((6, 6))
+        hessian[0:3, 0:3] = block
+        hessian[3:6, 3:6] = block
+        hessian[0:3, 3:6] = -block
+        hessian[3:6, 0:3] = -block
+        hessian = -hessian
+
+        assert rotational_modes(shifted, masses).shape[1] == 2
+        assert internal_subspace(shifted, masses).shape == (6, 1)
+        assert hessian_sign_factor(shifted, masses, hessian, "auto") == -1.0
+
+        reference = calculate(masses, coords, hessian)
+        translated = calculate(masses, shifted, hessian)
+
+        assert reference.wavenumbers[-1] == pytest.approx(1436.17, abs=1e-2)
+        assert translated.wavenumbers[-1] == pytest.approx(
+            reference.wavenumbers[-1], abs=1e-6
+        )
 
     def test_wavenumber_units(self):
         eigenvalues = np.array([1.0, -1.0])
