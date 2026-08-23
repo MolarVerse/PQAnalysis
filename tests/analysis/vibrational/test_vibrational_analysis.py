@@ -214,6 +214,9 @@ class TestVibrationalAnalysis:
         assert hessian_sign_factor(coords, masses, hessian, -1.0) == -1.0
         assert hessian_sign_factor(coords, masses, hessian, "positive") == 1.0
         assert hessian_sign_factor(coords, masses, hessian, "negative") == -1.0
+        assert hessian_sign_factor(coords, masses, hessian, "1") == 1.0
+        assert hessian_sign_factor(coords, masses, hessian, "-1") == -1.0
+        assert hessian_sign_factor(coords, masses, hessian, "+1") == 1.0
         assert hessian_sign_factor(coords, masses, hessian, "auto") == 1.0
         assert hessian_sign_factor(coords, masses, -hessian, "auto") == -1.0
 

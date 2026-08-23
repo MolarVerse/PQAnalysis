@@ -64,6 +64,37 @@ class TestVibrationalAnalysisInputFileReader:
         ) == "The unit key must be one of: kcal, hartree, ev."
 
     @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            ("1", "1"),
+            ("-1", "-1"),
+            ("auto", "auto"),
+            ("positive", "positive"),
+            ("negative", "negative"),
+        ],
+    )
+    @pytest.mark.parametrize("example_dir", ["vibrational"], indirect=False)
+    def test_hessian_sign_values(
+        self, test_with_data_dir, value, expected
+    ):  # pylint: disable=unused-argument
+        """
+        Every documented hessian_sign value is accepted, including the
+        numbers, which the input file parser reports as integers.
+        """
+        with open("sign.in", "w", encoding="utf-8") as file:
+            file.write(
+                "structure_file = h2o.rst\n"
+                "hessian_file = hessian.dat\n"
+                "out_file = wavenumbers.dat\n"
+                f"hessian_sign = {value}\n"
+            )
+
+        reader = VibrationalAnalysisInputFileReader("sign.in")
+        reader.read()
+
+        assert reader.hessian_sign == expected
+
+    @pytest.mark.parametrize(
         ("contents", "message"),
         [
             (
