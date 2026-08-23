@@ -21,7 +21,7 @@ from PQAnalysis.type_checking import runtime_type_checking
 
 # Local relative modules
 from .exceptions import TrajectoryReaderError
-from .frame_reader import get_frame_reader
+from .frame_reader import get_frame_reader, XYZ_FRAME_READER_TRAJ_FORMATS
 
 
 
@@ -597,10 +597,20 @@ class TrajectoryReader(BaseReader):
         list of Cell
             The list of cells read from the trajectory.
         """
+        if self.traj_format == TrajectoryFormat.EXTXYZ:
+            yield from self._extxyz_cell_generator()
+            return
+
+        if self.traj_format not in XYZ_FRAME_READER_TRAJ_FORMATS:
+            self.logger.error(
+                (
+                    "Reading the cells is not implemented for the "
+                    f"trajectory format {self.traj_format}."
+                ),
+                exception=TrajectoryReaderError,
+            )
+
         last_cell = None
-        with open(self.filenames[0], "r", encoding="utf-8") as f:
-            line = f.readline()
-            n_atoms = int(line.split()[0])
 
         for filename in self.filenames:
             line_number = 0
@@ -654,8 +664,60 @@ class TrajectoryReader(BaseReader):
 
                     last_cell = cell
 
+                    n_atoms = int(splitted_line[0])
+
                     for _ in range(n_atoms + 1):
                         next(f, None)  # Skip the next n_atoms+1 lines
+
+    def _extxyz_cell_generator(self) -> Generator[Cell]:
+        """
+        A generator that yields the cells of an extended xyz trajectory.
+
+        The cell of an extended xyz frame is stored as Lattice
+        metadata in the comment line of the frame and not in the
+        atom count line. If a frame does not define a Lattice, the
+        cell of the last frame is used.
+
+        Yields
+        ------
+        Cell
+            The cells read from the trajectory.
+        """
+        last_cell = None
+
+        for filename in self.filenames:
+            with open(filename, "r", encoding="utf-8") as f:
+                while True:
+                    atom_count_line = f.readline()
+                    if atom_count_line == "":
+                        break
+
+                    if atom_count_line.strip() == "":
+                        continue
+
+                    n_atoms = 0
+                    try:
+                        n_atoms = int(atom_count_line.split()[0])
+                    except (ValueError, IndexError):
+                        self.logger.error(
+                            (
+                                "Invalid number of atoms encountered "
+                                f"in file {filename}."
+                            ),
+                            exception=TrajectoryReaderError,
+                        )
+
+                    cell = self.frame_reader.read_cell(f.readline())
+
+                    if cell.is_vacuum and last_cell is not None:
+                        cell = last_cell
+
+                    last_cell = cell
+
+                    for _ in range(n_atoms):
+                        next(f, None)  # Skip the atom lines of the frame
+
+                    yield cell
 
     def _read_single_frame(
         self,
