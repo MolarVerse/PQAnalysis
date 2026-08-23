@@ -18,6 +18,16 @@ class TestSelection:
         indices = selection.select(self.topology)
         assert np.all(indices == np.arange(0, 3))
 
+    def test__selection_multi_digit_index(self):
+        topology = Topology([Atom("H", 1) for _ in range(30)])
+
+        assert np.all(Selection("12").select(topology) == np.array([12]))
+        assert np.all(Selection("25").select(topology) == np.array([25]))
+        assert np.all(
+            Selection("20..23").select(topology) == np.arange(20, 24)
+        )
+        assert np.all(Selection("12,25").select(topology) == np.array([12, 25]))
+
     def test__selection_atomtype(self):
         selection = Selection("C1")
         indices = selection.select(self.topology)
