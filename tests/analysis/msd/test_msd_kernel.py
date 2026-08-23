@@ -18,6 +18,7 @@ import pytest
 
 from PQAnalysis.analysis.msd import MSD
 from PQAnalysis.analysis.msd import _msd_kernel_py
+from PQAnalysis.analysis.msd.exceptions import MSDError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Cell
 from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
@@ -547,6 +548,46 @@ class TestMSDFastPathKernels:
             msd_stream._msd_accumulator,
         )
         assert np.array_equal(result_batch, result_stream)
+
+    def test_exact_batch_rejects_a_short_frame_generator(self, tmp_path):
+        # surplus blank separator lines inflate the counted frame number,
+        # so the generator fills fewer rows than the batch buffers hold;
+        # the unfilled rows must never reach the kernels
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = tmp_path / "blank-separated.xyz"
+        lines = []
+
+        for frame_index in range(6):
+            lines.extend((
+                "2 10.0 11.0 12.0",
+                "",
+                f"O {0.1 * frame_index} {0.2 * frame_index} 0.0",
+                f"O {1.0 + 0.05 * frame_index} 2.0 3.0",
+                # four surplus blank lines per frame, so that the
+                # counted line number stays a multiple of n_atoms + 2
+                "",
+                "",
+                "",
+                "",
+            ))
+
+        filename.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        msd = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=3,
+            gap=1,
+        )
+
+        assert msd.n_frames == 12
+
+        with pytest.raises(MSDError) as exception:
+            msd.run()
+
+        assert "yielded 6 frame(s), but 12 frame(s)" in str(exception.value)
 
     def test_active_kernel_is_a_known_implementation(self):
         # the msd module must have wired up either the Cython kernel
