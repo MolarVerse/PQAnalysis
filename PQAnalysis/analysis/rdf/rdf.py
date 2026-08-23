@@ -852,8 +852,9 @@ class RDF:
 
         if self.no_intra_molecular:
             for reference_index in self.reference_indices:
+                residue_number = self.topology.residue_numbers[reference_index]
                 residue_indices = self.topology.residue_atom_indices[
-                    reference_index]
+                    residue_number]
                 self.target_index_combinations.append(
                     np.setdiff1d(self.target_indices, residue_indices)
                 )

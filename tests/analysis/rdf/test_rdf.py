@@ -4,11 +4,11 @@ import pytest
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, Element, Residue
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.topology import SelectionCompatible
+from PQAnalysis.topology import SelectionCompatible, Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.exceptions import PQTypeError
 
@@ -32,6 +32,49 @@ def _make_no_intra_trajectory():
     )
 
     return Trajectory([system1, system2])
+
+
+def _make_residue_trajectory(n_water: int, n_sodium: int):
+    """
+    Builds a trajectory whose topology has real residues:
+    ``n_water`` water molecules (3 atoms each) followed by
+    ``n_sodium`` single-atom sodium residues.
+    """
+    water = Residue(
+        name="WAT",
+        residue_id=1,
+        total_charge=0.0,
+        elements=[Element("O"), Element("H"), Element("H")],
+        atom_types=np.array([0, 1, 1]),
+        partial_charges=np.array([-0.8, 0.4, 0.4]),
+    )
+
+    atoms = [Atom("O"), Atom("H"), Atom("H")] * n_water
+    atoms += [Atom("Na")] * n_sodium
+    residue_ids = np.array([1] * (3 * n_water) + [0] * n_sodium)
+
+    topology = Topology(
+        atoms=atoms,
+        residue_ids=residue_ids,
+        reference_residues=[water],
+    )
+
+    positions = []
+    for i in range(n_water):
+        origin = 4.3 * i
+        positions.append([origin, 0.0, 0.0])
+        positions.append([origin + 1.0, 0.0, 0.0])
+        positions.append([origin, 1.0, 0.0])
+    for i in range(n_sodium):
+        positions.append([float(i), 12.0, 12.0])
+
+    system = AtomicSystem(
+        pos=np.array(positions),
+        cell=Cell(30, 30, 30, 90, 90, 90),
+        topology=topology,
+    )
+
+    return Trajectory([system])
 
 
 def _make_partial_rdf_reference_trajectory():
@@ -704,6 +747,57 @@ class TestRDF:
         assert np.isfinite(normalized_bins).all()
         assert np.isfinite(normalized_bins2).all()
         assert np.isfinite(differential_bins).all()
+
+    def test_no_intra_molecular_excludes_own_residue(self):
+        # two water molecules (atoms 0-5) followed by eight sodium
+        # residues, so that every reference index is smaller than the
+        # number of residues and no IndexError can hide the bug.
+        rdf = RDF(
+            _make_residue_trajectory(n_water=2, n_sodium=8),
+            ["O"],
+            ["H"],
+            delta_r=0.5,
+            n_bins=12,
+            no_intra_molecular=True
+        )
+
+        assert rdf.reference_indices.tolist() == [0, 3]
+        assert rdf.target_indices.tolist() == [1, 2, 4, 5]
+
+        rdf.run()
+
+        # each oxygen has to lose exactly the hydrogens of its own water
+        assert len(rdf.target_index_combinations) == 2
+        assert rdf.target_index_combinations[0].tolist() == [4, 5]
+        assert rdf.target_index_combinations[1].tolist() == [1, 2]
+
+        # hand-computed inter-molecular distances:
+        # O(0) - H(4) = 5.3          -> bin 10
+        # O(0) - H(5) = sqrt(19.49)  -> bin 8
+        # O(3) - H(1) = 3.3          -> bin 6
+        # O(3) - H(2) = sqrt(19.49)  -> bin 8
+        # the intra-molecular O-H distances of 1.0 (bin 2) are excluded
+        expected_bins = np.array([0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0])
+        assert np.array_equal(rdf.bins, expected_bins)
+
+    def test_no_intra_molecular_with_more_atoms_than_residues(self):
+        # three water molecules, i.e. nine atoms but only three residues
+        rdf = RDF(
+            _make_residue_trajectory(n_water=3, n_sodium=0),
+            ["O"],
+            ["H"],
+            delta_r=0.5,
+            n_bins=12,
+            no_intra_molecular=True
+        )
+
+        assert rdf.reference_indices.tolist() == [0, 3, 6]
+
+        rdf.run()
+
+        assert rdf.target_index_combinations[0].tolist() == [4, 5, 7, 8]
+        assert rdf.target_index_combinations[1].tolist() == [1, 2, 7, 8]
+        assert rdf.target_index_combinations[2].tolist() == [1, 2, 4, 5]
 
     def test_run_skips_self_pairs_for_overlapping_selections(self):
         system = AtomicSystem(
