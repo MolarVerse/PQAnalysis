@@ -92,6 +92,30 @@ class TestBoxWriter:
 
         assert captured.out == "1 10 10 10 90 90 90\n2 10 10 11 90 90 120\n"
 
+    def test_write_box_file_unequal_trajectories(self, capsys: CaptureFixture):
+        writer = BoxWriter()
+
+        cell = Cell(10, 10, 10, 90, 90, 90)
+        frame = AtomicSystem(atoms=self.atoms1, pos=self.pos1, cell=cell)
+
+        traj3 = Trajectory([frame, frame, frame])
+        traj2 = Trajectory([frame, frame])
+
+        writer.write_box_file(traj3, reset_counter=False)
+        writer.write_box_file(traj2, reset_counter=False)
+
+        captured = capsys.readouterr()
+        steps = [int(line.split()[0]) for line in captured.out.splitlines()]
+
+        assert steps == [1, 2, 3, 4, 5]
+
+        writer.write_box_file(traj2, reset_counter=True)
+
+        captured = capsys.readouterr()
+        steps = [int(line.split()[0]) for line in captured.out.splitlines()]
+
+        assert steps == [1, 2]
+
     def test_write_vmd(self, capsys: CaptureFixture):
         writer = BoxWriter()
 
