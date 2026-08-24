@@ -121,7 +121,8 @@ class AddMoleculesCLI(CLIBase):
         )
 
         parser.add_argument(
-            "-n, --n-molecules",
+            "-n",
+            "--n-molecules",
             dest='n_molecules',
             type=int,
             default=1,
