@@ -78,3 +78,35 @@ def test_argcomplete_is_loaded_only_for_shell_completion(monkeypatch):
 
     assert calls == [parser]
     assert args.progress is True
+
+
+
+@pytest.mark.parametrize(
+    ("flags", "expected"),
+    [
+        ([], True),
+        (["--progress"], True),
+        (["--no-progress"], False),
+    ],
+)
+def test_progress_flag_matches_its_help_text(monkeypatch, flags, expected):
+    # --progress used to be a store_false flag, so passing it hid the
+    # progress bar although its help text reads "Show progress bar."
+    monkeypatch.setattr(argument_parser, "print_header", lambda: None)
+    monkeypatch.setattr(
+        argument_parser.config,
+        "with_progress_bar",
+        argument_parser.config.with_progress_bar,
+    )
+
+    parser = argument_parser._ArgumentParser(prog="pqanalysis-test")
+    root_logger = argument_parser.logging.getLogger()
+    original_level = root_logger.level
+
+    try:
+        args = parser.parse_args([*flags, "--log-file", "off"])
+    finally:
+        root_logger.setLevel(original_level)
+
+    assert args.progress is expected
+    assert argument_parser.config.with_progress_bar is expected
