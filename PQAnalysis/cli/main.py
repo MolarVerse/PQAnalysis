@@ -103,30 +103,52 @@ _COMMANDS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
 
 
 
+_ROOT_OPTIONS = (
+    "--help",
+    "--version",
+    "--progress",
+    "--logging-level",
+    "--log-file",
+)
+
+
+
+def _match_root_option(option: str) -> str | None:
+    """Resolve a possibly abbreviated long root option like argparse does."""
+    matches = [
+        root_option for root_option in _ROOT_OPTIONS
+        if root_option.startswith(option)
+    ]
+    return matches[0] if len(matches) == 1 else None
+
+
+
 def _detect_command(arguments: list[str]) -> str | None:
     """Scan root options to find the first positional CLI command."""
     index = 0
     while index < len(arguments):
         argument = arguments[index]
 
-        if argument in {"-h", "--help", "--version"}:
+        option = argument.partition("=")[0]
+        matched = (
+            _match_root_option(option)
+            if option.startswith("--") else None
+        )
+
+        if argument == "-h" or matched in {"--help", "--version"}:
             return None
 
-        if argument == "--logging-level":
+        if matched == "--logging-level" and option == argument:
             index += 2
             continue
 
-        if argument == "--log-file":
+        if matched == "--log-file" and option == argument:
             index += 1
             if (
                 index < len(arguments) and
                 not arguments[index].startswith("-")
             ):
                 index += 1
-            continue
-
-        if argument.startswith(("--logging-level=", "--log-file=")):
-            index += 1
             continue
 
         if argument.startswith("-"):
