@@ -9,6 +9,7 @@ The distance, binning and normalization expressions are unchanged.
 
 import hashlib
 import importlib
+import math
 from pathlib import Path
 
 import numpy as np
@@ -127,6 +128,61 @@ def test_float64_coordinate_controls_boundary_bin(
     analysis.run()
 
     assert np.array_equal(analysis.bins, np.array([1.0, 0.0, 0.0, 0.0]))
+
+
+@pytest.mark.parametrize(("frame_kernel", "batch_kernel"), KERNELS)
+def test_noncubic_box_bins_span_only_the_kernel_cutoff(
+    tmp_path,
+    monkeypatch,
+    frame_kernel,
+    batch_kernel,
+):
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_frame_histogram", frame_kernel
+    )
+    monkeypatch.setattr(
+        rdf_module, "legacy_rdf_batch_histogram", batch_kernel
+    )
+
+    trajectory = tmp_path / "noncubic.xyz"
+    trajectory.write_text(
+        "2 20.0 20.0 60.0 90.0 90.0 90.0\n\n"
+        "X 0.0 0.0 0.0\n"
+        "Y 3.0 0.0 0.0\n",
+        encoding="utf-8",
+    )
+
+    analysis = RDF(
+        TrajectoryReader(str(trajectory)),
+        "X",
+        "Y",
+        delta_r=0.1,
+    )
+    result = analysis.run()
+
+    # The kernel drops every pair beyond min(20, 20, 60) / 2 = 10.0, so
+    # the histogram must cover int(10.0 / float32(0.1)) = 99 bins. Sizing
+    # it from the largest edge (299 bins) would normalize over a tail the
+    # kernel never counts.
+    delta_r = float(np.float32(0.1))
+
+    assert analysis._legacy_rdf  # pylint: disable=protected-access
+    assert analysis.n_bins == 99
+    assert analysis.r_max == 99 * delta_r
+
+    # The single pair sits at distance 3.0 -> bin floor(3.0 / delta_r) = 29.
+    expected_bins = np.zeros(99)
+    expected_bins[29] = 1.0
+    assert np.array_equal(analysis.bins, expected_bins)
+
+    # Hand-computed: one pair, one reference, one frame, number density
+    # 1 / (20 * 20 * 60), ideal-gas shell between 29 and 30 bin edges.
+    density = 1.0 / (20.0 * 20.0 * 60.0)
+    shell = 4.0 / 3.0 * math.pi * (
+        (30.0 * delta_r) ** 3 - (29.0 * delta_r) ** 3
+    )
+    assert result[1][29] == pytest.approx(1.0 / (density * shell), rel=1e-12)
+    assert result[2][-1] == 1.0
 
 
 @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
