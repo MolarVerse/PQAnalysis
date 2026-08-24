@@ -118,7 +118,8 @@ class TrajectoryReader(BaseReader):
         """
 
         self.with_progress_bar = with_progress_bar
-        self.topology = topology
+        if topology is not None:
+            self.topology = topology
 
         traj = Trajectory()
         for frame in self.frame_generator():
