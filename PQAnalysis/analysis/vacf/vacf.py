@@ -688,8 +688,22 @@ class VACF:
                 dtype=np.float64,
             )
 
+            frame_index = -1
+
             for frame_index, velocity in enumerate(self._velocities()):
                 velocities[frame_index] = velocity
+
+            if frame_index + 1 != self.n_frames:
+                self.logger.error(
+                    (
+                        f"The velocity trajectory yielded "
+                        f"{frame_index + 1} frame(s), but {self.n_frames} "
+                        "frame(s) were expected from the frame count of "
+                        "the trajectory file(s). Please check them for "
+                        "surplus blank lines or incomplete frames."
+                    ),
+                    exception=VACFError,
+                )
 
         origin_indices = np.arange(
             self.gap - 1,
