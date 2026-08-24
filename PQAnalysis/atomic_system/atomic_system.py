@@ -561,10 +561,13 @@ class AtomicSystem(
             A copy of the AtomicSystem.
         """
         return AtomicSystem(
-            pos=self.pos,
-            vel=self.vel,
-            forces=self.forces,
-            charges=self.charges,
+            pos=self.pos.copy(),
+            vel=self.vel.copy(),
+            forces=self.forces.copy(),
+            charges=self.charges.copy(),
+            energy=self.energy,
+            virial=None if self.virial is None else self.virial.copy(),
+            stress=None if self.stress is None else self.stress.copy(),
             cell=self.cell,
             topology=self.topology
         )
