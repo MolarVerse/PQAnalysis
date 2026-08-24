@@ -68,3 +68,11 @@ class AtomError(PQException):
     """
     Exception raised for errors related to the Atom class
     """
+
+
+
+class CellError(PQException):
+
+    """
+    Exception raised for errors related to the Cell class
+    """
