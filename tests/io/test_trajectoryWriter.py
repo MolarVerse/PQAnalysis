@@ -95,6 +95,50 @@ def test_write_extxyz_roundtrip():
 
 
 @pytest.mark.usefixtures("tmpdir")
+@pytest.mark.parametrize("traj_type", ["xyz", "vel", "force", "charge"])
+def test_write_qmcfc_roundtrip(traj_type):
+    atoms = [Atom("h"), Atom("o")]
+    data = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+    charges = np.array([1.0, 2.0])
+    frame = AtomicSystem(
+        atoms=atoms,
+        pos=data,
+        vel=data,
+        forces=data,
+        charges=charges,
+        cell=Cell(10, 10, 10),
+    )
+    traj = Trajectory([frame, frame])
+
+    filename = f"qmcfc_output.{traj_type}"
+    write_trajectory(
+        traj,
+        filename=filename,
+        engine_format="qmcfc",
+        traj_type=traj_type,
+    )
+
+    with open(filename, "r", encoding="utf-8") as file:
+        lines = file.read().splitlines()
+
+    assert lines[0].split()[0] == "3"
+    assert lines[2].split()[0] == "X"
+
+    output = read_trajectory(filename, md_format="qmcfc", traj_format=traj_type)
+
+    assert len(output) == 2
+    assert output[0].atoms == atoms
+    if traj_type == "xyz":
+        assert np.allclose(output[0].pos, data)
+    elif traj_type == "vel":
+        assert np.allclose(output[0].vel, data)
+    elif traj_type == "force":
+        assert np.allclose(output[0].forces, data)
+    else:
+        assert np.allclose(output[0].charges, charges)
+
+
+@pytest.mark.usefixtures("tmpdir")
 def test_write_extxyz_ase_profile_converts_energy_like_units():
     from ase.io import read as ase_read
 
