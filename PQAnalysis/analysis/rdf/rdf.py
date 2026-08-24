@@ -587,8 +587,8 @@ class RDF:
         """Sets bins with the scalar semantics of ``thh_tools/RDF``."""
         self.r_min = 0.0
         self.delta_r = float(np.float32(delta_r))
-        self.n_bins = max(
-            int(max(cell.box_lengths) / 2.0 / self.delta_r)
+        self.n_bins = min(
+            int(min(cell.box_lengths) / 2.0 / self.delta_r)
             for cell in self.cells
         )
         self.r_max = self.delta_r * self.n_bins
