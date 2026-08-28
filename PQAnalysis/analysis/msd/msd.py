@@ -142,6 +142,9 @@ class MSD:
     _direct_batch_max_bytes = 512 * 1024 * 1024
     _direct_batch_max_workers = 16
 
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -495,7 +498,25 @@ class MSD:
             The z-component of the MSD in Angstrom^2.
         msd_tot : Np1DNumberArray
             The total MSD (x + y + z) in Angstrom^2.
+
+        Raises
+        ------
+        MSDError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
         """
+
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This MSD analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=MSDError
+            )
+
+        self._run_consumed = True
 
         if self._raw_reader is not None:
             self._calculate_msd_raw()

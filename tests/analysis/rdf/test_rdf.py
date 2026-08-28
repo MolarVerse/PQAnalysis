@@ -802,3 +802,41 @@ class TestRDF:
             expected_bins,
         )
         np.testing.assert_allclose(normalized_bins, ase_reference_bins)
+
+    def test_run_twice_raises(self, caplog):
+        """
+        An RDF object is single-use: the first run returns the
+        correct g(r), a second run raises a clear RDFError before
+        the accumulators are touched again (previously the second
+        call silently accumulated into self.bins and returned a
+        doubled g(r)).
+        """
+        rdf = RDF(
+            _make_no_intra_trajectory(), ["H"], ["H"], delta_r=0.5, n_bins=5
+        )
+        _, normalized_bins, *_ = rdf.run()
+
+        reference = RDF(
+            _make_no_intra_trajectory(), ["H"], ["H"], delta_r=0.5, n_bins=5
+        )
+        _, reference_bins, *_ = reference.run()
+
+        assert np.allclose(normalized_bins, reference_bins)
+
+        bins_after_first_run = rdf.bins.copy()
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="RDF",
+            logging_level="ERROR",
+            message_to_test=(
+                "This RDF analysis object has already been run; "
+                "construct a new one to run the analysis again."
+            ),
+            exception=RDFError,
+            function=rdf.run,
+        )
+
+        # the guard preempts the accumulation, so the bin counts
+        # are not doubled by the failed second call
+        assert np.array_equal(rdf.bins, bins_after_first_run)

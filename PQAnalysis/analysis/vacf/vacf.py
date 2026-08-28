@@ -110,6 +110,9 @@ class VACF:
     _direct_batch_max_bytes = 512 * 1024 * 1024
     _direct_batch_max_workers = 16
 
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -440,7 +443,25 @@ class VACF:
             The normalized (charge-flux weighted) velocity
             auto-correlation function; ``vacf[0]`` is exactly one for
             the direct method.
+
+        Raises
+        ------
+        VACFError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
         """
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This VACF analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=VACFError,
+            )
+
+        self._run_consumed = True
+
         if self.method == "fft":
             self.vacf = self._run_fft()
         else:

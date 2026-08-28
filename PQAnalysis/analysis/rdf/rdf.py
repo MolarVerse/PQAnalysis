@@ -183,6 +183,10 @@ class RDF:
     _batch_max_bytes = 512 * 1024 * 1024
     _batch_max_workers = 16
     _batch_pairs_per_worker = 250_000
+
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -807,7 +811,25 @@ class RDF:
             The density-normalized shell population in Angstrom^3.
         differential_bins : Np1DNumberArray
             The pair-count residual relative to the ideal-gas shell count.
+
+        Raises
+        ------
+        RDFError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
         """
+
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This RDF analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=RDFError
+            )
+
+        self._run_consumed = True
 
         self._initialize_run()
 
