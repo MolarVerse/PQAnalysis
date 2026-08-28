@@ -1,6 +1,9 @@
+import sys
+
 import numpy as np
 import pytest
 
+from PQAnalysis import config
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
@@ -295,6 +298,31 @@ def test__add_to_bins():
         1,
         0])
     )
+
+
+
+def test_progress_bar_binds_config_at_call_time(monkeypatch):
+    # config.with_progress_bar is set by the CLI after the module
+    # import, so it must be read at call time, not bound by value
+    # at import time
+    captured = {}
+
+    def fake_tqdm(iterable, **kwargs):
+        captured.update(kwargs)
+        return iterable
+
+    rdf_module = sys.modules[RDF.__module__]
+    monkeypatch.setattr(rdf_module, "tqdm", fake_tqdm)
+
+    monkeypatch.setattr(config, "with_progress_bar", False)
+    RDF(_make_no_intra_trajectory(), ["H"], ["C"], delta_r=0.5, n_bins=5).run()
+    assert captured["disable"] is True
+
+    captured.clear()
+
+    monkeypatch.setattr(config, "with_progress_bar", True)
+    RDF(_make_no_intra_trajectory(), ["H"], ["C"], delta_r=0.5, n_bins=5).run()
+    assert captured["disable"] is False
 
 
 

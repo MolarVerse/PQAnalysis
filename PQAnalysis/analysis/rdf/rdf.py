@@ -21,7 +21,7 @@ from beartype.typing import List, Tuple
 from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
-from PQAnalysis.config import with_progress_bar
+from PQAnalysis import config
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cell, Cells
 from PQAnalysis.traj import (
@@ -873,7 +873,7 @@ class RDF:
         for frame in tqdm(
             itertools.chain([self.first_frame], self.frame_generator),
             total=self.n_frames,
-            disable=not with_progress_bar
+            disable=not config.with_progress_bar
         ):
             for i, reference_index in enumerate(self.reference_indices):
 
@@ -953,7 +953,7 @@ class RDF:
         for values, cell in tqdm(
             self._raw_reader.raw_frame_generator(),
             total=self.n_frames,
-            disable=not with_progress_bar):
+            disable=not config.with_progress_bar):
 
             counter += 1
 
