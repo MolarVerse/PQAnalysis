@@ -5,8 +5,9 @@ from PQAnalysis.traj import MDEngineFormat, Trajectory, TrajectoryFormat
 from PQAnalysis.io import TrajectoryReader
 import PQAnalysis.io.traj_file.frame_reader as frame_reader
 from PQAnalysis.io.traj_file.exceptions import FrameReaderError, TrajectoryReaderError
-from PQAnalysis.io.traj_file.api import calculate_frames_of_trajectory_file
+from PQAnalysis.io.traj_file.api import calculate_frames_of_trajectory_file, read_trajectory
 from PQAnalysis.core import Cell, Atom
+from PQAnalysis.topology import Topology
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.exceptions import PQIndexError, PQFileNotFoundError
 
@@ -281,6 +282,48 @@ class TestTrajectoryReader:
         traj = reader.read()
 
         assert traj == ref_traj
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_keeps_constructor_topology(self):
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print("", file=file)
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 1.0", file=file)
+        file.close()
+
+        topology = Topology(
+            atoms=[Atom("C"), Atom("N")],
+            residue_ids=np.array([7, 7]),
+            check_residues=False,
+        )
+
+        reader = TrajectoryReader("tmp.xyz", topology=topology)
+        traj = reader.read()
+
+        assert traj[0].topology.atoms == topology.atoms
+        assert np.array_equal(traj[0].topology.residue_ids, [7, 7])
+        assert traj[1].topology.atoms == topology.atoms
+
+        traj = read_trajectory("tmp.xyz", topology=topology)
+
+        assert traj[0].topology.atoms == topology.atoms
+        assert np.array_equal(traj[0].topology.residue_ids, [7, 7])
+        assert traj[1].topology.atoms == topology.atoms
+
+        other = Topology(
+            atoms=[Atom("F"), Atom("Cl")],
+            residue_ids=np.array([3, 3]),
+            check_residues=False,
+        )
+        traj = reader.read(topology=other)
+
+        assert traj[0].topology.atoms == other.atoms
+        assert np.array_equal(traj[0].topology.residue_ids, [3, 3])
 
     # -------------------------------------------------------------------------------- #
 
