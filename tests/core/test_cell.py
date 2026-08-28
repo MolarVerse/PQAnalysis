@@ -2,8 +2,9 @@ import numpy as np
 import pytest
 
 from . import pytestmark
+from ..conftest import assert_logging_with_exception
 
-from PQAnalysis.core import Cell
+from PQAnalysis.core import Cell, CellError
 
 
 
@@ -33,6 +34,67 @@ class TestCell:
             np.array(
                 [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]
             )
+        )
+
+    def test__init__non_positive_box_lengths(self, caplog):
+        assert_logging_with_exception(
+            caplog,
+            Cell.__qualname__,
+            "ERROR",
+            "Box lengths must be positive, but got [0. 0. 0.].",
+            CellError,
+            Cell,
+            0.0,
+            0.0,
+            0.0
+        )
+
+    def test__init__box_angles_out_of_range(self, caplog):
+        assert_logging_with_exception(
+            caplog,
+            Cell.__qualname__,
+            "ERROR",
+            "Box angles must be within the interval (0, 180) degrees, "
+            "but got [190.  90.  90.].",
+            CellError,
+            Cell,
+            10.0,
+            10.0,
+            10.0,
+            190.0,
+            90.0,
+            90.0
+        )
+
+    def test__init__impossible_box_angles(self, caplog):
+        assert_logging_with_exception(
+            caplog,
+            Cell.__qualname__,
+            "ERROR",
+            "Box angles [170.  10.  10.] do not define a valid unit cell.",
+            CellError,
+            Cell,
+            10.0,
+            10.0,
+            10.0,
+            170.0,
+            10.0,
+            10.0
+        )
+
+    def test_set_box_lengths_non_positive(self, caplog):
+        cell = Cell(1, 2, 3)
+
+        def set_box_lengths():
+            cell.box_lengths = np.array([0.0, 2.0, 3.0])
+
+        assert_logging_with_exception(
+            caplog,
+            Cell.__qualname__,
+            "ERROR",
+            "Box lengths must be positive, but got [0. 2. 3.].",
+            CellError,
+            set_box_lengths
         )
 
     def test_box_lengths(self):
