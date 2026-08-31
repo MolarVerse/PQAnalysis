@@ -7,6 +7,9 @@ to C code.
 import numpy as np
 cimport numpy as np
 from libc.stdio cimport sscanf
+from libc.string cimport strlen
+
+from .exceptions import FrameReaderError
 
 def process_lines_with_atoms(input, int n_atoms):
     """
@@ -35,7 +38,7 @@ def process_lines_with_atoms(input, int n_atoms):
     
     cdef np.ndarray[np.float32_t, ndim=2] xyz = np.zeros((n_atoms, 3), dtype=np.float32)
     cdef list atoms = [None] * n_atoms
-    cdef char[5] atom
+    cdef char[256] atom
     cdef float x, y, z
     cdef int ret
 
@@ -43,7 +46,12 @@ def process_lines_with_atoms(input, int n_atoms):
         line = input[i]
         line_str = line.encode('utf-8')
 
-        ret = sscanf(line_str, "%s %f %f %f", atom, &x, &y, &z)
+        ret = sscanf(line_str, "%255s %f %f %f", atom, &x, &y, &z)
+        if ret >= 1 and strlen(atom) >= 255:
+            raise FrameReaderError(
+                "Atom type is too long: "
+                "the maximum supported length is 254 characters"
+            )
         if ret != 4:
             raise ValueError("Could not parse line")
 
