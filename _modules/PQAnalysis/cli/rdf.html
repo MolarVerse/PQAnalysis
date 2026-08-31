@@ -76,13 +76,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.rdf</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.rdf:</span>
 
 <span class="sd">Command Line Tool for RDF Analysis</span>
 <span class="sd">==================================</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.rdf</span><span class="w"> </span><span class="kn">import</span> <span class="n">rdf</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.rdf.rdf_input_file_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">input_keys_documentation</span>
@@ -90,7 +90,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 
 <span class="s2">This command line tool can be used to calculate the </span>
 <span class="s2">radial distribution function (RDF) of given </span>
@@ -101,23 +101,23 @@
 <span class="s2">The data file contains the bin-center distance, radial distribution</span>
 <span class="s2">function, cumulative coordination number, density-normalized shell</span>
 <span class="s2">population and ideal-gas pair-count residual, in that order.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.rdf.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.rdf.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
-<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on the general the &quot;</span>
-<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;RDF analysis and its input file options &quot;</span>
-<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;please visit &quot;</span>
-<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;:py:class:`PQAnalysis.analysis.rdf.rdf.RDF` &quot;</span>
-<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">&quot;and :py:mod:`PQAnalysis.analysis.rdf.rdf_input_file_reader`</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">"For more information on the general the "</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">"RDF analysis and its input file options "</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">"please visit "</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">":py:class:`PQAnalysis.analysis.rdf.rdf.RDF` "</span>
+<span class="vm">__doc__</span> <span class="o">+=</span> <span class="s2">"and :py:mod:`PQAnalysis.analysis.rdf.rdf_input_file_reader`</span><span class="se">\n</span><span class="s2">"</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
-    <span class="s2">&quot;For column definitions, units and normalization formulas see &quot;</span>
-    <span class="s2">&quot;:ref:`RDF output files &lt;analysis-output-rdf&gt;`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">"For column definitions, units and normalization formulas see "</span>
+    <span class="s2">":ref:`RDF output files &lt;analysis-output-rdf&gt;`.</span><span class="se">\n</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 
@@ -127,37 +127,37 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.rdf.html#PQAnalysis.cli.rdf.RDFCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RDFCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for RDF Analysis</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="RDFCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.rdf.html#PQAnalysis.cli.rdf.RDFCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;rdf&#39;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'rdf'</span></div>
 
 
 <div class="viewcode-block" id="RDFCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.rdf.html#PQAnalysis.cli.rdf.RDFCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_export_files</span><span class="p">()</span></div>
@@ -167,17 +167,17 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.rdf.html#PQAnalysis.cli.rdf.RDFCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the command line tool.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args : argparse.Namespace</span>
 <span class="sd">            The arguments parsed by the parser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">export_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">&#39;export_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
+            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">'export_files'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
 
         <span class="n">rdf</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">engine</span><span class="p">,</span> <span class="o">**</span><span class="n">export_kwargs</span><span class="p">)</span></div>
 </div>
@@ -188,12 +188,12 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.rdf.html#PQAnalysis.cli.rdf.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    The main function of the RDF analysis command line tool,</span>
 <span class="sd">    which is basically just a wrapper for the rdf function. </span>
 <span class="sd">    For more information on the rdf function please </span>
 <span class="sd">    visit :py:func:`PQAnalysis.analysis.rdf.api.rdf`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">RDFCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

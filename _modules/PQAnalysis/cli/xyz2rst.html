@@ -76,31 +76,31 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.xyz2rst</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.xyz2rst:</span>
 
 <span class="sd">Command Line Tool for Converting XYZ Files to Restart Files</span>
 <span class="sd">-----------------------------------------------------------</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">xyz2rst</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 
 <span class="s2">This command line tool can be used to convert xyz files to restart files. </span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.xyz2rst.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.xyz2rst.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
 
@@ -109,73 +109,73 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.xyz2rst.html#PQAnalysis.cli.xyz2rst.XYZ2RstCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">XYZ2RstCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for Converting XYZ Files to Restart Files</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="XYZ2RstCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.xyz2rst.html#PQAnalysis.cli.xyz2rst.XYZ2RstCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;xyz2rst&#39;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'xyz2rst'</span></div>
 
 
 <div class="viewcode-block" id="XYZ2RstCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.xyz2rst.html#PQAnalysis.cli.xyz2rst.XYZ2RstCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;xyz_file&#39;</span><span class="p">,</span>
+            <span class="s1">'xyz_file'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The xyz file to be converted.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The xyz file to be converted.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--velocity_file&#39;</span><span class="p">,</span>
-            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The velocity file to be converted.&#39;</span>
-        <span class="p">)</span>
-
-        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--force_file&#39;</span><span class="p">,</span>
+            <span class="s1">'--velocity_file'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The force file to be converted.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The velocity file to be converted.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--moldescriptor_file&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;--moldescriptor-file&#39;</span><span class="p">,</span>
-            <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;moldescriptor_file&#39;</span><span class="p">,</span>
+            <span class="s1">'--force_file'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The moldescriptor file used to infer moltypes.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The force file to be converted.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--randomize&#39;</span><span class="p">,</span>
+            <span class="s1">'--moldescriptor_file'</span><span class="p">,</span>
+            <span class="s1">'--moldescriptor-file'</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s1">'moldescriptor_file'</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The moldescriptor file used to infer moltypes.'</span>
+        <span class="p">)</span>
+
+        <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+            <span class="s1">'--randomize'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Randomize the atom order. Default is 0.0.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Randomize the atom order. Default is 0.0.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span>
@@ -186,14 +186,14 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.xyz2rst.html#PQAnalysis.cli.xyz2rst.XYZ2RstCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the command line tool.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args : argparse.Namespace</span>
 <span class="sd">            The arguments parsed by the parser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">xyz2rst</span><span class="p">(</span>
             <span class="n">xyz_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">xyz_file</span><span class="p">,</span>
             <span class="n">velocity_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">velocity_file</span><span class="p">,</span>
@@ -211,11 +211,11 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.xyz2rst.html#PQAnalysis.cli.xyz2rst.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function of the xyz2rst command line tool, which is basically just a wrapper </span>
 <span class="sd">    for the xyz2rst function. For more information on the xyz2rst function </span>
 <span class="sd">    please visit :py:func:`PQAnalysis.io.api.xyz2rst`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">XYZ2RstCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

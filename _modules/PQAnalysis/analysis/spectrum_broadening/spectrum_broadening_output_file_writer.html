@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the writer for broadened spectra.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="c1"># 3rd party imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span>
@@ -100,13 +100,13 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.SpectrumDataWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SpectrumDataWriter</span><span class="p">(</span><span class="n">AnalysisDataWriter</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class for writing a broadened spectrum to a file.</span>
 
 <span class="sd">    Each row contains one grid point and the broadened intensity at</span>
-<span class="sd">    that grid point in the legacy ``&#39;%8.4f    %16.12e&#39;`` format of</span>
+<span class="sd">    that grid point in the legacy ``'%8.4f    %16.12e'`` format of</span>
 <span class="sd">    ``build_spectrum.sh``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">schema</span> <span class="o">=</span> <span class="n">BROADENED_SPECTRUM_SCHEMA</span>
     <span class="n">header</span> <span class="o">=</span> <span class="n">format_output_header</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="n">schema</span><span class="o">.</span><span class="n">header_columns</span><span class="p">)</span>
@@ -115,27 +115,27 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
         <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str | None, optional</span>
 <span class="sd">            The filename to write to. If None, the output is printed</span>
 <span class="sd">            to stdout, by default None.</span>
 <span class="sd">        mode : str | FileWritingMode, optional</span>
-<span class="sd">            The writing mode, by default &quot;w&quot;.</span>
+<span class="sd">            The writing mode, by default "w".</span>
 <span class="sd">        export_files : Sequence[str] | None, optional</span>
 <span class="sd">            Additional output filenames, by default None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="n">export_files</span><span class="o">=</span><span class="n">export_files</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SpectrumDataWriter.write">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening_output_file_writer.SpectrumDataWriter.write">[docs]</a>
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the broadened spectrum to the file.</span>
 
 <span class="sd">        Parameters</span>
@@ -144,7 +144,7 @@
 <span class="sd">            The wavenumber grid and the broadened intensities as</span>
 <span class="sd">            returned by</span>
 <span class="sd">            :py:func:`~PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">table</span> <span class="o">=</span> <span class="n">AnalysisTable</span><span class="o">.</span><span class="n">from_columns</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
         <span class="k">def</span><span class="w"> </span><span class="nf">write_native</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
@@ -152,7 +152,7 @@
 
             <span class="k">for</span> <span class="n">grid_point</span><span class="p">,</span> <span class="n">intensity</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
                 <span class="nb">print</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">grid_point</span><span class="si">:</span><span class="s2">8.4f</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">intensity</span><span class="si">:</span><span class="s2">16.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">grid_point</span><span class="si">:</span><span class="s2">8.4f</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">intensity</span><span class="si">:</span><span class="s2">16.12e</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
                 <span class="p">)</span>
 

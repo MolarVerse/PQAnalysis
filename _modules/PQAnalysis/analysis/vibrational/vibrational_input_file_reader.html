@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.vibrational.vibrational_input_file_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Input-file reader for vibrational analysis.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -100,25 +100,25 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html#PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VibrationalAnalysisInputFileReader</span><span class="p">(</span><span class="n">Reader</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to read input files for vibrational analysis.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
-    <span class="n">structure_file_key</span> <span class="o">=</span> <span class="s2">&quot;structure_file&quot;</span>
-    <span class="n">hessian_file_key</span> <span class="o">=</span> <span class="s2">&quot;hessian_file&quot;</span>
-    <span class="n">unit_key</span> <span class="o">=</span> <span class="s2">&quot;unit&quot;</span>
-    <span class="n">hessian_sign_key</span> <span class="o">=</span> <span class="s2">&quot;hessian_sign&quot;</span>
-    <span class="n">normal_modes_file_key</span> <span class="o">=</span> <span class="s2">&quot;normal_modes_file&quot;</span>
-    <span class="n">modes_prefix_key</span> <span class="o">=</span> <span class="s2">&quot;modes_prefix&quot;</span>
-    <span class="n">modes_file_key</span> <span class="o">=</span> <span class="s2">&quot;modes_file&quot;</span>
-    <span class="n">modes_key</span> <span class="o">=</span> <span class="s2">&quot;modes&quot;</span>
-    <span class="n">modes_frames_key</span> <span class="o">=</span> <span class="s2">&quot;modes_frames&quot;</span>
-    <span class="n">modes_amplitude_key</span> <span class="o">=</span> <span class="s2">&quot;modes_amplitude&quot;</span>
-    <span class="n">modes_temperature_key</span> <span class="o">=</span> <span class="s2">&quot;modes_temperature&quot;</span>
-    <span class="n">modes_threshold_key</span> <span class="o">=</span> <span class="s2">&quot;modes_threshold&quot;</span>
+    <span class="n">structure_file_key</span> <span class="o">=</span> <span class="s2">"structure_file"</span>
+    <span class="n">hessian_file_key</span> <span class="o">=</span> <span class="s2">"hessian_file"</span>
+    <span class="n">unit_key</span> <span class="o">=</span> <span class="s2">"unit"</span>
+    <span class="n">hessian_sign_key</span> <span class="o">=</span> <span class="s2">"hessian_sign"</span>
+    <span class="n">normal_modes_file_key</span> <span class="o">=</span> <span class="s2">"normal_modes_file"</span>
+    <span class="n">modes_prefix_key</span> <span class="o">=</span> <span class="s2">"modes_prefix"</span>
+    <span class="n">modes_file_key</span> <span class="o">=</span> <span class="s2">"modes_file"</span>
+    <span class="n">modes_key</span> <span class="o">=</span> <span class="s2">"modes"</span>
+    <span class="n">modes_frames_key</span> <span class="o">=</span> <span class="s2">"modes_frames"</span>
+    <span class="n">modes_amplitude_key</span> <span class="o">=</span> <span class="s2">"modes_amplitude"</span>
+    <span class="n">modes_temperature_key</span> <span class="o">=</span> <span class="s2">"modes_temperature"</span>
+    <span class="n">modes_threshold_key</span> <span class="o">=</span> <span class="s2">"modes_threshold"</span>
 
     <span class="n">required_keys</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">structure_file_key</span><span class="p">,</span>
@@ -142,50 +142,50 @@
 
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
 <span class="sd">            The input file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
 <div class="viewcode-block" id="VibrationalAnalysisInputFileReader.read">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html#PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader.read">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Read and validate the input file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">not_defined_optional_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;kcal&quot;</span><span class="p">,</span> <span class="s2">&quot;hartree&quot;</span><span class="p">,</span> <span class="s2">&quot;ev&quot;</span><span class="p">}:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"kcal"</span><span class="p">,</span> <span class="s2">"hartree"</span><span class="p">,</span> <span class="s2">"ev"</span><span class="p">}:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;The unit key must be one of: kcal, hartree, ev.&quot;</span><span class="p">,</span>
+                <span class="s2">"The unit key must be one of: kcal, hartree, ev."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_sign</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span>
-            <span class="s2">&quot;auto&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span><span class="p">,</span> <span class="s2">&quot;negative&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;-1&quot;</span>
+            <span class="s2">"auto"</span><span class="p">,</span> <span class="s2">"positive"</span><span class="p">,</span> <span class="s2">"negative"</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">,</span> <span class="s2">"-1"</span>
         <span class="p">}:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;The hessian_sign key must be one of: auto, positive, &quot;</span>
-                    <span class="s2">&quot;negative, 1, -1.&quot;</span>
+                    <span class="s2">"The hessian_sign key must be one of: auto, positive, "</span>
+                    <span class="s2">"negative, 1, -1."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;nonzero&quot;</span><span class="p">,</span> <span class="s2">&quot;positive&quot;</span>
+            <span class="s2">"all"</span><span class="p">,</span> <span class="s2">"nonzero"</span><span class="p">,</span> <span class="s2">"positive"</span>
         <span class="p">}:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;The modes key must be one of: all, nonzero, positive, &quot;</span>
-                    <span class="s2">&quot;an integer, a list of integers or a range.&quot;</span>
+                    <span class="s2">"The modes key must be one of: all, nonzero, positive, "</span>
+                    <span class="s2">"an integer, a list of integers or a range."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
@@ -193,81 +193,94 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">,</span>
                       <span class="nb">list</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">(</span><span class="n">mode</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Mode numbers must be positive and one-based.&quot;</span><span class="p">,</span>
+                <span class="s2">"Mode numbers must be positive and one-based."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes_temperature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes_temperature</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;The modes_temperature key must be positive.&quot;</span><span class="p">,</span>
+                <span class="s2">"The modes_temperature key must be positive."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">structure_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str: The structure file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure_file_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hessian_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str: The Hessian file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_file_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">unit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str: The Hessian unit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">unit</span> <span class="o">=</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;kcal&quot;</span> <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">unit</span>
+        <span class="k">return</span> <span class="s2">"kcal"</span> <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">unit</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">hessian_sign</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str: The Hessian sign convention.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+
+<span class="sd">        The key accepts the names ``auto``, ``positive`` and ``negative``</span>
+<span class="sd">        as well as the numbers ``1`` and ``-1``. A number is returned as</span>
+<span class="sd">        its string form, so that the value can be validated and passed on</span>
+<span class="sd">        like any other name.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">hessian_sign_key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="n">PQKeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"auto"</span>
+
+        <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">"int"</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
         <span class="n">hessian_sign</span> <span class="o">=</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">hessian_sign_key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;auto&quot;</span> <span class="k">if</span> <span class="n">hessian_sign</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hessian_sign</span>
+        <span class="k">return</span> <span class="s2">"auto"</span> <span class="k">if</span> <span class="n">hessian_sign</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hessian_sign</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">normal_modes_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str | None: The normal-mode matrix output file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal_modes_file_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str | None: The XYZ mode file prefix.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes_prefix_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str | None: The extended XYZ mode file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_string</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes_file_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        str | list[int]: The normal modes selected for visualization.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">modes</span> <span class="o">=</span> <span class="n">_parse_modes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modes_key</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s2">&quot;all&quot;</span> <span class="k">if</span> <span class="n">modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">modes</span>
+        <span class="k">return</span> <span class="s2">"all"</span> <span class="k">if</span> <span class="n">modes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">modes</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        int: The number of frames per animated mode trajectory.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">modes_frames</span> <span class="o">=</span> <span class="n">_parse_positive_int</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modes_frames_key</span><span class="p">,</span>
@@ -276,9 +289,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        float: The maximum displacement in animated mode trajectories.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">modes_amplitude</span> <span class="o">=</span> <span class="n">_parse_positive_real</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modes_amplitude_key</span><span class="p">,</span>
@@ -287,9 +300,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        float | None: The ASE-style temperature used to scale modes.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">modes_temperature</span> <span class="o">=</span> <span class="n">_parse_positive_real</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modes_temperature_key</span><span class="p">,</span>
@@ -298,9 +311,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">modes_threshold</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        float: Wavenumber threshold for named mode selections.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">modes_threshold</span> <span class="o">=</span> <span class="n">_parse_positive_real</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modes_threshold_key</span><span class="p">,</span>
@@ -311,9 +324,9 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_parse_modes</span><span class="p">(</span><span class="n">input_dict</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Parse mode selection input.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">input_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
     <span class="k">except</span> <span class="n">PQKeyError</span><span class="p">:</span>
@@ -321,25 +334,25 @@
 
     <span class="n">value</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">data</span>
 
-    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">"None"</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">"str"</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">"int"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)]</span>
 
-    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;list(int)&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">"list(int)"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;range&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">"range"</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span> <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">value</span><span class="p">]</span>
 
     <span class="n">VibrationalAnalysisInputFileReader</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
         <span class="p">(</span>
-            <span class="s2">&quot;The modes key must be one of: all, nonzero, positive, &quot;</span>
-            <span class="s2">&quot;an integer, a list of integers or a range.&quot;</span>
+            <span class="s2">"The modes key must be one of: all, nonzero, positive, "</span>
+            <span class="s2">"an integer, a list of integers or a range."</span>
         <span class="p">),</span>
         <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
     <span class="p">)</span>
@@ -347,7 +360,7 @@
 
 
 
-<span class="n">input_keys_documentation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">input_keys_documentation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 
 <span class="s2">For the vibrational analysis input file several keys are available.</span>
 
@@ -396,7 +409,7 @@
 <span class="s2">      - Wavenumber threshold in cm-1 for nonzero and positive selections.</span>
 <span class="s2">        Default is 1.0e-8.</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">VibrationalAnalysisInputFileReader</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 </pre></div>

@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.input_file_reader.input_file_parser</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the input file parser.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -101,7 +101,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InputFileParser</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Class to parse input files.</span>
 
 <span class="sd">    This parser is based on a lark grammar. It uses the lark parser to parse</span>
@@ -118,21 +118,21 @@
 <span class="sd">    ----------</span>
 <span class="sd">    BaseReader : BaseReader</span>
 <span class="sd">        BaseReader class from PQAnalysis.io</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">input_format</span><span class="p">:</span> <span class="n">InputFileFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQANALYSIS</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
 <span class="sd">            The name of the input file.</span>
 <span class="sd">        input_format : InputFileFormat | str, optional</span>
 <span class="sd">            The format of the input file, by default InputFileFormat.PQANALYSIS</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">input_format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
 
@@ -147,8 +147,8 @@
 
 <div class="viewcode-block" id="InputFileParser.parse">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser.parse">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;InputDictionary&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"InputDictionary"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parse the input file.</span>
 
 <span class="sd">        It uses the lark parser to parse the input file. It then uses the</span>
@@ -160,23 +160,23 @@
 <span class="sd">        -------</span>
 <span class="sd">        InputDictionary: InputDictionary</span>
 <span class="sd">            The parsed input file dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">grammar_file</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># to avoid linter warning</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_format</span> <span class="o">==</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQANALYSIS</span><span class="p">:</span>
-            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">&quot;inputGrammar.lark&quot;</span>
+            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">"inputGrammar.lark"</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_format</span> <span class="o">==</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">:</span>
-            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">&quot;PQ_inputGrammar.lark&quot;</span>
+            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">"PQ_inputGrammar.lark"</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_format</span> <span class="o">==</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">QMCFC</span><span class="p">:</span>
-            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">&quot;QMCFC_inputGrammar.lark&quot;</span>
+            <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">"QMCFC_inputGrammar.lark"</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">InputDictionary</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Input file format </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_format</span><span class="si">}</span><span class="s2"> not supported.&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Input file format </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_format</span><span class="si">}</span><span class="s2"> not supported."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQTypeError</span>
             <span class="p">)</span>
 
-        <span class="n">grammar_path</span> <span class="o">=</span> <span class="n">__base_path__</span> <span class="o">/</span> <span class="s2">&quot;grammar&quot;</span>
+        <span class="n">grammar_path</span> <span class="o">=</span> <span class="n">__base_path__</span> <span class="o">/</span> <span class="s2">"grammar"</span>
 
         <span class="n">parser</span> <span class="o">=</span> <span class="n">Lark</span><span class="o">.</span><span class="n">open</span><span class="p">(</span>
             <span class="n">grammar_path</span> <span class="o">/</span> <span class="n">grammar_file</span><span class="p">,</span>
@@ -206,28 +206,28 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InputDictionary</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Input file dictionary.</span>
 
 <span class="sd">    This is a dictionary-like object that stores the input file keys and values.</span>
-<span class="sd">    It is case-insensitive, so that the keys &quot;key&quot;, &quot;Key&quot; and &quot;KEY&quot; are all</span>
+<span class="sd">    It is case-insensitive, so that the keys "key", "Key" and "KEY" are all</span>
 <span class="sd">    equivalent. It also stores the type of the value and the line where the key</span>
 <span class="sd">    was defined in the input file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        THe InputDictionary is initialized as an empty dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="p">{}</span>
 
 <div class="viewcode-block" id="InputDictionary.__getitem__">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__getitem__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the value of a key.</span>
 
 <span class="sd">        Parameters</span>
@@ -244,11 +244,11 @@
 <span class="sd">        ------</span>
 <span class="sd">        PQKeyError</span>
 <span class="sd">            If the key is not defined in the input file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">:=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Input file key </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> not defined in input file.&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Input file key </span><span class="se">\"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\"</span><span class="s2"> not defined in input file."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQKeyError</span>
             <span class="p">)</span>
 
@@ -258,7 +258,7 @@
 <div class="viewcode-block" id="InputDictionary.__setitem__">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__setitem__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Set the value of a key.</span>
 
 <span class="sd">        Parameters</span>
@@ -273,11 +273,11 @@
 <span class="sd">        ------</span>
 <span class="sd">        PQKeyError</span>
 <span class="sd">            If the key is already defined in the input file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">:=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Input file key </span><span class="se">\&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2"> defined multiple times in input file.&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Input file key </span><span class="se">\"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="se">\"</span><span class="s2"> defined multiple times in input file."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQKeyError</span>
             <span class="p">)</span>
 
@@ -287,7 +287,7 @@
 <div class="viewcode-block" id="InputDictionary.get_value">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the value of a key.</span>
 
 <span class="sd">        Parameters</span>
@@ -299,14 +299,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        Any</span>
 <span class="sd">            The value of the key.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="InputDictionary.get_line">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_line">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the line where the key was defined in the input file.</span>
 
 <span class="sd">        Parameters</span>
@@ -318,14 +318,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The line where the key was defined in the input file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="mi">2</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="InputDictionary.get_type">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.get_type">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the type of the value of a key.</span>
 
 <span class="sd">        Parameters</span>
@@ -337,28 +337,28 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The type of the value of the key.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="mi">1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="InputDictionary.keys">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the keys of the dictionary.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        List[str]</span>
 <span class="sd">            The keys of the dictionary in a list.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="InputDictionary.__eq__">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary.__eq__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compare two InputDictionary objects.</span>
 
 <span class="sd">        Parameters</span>
@@ -370,7 +370,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the objects are equal, False otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__value</span><span class="p">,</span> <span class="n">InputDictionary</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -381,14 +381,14 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_read_input_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read an input file, accepting legacy QMCFC files with latin-1 comments.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;latin-1&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"latin-1"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 
@@ -397,35 +397,35 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PrimitiveTransformer</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Transformer for primitive datatypes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Transformer : Transformer</span>
 <span class="sd">        Transformer class from lark.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visit_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        initialize the transformer</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        visit_tokens : bool, optional</span>
 <span class="sd">            boolean to visit tokens, by default False</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__visit_tokens__</span> <span class="o">=</span> <span class="n">visit_tokens</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__visit_tokens__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PrimitiveTransformer.float">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.float">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">float</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Real</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform float values</span>
 
-<span class="sd">        A &quot;float&quot; token is transformed into a float value,</span>
-<span class="sd">        the string &quot;float&quot;, and the line where the token was defined.</span>
+<span class="sd">        A "float" token is transformed into a float value,</span>
+<span class="sd">        the string "float", and the line where the token was defined.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -435,16 +435,16 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[Real, str, str]</span>
-<span class="sd">            tuple containing the float value, the string &quot;float&quot;,</span>
+<span class="sd">            tuple containing the float value, the string "float",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"float"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrimitiveTransformer.integer">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.integer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform int values</span>
 
 <span class="sd">        Parameters</span>
@@ -455,16 +455,16 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[Integral, str, str]</span>
-<span class="sd">            tuple containing the int value, the string &quot;int&quot;,</span>
+<span class="sd">            tuple containing the int value, the string "int",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"int"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrimitiveTransformer.word">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.word">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform word values</span>
 
 <span class="sd">        Parameters</span>
@@ -475,16 +475,16 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[str, str, str]</span>
-<span class="sd">            tuple containing the word value, the string &quot;str&quot;,</span>
+<span class="sd">            tuple containing the word value, the string "str",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"str"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PrimitiveTransformer.boolean">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.PrimitiveTransformer.boolean">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">boolean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform bool values</span>
 
 <span class="sd">        Parameters</span>
@@ -495,10 +495,10 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[bool, str, str]</span>
-<span class="sd">            tuple containing the bool value, the string &quot;bool&quot;,</span>
+<span class="sd">            tuple containing the bool value, the string "bool",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"true"</span><span class="p">,</span> <span class="s2">"bool"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 </div>
 
 
@@ -508,31 +508,31 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ComposedDatatypesTransformer</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Transformer for composed datatypes.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Transformer : Transformer</span>
 <span class="sd">        Transformer class from lark.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">primitive_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;float&quot;</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="s2">&quot;bool&quot;</span><span class="p">]</span>
+    <span class="n">primitive_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"float"</span><span class="p">,</span> <span class="s2">"int"</span><span class="p">,</span> <span class="s2">"str"</span><span class="p">,</span> <span class="s2">"bool"</span><span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visit_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        initialize the transformer</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        visit_tokens : bool, optional</span>
 <span class="sd">            boolean to visit tokens, by default False</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__visit_tokens__</span> <span class="o">=</span> <span class="n">visit_tokens</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__visit_tokens__</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_infer_most_general_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">types</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to infer the most general type of a list of items</span>
 
 <span class="sd">        Parameters</span>
@@ -549,35 +549,35 @@
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            if the list of items contains a bool and another type</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;str&quot;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;str&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="s2">"str"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"str"</span>
 
-        <span class="k">if</span> <span class="s2">&quot;bool&quot;</span> <span class="ow">in</span> <span class="n">types</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">types</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">"bool"</span> <span class="ow">in</span> <span class="n">types</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="s2">"bool"</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">types</span><span class="p">):</span>
             <span class="n">InputDictionary</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Bool cannot be used with other types. Found </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Bool cannot be used with other types. Found </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQTypeError</span>
             <span class="p">)</span>
-        <span class="k">if</span> <span class="s2">&quot;bool&quot;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;bool&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;float&quot;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;float&quot;</span>
-        <span class="k">if</span> <span class="s2">&quot;int&quot;</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;int&quot;</span>
+        <span class="k">if</span> <span class="s2">"bool"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"bool"</span>
+        <span class="k">if</span> <span class="s2">"float"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"float"</span>
+        <span class="k">if</span> <span class="s2">"int"</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">"int"</span>
 
         <span class="n">InputDictionary</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Could not infer most general type from </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Could not infer most general type from </span><span class="si">{</span><span class="n">types</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQTypeError</span>
         <span class="p">)</span>
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.array">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.array">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform array values</span>
 
 <span class="sd">        It transforms a list of items into a list of values, the string</span>
-<span class="sd">        &quot;{most_general_type}&quot;, and the line where the token was defined.</span>
+<span class="sd">        "{most_general_type}", and the line where the token was defined.</span>
 <span class="sd">        The most general type is inferred from the list of items.</span>
 <span class="sd">        If the list contains a bool and another type, a TypeError is raised.</span>
 <span class="sd">        The list of items must contain only primitive types.</span>
@@ -590,21 +590,21 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[List[Any], str, str]</span>
-<span class="sd">            tuple containing the array value, the string &quot;{most_general_type}&quot;,</span>
+<span class="sd">            tuple containing the array value, the string "{most_general_type}",</span>
 <span class="sd">            and the line where the token was defined.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
 <span class="sd">        TypeError</span>
 <span class="sd">            if the list of items contains a non-primitive type</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">not_primitive_types</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span> <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">primitive_types</span>
         <span class="p">]</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">not_primitive_types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">InputDictionary</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Array elements must be primitive types. Found </span><span class="si">{</span><span class="n">not_primitive_types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">"Array elements must be primitive types. Found </span><span class="si">{</span><span class="n">not_primitive_types</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQTypeError</span>
             <span class="p">)</span>
 
@@ -612,23 +612,46 @@
             <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">&quot;str&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">"str"</span><span class="p">:</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">&quot;bool&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">"bool"</span><span class="p">:</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">bool</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">&quot;float&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">"float"</span><span class="p">:</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">&quot;int&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">most_general_type</span> <span class="o">==</span> <span class="s2">"int"</span><span class="p">:</span>
             <span class="n">items</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
 
         <span class="n">_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">]</span>
-        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_list</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;list(</span><span class="si">{</span><span class="n">most_general_type</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">_list</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"list(</span><span class="si">{</span><span class="n">most_general_type</span><span class="si">}</span><span class="s2">)"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ComposedDatatypesTransformer.bare_array">
+<a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.bare_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">bare_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Method to transform unbracketed comma-separated array values.</span>
+
+<span class="sd">        The items are transformed exactly like bracketed arrays.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        items : List[Any]</span>
+<span class="sd">            items containing the array value</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Tuple[List[Any], str, str]</span>
+<span class="sd">            tuple containing the array value, the string</span>
+<span class="sd">            "list({most_general_type})", and the line where</span>
+<span class="sd">            the token was defined.</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.range">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.range">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Range</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform range values</span>
 
 <span class="sd">        Parameters</span>
@@ -639,21 +662,21 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[Range, str, str]</span>
-<span class="sd">            tuple containing the range value, the string &quot;range&quot;,</span>
+<span class="sd">            tuple containing the range value, the string "range",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">return_range</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span>
             <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">items</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">return_range</span><span class="p">,</span> <span class="s2">&quot;range&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="n">return_range</span><span class="p">,</span> <span class="s2">"range"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.glob">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.glob">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">glob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform glob values</span>
 
 <span class="sd">        Parameters</span>
@@ -664,34 +687,34 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[List[str], str, str]</span>
-<span class="sd">            tuple containing the glob value, the string &quot;glob&quot;,</span>
+<span class="sd">            tuple containing the glob value, the string "glob",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">glob</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="s2">&quot;glob&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="n">glob</span><span class="p">(</span><span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="s2">"glob"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.qmcfc_atom">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.qmcfc_atom">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">qmcfc_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Transform a QMCFC selector fragment to a string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">&quot;str&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="s2">"str"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.qmcfc_list">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.qmcfc_list">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">qmcfc_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Transform an unbracketed QMCFC comma-separated value to a list.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">],</span> <span class="s2">&quot;list(str)&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">],</span> <span class="s2">"list(str)"</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.key">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.key">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform key values</span>
 
 <span class="sd">        Parameters</span>
@@ -703,14 +726,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            key value</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ComposedDatatypesTransformer.value">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.value">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Method to transform value values</span>
 
 <span class="sd">        Parameters</span>
@@ -721,9 +744,9 @@
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Tuple[Any, str, str]</span>
-<span class="sd">            tuple containing the value value, the string &quot;value&quot;,</span>
+<span class="sd">            tuple containing the value value, the string "value",</span>
 <span class="sd">            and the line where the token was defined.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 </div>
 
@@ -734,28 +757,28 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InputFileVisitor</span><span class="p">(</span><span class="n">Visitor</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Visitor for input files.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Visitor :</span>
 <span class="sd">        Visitor class from lark.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Initialize the visitor.</span>
 
 <span class="sd">        It initializes the dictionary and the composed datatypes transformer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict</span> <span class="o">=</span> <span class="n">InputDictionary</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">composed_datatype_transformer</span> <span class="o">=</span> <span class="n">ComposedDatatypesTransformer</span><span class="p">()</span>
 
 <div class="viewcode-block" id="InputFileVisitor.assign">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.assign">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">assign</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tree</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parse an assign statement. The assign statement is of the form:</span>
 
 <span class="sd">        key = value;</span>
@@ -772,7 +795,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Tree</span>
 <span class="sd">            The assign statement.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">items</span></div>
@@ -781,7 +804,7 @@
 <div class="viewcode-block" id="InputFileVisitor.multiline_statement">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.multiline_statement">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">multiline_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tree</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parse a multiline statement. The multiline statement is of the form:</span>
 
 <span class="sd">        key</span>
@@ -802,7 +825,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Tree</span>
 <span class="sd">            The multiline statement.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">composed_datatype_transformer</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="nb">list</span><span class="p">(</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         <span class="p">)</span>
@@ -810,7 +833,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">array</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">array</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">items</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">end_line</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">items</span></div>
@@ -819,7 +842,7 @@
 <div class="viewcode-block" id="InputFileVisitor.visit">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.input_file_parser.html#PQAnalysis.io.input_file_reader.input_file_parser.InputFileVisitor.visit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InputDictionary</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Visit the tree and return the dictionary.</span>
 
 <span class="sd">        Parameters</span>
@@ -831,7 +854,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        InputDictionary</span>
 <span class="sd">            The parsed input file dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dict</span></div>

@@ -76,12 +76,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.vibrations</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.vibrations:</span>
 
 <span class="sd">Command Line Tool for Vibrational Analysis</span>
 <span class="sd">==========================================</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.vibrational</span><span class="w"> </span><span class="kn">import</span> <span class="n">vibrations</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.vibrational.vibrational_input_file_reader</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -92,7 +92,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 
 <span class="s2">This command line tool calculates vibrational frequencies, force constants,</span>
 <span class="s2">reduced masses, normal modes and optional IR intensities from a structure file</span>
@@ -101,18 +101,18 @@
 <span class="s2">The main table contains signed wavenumbers, optional IR intensities,</span>
 <span class="s2">force constants and reduced masses. Optional files contain the</span>
 <span class="s2">normal-mode matrix or XYZ mode representations.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.vibrations.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.vibrations.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="p">(</span>
-    <span class="s2">&quot;For column and mode-file definitions see &quot;</span>
-    <span class="s2">&quot;:ref:`vibrational-analysis output &lt;analysis-output-vibrations&gt;`.</span><span class="se">\n</span><span class="s2">&quot;</span>
+    <span class="s2">"For column and mode-file definitions see "</span>
+    <span class="s2">":ref:`vibrational-analysis output &lt;analysis-output-vibrations&gt;`.</span><span class="se">\n</span><span class="s2">"</span>
 <span class="p">)</span>
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 
@@ -122,27 +122,27 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.vibrations.html#PQAnalysis.cli.vibrations.VibrationsCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">VibrationsCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for Vibrational Analysis</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="VibrationsCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.vibrations.html#PQAnalysis.cli.vibrations.VibrationsCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;vibrations&quot;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">"vibrations"</span></div>
 
 
 <div class="viewcode-block" id="VibrationsCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.vibrations.html#PQAnalysis.cli.vibrations.VibrationsCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_export_files</span><span class="p">()</span></div>
 
@@ -151,12 +151,12 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.vibrations.html#PQAnalysis.cli.vibrations.VibrationsCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the command line tool.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">export_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">&#39;export_files&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
+            <span class="n">export_kwargs</span><span class="p">[</span><span class="s1">'export_files'</span><span class="p">]</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">export_files</span>
 
         <span class="n">vibrations</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span> <span class="o">**</span><span class="n">export_kwargs</span><span class="p">)</span></div>
 </div>
@@ -167,9 +167,9 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.vibrations.html#PQAnalysis.cli.vibrations.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function for the standalone vibrational analysis CLI.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">VibrationsCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

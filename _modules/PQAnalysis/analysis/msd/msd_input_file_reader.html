@@ -76,10 +76,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.msd.msd_input_file_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing a class to read input files to setup the</span>
 <span class="sd">:py:class:`~PQAnalysis.analysis.msd.msd.MSD` class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="c1"># local imports</span>
@@ -101,20 +101,20 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd_input_file_reader.html#PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MSDInputFileReader</span><span class="p">(</span><span class="n">Reader</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to read input files to setup the</span>
 <span class="sd">    :py:class:`~PQAnalysis.analysis.msd.msd.MSD` class.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
-    <span class="n">window_key</span> <span class="o">=</span> <span class="s2">&quot;window&quot;</span>
-    <span class="n">gap_key</span> <span class="o">=</span> <span class="s2">&quot;gap&quot;</span>
-    <span class="n">first_frame_key</span> <span class="o">=</span> <span class="s2">&quot;first_frame&quot;</span>
-    <span class="n">start_key</span> <span class="o">=</span> <span class="s2">&quot;start&quot;</span>
-    <span class="n">time_step_key</span> <span class="o">=</span> <span class="s2">&quot;time_step&quot;</span>
-    <span class="n">fit_window_key</span> <span class="o">=</span> <span class="s2">&quot;fit_window&quot;</span>
+    <span class="n">window_key</span> <span class="o">=</span> <span class="s2">"window"</span>
+    <span class="n">gap_key</span> <span class="o">=</span> <span class="s2">"gap"</span>
+    <span class="n">first_frame_key</span> <span class="o">=</span> <span class="s2">"first_frame"</span>
+    <span class="n">start_key</span> <span class="o">=</span> <span class="s2">"start"</span>
+    <span class="n">time_step_key</span> <span class="o">=</span> <span class="s2">"time_step"</span>
+    <span class="n">fit_window_key</span> <span class="o">=</span> <span class="s2">"fit_window"</span>
 
     <span class="c1">#: List[str]: The required keys of the input file</span>
     <span class="n">required_keys</span> <span class="o">=</span> <span class="p">[</span>
@@ -137,19 +137,19 @@
 
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
 <span class="sd">            the filename of the input file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
 <div class="viewcode-block" id="MSDInputFileReader.read">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.msd.msd_input_file_reader.html#PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader.read">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads the input file and parses it.</span>
 <span class="sd">        It also sets the raw_input_file and the dictionary.</span>
 <span class="sd">        It checks if all required keys are set and if all keys are known.</span>
@@ -166,7 +166,7 @@
 <span class="sd">            if the first_frame or start key is negative</span>
 <span class="sd">        InputFileError</span>
 <span class="sd">            if the time_step key is not positive</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">required_keys</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">optional_keys</span><span class="p">)</span>
@@ -178,9 +178,9 @@
         <span class="k">if</span> <span class="n">first_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The keys &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame_key</span><span class="si">}</span><span class="s2">&#39; and &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_key</span><span class="si">}</span><span class="s2">&#39; are aliases and cannot be &quot;</span>
-                    <span class="s2">&quot;used at the same time.&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The keys '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame_key</span><span class="si">}</span><span class="s2">' and "</span>
+                    <span class="sa">f</span><span class="s2">"'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_key</span><span class="si">}</span><span class="s2">' are aliases and cannot be "</span>
+                    <span class="s2">"used at the same time."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
@@ -188,9 +188,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_start</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame_key</span><span class="si">}</span><span class="s2">&#39;/&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_key</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                    <span class="s2">&quot;value has to be a non-negative integer - &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;It actually is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_start</span><span class="si">}</span><span class="s2">!&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame_key</span><span class="si">}</span><span class="s2">'/'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">start_key</span><span class="si">}</span><span class="s2">' "</span>
+                    <span class="s2">"value has to be a non-negative integer - "</span>
+                    <span class="sa">f</span><span class="s2">"It actually is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_start</span><span class="si">}</span><span class="s2">!"</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span>
@@ -198,9 +198,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step</span> <span class="o">&lt;=</span> <span class="mf">0.0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step_key</span><span class="si">}</span><span class="s2">&#39; value has to be a &quot;</span>
-                    <span class="s2">&quot;positive real number - &quot;</span>
-                    <span class="sa">f</span><span class="s2">&quot;It actually is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="si">}</span><span class="s2">!&quot;</span>
+                    <span class="sa">f</span><span class="s2">"The '</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step_key</span><span class="si">}</span><span class="s2">' value has to be a "</span>
+                    <span class="s2">"positive real number - "</span>
+                    <span class="sa">f</span><span class="s2">"It actually is </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_step</span><span class="si">}</span><span class="s2">!"</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span><span class="p">,</span>
             <span class="p">)</span></div>
@@ -208,23 +208,23 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        PositiveInt | None: The correlation window size in frames.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_positive_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">gap</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        PositiveInt | None: The gap between two time origins in frames.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_positive_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gap_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        int | None: The first frame at which processing starts.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">first_frame</span> <span class="o">=</span> <span class="n">_parse_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_frame_key</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">first_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -234,22 +234,22 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        PositiveReal | None: The time step between two frames in ps.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_positive_real</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_step_key</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        PositiveInt | None: The number of trailing MSD points to fit.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">_parse_positive_int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_window_key</span><span class="p">)</span></div>
 
 
 
 
-<span class="n">input_keys_documentation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="n">input_keys_documentation</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"""</span>
 
 <span class="s2">For the MSD analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.</span>
 
@@ -297,7 +297,7 @@
 <span class="s2">The MSD output file follows the legacy Diffcalc format. See</span>
 <span class="s2">:ref:`MSD output files &lt;analysis-output-msd&gt;` for its columns and units.</span>
 
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
 <span class="n">MSDInputFileReader</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">input_keys_documentation</span>
 </pre></div>

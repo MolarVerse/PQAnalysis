@@ -5,7 +5,9 @@ io.traj_file
 ===============================
 
 .. automodule:: PQAnalysis.io.traj_file
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -26,4 +28,38 @@ io.traj_file
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`BaseFrameReader <PQAnalysis.io.traj_file.frame_reader.BaseFrameReader>`
+         - Base class for frame readers.
+       * - :class:`ExtXYZFrameReader <PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader>`
+         - A frame reader for extended xyz position frames.
+       * - :class:`RawTrajectoryReader <PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader>`
+         - A fast-path reader that streams raw per-frame data of xyz-family trajectory files.
+       * - :class:`TrajectoryReader <PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader>`
+         - A class for reading a trajectory from a file.
+       * - :class:`TrajectoryWriter <PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter>`
+         - A class for writing a trajectory to a file.
+       * - :class:`XYZFrameReader <PQAnalysis.io.traj_file.frame_reader.XYZFrameReader>`
+         - This class provides methods for reading a frame from a string.
+    
+
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`get_frame_reader <PQAnalysis.io.traj_file.frame_reader.get_frame_reader>`
+         - Return the frame reader implementation for a trajectory format.
+    
+
+
+
+    Reference
+    ---------

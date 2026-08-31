@@ -5,7 +5,9 @@ topology
 ===========================
 
 .. automodule:: PQAnalysis.topology
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -32,4 +34,47 @@ topology
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Exceptions:
+
+
+    .. list-table::
+    
+       * - :exc:`TopologyError <PQAnalysis.topology.exceptions.TopologyError>`
+         - Exception raised for errors related to the Topology class
+    
+
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`Angle <PQAnalysis.topology.bonded_topology.angle.Angle>`
+         - A class to represent an angle in a molecular topology.
+       * - :class:`Bond <PQAnalysis.topology.bonded_topology.bond.Bond>`
+         - A class to represent a bond in a molecular topology.
+       * - :class:`BondedTopology <PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology>`
+         - A class to represent a bonded topology in a molecular topology.
+       * - :class:`Dihedral <PQAnalysis.topology.bonded_topology.dihedral.Dihedral>`
+         - A class to represent a dihedral in a molecular topology.
+       * - :class:`Selection <PQAnalysis.topology.selection.Selection>`
+         - A class for representing a selection.
+       * - :class:`Topology <PQAnalysis.topology.topology.Topology>`
+         - A class for representing a topology.
+    
+
+    ``__all__`` Data:
+
+
+    .. list-table::
+    
+       * - :data:`SelectionCompatible <PQAnalysis.topology.selection.SelectionCompatible>`
+         - Type variable.
+    
+
+
+
+    Reference
+    ---------

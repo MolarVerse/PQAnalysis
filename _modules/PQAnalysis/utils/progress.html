@@ -5,13 +5,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PQAnalysis.physical_data.exceptions &mdash; PQAnalysis  documentation</title>
+  <title>PQAnalysis.utils.progress &mdash; PQAnalysis  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=870d944b" />
       <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
 
   
-    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/physical_data/exceptions.html" />
+    <link rel="canonical" href="https://molarverse.github.io/PQAnalysis/_modules/PQAnalysis/utils/progress.html" />
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="../../../_static/documentation_options.js?v=5929fcd5"></script>
@@ -66,7 +66,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">PQAnalysis.physical_data.exceptions</li>
+      <li class="breadcrumb-item active">PQAnalysis.utils.progress</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -75,32 +75,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <h1>Source code for PQAnalysis.physical_data.exceptions</h1><div class="highlight"><pre>
-<span></span><span class="sd">"""</span>
-<span class="sd">A module containing different exceptions related to the physicalData subpackage.</span>
-<span class="sd">"""</span>
+  <h1>Source code for PQAnalysis.utils.progress</h1><div class="highlight"><pre>
+<span></span><span class="sd">"""Progress-bar selection for terminal and notebook environments."""</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PQException</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 
 
 
-<div class="viewcode-block" id="EnergyError">
-<a class="viewcode-back" href="../../../code/PQAnalysis.physical_data.exceptions.html#PQAnalysis.physical_data.exceptions.EnergyError">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">EnergyError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
+<div class="viewcode-block" id="tqdm">
+<a class="viewcode-back" href="../../../code/PQAnalysis.utils.progress.html#PQAnalysis.utils.progress.tqdm">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">tqdm</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Create a terminal bar unless the process is running in a notebook."""</span>
+    <span class="k">if</span> <span class="s2">"ipykernel"</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span> <span class="k">as</span> <span class="n">implementation</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span> <span class="k">as</span> <span class="n">implementation</span>  <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Exception raised for errors related to the Energy class</span>
-<span class="sd">    """</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        message : str</span>
-<span class="sd">            The error message.</span>
-<span class="sd">        """</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">implementation</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 </pre></div>
 

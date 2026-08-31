@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.topology.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module including the API for the topology subpackage.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
@@ -99,10 +99,10 @@
     <span class="n">trajectory</span><span class="p">:</span> <span class="n">Trajectory</span><span class="p">,</span>
     <span class="n">selection</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrapper function to generate a shake topology file for a given trajectory.</span>
 
 <span class="sd">    Parameters</span>
@@ -111,19 +111,19 @@
 <span class="sd">        The trajectory to generate the shake topology for.</span>
 <span class="sd">    selection : SelectionCompatible, optional</span>
 <span class="sd">        Selection is either a selection object or any object that can be</span>
-<span class="sd">        initialized via &#39;Selection(selection)&#39;. default None (all atoms)</span>
+<span class="sd">        initialized via 'Selection(selection)'. default None (all atoms)</span>
 <span class="sd">    output : str | None, optional</span>
 <span class="sd">        The output file. If not specified, the output is printed to stdout.</span>
 <span class="sd">    mode : FileWritingMode | str, optional</span>
-<span class="sd">        The writing mode, by default &quot;w&quot;. The following modes are available:</span>
-<span class="sd">        - &quot;w&quot;: write</span>
-<span class="sd">        - &quot;a&quot;: append</span>
-<span class="sd">        - &quot;o&quot;: overwrite</span>
+<span class="sd">        The writing mode, by default "w". The following modes are available:</span>
+<span class="sd">        - "w": write</span>
+<span class="sd">        - "a": append</span>
+<span class="sd">        - "o": overwrite</span>
 <span class="sd">    use_full_atom_info : bool, optional</span>
 <span class="sd">        If True, the full atom information (name, index, mass) is used</span>
 <span class="sd">        for the selection, by default False</span>
 <span class="sd">        Is always ignored if atoms is not a list of atom objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">generator</span> <span class="o">=</span> <span class="n">ShakeTopologyGenerator</span><span class="p">(</span><span class="n">selection</span><span class="p">,</span> <span class="n">use_full_atom_info</span><span class="p">)</span>
     <span class="n">generator</span><span class="o">.</span><span class="n">generate_topology</span><span class="p">(</span><span class="n">trajectory</span><span class="p">)</span>
@@ -141,14 +141,14 @@
     <span class="n">moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Selects atoms from a restart file and writes them to a new file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    selection : SelectionCompatible</span>
 <span class="sd">        Selection is either a selection object or any object that can be</span>
-<span class="sd">        initialized via &#39;Selection(selection)&#39;.</span>
+<span class="sd">        initialized via 'Selection(selection)'.</span>
 <span class="sd">    restart_file : str</span>
 <span class="sd">        The restart file to read the atoms from.</span>
 <span class="sd">    moldescriptor_file : str | None, optional</span>
@@ -157,7 +157,7 @@
 <span class="sd">        If True, the full atom information (name, index, mass) is used</span>
 <span class="sd">        for the selection, by default False</span>
 <span class="sd">        Is always ignored if atoms is not a list of atom objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">system</span> <span class="o">=</span> <span class="n">read_restart_file</span><span class="p">(</span><span class="n">restart_file</span><span class="p">,</span> <span class="n">moldescriptor_file</span><span class="p">)</span>
 
@@ -179,14 +179,14 @@
     <span class="n">moldescriptor_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Selects atoms from a restart file and writes them to a new file.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    selection : SelectionCompatible</span>
 <span class="sd">        Selection is either a selection object or any object that can be</span>
-<span class="sd">        initialized via &#39;Selection(selection)&#39;.</span>
+<span class="sd">        initialized via 'Selection(selection)'.</span>
 <span class="sd">    restart_file : str</span>
 <span class="sd">        The restart file to read the atoms from.</span>
 <span class="sd">    moldescriptor_file : str | None, optional</span>
@@ -195,7 +195,7 @@
 <span class="sd">        If True, the full atom information (name, index, mass) is used</span>
 <span class="sd">        for the selection, by default False</span>
 <span class="sd">        Is always ignored if atoms is not a list of atom objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span>
         <span class="n">select_from_restart_file</span><span class="p">(</span>

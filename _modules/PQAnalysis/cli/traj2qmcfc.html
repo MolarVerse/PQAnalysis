@@ -76,33 +76,33 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.traj2qmcfc</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.traj2qmcfc:</span>
 
 <span class="sd">Command Line Tool for Converting PQ to QMCFC Trajectory Files</span>
 <span class="sd">---------------------------------------------------------------------------</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">traj2qmcfc</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Converts a PQ trajectory to a QMCFC trajectory format output.</span>
 
 <span class="s2">Both formats are adapted xyz file formats with the box dimensions and box angles</span>
 <span class="s2">being placed in the same line after the number of atoms. The QMCFC contains an </span>
-<span class="s2">additional dummy &#39;X&#39; particle as first entry of the coordinates section for</span>
+<span class="s2">additional dummy 'X' particle as first entry of the coordinates section for</span>
 <span class="s2">visibility and debugging reasons in conjunction with vmd.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.traj2qmcfc.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.traj2qmcfc.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
 
@@ -112,43 +112,44 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2qmcfc.html#PQAnalysis.cli.traj2qmcfc.Traj2QMCFCCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Traj2QMCFCCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for Converting PQ to QMCFC Trajectory Files</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="Traj2QMCFCCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2qmcfc.html#PQAnalysis.cli.traj2qmcfc.Traj2QMCFCCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;traj2qmcfc&#39;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'traj2qmcfc'</span></div>
 
 
 <div class="viewcode-block" id="Traj2QMCFCCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2qmcfc.html#PQAnalysis.cli.traj2qmcfc.Traj2QMCFCCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;trajectory_file&#39;</span><span class="p">,</span>
+            <span class="s1">'trajectory_file'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The trajectory file to be converted.&#39;</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s1">'+'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The trajectory file(s) to be converted.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_mode</span><span class="p">()</span></div>
@@ -158,14 +159,14 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2qmcfc.html#PQAnalysis.cli.traj2qmcfc.Traj2QMCFCCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the command line tool.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args : _Namespace</span>
 <span class="sd">            The arguments from the command line.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">traj2qmcfc</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">trajectory_file</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">)</span></div>
 </div>
 
@@ -175,11 +176,11 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2qmcfc.html#PQAnalysis.cli.traj2qmcfc.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function of the traj2qmcfc command line tool, which is basically just a </span>
 <span class="sd">    wrapper for the traj2qmcfc function. For more information on the traj2qmcfc </span>
 <span class="sd">    function please visit :py:func:`PQAnalysis.io.api.traj2qmcfc`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">Traj2QMCFCCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

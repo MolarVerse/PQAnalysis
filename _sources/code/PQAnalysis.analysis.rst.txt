@@ -5,7 +5,9 @@ analysis
 ===========================
 
 .. automodule:: PQAnalysis.analysis
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -33,4 +35,85 @@ analysis
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Exceptions:
+
+
+    .. list-table::
+    
+       * - :exc:`AnalysisOutputError <PQAnalysis.analysis.output.AnalysisOutputError>`
+         - Raised when an analysis table cannot be read, written or converted.
+    
+
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`AnalysisColumn <PQAnalysis.analysis._output_schemas.AnalysisColumn>`
+         - Metadata for one analysis-table column.
+       * - :class:`AnalysisOutputFormat <PQAnalysis.analysis.output.AnalysisOutputFormat>`
+         - Supported analysis-table output formats.
+       * - :class:`AnalysisSchema <PQAnalysis.analysis._output_schemas.AnalysisSchema>`
+         - Title, columns and optional plot defaults for an analysis table.
+       * - :class:`AnalysisTable <PQAnalysis.analysis.output.AnalysisTable>`
+         - A validated numerical table with scientific column metadata.
+       * - :class:`MSD <PQAnalysis.analysis.msd.msd.MSD>`
+         - A class for calculating the mean square displacement (MSD) of a target selection using multiple simultaneously active time origins.
+       * - :class:`MSDDiffusionFit <PQAnalysis.analysis.msd.msd.MSDDiffusionFit>`
+         - A container for the result of a linear diffusion fit of an MSD component.
+       * - :class:`MSDInputFileReader <PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader>`
+         - A class to read input files to setup the     :py:class:`~PQAnalysis.analysis.msd.msd.MSD` class.
+       * - :class:`Momentum <PQAnalysis.analysis.momentum.momentum.Momentum>`
+         - A class for calculating the norm of the total linear momentum of a selection of atoms for every frame of a velocity trajectory.
+       * - :class:`RDF <PQAnalysis.analysis.rdf.rdf.RDF>`
+         - A class for calculating the radial distribution of a  reference selection to a target selection.
+       * - :class:`RDFDataWriter <PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter>`
+         - Class for writing the data of an  :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
+       * - :class:`RDFInputFileReader <PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader>`
+         - A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
+       * - :class:`RDFLogWriter <PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFLogWriter>`
+         - Class for writing the log (setup parameters) of an  :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` analysis to a file.
+       * - :class:`VACF <PQAnalysis.analysis.vacf.vacf.VACF>`
+         - A class for calculating the normalized velocity (or charge-flux) auto-correlation function of a target selection of a velocity trajectory.
+       * - :class:`VACFInputFileReader <PQAnalysis.analysis.vacf.vacf_input_file_reader.VACFInputFileReader>`
+         - A class to read input files to setup the     :py:class:`~PQAnalysis.analysis.vacf.vacf.VACF` class.
+       * - :class:`VibrationalAnalysisInputFileReader <PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader>`
+         - A class to read input files for vibrational analysis.
+       * - :class:`VibrationalAnalysisResult <PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult>`
+         - Result container for a vibrational analysis.
+    
+
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`broaden <PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden>`
+         - Broaden a stick spectrum on a wavenumber grid.
+       * - :func:`build_spectrum <PQAnalysis.analysis.spectrum_broadening.api.build_spectrum>`
+         - Broaden a two-column stick spectrum file and write the result.
+       * - :func:`check_momentum <PQAnalysis.analysis.momentum.api.check_momentum>`
+         - Calculate the total linear momentum norm per frame and write it.
+       * - :func:`convert_analysis_output <PQAnalysis.analysis.output.convert_analysis_output>`
+         - Convert one analysis table to one or more output files.
+       * - :func:`msd <PQAnalysis.analysis.msd.api.msd>`
+         - Calculates the mean square displacement (MSD) using a given input file.
+       * - :func:`rdf <PQAnalysis.analysis.rdf.api.rdf>`
+         - Calculates the radial distribution function (RDF) using a given input file.
+       * - :func:`read_analysis_table <PQAnalysis.analysis.output.read_analysis_table>`
+         - Read native, CSV, TSV or XVG analysis data by content.
+       * - :func:`vacf <PQAnalysis.analysis.vacf.api.vacf>`
+         - Calculates the velocity auto-correlation function (VACF) using a given input file.
+       * - :func:`vacf_spectrum <PQAnalysis.analysis.vacf.spectrum.vacf_spectrum>`
+         - Calculates the legacy cosine-transform spectrum of a correlation function.
+       * - :func:`vibrations <PQAnalysis.analysis.vibrational.api.vibrations>`
+         - Run vibrational analysis from an input file.
+    
+
+
+
+    Reference
+    ---------

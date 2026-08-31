@@ -76,12 +76,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.formats</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing different formats related to the io subpackage.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseEnumFormat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
@@ -94,7 +94,7 @@
     <span class="n">OutputFileFormatError</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;OutputFileFormat&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">"OutputFileFormat"</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
 
@@ -103,45 +103,45 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">OutputFileFormat</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An enumeration of the supported output file formats.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="c1">#: inference of the file format from the file extension</span>
-    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span>
+    <span class="n">AUTO</span> <span class="o">=</span> <span class="s2">"auto"</span>
 
     <span class="c1">#: The xyz file format.</span>
-    <span class="n">XYZ</span> <span class="o">=</span> <span class="s2">&quot;xyz&quot;</span>
+    <span class="n">XYZ</span> <span class="o">=</span> <span class="s2">"xyz"</span>
 
     <span class="c1">#: The vel file format.</span>
-    <span class="n">VEL</span> <span class="o">=</span> <span class="s2">&quot;vel&quot;</span>
+    <span class="n">VEL</span> <span class="o">=</span> <span class="s2">"vel"</span>
 
     <span class="c1">#: The force file format.</span>
-    <span class="n">FORCE</span> <span class="o">=</span> <span class="s2">&quot;force&quot;</span>
+    <span class="n">FORCE</span> <span class="o">=</span> <span class="s2">"force"</span>
 
     <span class="c1">#: The charge file format.</span>
-    <span class="n">CHARGE</span> <span class="o">=</span> <span class="s2">&quot;charge&quot;</span>
+    <span class="n">CHARGE</span> <span class="o">=</span> <span class="s2">"charge"</span>
 
     <span class="c1">#: The restart file format.</span>
-    <span class="n">RESTART</span> <span class="o">=</span> <span class="s2">&quot;restart&quot;</span>
+    <span class="n">RESTART</span> <span class="o">=</span> <span class="s2">"restart"</span>
 
     <span class="c1">#: The ENERGY file format.</span>
-    <span class="n">ENERGY</span> <span class="o">=</span> <span class="s2">&quot;energy&quot;</span>
+    <span class="n">ENERGY</span> <span class="o">=</span> <span class="s2">"energy"</span>
 
     <span class="c1">#: The INSTANTANEOUS ENERGY file format.</span>
-    <span class="n">INSTANTANEOUS_ENERGY</span> <span class="o">=</span> <span class="s2">&quot;instant_en&quot;</span>
+    <span class="n">INSTANTANEOUS_ENERGY</span> <span class="o">=</span> <span class="s2">"instant_en"</span>
 
     <span class="c1">#: The STRESS file format.</span>
-    <span class="n">STRESS</span> <span class="o">=</span> <span class="s2">&quot;stress&quot;</span>
+    <span class="n">STRESS</span> <span class="o">=</span> <span class="s2">"stress"</span>
 
     <span class="c1">#: The VIRIAL file format.</span>
-    <span class="n">VIRIAL</span> <span class="o">=</span> <span class="s2">&quot;virial&quot;</span>
+    <span class="n">VIRIAL</span> <span class="o">=</span> <span class="s2">"virial"</span>
 
     <span class="c1">#: The Info file format.</span>
-    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">&quot;info&quot;</span>
+    <span class="n">INFO</span> <span class="o">=</span> <span class="s2">"info"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method returns the missing value of the enumeration.</span>
 
 <span class="sd">        Parameters</span>
@@ -154,7 +154,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Any</span>
 <span class="sd">            The value to return.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -168,8 +168,8 @@
         <span class="k">if</span> <span class="n">output_file_format</span> <span class="o">==</span> <span class="bp">cls</span><span class="o">.</span><span class="n">AUTO</span> <span class="ow">and</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;The file format could not be inferred from &quot;</span>
-                    <span class="s2">&quot;the file extension because no filename was given.&quot;</span>
+                    <span class="s2">"The file format could not be inferred from "</span>
+                    <span class="s2">"the file extension because no filename was given."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">OutputFileFormatError</span>
             <span class="p">)</span>
@@ -183,26 +183,26 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat.file_extensions">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">file_extensions</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the file extensions of the different file formats.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        dict[str, list[str]]</span>
 <span class="sd">            The file extensions of the different file formats.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">file_extensions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">XYZ</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.xyz&quot;</span><span class="p">,</span> <span class="s2">&quot;.coord&quot;</span><span class="p">,</span> <span class="s2">&quot;.coords&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">VEL</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.vel&quot;</span><span class="p">,</span> <span class="s2">&quot;.velocs&quot;</span><span class="p">,</span> <span class="s2">&quot;.velocity&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">FORCE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.force&quot;</span><span class="p">,</span> <span class="s2">&quot;.frc&quot;</span><span class="p">,</span> <span class="s2">&quot;.forces&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">CHARGE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.charge&quot;</span><span class="p">,</span> <span class="s2">&quot;.chrg&quot;</span><span class="p">,</span> <span class="s2">&quot;.charges&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">RESTART</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.rst&quot;</span><span class="p">,</span> <span class="s2">&quot;.restart&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">ENERGY</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.en&quot;</span><span class="p">,</span> <span class="s2">&quot;.energy&quot;</span><span class="p">,</span> <span class="s2">&quot;.energies&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">STRESS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.stress&quot;</span><span class="p">,</span> <span class="s2">&quot;.stresses&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">VIRIAL</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.virial&quot;</span><span class="p">,</span> <span class="s2">&quot;.virials&quot;</span><span class="p">,</span> <span class="s2">&quot;.vir&quot;</span><span class="p">]</span>
-        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">INFO</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;.info&quot;</span><span class="p">,</span> <span class="s2">&quot;.information&quot;</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">XYZ</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".xyz"</span><span class="p">,</span> <span class="s2">".coord"</span><span class="p">,</span> <span class="s2">".coords"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">VEL</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".vel"</span><span class="p">,</span> <span class="s2">".velocs"</span><span class="p">,</span> <span class="s2">".velocity"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">FORCE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".force"</span><span class="p">,</span> <span class="s2">".frc"</span><span class="p">,</span> <span class="s2">".forces"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">CHARGE</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".charge"</span><span class="p">,</span> <span class="s2">".chrg"</span><span class="p">,</span> <span class="s2">".charges"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">RESTART</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".rst"</span><span class="p">,</span> <span class="s2">".restart"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">ENERGY</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".en"</span><span class="p">,</span> <span class="s2">".energy"</span><span class="p">,</span> <span class="s2">".energies"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">STRESS</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".stress"</span><span class="p">,</span> <span class="s2">".stresses"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">VIRIAL</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".virial"</span><span class="p">,</span> <span class="s2">".virials"</span><span class="p">,</span> <span class="s2">".vir"</span><span class="p">]</span>
+        <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">INFO</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">".info"</span><span class="p">,</span> <span class="s2">".information"</span><span class="p">]</span>
         <span class="n">file_extensions</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">INSTANTANEOUS_ENERGY</span><span class="o">.</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="s2">&quot;.instant_en&quot;</span><span class="p">,</span> <span class="s2">&quot;.instant_energies&quot;</span><span class="p">,</span> <span class="s2">&quot;.inst_energy&quot;</span>
+            <span class="s2">".instant_en"</span><span class="p">,</span> <span class="s2">".instant_energies"</span><span class="p">,</span> <span class="s2">".inst_energy"</span>
         <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">file_extensions</span></div>
@@ -211,8 +211,8 @@
 <div class="viewcode-block" id="OutputFileFormat.infer_format_from_extension">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat.infer_format_from_extension">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">infer_format_from_extension</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;OutputFileFormat&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">infer_format_from_extension</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"OutputFileFormat"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Infer the file format from the file extension.</span>
 
 <span class="sd">        Parameters</span>
@@ -224,9 +224,9 @@
 <span class="sd">        -------</span>
 <span class="sd">        OutputFileFormat</span>
 <span class="sd">            The inferred file format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
-        <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span> <span class="o">+</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">file_extension</span> <span class="o">=</span> <span class="s2">"."</span> <span class="o">+</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="n">file_extension</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">file_extensions</span><span class="p">()[</span><span class="bp">cls</span><span class="o">.</span><span class="n">XYZ</span><span class="o">.</span><span class="n">value</span><span class="p">]:</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">XYZ</span>
@@ -245,9 +245,9 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="s2">&quot;Could not infer the file format from the file extension of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\&quot;</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="se">\&quot;</span><span class="s2">. Possible file formats are: &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="s2">"Could not infer the file format from the file extension of "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="se">\"</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="se">\"</span><span class="s2">. Possible file formats are: "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">values</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span>
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">OutputFileFormatError</span>
         <span class="p">)</span></div>
@@ -257,9 +257,9 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat.get_file_extensions">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_file_extensions</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="s2">&quot;OutputFileFormat | str&quot;</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">file_format</span><span class="p">:</span> <span class="s2">"OutputFileFormat | str"</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Get the file extensions of the given file format.</span>
 
 <span class="sd">        Parameters</span>
@@ -271,7 +271,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        list[str]</span>
 <span class="sd">            The file extensions of the given file format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">file_format</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">file_format</span><span class="p">)</span>
 
@@ -284,10 +284,10 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">find_matching_files</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">file_path</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">output_file_format</span><span class="p">:</span> <span class="s2">&quot;OutputFileFormat | str&quot;</span><span class="p">,</span>
+        <span class="n">output_file_format</span><span class="p">:</span> <span class="s2">"OutputFileFormat | str"</span><span class="p">,</span>
         <span class="n">extension</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Find the files that match the given file format.</span>
 
 <span class="sd">        Parameters</span>
@@ -305,7 +305,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        List[str]</span>
 <span class="sd">            The files that match the given file format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="n">file</span> <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">file_path</span> <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">extension</span><span class="p">)]</span>
         <span class="k">else</span><span class="p">:</span>
@@ -320,14 +320,14 @@
 <div class="viewcode-block" id="OutputFileFormat.lower">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat.lower">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">lower</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method returns the lower case representation of the enumeration.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The lower case representation of the enumeration.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
 
@@ -335,7 +335,7 @@
 <div class="viewcode-block" id="OutputFileFormat.__eq__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.OutputFileFormat.__eq__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method checks if the enumeration is equal to the other object.</span>
 
 <span class="sd">        Parameters</span>
@@ -347,7 +347,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the enumeration is equal to the other object, False otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__eq__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 </div>
 
@@ -358,22 +358,22 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.ExtXYZProfile">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExtXYZProfile</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An enumeration of supported extended xyz unit conventions.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1">#: ASE/libAtoms-compatible units: eV, eV/Angstrom, eV/Angstrom^3.</span>
-    <span class="n">ASE</span> <span class="o">=</span> <span class="s2">&quot;ase&quot;</span>
+    <span class="n">ASE</span> <span class="o">=</span> <span class="s2">"ase"</span>
 
     <span class="c1">#: PQ native units: kcal/mol, kcal/(mol Angstrom), kcal/(mol Angstrom^3).</span>
-    <span class="n">PQ</span> <span class="o">=</span> <span class="s2">&quot;pq&quot;</span>
+    <span class="n">PQ</span> <span class="o">=</span> <span class="s2">"pq"</span>
 
     <span class="c1">#: GPUMD NEP training data convention.</span>
-    <span class="n">NEP</span> <span class="o">=</span> <span class="s2">&quot;nep&quot;</span>
+    <span class="n">NEP</span> <span class="o">=</span> <span class="s2">"nep"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method returns the missing value of the enumeration.</span>
 
 <span class="sd">        Parameters</span>
@@ -385,7 +385,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Any</span>
 <span class="sd">            The value to return.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_missing_</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">ExtXYZProfileError</span><span class="p">)</span></div>
 
@@ -396,23 +396,23 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.FileWritingMode">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">FileWritingMode</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An enumeration of the supported file write modes.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1">#: The write mode for overwriting a file.</span>
-    <span class="n">OVERWRITE</span> <span class="o">=</span> <span class="s2">&quot;o&quot;</span>
+    <span class="n">OVERWRITE</span> <span class="o">=</span> <span class="s2">"o"</span>
 
     <span class="c1">#: The write mode for appending to a file.</span>
-    <span class="n">APPEND</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+    <span class="n">APPEND</span> <span class="o">=</span> <span class="s2">"a"</span>
 
     <span class="c1">#: The write mode for writing to a file</span>
-    <span class="n">WRITE</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+    <span class="n">WRITE</span> <span class="o">=</span> <span class="s2">"w"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method returns the missing value of the enumeration.</span>
 
 <span class="sd">        Parameters</span>
@@ -424,7 +424,7 @@
 <span class="sd">        - ------</span>
 <span class="sd">        Any</span>
 <span class="sd">            The value to return .</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_missing_</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">FileWritingModeError</span><span class="p">)</span></div>
 
@@ -435,10 +435,10 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.formats.html#PQAnalysis.io.formats.BoxFileFormat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BoxFileFormat</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An enumeration of the supported box file formats.</span>
 
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="c1">#: | The VMD format.</span>
     <span class="c1">#: | The format looks in general like this:</span>
@@ -460,7 +460,7 @@
     <span class="c1"># The first line contains the number of vertices.</span>
     <span class="c1">#: | The second line contains the box dimensions and</span>
     <span class="c1"># box angles as the comment line for a xyz file.</span>
-    <span class="n">VMD</span> <span class="o">=</span> <span class="s2">&quot;vmd&quot;</span>
+    <span class="n">VMD</span> <span class="o">=</span> <span class="s2">"vmd"</span>
 
     <span class="c1">#: | The data file format.</span>
     <span class="c1">#: | The format looks in general like this:</span>
@@ -472,11 +472,11 @@
     <span class="c1"># starting from 1, the second to fourth column</span>
     <span class="c1">#: | represent the box vectors a, b, c,</span>
     <span class="c1"># the fifth to seventh column represent the box angles.</span>
-    <span class="n">DATA</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+    <span class="n">DATA</span> <span class="o">=</span> <span class="s2">"data"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method returns the missing value of the enumeration.</span>
 
 <span class="sd">        Parameters</span>
@@ -488,7 +488,7 @@
 <span class="sd">        - ------</span>
 <span class="sd">        Any</span>
 <span class="sd">            The value to return .</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_missing_</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">BoxFileFormatError</span><span class="p">)</span></div>
 

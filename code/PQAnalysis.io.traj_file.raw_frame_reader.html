@@ -133,16 +133,13 @@ of a trajectory as plain numpy arrays together with the corresponding
 <a class="reference internal" href="PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem" title="PQAnalysis.atomic_system.atomic_system.AtomicSystem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AtomicSystem</span></code></a> or
 <a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Atom</span></code></a> objects for every frame.
 It is an additive fast path intended for analyses that only need the
-raw coordinates/velocities per frame (e.g. MSD and VACF) and produces
-bit-identical values compared to
-<a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">frame_generator()</span></code></a>:
-the frames are parsed from large byte chunks by the slab parser
-(<code class="xref py py-mod docutils literal notranslate"><span class="pre">_slab_parser</span></code>), whose <code class="docutils literal notranslate"><span class="pre">strtof</span></code>
-conversions are bitwise identical to the <code class="docutils literal notranslate"><span class="pre">sscanf(&quot;%f&quot;)</span></code> conversions
-of the line parsing routine
-(<a class="reference internal" href="PQAnalysis.io.traj_file.process_lines.html#PQAnalysis.io.traj_file.process_lines.process_lines" title="PQAnalysis.io.traj_file.process_lines.process_lines"><code class="xref py py-func docutils literal notranslate"><span class="pre">process_lines()</span></code></a>)
-used by the line based readers. When the compiled slab parser is not
-available, the pure Python implementation
+raw coordinates or velocities per frame (e.g. MSD and VACF). The
+frames are parsed from large byte chunks by the slab parser
+(<code class="xref py py-mod docutils literal notranslate"><span class="pre">_slab_parser</span></code>). Its default
+<code class="docutils literal notranslate"><span class="pre">float32</span></code> mode is bit-identical to the line-based trajectory reader;
+the optional <code class="docutils literal notranslate"><span class="pre">float64</span></code> mode instead preserves the precision of the
+text with direct <code class="docutils literal notranslate"><span class="pre">strtod</span></code> conversions. When the compiled slab parser
+is not available, the pure Python implementation
 (<code class="xref py py-mod docutils literal notranslate"><span class="pre">_slab_parser_py</span></code>), which reuses
 the current per-line machinery, is used instead.</p>
 <section id="summary">
@@ -166,6 +163,7 @@ the current per-line machinery, is used instead.</p>
 <dd><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">traj_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.TrajectoryFormat" title="PQAnalysis.traj.formats.TrajectoryFormat"><span class="pre">TrajectoryFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">TrajectoryFormat.AUTO</span></span></em>,</dd>
 <dd><em class="sig-param"><span class="n"><span class="pre">md_format</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><span class="pre">MDEngineFormat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MDEngineFormat.PQ</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'float32'</span></span></em>,</dd>
 </dl>
 
 <span class="sig-paren">)</span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/raw_frame_reader.html#RawTrajectoryReader"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader" title="Link to this definition"></a></dt>
@@ -177,9 +175,9 @@ trajectory files.</p>
 this reader does not construct AtomicSystem/Atom objects per frame.
 Instead, <a class="reference internal" href="#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.raw_frame_generator" title="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.raw_frame_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">raw_frame_generator()</span></code></a> yields
 <code class="docutils literal notranslate"><span class="pre">(values,</span> <span class="pre">cell)</span></code> tuples, where <code class="docutils literal notranslate"><span class="pre">values</span></code> is the <code class="docutils literal notranslate"><span class="pre">(n_atoms,</span> <span class="pre">3)</span></code>
-float32 array of the frame body (positions, velocities or forces,
-depending on the trajectory format) and <code class="docutils literal notranslate"><span class="pre">cell</span></code> is the unit cell
-of the frame.</p>
+array of the frame body (positions, velocities or forces,
+depending on the trajectory format) in the configured precision
+and <code class="docutils literal notranslate"><span class="pre">cell</span></code> is the unit cell of the frame.</p>
 <p>The reader follows the exact same semantics as
 <a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">frame_generator()</span></code></a>:</p>
 <ul class="simple">
@@ -216,10 +214,17 @@ TrajectoryFormat.AUTO. The format is inferred from the
 file extension. Only the xyz-family formats XYZ, VEL and
 FORCE are supported by this reader.</p></li>
 <li><p><strong>md_format</strong> (<a class="reference internal" href="PQAnalysis.traj.formats.html#PQAnalysis.traj.formats.MDEngineFormat" title="PQAnalysis.traj.formats.MDEngineFormat"><em>MDEngineFormat</em></a><em> | </em><em>str</em><em>, </em><em>optional</em>) – The format of the MD engine. Default is MDEngineFormat.PQ.</p></li>
+<li><p><strong>dtype</strong> (<em>{&quot;float32&quot;</em><em>, </em><em>&quot;float64&quot;}</em><em>, </em><em>optional</em>) – Numeric precision of xyz-family frame values. <code class="docutils literal notranslate"><span class="pre">float32</span></code>
+preserves the established trajectory-reader behavior;
+<code class="docutils literal notranslate"><span class="pre">float64</span></code> parses directly with <code class="docutils literal notranslate"><span class="pre">strtod</span></code>. Default is
+<code class="docutils literal notranslate"><span class="pre">float32</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html#PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError" title="PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError"><strong>TrajectoryReaderError</strong></a> – If the trajectory format is not an xyz-family format.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html#PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError" title="PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError"><strong>TrajectoryReaderError</strong></a> – If the trajectory format is not an xyz-family format.</p></li>
+<li><p><strong>ValueError</strong> – If dtype is not <code class="docutils literal notranslate"><span class="pre">float32</span></code> or <code class="docutils literal notranslate"><span class="pre">float64</span></code>.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -251,12 +256,13 @@ exactly as in the frame counting of
 <span class="sig-name descname"><span class="pre">raw_frame_generator</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/raw_frame_reader.html#RawTrajectoryReader.raw_frame_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.raw_frame_generator" title="Link to this definition"></a></dt>
 <dd><p>A generator that yields the raw data of the trajectory frames.</p>
 <p>For every frame a tuple <code class="docutils literal notranslate"><span class="pre">(values,</span> <span class="pre">cell)</span></code> is yielded, where
-<code class="docutils literal notranslate"><span class="pre">values</span></code> is the <code class="docutils literal notranslate"><span class="pre">(n_atoms,</span> <span class="pre">3)</span></code> float32 array parsed from
-the frame body (positions, velocities or forces, depending on
-the trajectory format) and <code class="docutils literal notranslate"><span class="pre">cell</span></code> is the unit cell of the
-frame. The values and cells are bit-identical to the ones
-produced by
-<a class="reference internal" href="PQAnalysis.io.traj_file.trajectory_reader.html#PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator" title="PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader.frame_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">frame_generator()</span></code></a>.</p>
+<code class="docutils literal notranslate"><span class="pre">values</span></code> is the <code class="docutils literal notranslate"><span class="pre">(n_atoms,</span> <span class="pre">3)</span></code> array parsed from the frame
+body (positions, velocities or forces, depending on the
+trajectory format) and <code class="docutils literal notranslate"><span class="pre">cell</span></code> is the unit cell of the frame.
+The array dtype is selected at construction. In <code class="docutils literal notranslate"><span class="pre">float32</span></code>
+mode the values and cells are bit-identical to those produced
+by the line-based trajectory reader; <code class="docutils literal notranslate"><span class="pre">float64</span></code> mode retains
+additional digits present in the source text.</p>
 <p>The generator always starts at the first frame of the
 trajectory, so it can be restarted by simply calling this
 method again.</p>
@@ -295,6 +301,58 @@ the first frame.</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.io.traj_file.exceptions.html#PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError" title="PQAnalysis.io.traj_file.exceptions.TrajectoryReaderError"><strong>TrajectoryReaderError</strong></a> – If the trajectory contains no frames.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.try_read_all_frames">
+<span class="sig-name descname"><span class="pre">try_read_all_frames</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">expected_n_atoms</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">max_bytes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">expected_n_frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">include_cells</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>,</dd>
+<dd><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>,</dd>
+<dd><em class="sig-param"><span class="n"><span class="pre">include_box_lengths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.NpnDNumberArray" title="PQAnalysis.types.NpnDNumberArray"><span class="pre">NpnDNumberArray</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><span class="pre">Cell</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="PQAnalysis.types.html#PQAnalysis.types.Np2DNumberArray" title="PQAnalysis.types.Np2DNumberArray"><span class="pre">Np2DNumberArray</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/traj_file/raw_frame_reader.html#RawTrajectoryReader.try_read_all_frames"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.try_read_all_frames" title="Link to this definition"></a></dt>
+<dd><p>Read a fixed-topology xyz-family trajectory as one batch.</p>
+<p>The peak input-buffer and numeric-array working set must fit below
+<code class="docutils literal notranslate"><span class="pre">max_bytes</span></code>. If it does not, or if the file requires one of the
+permissive line-reader compatibility paths, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned and
+the caller can use <a class="reference internal" href="#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.raw_frame_generator" title="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader.raw_frame_generator"><code class="xref py py-meth docutils literal notranslate"><span class="pre">raw_frame_generator()</span></code></a> instead.</p>
+<p>Numeric tokens are converted by the same slab-parser routines as
+the streaming path. The returned values therefore have identical
+float32 or float64 bit patterns in the same frame order.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>expected_n_atoms</strong> (<em>int</em>) – Number of physical atoms expected after QMCFC dummy removal.</p></li>
+<li><p><strong>max_bytes</strong> (<em>int</em>) – Maximum combined size of the input byte buffers and output
+value arrays.</p></li>
+<li><p><strong>expected_n_frames</strong> (<em>int</em><em> | </em><em>None</em><em>, </em><em>optional</em>) – Expected total frame count, used as an additional consistency
+check when the caller already knows it.</p></li>
+<li><p><strong>include_cells</strong> (<em>bool</em><em>, </em><em>optional</em>) – Build the per-frame cell list. When false, unique box headers are
+still validated but the returned cell list is empty.</p></li>
+<li><p><strong>include_box_lengths</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return per-frame orthorhombic box lengths as a float64 array
+instead of Cell objects. Explicit triclinic boxes and a vacuum
+cell without a preceding periodic cell are not compatible with
+this mode and cause the bounded batch path to return <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+This option requires <code class="docutils literal notranslate"><span class="pre">include_cells=False</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">(values,</span> <span class="pre">cell_data)</span></code> with values shaped
+<code class="docutils literal notranslate"><span class="pre">(n_frames,</span> <span class="pre">expected_n_atoms,</span> <span class="pre">3)</span></code>. <code class="docutils literal notranslate"><span class="pre">cell_data</span></code> is either the
+Cell list or, when requested, an <code class="docutils literal notranslate"><span class="pre">(n_frames,</span> <span class="pre">3)</span></code> float64 box
+length array. Returns <code class="docutils literal notranslate"><span class="pre">None</span></code> when the bounded batch path cannot
+be used.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple or None</p>
 </dd>
 </dl>
 </dd></dl>

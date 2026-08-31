@@ -294,6 +294,11 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>Np3x3NumberArray</p>
 </dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.CellError" title="PQAnalysis.core.exceptions.CellError"><strong>CellError</strong></a> – If a box length is not positive, a box angle is not
+    within the interval (0, 180) or the box angles do not
+    define a valid unit cell.</p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -397,6 +402,11 @@ dimension of the input is 3, representing the x, y and z coordinates of the posi
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.logger">
+<span class="sig-name descname"><span class="pre">logger</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CustomLogger</span> <span class="pre">PQAnalysis.Cell</span> <span class="pre">(INFO)&gt;</span></em><a class="headerlink" href="#PQAnalysis.core.cell.cell.Cell.logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="PQAnalysis.core.cell.cell.Cell.volume">

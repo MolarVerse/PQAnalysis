@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.topology.bonded_topology.dihedral</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the Dihedral class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">PositiveInt</span><span class="p">,</span> <span class="n">PositiveReal</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.type_checking</span><span class="w"> </span><span class="kn">import</span> <span class="n">runtime_type_checking</span>
@@ -89,9 +89,9 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Dihedral</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to represent a dihedral in a molecular topology.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -106,7 +106,7 @@
         <span class="n">is_improper</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        index1 : PositiveInt</span>
@@ -127,7 +127,7 @@
 <span class="sd">            A flag to indicate if the dihedral is an improper dihedral, by default False.</span>
 <span class="sd">        comment : str, optional</span>
 <span class="sd">            A comment for the dihedral, by default None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">index1</span> <span class="o">=</span> <span class="n">index1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">index2</span> <span class="o">=</span> <span class="n">index2</span>
@@ -141,15 +141,15 @@
 
 <div class="viewcode-block" id="Dihedral.copy">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral.copy">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Dihedral&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Dihedral"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        A method to create a copy of the dihedral.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Dihedral</span>
 <span class="sd">            A copy of the dihedral.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">Dihedral</span><span class="p">(</span>
             <span class="n">index1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index1</span><span class="p">,</span>
             <span class="n">index2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">index2</span><span class="p">,</span>
@@ -166,7 +166,7 @@
 <div class="viewcode-block" id="Dihedral.__eq__">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.dihedral.html#PQAnalysis.topology.bonded_topology.dihedral.Dihedral.__eq__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Compare the Dihedral object with another object.</span>
 
 <span class="sd">        Parameters</span>
@@ -178,7 +178,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            True if the objects are equal, False otherwise.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Dihedral</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>

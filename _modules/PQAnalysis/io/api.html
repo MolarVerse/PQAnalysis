@@ -76,10 +76,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">This module provides API functions for input/output </span>
 <span class="sd">handling of molecular dynamics simulations.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -92,7 +92,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.input_file_reader</span><span class="w"> </span><span class="kn">import</span> <span class="n">PQInputFileReader</span> <span class="k">as</span> <span class="n">Reader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.input_file_reader.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">InputFileFormat</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;io.api&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">"io.api"</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
 
@@ -105,7 +105,7 @@
     <span class="n">n</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
     <span class="n">input_format</span><span class="p">:</span> <span class="n">InputFileFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQ</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    API function for continuing an input file.</span>
 
 <span class="sd">    This function reads the input file and continues it n times.</span>
@@ -126,14 +126,14 @@
 <span class="sd">    ------</span>
 <span class="sd">    NotImplementedError</span>
 <span class="sd">        if the input format is not PQ or QMCFC</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">input_format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="p">(</span><span class="n">input_format</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">is_qmcf_type</span><span class="p">(</span><span class="n">input_format</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Format </span><span class="si">{</span><span class="n">input_format</span><span class="si">}</span><span class="s2"> not implemented &quot;</span>
-            <span class="s2">&quot;yet for continuing input file.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Format </span><span class="si">{</span><span class="n">input_format</span><span class="si">}</span><span class="s2"> not implemented "</span>
+            <span class="s2">"yet for continuing input file."</span>
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQNotImplementedError</span>
         <span class="p">)</span>

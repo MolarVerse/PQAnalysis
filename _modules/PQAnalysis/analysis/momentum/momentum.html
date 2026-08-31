@@ -76,21 +76,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.momentum.momentum</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the Momentum class. The Momentum class is used</span>
 <span class="sd">to calculate the norm of the total linear momentum of a selection</span>
 <span class="sd">of atoms for every frame of a velocity trajectory. It can be used</span>
 <span class="sd">to check a simulation for center of mass drift.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">getsize</span>
 
 <span class="c1"># 3rd party imports</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm.auto</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.progress</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
 <span class="c1"># local absolute imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">config</span>
@@ -99,7 +101,7 @@
     <span class="n">Np2DNumberArray</span><span class="p">,</span>
     <span class="n">PositiveReal</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">TrajectoryFormat</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.traj</span><span class="w"> </span><span class="kn">import</span> <span class="n">MDEngineFormat</span><span class="p">,</span> <span class="n">Trajectory</span><span class="p">,</span> <span class="n">TrajectoryFormat</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Selection</span><span class="p">,</span> <span class="n">SelectionCompatible</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">timeit_in_class</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.utils.custom_logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
@@ -110,13 +112,24 @@
 <span class="c1"># local relative imports</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MomentumError</span>
 
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._momentum_kernel</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># pylint: disable=import-error</span>
+        <span class="n">legacy_momentum_file</span><span class="p">,</span>
+        <span class="n">legacy_momentum_norm</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ModuleNotFoundError</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">._momentum_kernel_py</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">legacy_momentum_norm</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">legacy_momentum_file</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># pylint: disable=invalid-name</span>
+
 
 
 <div class="viewcode-block" id="Momentum">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.momentum.momentum.html#PQAnalysis.analysis.momentum.momentum.Momentum">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Momentum</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for calculating the norm of the total linear momentum</span>
 <span class="sd">    of a selection of atoms for every frame of a velocity trajectory.</span>
 
@@ -127,14 +140,6 @@
 <span class="sd">    the default scaling factor of 1e-15 converts the momentum norm</span>
 <span class="sd">    from amu*Angstrom/s to amu*Angstrom/fs.</span>
 
-<span class="sd">    Note that the velocities are parsed from file in single precision</span>
-<span class="sd">    by the TrajectoryReader, so reported norms below roughly</span>
-<span class="sd">    ``1e-7 * sum_i m_i * |v_i| * scale`` are parsing noise, not</span>
-<span class="sd">    physical center of mass drift. The legacy ``equipartition.jl``</span>
-<span class="sd">    tool parses the velocities in double precision and therefore</span>
-<span class="sd">    resolves correspondingly smaller drift for momentum-conserving</span>
-<span class="sd">    trajectories.</span>
-
 <span class="sd">    The Momentum class can be initialized with either a trajectory</span>
 <span class="sd">    object or via a TrajectoryReader object. If a trajectory object</span>
 <span class="sd">    is given, it is assumed to have a constant topology over all</span>
@@ -144,17 +149,19 @@
 <span class="sd">    frame when needed. This can be useful for large trajectories</span>
 <span class="sd">    that do not fit into memory.</span>
 
-<span class="sd">    When initialized with a TrajectoryReader of a velocity</span>
-<span class="sd">    trajectory, the frames are streamed through the raw fast-path</span>
-<span class="sd">    reader</span>
+<span class="sd">    When initialized with a TrajectoryReader of a velocity trajectory,</span>
+<span class="sd">    frames are parsed directly in float64 through the raw fast-path reader</span>
 <span class="sd">    (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)</span>
-<span class="sd">    without building an AtomicSystem per frame. The computed</span>
-<span class="sd">    momentum norms are bit-identical to the AtomicSystem based</span>
-<span class="sd">    stream.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    without building an AtomicSystem per frame. Atom-order accumulation,</span>
+<span class="sd">    the three-component norm and scaling reproduce the operation order of</span>
+<span class="sd">    the legacy ``equipartition.jl`` tool. Trajectory objects and other</span>
+<span class="sd">    trajectory formats retain the precision and general NumPy semantics</span>
+<span class="sd">    of their supplied velocity arrays.</span>
+<span class="sd">    """</span>
 
     <span class="n">_scale_default</span> <span class="o">=</span> <span class="mf">1e-15</span>
     <span class="n">_use_full_atom_default</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_batch_max_bytes</span> <span class="o">=</span> <span class="mi">512</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -167,7 +174,7 @@
         <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">scale</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        traj : Trajectory | TrajectoryReader</span>
@@ -193,7 +200,7 @@
 <span class="sd">            If the selection does not select any atoms.</span>
 <span class="sd">        MomentumError</span>
 <span class="sd">            If the mass of an atom of the selection is unknown.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">use_full_atom_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_default</span>
@@ -212,18 +219,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_frames_total</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span> <span class="o">==</span> <span class="n">TrajectoryFormat</span><span class="o">.</span><span class="n">VEL</span>
         <span class="p">):</span>
-            <span class="c1"># additive fast path: stream the raw float32 values of</span>
-            <span class="c1"># the velocity trajectory without building an</span>
-            <span class="c1"># AtomicSystem per frame (bit-identical values)</span>
+            <span class="c1"># Legacy-compatible fast path: parse float64 velocity values</span>
+            <span class="c1"># without building an AtomicSystem per frame.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="o">=</span> <span class="n">RawTrajectoryReader</span><span class="p">(</span>
                 <span class="n">traj</span><span class="o">.</span><span class="n">filenames</span><span class="p">,</span>
                 <span class="n">traj_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">traj_format</span><span class="p">,</span>
                 <span class="n">md_format</span><span class="o">=</span><span class="n">traj</span><span class="o">.</span><span class="n">md_format</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_n_frames_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">read_first_frame</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">TrajectoryReader</span><span class="p">):</span>
             <span class="c1"># lazy loading of trajectory from file(s)</span>
@@ -239,8 +245,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;Trajectory cannot be of length 0.&quot;</span><span class="p">,</span>
-                <span class="n">exception</span><span class="o">=</span><span class="n">MomentumError</span>
+                <span class="s2">"Trajectory cannot be of length 0."</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="n">MomentumError</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -248,14 +253,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">topology</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span><span class="o">.</span><span class="n">topology</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">select</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">use_full_atom_info</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;The selection does not select any atoms.&quot;</span><span class="p">,</span>
+                <span class="s2">"The selection does not select any atoms."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">MomentumError</span>
             <span class="p">)</span>
 
@@ -264,13 +272,13 @@
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">mass</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">mass</span> <span class="ow">in</span> <span class="n">masses</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;The mass of at least one selected atom is unknown. &quot;</span>
-                <span class="s2">&quot;The total momentum cannot be calculated.&quot;</span>
+                    <span class="s2">"The mass of at least one selected atom is unknown. "</span>
+                    <span class="s2">"The total momentum cannot be calculated."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">MomentumError</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">masses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">masses</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">masses</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
 
@@ -278,7 +286,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.analysis.momentum.momentum.html#PQAnalysis.analysis.momentum.momentum.Momentum.run">[docs]</a>
     <span class="nd">@timeit_in_class</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the momentum analysis.</span>
 
 <span class="sd">        For every frame of the trajectory the total linear momentum</span>
@@ -300,65 +308,134 @@
 <span class="sd">        MomentumError</span>
 <span class="sd">            If a frame does not contain velocity information for all</span>
 <span class="sd">            atoms of the topology.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">batch_norms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_run_raw_file_batch</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">batch_norms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_n_frames_total</span> <span class="o">=</span> <span class="n">batch_norms</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span> <span class="o">=</span> <span class="n">batch_norms</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_n_frames_total</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">count_frames</span><span class="p">()</span>
+
         <span class="n">norms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">selected_masses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">masses</span><span class="p">[:,</span> <span class="kc">None</span><span class="p">]</span>
 
         <span class="k">for</span> <span class="n">velocities</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="p">(),</span>
             <span class="n">total</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_frames_total</span><span class="p">,</span>
-            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span><span class="p">):</span>
+            <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">config</span><span class="o">.</span><span class="n">with_progress_bar</span>
+        <span class="p">):</span>
 
             <span class="k">if</span> <span class="n">velocities</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                    <span class="s2">&quot;The trajectory does not contain velocity &quot;</span>
-                    <span class="s2">&quot;information for all atoms. Please provide a &quot;</span>
-                    <span class="s2">&quot;velocity trajectory.&quot;</span>
+                        <span class="s2">"The trajectory does not contain velocity "</span>
+                        <span class="s2">"information for all atoms. Please provide a "</span>
+                        <span class="s2">"velocity trajectory."</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">MomentumError</span>
                 <span class="p">)</span>
 
-            <span class="n">momentum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-                <span class="n">selected_masses</span> <span class="o">*</span> <span class="n">velocities</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">],</span>
-                <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="n">legacy_momentum_norm</span><span class="p">(</span>
+                    <span class="n">velocities</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">masses</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">momentum</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                    <span class="n">selected_masses</span> <span class="o">*</span> <span class="n">velocities</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span>
+                <span class="p">)</span>
+                <span class="n">norm</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">momentum</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
 
-            <span class="n">norms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">momentum</span><span class="p">))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+            <span class="n">norms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norm</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">norms</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Yields the float64 velocities of all frames.</span>
+    <span class="c1"># Keep parsing and metadata validation in one all-or-fallback transaction.</span>
+    <span class="c1"># pylint: disable-next=too-complex</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_run_raw_file_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Parse and reduce bounded velocity files in one pass."""</span>
+        <span class="k">if</span> <span class="n">legacy_momentum_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
 
-<span class="sd">        Dispatches to the raw fast-path stream if the analysis was</span>
-<span class="sd">        constructed from a TrajectoryReader of a velocity trajectory</span>
-<span class="sd">        and to the AtomicSystem based stream otherwise. Both streams</span>
-<span class="sd">        yield bit-identical float64 arrays.</span>
+        <span class="n">input_bytes</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span>
+            <span class="n">getsize</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">filenames</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">input_bytes</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_max_bytes</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">strip_first</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">md_format</span> <span class="o">==</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">QMCFC</span>
+        <span class="n">norm_batches</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">filenames</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"rb"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">data</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="sa">b</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">+=</span> <span class="sa">b</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="n">input_bytes</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">input_bytes</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_batch_max_bytes</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">norms</span><span class="p">,</span> <span class="n">box_headers</span><span class="p">,</span> <span class="n">first_names</span> <span class="o">=</span> <span class="n">legacy_momentum_file</span><span class="p">(</span>
+                    <span class="n">data</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span>
+                    <span class="n">strip_first</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">masses</span><span class="p">,</span>
+                    <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">),</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">EOFError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">strip_first</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">first_name</span> <span class="ow">in</span> <span class="n">first_names</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">_validate_dummy_name</span><span class="p">(</span><span class="n">first_name</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+            <span class="k">for</span> <span class="n">box_bytes</span> <span class="ow">in</span> <span class="n">box_headers</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">_cell_from_box_bytes</span><span class="p">(</span><span class="n">box_bytes</span><span class="p">)</span>  <span class="c1"># pylint: disable=protected-access</span>
+
+            <span class="n">norm_batches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">norms</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">norm_batches</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">norm_batches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">norm_batches</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_velocities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Np2DNumberArray</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Yields the velocities of all frames as float64 arrays.</span>
+
+<span class="sd">        The raw fast path receives values parsed directly as float64.</span>
+<span class="sd">        Other inputs are widened from the precision stored by their</span>
+<span class="sd">        trajectory objects.</span>
 
 <span class="sd">        Yields</span>
 <span class="sd">        ------</span>
 <span class="sd">        Np2DNumberArray</span>
 <span class="sd">            The velocities of one frame with shape ``(n_atoms, 3)``.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">values</span><span class="p">,</span> <span class="n">_cell</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_reader</span><span class="o">.</span><span class="n">raw_frame_generator</span><span class="p">():</span>
                 <span class="k">yield</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">frames</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">(</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span>
-            <span class="p">)</span>
+            <span class="n">frames</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">chain</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">first_frame</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame_generator</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">frames</span><span class="p">:</span>
                 <span class="k">yield</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">n_frames</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;int: The number of analyzed frames after calling run().&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""int: The number of analyzed frames after calling run()."""</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">momentum_norms</span><span class="p">)</span></div>
 
 </pre></div>

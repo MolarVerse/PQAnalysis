@@ -76,13 +76,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.traj2extxyz</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.traj2extxyz:</span>
 
 <span class="sd">Command Line Tool for Converting PQ Trajectory Files to Extended XYZ</span>
 <span class="sd">--------------------------------------------------------------------</span>
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">traj2extxyz</span>
@@ -90,15 +90,15 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 <span class="s2">Converts PQ xyz trajectory files to extended xyz format.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.traj2extxyz.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.traj2extxyz.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
 
@@ -108,57 +108,57 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2extxyz.html#PQAnalysis.cli.traj2extxyz.Traj2ExtXYZCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Traj2ExtXYZCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for Converting PQ Trajectory Files to Extended XYZ</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="Traj2ExtXYZCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2extxyz.html#PQAnalysis.cli.traj2extxyz.Traj2ExtXYZCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;traj2extxyz&#39;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'traj2extxyz'</span></div>
 
 
 <div class="viewcode-block" id="Traj2ExtXYZCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2extxyz.html#PQAnalysis.cli.traj2extxyz.Traj2ExtXYZCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;trajectory_file&#39;</span><span class="p">,</span>
+            <span class="s1">'trajectory_file'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The trajectory file(s) to be converted.&#39;</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s1">'+'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The trajectory file(s) to be converted.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_engine</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_mode</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--extxyz-profile&quot;</span><span class="p">,</span>
+            <span class="s2">"--extxyz-profile"</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">choices</span><span class="o">=</span><span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span>
             <span class="n">default</span><span class="o">=</span><span class="n">ExtXYZProfile</span><span class="o">.</span><span class="n">ASE</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-                <span class="s2">&quot;The extended xyz unit convention. Use &#39;ase&#39; for eV-based &quot;</span>
-                <span class="s2">&quot;external tooling units, &#39;nep&#39; for GPUMD NEP training data, &quot;</span>
-                <span class="s2">&quot;or &#39;pq&#39; for native PQ units.&quot;</span>
+                <span class="s2">"The extended xyz unit convention. Use 'ase' for eV-based "</span>
+                <span class="s2">"external tooling units, 'nep' for GPUMD NEP training data, "</span>
+                <span class="s2">"or 'pq' for native PQ units."</span>
             <span class="p">),</span>
         <span class="p">)</span></div>
 
@@ -167,14 +167,14 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2extxyz.html#PQAnalysis.cli.traj2extxyz.Traj2ExtXYZCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the command line tool.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args : _Namespace</span>
 <span class="sd">            The arguments from the command line.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">traj2extxyz</span><span class="p">(</span>
             <span class="n">args</span><span class="o">.</span><span class="n">trajectory_file</span><span class="p">,</span>
             <span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span>
@@ -190,11 +190,11 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.traj2extxyz.html#PQAnalysis.cli.traj2extxyz.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function of the traj2extxyz command line tool, which is basically just</span>
 <span class="sd">    a wrapper for the traj2extxyz function. For more information on the</span>
 <span class="sd">    traj2extxyz function please visit :py:func:`PQAnalysis.io.api.traj2extxyz`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">Traj2ExtXYZCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

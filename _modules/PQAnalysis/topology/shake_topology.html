@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.topology.shake_topology</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the ShakeTopologyGenerator class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -105,9 +105,9 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ShakeTopologyGenerator</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for generating the shake topology for a given trajectory</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -118,17 +118,17 @@
         <span class="n">selection</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        selection : SelectionCompatible, optional</span>
 <span class="sd">            Selection is either a selection object or any object that can be</span>
-<span class="sd">            initialized via &#39;Selection(selection)&#39;. default None (all atoms)</span>
+<span class="sd">            initialized via 'Selection(selection)'. default None (all atoms)</span>
 <span class="sd">        use_full_atom_info : bool, optional</span>
 <span class="sd">            If True, the full atom information (name, index, mass) is used</span>
 <span class="sd">            for the selection, by default False</span>
 <span class="sd">            Is always ignored if atoms is not a list of atom objects.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_use_full_atom_info</span> <span class="o">=</span> <span class="n">use_full_atom_info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">Selection</span><span class="p">(</span><span class="n">selection</span><span class="p">)</span>
@@ -143,7 +143,7 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.generate_topology">[docs]</a>
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">generate_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trajectory</span><span class="p">:</span> <span class="n">Trajectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Generates a tuple of indices, target_indices, and distances for the given trajectory.</span>
 
 <span class="sd">        The generated numpy arrays represent all important information about the shake</span>
@@ -157,7 +157,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        trajectory : Trajectory</span>
 <span class="sd">            The trajectory to generate the shake topology for.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">atomic_system</span> <span class="o">=</span> <span class="n">trajectory</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_topology</span> <span class="o">=</span> <span class="n">trajectory</span><span class="o">.</span><span class="n">topology</span>
@@ -195,7 +195,7 @@
         <span class="n">indices</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Np1DIntArray</span><span class="p">]</span> <span class="o">|</span> <span class="n">Np2DIntArray</span><span class="p">,</span>
         <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Averages the distances for equivalent atoms.</span>
 
 <span class="sd">        The parameter indices is a numpy 2d array of equivalent atom indices.</span>
@@ -208,7 +208,7 @@
 <span class="sd">            The indices of the equivalent atoms.</span>
 <span class="sd">        comments : List[str], optional</span>
 <span class="sd">            The line comments for the averaged distances, by default None</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">for</span> <span class="n">equivalent_indices</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">:</span>
             <span class="n">_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">equivalent_indices</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
@@ -220,11 +220,11 @@
         <span class="k">if</span> <span class="n">comments</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;The number of comments does not match the number of indices.&quot;</span><span class="p">,</span>
+                    <span class="s2">"The number of comments does not match the number of indices."</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
                 <span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">""</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">equivalent_indices</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
                 <span class="n">_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span>
@@ -239,23 +239,23 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.shake_topology.html#PQAnalysis.topology.shake_topology.ShakeTopologyGenerator.add_comments">[docs]</a>
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_comments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comments</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds comments to the topology.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        comments : List[str]</span>
 <span class="sd">            The comments to add to each line of the shake topology.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">comments</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;The number of comments does not match the number of indices.&quot;</span><span class="p">,</span>
+                <span class="s2">"The number of comments does not match the number of indices."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="o">=</span> <span class="p">[</span><span class="s2">""</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">comment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">comments</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">comment</span></div>
@@ -267,9 +267,9 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">write_topology</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"w"</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the topology to a file.</span>
 
 <span class="sd">        The topology is written to a file with the given filename.</span>
@@ -281,11 +281,11 @@
 <span class="sd">        filename : str</span>
 <span class="sd">            The filename to write the topology to.</span>
 <span class="sd">        mode : FileWritingMode | str, optional</span>
-<span class="sd">            The writing mode, by default &quot;w&quot;. The following modes are available:</span>
-<span class="sd">            - &quot;w&quot;: write</span>
-<span class="sd">            - &quot;a&quot;: append</span>
-<span class="sd">            - &quot;o&quot;: overwrite</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The writing mode, by default "w". The following modes are available:</span>
+<span class="sd">            - "w": write</span>
+<span class="sd">            - "a": append</span>
+<span class="sd">            - "o": overwrite</span>
+<span class="sd">        """</span>
 
         <span class="n">shake_bonds</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">line_comments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -317,7 +317,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">selection_object</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SelectionCompatible</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;SelectionCompatible: The selection object.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""SelectionCompatible: The selection object."""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="o">.</span><span class="n">selection_object</span></div>
 
 </pre></div>

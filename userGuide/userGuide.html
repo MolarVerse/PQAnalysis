@@ -111,6 +111,13 @@ out_file = rdf.out
 traj_files = trajectory.xyz
 </pre></div>
 </div>
+<p>For a file-backed periodic orthorhombic trajectory, this minimal form with
+<code class="docutils literal notranslate"><span class="pre">delta_r</span></code> alone and the default <code class="docutils literal notranslate"><span class="pre">r_min</span> <span class="pre">=</span> <span class="pre">0</span></code> uses the legacy-compatible
+RDF path. Coordinates are parsed directly as float64, while <code class="docutils literal notranslate"><span class="pre">delta_r</span></code> is
+represented as float32 as it was by the legacy C input reader. Histogram
+binning and all five output columns preserve the legacy arithmetic order.
+Explicit <code class="docutils literal notranslate"><span class="pre">r_max</span></code> or <code class="docutils literal notranslate"><span class="pre">n_bins</span></code> values, triclinic cells, vacuum trajectories
+and intra-molecular exclusion use the general PQAnalysis RDF definition.</p>
 <p>Restart files and moldescriptor files are only needed when the calculation
 requires molecular topology information. For example,
 <code class="code docutils literal notranslate"><span class="pre">no_intra_molecular</span> <span class="pre">=</span> <span class="pre">True</span></code> excludes pairs from the same molecule.
@@ -211,11 +218,11 @@ legacy-exact sliding-origin one.</p>
 <li><p><a class="reference internal" href="../code/PQAnalysis.cli.traj2qmcfc.html#cli-traj2qmcfc"><span class="std std-ref">traj2qmcfc</span></a></p></li>
 <li><p><a class="reference internal" href="../code/PQAnalysis.cli.traj2box.html#cli-traj2box"><span class="std std-ref">traj2box</span></a></p></li>
 </ul>
-<p>Note that <a class="reference internal" href="../code/PQAnalysis.cli.check_momentum.html#cli-check-momentum"><span class="std std-ref">check_momentum</span></a> parses velocities in
-single precision: reported momentum norms below roughly 1e-7 times the
-scaled sum of m<sub>i</sub> |v<sub>i</sub>| are parsing noise rather than
-physical center of mass drift (the legacy <code class="docutils literal notranslate"><span class="pre">equipartition.jl</span></code> tool parses
-in double precision and resolves smaller drift).</p>
+<p><a class="reference internal" href="../code/PQAnalysis.cli.check_momentum.html#cli-check-momentum"><span class="std std-ref">check_momentum</span></a> parses file-backed velocity
+trajectories directly in float64 and preserves the atom-order arithmetic of
+the legacy <code class="docutils literal notranslate"><span class="pre">equipartition.jl</span></code> tool. This resolves conserved-momentum
+residuals at the float64 noise floor instead of the former float32 parsing
+floor.</p>
 </section>
 </section>
 </section>

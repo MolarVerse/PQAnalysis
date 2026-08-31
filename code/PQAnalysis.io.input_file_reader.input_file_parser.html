@@ -198,6 +198,32 @@ and the line where the token was defined.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.bare_array">
+<span class="sig-name descname"><span class="pre">bare_array</span></span><span class="sig-paren">(</span>
+
+<dl>
+<dd><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>,</dd>
+</dl>
+
+<span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/PQAnalysis/io/input_file_reader/input_file_parser.html#ComposedDatatypesTransformer.bare_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.bare_array" title="Link to this definition"></a></dt>
+<dd><p>Method to transform unbracketed comma-separated array values.</p>
+<p>The items are transformed exactly like bracketed arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>items</strong> (<em>List</em><em>[</em><em>Any</em><em>]</em>) – items containing the array value</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple containing the array value, the string
+“list({most_general_type})”, and the line where
+the token was defined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tuple[List[Any], str, str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="PQAnalysis.io.input_file_reader.input_file_parser.ComposedDatatypesTransformer.glob">
 <span class="sig-name descname"><span class="pre">glob</span></span><span class="sig-paren">(</span>
 

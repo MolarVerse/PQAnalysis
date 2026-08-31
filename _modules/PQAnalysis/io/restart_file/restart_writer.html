@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.restart_file.restart_writer</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module for writing restart files.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -102,7 +102,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.restart_file.restart_writer.html#PQAnalysis.io.restart_file.restart_writer.RestartFileWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RestartFileWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for writing restart files.</span>
 
 <span class="sd">    Inherits from the BaseWriter class.</span>
@@ -130,7 +130,7 @@
 <span class="sd">    For more information on how the restart file of PQ simulations</span>
 <span class="sd">    is structured, see the corresponding documentation of the</span>
 <span class="sd">    `PQ &lt;https://molarverse.github.io/PQ&gt;`_ code.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -140,9 +140,9 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">md_engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">'w'</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str | None, optional</span>
@@ -150,9 +150,9 @@
 <span class="sd">        md_engine_format : MDEngineFormat | str, optional</span>
 <span class="sd">            The format of the restart file, by default MDEngineFormat.PQ</span>
 <span class="sd">        mode : FileWritingMode | str, optional</span>
-<span class="sd">            The writing mode, by default &#39;w&#39; - </span>
-<span class="sd">            Possible values are &#39;w&#39; (write), &#39;a&#39; (append) and &#39;o&#39; (overwrite).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The writing mode, by default 'w' - </span>
+<span class="sd">            Possible values are 'w' (write), 'a' (append) and 'o' (overwrite).</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">md_engine_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_engine_format</span><span class="p">)</span>
@@ -165,7 +165,7 @@
         <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">,</span>
         <span class="n">atom_counter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the frame to the file.</span>
 
 <span class="sd">        Parameters</span>
@@ -178,7 +178,7 @@
 <span class="sd">            counter for all atoms. If an array is given, this array</span>
 <span class="sd">            has to have the same length as the number of atoms </span>
 <span class="sd">            in the frame.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_lines</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">atom_counter</span><span class="p">)</span>
 
@@ -186,14 +186,14 @@
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_lines_to_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the lines to the file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        lines : List[str]</span>
 <span class="sd">            The lines to write.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 
@@ -207,7 +207,7 @@
         <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">,</span>
         <span class="n">atom_counter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Collects the lines to write to the file.</span>
 
 <span class="sd">        Parameters</span>
@@ -219,7 +219,7 @@
 <span class="sd">            given, this number will be used as the atom counter for all </span>
 <span class="sd">            atoms. If an array is given, this array has to have the same </span>
 <span class="sd">            length as the number of atoms in the frame.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">frame</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span><span class="p">:</span>
@@ -234,17 +234,17 @@
         <span class="k">return</span> <span class="n">lines</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_box_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">:</span> <span class="n">Cell</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the box to the file.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        frame : Frame</span>
 <span class="sd">            The frame to write.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Box  </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">z</span><span class="si">}</span><span class="s2">  &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">alpha</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">gamma</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"Box  </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">x</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">y</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">z</span><span class="si">}</span><span class="s2">  "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">alpha</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cell</span><span class="o">.</span><span class="n">gamma</span><span class="si">}</span><span class="s2">"</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -254,7 +254,7 @@
         <span class="n">atom_counter</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">md_engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the atoms to the file.</span>
 
 <span class="sd">        Parameters</span>
@@ -268,15 +268,15 @@
 <span class="sd">            length as the number of atoms in the frame.</span>
 <span class="sd">        md_engine_format : MDEngineFormat | str, optional</span>
 <span class="sd">            The format of the restart file, by default MDEngineFormat.PQ</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">atom_counter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom_counter</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atom_counter</span><span class="p">)</span> <span class="o">!=</span> <span class="n">frame</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">:</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                     <span class="p">(</span>
-                        <span class="s2">&quot;The atom counter has to have the same length as &quot;</span>
-                        <span class="s2">&quot;the number of atoms in the frame if it is given &quot;</span>
-                        <span class="s2">&quot;as an array.&quot;</span>
+                        <span class="s2">"The atom counter has to have the same length as "</span>
+                        <span class="s2">"the number of atoms in the frame if it is given "</span>
+                        <span class="s2">"as an array."</span>
                     <span class="p">),</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">RestartFileWriterError</span>
                 <span class="p">)</span>
@@ -298,19 +298,19 @@
 
             <span class="n">residue</span> <span class="o">=</span> <span class="n">residues</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
-            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">""</span>
 
-            <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">atom_counter</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">residue</span><span class="si">}</span><span class="s2">    &quot;</span>
-            <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">atom</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">atom_counter</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">    </span><span class="si">{</span><span class="n">residue</span><span class="si">}</span><span class="s2">    "</span>
+            <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
 
             <span class="k">if</span> <span class="p">(</span><span class="n">frame</span><span class="o">.</span><span class="n">has_vel</span> <span class="ow">and</span> <span class="n">frame</span><span class="o">.</span><span class="n">has_forces</span><span class="p">)</span> <span class="ow">or</span> <span class="n">md_engine_format</span> <span class="o">!=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">:</span>
-                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
-                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
 
             <span class="k">if</span> <span class="n">md_engine_format</span> <span class="o">!=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">:</span>
-                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">pos</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">vel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="n">line</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">force</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}</span><span class="s2">"</span>
 
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
@@ -318,14 +318,14 @@
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_default_atom_counter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the default restart-file running indices.</span>
 
 <span class="sd">        If moltype information is present in the topology, PQ writes a</span>
 <span class="sd">        one-based running index within each contiguous molecule. Without</span>
 <span class="sd">        moltype information the historical PQAnalysis zero-based atom counter</span>
 <span class="sd">        is kept.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">residue_ids</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_ids</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">!=</span> <span class="n">frame</span><span class="o">.</span><span class="n">n_atoms</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">residue_ids</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>

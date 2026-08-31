@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.atomic_system.atomic_system</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the AtomicSystem class</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -121,7 +121,7 @@
     <span class="n">_PositionsMixin</span><span class="p">,</span>
 <span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for storing atomic systems.</span>
 
 <span class="sd">    It contains the standard properties of an atomic system</span>
@@ -169,22 +169,22 @@
 <span class="sd">    &gt;&gt;&gt; from PQAnalysis.core import Atom</span>
 <span class="sd">    &gt;&gt;&gt; from PQAnalysis.atomic_system import AtomicSystem</span>
 
-<span class="sd">    &gt;&gt;&gt; atoms = [Atom(&#39;C1&#39;, use_guess_element=False), Atom(&#39;C2&#39;, use_guess_element=False)]</span>
+<span class="sd">    &gt;&gt;&gt; atoms = [Atom('C1', use_guess_element=False), Atom('C2', use_guess_element=False)]</span>
 <span class="sd">    &gt;&gt;&gt; AtomicSystem(atoms=atoms, pos=np.array([[0, 0, 0], [1, 0, 0]]))</span>
 <span class="sd">    AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
 
 <span class="sd">    &gt;&gt;&gt; AtomicSystem()</span>
 <span class="sd">    AtomicSystem(topology=(Topology with 0 atoms...), cell=(Cell()))</span>
 
-<span class="sd">    &gt;&gt;&gt; AtomicSystem(topology=Topology(atoms=[Atom(&#39;C&#39;), Atom(&#39;C&#39;)]))</span>
+<span class="sd">    &gt;&gt;&gt; AtomicSystem(topology=Topology(atoms=[Atom('C'), Atom('C')]))</span>
 <span class="sd">    AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-    <span class="n">fitting_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">&quot;.fit_atomic_system&quot;</span><span class="p">)</span>
+    <span class="n">fitting_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span> <span class="o">+</span> <span class="s2">".fit_atomic_system"</span><span class="p">)</span>
     <span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="n">handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-    <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">))</span>
+    <span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">"</span><span class="si">%(message)s</span><span class="s2">"</span><span class="p">))</span>
     <span class="n">fitting_logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
     <span class="n">fitting_logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -205,7 +205,7 @@
         <span class="n">stress</span><span class="p">:</span> <span class="n">Np3x3NumberArray</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">cell</span><span class="p">:</span> <span class="n">Cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        For the initialization of an AtomicSystem all parameters are optional.</span>
 <span class="sd">        If no value is given for a parameter, the default value is used which</span>
 <span class="sd">        is an empty list for atoms, an empty numpy.ndarray for pos, vel, forces</span>
@@ -248,13 +248,13 @@
 <span class="sd">        ------</span>
 <span class="sd">        ValueError</span>
 <span class="sd">            If both atoms and topology are given.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">topology</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">atoms</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;Cannot initialize AtomicSystem with both atoms and topology &quot;</span>
-                    <span class="s2">&quot;arguments - they are mutually exclusive.&quot;</span>
+                    <span class="s2">"Cannot initialize AtomicSystem with both atoms and topology "</span>
+                    <span class="s2">"arguments - they are mutually exclusive."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">AtomicSystemError</span>
             <span class="p">)</span>
@@ -275,21 +275,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cell</span> <span class="o">=</span> <span class="n">cell</span>
 
     <span class="c1"># TODO: check why dynamic formatting does</span>
-    <span class="c1">#      not work here for &quot;AtomicSystem&quot;</span>
+    <span class="c1">#      not work here for "AtomicSystem"</span>
     <span class="c1">#</span>
     <span class="c1"># @runtime_type_checking</span>
 <div class="viewcode-block" id="AtomicSystem.fit_atomic_system">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.fit_atomic_system">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_atomic_system</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">,</span>
+        <span class="n">system</span><span class="p">:</span> <span class="s2">"AtomicSystem"</span><span class="p">,</span>
         <span class="n">number_of_additions</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">max_iterations</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">distance_cutoff</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">max_displacement</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">rotation_angle_step</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;List[AtomicSystem] | AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"List[AtomicSystem] | AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fit the positions of the system to the positions of another system.</span>
 
 <span class="sd">        Parameters</span>
@@ -331,7 +331,7 @@
 <span class="sd">        AtomicSystemError</span>
 <span class="sd">            If the system could not be fitted into the positions</span>
 <span class="sd">            of the AtomicSystem within the maximum number of iterations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">systems</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -344,8 +344,8 @@
 
             <span class="bp">self</span><span class="o">.</span><span class="n">fitting_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Performing fitting for </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">number_of_additions</span><span class="si">}</span><span class="s2"> &quot;</span>
-                    <span class="s2">&quot;addition(s).&quot;</span>
+                    <span class="sa">f</span><span class="s2">"Performing fitting for </span><span class="si">{</span><span class="n">i</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">number_of_additions</span><span class="si">}</span><span class="s2"> "</span>
+                    <span class="s2">"addition(s)."</span>
                 <span class="p">)</span>
             <span class="p">)</span>
 
@@ -366,13 +366,13 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_fit_atomic_system</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">positions_to_fit_into</span><span class="p">:</span> <span class="n">Np2DNumberArray</span><span class="p">,</span>
-        <span class="n">system</span><span class="p">:</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">,</span>
+        <span class="n">system</span><span class="p">:</span> <span class="s2">"AtomicSystem"</span><span class="p">,</span>
         <span class="n">max_iterations</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
         <span class="n">distance_cutoff</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">max_displacement</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">rotation_angle_step</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Fit the positions of the system to the positions of another system.</span>
 
 <span class="sd">        First a random center of mass is chosen and a random displacement</span>
@@ -410,7 +410,7 @@
 <span class="sd">        AtomicSystemError</span>
 <span class="sd">            If the system could not be fitted into the positions</span>
 <span class="sd">            of the AtomicSystem within the maximum number of iterations.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="c1"># Lazy import: scipy.spatial.transform is expensive to import</span>
         <span class="c1"># and only needed when fitting atomic systems.</span>
@@ -418,7 +418,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AtomicSystemError</span><span class="p">(</span>
-                <span class="s2">&quot;Cannot fit into positions of a system with a vacuum cell.&quot;</span>
+                <span class="s2">"Cannot fit into positions of a system with a vacuum cell."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_displacement</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
@@ -426,7 +426,7 @@
 
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">max_displacement</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;The maximum displacement percentage must be a positive number.&quot;</span>
+                <span class="s2">"The maximum displacement percentage must be a positive number."</span>
             <span class="p">)</span>
 
         <span class="n">iter_converged</span> <span class="o">=</span> <span class="kc">None</span>
@@ -448,10 +448,10 @@
             <span class="n">rotation</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">random</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
 
             <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">360</span><span class="p">,</span> <span class="n">rotation_angle_step</span><span class="p">),</span> <span class="n">repeat</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
-                <span class="n">rotation_angles</span> <span class="o">=</span> <span class="n">rotation</span><span class="o">.</span><span class="n">as_euler</span><span class="p">(</span><span class="s1">&#39;xyz&#39;</span><span class="p">,</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">rotation_angles</span> <span class="o">=</span> <span class="n">rotation</span><span class="o">.</span><span class="n">as_euler</span><span class="p">(</span><span class="s1">'xyz'</span><span class="p">,</span> <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="n">rotation_angles</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
                 <span class="n">rotation</span> <span class="o">=</span> <span class="n">Rotation</span><span class="o">.</span><span class="n">from_euler</span><span class="p">(</span>
-                    <span class="s1">&#39;xyz&#39;</span><span class="p">,</span>
+                    <span class="s1">'xyz'</span><span class="p">,</span>
                     <span class="n">rotation_angles</span><span class="p">,</span>
                     <span class="n">degrees</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="p">)</span>
@@ -468,12 +468,12 @@
 
         <span class="k">if</span> <span class="n">iter_converged</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AtomicSystemError</span><span class="p">(</span>
-                <span class="s2">&quot;Could not fit the positions of the system. &quot;</span>
-                <span class="s2">&quot;Try increasing the maximum number of iterations.&quot;</span>
+                <span class="s2">"Could not fit the positions of the system. "</span>
+                <span class="s2">"Try increasing the maximum number of iterations."</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fitting_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Converged after </span><span class="si">{</span><span class="n">_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> iterations.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="se">\t</span><span class="s2">Converged after </span><span class="si">{</span><span class="n">_iter</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> iterations.</span><span class="se">\n</span><span class="s2">"</span>
         <span class="p">)</span>
         <span class="n">system</span> <span class="o">=</span> <span class="n">system</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="n">system</span><span class="o">.</span><span class="n">pos</span> <span class="o">=</span> <span class="n">new_pos</span>
@@ -482,8 +482,8 @@
         <span class="k">return</span> <span class="n">system</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">center_of_mass_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">center_of_mass_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes the center of mass of the residues in the system.</span>
 
 <span class="sd">        Returns</span>
@@ -502,7 +502,7 @@
 <span class="sd">        TODO:</span>
 <span class="sd">        -----</span>
 <span class="sd">        Include also center of mass velocities, forces and so on...</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pos</span><span class="p">:</span>
             <span class="n">residue_pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
                 <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_atom_indices</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>
@@ -515,15 +515,15 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_forces</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_vel</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_charges</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;Center of mass of residues not implemented for &quot;</span>
-                    <span class="s2">&quot;systems with forces, velocities or charges.&quot;</span>
+                    <span class="s2">"Center of mass of residues not implemented for "</span>
+                    <span class="s2">"systems with forces, velocities or charges."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQNotImplementedError</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">residue_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;No residues in the system.&quot;</span><span class="p">,</span>
+                <span class="s2">"No residues in the system."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">AtomicSystemError</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -564,8 +564,8 @@
     <span class="c1"># TODO: refactor or discard this method</span>
 <div class="viewcode-block" id="AtomicSystem.compute_com_atomic_system">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.compute_com_atomic_system">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_com_atomic_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_com_atomic_system</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Computes a new AtomicSystem with the center of mass of the system or groups of atoms.</span>
 
 <span class="sd">        Parameters</span>
@@ -582,13 +582,13 @@
 <span class="sd">        ------</span>
 <span class="sd">        AtomicSystemError</span>
 <span class="sd">            If the number of atoms in the selection is not a multiple of group.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">group</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">group</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span>
 
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span> <span class="o">%</span> <span class="n">group</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AtomicSystemError</span><span class="p">(</span>
-                <span class="s1">&#39;Number of atoms in selection is not a multiple of group.&#39;</span>
+                <span class="s1">'Number of atoms in selection is not a multiple of group.'</span>
             <span class="p">)</span>
 
         <span class="n">pos</span> <span class="o">=</span> <span class="p">[]</span>
@@ -615,8 +615,8 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">stdev</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
         <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Randomizes the positions of the atoms in the system with a normal distribution.</span>
 
 <span class="sd">        Parameters</span>
@@ -630,7 +630,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystem</span>
 <span class="sd">            The AtomicSystem with the randomized positions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
@@ -642,15 +642,15 @@
 
 <div class="viewcode-block" id="AtomicSystem.copy">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.copy">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a copy of the AtomicSystem.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystem</span>
 <span class="sd">            A copy of the AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">AtomicSystem</span><span class="p">(</span>
             <span class="n">pos</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">pos</span><span class="p">,</span>
             <span class="n">vel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vel</span><span class="p">,</span>
@@ -664,7 +664,7 @@
 <div class="viewcode-block" id="AtomicSystem.__eq__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__eq__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks whether the AtomicSystem is equal to another AtomicSystem.</span>
 
 <span class="sd">        Parameters</span>
@@ -676,7 +676,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            Whether the AtomicSystem is equal to the other AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isclose</span><span class="p">(</span><span class="n">other</span><span class="p">)</span></div>
 
@@ -690,7 +690,7 @@
         <span class="n">rtol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">1e-9</span><span class="p">,</span>
         <span class="n">atol</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks whether the AtomicSystem is close to another AtomicSystem.</span>
 
 <span class="sd">        Parameters</span>
@@ -706,7 +706,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        bool</span>
 <span class="sd">            Whether the AtomicSystem is close to the other AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">AtomicSystem</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -743,8 +743,8 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__getitem__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">Atom</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="n">Np1DIntArray</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AtomicSystem&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AtomicSystem"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a new AtomicSystem with the given key.</span>
 
 <span class="sd">        Examples</span>
@@ -753,19 +753,19 @@
 <span class="sd">        &gt;&gt;&gt; from PQAnalysis.core import Atom, Residue</span>
 <span class="sd">        &gt;&gt;&gt; from PQAnalysis.atomic_system import AtomicSystem</span>
 
-<span class="sd">        &gt;&gt;&gt; atoms = [Atom(&#39;C&#39;), Atom(&#39;C&#39;)]</span>
+<span class="sd">        &gt;&gt;&gt; atoms = [Atom('C'), Atom('C')]</span>
 <span class="sd">        &gt;&gt;&gt; pos = np.array([[0, 0, 0], [1, 0, 0]])</span>
 <span class="sd">        &gt;&gt;&gt; system = AtomicSystem(atoms=atoms, pos=pos)</span>
 <span class="sd">        &gt;&gt;&gt; system[0]</span>
 <span class="sd">        AtomicSystem(topology=(Topology with 1 atoms...), cell=(Cell()))</span>
 
-<span class="sd">        &gt;&gt;&gt; system[0] == AtomicSystem(atoms=[Atom(&#39;C&#39;)], pos=np.array([[0, 0, 0]]))</span>
+<span class="sd">        &gt;&gt;&gt; system[0] == AtomicSystem(atoms=[Atom('C')], pos=np.array([[0, 0, 0]]))</span>
 <span class="sd">        True</span>
 
 <span class="sd">        &gt;&gt;&gt; system[0:2]</span>
 <span class="sd">        AtomicSystem(topology=(Topology with 2 atoms...), cell=(Cell()))</span>
 
-<span class="sd">        &gt;&gt;&gt; atoms = [Atom(&#39;C&#39;), Atom(&#39;C&#39;)]</span>
+<span class="sd">        &gt;&gt;&gt; atoms = [Atom('C'), Atom('C')]</span>
 <span class="sd">        &gt;&gt;&gt; pos = np.array([[0, 0, 0], [1, 0, 0]])</span>
 <span class="sd">        &gt;&gt;&gt; system[0:2] == AtomicSystem(atoms=atoms, pos=pos)</span>
 <span class="sd">        True</span>
@@ -773,7 +773,7 @@
 <span class="sd">        &gt;&gt;&gt; system[np.array([0, 1])]</span>
 <span class="sd">        AtomicSystem(topology=(Topology with 2 atoms ...), cell=(Cell()))</span>
 
-<span class="sd">        &gt;&gt;&gt; atoms = [Atom(&#39;C&#39;), Atom(&#39;C&#39;)]</span>
+<span class="sd">        &gt;&gt;&gt; atoms = [Atom('C'), Atom('C')]</span>
 <span class="sd">        &gt;&gt;&gt; pos = np.array([[0, 0, 0], [1, 0, 0]])</span>
 <span class="sd">        &gt;&gt;&gt; system[np.array([0, 1])] == AtomicSystem(atoms=atoms, pos=pos)</span>
 <span class="sd">        True</span>
@@ -787,7 +787,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystem</span>
 <span class="sd">            The new AtomicSystem with the given key.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">Atom</span><span class="p">):</span>
             <span class="n">key</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
@@ -816,42 +816,42 @@
 <div class="viewcode-block" id="AtomicSystem.__len__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__len__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the number of atoms in the AtomicSystem.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The number of atoms in the AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_atoms</span></div>
 
 
 <div class="viewcode-block" id="AtomicSystem.__str__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__str__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the string representation of the AtomicSystem.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The string representation of the AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;AtomicSystem(topology=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="si">}</span><span class="s2">), cell=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="si">}</span><span class="s2">))&quot;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"AtomicSystem(topology=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="si">}</span><span class="s2">), cell=(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cell</span><span class="si">}</span><span class="s2">))"</span></div>
 
 
 <div class="viewcode-block" id="AtomicSystem.__repr__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.atomic_system.html#PQAnalysis.atomic_system.atomic_system.AtomicSystem.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the string representation of the AtomicSystem.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The string representation of the AtomicSystem.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span></div>
 
 

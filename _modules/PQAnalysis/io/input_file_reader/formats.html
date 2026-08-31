@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.input_file_reader.formats</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the InputFileFormat enumeration.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 
@@ -91,19 +91,19 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.formats.html#PQAnalysis.io.input_file_reader.formats.InputFileFormat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">InputFileFormat</span><span class="p">(</span><span class="n">BaseEnumFormat</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    An enumeration of the supported input formats.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">PQANALYSIS</span> <span class="o">=</span> <span class="s2">&quot;PQANALYSIS&quot;</span>
-    <span class="n">PQ</span> <span class="o">=</span> <span class="s2">&quot;PQ&quot;</span>
-    <span class="n">QMCFC</span> <span class="o">=</span> <span class="s2">&quot;QMCFC&quot;</span>
+    <span class="n">PQANALYSIS</span> <span class="o">=</span> <span class="s2">"PQANALYSIS"</span>
+    <span class="n">PQ</span> <span class="o">=</span> <span class="s2">"PQ"</span>
+    <span class="n">QMCFC</span> <span class="o">=</span> <span class="s2">"QMCFC"</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_missing_</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>  <span class="c1"># pylint: disable=arguments-differ</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        This method allows an InputFileFormat to be retrieved from a string.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="bp">cls</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">member</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
@@ -115,9 +115,9 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.input_file_reader.formats.html#PQAnalysis.io.input_file_reader.formats.InputFileFormat.is_qmcf_type">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_qmcf_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns True if the given value is a QMCF input file format.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">value</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">QMCFC</span><span class="p">]</span></div>
 </div>
 

@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module for reading the input file for the PQAnalysis.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
@@ -99,7 +99,7 @@
 <a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PQAnalysisInputFileReader</span><span class="p">(</span><span class="n">_FileMixin</span><span class="p">,</span> <span class="n">_SelectionMixin</span><span class="p">,</span> <span class="n">_PositionsMixin</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to read the input file for the PQAnalysis. </span>
 <span class="sd">    It inherits from _FileMixin, _SelectionMixin and _PositionsMixin.</span>
 
@@ -115,31 +115,31 @@
 <span class="sd">        thus also no information/documentation of the values of the </span>
 <span class="sd">        keywords is given, so that they can be used accordingly in</span>
 <span class="sd">        the implementing subclasses.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="n">known_keys</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># fmt: off</span>
-    <span class="n">r_max_key</span> <span class="o">=</span> <span class="s2">&quot;r_max&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_max_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">r_min_key</span> <span class="o">=</span> <span class="s2">&quot;r_min&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_min_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">delta_r_key</span> <span class="o">=</span> <span class="s2">&quot;delta_r&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delta_r_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">n_bins_key</span> <span class="o">=</span> <span class="s2">&quot;n_bins&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_bins_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">traj_files_key</span> <span class="o">=</span> <span class="s2">&quot;traj_files&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traj_files_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">selection_key</span> <span class="o">=</span> <span class="s2">&quot;selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">reference_selection_key</span> <span class="o">=</span> <span class="s2">&quot;reference_selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reference_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">target_selection_key</span> <span class="o">=</span> <span class="s2">&quot;target_selection&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">use_full_atom_info_key</span> <span class="o">=</span> <span class="s2">&quot;use_full_atom_info&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">use_full_atom_info_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">out_file_key</span> <span class="o">=</span> <span class="s2">&quot;out_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">log_file_key</span> <span class="o">=</span> <span class="s2">&quot;log_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">no_intra_molecular_key</span> <span class="o">=</span> <span class="s2">&quot;no_intra_molecular&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">no_intra_molecular_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">moldescriptor_file_key</span> <span class="o">=</span> <span class="s2">&quot;moldescriptor_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moldescriptor_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
-    <span class="n">restart_file_key</span> <span class="o">=</span> <span class="s2">&quot;restart_file&quot;</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">restart_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">r_max_key</span> <span class="o">=</span> <span class="s2">"r_max"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_max_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">r_min_key</span> <span class="o">=</span> <span class="s2">"r_min"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_min_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">delta_r_key</span> <span class="o">=</span> <span class="s2">"delta_r"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">delta_r_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">n_bins_key</span> <span class="o">=</span> <span class="s2">"n_bins"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_bins_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">traj_files_key</span> <span class="o">=</span> <span class="s2">"traj_files"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">traj_files_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">selection_key</span> <span class="o">=</span> <span class="s2">"selection"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">reference_selection_key</span> <span class="o">=</span> <span class="s2">"reference_selection"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reference_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">target_selection_key</span> <span class="o">=</span> <span class="s2">"target_selection"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">target_selection_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">use_full_atom_info_key</span> <span class="o">=</span> <span class="s2">"use_full_atom_info"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">use_full_atom_info_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">out_file_key</span> <span class="o">=</span> <span class="s2">"out_file"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">out_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">log_file_key</span> <span class="o">=</span> <span class="s2">"log_file"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">log_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">no_intra_molecular_key</span> <span class="o">=</span> <span class="s2">"no_intra_molecular"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">no_intra_molecular_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">moldescriptor_file_key</span> <span class="o">=</span> <span class="s2">"moldescriptor_file"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">moldescriptor_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
+    <span class="n">restart_file_key</span> <span class="o">=</span> <span class="s2">"restart_file"</span><span class="p">;</span> <span class="n">known_keys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">restart_file_key</span><span class="p">)</span> <span class="c1"># pylint: disable=multiple-statements</span>
     <span class="c1">#fmt: on</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        It sets the format to InputFileFormat.PQANALYSIS and the</span>
 <span class="sd">        filename to the given filename. It also creates a </span>
 <span class="sd">        InputFileParser with the given filename.</span>
@@ -148,7 +148,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
 <span class="sd">            the filename of the input file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">format</span> <span class="o">=</span> <span class="n">InputFileFormat</span><span class="o">.</span><span class="n">PQANALYSIS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">InputFileParser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
@@ -159,10 +159,10 @@
 <div class="viewcode-block" id="PQAnalysisInputFileReader.read">
 <a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.read">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads the input file and parses it.</span>
 <span class="sd">        It also sets the raw_input_file and the dictionary.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">raw_input_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">raw_input_file</span></div>
 
@@ -170,7 +170,7 @@
 <div class="viewcode-block" id="PQAnalysisInputFileReader.check_required_keys">
 <a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.check_required_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_required_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">required_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if all required keys are set in the input file.</span>
 
 <span class="sd">        Parameters</span>
@@ -182,12 +182,12 @@
 <span class="sd">        ------</span>
 <span class="sd">        InputFileError</span>
 <span class="sd">            if not all required keys are set in the input file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_keys</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                <span class="s2">&quot;Not all required keys were set in &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the input file! The required keys are: </span><span class="si">{</span><span class="n">required_keys</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="s2">"Not all required keys were set in "</span>
+                <span class="sa">f</span><span class="s2">"the input file! The required keys are: </span><span class="si">{</span><span class="n">required_keys</span><span class="si">}</span><span class="s2">."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">InputFileError</span>
             <span class="p">)</span></div>
@@ -196,7 +196,7 @@
 <div class="viewcode-block" id="PQAnalysisInputFileReader.check_known_keys">
 <a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.check_known_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_known_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">known_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if all keys in the input file are known.</span>
 
 <span class="sd">        Parameters</span>
@@ -208,21 +208,21 @@
 <span class="sd">        -----</span>
 <span class="sd">        InputFileWarning</span>
 <span class="sd">            if unknown keys were set in the input file</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">known_keys</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">known_keys</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">known_keys</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">known_keys</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                <span class="s2">&quot;Unknown keys were set in the input file! &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;The known keys are: </span><span class="si">{</span><span class="n">known_keys</span><span class="si">}</span><span class="s2">. They will be ignored!&quot;</span>
+                <span class="s2">"Unknown keys were set in the input file! "</span>
+                <span class="sa">f</span><span class="s2">"The known keys are: </span><span class="si">{</span><span class="n">known_keys</span><span class="si">}</span><span class="s2">. They will be ignored!"</span>
             <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PQAnalysisInputFileReader.not_defined_optional_keys">
 <a class="viewcode-back" href="../../../../../code/PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.html#PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader.not_defined_optional_keys">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">not_defined_optional_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optional_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if optional keys are set in the input file.</span>
 <span class="sd">        If not set, it sets them to None.</span>
 
@@ -230,10 +230,10 @@
 <span class="sd">        ----------</span>
 <span class="sd">        optional_keys : List[str]</span>
 <span class="sd">            the optional keys</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">optional_keys</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dictionary</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s2">"None"</span><span class="p">,</span> <span class="s2">"None"</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -124,6 +124,80 @@ within the api module, but can be used directly from the core package.</p>
 </ul>
 </div>
 </section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Exceptions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.AtomError" title="PQAnalysis.core.exceptions.AtomError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AtomError</span></code></a></p></td>
+<td><p>Exception raised for errors related to the Atom class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.CellError" title="PQAnalysis.core.exceptions.CellError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">CellError</span></code></a></p></td>
+<td><p>Exception raised for errors related to the Cell class</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.ElementNotFoundError" title="PQAnalysis.core.exceptions.ElementNotFoundError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ElementNotFoundError</span></code></a></p></td>
+<td><p>Exception raised if the given element id is not valid</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.ResidueError" title="PQAnalysis.core.exceptions.ResidueError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ResidueError</span></code></a></p></td>
+<td><p>Exception raised for errors related to the Residue class</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.exceptions.html#PQAnalysis.core.exceptions.ResidueWarning" title="PQAnalysis.core.exceptions.ResidueWarning"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ResidueWarning</span></code></a></p></td>
+<td><p>Warning raised for problems related to the Residue class</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Classes:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atom" title="PQAnalysis.core.atom.atom.Atom"><code class="xref py py-class docutils literal notranslate"><span class="pre">Atom</span></code></a></p></td>
+<td><p>A class used to represent an atom in a molecule.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cell" title="PQAnalysis.core.cell.cell.Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cell</span></code></a></p></td>
+<td><p>Class for storing unit cell parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.CustomElement" title="PQAnalysis.core.atom.element.CustomElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">CustomElement</span></code></a></p></td>
+<td><p>A class representing a custom element it  inherits from the Element class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Element" title="PQAnalysis.core.atom.element.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">Element</span></code></a></p></td>
+<td><p>A class representing an element.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.QMResidue" title="PQAnalysis.core.residue.QMResidue"><code class="xref py py-class docutils literal notranslate"><span class="pre">QMResidue</span></code></a></p></td>
+<td><p>A class for representing a QM residue type (mol type).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residue" title="PQAnalysis.core.residue.Residue"><code class="xref py py-class docutils literal notranslate"><span class="pre">Residue</span></code></a></p></td>
+<td><p>A class for representing a residue type (mol type).</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Functions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.api.html#PQAnalysis.core.api.distance" title="PQAnalysis.core.api.distance"><code class="xref py py-func docutils literal notranslate"><span class="pre">distance</span></code></a></p></td>
+<td><p>Returns the distances between all combinations of two position arrays.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Data:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.atom.atom.html#PQAnalysis.core.atom.atom.Atoms" title="PQAnalysis.core.atom.atom.Atoms"><code class="xref py py-data docutils literal notranslate"><span class="pre">Atoms</span></code></a></p></td>
+<td><p>Type variable.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.cell.cell.html#PQAnalysis.core.cell.cell.Cells" title="PQAnalysis.core.cell.cell.Cells"><code class="xref py py-data docutils literal notranslate"><span class="pre">Cells</span></code></a></p></td>
+<td><p>NewType creates simple unique types with almost zero runtime overhead.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.core.atom.element.html#PQAnalysis.core.atom.element.Elements" title="PQAnalysis.core.atom.element.Elements"><code class="xref py py-data docutils literal notranslate"><span class="pre">Elements</span></code></a></p></td>
+<td><p>NewType creates simple unique types with almost zero runtime overhead.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.core.residue.html#PQAnalysis.core.residue.Residues" title="PQAnalysis.core.residue.Residues"><code class="xref py py-data docutils literal notranslate"><span class="pre">Residues</span></code></a></p></td>
+<td><p>Type variable.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+</section>
 </section>
 
 

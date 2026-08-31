@@ -76,10 +76,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.vacf.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">This module provides API functions for the velocity auto-correlation</span>
 <span class="sd">function (VACF) analysis.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
@@ -109,14 +109,14 @@
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Reads a legacy static charge file.</span>
 
 <span class="sd">    The file consists of a header line with the number of atoms, one</span>
-<span class="sd">    comment line and one &quot;name charge&quot; line per atom (legacy</span>
+<span class="sd">    comment line and one "name charge" line per atom (legacy</span>
 <span class="sd">    Fluxfreqcalc chrg_file format). For the</span>
 <span class="sd">    :py:class:`~PQAnalysis.traj.formats.MDEngineFormat.QMCFC` format</span>
-<span class="sd">    the first entry is the dummy &#39;X&#39; atom, which is stripped like in</span>
+<span class="sd">    the first entry is the dummy 'X' atom, which is stripped like in</span>
 <span class="sd">    the velocity trajectory.</span>
 
 <span class="sd">    Parameters</span>
@@ -124,7 +124,7 @@
 <span class="sd">    filename : str</span>
 <span class="sd">        The static charge file to read.</span>
 <span class="sd">    md_format : MDEngineFormat | str, optional</span>
-<span class="sd">        the format of the underlying trajectory. Default is &quot;PQ&quot;.</span>
+<span class="sd">        the format of the underlying trajectory. Default is "PQ".</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -136,20 +136,20 @@
 <span class="sd">    VACFError</span>
 <span class="sd">        If the file header or a charge line cannot be parsed, if the</span>
 <span class="sd">        file provides fewer charges than the header announces or if</span>
-<span class="sd">        the first atom of a QMCFC charge file is not the dummy &#39;X&#39;</span>
+<span class="sd">        the first atom of a QMCFC charge file is not the dummy 'X'</span>
 <span class="sd">        atom.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">md_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_format</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">n_entries</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Could not read the number of atoms from the header of &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;the charge file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Could not read the number of atoms from the header of "</span>
+            <span class="sa">f</span><span class="s2">"the charge file '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">'."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
     <span class="c1"># lines[1] is a comment line and is skipped like in the legacy tool</span>
@@ -157,9 +157,9 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">entry_lines</span><span class="p">)</span> <span class="o">!=</span> <span class="n">n_entries</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;The charge file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; provides only &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">entry_lines</span><span class="p">)</span><span class="si">}</span><span class="s2"> charge line(s), but the header &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;announces </span><span class="si">{</span><span class="n">n_entries</span><span class="si">}</span><span class="s2"> atom(s).&quot;</span>
+            <span class="sa">f</span><span class="s2">"The charge file '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">' provides only "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">entry_lines</span><span class="p">)</span><span class="si">}</span><span class="s2"> charge line(s), but the header "</span>
+            <span class="sa">f</span><span class="s2">"announces </span><span class="si">{</span><span class="n">n_entries</span><span class="si">}</span><span class="s2"> atom(s)."</span>
         <span class="p">)</span>
 
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
@@ -173,16 +173,16 @@
             <span class="n">charges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">splitted_line</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Could not parse the charge line &#39;</span><span class="si">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&#39; of &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;the charge file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39;. Each line has to be &quot;</span>
-                <span class="s2">&quot;of the form &#39;name charge&#39;.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Could not parse the charge line '</span><span class="si">{</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">' of "</span>
+                <span class="sa">f</span><span class="s2">"the charge file '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">'. Each line has to be "</span>
+                <span class="s2">"of the form 'name charge'."</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
     <span class="k">if</span> <span class="n">md_format</span> <span class="o">==</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">QMCFC</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">names</span> <span class="ow">or</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;X&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">names</span> <span class="ow">or</span> <span class="n">names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">"X"</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">VACFError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;The first atom of the QMCFC charge file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="s2">&quot;is not the dummy &#39;X&#39; atom.&quot;</span>
+                <span class="sa">f</span><span class="s2">"The first atom of the QMCFC charge file '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">' "</span>
+                <span class="s2">"is not the dummy 'X' atom."</span>
             <span class="p">)</span>
 
         <span class="n">charges</span> <span class="o">=</span> <span class="n">charges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
@@ -200,7 +200,7 @@
     <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
     <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculates the velocity auto-correlation function (VACF) using a</span>
 <span class="sd">    given input file.</span>
 
@@ -221,14 +221,14 @@
 <span class="sd">        keys please visit</span>
 <span class="sd">        :py:mod:`~PQAnalysis.analysis.vacf.vacf_input_file_reader`.</span>
 <span class="sd">    md_format : MDEngineFormat | str, optional</span>
-<span class="sd">        the format of the input trajectory. Default is &quot;PQ&quot;.</span>
+<span class="sd">        the format of the input trajectory. Default is "PQ".</span>
 <span class="sd">        For more information on the supported formats please visit</span>
 <span class="sd">        :py:class:`~PQAnalysis.traj.formats.MDEngineFormat`.</span>
 <span class="sd">    export_files : Sequence[str] | None, optional</span>
 <span class="sd">        Additional outputs for the main correlation table. ``.csv``,</span>
 <span class="sd">        ``.tsv`` and ``.xvg`` select those formats; other extensions use</span>
 <span class="sd">        native PQAnalysis text.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">md_format</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="p">(</span><span class="n">md_format</span><span class="p">)</span>
 
@@ -296,15 +296,15 @@
         <span class="n">spectrum_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">ftsize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">&quot;ftsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">ftsize</span>
+            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">"ftsize"</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">ftsize</span>
         <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">&quot;window_function&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_function</span>
+            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">"window_function"</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_function</span>
         <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">&quot;window_param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_param</span>
+            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">"window_param"</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_param</span>
         <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">&quot;window_start&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_start</span>
+            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">"window_start"</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_start</span>
         <span class="k">if</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">&quot;window_stop&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_stop</span>
+            <span class="n">spectrum_kwargs</span><span class="p">[</span><span class="s2">"window_stop"</span><span class="p">]</span> <span class="o">=</span> <span class="n">input_reader</span><span class="o">.</span><span class="n">window_stop</span>
 
         <span class="n">wavenumbers</span><span class="p">,</span> <span class="n">amplitudes</span><span class="p">,</span> <span class="n">windowed_correlation</span> <span class="o">=</span> <span class="n">vacf_spectrum</span><span class="p">(</span>
             <span class="n">time</span><span class="p">,</span>

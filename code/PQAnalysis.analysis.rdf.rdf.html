@@ -171,13 +171,16 @@ TrajectoryReader object allows for lazy loading of
 the trajectory, meaning that the trajectory is only
 loaded frame by frame when needed. This can be useful
 for large trajectories that do not fit into memory.</p>
-<p>For xyz trajectory files without intra-molecular
-exclusion the frames are streamed via the raw-frame
+<p>For xyz trajectory files without intra-molecular exclusion the
+frames are streamed in float64 via the raw-frame
 fast path
 (<a class="reference internal" href="PQAnalysis.io.traj_file.raw_frame_reader.html#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader" title="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawTrajectoryReader</span></code></a>)
 and accumulated with a compiled distance-histogram
-kernel, which is considerably faster and produces
-identical results.</p>
+kernel. A periodic orthorhombic calculation specified by
+<code class="docutils literal notranslate"><span class="pre">delta_r</span></code> alone, with the default <code class="docutils literal notranslate"><span class="pre">r_min</span> <span class="pre">=</span> <span class="pre">0</span></code>, reproduces the
+numeric operation order of the legacy <code class="docutils literal notranslate"><span class="pre">thh_tools/RDF</span></code> program.
+Other geometries and explicit radial ranges use the general
+PQAnalysis RDF semantics.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

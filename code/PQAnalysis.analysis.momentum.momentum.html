@@ -148,13 +148,6 @@ selected atoms and the norm <code class="docutils literal notranslate"><span cla
 factor. With velocities in Angstrom/s (PQ velocity trajectories)
 the default scaling factor of 1e-15 converts the momentum norm
 from amu*Angstrom/s to amu*Angstrom/fs.</p>
-<p>Note that the velocities are parsed from file in single precision
-by the TrajectoryReader, so reported norms below roughly
-<code class="docutils literal notranslate"><span class="pre">1e-7</span> <span class="pre">*</span> <span class="pre">sum_i</span> <span class="pre">m_i</span> <span class="pre">*</span> <span class="pre">|v_i|</span> <span class="pre">*</span> <span class="pre">scale</span></code> are parsing noise, not
-physical center of mass drift. The legacy <code class="docutils literal notranslate"><span class="pre">equipartition.jl</span></code>
-tool parses the velocities in double precision and therefore
-resolves correspondingly smaller drift for momentum-conserving
-trajectories.</p>
 <p>The Momentum class can be initialized with either a trajectory
 object or via a TrajectoryReader object. If a trajectory object
 is given, it is assumed to have a constant topology over all
@@ -163,13 +156,14 @@ TrajectoryReader object allows for lazy loading of the
 trajectory, meaning that the trajectory is only loaded frame by
 frame when needed. This can be useful for large trajectories
 that do not fit into memory.</p>
-<p>When initialized with a TrajectoryReader of a velocity
-trajectory, the frames are streamed through the raw fast-path
-reader
+<p>When initialized with a TrajectoryReader of a velocity trajectory,
+frames are parsed directly in float64 through the raw fast-path reader
 (<a class="reference internal" href="PQAnalysis.io.traj_file.raw_frame_reader.html#PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader" title="PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">RawTrajectoryReader</span></code></a>)
-without building an AtomicSystem per frame. The computed
-momentum norms are bit-identical to the AtomicSystem based
-stream.</p>
+without building an AtomicSystem per frame. Atom-order accumulation,
+the three-component norm and scaling reproduce the operation order of
+the legacy <code class="docutils literal notranslate"><span class="pre">equipartition.jl</span></code> tool. Trajectory objects and other
+trajectory formats retain the precision and general NumPy semantics
+of their supplied velocity arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -76,13 +76,13 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.topology.bonded_topology.bonded_topology</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the BondedTopology class. </span>
 
 <span class="sd">The BondedTopology class represents a bonded topology in a molecular</span>
 <span class="sd">topology and is used to store the bonds, angles, dihedrals,</span>
 <span class="sd">impropers, and shake bonds of a molecular system along with their properties.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -105,12 +105,12 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.topology.bonded_topology.bonded_topology.html#PQAnalysis.topology.bonded_topology.bonded_topology.BondedTopology">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BondedTopology</span><span class="p">(</span><span class="n">TopologyPropertiesMixin</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to represent a bonded topology in a molecular topology.</span>
 
 <span class="sd">    It inherits from TopologyPropertiesMixin.</span>
 <span class="sd">    A mixin class to add the most common properties of a topology.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -125,7 +125,7 @@
         <span class="n">shake_bonds</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Bond</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ordering_keys</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        bonds : List[Bond], optional</span>
@@ -141,7 +141,7 @@
 <span class="sd">        ordering_keys : List[str], optional</span>
 <span class="sd">            A list of keys to order the blocks of the bonded topology,</span>
 <span class="sd">            when initializing from a file, by default None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">bonds</span> <span class="o">=</span> <span class="n">bonds</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">angles</span> <span class="o">=</span> <span class="n">angles</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -161,7 +161,7 @@
         <span class="n">n_extensions</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">n_atoms_per_extension</span><span class="p">:</span> <span class="n">PositiveInt</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Extend the shake bonds in the bonded topology.</span>
 
 <span class="sd">        This function is useful when two or more atomic systems are merged,</span>
@@ -184,11 +184,11 @@
 <span class="sd">            If n_atoms_per_extension is not provided and n_extensions is not 1.</span>
 <span class="sd">        PQValueError</span>
 <span class="sd">            If n_atoms_per_extension is less than the highest index in the provided shake bonds.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">n_extensions</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">n_atoms_per_extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;n_atoms_per_extension must be provided if n_extensions is not 1.&quot;</span><span class="p">,</span>
+                <span class="s2">"n_atoms_per_extension must be provided if n_extensions is not 1."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>
 
@@ -202,8 +202,8 @@
         <span class="k">elif</span> <span class="n">n_atoms_per_extension</span> <span class="o">&lt;</span> <span class="n">max_index_shake_bonds</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;n_atoms_per_extension must be greater or equal &quot;</span>
-                    <span class="s2">&quot;than the highest index in the provided shake bonds.&quot;</span>
+                    <span class="s2">"n_atoms_per_extension must be greater or equal "</span>
+                    <span class="s2">"than the highest index in the provided shake bonds."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>

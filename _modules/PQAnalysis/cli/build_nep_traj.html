@@ -76,30 +76,30 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.build_nep_traj</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">.. _cli.build_nep_traj:</span>
 
 <span class="sd">Command Line Tool for Building Neuroevolution Potential (NEP) training/test trajectories</span>
 <span class="sd">----------------------------------------------------------------------------------------</span>
 
 
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.nep.nep_writer</span><span class="w"> </span><span class="kn">import</span> <span class="n">NEPWriter</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 
 <span class="s2">This command line tool can be used to convert output of PQ of QMCFC simulations to training and test files for the Neuroevolution Potential (NEP) method. The output is written to a xyz file.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For more information on required and optional input file keys please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.build_nep_traj.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For more information on required and optional input file keys please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">PQAnalysis.cli.build_nep_traj.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
 
 <span class="vm">__doc__</span> <span class="o">+=</span> <span class="n">__outputdoc__</span>
 
@@ -109,116 +109,116 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.build_nep_traj.html#PQAnalysis.cli.build_nep_traj.BuildNEPTrajCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">BuildNEPTrajCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Command Line Tool for Building Neuroevolution Potential (NEP) training/test trajectories</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="BuildNEPTrajCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.build_nep_traj.html#PQAnalysis.cli.build_nep_traj.BuildNEPTrajCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the name of the program.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The name of the program.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39;build_nep_traj&#39;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s1">'build_nep_traj'</span></div>
 
 
 <div class="viewcode-block" id="BuildNEPTrajCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.build_nep_traj.html#PQAnalysis.cli.build_nep_traj.BuildNEPTrajCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Adds the arguments to the parser.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        parser : _ArgumentParser</span>
 <span class="sd">            The parser to which the arguments should be added.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;file_prefixes&#39;</span><span class="p">,</span>
+            <span class="s1">'file_prefixes'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
-            <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;The file prefixes for all input files.&#39;</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="s1">'+'</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'The file prefixes for all input files.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_output_file</span><span class="p">()</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--test-ratio&#39;</span><span class="p">,</span>
+            <span class="s1">'--test-ratio'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;The ratio of testing frames to the total number of &quot;</span>
-            <span class="s2">&quot;frames, by default 0.0. If the test_ratio is 0.0 no &quot;</span>
-            <span class="s2">&quot;train and test files are created. If the test_ratio &quot;</span>
-            <span class="s2">&quot;is larger not equal to 0.0, the test_ratio is used &quot;</span>
-            <span class="s2">&quot;to determine the number of training and testing frames. &quot;</span>
-            <span class="s2">&quot;The final ratio will be as close to the test_ratio as &quot;</span>
-            <span class="s2">&quot;possible, but if it is not possible to have the exact &quot;</span>
-            <span class="s2">&quot;ratio, always the higher next higher ratio is chosen. &quot;</span>
-            <span class="s2">&quot;As output filenames the original filename is used with &quot;</span>
-            <span class="s2">&quot;the suffix _train or _test appended and the same &quot;</span>
-            <span class="s2">&quot;FileWritingMode as the original file is used.&quot;</span>
+            <span class="s2">"The ratio of testing frames to the total number of "</span>
+            <span class="s2">"frames, by default 0.0. If the test_ratio is 0.0 no "</span>
+            <span class="s2">"train and test files are created. If the test_ratio "</span>
+            <span class="s2">"is larger not equal to 0.0, the test_ratio is used "</span>
+            <span class="s2">"to determine the number of training and testing frames. "</span>
+            <span class="s2">"The final ratio will be as close to the test_ratio as "</span>
+            <span class="s2">"possible, but if it is not possible to have the exact "</span>
+            <span class="s2">"ratio, always the higher next higher ratio is chosen. "</span>
+            <span class="s2">"As output filenames the original filename is used with "</span>
+            <span class="s2">"the suffix _train or _test appended and the same "</span>
+            <span class="s2">"FileWritingMode as the original file is used."</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--total-ratios&#39;</span><span class="p">,</span>
+            <span class="s1">'--total-ratios'</span><span class="p">,</span>
             <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-            <span class="s2">&quot;The total_ratios keyword argument is used to &quot;</span>
-            <span class="s2">&quot;describe frame ratios including validation frames &quot;</span>
-            <span class="s2">&quot;in the format train_ratio:test_ratio:validation_ratio. &quot;</span>
-            <span class="s2">&quot;The validation_ratio is optional and if not given, &quot;</span>
-            <span class="s2">&quot;no validation frames are written. The total sum of &quot;</span>
-            <span class="s2">&quot;the integer values provided do not have to add up &quot;</span>
-            <span class="s2">&quot;to the total number of frames in the input trajectory &quot;</span>
-            <span class="s2">&quot;files. The ratios are used to determine the ratios of &quot;</span>
-            <span class="s2">&quot;the training, testing, and validation frames. The final&quot;</span>
-            <span class="s2">&quot;ratio will be as close to the given ratios as possible, &quot;</span>
-            <span class="s2">&quot;but if it is not possible to have the exact ratio, &quot;</span>
-            <span class="s2">&quot;always the next higher ratio is chosen. As output &quot;</span>
-            <span class="s2">&quot;filenames the original filename is used with the suffix &quot;</span>
-            <span class="s2">&quot;_train, _test, or _validation appended and the same &quot;</span>
-            <span class="s2">&quot;FileWritingMode as the original file is used. The &quot;</span>
-            <span class="s2">&quot;validation frames are written to a file with the &quot;</span>
-            <span class="s2">&quot;suffix _validation and a file with the suffix _validation.ref. &quot;</span>
-            <span class="s2">&quot;The _validation file contains only the coordinates and &quot;</span>
-            <span class="s2">&quot;box information to function as crude testing input and &quot;</span>
-            <span class="s2">&quot;the _validation.ref file contains all information &quot;</span>
-            <span class="s2">&quot;additionally provided in the original files. &quot;</span>
-            <span class="s2">&quot;Pay Attention: This keyword argument is mutually exclusive &quot;</span>
-            <span class="s2">&quot;with the test_ratio keyword argument. If both are given, &quot;</span>
-            <span class="s2">&quot;a ValueError is raised.&quot;</span>
+            <span class="s2">"The total_ratios keyword argument is used to "</span>
+            <span class="s2">"describe frame ratios including validation frames "</span>
+            <span class="s2">"in the format train_ratio:test_ratio:validation_ratio. "</span>
+            <span class="s2">"The validation_ratio is optional and if not given, "</span>
+            <span class="s2">"no validation frames are written. The total sum of "</span>
+            <span class="s2">"the integer values provided do not have to add up "</span>
+            <span class="s2">"to the total number of frames in the input trajectory "</span>
+            <span class="s2">"files. The ratios are used to determine the ratios of "</span>
+            <span class="s2">"the training, testing, and validation frames. The final"</span>
+            <span class="s2">"ratio will be as close to the given ratios as possible, "</span>
+            <span class="s2">"but if it is not possible to have the exact ratio, "</span>
+            <span class="s2">"always the next higher ratio is chosen. As output "</span>
+            <span class="s2">"filenames the original filename is used with the suffix "</span>
+            <span class="s2">"_train, _test, or _validation appended and the same "</span>
+            <span class="s2">"FileWritingMode as the original file is used. The "</span>
+            <span class="s2">"validation frames are written to a file with the "</span>
+            <span class="s2">"suffix _validation and a file with the suffix _validation.ref. "</span>
+            <span class="s2">"The _validation file contains only the coordinates and "</span>
+            <span class="s2">"box information to function as crude testing input and "</span>
+            <span class="s2">"the _validation.ref file contains all information "</span>
+            <span class="s2">"additionally provided in the original files. "</span>
+            <span class="s2">"Pay Attention: This keyword argument is mutually exclusive "</span>
+            <span class="s2">"with the test_ratio keyword argument. If both are given, "</span>
+            <span class="s2">"a ValueError is raised."</span>
             <span class="p">)</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--use-forces&#39;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="s1">'--use-forces'</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to include forces in the output file.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Whether to include forces in the output file.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--use-virial&#39;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="s1">'--use-virial'</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to include the virial in the output file.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Whether to include the virial in the output file.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s1">&#39;--use-stress&#39;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+            <span class="s1">'--use-stress'</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s1">'store_true'</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Whether to include the stress tensor in the output file.&#39;</span>
+            <span class="n">help</span><span class="o">=</span><span class="s1">'Whether to include the stress tensor in the output file.'</span>
         <span class="p">)</span>
 
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_mode</span><span class="p">()</span></div>
@@ -228,14 +228,14 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.build_nep_traj.html#PQAnalysis.cli.build_nep_traj.BuildNEPTrajCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Runs the build_nep_traj function with the given arguments.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        args : argparse.Namespace</span>
 <span class="sd">            The parsed arguments.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">writer</span> <span class="o">=</span> <span class="n">NEPWriter</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">mode</span><span class="p">)</span>
 
         <span class="n">writer</span><span class="o">.</span><span class="n">write_from_files</span><span class="p">(</span>
@@ -254,11 +254,11 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.build_nep_traj.html#PQAnalysis.cli.build_nep_traj.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Main function of the build_nep_traj command line tool, which is basically </span>
 <span class="sd">    just a wrapper for the build_nep_traj function. For more information on </span>
 <span class="sd">    the build_nep_traj function please visit :py:func:`PQAnalysis.io.api.build_nep_traj`.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
 
     <span class="n">BuildNEPTrajCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>

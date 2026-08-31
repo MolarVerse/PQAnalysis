@@ -115,3 +115,27 @@ The project uses `pytest <https://docs.pytest.org/en/latest/>`_ for testing. Bef
 The testing framework will run all tests and provide automatically generated coverage reports. Not only should all tests pass, but the coverage should be as close to 100% as possible. Furthermore, the project automatically uses doctest, so please make sure that all examples included in the doc strings of the implemented features are correct otherwise the tests will fail.
 
 Last, if any additional dependencies are required for testing, please add them to the ``pyproject.toml`` file under the ``[project.optional-dependencies]`` section.
+
+**********************
+Performance Validation
+**********************
+
+File-backed VACF, MSD, RDF and momentum analyses use bounded compiled fast
+paths. A batch path must preserve the numeric operation order of its streaming
+fallback and must return to that fallback when the configured memory limit is
+exceeded. Parallel work is restricted to independent lag ranges, frames or
+private integer histograms; floating-point reductions within one legacy result
+must not be reordered.
+
+Install the benchmark dependency and run the focused benchmark suite with:
+
+.. code:: bash
+
+    $ pip install -e ".[test,benchmark]"
+    $ pytest -c benchmarks/pytest.ini benchmarks --benchmark-only
+
+Store a baseline with ``--benchmark-json=baseline.json`` and compare a changed
+branch with ``--benchmark-compare=baseline.json``. Runtime assertions do not
+belong in CI because host load is variable. Every optimization must instead
+pass the compiled and fallback tests plus the relevant fixed-bit legacy oracle
+before its benchmark result is considered.

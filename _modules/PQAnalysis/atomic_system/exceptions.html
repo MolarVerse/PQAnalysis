@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.atomic_system.exceptions</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing different exceptions related to the core subpackage.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PQException</span>
 
@@ -88,17 +88,17 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomicSystemError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Exception raised for errors related to the AtomicSystem class</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        message : str</span>
 <span class="sd">            The error message.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span></div>
 
@@ -109,19 +109,19 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemPositionsError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomicSystemPositionsError</span><span class="p">(</span><span class="n">AtomicSystemError</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Exception raised if atoms is not of the same length as positions</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;Atoms and positions must be of the same length.&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"Atoms and positions must be of the same length."</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        message : str</span>
 <span class="sd">            The error message.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
 
@@ -134,20 +134,20 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.atomic_system.exceptions.html#PQAnalysis.atomic_system.exceptions.AtomicSystemMassError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AtomicSystemMassError</span><span class="p">(</span><span class="n">AtomicSystemError</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Exception raised if atoms do not contain mass information</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;AtomicSystem contains atoms without mass information. &quot;</span>
-    <span class="n">message</span> <span class="o">+=</span> <span class="s2">&quot;Which is required for this operation.&quot;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="s2">"AtomicSystem contains atoms without mass information. "</span>
+    <span class="n">message</span> <span class="o">+=</span> <span class="s2">"Which is required for this operation."</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        message : str</span>
 <span class="sd">            The error message.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="n">message</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>

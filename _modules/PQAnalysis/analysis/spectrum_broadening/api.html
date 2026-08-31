@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.spectrum_broadening.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">API functions for spectrum broadening.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">numbers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Real</span>
 
@@ -114,16 +114,16 @@
     <span class="n">wavenumber_min</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_MIN</span><span class="p">,</span>
     <span class="n">wavenumber_max</span><span class="p">:</span> <span class="n">Real</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_MAX</span><span class="p">,</span>
     <span class="n">wavenumber_step</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">=</span> <span class="n">DEFAULT_WAVENUMBER_STEP</span><span class="p">,</span>
-    <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;gaussian&quot;</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">kernel</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"gaussian"</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
     <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Np1DNumberArray</span><span class="p">,</span> <span class="n">Np1DNumberArray</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Broaden a two-column stick spectrum file and write the result.</span>
 
 <span class="sd">    Reads a stick spectrum (wavenumber in cm^-1, intensity), broadens</span>
 <span class="sd">    it on a regular wavenumber grid using the peak-height convention</span>
-<span class="sd">    and writes one ``&#39;%8.4f    %16.12e&#39;`` row per grid point. This is</span>
+<span class="sd">    and writes one ``'%8.4f    %16.12e'`` row per grid point. This is</span>
 <span class="sd">    a port of the legacy ``build_spectrum.sh`` awk implementation.</span>
 
 <span class="sd">    Parameters</span>
@@ -152,7 +152,7 @@
 <span class="sd">        The broadening kernel, either ``gaussian`` or ``lorentzian``,</span>
 <span class="sd">        by default ``gaussian``.</span>
 <span class="sd">    mode : str | FileWritingMode, optional</span>
-<span class="sd">        The writing mode of the output file, by default &quot;w&quot;.</span>
+<span class="sd">        The writing mode of the output file, by default "w".</span>
 <span class="sd">    export_files : Sequence[str] | None, optional</span>
 <span class="sd">        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select</span>
 <span class="sd">        those formats; other extensions use native PQAnalysis text.</span>
@@ -166,11 +166,11 @@
 <span class="sd">    ------</span>
 <span class="sd">    SpectrumBroadeningError</span>
 <span class="sd">        If both alpha and fwhm are specified.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">fwhm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SpectrumBroadeningError</span><span class="p">(</span>
-            <span class="s2">&quot;The parameters alpha and fwhm are mutually exclusive. &quot;</span>
-            <span class="s2">&quot;Please specify only one of them.&quot;</span>
+            <span class="s2">"The parameters alpha and fwhm are mutually exclusive. "</span>
+            <span class="s2">"Please specify only one of them."</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">alpha</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

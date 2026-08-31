@@ -124,6 +124,108 @@
 </ul>
 </div>
 </section>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Exceptions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisOutputError" title="PQAnalysis.analysis.output.AnalysisOutputError"><code class="xref py py-exc docutils literal notranslate"><span class="pre">AnalysisOutputError</span></code></a></p></td>
+<td><p>Raised when an analysis table cannot be read, written or converted.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Classes:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisColumn</span></code></p></td>
+<td><p>Metadata for one analysis-table column.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisOutputFormat" title="PQAnalysis.analysis.output.AnalysisOutputFormat"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisOutputFormat</span></code></a></p></td>
+<td><p>Supported analysis-table output formats.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisSchema</span></code></p></td>
+<td><p>Title, columns and optional plot defaults for an analysis table.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisTable" title="PQAnalysis.analysis.output.AnalysisTable"><code class="xref py py-class docutils literal notranslate"><span class="pre">AnalysisTable</span></code></a></p></td>
+<td><p>A validated numerical table with scientific column metadata.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSD" title="PQAnalysis.analysis.msd.msd.MSD"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSD</span></code></a></p></td>
+<td><p>A class for calculating the mean square displacement (MSD) of a target selection using multiple simultaneously active time origins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSDDiffusionFit" title="PQAnalysis.analysis.msd.msd.MSDDiffusionFit"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSDDiffusionFit</span></code></a></p></td>
+<td><p>A container for the result of a linear diffusion fit of an MSD component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.msd.msd_input_file_reader.html#PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader" title="PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSDInputFileReader</span></code></a></p></td>
+<td><p>A class to read input files to setup the     <a class="reference internal" href="PQAnalysis.analysis.msd.msd.html#PQAnalysis.analysis.msd.msd.MSD" title="PQAnalysis.analysis.msd.msd.MSD"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSD</span></code></a> class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.momentum.momentum.html#PQAnalysis.analysis.momentum.momentum.Momentum" title="PQAnalysis.analysis.momentum.momentum.Momentum"><code class="xref py py-class docutils literal notranslate"><span class="pre">Momentum</span></code></a></p></td>
+<td><p>A class for calculating the norm of the total linear momentum of a selection of atoms for every frame of a velocity trajectory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a></p></td>
+<td><p>A class for calculating the radial distribution of a  reference selection to a target selection.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.rdf.rdf_output_file_writer.html#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter" title="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFDataWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDFDataWriter</span></code></a></p></td>
+<td><p>Class for writing the data of an  <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a> analysis to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.rdf.rdf_input_file_reader.html#PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader" title="PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDFInputFileReader</span></code></a></p></td>
+<td><p>A class to read input files to setup the <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a> class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.rdf.rdf_output_file_writer.html#PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFLogWriter" title="PQAnalysis.analysis.rdf.rdf_output_file_writer.RDFLogWriter"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDFLogWriter</span></code></a></p></td>
+<td><p>Class for writing the log (setup parameters) of an  <a class="reference internal" href="PQAnalysis.analysis.rdf.rdf.html#PQAnalysis.analysis.rdf.rdf.RDF" title="PQAnalysis.analysis.rdf.rdf.RDF"><code class="xref py py-class docutils literal notranslate"><span class="pre">RDF</span></code></a> analysis to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACF</span></code></a></p></td>
+<td><p>A class for calculating the normalized velocity (or charge-flux) auto-correlation function of a target selection of a velocity trajectory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vacf.vacf_input_file_reader.html#PQAnalysis.analysis.vacf.vacf_input_file_reader.VACFInputFileReader" title="PQAnalysis.analysis.vacf.vacf_input_file_reader.VACFInputFileReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACFInputFileReader</span></code></a></p></td>
+<td><p>A class to read input files to setup the     <a class="reference internal" href="PQAnalysis.analysis.vacf.vacf.html#PQAnalysis.analysis.vacf.vacf.VACF" title="PQAnalysis.analysis.vacf.vacf.VACF"><code class="xref py py-class docutils literal notranslate"><span class="pre">VACF</span></code></a> class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.html#PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader" title="PQAnalysis.analysis.vibrational.vibrational_input_file_reader.VibrationalAnalysisInputFileReader"><code class="xref py py-class docutils literal notranslate"><span class="pre">VibrationalAnalysisInputFileReader</span></code></a></p></td>
+<td><p>A class to read input files for vibrational analysis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.vibrational_analysis.html#PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult" title="PQAnalysis.analysis.vibrational.vibrational_analysis.VibrationalAnalysisResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">VibrationalAnalysisResult</span></code></a></p></td>
+<td><p>Result container for a vibrational analysis.</p></td>
+</tr>
+</tbody>
+</table>
+<p><code class="docutils literal notranslate"><span class="pre">__all__</span></code> Functions:</p>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.html#PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden" title="PQAnalysis.analysis.spectrum_broadening.spectrum_broadening.broaden"><code class="xref py py-func docutils literal notranslate"><span class="pre">broaden</span></code></a></p></td>
+<td><p>Broaden a stick spectrum on a wavenumber grid.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.spectrum_broadening.api.html#PQAnalysis.analysis.spectrum_broadening.api.build_spectrum" title="PQAnalysis.analysis.spectrum_broadening.api.build_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">build_spectrum</span></code></a></p></td>
+<td><p>Broaden a two-column stick spectrum file and write the result.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.momentum.api.html#PQAnalysis.analysis.momentum.api.check_momentum" title="PQAnalysis.analysis.momentum.api.check_momentum"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_momentum</span></code></a></p></td>
+<td><p>Calculate the total linear momentum norm per frame and write it.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.convert_analysis_output" title="PQAnalysis.analysis.output.convert_analysis_output"><code class="xref py py-func docutils literal notranslate"><span class="pre">convert_analysis_output</span></code></a></p></td>
+<td><p>Convert one analysis table to one or more output files.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.msd.api.html#PQAnalysis.analysis.msd.api.msd" title="PQAnalysis.analysis.msd.api.msd"><code class="xref py py-func docutils literal notranslate"><span class="pre">msd</span></code></a></p></td>
+<td><p>Calculates the mean square displacement (MSD) using a given input file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.rdf.api.html#PQAnalysis.analysis.rdf.api.rdf" title="PQAnalysis.analysis.rdf.api.rdf"><code class="xref py py-func docutils literal notranslate"><span class="pre">rdf</span></code></a></p></td>
+<td><p>Calculates the radial distribution function (RDF) using a given input file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.read_analysis_table" title="PQAnalysis.analysis.output.read_analysis_table"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_analysis_table</span></code></a></p></td>
+<td><p>Read native, CSV, TSV or XVG analysis data by content.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vacf.api.html#PQAnalysis.analysis.vacf.api.vacf" title="PQAnalysis.analysis.vacf.api.vacf"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacf</span></code></a></p></td>
+<td><p>Calculates the velocity auto-correlation function (VACF) using a given input file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PQAnalysis.analysis.vacf.spectrum.html#PQAnalysis.analysis.vacf.spectrum.vacf_spectrum" title="PQAnalysis.analysis.vacf.spectrum.vacf_spectrum"><code class="xref py py-func docutils literal notranslate"><span class="pre">vacf_spectrum</span></code></a></p></td>
+<td><p>Calculates the legacy cosine-transform spectrum of a correlation function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="PQAnalysis.analysis.vibrational.api.html#PQAnalysis.analysis.vibrational.api.vibrations" title="PQAnalysis.analysis.vibrational.api.vibrations"><code class="xref py py-func docutils literal notranslate"><span class="pre">vibrations</span></code></a></p></td>
+<td><p>Run vibrational analysis from an input file.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="#reference" title="Link to this heading"></a></h2>
+</section>
 </section>
 
 

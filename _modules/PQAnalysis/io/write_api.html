@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.write_api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing API functions for writing different objects to a file.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -95,7 +95,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.traj_file.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">write_trajectory</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;io.write_api&quot;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">"io.write_api"</span><span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
 
@@ -108,7 +108,7 @@
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">WRITE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    API write wrapper function for writing different objects to a file.</span>
 
 <span class="sd">    It can call the following specialized write functions</span>
@@ -127,7 +127,7 @@
 <span class="sd">        The name of the file to write to. If None, the output is printed to stdout.</span>
 <span class="sd">    mode : FileWritingMode | str, optional</span>
 <span class="sd">        The writing mode. If a string is given, it is converted to a FileWritingMode enum.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">object_to_write</span><span class="p">,</span> <span class="p">(</span><span class="n">Trajectory</span><span class="p">,</span> <span class="n">AtomicSystem</span><span class="p">)):</span>
 
@@ -141,8 +141,8 @@
 
         <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
             <span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Writing object of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">object_to_write</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;is not implemented yet.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Writing object of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">object_to_write</span><span class="p">)</span><span class="si">}</span><span class="s2"> "</span>
+            <span class="s2">"is not implemented yet."</span>
             <span class="p">),</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQNotImplementedError</span>
         <span class="p">)</span></div>
@@ -158,7 +158,7 @@
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">output_format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Writes the given trajectory to the file in a selected box file format.</span>
 
 <span class="sd">    Parameters</span>
@@ -170,7 +170,7 @@
 <span class="sd">    output_format : str, optional</span>
 <span class="sd">        The format of the file. If None, the format is inferred as a data file format.</span>
 <span class="sd">        (see BoxWriter.formats for available formats)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">writer</span> <span class="o">=</span> <span class="n">BoxWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">output_format</span><span class="p">)</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">traj</span><span class="p">)</span></div>

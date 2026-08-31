@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.restart_file.restart_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the RestartFileReader class</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -104,7 +104,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.restart_file.restart_reader.html#PQAnalysis.io.restart_file.restart_reader.RestartFileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">RestartFileReader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for reading restart files.</span>
 
 <span class="sd">    Inherits from the BaseReader class.</span>
@@ -129,7 +129,7 @@
 <span class="sd">    For more information on how the restart file of PQ simulations is </span>
 <span class="sd">    structured, see the corresponding documentation of the </span>
 <span class="sd">    `PQ &lt;https://molarverse.github.io/PQ&gt;`_ code.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -142,7 +142,7 @@
         <span class="n">reference_residues</span><span class="p">:</span> <span class="n">Residues</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">md_engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
@@ -157,14 +157,14 @@
 <span class="sd">            moldescriptor_filename is None, by default None</span>
 <span class="sd">        md_engine_format : MDEngineFormat | str, optional</span>
 <span class="sd">            The format of the restart file, by default MDEngineFormat.PQ</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">moldescriptor_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">reference_residues</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="p">(</span>
-                    <span class="s2">&quot;Both moldescriptor_filename and reference_residues &quot;</span>
-                    <span class="s2">&quot;are given. They are mutually exclusive.&quot;</span>
+                    <span class="s2">"Both moldescriptor_filename and reference_residues "</span>
+                    <span class="s2">"are given. They are mutually exclusive."</span>
                 <span class="p">),</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">RestartFileReaderError</span>
             <span class="p">)</span>
@@ -177,7 +177,7 @@
 <div class="viewcode-block" id="RestartFileReader.read">
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.restart_file.restart_reader.html#PQAnalysis.io.restart_file.restart_reader.RestartFileReader.read">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads the restart file and returns an AtomicSystem and</span>
 <span class="sd">        an Np1DIntArray containing the molecular types.</span>
 
@@ -195,7 +195,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        AtomicSystem:</span>
 <span class="sd">            The AtomicSystem object including the Topology with the molecular types.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">moldescriptor_filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">reference_residues</span> <span class="o">=</span> <span class="n">MoldescriptorReader</span><span class="p">(</span>
@@ -205,9 +205,9 @@
         <span class="n">cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">()</span>
         <span class="n">atom_lines</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8"</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'#'</span><span class="p">):</span>
                     <span class="k">continue</span>
 
                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -215,21 +215,21 @@
 
                 <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;box&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"box"</span><span class="p">:</span>
                     <span class="n">cell</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_box</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;step&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"step"</span><span class="p">:</span>
                     <span class="k">continue</span>
-                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;chi&quot;</span><span class="p">:</span>
+                <span class="k">elif</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"chi"</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="n">atom_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+                    <span class="n">atom_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_atoms</span><span class="p">(</span><span class="n">atom_lines</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reference_residues</span><span class="p">)</span></div>
 
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_parse_box</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Cell</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parses the box line of the restart file.</span>
 
 <span class="sd">        The box line can have 1, 4 or 7 arguments.</span>
@@ -251,7 +251,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        RestartFileReaderError</span>
 <span class="sd">            If the number of arguments is not 1, 4 or 7.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">Cell</span><span class="p">()</span>
 
@@ -265,7 +265,7 @@
             <span class="k">return</span> <span class="n">Cell</span><span class="p">(</span><span class="o">*</span><span class="n">box_lengths</span><span class="p">,</span> <span class="o">*</span><span class="n">box_angles</span><span class="p">)</span>
 
         <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Invalid number of arguments for box: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">"Invalid number of arguments for box: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">RestartFileReaderError</span>
         <span class="p">)</span>
 
@@ -276,7 +276,7 @@
         <span class="n">cell</span><span class="p">:</span> <span class="n">Cell</span> <span class="o">=</span> <span class="n">Cell</span><span class="p">(),</span>
         <span class="n">reference_residues</span><span class="p">:</span> <span class="n">Residues</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AtomicSystem</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parses the atom lines of the restart file.</span>
 
 <span class="sd">        An atom line can have 12 or 21 arguments.</span>
@@ -340,7 +340,7 @@
 <span class="sd">            If the number of arguments is not 12 or 21.</span>
 <span class="sd">        RestartFileReaderError</span>
 <span class="sd">            If no atoms are found in the restart file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">velocities</span> <span class="o">=</span> <span class="p">[]</span>
@@ -352,7 +352,7 @@
 
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">12</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">21</span><span class="p">:</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Invalid number of arguments for atom: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Invalid number of arguments for atom: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">RestartFileReaderError</span>
                 <span class="p">)</span>
 
@@ -364,7 +364,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">atoms</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;No atoms found in restart file.&quot;</span><span class="p">,</span>
+                <span class="s2">"No atoms found in restart file."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">RestartFileReaderError</span>
             <span class="p">)</span>
 

@@ -5,7 +5,9 @@ io.input_file_reader
 =======================================
 
 .. automodule:: PQAnalysis.io.input_file_reader
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -31,4 +33,27 @@ io.input_file_reader
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`InputDictionary <PQAnalysis.io.input_file_reader.input_file_parser.InputDictionary>`
+         - Input file dictionary.
+       * - :class:`InputFileFormat <PQAnalysis.io.input_file_reader.formats.InputFileFormat>`
+         - An enumeration of the supported input formats.
+       * - :class:`InputFileParser <PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser>`
+         - Class to parse input files.
+       * - :class:`PQAnalysisInputFileReader <PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader>`
+         - A class to read the input file for the PQAnalysis.
+       * - :class:`PQInputFileReader <PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.PQInputFileReader>`
+         - Reads a PQ input file and parses it.
+    
+
+
+
+    Reference
+    ---------

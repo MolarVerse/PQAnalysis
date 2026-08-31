@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.momentum.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">API functions for the momentum analysis.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Sequence</span>
 
@@ -104,10 +104,10 @@
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">scale</span><span class="p">:</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">md_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
     <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DNumberArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Calculate the total linear momentum norm per frame and write it.</span>
 
 <span class="sd">    Reads the given velocity trajectory file(s) frame by frame,</span>
@@ -137,9 +137,9 @@
 <span class="sd">    md_format : MDEngineFormat | str, optional</span>
 <span class="sd">        The format of the trajectory, by default MDEngineFormat.PQ.</span>
 <span class="sd">        Use ``qmcfc`` for legacy trajectories with a leading dummy</span>
-<span class="sd">        &#39;X&#39; atom.</span>
+<span class="sd">        'X' atom.</span>
 <span class="sd">    mode : str | FileWritingMode, optional</span>
-<span class="sd">        The writing mode of the output file, by default &quot;w&quot;.</span>
+<span class="sd">        The writing mode of the output file, by default "w".</span>
 <span class="sd">    export_files : Sequence[str] | None, optional</span>
 <span class="sd">        Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select</span>
 <span class="sd">        those formats; other extensions use native PQAnalysis text.</span>
@@ -149,7 +149,7 @@
 <span class="sd">    Np1DNumberArray</span>
 <span class="sd">        The scaled norms of the total linear momentum, one value</span>
 <span class="sd">        per frame.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">TrajectoryReader</span><span class="p">(</span><span class="n">trajectory_files</span><span class="p">,</span> <span class="n">md_format</span><span class="o">=</span><span class="n">md_format</span><span class="p">)</span>
 
     <span class="n">momentum</span> <span class="o">=</span> <span class="n">Momentum</span><span class="p">(</span>

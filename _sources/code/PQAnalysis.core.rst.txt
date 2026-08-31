@@ -5,7 +5,9 @@ core
 =======================
 
 .. automodule:: PQAnalysis.core
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -31,4 +33,70 @@ core
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Exceptions:
+
+
+    .. list-table::
+    
+       * - :exc:`AtomError <PQAnalysis.core.exceptions.AtomError>`
+         - Exception raised for errors related to the Atom class
+       * - :exc:`CellError <PQAnalysis.core.exceptions.CellError>`
+         - Exception raised for errors related to the Cell class
+       * - :exc:`ElementNotFoundError <PQAnalysis.core.exceptions.ElementNotFoundError>`
+         - Exception raised if the given element id is not valid
+       * - :exc:`ResidueError <PQAnalysis.core.exceptions.ResidueError>`
+         - Exception raised for errors related to the Residue class
+       * - :exc:`ResidueWarning <PQAnalysis.core.exceptions.ResidueWarning>`
+         - Warning raised for problems related to the Residue class
+    
+
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`Atom <PQAnalysis.core.atom.atom.Atom>`
+         - A class used to represent an atom in a molecule.
+       * - :class:`Cell <PQAnalysis.core.cell.cell.Cell>`
+         - Class for storing unit cell parameters.
+       * - :class:`CustomElement <PQAnalysis.core.atom.element.CustomElement>`
+         - A class representing a custom element it  inherits from the Element class.
+       * - :class:`Element <PQAnalysis.core.atom.element.Element>`
+         - A class representing an element.
+       * - :class:`QMResidue <PQAnalysis.core.residue.QMResidue>`
+         - A class for representing a QM residue type (mol type).
+       * - :class:`Residue <PQAnalysis.core.residue.Residue>`
+         - A class for representing a residue type (mol type).
+    
+
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`distance <PQAnalysis.core.api.distance>`
+         - Returns the distances between all combinations of two position arrays.
+    
+
+    ``__all__`` Data:
+
+
+    .. list-table::
+    
+       * - :data:`Atoms <PQAnalysis.core.atom.atom.Atoms>`
+         - Type variable.
+       * - :data:`Cells <PQAnalysis.core.cell.cell.Cells>`
+         - NewType creates simple unique types with almost zero runtime overhead.
+       * - :data:`Elements <PQAnalysis.core.atom.element.Elements>`
+         - NewType creates simple unique types with almost zero runtime overhead.
+       * - :data:`Residues <PQAnalysis.core.residue.Residues>`
+         - Type variable.
+    
+
+
+
+    Reference
+    ---------

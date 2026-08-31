@@ -488,7 +488,8 @@ output.</p>
 <section id="total-linear-momentum">
 <span id="analysis-output-momentum"></span><h2>Total linear momentum<a class="headerlink" href="#total-linear-momentum" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">check_momentum</span></code> command writes two columns to <code class="docutils literal notranslate"><span class="pre">--output</span></code> or standard
-output.</p>
+output. Native output uses 17 significant digits for the momentum norm, so
+reading the value as float64 preserves the calculated bit pattern.</p>
 <table class="analysis-output-columns docutils align-default" id="id9">
 <caption><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">check_momentum</span></code> output columns</span><a class="headerlink" href="#id9" title="Link to this table"></a></caption>
 <colgroup>

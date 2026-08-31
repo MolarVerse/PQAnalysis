@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.gen_file.gen_file_writer</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the GenFileWriter class</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -98,9 +98,9 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.gen_file.gen_file_writer.html#PQAnalysis.io.gen_file.gen_file_writer.GenFileWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GenFileWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for writing gen files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -109,20 +109,20 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str | None, optional</span>
 <span class="sd">            The filename of the gen file. If None, the file is not opened,</span>
 <span class="sd">            by default None.</span>
 <span class="sd">        mode : FileWritingMode | str, optional</span>
-<span class="sd">            The writing mode, by default &quot;w&quot;. The following modes are available:</span>
-<span class="sd">            - &quot;w&quot;: write</span>
-<span class="sd">            - &quot;a&quot;: append</span>
-<span class="sd">            - &quot;o&quot;: overwrite</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">            The writing mode, by default "w". The following modes are available:</span>
+<span class="sd">            - "w": write</span>
+<span class="sd">            - "a": append</span>
+<span class="sd">            - "o": overwrite</span>
+<span class="sd">        """</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
 
@@ -137,7 +137,7 @@
         <span class="n">system</span><span class="p">:</span> <span class="n">AtomicSystem</span><span class="p">,</span>
         <span class="n">periodic</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the system to the file.</span>
 
 <span class="sd">        Parameters</span>
@@ -153,50 +153,50 @@
 <span class="sd">        ------</span>
 <span class="sd">        PQValueError</span>
 <span class="sd">            If the system is non-periodic and periodic is set to True.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">system</span> <span class="o">=</span> <span class="n">system</span>
 
         <span class="k">if</span> <span class="n">periodic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">periodic</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="s2">&quot;Invalid periodicity. The system is non-periodic.&quot;</span><span class="p">,</span>
+                    <span class="s2">"Invalid periodicity. The system is non-periodic."</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span><span class="p">,</span>
                 <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">periodic</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">&quot;S&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">"S"</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">"C"</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span> <span class="k">else</span> <span class="s2">&quot;S&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">=</span> <span class="s2">"C"</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">is_vacuum</span> <span class="k">else</span> <span class="s2">"S"</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_header</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">periodic</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_coords</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">==</span> <span class="s2">&quot;S&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">periodic</span> <span class="o">==</span> <span class="s2">"S"</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_write_box_matrix</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">periodicity</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the header of the gen file.</span>
 
 <span class="sd">        The header consists of two lines. The first line contains the number of atoms and </span>
 <span class="sd">        the periodicity of the system. The second line contains the atom names from which </span>
 <span class="sd">        the indices of the atoms in the coordinates block can be derived.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">,</span> <span class="n">periodicity</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
         <span class="n">atom_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unique_atom_names</span><span class="p">()</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atom_names</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">atom_names</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the coordinates of the system.</span>
 
 <span class="sd">        The coordinates are written in the following format:</span>
@@ -205,7 +205,7 @@
 <span class="sd">        - The x-coordinate</span>
 <span class="sd">        - The y-coordinate</span>
 <span class="sd">        - The z-coordinate</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">atom_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_unique_atom_names</span><span class="p">()</span>
         <span class="n">atom_indices</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">atom_name</span><span class="p">:</span> <span class="n">index</span>
@@ -214,7 +214,7 @@
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">,</span>
                 <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
                 <span class="n">atom_indices</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">pos</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
@@ -224,9 +224,9 @@
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_unique_atom_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Gets atom names in first-seen order.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">atom_names</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
@@ -236,7 +236,7 @@
         <span class="k">return</span> <span class="n">atom_names</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_write_box_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Writes the box matrix of the system.</span>
 
 <span class="sd">        Before writing the box matrix, the box vector (0, 0, 0) is written.</span>
@@ -245,7 +245,7 @@
 <span class="sd">        - The x-coordinate of the first box vector</span>
 <span class="sd">        - The y-coordinate of the first box vector</span>
 <span class="sd">        - The z-coordinate of the first box vector</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">box_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">system</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">box_matrix</span><span class="p">)</span>
 
         <span class="nb">print</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">file</span><span class="p">)</span>

@@ -5,7 +5,9 @@ traj
 =======================
 
 .. automodule:: PQAnalysis.traj
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -23,4 +25,47 @@ traj
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Exceptions:
+
+
+    .. list-table::
+    
+       * - :exc:`MDEngineFormatError <PQAnalysis.traj.exceptions.MDEngineFormatError>`
+         - Exception raised if the given enum is not valid
+       * - :exc:`TrajectoryError <PQAnalysis.traj.exceptions.TrajectoryError>`
+         - Exception raised for errors related to the Trajectory class
+       * - :exc:`TrajectoryFormatError <PQAnalysis.traj.exceptions.TrajectoryFormatError>`
+         - Exception raised if the given enum is not valid
+    
+
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`MDEngineFormat <PQAnalysis.traj.formats.MDEngineFormat>`
+         - An enumeration of the supported MD engine formats.
+       * - :class:`Trajectory <PQAnalysis.traj.trajectory.Trajectory>`
+         - A trajectory object is a sequence of frames.
+       * - :class:`TrajectoryFormat <PQAnalysis.traj.formats.TrajectoryFormat>`
+         - An enumeration of the supported trajectory formats.
+    
+
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`check_trajectory_pbc <PQAnalysis.traj.api.check_trajectory_pbc>`
+         - Checks no cell in the trajectory is Cell() i.e.
+       * - :func:`check_trajectory_vacuum <PQAnalysis.traj.api.check_trajectory_vacuum>`
+         - Checks if all cells of the trajectory are in vacuum i.e.
+    
+
+
+
+    Reference
+    ---------

@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.analysis.output</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Read, write and convert self-describing analysis tables.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
@@ -123,28 +123,28 @@
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;AnalysisColumn&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisDataWriter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisOutputError&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisOutputFormat&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisPlotPreset&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisSchema&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisTable&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;AnalysisTableWriter&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BROADENED_SPECTRUM_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MOMENTUM_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MSD_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;RDF_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;VACF_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;VACF_SPECTRUM_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;VACF_WINDOWED_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;VIBRATIONAL_IR_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;VIBRATIONAL_SCHEMA&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;convert_analysis_output&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;infer_output_format&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;normal_mode_schema&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;read_analysis_table&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;write_analysis_table&quot;</span><span class="p">,</span>
+    <span class="s2">"AnalysisColumn"</span><span class="p">,</span>
+    <span class="s2">"AnalysisDataWriter"</span><span class="p">,</span>
+    <span class="s2">"AnalysisOutputError"</span><span class="p">,</span>
+    <span class="s2">"AnalysisOutputFormat"</span><span class="p">,</span>
+    <span class="s2">"AnalysisPlotPreset"</span><span class="p">,</span>
+    <span class="s2">"AnalysisSchema"</span><span class="p">,</span>
+    <span class="s2">"AnalysisTable"</span><span class="p">,</span>
+    <span class="s2">"AnalysisTableWriter"</span><span class="p">,</span>
+    <span class="s2">"BROADENED_SPECTRUM_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"MOMENTUM_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"MSD_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"RDF_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"VACF_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"VACF_SPECTRUM_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"VACF_WINDOWED_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"VIBRATIONAL_IR_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"VIBRATIONAL_SCHEMA"</span><span class="p">,</span>
+    <span class="s2">"convert_analysis_output"</span><span class="p">,</span>
+    <span class="s2">"infer_output_format"</span><span class="p">,</span>
+    <span class="s2">"normal_mode_schema"</span><span class="p">,</span>
+    <span class="s2">"read_analysis_table"</span><span class="p">,</span>
+    <span class="s2">"write_analysis_table"</span><span class="p">,</span>
 <span class="p">]</span>
 
 <span class="n">AnalysisTextStream</span> <span class="o">=</span> <span class="n">TextIO</span> <span class="o">|</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span>
@@ -155,9 +155,9 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisOutputError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalysisOutputError</span><span class="p">(</span><span class="n">PQException</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Raised when an analysis table cannot be read, written or converted.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    """</span></div>
 
 
 
@@ -166,14 +166,14 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisOutputFormat">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalysisOutputFormat</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Supported analysis-table output formats.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">NATIVE</span> <span class="o">=</span> <span class="s2">&quot;native&quot;</span>
-    <span class="n">CSV</span> <span class="o">=</span> <span class="s2">&quot;csv&quot;</span>
-    <span class="n">TSV</span> <span class="o">=</span> <span class="s2">&quot;tsv&quot;</span>
-    <span class="n">XVG</span> <span class="o">=</span> <span class="s2">&quot;xvg&quot;</span></div>
+    <span class="n">NATIVE</span> <span class="o">=</span> <span class="s2">"native"</span>
+    <span class="n">CSV</span> <span class="o">=</span> <span class="s2">"csv"</span>
+    <span class="n">TSV</span> <span class="o">=</span> <span class="s2">"tsv"</span>
+    <span class="n">XVG</span> <span class="o">=</span> <span class="s2">"xvg"</span></div>
 
 
 
@@ -183,9 +183,9 @@
 <span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalysisTable</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A validated numerical table with scientific column metadata.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">schema</span><span class="p">:</span> <span class="n">AnalysisSchema</span>
     <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span>
@@ -195,24 +195,24 @@
 
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Analysis table data must be two-dimensional, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Analysis table data must be two-dimensional, got </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Analysis table has </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> data columns but &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> metadata columns.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Analysis table has </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2"> data columns but "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> metadata columns."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">&quot;Analysis table contains no data rows.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">"Analysis table contains no data rows."</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">number</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="s2">&quot;Analysis table contains non-numeric data.&quot;</span>
+                <span class="s2">"Analysis table contains non-numeric data."</span>
             <span class="p">)</span>
 
-        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"data"</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
 
 <div class="viewcode-block" id="AnalysisTable.from_columns">
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisTable.from_columns">[docs]</a>
@@ -221,27 +221,27 @@
         <span class="bp">cls</span><span class="p">,</span>
         <span class="n">schema</span><span class="p">:</span> <span class="n">AnalysisSchema</span><span class="p">,</span>
         <span class="n">columns</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Sequence</span><span class="p">[</span><span class="n">Real</span><span class="p">]</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AnalysisTable&quot;</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"AnalysisTable"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Build a table from equally sized one-dimensional columns.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">arrays</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">column</span><span class="p">)</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Analysis table received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span><span class="si">}</span><span class="s2"> data columns but &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> metadata columns.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Analysis table received </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">arrays</span><span class="p">)</span><span class="si">}</span><span class="s2"> data columns but "</span>
+                <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> metadata columns."</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="s2">&quot;Analysis table columns must be one-dimensional.&quot;</span>
+                <span class="s2">"Analysis table columns must be one-dimensional."</span>
             <span class="p">)</span>
 
         <span class="n">lengths</span> <span class="o">=</span> <span class="p">{</span><span class="nb">len</span><span class="p">(</span><span class="n">array</span><span class="p">)</span> <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">arrays</span><span class="p">}</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lengths</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="s2">&quot;Analysis table columns must contain the same number of rows.&quot;</span>
+                <span class="s2">"Analysis table columns must contain the same number of rows."</span>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">schema</span><span class="o">=</span><span class="n">schema</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">))</span></div>
@@ -250,15 +250,15 @@
 <div class="viewcode-block" id="AnalysisTable.column">
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisTable.column">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">field</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return one data column selected by its stable field identifier.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-            <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+            <span class="n">fields</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Unknown analysis field &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39;. Available fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Unknown analysis field '</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">'. Available fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">."</span>
             <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:,</span> <span class="n">index</span><span class="p">]</span></div>
@@ -270,7 +270,7 @@
 <div class="viewcode-block" id="infer_output_format">
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.infer_output_format">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">infer_output_format</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnalysisOutputFormat</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Infer a requested output format from a recognized filename suffix.</span>
 
 <span class="sd">    Unrecognized suffixes and stdout retain the native PQAnalysis format.</span>
@@ -284,15 +284,15 @@
 <span class="sd">    -------</span>
 <span class="sd">    AnalysisOutputFormat</span>
 <span class="sd">        Format selected from the case-insensitive suffix.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">NATIVE</span>
 
     <span class="n">suffix</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">return</span> <span class="p">{</span>
-        <span class="s2">&quot;.csv&quot;</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">CSV</span><span class="p">,</span>
-        <span class="s2">&quot;.tsv&quot;</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">TSV</span><span class="p">,</span>
-        <span class="s2">&quot;.xvg&quot;</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">XVG</span><span class="p">,</span>
+        <span class="s2">".csv"</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">CSV</span><span class="p">,</span>
+        <span class="s2">".tsv"</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">TSV</span><span class="p">,</span>
+        <span class="s2">".xvg"</span><span class="p">:</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">XVG</span><span class="p">,</span>
     <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">NATIVE</span><span class="p">)</span></div>
 
 
@@ -301,7 +301,7 @@
 <div class="viewcode-block" id="read_analysis_table">
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.read_analysis_table">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_analysis_table</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AnalysisTable</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read native, CSV, TSV or XVG analysis data by content.</span>
 
 <span class="sd">    Parameters</span>
@@ -318,26 +318,26 @@
 <span class="sd">    ------</span>
 <span class="sd">    AnalysisOutputError</span>
 <span class="sd">        If metadata, headers or numeric rows are malformed.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8-sig&quot;</span><span class="p">)</span>
-    <span class="n">first_line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">read_text</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">"utf-8-sig"</span><span class="p">)</span>
+    <span class="n">first_line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()),</span> <span class="s2">""</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">first_line</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; is empty.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">' is empty."</span>
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">is_xvg</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_read_xvg_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">first_line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">first_line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">()</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">_read_native_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="ow">in</span> <span class="n">first_line</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s2">&quot;,&quot;</span> <span class="ow">in</span> <span class="n">first_line</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">"</span><span class="se">\t</span><span class="s2">"</span> <span class="ow">in</span> <span class="n">first_line</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s2">","</span> <span class="ow">in</span> <span class="n">first_line</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">","</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">_is_single_column_delimited</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_read_delimited_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">","</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">_read_native_table</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
 
@@ -351,9 +351,9 @@
     <span class="n">output_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">x_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">y_fields</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert one analysis table to one or more output files.</span>
 
 <span class="sd">    Parameters</span>
@@ -368,9 +368,9 @@
 <span class="sd">        XVG y-axis fields, by default None.</span>
 <span class="sd">    mode : str | FileWritingMode, optional</span>
 <span class="sd">        Output writing mode, by default ``w``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">output_files</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">&quot;At least one output file is required.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">"At least one output file is required."</span><span class="p">)</span>
 
     <span class="n">_validate_distinct_paths</span><span class="p">(</span><span class="n">input_file</span><span class="p">,</span> <span class="n">output_files</span><span class="p">)</span>
     <span class="n">table</span> <span class="o">=</span> <span class="n">read_analysis_table</span><span class="p">(</span><span class="n">input_file</span><span class="p">)</span>
@@ -399,16 +399,16 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisTableWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalysisTableWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Write an :class:`AnalysisTable` using a suffix-selected format.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str</span>
@@ -416,7 +416,7 @@
 <span class="sd">        mode : str | FileWritingMode, optional</span>
 <span class="sd">            Output writing mode, by default ``w``. Append mode is only</span>
 <span class="sd">            valid for native text.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_format</span> <span class="o">=</span> <span class="n">infer_output_format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
 
@@ -425,8 +425,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span> <span class="o">==</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">APPEND</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Appending is not supported for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;analysis output.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Appending is not supported for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="s2">"analysis output."</span>
             <span class="p">)</span>
 
 <div class="viewcode-block" id="AnalysisTableWriter.write">
@@ -437,9 +437,9 @@
         <span class="n">x_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">y_fields</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Write a table and close the output stream.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">rendered</span> <span class="o">=</span> <span class="n">_render_analysis_table</span><span class="p">(</span>
             <span class="n">table</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="p">,</span>
@@ -456,19 +456,19 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.analysis.output.html#PQAnalysis.analysis.output.AnalysisDataWriter">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AnalysisDataWriter</span><span class="p">(</span><span class="n">BaseWriter</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Base writer that preserves native formatting and adds table exports.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">schema</span><span class="p">:</span> <span class="n">AnalysisSchema</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span>
+        <span class="n">mode</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">FileWritingMode</span> <span class="o">=</span> <span class="s2">"w"</span><span class="p">,</span>
         <span class="n">export_files</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        filename : str | None</span>
@@ -477,7 +477,7 @@
 <span class="sd">            Output writing mode, by default ``w``.</span>
 <span class="sd">        export_files : Sequence[str] | None, optional</span>
 <span class="sd">            Additional distinct output paths, by default None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_format</span> <span class="o">=</span> <span class="n">infer_output_format</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">export_files</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">export_files</span> <span class="ow">or</span> <span class="p">())</span>
         <span class="n">_validate_distinct_paths</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">export_files</span><span class="p">)</span>
@@ -488,8 +488,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">original_mode</span> <span class="o">==</span> <span class="n">FileWritingMode</span><span class="o">.</span><span class="n">APPEND</span>
         <span class="p">):</span>
             <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Appending is not supported for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> &quot;</span>
-                <span class="s2">&quot;analysis output.&quot;</span>
+                <span class="sa">f</span><span class="s2">"Appending is not supported for </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2"> "</span>
+                <span class="s2">"analysis output."</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">export_writers</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
@@ -504,9 +504,9 @@
         <span class="n">table</span><span class="p">:</span> <span class="n">AnalysisTable</span><span class="p">,</span>
         <span class="n">native_writer</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">AnalysisTextStream</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Write the primary file and all requested additional exports.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">rendered</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_format</span> <span class="o">!=</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">NATIVE</span><span class="p">:</span>
             <span class="n">rendered</span> <span class="o">=</span> <span class="n">_render_analysis_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_format</span><span class="p">)</span>
@@ -536,7 +536,7 @@
     <span class="n">x_field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">y_fields</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Write an analysis table to an open text stream.</span>
 
 <span class="sd">    Parameters</span>
@@ -551,18 +551,18 @@
 <span class="sd">        XVG x-axis field override, by default None.</span>
 <span class="sd">    y_fields : Sequence[str] | None, optional</span>
 <span class="sd">        XVG y-axis fields, by default None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="n">output_format</span> <span class="o">==</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">NATIVE</span><span class="p">:</span>
         <span class="n">_write_native_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">CSV</span><span class="p">:</span>
-        <span class="n">_write_delimited_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">)</span>
+        <span class="n">_write_delimited_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">","</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">TSV</span><span class="p">:</span>
-        <span class="n">_write_delimited_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">_write_delimited_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="s2">"</span><span class="se">\t</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">output_format</span> <span class="o">==</span> <span class="n">AnalysisOutputFormat</span><span class="o">.</span><span class="n">XVG</span><span class="p">:</span>
         <span class="n">_write_xvg_table</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">file</span><span class="p">,</span> <span class="n">x_field</span><span class="o">=</span><span class="n">x_field</span><span class="p">,</span> <span class="n">y_fields</span><span class="o">=</span><span class="n">y_fields</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Unsupported analysis output format &#39;</span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s2">&#39;.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Unsupported analysis output format '</span><span class="si">{</span><span class="n">output_format</span><span class="si">}</span><span class="s2">'."</span>
         <span class="p">)</span></div>
 
 
@@ -600,7 +600,7 @@
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_is_single_column_delimited</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="n">lines</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">text</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -650,7 +650,7 @@
 
     <span class="n">_validate_metadata</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">symbols</span><span class="p">,</span> <span class="n">units</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="p">)</span>
     <span class="n">schema</span> <span class="o">=</span> <span class="n">_schema_from_metadata</span><span class="p">(</span>
-        <span class="n">title</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"title"</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">),</span>
         <span class="n">fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
         <span class="n">symbols</span><span class="o">=</span><span class="n">symbols</span><span class="p">,</span>
         <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
@@ -667,17 +667,17 @@
         <span class="n">stripped</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">stripped</span><span class="p">:</span>
             <span class="k">continue</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">stripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">stripped</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
             <span class="n">numeric_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
             <span class="k">continue</span>
 
         <span class="n">content</span> <span class="o">=</span> <span class="n">stripped</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;PQAnalysis:&quot;</span><span class="p">):</span>
-            <span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">&quot;PQAnalysis:&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"PQAnalysis:"</span><span class="p">):</span>
+            <span class="n">metadata</span><span class="p">[</span><span class="s2">"title"</span><span class="p">]</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="s2">"PQAnalysis:"</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
             <span class="k">continue</span>
 
-        <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;FIELDS&quot;</span><span class="p">,</span> <span class="s2">&quot;SYMBOLS&quot;</span><span class="p">,</span> <span class="s2">&quot;UNITS&quot;</span><span class="p">}:</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s2">" "</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"FIELDS"</span><span class="p">,</span> <span class="s2">"SYMBOLS"</span><span class="p">,</span> <span class="s2">"UNITS"</span><span class="p">}:</span>
             <span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">numeric_lines</span>
@@ -687,14 +687,14 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_load_native_data</span><span class="p">(</span><span class="n">numeric_lines</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">numeric_lines</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains no numeric rows.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains no numeric rows."</span>
         <span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">numeric_lines</span><span class="p">)),</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">numeric_lines</span><span class="p">)),</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains invalid numeric data.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains invalid numeric data."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
 
@@ -703,14 +703,14 @@
     <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">n_columns</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]]:</span>
-    <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fields&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-    <span class="n">symbols</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;symbols&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
-    <span class="n">units</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"fields"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">symbols</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"symbols"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"units"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;column_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="sa">f</span><span class="s2">"column_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
 
-    <span class="k">return</span> <span class="n">fields</span><span class="p">,</span> <span class="n">symbols</span> <span class="ow">or</span> <span class="n">fields</span><span class="p">,</span> <span class="n">units</span> <span class="ow">or</span> <span class="nb">tuple</span><span class="p">(</span><span class="s2">&quot;1&quot;</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fields</span><span class="p">,</span> <span class="n">symbols</span> <span class="ow">or</span> <span class="n">fields</span><span class="p">,</span> <span class="n">units</span> <span class="ow">or</span> <span class="nb">tuple</span><span class="p">(</span><span class="s2">"1"</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
 
 
 
@@ -724,7 +724,7 @@
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Delimited analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains no data rows.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Delimited analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains no data rows."</span>
         <span class="p">)</span>
 
     <span class="n">fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -732,7 +732,7 @@
 
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Delimited analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; has inconsistent row widths.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Delimited analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' has inconsistent row widths."</span>
         <span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -742,7 +742,7 @@
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Delimited analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains invalid numeric data.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Delimited analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains invalid numeric data."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
     <span class="n">schema</span> <span class="o">=</span> <span class="n">_schema_for_fields</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
@@ -770,17 +770,17 @@
         <span class="k">return</span> <span class="n">KNOWN_SCHEMAS</span><span class="p">[</span><span class="n">fields</span><span class="p">]</span>
 
     <span class="n">expected_mode_fields</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;mode_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="sa">f</span><span class="s2">"mode_</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2">"</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">fields</span> <span class="o">==</span> <span class="n">expected_mode_fields</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">normal_mode_schema</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span>
 
-    <span class="n">columns</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">AnalysisColumn</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">AnalysisColumn</span><span class="p">(</span><span class="n">field</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="s2">"1"</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">plot</span> <span class="o">=</span> <span class="n">AnalysisPlotPreset</span><span class="p">(</span>
             <span class="n">x_field</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">y_fields</span><span class="o">=</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">),</span>
-            <span class="n">x_label</span><span class="o">=</span><span class="s2">&quot;Row&quot;</span><span class="p">,</span>
+            <span class="n">x_label</span><span class="o">=</span><span class="s2">"Row"</span><span class="p">,</span>
             <span class="n">y_label</span><span class="o">=</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">legends</span><span class="o">=</span><span class="p">(</span><span class="n">fields</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">),</span>
         <span class="p">)</span>
@@ -807,8 +807,8 @@
     <span class="n">counts</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">symbols</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">units</span><span class="p">),</span> <span class="n">n_columns</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">counts</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; has inconsistent FIELDS, SYMBOLS, &quot;</span>
-            <span class="s2">&quot;UNITS and numeric column counts.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' has inconsistent FIELDS, SYMBOLS, "</span>
+            <span class="s2">"UNITS and numeric column counts."</span>
         <span class="p">)</span>
     <span class="n">_validate_fields</span><span class="p">(</span><span class="n">fields</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
@@ -817,11 +817,11 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_validate_fields</span><span class="p">(</span><span class="n">fields</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">fields</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">field</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">fields</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains a blank field name.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains a blank field name."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">fields</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">fields</span><span class="p">):</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis output file &#39;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&#39; contains duplicate field names.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis output file '</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">' contains duplicate field names."</span>
         <span class="p">)</span>
 
 
@@ -829,19 +829,19 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">_write_native_table</span><span class="p">(</span>
     <span class="n">table</span><span class="p">:</span> <span class="n">AnalysisTable</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">AnalysisTextStream</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# PQAnalysis: </span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# FIELDS </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"# PQAnalysis: </span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"# FIELDS </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;# SYMBOLS </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">symbol</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"# SYMBOLS </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">symbol</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span>
-        <span class="sa">f</span><span class="s2">&quot;# UNITS </span><span class="si">{</span><span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">unit</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">"# UNITS </span><span class="si">{</span><span class="s1">' '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">unit</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">column</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
         <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_format_number</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_format_number</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
 
 
 
@@ -850,7 +850,7 @@
     <span class="n">file</span><span class="p">:</span> <span class="n">AnalysisTextStream</span><span class="p">,</span>
     <span class="n">delimiter</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">lineterminator</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">lineterminator</span><span class="o">=</span><span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
     <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span>
         <span class="p">[</span><span class="n">_format_number</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">table</span><span class="o">.</span><span class="n">data</span>
@@ -868,7 +868,7 @@
 
     <span class="k">if</span> <span class="n">preset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Analysis table &#39;</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">&#39; has no xmgrace plot preset.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Analysis table '</span><span class="si">{</span><span class="n">table</span><span class="o">.</span><span class="n">schema</span><span class="o">.</span><span class="n">title</span><span class="si">}</span><span class="s2">' has no xmgrace plot preset."</span>
         <span class="p">)</span>
 
     <span class="n">selected_x</span> <span class="o">=</span> <span class="n">x_field</span> <span class="k">if</span> <span class="n">x_field</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">preset</span><span class="o">.</span><span class="n">x_field</span>
@@ -916,10 +916,10 @@
         <span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">x_field</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">y_fields</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="s2">&quot;At least one y field is required for XVG output.&quot;</span>
+            <span class="s2">"At least one y field is required for XVG output."</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">y_fields</span><span class="p">))</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_fields</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">&quot;XVG y fields must be distinct.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">"XVG y fields must be distinct."</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">y_fields</span><span class="p">:</span>
         <span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span>
 
@@ -939,13 +939,13 @@
     <span class="k">if</span> <span class="n">x_field</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">x_label</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">preset</span><span class="o">.</span><span class="n">x_label</span>
-            <span class="k">if</span> <span class="n">preset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">preset</span><span class="o">.</span><span class="n">x_field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;Row&quot;</span>
+            <span class="k">if</span> <span class="n">preset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">preset</span><span class="o">.</span><span class="n">x_field</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">"Row"</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">x_label</span> <span class="o">=</span> <span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">x_field</span><span class="p">)</span>
 
     <span class="n">y_label</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">y_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;Value&quot;</span>
+        <span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">y_fields</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">y_fields</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">"Value"</span>
     <span class="p">)</span>
     <span class="n">legends</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">_column_label</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">field</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="n">y_fields</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">AnalysisPlotPreset</span><span class="p">(</span>
@@ -964,38 +964,38 @@
             <span class="n">column</span> <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">schema</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">field</span> <span class="o">==</span> <span class="n">field</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
+        <span class="n">fields</span> <span class="o">=</span> <span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">schema</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
         <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Unknown analysis field &#39;</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">&#39;. Available fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="sa">f</span><span class="s2">"Unknown analysis field '</span><span class="si">{</span><span class="n">field</span><span class="si">}</span><span class="s2">'. Available fields: </span><span class="si">{</span><span class="n">fields</span><span class="si">}</span><span class="s2">."</span>
         <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exception</span>
 
     <span class="n">symbol</span> <span class="o">=</span> <span class="n">_unicode_to_grace</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">symbol</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">column</span><span class="o">.</span><span class="n">unit</span> <span class="o">==</span> <span class="s2">"1"</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">symbol</span>
-    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">_unicode_to_grace</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> [</span><span class="si">{</span><span class="n">_unicode_to_grace</span><span class="p">(</span><span class="n">column</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="si">}</span><span class="s2">]"</span>
 
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_unicode_to_grace</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">replacements</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;Å&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\cE\C&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;²&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\S2\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;³&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\S3\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;⁻¹&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\S-1\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;−&quot;</span><span class="p">:</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;∕&quot;</span><span class="p">:</span> <span class="s2">&quot;/&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;·&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-        <span class="s2">&quot;‖&quot;</span><span class="p">:</span> <span class="s2">&quot;|&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;⟨&quot;</span><span class="p">:</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;⟩&quot;</span><span class="p">:</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Δ&quot;</span><span class="p">:</span> <span class="s2">&quot;Delta&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;μ&quot;</span><span class="p">:</span> <span class="s2">&quot;mu&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ν̃&quot;</span><span class="p">:</span> <span class="s2">&quot;nu~&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;Ĉ&quot;</span><span class="p">:</span> <span class="s2">&quot;C^&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ᵢ&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\si\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ⱼ&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\sj\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;ᴵᴿ&quot;</span><span class="p">:</span> <span class="sa">r</span><span class="s2">&quot;\SIR\N&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;α&quot;</span><span class="p">:</span> <span class="s2">&quot;alpha&quot;</span><span class="p">,</span>
+        <span class="s2">"Å"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\cE\C"</span><span class="p">,</span>
+        <span class="s2">"²"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\S2\N"</span><span class="p">,</span>
+        <span class="s2">"³"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\S3\N"</span><span class="p">,</span>
+        <span class="s2">"⁻¹"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\S-1\N"</span><span class="p">,</span>
+        <span class="s2">"−"</span><span class="p">:</span> <span class="s2">"-"</span><span class="p">,</span>
+        <span class="s2">"∕"</span><span class="p">:</span> <span class="s2">"/"</span><span class="p">,</span>
+        <span class="s2">"·"</span><span class="p">:</span> <span class="s2">" "</span><span class="p">,</span>
+        <span class="s2">"‖"</span><span class="p">:</span> <span class="s2">"|"</span><span class="p">,</span>
+        <span class="s2">"⟨"</span><span class="p">:</span> <span class="s2">"&lt;"</span><span class="p">,</span>
+        <span class="s2">"⟩"</span><span class="p">:</span> <span class="s2">"&gt;"</span><span class="p">,</span>
+        <span class="s2">"Δ"</span><span class="p">:</span> <span class="s2">"Delta"</span><span class="p">,</span>
+        <span class="s2">"μ"</span><span class="p">:</span> <span class="s2">"mu"</span><span class="p">,</span>
+        <span class="s2">"ν̃"</span><span class="p">:</span> <span class="s2">"nu~"</span><span class="p">,</span>
+        <span class="s2">"Ĉ"</span><span class="p">:</span> <span class="s2">"C^"</span><span class="p">,</span>
+        <span class="s2">"ᵢ"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\si\N"</span><span class="p">,</span>
+        <span class="s2">"ⱼ"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\sj\N"</span><span class="p">,</span>
+        <span class="s2">"ᴵᴿ"</span><span class="p">:</span> <span class="sa">r</span><span class="s2">"\SIR\N"</span><span class="p">,</span>
+        <span class="s2">"α"</span><span class="p">:</span> <span class="s2">"alpha"</span><span class="p">,</span>
     <span class="p">}</span>
     <span class="n">converted</span> <span class="o">=</span> <span class="n">value</span>
     <span class="k">for</span> <span class="n">source</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">replacements</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1021,7 +1021,7 @@
     <span class="n">paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">output_files</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">paths</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">paths</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">&quot;Analysis output paths must be distinct.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">AnalysisOutputError</span><span class="p">(</span><span class="s2">"Analysis output paths must be distinct."</span><span class="p">)</span>
 </pre></div>
 
            </div>

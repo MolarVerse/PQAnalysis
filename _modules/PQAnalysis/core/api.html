@@ -76,11 +76,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.core.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing all api functions for the PQAnalysis.core package.</span>
 
 <span class="sd">All of this functions are provided within the namespace of the PQAnalysis.core package.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -99,13 +99,13 @@
     <span class="n">cell</span><span class="p">:</span> <span class="n">_cell</span><span class="o">.</span><span class="n">Cell</span> <span class="o">=</span> <span class="n">_cell</span><span class="o">.</span><span class="n">Cell</span><span class="p">(),</span>
     <span class="o">**</span><span class="n">kwargs</span>  <span class="c1"># pylint: disable=unused-argument</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PositiveReal</span> <span class="o">|</span> <span class="n">Np1DNumberArray</span> <span class="o">|</span> <span class="n">Np2DNumberArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the distances between all combinations of two position arrays.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    In more detail this function returns the distances between all combinations</span>
-<span class="sd">    of two positions in the position arrays &#39;pos1&#39; and &#39;pos2&#39;. If pos1 and pos2</span>
+<span class="sd">    of two positions in the position arrays 'pos1' and 'pos2'. If pos1 and pos2</span>
 <span class="sd">    are both 1D arrays, the distance between the two positions is returned. </span>
 <span class="sd">    If pos1 is a 1D array and pos2 is a 2D array, the distances between the </span>
 <span class="sd">    position in pos1 and all positions in pos2 are returned. If pos1 and pos2</span>
@@ -152,7 +152,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    PositiveReal | Np1DNumberArray | Np2DNumberArray</span>
 <span class="sd">        The distance(s) between the two position(s) (arrays).</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">pos1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">pos1</span><span class="p">)</span>
 

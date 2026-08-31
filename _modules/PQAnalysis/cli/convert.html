@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.cli.convert</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">Command line interface for converting analysis-table output.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.analysis.output</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_analysis_output</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">code_base_url</span>
@@ -86,17 +86,17 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">._argument_parser</span><span class="w"> </span><span class="kn">import</span> <span class="n">_ArgumentParser</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">._cli_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">CLIBase</span>
 
-<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">__outputdoc__</span> <span class="o">=</span> <span class="s2">"""</span>
 
 <span class="s2">Convert a native PQAnalysis, CSV, TSV or PQAnalysis XVG analysis table</span>
 <span class="s2">into one or more output files. The output extension selects CSV, TSV,</span>
 <span class="s2">XVG or the native self-describing text format.</span>
-<span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">"""</span>
 
-<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;For analysis output column definitions please visit &quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">userGuide/analysisOutputFiles.html.&quot;</span>
-<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<span class="n">__epilog__</span> <span class="o">=</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"For analysis output column definitions please visit "</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">code_base_url</span><span class="si">}</span><span class="s2">userGuide/analysisOutputFiles.html."</span>
+<span class="n">__epilog__</span> <span class="o">+=</span> <span class="s2">"</span><span class="se">\n\n</span><span class="s2">"</span>
 
 
 
@@ -104,55 +104,55 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.convert.html#PQAnalysis.cli.convert.ConvertCLI">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">ConvertCLI</span><span class="p">(</span><span class="n">CLIBase</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Convert analysis-table output files.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="ConvertCLI.program_name">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.convert.html#PQAnalysis.cli.convert.ConvertCLI.program_name">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">program_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Return the pqanalysis subcommand name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;convert&quot;</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">"convert"</span></div>
 
 
 <div class="viewcode-block" id="ConvertCLI.add_arguments">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.convert.html#PQAnalysis.cli.convert.ConvertCLI.add_arguments">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">add_arguments</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">_ArgumentParser</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Add converter arguments to a parser.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_input_file</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;-o&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;--output&quot;</span><span class="p">,</span>
-            <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;output_files&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+            <span class="s2">"-o"</span><span class="p">,</span>
+            <span class="s2">"--output"</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">"output_files"</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
             <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FILE&quot;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">"FILE"</span><span class="p">,</span>
             <span class="n">help</span><span class="o">=</span><span class="p">(</span>
-                <span class="s2">&quot;Output file. Repeat for multiple outputs. The .csv, .tsv &quot;</span>
-                <span class="s2">&quot;and .xvg extensions select those formats; other extensions &quot;</span>
-                <span class="s2">&quot;use native PQAnalysis text.&quot;</span>
+                <span class="s2">"Output file. Repeat for multiple outputs. The .csv, .tsv "</span>
+                <span class="s2">"and .xvg extensions select those formats; other extensions "</span>
+                <span class="s2">"use native PQAnalysis text."</span>
             <span class="p">),</span>
         <span class="p">)</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--x&quot;</span><span class="p">,</span>
-            <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;x_field&quot;</span><span class="p">,</span>
+            <span class="s2">"--x"</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">"x_field"</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FIELD&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override the x-axis field used for XVG output.&quot;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">"FIELD"</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"Override the x-axis field used for XVG output."</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-            <span class="s2">&quot;--y&quot;</span><span class="p">,</span>
-            <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;y_fields&quot;</span><span class="p">,</span>
-            <span class="n">action</span><span class="o">=</span><span class="s2">&quot;append&quot;</span><span class="p">,</span>
+            <span class="s2">"--y"</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="s2">"y_fields"</span><span class="p">,</span>
+            <span class="n">action</span><span class="o">=</span><span class="s2">"append"</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;FIELD&quot;</span><span class="p">,</span>
-            <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Override an XVG y-axis field. Repeat for multiple sets.&quot;</span><span class="p">,</span>
+            <span class="n">metavar</span><span class="o">=</span><span class="s2">"FIELD"</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="s2">"Override an XVG y-axis field. Repeat for multiple sets."</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">parse_mode</span><span class="p">()</span></div>
 
@@ -161,9 +161,9 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.convert.html#PQAnalysis.cli.convert.ConvertCLI.run">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Run the requested conversions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">convert_analysis_output</span><span class="p">(</span>
             <span class="n">input_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input_file</span><span class="p">,</span>
             <span class="n">output_files</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">output_files</span><span class="p">,</span>
@@ -179,9 +179,9 @@
 <div class="viewcode-block" id="main">
 <a class="viewcode-back" href="../../../code/PQAnalysis.cli.convert.html#PQAnalysis.cli.convert.main">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Run the standalone analysis-table converter CLI.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">_ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">__outputdoc__</span><span class="p">,</span> <span class="n">epilog</span><span class="o">=</span><span class="n">__epilog__</span><span class="p">)</span>
     <span class="n">ConvertCLI</span><span class="o">.</span><span class="n">add_arguments</span><span class="p">(</span><span class="n">parser</span><span class="p">)</span>
     <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>

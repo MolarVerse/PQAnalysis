@@ -5,7 +5,9 @@ utils
 ========================
 
 .. automodule:: PQAnalysis.utils
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -20,6 +22,7 @@ utils
        PQAnalysis.utils.decorators
        PQAnalysis.utils.files
        PQAnalysis.utils.math
+       PQAnalysis.utils.progress
        PQAnalysis.utils.random
        PQAnalysis.utils.string
        PQAnalysis.utils.units
@@ -27,4 +30,27 @@ utils
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`calculate_simulation_time <PQAnalysis.utils.units.calculate_simulation_time>`
+         - Calculates simulation time from a timestep count.
+       * - :func:`count_decorator <PQAnalysis.utils.decorators.count_decorator>`
+         - Decorator which counts the number of times a function is called.
+       * - :func:`instance_function_count_decorator <decorator.instance_function_count_decorator>`
+         - Decorator which counts the number of times a function is called for an instance of a class.
+       * - :func:`print_header <PQAnalysis.utils.common.print_header>`
+         - A function to print the header of the program.
+       * - :func:`timeit_in_class <decorator.timeit_in_class>`
+         - Decorator which measures the time a function of a class takes to execute and sets elapsed time as an attribute of the class.
+    
+
+
+
+    Reference
+    ---------

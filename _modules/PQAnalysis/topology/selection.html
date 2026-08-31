@@ -76,10 +76,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.topology.selection</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the Selection class and related functions/classes.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 <span class="c1"># library imports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
@@ -110,15 +111,15 @@
 <span class="c1">#: |     - Selection: the given selection is copied</span>
 <span class="c1">#: |     - None: all atoms are selected</span>
 <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span>
-    <span class="s1">&#39;SelectionCompatible&#39;</span><span class="p">,</span>
+    <span class="s1">'SelectionCompatible'</span><span class="p">,</span>
     <span class="nb">str</span><span class="p">,</span>
-    <span class="s1">&#39;PQAnalysis.core.Atom&#39;</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;PQAnalysis.core.Atom&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;PQAnalysis.core.Element&#39;</span><span class="p">,</span>
-    <span class="n">List</span><span class="p">[</span><span class="s1">&#39;PQAnalysis.core.Element&#39;</span><span class="p">],</span>
+    <span class="s1">'PQAnalysis.core.Atom'</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">[</span><span class="s1">'PQAnalysis.core.Atom'</span><span class="p">],</span>
+    <span class="s1">'PQAnalysis.core.Element'</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">[</span><span class="s1">'PQAnalysis.core.Element'</span><span class="p">],</span>
     <span class="n">Np1DIntArray</span><span class="p">,</span>
     <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="s1">&#39;PQAnalysis.topology.Selection&#39;</span><span class="p">,</span>
+    <span class="s1">'PQAnalysis.topology.Selection'</span><span class="p">,</span>
     <span class="kc">None</span>
 <span class="p">)</span>
 
@@ -128,7 +129,7 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Selection</span><span class="p">:</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for representing a selection.</span>
 
 <span class="sd">    If the selection object is a Selection object, the selection is copied.</span>
@@ -165,24 +166,24 @@
 <span class="sd">        are selected</span>
 <span class="sd">      - elem(&lt;element_symbol&gt;): all atoms with the given element type</span>
 <span class="sd">        are selected</span>
-<span class="sd">      - `*`: all atoms are selected (same as &#39;all&#39;), useful if only</span>
+<span class="sd">      - `*`: all atoms are selected (same as 'all'), useful if only</span>
 <span class="sd">        few atoms should be excluded</span>
 
 <span class="sd">      All of the above statements can be combined with the following</span>
 <span class="sd">      operators:</span>
 
-<span class="sd">      - &#39;,&#39;: the union of the two statements is selected, meaning that</span>
+<span class="sd">      - ',': the union of the two statements is selected, meaning that</span>
 <span class="sd">        the atoms selected by the first statement and the atoms selected</span>
 <span class="sd">        by the second statement are selected</span>
-<span class="sd">      - &#39;&amp;&#39;: the intersection of the two statements is selected, meaning</span>
+<span class="sd">      - '&amp;': the intersection of the two statements is selected, meaning</span>
 <span class="sd">        that only the atoms selected by both statements are selected</span>
-<span class="sd">      - &#39;|&#39;: the set difference of the two statements is selected,</span>
+<span class="sd">      - '|': the set difference of the two statements is selected,</span>
 <span class="sd">        meaning that only the atoms selected by the first statement are</span>
 <span class="sd">        selected, which are not selected by the second statement</span>
 
 <span class="sd">      The operators are evaluated in the following order:</span>
-<span class="sd">      &#39;|&#39; -&gt; &#39;&amp;&#39; -&gt; &#39;,&#39;. This means that the &#39;,&#39; operator has the lowest</span>
-<span class="sd">      precedence and the &#39;|&#39; operator has the highest precedence and</span>
+<span class="sd">      '|' -&gt; '&amp;' -&gt; ','. This means that the ',' operator has the lowest</span>
+<span class="sd">      precedence and the '|' operator has the highest precedence and</span>
 <span class="sd">      therefore binds the strongest.</span>
 
 <span class="sd">      Additionally, parentheses can be used to group statements and</span>
@@ -192,19 +193,19 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The atom counting always starts with 0!</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="nd">@runtime_type_checking</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selection_object</span><span class="p">:</span> <span class="n">SelectionCompatible</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        selection_object : SelectionCompatible, optional</span>
 <span class="sd">            The object to create the selection from.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">selection_object</span><span class="p">,</span> <span class="n">Selection</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selection_object</span> <span class="o">=</span> <span class="n">selection_object</span><span class="o">.</span><span class="n">selection_object</span>
         <span class="k">else</span><span class="p">:</span>
@@ -218,7 +219,7 @@
         <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">,</span>
         <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the atoms selected by the selection object.</span>
 
 <span class="sd">        If the selection_object is None all atoms are selected. With the </span>
@@ -238,7 +239,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the atoms selected by the selection object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selection_object</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span>
 
@@ -252,28 +253,28 @@
 <div class="viewcode-block" id="Selection.__str__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection.__str__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the string representation of the selection object.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The string representation of the selection object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_object</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Selection.__repr__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.Selection.__repr__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the string representation of the selection object.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The string representation of the selection object.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selection_object</span><span class="p">)</span></div>
 </div>
 
@@ -285,7 +286,7 @@
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Overloaded function for selecting atoms based</span>
 <span class="sd">    on a list of atoms/elements or a single atom/element.</span>
 
@@ -302,7 +303,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the atoms selected by the selection object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="p">(</span><span class="n">Atom</span><span class="p">,</span> <span class="n">Element</span><span class="p">)):</span>
         <span class="k">return</span> <span class="n">_selection_of_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">topology</span><span class="p">,</span> <span class="n">use_full_atom_info</span><span class="p">)</span>
@@ -328,7 +329,7 @@
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the indices of the atoms selected by the selection object.</span>
 
 <span class="sd">    Parameters</span>
@@ -349,14 +350,14 @@
 <span class="sd">    ------</span>
 <span class="sd">    PQValueError</span>
 <span class="sd">        If the use_full_atom_info parameter is True and the atoms parameter is an Element object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="p">(</span><span class="n">Atom</span><span class="p">,</span> <span class="n">Element</span><span class="p">)):</span>
         <span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="n">atoms</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atoms</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Element</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">use_full_atom_info</span><span class="p">:</span>
             <span class="n">Selection</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                <span class="s2">&quot;The use_full_atom_info parameter is not supported for Element objects.&quot;</span><span class="p">,</span>
+                <span class="s2">"The use_full_atom_info parameter is not supported for Element objects."</span><span class="p">,</span>
                 <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
             <span class="p">)</span>
 
@@ -378,7 +379,7 @@
     <span class="n">atomtype_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Overloaded function for selecting atoms based on a list of atom type names.</span>
 
 <span class="sd">    Parameters</span>
@@ -392,7 +393,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the atoms selected by the selection object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">indices</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="k">for</span> <span class="n">atomtype_name</span> <span class="ow">in</span> <span class="n">atomtype_names</span><span class="p">:</span>
@@ -407,7 +408,7 @@
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">,</span>
     <span class="n">use_full_atom_info</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Overloaded function for selecting atoms based on a string.</span>
 
 <span class="sd">    This function implements a Lark parser for the selection grammar.</span>
@@ -425,13 +426,20 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the atoms selected by the selection object.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">grammar_file</span> <span class="o">=</span> <span class="s2">&quot;selection.lark&quot;</span>
-    <span class="n">grammar_path</span> <span class="o">=</span> <span class="n">__base_path__</span> <span class="o">/</span> <span class="s2">&quot;grammar&quot;</span>
+<span class="sd">    """</span>
+    <span class="n">stripped_string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
 
-    <span class="n">parser</span> <span class="o">=</span> <span class="n">Lark</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">grammar_path</span> <span class="o">/</span> <span class="n">grammar_file</span><span class="p">,</span> <span class="n">propagate_positions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># SelectionTransformer.atomtype performs this exact lookup. Plain atom</span>
+    <span class="c1"># types can skip parser construction without changing their semantics.</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="n">stripped_string</span> <span class="o">!=</span> <span class="s2">"all"</span> <span class="ow">and</span>
+        <span class="n">stripped_string</span><span class="o">.</span><span class="n">isascii</span><span class="p">()</span> <span class="ow">and</span>
+        <span class="n">stripped_string</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()</span> <span class="ow">and</span>
+        <span class="ow">not</span> <span class="n">stripped_string</span><span class="o">.</span><span class="n">isdigit</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="k">return</span> <span class="n">_indices_by_atom_type_name</span><span class="p">(</span><span class="n">stripped_string</span><span class="p">,</span> <span class="n">topology</span><span class="p">)</span>
 
-    <span class="n">tree</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">_selection_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
     <span class="n">transformed_tree</span> <span class="o">=</span> <span class="n">SelectionTransformer</span><span class="p">(</span>
         <span class="n">topology</span><span class="o">=</span><span class="n">topology</span><span class="p">,</span>
         <span class="n">visit_tokens</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -442,19 +450,27 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">visitor</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">transformed_tree</span><span class="p">))</span>
 
 
+<span class="nd">@lru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_selection_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Lark</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Builds the shared selection grammar parser once per process."""</span>
+    <span class="n">grammar_path</span> <span class="o">=</span> <span class="n">__base_path__</span> <span class="o">/</span> <span class="s2">"grammar"</span> <span class="o">/</span> <span class="s2">"selection.lark"</span>
+
+    <span class="k">return</span> <span class="n">Lark</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">grammar_path</span><span class="p">,</span> <span class="n">propagate_positions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
 
 <div class="viewcode-block" id="SelectionTransformer">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SelectionTransformer</span><span class="p">(</span><span class="n">Transformer</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for transforming a Lark parse tree.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Transformer : Transformer</span>
 <span class="sd">        The type of the Transformer class to inherit from.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -462,7 +478,7 @@
         <span class="n">visit_tokens</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">use_full_atom_info</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        visit_tokens : bool, optional</span>
@@ -471,7 +487,7 @@
 <span class="sd">            The topology to get the indices from.</span>
 <span class="sd">        use_full_atom_info : bool, optional</span>
 <span class="sd">            Whether to use the full atom information, by default False</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__visit_tokens__</span> <span class="o">=</span> <span class="n">visit_tokens</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">visit_tokens</span><span class="o">=</span><span class="n">visit_tokens</span><span class="p">)</span>
 
@@ -481,7 +497,7 @@
 <div class="viewcode-block" id="SelectionTransformer.word">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.word">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">word</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the word of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -493,14 +509,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The word of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.letters">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.letters">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">letters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the letters of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -512,14 +528,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        str</span>
 <span class="sd">            The letters of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="s2">""</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.unsigned_integer">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.unsigned_integer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">unsigned_integer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the unsigned integer of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -531,14 +547,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The unsigned integer of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.integer">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.integer">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">integer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the integer of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -550,14 +566,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The integer of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.UNSIGNED_INT">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.UNSIGNED_INT">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">UNSIGNED_INT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Token</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the unsigned integer of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -569,14 +585,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The unsigned integer of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">items</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.INT">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.INT">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">INT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">]</span> <span class="o">|</span> <span class="n">Token</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">INT</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Token</span> <span class="o">|</span> <span class="n">List</span><span class="p">[</span><span class="n">Token</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>  <span class="c1"># pylint: disable=invalid-name</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the integer of the given token.</span>
 
 <span class="sd">        Parameters</span>
@@ -588,14 +604,14 @@
 <span class="sd">        -------</span>
 <span class="sd">        int</span>
 <span class="sd">            The integer of the given token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="n">items</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SelectionTransformer.atomtype">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.atomtype">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">atomtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the atoms with the given atom type name.</span>
 
 <span class="sd">        Parameters</span>
@@ -607,7 +623,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the atoms with the given atom type name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">atomtype</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">_indices_by_atom_type_name</span><span class="p">(</span><span class="n">atomtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="p">)</span></div>
@@ -616,7 +632,7 @@
 <div class="viewcode-block" id="SelectionTransformer.atom">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.atom">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the given atom.</span>
 
 <span class="sd">        Parameters</span>
@@ -628,7 +644,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the given atom.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">atom</span> <span class="o">=</span> <span class="n">Atom</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
@@ -641,7 +657,7 @@
 <div class="viewcode-block" id="SelectionTransformer.element">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.element">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the given element type.</span>
 
 <span class="sd">        Parameters</span>
@@ -653,7 +669,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the given element type.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">element</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
@@ -663,7 +679,7 @@
 <div class="viewcode-block" id="SelectionTransformer.residue">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.residue">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the given residue name.</span>
 
 <span class="sd">        Parameters</span>
@@ -675,7 +691,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the given residue name.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_atom_indices_from_residue_names</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="p">)</span></div>
@@ -684,7 +700,7 @@
 <div class="viewcode-block" id="SelectionTransformer.residue_number">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.residue_number">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">residue_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the given residue number.</span>
 
 <span class="sd">        Parameters</span>
@@ -696,7 +712,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the given residue number.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">get_atom_indices_from_residue_numbers</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -706,7 +722,7 @@
 <div class="viewcode-block" id="SelectionTransformer.index">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.index">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the given index as an array.</span>
 
 <span class="sd">        Parameters</span>
@@ -718,7 +734,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the index Token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">index</span><span class="p">])</span></div>
@@ -727,7 +743,7 @@
 <div class="viewcode-block" id="SelectionTransformer.indices">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.indices">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns a range of indices based on the given indices.</span>
 
 <span class="sd">        if two indices are given, a range from the first index to</span>
@@ -749,7 +765,7 @@
 <span class="sd">        ------</span>
 <span class="sd">        PQValueError</span>
 <span class="sd">            If the indices Token has more than 3 items. Should never be reached.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">items</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
@@ -759,7 +775,7 @@
 
         <span class="c1"># should never be reached</span>
         <span class="n">Selection</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-            <span class="s2">&quot;The indices Token must have 2 or 3 items.&quot;</span><span class="p">,</span>
+            <span class="s2">"The indices Token must have 2 or 3 items."</span><span class="p">,</span>
             <span class="n">exception</span><span class="o">=</span><span class="n">PQValueError</span>
         <span class="p">)</span></div>
 
@@ -767,14 +783,14 @@
 <div class="viewcode-block" id="SelectionTransformer.all">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.all">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns all indices.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the all Token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_atoms</span><span class="p">)</span></div>
 
@@ -782,7 +798,7 @@
 <div class="viewcode-block" id="SelectionTransformer.without_statement">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.without_statement">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">without_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the the first item</span>
 <span class="sd">        without the indices of all other items.</span>
 
@@ -795,7 +811,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the given without statement Token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">difference</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -808,7 +824,7 @@
 <div class="viewcode-block" id="SelectionTransformer.and_statement">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.and_statement">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">and_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the and_statement Token.</span>
 
 <span class="sd">        Parameters</span>
@@ -820,7 +836,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the and_statement Token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">intersection</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -833,7 +849,7 @@
 <div class="viewcode-block" id="SelectionTransformer.or_statement">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionTransformer.or_statement">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">or_statement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Returns the indices of the or_statement Token.</span>
 
 <span class="sd">        Parameters</span>
@@ -845,7 +861,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the or_statement Token.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
 
         <span class="n">union</span> <span class="o">=</span> <span class="n">items</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -862,31 +878,31 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionVisitor">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">SelectionVisitor</span><span class="p">(</span><span class="n">Visitor</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class for visiting a Lark parse tree and returning the indices of parsed selection.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Visitor : Visitor</span>
 <span class="sd">        The type of the Visitor class to inherit from.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        topology : Topology</span>
 <span class="sd">            The topology to get the indices from.</span>
 <span class="sd">        use_full_atom_info : bool, optional</span>
 <span class="sd">            Whether to use the full atom information, by default False</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SelectionVisitor.expression">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionVisitor.expression">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">expression</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Visits the given tree and returns the indices of the parsed selection.</span>
 
 <span class="sd">        Parameters</span>
@@ -898,7 +914,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the parsed selection.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selection</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="p">)</span></div>
@@ -907,7 +923,7 @@
 <div class="viewcode-block" id="SelectionVisitor.visit">
 <a class="viewcode-back" href="../../../code/PQAnalysis.topology.selection.html#PQAnalysis.topology.selection.SelectionVisitor.visit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">visit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tree</span><span class="p">:</span> <span class="n">Tree</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Visits the given tree and returns the indices of the parsed selection.</span>
 
 <span class="sd">        Parameters</span>
@@ -919,7 +935,7 @@
 <span class="sd">        -------</span>
 <span class="sd">        Np1DIntArray</span>
 <span class="sd">            The indices of the parsed selection.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">visit</span><span class="p">(</span><span class="n">tree</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selection</span><span class="p">)</span></div>
@@ -929,7 +945,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_indices_by_atom_type_name</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the indices of the atoms with the given atom type name.</span>
 
 <span class="sd">    Parameters</span>
@@ -943,7 +959,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the atoms with the given atom type name.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">bool_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span><span class="n">topology_name</span> <span class="o">==</span> <span class="n">name</span> <span class="k">for</span> <span class="n">topology_name</span> <span class="ow">in</span> <span class="n">topology</span><span class="o">.</span><span class="n">atomtype_names</span><span class="p">]</span>
@@ -956,7 +972,7 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_indices_by_atom</span><span class="p">(</span><span class="n">atom</span><span class="p">:</span> <span class="n">Atom</span><span class="p">,</span> <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the indices of the given atom.</span>
 
 <span class="sd">    Parameters</span>
@@ -970,7 +986,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the given atom.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">topology</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span> <span class="o">==</span> <span class="n">atom</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
 
@@ -982,7 +998,7 @@
     <span class="n">atom</span><span class="p">:</span> <span class="n">Atom</span> <span class="o">|</span> <span class="n">Element</span><span class="p">,</span>
     <span class="n">topology</span><span class="p">:</span> <span class="n">Topology</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Np1DIntArray</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Returns the indices of the given element type.</span>
 
 <span class="sd">    It can be use for both Atom and Element objects.</span>
@@ -998,7 +1014,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    Np1DIntArray</span>
 <span class="sd">        The indices of the given element type.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">atom</span><span class="p">,</span> <span class="n">Atom</span><span class="p">):</span>
         <span class="n">element</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">element</span>

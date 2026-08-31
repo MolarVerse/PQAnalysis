@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.virial.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the API for reading virial and stress files.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">beartype.typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
 
@@ -92,7 +92,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.virial.api.html#PQAnalysis.io.virial.api.read_virial_file">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_virial_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read a virial file.</span>
 
 <span class="sd">    Parameters</span>
@@ -104,7 +104,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    List[np.ndarray]</span>
 <span class="sd">        The virial data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">VirialFileReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 
@@ -115,7 +115,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.virial.api.html#PQAnalysis.io.virial.api.read_stress_file">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_stress_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Read a stress file.</span>
 
 <span class="sd">    Parameters</span>
@@ -127,7 +127,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    List[np.ndarray]</span>
 <span class="sd">        The stress data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="n">reader</span> <span class="o">=</span> <span class="n">StressFileReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 

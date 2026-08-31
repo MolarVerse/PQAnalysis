@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.topology_file.api</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the API for reading and writing topology files.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">Topology</span><span class="p">,</span> <span class="n">BondedTopology</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PQAnalysis.io.formats</span><span class="w"> </span><span class="kn">import</span> <span class="n">FileWritingMode</span>
@@ -95,11 +95,11 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">write_topology_file</span><span class="p">(</span>
     <span class="n">bonded_topology</span><span class="p">:</span> <span class="n">Topology</span> <span class="o">|</span> <span class="n">BondedTopology</span><span class="p">,</span>
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;w&quot;</span>
+    <span class="n">mode</span><span class="p">:</span> <span class="n">FileWritingMode</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"w"</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Wrapper function to write a topology file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">TopologyFileWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bonded_topology</span><span class="p">)</span></div>
 
@@ -110,7 +110,7 @@
 <a class="viewcode-back" href="../../../../code/PQAnalysis.io.topology_file.api.html#PQAnalysis.io.topology_file.api.read_topology_file">[docs]</a>
 <span class="nd">@runtime_type_checking</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">read_topology_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BondedTopology</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Function to read a topology file.</span>
 
 <span class="sd">    Parameters</span>
@@ -122,7 +122,7 @@
 <span class="sd">    -------</span>
 <span class="sd">    BondedTopology</span>
 <span class="sd">        The bonded topology.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="k">return</span> <span class="n">TopologyFileReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span></div>
 

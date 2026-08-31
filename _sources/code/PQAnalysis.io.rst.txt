@@ -5,7 +5,9 @@ io
 =====================
 
 .. automodule:: PQAnalysis.io
-    
+    :members: TYPE_CHECKING
+    :undoc-members:
+    :show-inheritance:
 
 
 
@@ -45,4 +47,124 @@ io
 
 
 
+    Summary
+    -------
 
+    ``__all__`` Classes:
+
+
+    .. list-table::
+    
+       * - :class:`BaseFrameReader <PQAnalysis.io.traj_file.frame_reader.BaseFrameReader>`
+         - Base class for frame readers.
+       * - :class:`BaseReader <PQAnalysis.io.base.BaseReader>`
+         - A base class for all readers.
+       * - :class:`BaseWriter <PQAnalysis.io.base.BaseWriter>`
+         - A base class for all writers.
+       * - :class:`BoxFileFormat <PQAnalysis.io.formats.BoxFileFormat>`
+         - An enumeration of the supported box file formats.
+       * - :class:`BoxReader <PQAnalysis.io.box_reader.BoxReader>`
+         - A class for reading data-style box files.
+       * - :class:`BoxWriter <PQAnalysis.io.box_writer.BoxWriter>`
+         - A class for writing a trajectory to a box file.
+       * - :class:`EnergyFileReader <PQAnalysis.io.energy_file_reader.EnergyFileReader>`
+         - A class to read energy files from molecular dynamics simulations.
+       * - :class:`ExtXYZFrameReader <PQAnalysis.io.traj_file.frame_reader.ExtXYZFrameReader>`
+         - A frame reader for extended xyz position frames.
+       * - :class:`ExtXYZProfile <PQAnalysis.io.formats.ExtXYZProfile>`
+         - An enumeration of supported extended xyz unit conventions.
+       * - :class:`FileWritingMode <PQAnalysis.io.formats.FileWritingMode>`
+         - An enumeration of the supported file write modes.
+       * - :class:`GenFileReader <PQAnalysis.io.gen_file.gen_file_reader.GenFileReader>`
+         - A class for reading gen files.
+       * - :class:`GenFileWriter <PQAnalysis.io.gen_file.gen_file_writer.GenFileWriter>`
+         - A class for writing gen files.
+       * - :class:`InfoFileReader <PQAnalysis.io.info_file_reader.InfoFileReader>`
+         - This is a class to read info files from molecular dynamics simulations.
+       * - :class:`InputFileFormat <PQAnalysis.io.input_file_reader.formats.InputFileFormat>`
+         - An enumeration of the supported input formats.
+       * - :class:`InputFileParser <PQAnalysis.io.input_file_reader.input_file_parser.InputFileParser>`
+         - Class to parse input files.
+       * - :class:`MoldescriptorReader <PQAnalysis.io.moldescriptor_reader.MoldescriptorReader>`
+         - This is a class to read moldescriptor files.
+       * - :class:`OptimizerFileReader <PQAnalysis.io.optimizer_file_reader.OptimizerFileReader>`
+         - A reader for the fixed 13-column ``.opt`` files written by PQ.
+       * - :class:`OutputFileFormat <PQAnalysis.io.formats.OutputFileFormat>`
+         - An enumeration of the supported output file formats.
+       * - :class:`PQAnalysisInputFileReader <PQAnalysis.io.input_file_reader.pq_analysis.pqanalysis_input_file_reader.PQAnalysisInputFileReader>`
+         - A class to read the input file for the PQAnalysis.
+       * - :class:`PQInputFileReader <PQAnalysis.io.input_file_reader.pq.pq_input_file_reader.PQInputFileReader>`
+         - Reads a PQ input file and parses it.
+       * - :class:`RawTrajectoryReader <PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader>`
+         - A fast-path reader that streams raw per-frame data of xyz-family trajectory files.
+       * - :class:`RestartFileReader <PQAnalysis.io.restart_file.restart_reader.RestartFileReader>`
+         - A class for reading restart files.
+       * - :class:`RestartFileWriter <PQAnalysis.io.restart_file.restart_writer.RestartFileWriter>`
+         - A class for writing restart files.
+       * - :class:`TopologyFileReader <PQAnalysis.io.topology_file.topology_file_reader.TopologyFileReader>`
+         - A class to read a topology file for the bonded topology of the PQ or QMCFC  project and return a BondedTopology object.
+       * - :class:`TopologyFileWriter <PQAnalysis.io.topology_file.topology_file_writer.TopologyFileWriter>`
+         - Class for writing topology files containing bonded information for the PQ and  QMCFC MD software packages.
+       * - :class:`TrajectoryReader <PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader>`
+         - A class for reading a trajectory from a file.
+       * - :class:`TrajectoryWriter <PQAnalysis.io.traj_file.trajectory_writer.TrajectoryWriter>`
+         - A class for writing a trajectory to a file.
+       * - :class:`XYZFrameReader <PQAnalysis.io.traj_file.frame_reader.XYZFrameReader>`
+         - This class provides methods for reading a frame from a string.
+    
+
+    ``__all__`` Functions:
+
+
+    .. list-table::
+    
+       * - :func:`calculate_frames_of_trajectory_file <PQAnalysis.io.traj_file.api.calculate_frames_of_trajectory_file>`
+         - Calculate the number of frames in a trajectory file.
+       * - :func:`continue_input_file <PQAnalysis.io.api.continue_input_file>`
+         - API function for continuing an input file.
+       * - :func:`gen2xyz <PQAnalysis.io.conversion_api.gen2xyz>`
+         - Converts a gen file to a xyz file and prints it to stdout or writes it to a file.
+       * - :func:`get_frame_reader <PQAnalysis.io.traj_file.frame_reader.get_frame_reader>`
+         - Return the frame reader implementation for a trajectory format.
+       * - :func:`read_box <PQAnalysis.io.box_reader.read_box>`
+         - Reads a data-style box file.
+       * - :func:`read_gen_file <PQAnalysis.io.gen_file.api.read_gen_file>`
+         - Function to read a gen file.
+       * - :func:`read_optimizer_file <PQAnalysis.io.optimizer_file_reader.read_optimizer_file>`
+         - Read a PQ optimizer output file.
+       * - :func:`read_restart_file <PQAnalysis.io.restart_file.api.read_restart_file>`
+         - API function for reading a restart file.
+       * - :func:`read_topology_file <PQAnalysis.io.topology_file.api.read_topology_file>`
+         - Function to read a topology file.
+       * - :func:`read_trajectory <PQAnalysis.io.traj_file.api.read_trajectory>`
+         - API function for reading a trajectory from a file.
+       * - :func:`read_trajectory_generator <PQAnalysis.io.traj_file.api.read_trajectory_generator>`
+         - API function for building a frame generator from a trajectory file.
+       * - :func:`rst2xyz <PQAnalysis.io.conversion_api.rst2xyz>`
+         - Converts a restart file to a xyz file and prints it to stdout or writes it to a file.
+       * - :func:`traj2box <PQAnalysis.io.conversion_api.traj2box>`
+         - Converts multiple trajectory files to a box file and  prints it to stdout or writes it to a file.
+       * - :func:`traj2extxyz <PQAnalysis.io.conversion_api.traj2extxyz>`
+         - Converts one or more PQ xyz trajectory files to extended xyz format and prints it to stdout or writes it to a file.
+       * - :func:`traj2qmcfc <PQAnalysis.io.conversion_api.traj2qmcfc>`
+         - Converts multiple trajectory files from a PQ format to a  QMCFC format and prints it to stdout or writes it to a file.
+       * - :func:`write <PQAnalysis.io.write_api.write>`
+         - API write wrapper function for writing different objects to a file.
+       * - :func:`write_box <PQAnalysis.io.write_api.write_box>`
+         - Writes the given trajectory to the file in a selected box file format.
+       * - :func:`write_gen_file <PQAnalysis.io.gen_file.api.write_gen_file>`
+         - Function to write a gen file.
+       * - :func:`write_topology_file <PQAnalysis.io.topology_file.api.write_topology_file>`
+         - Wrapper function to write a topology file.
+       * - :func:`write_trajectory <PQAnalysis.io.traj_file.api.write_trajectory>`
+         - Wrapper for TrajectoryWriter to write a trajectory to a file.
+       * - :func:`xyz2gen <PQAnalysis.io.conversion_api.xyz2gen>`
+         - Converts a xyz file to a gen file and prints it to stdout or writes it to a file.
+       * - :func:`xyz2rst <PQAnalysis.io.conversion_api.xyz2rst>`
+         - Converts a xyz file to a restart file and prints it to stdout or writes it to a file.
+    
+
+
+
+    Reference
+    ---------

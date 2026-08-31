@@ -76,9 +76,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PQAnalysis.io.energy_file_reader</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="sd">"""</span>
 <span class="sd">A module containing the EnergyFileReader class.</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">"""</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -100,9 +100,9 @@
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.energy_file_reader.html#PQAnalysis.io.energy_file_reader.EnergyFileReader">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">EnergyFileReader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
 
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A class to read energy files from molecular dynamics simulations.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__package_name__</span><span class="p">)</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="vm">__qualname__</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -115,7 +115,7 @@
         <span class="n">use_info_file</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">engine_format</span><span class="p">:</span> <span class="n">MDEngineFormat</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">MDEngineFormat</span><span class="o">.</span><span class="n">PQ</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        For the initialization of the EnergyFileReader, the filename of the energy</span>
 <span class="sd">        file has to be given. The info_filename can be given as well. If no</span>
 <span class="sd">        info_filename is given, the energy filename is used to find the info </span>
@@ -147,7 +147,7 @@
 <span class="sd">            If True, the info file is searched for, by default True</span>
 <span class="sd">        engine_format : MDEngineFormat | str, optional</span>
 <span class="sd">            The format of the file, by default MDEngineFormat.PQ</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span> <span class="o">=</span> <span class="n">info_filename</span>
 
@@ -161,7 +161,7 @@
 <div class="viewcode-block" id="EnergyFileReader.read">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.energy_file_reader.html#PQAnalysis.io.energy_file_reader.EnergyFileReader.read">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Energy</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads the energy file.</span>
 
 <span class="sd">        The data of the energy file is returned as a np.array within a Energy object.</span>
@@ -174,7 +174,7 @@
 <span class="sd">            The data of the energy file as a np.array within a Energy object.</span>
 <span class="sd">            In addition, the info and units of the info file are stored in the Energy</span>
 <span class="sd">            object, if an info file was found.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">info</span><span class="p">,</span> <span class="n">units</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">with_info_file</span><span class="p">:</span>
@@ -196,14 +196,14 @@
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">_read_data_from_file</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Reads energy data from a single file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">file</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"#"</span><span class="p">):</span>
                     <span class="k">continue</span>
 
                 <span class="n">data_line</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
@@ -212,9 +212,9 @@
         <span class="k">return</span> <span class="n">data</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_filenames_to_read</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Gets the energy filenames to read.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">multiple_files</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filenames</span>
 
@@ -223,7 +223,7 @@
 <div class="viewcode-block" id="EnergyFileReader.__info_file_found__">
 <a class="viewcode-back" href="../../../code/PQAnalysis.io.energy_file_reader.html#PQAnalysis.io.energy_file_reader.EnergyFileReader.__info_file_found__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">__info_file_found__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Checks if a info file exists for the given file.</span>
 
 <span class="sd">        If no info_filename is given, the energy filename is used to find the</span>
@@ -240,12 +240,12 @@
 <span class="sd">        ------</span>
 <span class="sd">        FileNotFoundError</span>
 <span class="sd">            If an explicitly given info file does not exist.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_filenames_to_read</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;.info&quot;</span>
+            <span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">".info"</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">BaseReader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span><span class="p">)</span>
@@ -258,7 +258,7 @@
                 <span class="n">BaseReader</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span><span class="p">)</span>
             <span class="k">except</span> <span class="n">PQFileNotFoundError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Info File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span><span class="si">}</span><span class="s2"> not found.&quot;</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="s2">"Info File </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">info_filename</span><span class="si">}</span><span class="s2"> not found."</span><span class="p">,</span>
                     <span class="n">exception</span><span class="o">=</span><span class="n">PQFileNotFoundError</span>
                 <span class="p">)</span>
 

@@ -118,7 +118,7 @@
 <li><p>Commit your changes to your feature branch and publish your feature branch:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>&lt;files&gt;
-$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;fix: describe the bug fix&quot;</span>
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s2">"fix: describe the bug fix"</span>
 $<span class="w"> </span>git<span class="w"> </span>flow<span class="w"> </span>feature<span class="w"> </span>publish<span class="w"> </span>&lt;feature_branch_name&gt;
 </pre></div>
 </div>
@@ -145,7 +145,7 @@ $<span class="w"> </span>git<span class="w"> </span>flow<span class="w"> </span>
 <p>The project uses <a class="reference external" href="https://numpydoc.readthedocs.io/en/latest/">numpydoc</a> for docstring formatting. Please make sure that all docstrings are formatted correctly.</p>
 </div>
 <p>In order to install all the dependencies required for building the documentation, use the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[docs]&quot;</span><span class="w"> </span><span class="c1"># install the project with the documentation dependencies</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[docs]"</span><span class="w"> </span><span class="c1"># install the project with the documentation dependencies</span>
 </pre></div>
 </div>
 <p>To build the documentation, use the following command:</p>
@@ -166,13 +166,32 @@ $<span class="w"> </span>make<span class="w"> </span>html
 <section id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
 <p>The project uses <a class="reference external" href="https://docs.pytest.org/en/latest/">pytest</a> for testing. Before creating a pull request, please make sure that all tests pass and ensure a high quality of code coverage. In order to run the tests, use the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[test]&quot;</span><span class="w"> </span><span class="c1"># install the project with the test dependencies</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[test]"</span><span class="w"> </span><span class="c1"># install the project with the test dependencies</span>
 
 $<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>pytest
 </pre></div>
 </div>
 <p>The testing framework will run all tests and provide automatically generated coverage reports. Not only should all tests pass, but the coverage should be as close to 100% as possible. Furthermore, the project automatically uses doctest, so please make sure that all examples included in the doc strings of the implemented features are correct otherwise the tests will fail.</p>
 <p>Last, if any additional dependencies are required for testing, please add them to the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> file under the <code class="docutils literal notranslate"><span class="pre">[project.optional-dependencies]</span></code> section.</p>
+</section>
+<section id="performance-validation">
+<h2>Performance Validation<a class="headerlink" href="#performance-validation" title="Link to this heading"></a></h2>
+<p>File-backed VACF, MSD, RDF and momentum analyses use bounded compiled fast
+paths. A batch path must preserve the numeric operation order of its streaming
+fallback and must return to that fallback when the configured memory limit is
+exceeded. Parallel work is restricted to independent lag ranges, frames or
+private integer histograms; floating-point reductions within one legacy result
+must not be reordered.</p>
+<p>Install the benchmark dependency and run the focused benchmark suite with:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">".[test,benchmark]"</span>
+$<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>benchmarks/pytest.ini<span class="w"> </span>benchmarks<span class="w"> </span>--benchmark-only
+</pre></div>
+</div>
+<p>Store a baseline with <code class="docutils literal notranslate"><span class="pre">--benchmark-json=baseline.json</span></code> and compare a changed
+branch with <code class="docutils literal notranslate"><span class="pre">--benchmark-compare=baseline.json</span></code>. Runtime assertions do not
+belong in CI because host load is variable. Every optimization must instead
+pass the compiled and fallback tests plus the relevant fixed-bit legacy oracle
+before its benchmark result is considered.</p>
 </section>
 </section>
 
