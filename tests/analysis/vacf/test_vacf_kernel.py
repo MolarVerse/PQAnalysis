@@ -22,8 +22,10 @@ import pytest
 from PQAnalysis.analysis.vacf import VACF
 from PQAnalysis.analysis.vacf import _vacf_kernel_py
 from PQAnalysis.analysis.vacf import _raw_charge_reader
-from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.traj import TrajectoryFormat
+from PQAnalysis.analysis.vacf.exceptions import VACFError
+from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
+from PQAnalysis.traj import Trajectory, TrajectoryFormat
 
 from .. import pytestmark  # pylint: disable=unused-import
 
@@ -403,6 +405,17 @@ class TestVACFFastPathKernels:
         )
 
     @staticmethod
+    def _read_float64_velocity_trajectory(vel_file):
+        """Builds an AtomicSystem trajectory from direct float64 parsing."""
+        reader = RawTrajectoryReader(vel_file, dtype="float64")
+        topology = reader.read_first_frame().topology
+
+        return Trajectory([
+            AtomicSystem(topology=topology, vel=values, cell=cell)
+            for values, cell in reader.raw_frame_generator()
+        ])
+
+    @staticmethod
     def _charge_kwargs(charge_source, vel_file, charge_file):
         if charge_source == "static":
             return {"charges": np.array([-0.8, 0.4] * 3)}
@@ -422,16 +435,16 @@ class TestVACFFastPathKernels:
         ["none", "static", "trajectory"],
     )
     @pytest.mark.parametrize("kernel_module", KERNEL_MODULES)
-    def test_fast_path_matches_in_memory_path(
+    def test_fast_path_matches_float64_in_memory_path(
         self,
         kernel_module,
         charge_source,
         tmp_path,
         monkeypatch,
     ):
-        # the fast path (with either kernel implementation) must
-        # reproduce the results of the in-memory Trajectory hot loop
-        # for all charge modes
+        # The fast path (with either kernel implementation) must
+        # reproduce an in-memory trajectory built from the same
+        # directly parsed float64 text values for all charge modes.
         vel_file, charge_file = self._write_trajectories(tmp_path)
 
         self._patch_kernels(monkeypatch, kernel_module)
@@ -467,7 +480,7 @@ class TestVACFFastPathKernels:
             }
 
         reference = VACF(
-            TrajectoryReader(vel_file).read(),
+            self._read_float64_velocity_trajectory(vel_file),
             window_size=20,
             time_step=0.1,
             gap=5,
@@ -487,13 +500,14 @@ class TestVACFFastPathKernels:
         )
 
     @pytest.mark.parametrize("kernel_module", KERNEL_MODULES)
-    def test_fast_path_matches_in_memory_path_fft(
+    def test_fast_path_matches_float64_in_memory_path_fft(
         self,
         kernel_module,
         tmp_path,
         monkeypatch,
     ):
-        # the fft estimator consumes the same velocity stream
+        # The FFT estimator consumes the same directly parsed float64
+        # velocity stream in both paths.
         vel_file, _ = self._write_trajectories(tmp_path)
 
         self._patch_kernels(monkeypatch, kernel_module)
@@ -510,7 +524,7 @@ class TestVACFFastPathKernels:
         _, fast_correlation = fast.run()
 
         reference = VACF(
-            TrajectoryReader(vel_file).read(),
+            self._read_float64_velocity_trajectory(vel_file),
             window_size=20,
             time_step=0.1,
             method="fft",
@@ -524,6 +538,48 @@ class TestVACFFastPathKernels:
             rtol=0.0,
             atol=1e-14,
         )
+
+    def test_direct_batch_rejects_a_short_velocity_generator(self, tmp_path):
+        # surplus blank separator lines inflate the counted frame number,
+        # so the generator fills fewer rows than the batch buffer holds;
+        # the unfilled rows must never reach the kernels
+        _require_cython()
+
+        filename = tmp_path / "blank-separated.vel"
+        lines = []
+
+        for frame_index in range(6):
+            lines.extend((
+                "2 10.0 11.0 12.0",
+                "",
+                f"O {0.1 + 0.1 * frame_index} 0.2 {0.3 * frame_index}",
+                f"O {1.0 + 0.05 * frame_index} 2.0 3.0",
+                # four surplus blank lines per frame, so that the
+                # counted line number stays a multiple of n_atoms + 2
+                "",
+                "",
+                "",
+                "",
+            ))
+
+        filename.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        vacf = VACF(
+            TrajectoryReader(
+                str(filename),
+                traj_format=TrajectoryFormat.VEL,
+            ),
+            window_size=3,
+            time_step=0.5,
+            gap=1,
+        )
+
+        assert vacf.n_frames == 12
+
+        with pytest.raises(VACFError) as exception:
+            vacf.run()
+
+        assert "yielded 6 frame(s), but 12 frame(s)" in str(exception.value)
 
     def test_active_kernels_are_a_known_implementation(self):
         # the vacf modules must have wired up either the Cython kernel

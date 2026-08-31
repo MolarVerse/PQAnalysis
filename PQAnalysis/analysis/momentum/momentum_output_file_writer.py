@@ -74,6 +74,7 @@ class MomentumDataWriter(AnalysisDataWriter):
             print(self.header, file=file)
 
             for frame_index, norm in enumerate(data, start=1):
-                print(f"{frame_index}  {norm:.12e}", file=file)
+                # Seventeen significant digits round-trip every float64.
+                print(f"{frame_index}  {norm:.16e}", file=file)
 
         self.write_table(table, write_native)

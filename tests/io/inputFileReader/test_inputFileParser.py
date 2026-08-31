@@ -120,6 +120,34 @@ class TestInputFileParser:
             "6"
         )
 
+    def test_parse_pq_paths_and_unbracketed_lists(self, tmp_path):
+        input_file = tmp_path / "run-01.in"
+        input_file.write_text(
+            "jobtype = qm-md;\n"
+            "qm_script_full_path = /path/to/script;\n"
+            "inner_region_center = 0,3,6,9;\n"
+            "start_file = md-00.rst;\n"
+            "file_prefix = md-01;\n",
+            encoding="utf-8"
+        )
+
+        input_dictionary = InputFileParser(str(input_file), "pq").parse()
+
+        assert input_dictionary["qm_script_full_path"] == (
+            "/path/to/script", "str", "2"
+        )
+        assert input_dictionary["inner_region_center"] == (
+            [0, 3, 6, 9], "list(int)", "3"
+        )
+
+    def test_parse_word_with_slashes(self, tmp_path):
+        input_file = tmp_path / "input.in"
+        input_file.write_text("script = /path/to/script\n", encoding="utf-8")
+
+        input_dictionary = InputFileParser(str(input_file)).parse()
+
+        assert input_dictionary["script"] == ("/path/to/script", "str", "1")
+
     def test_parse_qmcfc_latin1_comments(self, tmp_path):
         input_file = tmp_path / "qmcfc.in"
         input_file.write_bytes(b"# force constant in A\xb2*kcal/mol\njobtype = mm-md;\n")

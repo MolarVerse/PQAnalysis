@@ -11,9 +11,8 @@ trajectory frame: for every reference atom the distances to all
 target atoms (excluding the reference atom itself) are computed and
 scattered into the bins ``floor((distance - r_min) / delta_r)``.
 
-The numeric semantics replicate the original numpy hot loop bit for
-bit: the pair displacements are computed in float32 (the dtype of
-the raw frame values) and widened to float64, the minimum image
+The general numeric semantics replicate the numpy hot loop bit for
+bit at the precision of the raw frame values. The minimum image
 convention uses the exact op order of
 :py:meth:`PQAnalysis.core.cell.cell.Cell.image` (an orthorhombic
 box-length branch with round-half-even ``rint`` matching
@@ -32,6 +31,10 @@ operations.
 
 A pure Python/numpy fallback with the identical signature lives in
 :py:mod:`PQAnalysis.analysis.rdf._rdf_kernel_py`.
+
+The separate :func:`legacy_rdf_frame_histogram` kernel preserves the
+double-precision operation order, C99 rounding and per-frame cutoff of
+the legacy ``thh_tools/RDF`` implementation.
 """
 
 import numpy as np
@@ -40,6 +43,15 @@ cimport numpy as np
 
 from libc.float cimport DBL_MAX
 from libc.math cimport fabs, floor, fmod, rint, sqrt
+
+
+cdef extern from "<math.h>":
+    double c_round "round"(double) noexcept nogil
+
+
+ctypedef fused position_t:
+    np.float32_t
+    np.float64_t
 
 
 cdef inline double _floor_divide(double a, double b) noexcept nogil:
@@ -69,7 +81,7 @@ cdef inline double _floor_divide(double a, double b) noexcept nogil:
 
 
 def rdf_frame_histogram(
-    const np.float32_t[:, ::1] values,
+    const position_t[:, ::1] values,
     const np.int64_t[::1] reference_indices,
     const np.int64_t[::1] target_indices,
     const np.float64_t[::1] box_lengths,
@@ -93,7 +105,7 @@ def rdf_frame_histogram(
 
     Parameters
     ----------
-    values : np.float32 array of shape (n_atoms, 3), C-contiguous
+    values : np.float32 | np.float64 array of shape (n_atoms, 3), C-contiguous
         The raw frame values (positions) of all atoms of the frame.
     reference_indices : np.int64 array of shape (n_ref,)
         The indices of the reference atoms.
@@ -126,8 +138,8 @@ def rdf_frame_histogram(
     cdef Py_ssize_t n_tgt = target_indices.shape[0]
     cdef Py_ssize_t i, j, row
     cdef np.int64_t ref_index
-    cdef float ref_x, ref_y, ref_z
-    cdef float delta32_x, delta32_y, delta32_z
+    cdef position_t ref_x, ref_y, ref_z
+    cdef position_t delta_x, delta_y, delta_z
     cdef double dx, dy, dz
     cdef double f0, f1, f2
     cdef double dist_sq, dist, shifted, quotient, bin_index, fraction
@@ -164,80 +176,201 @@ def rdf_frame_histogram(
     cdef double reject = (r_min + delta_r * n_bins_d) * (1.0 + 1e-9) + 1e-9
     cdef double reject_sq = reject * reject
 
-    for i in range(n_ref):
-        ref_index = reference_indices[i]
-        row = <Py_ssize_t> ref_index
-        ref_x = values[row, 0]
-        ref_y = values[row, 1]
-        ref_z = values[row, 2]
+    with nogil:
+        for i in range(n_ref):
+            ref_index = reference_indices[i]
+            row = <Py_ssize_t> ref_index
+            ref_x = values[row, 0]
+            ref_y = values[row, 1]
+            ref_z = values[row, 2]
 
-        for j in range(n_tgt):
-            if target_indices[j] == ref_index:
-                continue
+            for j in range(n_tgt):
+                if target_indices[j] == ref_index:
+                    continue
 
-            row = <Py_ssize_t> target_indices[j]
+                row = <Py_ssize_t> target_indices[j]
 
-            # float32 pair displacement (exact float32 arithmetic,
-            # as in the original loop), widened to float64
-            delta32_x = values[row, 0] - ref_x
-            delta32_y = values[row, 1] - ref_y
-            delta32_z = values[row, 2] - ref_z
+                # Pair displacement at the source-array precision,
+                # widened to float64 for imaging and distance evaluation.
+                delta_x = values[row, 0] - ref_x
+                delta_y = values[row, 1] - ref_y
+                delta_z = values[row, 2] - ref_z
 
-            dx = <double> delta32_x
-            dy = <double> delta32_y
-            dz = <double> delta32_z
+                dx = <double> delta_x
+                dy = <double> delta_y
+                dz = <double> delta_z
 
-            if is_orthorhombic:
-                # d - L * rint(d / L); for |d| <= L/2 the rounded
-                # quotient is exactly 0 and d is unchanged
-                if use_half_box_shortcut:
-                    if fabs(dx) > half_x:
+                if is_orthorhombic:
+                    # d - L * rint(d / L); for |d| <= L/2 the rounded
+                    # quotient is exactly 0 and d is unchanged
+                    if use_half_box_shortcut:
+                        if fabs(dx) > half_x:
+                            dx = dx - length_x * rint(dx / length_x)
+                        if fabs(dy) > half_y:
+                            dy = dy - length_y * rint(dy / length_y)
+                        if fabs(dz) > half_z:
+                            dz = dz - length_z * rint(dz / length_z)
+                    else:
                         dx = dx - length_x * rint(dx / length_x)
-                    if fabs(dy) > half_y:
                         dy = dy - length_y * rint(dy / length_y)
-                    if fabs(dz) > half_z:
                         dz = dz - length_z * rint(dz / length_z)
                 else:
-                    dx = dx - length_x * rint(dx / length_x)
-                    dy = dy - length_y * rint(dy / length_y)
-                    dz = dz - length_z * rint(dz / length_z)
-            else:
-                # fractional = d @ inv_box.T
-                f0 = dx * i00 + dy * i01 + dz * i02
-                f1 = dx * i10 + dy * i11 + dz * i12
-                f2 = dx * i20 + dy * i21 + dz * i22
+                    # fractional = d @ inv_box.T
+                    f0 = dx * i00 + dy * i01 + dz * i02
+                    f1 = dx * i10 + dy * i11 + dz * i12
+                    f2 = dx * i20 + dy * i21 + dz * i22
 
-                f0 -= rint(f0)
-                f1 -= rint(f1)
-                f2 -= rint(f2)
+                    f0 -= rint(f0)
+                    f1 -= rint(f1)
+                    f2 -= rint(f2)
 
-                # d = fractional @ box.T
-                dx = f0 * b00 + f1 * b01 + f2 * b02
-                dy = f0 * b10 + f1 * b11 + f2 * b12
-                dz = f0 * b20 + f1 * b21 + f2 * b22
+                    # d = fractional @ box.T
+                    dx = f0 * b00 + f1 * b01 + f2 * b02
+                    dy = f0 * b10 + f1 * b11 + f2 * b12
+                    dz = f0 * b20 + f1 * b21 + f2 * b22
 
-            dist_sq = (dx * dx + dy * dy) + dz * dz
+                dist_sq = (dx * dx + dy * dy) + dz * dz
 
-            if dist_sq > reject_sq:
+                if dist_sq > reject_sq:
+                    continue
+
+                dist = sqrt(dist_sq)
+
+                shifted = dist - r_min
+                quotient = shifted / delta_r
+                bin_index = floor(quotient)
+                fraction = quotient - bin_index
+
+                # The plain floor equals np.floor_divide away from an
+                # integer; otherwise take the exact replica.
+                if not (
+                    fraction > 1e-6
+                    and fraction < 0.999999
+                    and fabs(quotient) < 8.589934592e9
+                ):
+                    bin_index = _floor_divide(shifted, delta_r)
+
+                if bin_index >= 0.0 and bin_index < n_bins_d:
+                    hist[<Py_ssize_t> bin_index] += 1
+
+
+cdef inline void _legacy_rdf_accumulate(
+    const np.float64_t[:, ::1] values,
+    const np.int64_t[::1] reference_indices,
+    const np.int64_t[::1] target_indices,
+    const np.float64_t[::1] box_lengths,
+    double delta_r,
+    long long n_bins,
+    np.int64_t[::1] hist,
+) noexcept nogil:
+    cdef Py_ssize_t n_ref = reference_indices.shape[0]
+    cdef Py_ssize_t n_tgt = target_indices.shape[0]
+    cdef Py_ssize_t i, j, ref_row, target_row, bin_index
+    cdef np.int64_t ref_index, target_index
+    cdef double ref_x, ref_y, ref_z
+    cdef double target_x, target_y, target_z
+    cdef double image_x, image_y, image_z
+    cdef double dx, dy, dz, distance
+    cdef double length_x = box_lengths[0]
+    cdef double length_y = box_lengths[1]
+    cdef double length_z = box_lengths[2]
+    cdef double cutoff = length_x
+
+    if length_y < cutoff:
+        cutoff = length_y
+    if length_z < cutoff:
+        cutoff = length_z
+
+    cutoff = cutoff / 2.0
+
+    for i in range(n_ref):
+        ref_index = reference_indices[i]
+        ref_row = <Py_ssize_t> ref_index
+        ref_x = values[ref_row, 0]
+        ref_y = values[ref_row, 1]
+        ref_z = values[ref_row, 2]
+
+        for j in range(n_tgt):
+            target_index = target_indices[j]
+
+            if target_index == ref_index:
                 continue
 
-            dist = sqrt(dist_sq)
+            target_row = <Py_ssize_t> target_index
+            target_x = values[target_row, 0]
+            target_y = values[target_row, 1]
+            target_z = values[target_row, 2]
 
-            shifted = dist - r_min
-            quotient = shifted / delta_r
-            bin_index = floor(quotient)
-            fraction = quotient - bin_index
+            image_x = target_x + length_x * c_round(
+                (ref_x - target_x) / length_x
+            )
+            image_y = target_y + length_y * c_round(
+                (ref_y - target_y) / length_y
+            )
+            image_z = target_z + length_z * c_round(
+                (ref_z - target_z) / length_z
+            )
 
-            # the plain floor of the quotient equals np.floor_divide
-            # whenever the quotient is safely away from an integer
-            # (|quotient| < 2^33 bounds the rounding error of the
-            # division by 2^-20); otherwise take the exact replica
-            if not (
-                fraction > 1e-6
-                and fraction < 0.999999
-                and fabs(quotient) < 8.589934592e9
-            ):
-                bin_index = _floor_divide(shifted, delta_r)
+            dx = ref_x - image_x
+            dy = ref_y - image_y
+            dz = ref_z - image_z
+            distance = sqrt((dx * dx + dy * dy) + dz * dz)
 
-            if bin_index >= 0.0 and bin_index < n_bins_d:
-                hist[<Py_ssize_t> bin_index] += 1
+            if distance <= cutoff:
+                bin_index = <Py_ssize_t> floor(distance / delta_r)
+
+                if bin_index >= 0 and bin_index < n_bins:
+                    hist[bin_index] += 1
+
+
+def legacy_rdf_frame_histogram(
+    const np.float64_t[:, ::1] values,
+    const np.int64_t[::1] reference_indices,
+    const np.int64_t[::1] target_indices,
+    const np.float64_t[::1] box_lengths,
+    double delta_r,
+    long long n_bins,
+    np.int64_t[::1] hist,
+):
+    """Accumulates one frame with the legacy RDF operation order."""
+    with nogil:
+        _legacy_rdf_accumulate(
+            values,
+            reference_indices,
+            target_indices,
+            box_lengths,
+            delta_r,
+            n_bins,
+            hist,
+        )
+
+
+def legacy_rdf_batch_histogram(
+    const np.float64_t[:, :, ::1] values,
+    const np.int64_t[::1] reference_indices,
+    const np.int64_t[::1] target_indices,
+    const np.float64_t[:, ::1] box_lengths,
+    double delta_r,
+    long long n_bins,
+    np.int64_t[::1] hist,
+):
+    """Accumulates a frame batch with the legacy RDF operation order."""
+    cdef Py_ssize_t n_frames = values.shape[0]
+    cdef Py_ssize_t frame_index
+
+    if box_lengths.shape[0] != n_frames:
+        raise ValueError(
+            "The number of RDF boxes must match the number of frames."
+        )
+
+    with nogil:
+        for frame_index in range(n_frames):
+            _legacy_rdf_accumulate(
+                values[frame_index],
+                reference_indices,
+                target_indices,
+                box_lengths[frame_index],
+                delta_r,
+                n_bins,
+                hist,
+            )

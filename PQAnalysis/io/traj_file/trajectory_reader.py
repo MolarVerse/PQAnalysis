@@ -5,7 +5,7 @@ A module containing classes for reading a trajectory from a file.
 # 3rd party modules
 import logging
 from beartype.typing import List, Generator
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # Local absolute imports
 from PQAnalysis.config import with_progress_bar
@@ -118,7 +118,8 @@ class TrajectoryReader(BaseReader):
         """
 
         self.with_progress_bar = with_progress_bar
-        self.topology = topology
+        if topology is not None:
+            self.topology = topology
 
         traj = Trajectory()
         for frame in self.frame_generator():

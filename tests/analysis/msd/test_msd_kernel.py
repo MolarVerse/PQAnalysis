@@ -18,8 +18,11 @@ import pytest
 
 from PQAnalysis.analysis.msd import MSD
 from PQAnalysis.analysis.msd import _msd_kernel_py
+from PQAnalysis.analysis.msd.exceptions import MSDError
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Cell
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import RawTrajectoryReader, TrajectoryReader
+from PQAnalysis.traj import Trajectory
 
 from .. import pytestmark  # pylint: disable=unused-import
 
@@ -289,15 +292,56 @@ class TestMSDFastPathKernels:
 
         return positions
 
+    @staticmethod
+    def _write_fallback_trajectory(path, cell_mode, n_frames=60, n_atoms=8):
+        names = ["O" if i % 2 == 0 else "H" for i in range(n_atoms)]
+
+        with open(path, "w", encoding="utf-8") as file:
+            for frame_index in range(n_frames):
+                if cell_mode == "vacuum":
+                    file.write(f"{n_atoms}\n\n")
+                elif cell_mode == "triclinic":
+                    file.write(
+                        f"{n_atoms} 10.0 12.0 14.0 80.0 95.0 103.0\n\n"
+                    )
+                else:
+                    box = 10.0 if frame_index < n_frames // 2 else 11.0
+                    file.write(f"{n_atoms} {box} 12.0 14.0\n\n")
+
+                for atom_index, name in enumerate(names):
+                    displacement = 0.73 * frame_index + 0.1 * atom_index
+                    if cell_mode == "changing-box":
+                        x = displacement % box
+                        y = (1.1 * displacement + 0.2) % 12.0
+                        z = (0.8 * displacement + 0.4) % 14.0
+                    else:
+                        x = displacement
+                        y = displacement + 0.2
+                        z = displacement + 0.4
+
+                    file.write(f"{name} {x:.12f} {y:.12f} {z:.12f}\n")
+
+    @staticmethod
+    def _read_float64_trajectory(filename):
+        """Builds an AtomicSystem trajectory from direct float64 parsing."""
+        reader = RawTrajectoryReader(filename, dtype="float64")
+        topology = reader.read_first_frame().topology
+
+        return Trajectory([
+            AtomicSystem(topology=topology, pos=values, cell=cell)
+            for values, cell in reader.raw_frame_generator()
+        ])
+
     @pytest.mark.parametrize("kernel", KERNELS)
-    def test_fast_path_matches_in_memory_path(
+    def test_fast_path_matches_float64_in_memory_path(
         self,
         kernel,
         tmp_path,
         monkeypatch,
     ):
-        # the fast path (with either kernel implementation) must
-        # reproduce the results of the original in-memory hot loop
+        # The fast path (with either kernel implementation) must
+        # reproduce the in-memory hot loop when both consume the same
+        # directly parsed float64 text values.
         filename = str(tmp_path / "traj.xyz")
         self._write_trajectory(filename)
 
@@ -310,7 +354,14 @@ class TestMSDFastPathKernels:
 
         result_fast = np.column_stack(msd_fast.run()[1:])
 
-        traj = TrajectoryReader(filename).read()
+        expected = (
+            msd_fast._msd_accumulator
+            / float(len(msd_fast.target_indices))
+            / float(msd_fast.total_origins)
+        )
+        assert np.array_equal(result_fast[:, :3], expected)
+
+        traj = self._read_float64_trajectory(filename)
         msd_reference = MSD(traj, "O", window=20, gap=5)
 
         assert msd_reference._raw_reader is None  # pylint: disable=protected-access
@@ -320,6 +371,223 @@ class TestMSDFastPathKernels:
         assert np.allclose(
             result_fast, result_reference, rtol=0.0, atol=1e-12
         )
+
+    @pytest.mark.parametrize("cell_mode", ["vacuum", "triclinic"])
+    def test_exact_batch_falls_back_for_unsupported_cells(
+        self,
+        cell_mode,
+        tmp_path,
+        monkeypatch,
+    ):
+        filename = str(tmp_path / f"{cell_mode}.xyz")
+        self._write_fallback_trajectory(filename, cell_mode)
+
+        msd_fast = MSD(
+            TrajectoryReader(filename),
+            "O",
+            window=20,
+            gap=5,
+        )
+
+        assert msd_fast._calculate_msd_raw_batch() is False
+
+        monkeypatch.setattr(
+            msd_fast._raw_reader,
+            "try_read_all_frames",
+            lambda **_kwargs: None,
+        )
+
+        assert msd_fast._calculate_msd_raw_batch() is False
+
+        result_fast = np.column_stack(msd_fast.run()[1:])
+        result_reference = np.column_stack(
+            MSD(
+                self._read_float64_trajectory(filename),
+                "O",
+                window=20,
+                gap=5,
+            ).run()[1:]
+        )
+
+        assert np.allclose(
+            result_fast,
+            result_reference,
+            rtol=0.0,
+            atol=1e-12,
+        )
+
+    def test_exact_batch_supports_changing_orthorhombic_cells(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = str(tmp_path / "changing-box.xyz")
+        self._write_fallback_trajectory(filename, "changing-box")
+
+        msd_batch = MSD(
+            TrajectoryReader(filename),
+            "O",
+            window=20,
+            gap=5,
+        )
+        result_batch = np.column_stack(msd_batch.run()[1:])
+
+        msd_stream = MSD(
+            TrajectoryReader(filename),
+            "O",
+            window=20,
+            gap=5,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run()[1:])
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
+
+    def test_exact_window_batch_handles_empty_files_and_inherited_cell(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        first = tmp_path / "first.xyz"
+        empty = tmp_path / "empty.xyz"
+        inherited = tmp_path / "inherited.xyz"
+
+        first.write_text(
+            "1 10.0 11.0 12.0\n\nO 1.0 2.0 3.0\n"
+            "1 10.0 11.0 12.0\n\nO 2.0 2.0 3.0\n",
+            encoding="utf-8",
+        )
+        empty.write_text("", encoding="utf-8")
+        inherited.write_text(
+            "1\n\nO 3.0 2.0 3.0\n",
+            encoding="utf-8",
+        )
+        filenames = [
+            str(empty),
+            str(first),
+            str(empty),
+            str(inherited),
+            str(empty),
+        ]
+
+        msd_batch = MSD(
+            TrajectoryReader(filenames),
+            "O",
+            window=3,
+            gap=1,
+        )
+        result_batch = np.column_stack(msd_batch.run())
+
+        msd_stream = MSD(
+            TrajectoryReader(filenames),
+            "O",
+            window=3,
+            gap=1,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run())
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
+        assert np.array_equal(result_batch[-1, 1:], np.zeros(4))
+
+    def test_exact_batch_matches_streaming_at_half_box_ties(
+        self,
+        tmp_path,
+        monkeypatch,
+    ):
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = tmp_path / "half-box.xyz"
+        lines = []
+
+        for frame_index in range(9):
+            box_x = 10.0 if frame_index % 2 == 0 else 12.0
+            position_x = 0.0 if frame_index % 2 == 0 else box_x / 2.0
+            lines.extend((
+                f"1 {box_x} 11.0 13.0",
+                "",
+                f"O {position_x} 0.0 0.0",
+            ))
+
+        filename.write_text("\n".join(lines), encoding="utf-8")
+
+        msd_batch = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=4,
+            gap=2,
+        )
+        result_batch = np.column_stack(msd_batch.run())
+
+        msd_stream = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=4,
+            gap=2,
+        )
+        monkeypatch.setattr(msd_stream, "_direct_batch_max_bytes", 0)
+        result_stream = np.column_stack(msd_stream.run())
+
+        assert np.array_equal(
+            msd_batch._msd_accumulator,
+            msd_stream._msd_accumulator,
+        )
+        assert np.array_equal(result_batch, result_stream)
+
+    def test_exact_batch_rejects_a_short_frame_generator(self, tmp_path):
+        # surplus blank separator lines inflate the counted frame number,
+        # so the generator fills fewer rows than the batch buffers hold;
+        # the unfilled rows must never reach the kernels
+        if _msd_kernel is None:
+            pytest.skip("Cython _msd_kernel extension not built")
+
+        filename = tmp_path / "blank-separated.xyz"
+        lines = []
+
+        for frame_index in range(6):
+            lines.extend((
+                "2 10.0 11.0 12.0",
+                "",
+                f"O {0.1 * frame_index} {0.2 * frame_index} 0.0",
+                f"O {1.0 + 0.05 * frame_index} 2.0 3.0",
+                # four surplus blank lines per frame, so that the
+                # counted line number stays a multiple of n_atoms + 2
+                "",
+                "",
+                "",
+                "",
+            ))
+
+        filename.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+        msd = MSD(
+            TrajectoryReader(str(filename)),
+            "all",
+            window=3,
+            gap=1,
+        )
+
+        assert msd.n_frames == 12
+
+        with pytest.raises(MSDError) as exception:
+            msd.run()
+
+        assert "yielded 6 frame(s), but 12 frame(s)" in str(exception.value)
 
     def test_active_kernel_is_a_known_implementation(self):
         # the msd module must have wired up either the Cython kernel

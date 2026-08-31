@@ -3,7 +3,7 @@ A module containing different formats related to the io subpackage.
 """
 import logging
 
-from beartype.typing import Any, List
+from typing import Any, List
 
 from PQAnalysis.formats import BaseEnumFormat
 from PQAnalysis.utils.custom_logging import setup_logger

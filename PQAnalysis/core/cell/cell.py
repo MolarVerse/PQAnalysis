@@ -2,6 +2,7 @@
 A module containing the Cell class.
 """
 
+import logging
 import sys
 import warnings
 
@@ -14,9 +15,12 @@ from beartype.vale import Is
 
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.types import Np3x3NumberArray, Np2DNumberArray, NpnDNumberArray, PositiveReal, Bool
+from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.utils.math import allclose_vectorized
+from PQAnalysis import __package_name__
 
 from ._standard_properties import _StandardPropertiesMixin
+from ..exceptions import CellError
 
 
 
@@ -25,6 +29,9 @@ class Cell(_StandardPropertiesMixin):
     """
     Class for storing unit cell parameters.
     """
+
+    logger = logging.getLogger(__package_name__).getChild(__qualname__)
+    logger = setup_logger(logger)
 
     @runtime_type_checking
     def __init__(
@@ -72,7 +79,30 @@ class Cell(_StandardPropertiesMixin):
         -------
         box matrix: Np3x3NumberArray
             The box matrix.
+
+        Raises
+        ------
+        CellError
+            If a box length is not positive, a box angle is not
+            within the interval (0, 180) or the box angles do not
+            define a valid unit cell.
         """
+        if not np.all(np.greater(self.box_lengths, 0)):
+            self.logger.error(
+                f"Box lengths must be positive, but got {self.box_lengths}.",
+                exception=CellError
+            )
+
+        if not (
+            np.all(np.greater(self.box_angles, 0)) and
+            np.all(np.less(self.box_angles, 180))
+        ):
+            self.logger.error(
+                "Box angles must be within the interval (0, 180) degrees, "
+                f"but got {self.box_angles}.",
+                exception=CellError
+            )
+
         matrix = np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]])
 
         alpha, beta, gamma = np.deg2rad(self.box_angles)
@@ -81,14 +111,23 @@ class Cell(_StandardPropertiesMixin):
         sin_beta = np.sin(beta)
         x, y, z = self.box_lengths
 
+        radicand = (
+            sin_beta**2 - (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2
+        )
+
+        if not radicand > 0:
+            self.logger.error(
+                f"Box angles {self.box_angles} do not define a valid "
+                "unit cell.",
+                exception=CellError
+            )
+
         matrix[0][0] = x
         matrix[0][1] = y * cos_gamma
         matrix[0][2] = z * cos_beta
         matrix[1][1] = y * sin_gamma
         matrix[1][2] = z * (cos_alpha - cos_beta * cos_gamma) / sin_gamma
-        matrix[2][2] = z * np.sqrt(
-            sin_beta**2 - (cos_alpha - cos_beta * cos_gamma)**2 / sin_gamma**2
-        )
+        matrix[2][2] = z * np.sqrt(radicand)
 
         return matrix
 
