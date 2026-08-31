@@ -22,15 +22,30 @@ from ...conftest import assert_logging_with_exception
 
 momentum_module = sys.modules[Momentum.__module__]
 
-# hand-computed |P| references for tests/data/momentum/two_frames.vel
-# (velocities are exactly representable in float32, masses
-# O = 15.9994 amu and H = 1.00794 amu):
+# Legacy equipartition.jl |P| references for
+# tests/data/momentum/two_frames.vel. Its binary-exact velocity values
+# use masses O = 15.9994 amu and H = 1.00794 amu:
 # frame 1: P = 15.9994*(0.5, -0.25, 1.0) + 1.00794*(2.0, 1.5, -0.5)
 #              + 1.00794*(-1.0, 0.25, 0.75)
 # frame 2: P = 15.9994*(1.0, 0.0, 0.0) + 1.00794*(0.0, 2.0, 0.0)
 #              + 1.00794*(0.0, 0.0, 4.0)
-TWO_FRAMES_NORMS = [18.714822669473786, 16.622264022448928]
+TWO_FRAMES_NORMS = np.array([
+    18.714822669473786,
+    16.622264022448928,
+])
+TWO_FRAMES_SCALED_NORMS = np.array([
+    1.8714822669473787e-14,
+    1.662226402244893e-14,
+])
 TWO_FRAMES_NORMS_OXYGEN = [18.329615393469116, 15.9994]
+
+# Original equipartition.jl output for the first three frames of
+# thh_tools/thh_momentum/gas_md_01.vel.
+GAS3_LEGACY_NORMS = np.array([
+    2.6407665688752317e-16,
+    3.625033674412557e-16,
+    2.827919968396604e-16,
+])
 
 # masses used by the independent gas3.vel reference parser below
 # (identical to the PQAnalysis element data for c and o)
@@ -44,10 +59,9 @@ def _independent_gas3_norms(filename, scale=1e-15):
     pipeline.
 
     This minimal parser only shares the documented number semantics
-    with the pipeline: every velocity component is parsed from its
-    token in single precision (float32 quantization) and the
-    mass-weighted sum is accumulated in float64. Any behavioral
-    change in TrajectoryReader parsing or in the Momentum
+    with the legacy tool: every velocity component is parsed from its
+    token as float64 and the mass-weighted sum is accumulated in atom
+    order. Any behavioral change in trajectory parsing or momentum
     accumulation therefore makes the pipeline diverge from this
     reference.
     """
@@ -71,10 +85,8 @@ def _independent_gas3_norms(filename, scale=1e-15):
             if name == "x":  # QMCFC dummy atom is stripped
                 continue
 
-            velocity = np.array(
-                tokens[1:4], dtype=np.float32
-            ).astype(np.float64)
-            momentum += GAS3_MASSES[name] * velocity
+            velocity = np.array(tokens[1:4], dtype=np.float64)
+            momentum = momentum + GAS3_MASSES[name] * velocity
 
         norms.append(float(np.linalg.norm(momentum)) * scale)
 
@@ -98,43 +110,30 @@ class TestMomentum:
         reader = TrajectoryReader("two_frames.vel", md_format="qmcfc")
         momentum_norms = Momentum(reader).run()
 
-        assert np.allclose(
-            momentum_norms,
-            np.array(TWO_FRAMES_NORMS) * 1e-15,
-            rtol=1e-12,
-        )
+        assert np.array_equal(momentum_norms, TWO_FRAMES_SCALED_NORMS)
 
     @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
-    def test_gas_noise_floor_reference(self, test_with_data_dir):  # pylint: disable=unused-argument
+    def test_gas_float64_residual_reference(self, test_with_data_dir):  # pylint: disable=unused-argument
         """
         The momentum norms of the first three frames of the legacy
         equipartition.jl gas phase test trajectory (gas3.vel, the
         momentum-conserving 150-atom QMCFC trajectory gas_md_01.vel)
-        match an independent single-precision reference computation.
+        match the original Julia output bit for bit.
 
         The total momentum of this data is zero up to floating point
         noise (single m_i * v_i terms are of the order 5e13
-        amu*Angstrom/s), so the norm is pure summation noise of the
-        parsing precision: PQAnalysis parses the velocities as
-        float32 and reports norms of the order 5e-8 (scaled), while
-        the legacy Julia tool parses as float64 and prints
-        2.6407665688752317e-16, 3.625033674412557e-16 and
-        2.827919968396604e-16 for these frames. The expected values
-        are recomputed by _independent_gas3_norms, a minimal parser
-        written independently of the TrajectoryReader/Momentum
-        pipeline, so this test fails if either changes behavior.
+        amu*Angstrom/s). The float64 residual therefore detects any
+        parser or accumulation-order change. The expected values are
+        also recomputed by _independent_gas3_norms, a minimal parser
+        independent of the TrajectoryReader/Momentum pipeline.
         """
         expected_norms = _independent_gas3_norms("gas3.vel")
 
         reader = TrajectoryReader("gas3.vel", md_format="qmcfc")
         momentum_norms = Momentum(reader).run()
 
-        # momentum conservation: the norms sit at the float32
-        # parsing noise floor, orders of magnitude below a single
-        # scaled m_i * |v_i| term (~5e-2 after the 1e-15 scaling)
-        assert np.all(momentum_norms < 1e-6)
-
-        assert np.allclose(momentum_norms, expected_norms, rtol=1e-6)
+        assert np.array_equal(expected_norms, GAS3_LEGACY_NORMS)
+        assert np.array_equal(momentum_norms, GAS3_LEGACY_NORMS)
 
     @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
     def test_selection(self, test_with_data_dir):  # pylint: disable=unused-argument
@@ -250,17 +249,18 @@ class TestMomentum:
         )
 
     @pytest.mark.parametrize("example_dir", ["momentum"], indirect=False)
-    def test_raw_fast_path_matches_in_memory_path(self, test_with_data_dir):  # pylint: disable=unused-argument
+    def test_raw_fast_path_retains_float64_input(self, test_with_data_dir):  # pylint: disable=unused-argument
         """
-        A velocity TrajectoryReader dispatches to the raw fast-path
-        stream, which produces bit-identical momentum norms compared
-        to the in-memory AtomicSystem based stream.
+        The file-backed path retains float64 tokens and reaches the
+        legacy residual, while the general in-memory path preserves
+        the float32 values supplied by TrajectoryReader.read().
         """
         momentum = Momentum(
             TrajectoryReader("gas3.vel", md_format="qmcfc")
         )
 
         assert momentum._raw_reader is not None
+        assert momentum._raw_reader.dtype == "float64"
 
         raw_norms = momentum.run()
 
@@ -271,7 +271,8 @@ class TestMomentum:
 
         in_memory_norms = in_memory.run()
 
-        assert np.array_equal(raw_norms, in_memory_norms)
+        assert np.array_equal(raw_norms, GAS3_LEGACY_NORMS)
+        assert not np.array_equal(raw_norms, in_memory_norms)
 
     def test_progress_bar_binds_config_at_call_time(self, monkeypatch):
         """

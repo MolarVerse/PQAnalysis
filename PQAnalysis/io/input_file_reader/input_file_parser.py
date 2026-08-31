@@ -497,6 +497,26 @@ class ComposedDatatypesTransformer(Transformer):
         _list = [item[0] for item in items]
         return list(_list), f"list({most_general_type})", str(items[0][2])
 
+    def bare_array(self, items) -> Tuple[List[Any], str, str]:
+        """
+        Method to transform unbracketed comma-separated array values.
+
+        The items are transformed exactly like bracketed arrays.
+
+        Parameters
+        ----------
+        items : List[Any]
+            items containing the array value
+
+        Returns
+        -------
+        Tuple[List[Any], str, str]
+            tuple containing the array value, the string
+            "list({most_general_type})", and the line where
+            the token was defined.
+        """
+        return self.array(items)
+
     def range(self, items) -> Tuple[Range, str, str]:
         """
         Method to transform range values

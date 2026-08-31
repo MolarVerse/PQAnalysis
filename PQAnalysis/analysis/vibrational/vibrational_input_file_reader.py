@@ -147,7 +147,20 @@ class VibrationalAnalysisInputFileReader(Reader):
     def hessian_sign(self) -> str:
         """
         str: The Hessian sign convention.
+
+        The key accepts the names ``auto``, ``positive`` and ``negative``
+        as well as the numbers ``1`` and ``-1``. A number is returned as
+        its string form, so that the value can be validated and passed on
+        like any other name.
         """
+        try:
+            data = self.dictionary[self.hessian_sign_key]
+        except PQKeyError:
+            return "auto"
+
+        if data[1] == "int":
+            return str(data[0])
+
         hessian_sign = _parse_string(self.dictionary, self.hessian_sign_key)
         return "auto" if hessian_sign is None else hessian_sign
 

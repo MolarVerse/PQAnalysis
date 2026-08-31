@@ -50,6 +50,17 @@ class TestElement:
         assert element.atomic_number == 2
         assert np.isclose(element.mass, 4.002602)
 
+    def test__init__with_shared_atomic_number(self):
+        # 'h', 'd', 't' and 'dum' all share atomic number 1 - the canonical
+        # symbol has to win when the element is built from the number
+        element = Element(1)
+        assert element.symbol == 'h'
+        assert element == Element('H')
+        assert np.isclose(element.mass, 1.00794)
+
+        # 'q' and 'x' both share atomic number 999
+        assert Element(999) == Element('q')
+
     def test__eq__(self):
         element1 = Element('C')
         element2 = Element(6)

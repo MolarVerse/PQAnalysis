@@ -3,7 +3,7 @@ A module containing the base class for all Format enumerations.
 """
 
 from enum import Enum
-from beartype.typing import Any, List
+from typing import Any, List
 
 
 

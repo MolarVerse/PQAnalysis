@@ -10,6 +10,9 @@ names performing a wrapped random walk in an orthorhombic box of
 20 Angstrom over 500 frames).
 """
 
+import hashlib
+import sys
+
 import numpy as np
 import pytest
 
@@ -18,12 +21,22 @@ from PQAnalysis.io import TrajectoryReader
 
 from .. import pytestmark  # pylint: disable=unused-import
 
-#: The tolerances of the parity tests. PQAnalysis parses coordinates
-#: as float32 while the legacy tool parses them as double, so exact
-#: equality cannot be expected. The observed maximum absolute
-#: deviation is below 1e-6 for MSD values of the order of 10.
-RTOL = 1e-5
-ATOL = 5e-6
+msd_module = sys.modules[MSD.__module__]
+
+#: The raw analysis path and the legacy tool both parse coordinates as
+#: float64. The remaining tolerance is one half-unit in the last place
+#: printed by the eight-decimal legacy reference files, plus a small
+#: numerical margin.
+RTOL = 0.0
+ATOL = 5.1e-9
+
+#: SHA-256 digests of little-endian float64 component values emitted by
+#: Diffcalc compiled with -O2 and printed as C99 hexadecimal floats.
+MSD_FLOAT64_SHA256 = {
+    "O": "b0aa55a6e2967f267bd4c2a3200b8ddf71bccedd23226d783a8e386960c48f66",
+    "atom3": "bce49c957358f48c7f63f727c1752f9d1a53a499c9e4c6d1b133faa937e49f0d",
+    "O_start": "458bb4ffad296e7161e971faa5fb25becd2aadd22d682696d20bf5f8cddbf12a",
+}
 
 
 
@@ -36,6 +49,13 @@ def _run_msd(target_species, **kwargs):
     _, msd_x, msd_y, msd_z, _ = msd.run()
 
     return np.column_stack([msd_x, msd_y, msd_z])
+
+
+def _float64_sha256(values):
+    """Returns a platform-independent digest of float64 result bits."""
+    array = np.asarray(values, dtype="<f8")
+
+    return hashlib.sha256(array.tobytes(order="C")).hexdigest()
 
 
 
@@ -53,6 +73,9 @@ class TestMSDLegacyParity:
 
         assert np.allclose(result, reference[:, 1:], rtol=RTOL, atol=ATOL)
 
+        if msd_module.direct_msd_lag_range is not None:
+            assert _float64_sha256(result) == MSD_FLOAT64_SHA256["O"]
+
     @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
     def test_index_selection_matches_legacy(self, test_with_data_dir):
         # the legacy Diffcalc target_atoms indices are 0-based,
@@ -62,6 +85,9 @@ class TestMSDLegacyParity:
         result = _run_msd(np.array([3]))
 
         assert np.allclose(result, reference[:, 1:], rtol=RTOL, atol=ATOL)
+
+        if msd_module.direct_msd_lag_range is not None:
+            assert _float64_sha256(result) == MSD_FLOAT64_SHA256["atom3"]
 
     @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
     def test_n_start_matches_legacy(self, test_with_data_dir):
@@ -73,3 +99,22 @@ class TestMSDLegacyParity:
         result = _run_msd("O", n_start=155)
 
         assert np.allclose(result, reference[:, 1:], rtol=RTOL, atol=ATOL)
+
+        if msd_module.direct_msd_lag_range is not None:
+            assert _float64_sha256(result) == MSD_FLOAT64_SHA256["O_start"]
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_exact_streaming_full_precision(
+        self,
+        test_with_data_dir,
+        monkeypatch,
+    ):
+        monkeypatch.setattr(MSD, "_direct_batch_max_bytes", 0)
+
+        result = _run_msd("O")
+        reference = np.loadtxt("msd_ref_O.dat")
+
+        assert np.allclose(result, reference[:, 1:], rtol=RTOL, atol=ATOL)
+
+        if msd_module.legacy_msd_frame_update is not None:
+            assert _float64_sha256(result) == MSD_FLOAT64_SHA256["O"]

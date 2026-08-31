@@ -93,5 +93,6 @@ class RawChargeTrajectoryReader(RawTrajectoryReader):
 
         self.traj_format = TrajectoryFormat.CHARGE
         self.md_format = MDEngineFormat(md_format)
+        self._slab_mode = self._SLAB_MODE
 
         self._cell_cache = {}

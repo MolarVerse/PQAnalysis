@@ -22,6 +22,21 @@ def test_traj2qmcfc(test_with_data_dir):
 
 
 @pytest.mark.parametrize("example_dir", ["traj2qmcfc"], indirect=False)
+def test_command_line_single_file(test_with_data_dir, monkeypatch):
+    monkeypatch.setattr(
+        "sys.argv",
+        [
+            "traj2qmcfc",
+            "acof_triclinic.xyz",
+            "-o",
+            "single.qmcfc.xyz",
+        ],
+    )
+
+    main()
+
+
+@pytest.mark.parametrize("example_dir", ["traj2qmcfc"], indirect=False)
 def test_main(test_with_data_dir):
     main_traj2qmcfc()
 
