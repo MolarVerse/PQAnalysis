@@ -6,6 +6,52 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.6.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.6.0) - 2026-08-31
+
+<small>[Compare with v1.5.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.5.0...v1.6.0)</small>
+
+### Docs
+
+- document analysis performance validation ([f3fee7c](https://github.com/MolarVerse/PQAnalysis/commit/f3fee7ca23e7645e8b3290a1faacb4ad4ce37686) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- parse paths and unbracketed lists in PQ input files ([3d9a1ac](https://github.com/MolarVerse/PQAnalysis/commit/3d9a1acdca1a8b577a7a8e7a7280ab508a16a4ae) by Josef M. Gallmetzer).
+- validate cell box lengths and angles on construction ([a6b45a1](https://github.com/MolarVerse/PQAnalysis/commit/a6b45a10e195073854e9b0b420f64a51c9f9486a) by Josef M. Gallmetzer).
+- make --progress flag match its help text ([2eefbb5](https://github.com/MolarVerse/PQAnalysis/commit/2eefbb5281a0bdc2d7763d5de4ef81b38c70300e) by Josef M. Gallmetzer).
+- parse xyz2gen --periodic values from the command line ([e346ac3](https://github.com/MolarVerse/PQAnalysis/commit/e346ac33010dfa90853fa8720f5c75b67a136c7d) by Josef M. Gallmetzer).
+- accept --n-molecules flag in add_molecules ([514ed60](https://github.com/MolarVerse/PQAnalysis/commit/514ed606ce958cb426bbcccfc7b5ff6027f60bcc) by Josef M. Gallmetzer).
+- keep constructor topology when read() gets none ([b0524e9](https://github.com/MolarVerse/PQAnalysis/commit/b0524e9779ee2fa809178c3700c8c1cefd821891) by Josef M. Gallmetzer).
+- raise logged errors independently of the logging level ([b94d2d2](https://github.com/MolarVerse/PQAnalysis/commit/b94d2d2e1b6f0c4068aa5e7a46aaa95474debce5) by Josef M. Gallmetzer).
+- accept trajectory files on the traj2qmcfc command line ([6bf8369](https://github.com/MolarVerse/PQAnalysis/commit/6bf83692430cc75f99849517df5c3007e746a62a) by Josef M. Gallmetzer).
+- read whole integer tokens in selections ([488cda6](https://github.com/MolarVerse/PQAnalysis/commit/488cda6870ce4a82475b7d05274232b37ce58491) by Josef M. Gallmetzer).
+- accept the documented numeric hessian_sign values ([7a35ebf](https://github.com/MolarVerse/PQAnalysis/commit/7a35ebf01798f40f380f58eaa85aa27078a6eaa9) by Josef M. Gallmetzer).
+- preserve lazy analysis exports ([576eb98](https://github.com/MolarVerse/PQAnalysis/commit/576eb9835df09d292508f49f17dc38e7ea98abd7) by Josef M. Gallmetzer).
+- handle empty files in MSD batches ([c5abf83](https://github.com/MolarVerse/PQAnalysis/commit/c5abf8329fe2b55617e4e0a0c7a9e648ed1c7f53) by Josef M. Gallmetzer).
+- enforce momentum batch memory cap ([b2317d0](https://github.com/MolarVerse/PQAnalysis/commit/b2317d0ed5f53c01041cc1c8c0f6f7f81dffbf55) by Josef M. Gallmetzer).
+
+### Performance Improvements
+
+- reduce RDF and MSD trajectory setup ([b67b7fc](https://github.com/MolarVerse/PQAnalysis/commit/b67b7fc47e8b7b4cebd0ee4f4a15367bf514e7b0) by Josef M. Gallmetzer).
+- reduce CLI startup overhead ([17a2bd2](https://github.com/MolarVerse/PQAnalysis/commit/17a2bd28dca2cfd2957a91ba6663ee116040f00d) by Josef M. Gallmetzer).
+- batch exact RDF frames per worker ([2065bb8](https://github.com/MolarVerse/PQAnalysis/commit/2065bb82b45323f1330c72fa58ca826af60b5ef2) by Josef M. Gallmetzer).
+- avoid repeated selection parser setup ([d2ac0c9](https://github.com/MolarVerse/PQAnalysis/commit/d2ac0c9a42afbde40b9de8b7f78e04b3125ef921) by Josef M. Gallmetzer).
+- parallelize exact RDF frame histograms ([c81b5bb](https://github.com/MolarVerse/PQAnalysis/commit/c81b5bb7bce41bda16df9150cda4f5a361395772) by Josef M. Gallmetzer).
+- batch exact MSD position loading ([645c927](https://github.com/MolarVerse/PQAnalysis/commit/645c9270b75fb7f9a2d098df17d353c8d778df1f) by Josef M. Gallmetzer).
+- batch exact VACF velocity loading ([3022e26](https://github.com/MolarVerse/PQAnalysis/commit/3022e26ab6536e7cad8bf317efc17573f760a19c) by Josef M. Gallmetzer).
+- fuse exact momentum parsing and reduction ([25063f2](https://github.com/MolarVerse/PQAnalysis/commit/25063f2f2016db8ab4f832da804f878525186986) by Josef M. Gallmetzer).
+- add bounded trajectory batch parsing ([9e1d8b2](https://github.com/MolarVerse/PQAnalysis/commit/9e1d8b22052c67856b6733279c1f52f465667ac3) by Josef M. Gallmetzer).
+- make momentum bitwise-exact with equipartition ([e8ee119](https://github.com/MolarVerse/PQAnalysis/commit/e8ee11941a98c1e5ed52996d1c890a8f1f9c51a2) by Josef M. Gallmetzer).
+- make RDF bitwise-exact with legacy RDF ([8aa924c](https://github.com/MolarVerse/PQAnalysis/commit/8aa924cbea4bcb163a18a00c81940fa579bfad58) by Josef M. Gallmetzer).
+- make MSD bitwise-exact with Diffcalc ([f78f0bd](https://github.com/MolarVerse/PQAnalysis/commit/f78f0bd7a39e3c4cc3e57012ffd01e7422e15a09) by Josef M. Gallmetzer).
+- make VACF bitwise-exact with FreqCalc ([9c1addb](https://github.com/MolarVerse/PQAnalysis/commit/9c1addbf4cec88fe9f1422bc2bc6681b322e21d9) by Josef M. Gallmetzer).
+- add direct float64 trajectory parsing ([bb4ea5f](https://github.com/MolarVerse/PQAnalysis/commit/bb4ea5fb3af96d7f390423010d9bc38eb7dc9cfb) by Josef M. Gallmetzer).
+
+### Tests
+
+- cover deferred CLI edge paths ([15aa5a2](https://github.com/MolarVerse/PQAnalysis/commit/15aa5a2e2800accd8fb7521e204cbdac4d2e57ad) by Josef M. Gallmetzer).
+- cover batched analysis fallbacks ([4477efd](https://github.com/MolarVerse/PQAnalysis/commit/4477efda54c5ac8cadf2e70864661abce977fec8) by Josef M. Gallmetzer).
+
 ## [v1.5.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.5.0) - 2026-08-07
 
 <small>[Compare with v1.4.1](https://github.com/MolarVerse/PQAnalysis/compare/v1.4.1...v1.5.0)</small>
