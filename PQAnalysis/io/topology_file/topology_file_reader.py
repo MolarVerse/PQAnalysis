@@ -9,7 +9,14 @@ import logging
 from beartype.typing import List, Tuple
 
 from PQAnalysis.io.base import BaseReader
-from PQAnalysis.topology import Bond, BondedTopology, Angle, Dihedral
+from PQAnalysis.topology import (
+    Bond,
+    BondedTopology,
+    Angle,
+    Dihedral,
+    JCoupling,
+    DistanceConstraint,
+)
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.utils.string import is_comment_line
 from PQAnalysis.type_checking import runtime_type_checking
@@ -30,6 +37,8 @@ class TopologyFileReader(BaseReader):
     - angles
     - dihedrals
     - impropers
+    - j_couplings
+    - dist_constraints
 
     For more information please visit the documentation page of PQ https://molarverse.github.io/PQ/
     """
@@ -153,6 +162,8 @@ class TopologyFileReader(BaseReader):
         angles = None
         dihedrals = None
         impropers = None
+        j_couplings = None
+        distance_constraints = None
 
         for key, value in blocks.items():
             if key == "bonds":
@@ -165,6 +176,10 @@ class TopologyFileReader(BaseReader):
                 dihedrals = self._parse_dihedrals(value)
             elif key == "impropers":
                 impropers = self._parse_impropers(value)
+            elif key == "j_couplings":
+                j_couplings = self._parse_j_couplings(value)
+            elif key == "dist_constraints":
+                distance_constraints = self._parse_distance_constraints(value)
             else:
                 self.logger.error(
                     f"Unknown block {key}", exception=TopologyFileError
@@ -175,7 +190,9 @@ class TopologyFileReader(BaseReader):
             angles=angles,
             dihedrals=dihedrals,
             impropers=impropers,
-            shake_bonds=shake_bonds
+            shake_bonds=shake_bonds,
+            j_couplings=j_couplings,
+            distance_constraints=distance_constraints
         )
 
     def _parse_bonds(self, block: List[str]) -> List[Bond]:
@@ -480,6 +497,134 @@ class TopologyFileReader(BaseReader):
             )
 
         return shake_bonds
+
+    def _parse_j_couplings(self, block: List[str]) -> List[JCoupling]:
+        """
+        Parse the j_couplings block of the topology file and
+        return a list of JCoupling objects.
+
+        One block should have the following format:
+        index1 index2 index3 index4 j_coupling_type
+        ...
+        ...
+        index1 index2 index3 index4 j_coupling_type
+
+        Parameters
+        ----------
+        block : List[str]
+            A list with the lines of the j_couplings block.
+
+        Returns
+        -------
+        List[JCoupling]
+            A list of JCoupling objects.
+
+        Raises
+        ------
+        TopologyFileError
+            If the number of columns in the block is not 5.
+        """
+        j_couplings = []
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
+
+            line, comment = self._get_data_line_comment(line)
+
+            index1 = None  # to avoid linter warning
+            index2 = None  # to avoid linter warning
+            index3 = None  # to avoid linter warning
+            index4 = None  # to avoid linter warning
+            j_coupling_type = None  # to avoid linter warning
+
+            if len(line.split()) == 5:
+                index1, index2, index3, index4, j_coupling_type = line.split()
+            else:
+                self.logger.error(
+                    "Invalid number of columns in j-coupling block. Expected 5.",
+                    exception=TopologyFileError
+                )
+
+            j_couplings.append(
+                JCoupling(
+                    index1=int(index1),
+                    index2=int(index2),
+                    index3=int(index3),
+                    index4=int(index4),
+                    j_coupling_type=int(j_coupling_type),
+                    comment=comment
+                )
+            )
+
+        return j_couplings
+
+    def _parse_distance_constraints(
+        self, block: List[str]
+    ) -> List[DistanceConstraint]:
+        """
+        Parse the dist_constraints block of the topology file and
+        return a list of DistanceConstraint objects.
+
+        One block should have the following format:
+        index1 index2 lower_distance upper_distance spring_constant dk/dt
+        ...
+        ...
+        index1 index2 lower_distance upper_distance spring_constant dk/dt
+
+        Parameters
+        ----------
+        block : List[str]
+            A list with the lines of the dist_constraints block.
+
+        Returns
+        -------
+        List[DistanceConstraint]
+            A list of DistanceConstraint objects.
+
+        Raises
+        ------
+        TopologyFileError
+            If the number of columns in the block is not 6.
+        """
+        distance_constraints = []
+        for line in block[:-1]:  # [-1] to avoid the "END" line of the block
+
+            line, comment = self._get_data_line_comment(line)
+
+            index1 = None  # to avoid linter warning
+            index2 = None  # to avoid linter warning
+            lower_distance = None  # to avoid linter warning
+            upper_distance = None  # to avoid linter warning
+            spring_constant = None  # to avoid linter warning
+            d_spring_constant_dt = None  # to avoid linter warning
+
+            if len(line.split()) == 6:
+                (
+                    index1,
+                    index2,
+                    lower_distance,
+                    upper_distance,
+                    spring_constant,
+                    d_spring_constant_dt
+                ) = line.split()
+            else:
+                self.logger.error(
+                    "Invalid number of columns in distance constraints "
+                    "block. Expected 6.",
+                    exception=TopologyFileError
+                )
+
+            distance_constraints.append(
+                DistanceConstraint(
+                    index1=int(index1),
+                    index2=int(index2),
+                    lower_distance=float(lower_distance),
+                    upper_distance=float(upper_distance),
+                    spring_constant=float(spring_constant),
+                    d_spring_constant_dt=float(d_spring_constant_dt),
+                    comment=comment
+                )
+            )
+
+        return distance_constraints
 
     @staticmethod
     def _get_data_line_comment(line: str) -> Tuple[str, str | None]:

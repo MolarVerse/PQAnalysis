@@ -20,6 +20,7 @@ from PQAnalysis.topology.bonded_topology import (
     Bond,
     Angle,
     Dihedral,
+    JCoupling,
 )
 
 from .exceptions import TopologyFileError
@@ -65,7 +66,9 @@ class TopologyFileWriter(BaseWriter):
             "angles": self._write_angle_info,
             "dihedrals": self._write_dihedral_info,
             "impropers": self._write_improper_info,
-            "shake": self._write_shake_info
+            "shake": self._write_shake_info,
+            "j_couplings": self._write_j_coupling_info,
+            "dist_constraints": self._write_distance_constraint_info
         }
 
     @runtime_type_checking
@@ -129,8 +132,8 @@ class TopologyFileWriter(BaseWriter):
         Raises
         ------
         TopologyFileError
-            If any bond, angle, dihedral or improper to be written
-            does not have a type defined.
+            If any bond, angle, dihedral, improper or j-coupling to be
+            written does not have a type defined.
         """
 
         type_names = {
@@ -138,6 +141,7 @@ class TopologyFileWriter(BaseWriter):
             "angles": "angle",
             "dihedrals": "dihedral",
             "impropers": "improper",
+            "j_couplings": "j-coupling",
         }
 
         for key in keys:
@@ -264,27 +268,77 @@ class TopologyFileWriter(BaseWriter):
                 print(line, file=file)
 
     @classmethod
-    def _check_type_given(
-        cls, types: List[Bond | Angle | Dihedral], type_name: str
+    def _write_j_coupling_info(
+        cls, bonded_topology: BondedTopology, file: File
     ) -> None:
         """
-        Check if the type is given for each bond, angle, or dihedral.
+        Determines if the bonded topology contains j-couplings and
+        writes the j-coupling information to the file.
 
         Parameters
         ----------
-        types : List[Bond | Angle | Dihedral]
-            The list of bonds, angles, or dihedrals to check.
+        bonded_topology : BondedTopology
+            The bonded topology object containing the j-coupling information.
+        file : File
+            The file object to write the j-coupling information to.
+
+        Raises
+        ------
+        TopologyFileError
+            If any j-coupling in the bonded topology does not have
+            a j-coupling type defined.
+        """
+
+        if len(bonded_topology.j_couplings) != 0:
+            lines = cls._get_j_coupling_lines(bonded_topology)
+            for line in lines:
+                print(line, file=file)
+
+    @classmethod
+    def _write_distance_constraint_info(
+        cls, bonded_topology: BondedTopology, file: File
+    ) -> None:
+        """
+        Writes the distance constraint information to the file.
+
+        Parameters
+        ----------
+        bonded_topology : BondedTopology
+            The bonded topology object containing the distance
+            constraint information.
+        file : File
+            The file object to write the distance constraint information to.
+        """
+        if len(bonded_topology.distance_constraints) != 0:
+            lines = cls._get_distance_constraint_lines(bonded_topology)
+            for line in lines:
+                print(line, file=file)
+
+    @classmethod
+    def _check_type_given(
+        cls, types: List[Bond | Angle | Dihedral | JCoupling], type_name: str
+    ) -> None:
+        """
+        Check if the type is given for each bond, angle, dihedral, or j-coupling.
+
+        Parameters
+        ----------
+        types : List[Bond | Angle | Dihedral | JCoupling]
+            The list of bonds, angles, dihedrals, or j-couplings to check.
         type_name : str
             The name of the type to check.
         """
 
-        def get_type(type_: Bond | Angle | Dihedral) -> int | None:
+        def get_type(type_: Bond | Angle | Dihedral | JCoupling) -> int | None:
 
             if isinstance(type_, Bond):
                 return type_.bond_type
 
             if isinstance(type_, Angle):
                 return type_.angle_type
+
+            if isinstance(type_, JCoupling):
+                return type_.j_coupling_type
 
             return type_.dihedral_type
 
@@ -552,6 +606,114 @@ class TopologyFileWriter(BaseWriter):
 
             if bond.comment is not None:
                 line += f" # {bond.comment}"
+
+            lines.append(line)
+
+        lines.append("END")
+
+        return lines
+
+    @staticmethod
+    def _get_j_coupling_lines(bonded_topology: BondedTopology) -> List[str]:
+        """
+        Get the j-coupling lines for the bonded topology.
+
+        The lines contain one header line, one line for each j-coupling,
+        and an end line in the following format:
+
+        J_COUPLINGS n_unique_indices1 n_unique_indices2 n_unique_indices3 n_unique_indices4
+        index1 index2 index3 index4 j_coupling_type
+        ...
+        END
+
+        Parameters
+        ----------
+        bonded_topology : BondedTopology
+            The bonded topology object containing the j-coupling information.
+
+        Returns
+        -------
+        List[str]
+            The list of j-coupling lines.
+        """
+        n_unique_indices1 = len(bonded_topology.unique_j_coupling1_indices)
+        n_unique_indices2 = len(bonded_topology.unique_j_coupling2_indices)
+        n_unique_indices3 = len(bonded_topology.unique_j_coupling3_indices)
+        n_unique_indices4 = len(bonded_topology.unique_j_coupling4_indices)
+
+        lines = []
+
+        lines.append(
+            f"J_COUPLINGS {n_unique_indices1} {n_unique_indices2} "
+            f"{n_unique_indices3} {n_unique_indices4}"
+        )
+
+        for j_coupling in bonded_topology.j_couplings:
+            line = (
+                f"{j_coupling.index1:>5d} {j_coupling.index2:>5d} "
+                f"{j_coupling.index3:>5d} {j_coupling.index4:>5d} "
+                f"{j_coupling.j_coupling_type:>5d}"
+            )
+
+            if j_coupling.comment is not None:
+                line += f" # {j_coupling.comment}"
+
+            lines.append(line)
+
+        lines.append("END")
+
+        return lines
+
+    @staticmethod
+    def _get_distance_constraint_lines(
+        bonded_topology: BondedTopology
+    ) -> List[str]:
+        """
+        Get the distance constraint lines for the bonded topology.
+
+        The lines contain one header line, one line for each distance
+        constraint, and an end line in the following format:
+
+        DIST_CONSTRAINTS n_unique_indices n_unique_target_indices
+        index1 index2 lower_distance upper_distance spring_constant dk/dt
+        ...
+        END
+
+        Parameters
+        ----------
+        bonded_topology : BondedTopology
+            The bonded topology object containing the distance
+            constraint information.
+
+        Returns
+        -------
+        List[str]
+            The list of distance constraint lines.
+        """
+        n_unique_indices = len(
+            bonded_topology.unique_distance_constraint1_indices
+        )
+        n_unique_target_indices = len(
+            bonded_topology.unique_distance_constraint2_indices
+        )
+
+        lines = []
+
+        lines.append(
+            f"DIST_CONSTRAINTS {n_unique_indices} {n_unique_target_indices}"
+        )
+
+        for constraint in bonded_topology.distance_constraints:
+            line = (
+                f"{constraint.index1:>5d} {constraint.index2:>5d} "
+                f"{constraint.lower_distance:16.12f} "
+                f"{constraint.upper_distance:16.12f} "
+                f"{constraint.spring_constant:16.12f} "
+                f"{constraint.d_spring_constant_dt:16.12f}"
+            )
+
+            if constraint.comment is not None:
+                line += f" # {constraint.comment}"
 
             lines.append(line)
 

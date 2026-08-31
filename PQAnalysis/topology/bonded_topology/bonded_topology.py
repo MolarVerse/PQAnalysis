@@ -3,7 +3,8 @@ A module containing the BondedTopology class.
 
 The BondedTopology class represents a bonded topology in a molecular
 topology and is used to store the bonds, angles, dihedrals,
-impropers, and shake bonds of a molecular system along with their properties.
+impropers, shake bonds, j-couplings, and distance constraints
+of a molecular system along with their properties.
 """
 
 import logging
@@ -19,10 +20,13 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .bond import Bond
 from .angle import Angle
 from .dihedral import Dihedral
+from .j_coupling import JCoupling
+from .distance_constraint import DistanceConstraint
 from ._topology_properties import TopologyPropertiesMixin
 
 
 
+# pylint: disable-next=too-many-instance-attributes
 class BondedTopology(TopologyPropertiesMixin):
 
     """
@@ -43,6 +47,8 @@ class BondedTopology(TopologyPropertiesMixin):
         dihedrals: List[Dihedral] | None = None,
         impropers: List[Dihedral] | None = None,
         shake_bonds: List[Bond] | None = None,
+        j_couplings: List[JCoupling] | None = None,
+        distance_constraints: List[DistanceConstraint] | None = None,
         ordering_keys: List[str] | None = None
     ) -> None:
         """
@@ -58,6 +64,10 @@ class BondedTopology(TopologyPropertiesMixin):
             A list of impropers in the bonded topology, by default None.
         shake_bonds : List[Bond], optional
             A list of shake bonds in the bonded topology, by default None.
+        j_couplings : List[JCoupling], optional
+            A list of j-couplings in the bonded topology, by default None.
+        distance_constraints : List[DistanceConstraint], optional
+            A list of distance constraints in the bonded topology, by default None.
         ordering_keys : List[str], optional
             A list of keys to order the blocks of the bonded topology,
             when initializing from a file, by default None.
@@ -68,6 +78,8 @@ class BondedTopology(TopologyPropertiesMixin):
         self.dihedrals = dihedrals or []
         self.impropers = impropers or []
         self.shake_bonds = shake_bonds or []
+        self.j_couplings = j_couplings or []
+        self.distance_constraints = distance_constraints or []
 
         self.ordering_keys = ordering_keys
 

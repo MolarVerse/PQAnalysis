@@ -11,6 +11,8 @@ if TYPE_CHECKING:  # pragma: no cover
     from .bonded_topology.bond import Bond
     from .bonded_topology.bonded_topology import BondedTopology
     from .bonded_topology.dihedral import Dihedral
+    from .bonded_topology.j_coupling import JCoupling
+    from .bonded_topology.distance_constraint import DistanceConstraint
     from .exceptions import TopologyError
     from .selection import Selection, SelectionCompatible
     from .topology import Topology
@@ -20,6 +22,8 @@ _EXPORTS = {
     "Bond": ".bonded_topology.bond",
     "Angle": ".bonded_topology.angle",
     "Dihedral": ".bonded_topology.dihedral",
+    "JCoupling": ".bonded_topology.j_coupling",
+    "DistanceConstraint": ".bonded_topology.distance_constraint",
     "BondedTopology": ".bonded_topology.bonded_topology",
     "Selection": ".selection",
     "SelectionCompatible": ".selection",

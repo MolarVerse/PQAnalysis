@@ -10,6 +10,8 @@ from PQAnalysis.topology.bonded_topology import (
     Bond,
     Angle,
     Dihedral,
+    JCoupling,
+    DistanceConstraint,
 )
 
 from . import pytestmark  # pylint: disable=unused-import
@@ -69,6 +71,22 @@ class TestTopologyFileWriter:
             "all dihedrals must have a dihedral type defined."
         )
 
+        j_couplings = [
+            JCoupling(index1=1, index2=2, index3=3, index4=4,
+                      j_coupling_type=1)
+        ]
+
+        TopologyFileWriter._check_type_given(j_couplings, "j-coupling")
+
+        j_couplings.append(JCoupling(index1=2, index2=3, index3=4, index4=5))
+
+        with pytest.raises(TopologyFileError) as exception:
+            TopologyFileWriter._check_type_given(j_couplings, "j-coupling")
+        assert str(exception.value) == (
+            "In order to write the j-coupling information in 'PQ' topology format, "
+            "all j-couplings must have a j-coupling type defined."
+        )
+
     def test_write_does_not_truncate_on_invalid_topology(self, tmp_path):
         """
         Test that a failing write leaves an already existing file untouched.
@@ -80,6 +98,27 @@ class TestTopologyFileWriter:
             file.write(content)
 
         topology = BondedTopology(bonds=[Bond(index1=1, index2=2)])
+
+        with pytest.raises(TopologyFileError):
+            TopologyFileWriter(filename, mode="o").write(topology)
+
+        with open(filename, "r", encoding="utf-8") as file:
+            assert file.read() == content
+
+    def test_write_does_not_truncate_on_untyped_j_coupling(self, tmp_path):
+        """
+        Test that a failing write due to an untyped j-coupling leaves an
+        already existing file untouched.
+        """
+        filename = str(tmp_path / "topology.top")
+        content = "J_COUPLINGS 1 1 1 1\n    1     2     3     4     1\nEND\n"
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+
+        topology = BondedTopology(
+            j_couplings=[JCoupling(index1=1, index2=2, index3=3, index4=4)]
+        )
 
         with pytest.raises(TopologyFileError):
             TopologyFileWriter(filename, mode="o").write(topology)
@@ -346,3 +385,78 @@ class TestTopologyFileWriter:
             "This is a comment."
         )
         assert lines[5] == "END"
+
+    def test__get_j_coupling_lines(self):
+        """
+        Test the _get_j_coupling_lines method.
+        """
+        topology = BondedTopology()
+
+        lines = TopologyFileWriter._get_j_coupling_lines(topology)
+        assert lines[0] == "J_COUPLINGS 0 0 0 0"
+        assert lines[1] == "END"
+
+        j_coupling1 = JCoupling(
+            index1=1, index2=2, index3=3, index4=4, j_coupling_type=1
+        )
+        j_coupling2 = JCoupling(
+            index1=5,
+            index2=2,
+            index3=3,
+            index4=4,
+            j_coupling_type=1,
+            comment="This is a comment.",
+        )
+
+        topology.j_couplings = [j_coupling1, j_coupling2]
+
+        lines = TopologyFileWriter._get_j_coupling_lines(topology)
+        assert lines[0] == "J_COUPLINGS 2 1 1 1"
+        assert lines[1] == f"{1:>5d} {2:>5d} {3:>5d} {4:>5d} {1:>5d}"
+        assert lines[2] == (
+            f"{5:>5d} {2:>5d} {3:>5d} {4:>5d} {1:>5d} "
+            "# This is a comment."
+        )
+        assert lines[3] == "END"
+
+    def test__get_distance_constraint_lines(self):
+        """
+        Test the _get_distance_constraint_lines method.
+        """
+        topology = BondedTopology()
+
+        lines = TopologyFileWriter._get_distance_constraint_lines(topology)
+        assert lines[0] == "DIST_CONSTRAINTS 0 0"
+        assert lines[1] == "END"
+
+        constraint1 = DistanceConstraint(
+            index1=1,
+            index2=2,
+            lower_distance=1.0,
+            upper_distance=2.0,
+            spring_constant=100.0,
+            d_spring_constant_dt=-0.1
+        )
+        constraint2 = DistanceConstraint(
+            index1=3,
+            index2=4,
+            lower_distance=1.5,
+            upper_distance=2.5,
+            spring_constant=200.0,
+            d_spring_constant_dt=0.0,
+            comment="This is a comment."
+        )
+
+        topology.distance_constraints = [constraint1, constraint2]
+
+        lines = TopologyFileWriter._get_distance_constraint_lines(topology)
+        assert lines[0] == "DIST_CONSTRAINTS 2 2"
+        assert lines[1] == (
+            f"{1:>5d} {2:>5d} {1.0:16.12f} {2.0:16.12f} "
+            f"{100.0:16.12f} {-0.1:16.12f}"
+        )
+        assert lines[2] == (
+            f"{3:>5d} {4:>5d} {1.5:16.12f} {2.5:16.12f} "
+            f"{200.0:16.12f} {0.0:16.12f} # This is a comment."
+        )
+        assert lines[3] == "END"

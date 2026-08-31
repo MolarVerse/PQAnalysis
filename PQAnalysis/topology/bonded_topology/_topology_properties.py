@@ -11,6 +11,7 @@ from .dihedral import Dihedral
 
 
 
+# pylint: disable-next=too-many-public-methods
 class TopologyPropertiesMixin:
 
     """
@@ -116,3 +117,37 @@ class TopologyPropertiesMixin:
     def shake_linkers(self) -> List[Bond]:
         """List[Bond]: The shake bonds that are linkers."""
         return [bond for bond in self.shake_bonds if bond.is_linker]
+
+    @property
+    def unique_j_coupling1_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the first atoms in the j-couplings."""
+        return {j_coupling.index1 for j_coupling in self.j_couplings}
+
+    @property
+    def unique_j_coupling2_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the second atoms in the j-couplings."""
+        return {j_coupling.index2 for j_coupling in self.j_couplings}
+
+    @property
+    def unique_j_coupling3_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the third atoms in the j-couplings."""
+        return {j_coupling.index3 for j_coupling in self.j_couplings}
+
+    @property
+    def unique_j_coupling4_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the fourth atoms in the j-couplings."""
+        return {j_coupling.index4 for j_coupling in self.j_couplings}
+
+    @property
+    def unique_distance_constraint1_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the first atoms in the distance constraints."""
+        return {
+            constraint.index1 for constraint in self.distance_constraints
+        }
+
+    @property
+    def unique_distance_constraint2_indices(self) -> Set[PositiveInt]:
+        """Set[PositiveInt]: The unique indices of the second atoms in the distance constraints."""
+        return {
+            constraint.index2 for constraint in self.distance_constraints
+        }
