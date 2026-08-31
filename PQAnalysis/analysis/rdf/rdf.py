@@ -8,16 +8,20 @@ of finding a particle at a distance r from another particle.
 
 import itertools
 import logging
+import math
+
+from concurrent.futures import ThreadPoolExecutor
+from os import cpu_count
 
 # 3rd party imports
 import numpy as np
 
 # 3rd party imports
 from beartype.typing import List, Tuple
-from tqdm.auto import tqdm
+from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
-from PQAnalysis.config import with_progress_bar
+from PQAnalysis import config
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cell, Cells
 from PQAnalysis.traj import (
@@ -38,9 +42,93 @@ from PQAnalysis.type_checking import runtime_type_checking
 from .exceptions import RDFError
 
 try:
-    from ._rdf_kernel import rdf_frame_histogram  # pylint: disable=import-error
+    from ._rdf_kernel import (  # pylint: disable=import-error
+        legacy_rdf_batch_histogram,
+        legacy_rdf_frame_histogram,
+        rdf_frame_histogram,
+    )
 except ModuleNotFoundError:
-    from ._rdf_kernel_py import rdf_frame_histogram
+    from ._rdf_kernel_py import (
+        legacy_rdf_batch_histogram,
+        legacy_rdf_frame_histogram,
+        rdf_frame_histogram,
+    )
+
+
+
+# The flat argument list keeps the threaded worker setup compact.
+# pylint: disable-next=too-many-arguments,too-many-positional-arguments,too-many-locals
+def _raw_histogram_range(
+    values,
+    cells,
+    start,
+    stop,
+    reference_indices,
+    target_indices,
+    r_min,
+    delta_r,
+    n_bins,
+    use_legacy,
+    legacy_box_lengths,
+):
+    """Calculate a private exact histogram over a frame range."""
+    hist = np.zeros(n_bins, dtype=np.int64)
+
+    if use_legacy:
+        legacy_rdf_batch_histogram(
+            values[start:stop],
+            reference_indices,
+            target_indices,
+            legacy_box_lengths[start:stop],
+            delta_r,
+            n_bins,
+            hist,
+        )
+
+        return hist
+
+    last_cell = None
+    box_lengths = np.ones(3)
+    box = np.eye(3)
+    inv_box = np.eye(3)
+    is_orthorhombic = 1
+
+    for frame_index in range(start, stop):
+        cell = cells[frame_index]
+
+        if cell is not last_cell:
+            last_cell = cell
+            is_orthorhombic = int(
+                cell.alpha == 90 and cell.beta == 90 and cell.gamma == 90
+            )
+            box_lengths = np.ascontiguousarray(
+                cell.box_lengths,
+                dtype=np.float64,
+            )
+            box = np.ascontiguousarray(
+                cell.box_matrix,
+                dtype=np.float64,
+            )
+            inv_box = np.ascontiguousarray(
+                cell.inverse_box_matrix,
+                dtype=np.float64,
+            )
+
+        rdf_frame_histogram(
+            values[frame_index],
+            reference_indices,
+            target_indices,
+            box_lengths,
+            box,
+            inv_box,
+            is_orthorhombic,
+            r_min,
+            delta_r,
+            n_bins,
+            hist,
+        )
+
+    return hist
 
 
 
@@ -74,13 +162,16 @@ class RDF:
     loaded frame by frame when needed. This can be useful
     for large trajectories that do not fit into memory.
 
-    For xyz trajectory files without intra-molecular
-    exclusion the frames are streamed via the raw-frame
+    For xyz trajectory files without intra-molecular exclusion the
+    frames are streamed in float64 via the raw-frame
     fast path
     (:py:class:`~PQAnalysis.io.traj_file.raw_frame_reader.RawTrajectoryReader`)
     and accumulated with a compiled distance-histogram
-    kernel, which is considerably faster and produces
-    identical results.
+    kernel. A periodic orthorhombic calculation specified by
+    ``delta_r`` alone, with the default ``r_min = 0``, reproduces the
+    numeric operation order of the legacy ``thh_tools/RDF`` program.
+    Other geometries and explicit radial ranges use the general
+    PQAnalysis RDF semantics.
     """
 
     _use_full_atom_default = False
@@ -89,11 +180,14 @@ class RDF:
 
     #: The chunk size (in bytes) of the buffered header-only cell scan.
     _CELL_SCAN_CHUNK_SIZE = 16 * 1024 * 1024
+    _batch_max_bytes = 512 * 1024 * 1024
+    _batch_max_workers = 16
+    _batch_pairs_per_worker = 250_000
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
     @runtime_type_checking
-    def __init__(
+    def __init__(  # pylint: disable=too-many-branches
         self,
         traj: Trajectory | TrajectoryReader,
         reference_species: SelectionCompatible,
@@ -178,6 +272,8 @@ class RDF:
 
         self._average_volume = 0.0
         self._reference_density = 0.0
+        self.delta_r, self.n_bins, self.r_max = 0.0, 0, 0.0
+        self.bin_middle_points, self.bins = np.array([]), np.array([])
         self.target_index_combinations = []
         self.normalized_bins = np.array([])
         self.integrated_bins = np.array([])
@@ -218,20 +314,12 @@ class RDF:
         ############################################
 
         self._raw_reader = None
+        self._raw_batch = None
+        self._raw_batch_attempted = False
         self.frame_generator = None
 
         if self._use_raw_fast_path(traj):
-            # fast path: lazy loading of the raw frame data from
-            # file(s) without per-frame AtomicSystem construction;
-            # the cells are collected with a cheap header-only scan
-            # that deduplicates repeated boxes
-            self._raw_reader = RawTrajectoryReader(
-                traj.filenames,
-                traj_format=traj.traj_format,
-                md_format=traj.md_format,
-            )
-            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
-            self.first_frame = self._raw_reader.read_first_frame()
+            self._initialize_raw_fast_path(traj)
         else:
             self.cells = traj.cells
             self._setup_cells = self.cells
@@ -244,8 +332,7 @@ class RDF:
                 self.frame_generator = iter(traj)
             else:
                 self.logger.error(
-                    "Trajectory cannot be of length 0.",
-                    exception=RDFError
+                    "Trajectory cannot be of length 0.", exception=RDFError
                 )
 
             self.first_frame = next(self.frame_generator)
@@ -254,21 +341,19 @@ class RDF:
         else:
             self.topology = self.first_frame.topology
 
-        self._setup_bins(
+        self._setup_analysis_bins(
             n_bins=n_bins,
             delta_r=delta_r,
             r_max=r_max,
-            r_min=self.r_min
+            r_min=self.r_min,
         )
 
         self.reference_indices = self.reference_selection.select(
-            self.topology,
-            self.use_full_atom_info
+            self.topology, self.use_full_atom_info
         )
 
         self.target_indices = self.target_selection.select(
-            self.topology,
-            self.use_full_atom_info
+            self.topology, self.use_full_atom_info
         )
 
     def _use_raw_fast_path(self, traj: Trajectory | TrajectoryReader) -> bool:
@@ -296,9 +381,76 @@ class RDF:
         """
 
         return (
-            isinstance(traj, TrajectoryReader)
-            and traj.traj_format == TrajectoryFormat.XYZ
-            and not self.no_intra_molecular
+            isinstance(traj, TrajectoryReader) and
+            traj.traj_format == TrajectoryFormat.XYZ and
+            not self.no_intra_molecular
+        )
+
+    def _initialize_raw_fast_path(self, traj: TrajectoryReader):
+        """Initialize raw input and reuse a compatible batch for setup."""
+        self._raw_reader = RawTrajectoryReader(
+            traj.filenames,
+            traj_format=traj.traj_format,
+            md_format=traj.md_format,
+            dtype="float64",
+        )
+        self.first_frame = self._raw_reader.read_first_frame()
+
+        if not rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
+            self._raw_batch_attempted = True
+            self._raw_batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.first_frame.n_atoms,
+                max_bytes=self._batch_max_bytes,
+            )
+
+        if self._raw_batch is None:
+            self.cells, self._setup_cells = self._scan_cells(traj.filenames)
+            return
+
+        _values, self.cells = self._raw_batch
+        self._setup_cells = list({
+            id(cell): cell for cell in self.cells
+        }.values())
+
+    def _use_legacy_rdf(
+        self,
+        n_bins: PositiveInt | None,
+        delta_r: PositiveReal | None,
+        r_max: PositiveReal | None,
+    ) -> bool:
+        """Whether the input can reproduce the legacy RDF calculation."""
+        return (
+            self._raw_reader is not None and n_bins is None and
+            delta_r is not None and r_max is None and self.r_min == 0.0 and
+            all(not cell.is_vacuum for cell in self._setup_cells) and all(
+                np.array_equal(cell.box_angles, np.array([90, 90, 90]))
+                for cell in self._setup_cells
+            )
+        )
+
+    def _setup_analysis_bins(
+        self,
+        n_bins: PositiveInt | None,
+        delta_r: PositiveReal | None,
+        r_max: PositiveReal | None,
+        r_min: PositiveReal,
+    ):
+        """Selects legacy-compatible or general RDF bin semantics."""
+        self._legacy_rdf = self._use_legacy_rdf(
+            n_bins=n_bins,
+            delta_r=delta_r,
+            r_max=r_max,
+        )
+
+        if self._legacy_rdf:
+            self._setup_legacy_bins(delta_r)
+            return
+
+        self._setup_bins(
+            n_bins=n_bins,
+            delta_r=delta_r,
+            r_max=r_max,
+            r_min=r_min,
         )
 
     @classmethod
@@ -378,9 +530,7 @@ class RDF:
                     while index < len(lines):
                         line_number += 1
 
-                        stripped_line = (
-                            lines[index].decode("utf-8").strip()
-                        )
+                        stripped_line = (lines[index].decode("utf-8").strip())
                         splitted_line = stripped_line.split()
 
                         if len(splitted_line) == 1:
@@ -432,6 +582,23 @@ class RDF:
                         break
 
         return cells, unique_cells
+
+    def _setup_legacy_bins(self, delta_r: PositiveReal):
+        """Sets bins with the scalar semantics of ``thh_tools/RDF``."""
+        self.r_min = 0.0
+        self.delta_r = float(np.float32(delta_r))
+        self.n_bins = max(
+            int(max(cell.box_lengths) / 2.0 / self.delta_r)
+            for cell in self.cells
+        )
+        self.r_max = self.delta_r * self.n_bins
+        self.bin_middle_points = np.array(
+            [
+                (float(np.float32(index)) + 0.5) * self.delta_r
+                for index in range(self.n_bins)
+            ]
+        )
+        self.bins = np.zeros(self.n_bins)
 
     def _setup_bins(
         self,
@@ -491,9 +658,9 @@ class RDF:
         elif all([n_bins, delta_r, r_max]):
             self.logger.error(
                 (
-                "It is not possible to specify all of n_bins, "
-                "delta_r and r_max in the same RDF analysis "
-                "as this would lead to ambiguous results."
+                    "It is not possible to specify all of n_bins, "
+                    "delta_r and r_max in the same RDF analysis "
+                    "as this would lead to ambiguous results."
                 ),
                 exception=RDFError
             )
@@ -506,10 +673,7 @@ class RDF:
             self.delta_r = delta_r
 
             self.r_max = self._calculate_r_max(
-                n_bins,
-                delta_r,
-                r_min,
-                self._setup_cells
+                n_bins, delta_r, r_min, self._setup_cells
             )
 
             self.n_bins, self.r_max = self._calculate_n_bins(
@@ -541,10 +705,7 @@ class RDF:
                 self.delta_r = (self.r_max - self.r_min) / self.n_bins
 
         self.bin_middle_points = self._setup_bin_middle_points(
-            self.n_bins,
-            self.r_min,
-            self.r_max,
-            self.delta_r
+            self.n_bins, self.r_min, self.r_max, self.delta_r
         )
 
         self.bins = np.zeros(self.n_bins)
@@ -561,14 +722,14 @@ class RDF:
         """
 
         if not check_trajectory_pbc(
-                self._setup_cells
+            self._setup_cells
         ) and not check_trajectory_vacuum(self._setup_cells):
             self.logger.error(
                 (
-                "The provided trajectory is not fully periodic or "
-                "in vacuum, meaning that some frames are in vacuum "
-                "and others are periodic. This is not supported by "
-                "the RDF analysis."
+                    "The provided trajectory is not fully periodic or "
+                    "in vacuum, meaning that some frames are in vacuum "
+                    "and others are periodic. This is not supported by "
+                    "the RDF analysis."
                 ),
                 exception=RDFError
             )
@@ -582,7 +743,9 @@ class RDF:
         """
         Calculates the average volume of the trajectory.
 
-        For the raw-frame fast path the volume of every unique cell
+        The legacy-compatible path sums orthorhombic ``x*y*z`` volumes
+        in frame order, preserving the C implementation's rounding.
+        For the other raw-frame paths the volume of every unique cell
         is computed only once and broadcast to the full (shared
         object) cell list before averaging, which is bit-identical
         to (but much cheaper than) the plain mean over the volumes
@@ -595,6 +758,17 @@ class RDF:
             The average volume of the trajectory.
         """
 
+        if self._legacy_rdf:
+            volume = 0.0
+
+            for cell in self.cells:
+                length_x = float(cell.box_lengths[0])
+                length_y = float(cell.box_lengths[1])
+                length_z = float(cell.box_lengths[2])
+                volume = volume + (length_x * length_y) * length_z
+
+            return volume / float(self.n_frames)
+
         if self._raw_reader is None:
             return self.average_volume
 
@@ -606,10 +780,10 @@ class RDF:
     def run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Runs the RDF analysis.
 
@@ -681,8 +855,7 @@ class RDF:
                 residue_indices = self.topology.residue_atom_indices[
                     reference_index]
                 self.target_index_combinations.append(
-                    np.setdiff1d(self.target_indices,
-                    residue_indices)
+                    np.setdiff1d(self.target_indices, residue_indices)
                 )
 
     def _calculate_bins(self):
@@ -697,9 +870,11 @@ class RDF:
         calculated from these distances.
         """
 
-        for frame in tqdm(itertools.chain([self.first_frame], self.frame_generator),
+        for frame in tqdm(
+            itertools.chain([self.first_frame], self.frame_generator),
             total=self.n_frames,
-            disable=not with_progress_bar):
+            disable=not config.with_progress_bar
+        ):
             for i, reference_index in enumerate(self.reference_indices):
 
                 if self.no_intra_molecular:
@@ -707,22 +882,18 @@ class RDF:
                 else:
                     target_indices = self.target_indices
 
-                target_indices = target_indices[target_indices != reference_index]
+                target_indices = target_indices[target_indices !=
+                                                reference_index]
 
                 reference_position = frame.pos[reference_index]
                 target_positions = frame.pos[target_indices]
 
                 distances = distance(
-                    reference_position,
-                    target_positions,
-                    frame.cell
+                    reference_position, target_positions, frame.cell
                 ).ravel()
 
                 self.bins += self._add_to_bins(
-                    distances,
-                    self.r_min,
-                    self.delta_r,
-                    self.n_bins
+                    distances, self.r_min, self.delta_r, self.n_bins
                 )
 
     def _calculate_bins_raw(self):
@@ -749,6 +920,9 @@ class RDF:
             If a frame does not provide positions for all atoms
             referenced by the selections.
         """
+
+        if self._calculate_bins_raw_batch():
+            return
 
         hist = np.zeros(self.n_bins, dtype=np.int64)
 
@@ -779,18 +953,18 @@ class RDF:
         for values, cell in tqdm(
             self._raw_reader.raw_frame_generator(),
             total=self.n_frames,
-            disable=not with_progress_bar):
+            disable=not config.with_progress_bar):
 
             counter += 1
 
             if values.shape[0] <= max_index:
                 self.logger.error(
                     (
-                    f"Frame {counter} of the trajectory provides "
-                    f"only {values.shape[0]} atoms, but the "
-                    "selections reference the atom index "
-                    f"{max_index}. Please provide a trajectory "
-                    "with a consistent number of atoms."
+                        f"Frame {counter} of the trajectory provides "
+                        f"only {values.shape[0]} atoms, but the "
+                        "selections reference the atom index "
+                        f"{max_index}. Please provide a trajectory "
+                        "with a consistent number of atoms."
                     ),
                     exception=RDFError
                 )
@@ -804,36 +978,149 @@ class RDF:
                 box_lengths = np.ascontiguousarray(
                     cell.box_lengths, dtype=np.float64
                 )
-                box = np.ascontiguousarray(
-                    cell.box_matrix, dtype=np.float64
-                )
+                box = np.ascontiguousarray(cell.box_matrix, dtype=np.float64)
                 inv_box = np.ascontiguousarray(
                     cell.inverse_box_matrix, dtype=np.float64
                 )
 
-            rdf_frame_histogram(
+            if self._legacy_rdf:
+                legacy_rdf_frame_histogram(
+                    values,
+                    reference_indices,
+                    target_indices,
+                    box_lengths,
+                    self.delta_r,
+                    self.n_bins,
+                    hist,
+                )
+            else:
+                rdf_frame_histogram(
+                    values,
+                    reference_indices,
+                    target_indices,
+                    box_lengths,
+                    box,
+                    inv_box,
+                    is_orthorhombic,
+                    self.r_min,
+                    self.delta_r,
+                    self.n_bins,
+                    hist,
+                )
+
+        self.bins += hist
+
+    # This method owns batch sizing, worker partitioning and exact reduction.
+    # pylint: disable-next=too-many-locals
+    def _calculate_bins_raw_batch(self) -> bool:
+        """Calculate independent frame histograms from one raw batch."""
+        if rdf_frame_histogram.__module__.endswith("_rdf_kernel_py"):
+            return False
+
+        if self._batch_max_bytes <= 0:
+            self._raw_batch = None
+            self._raw_batch_attempted = False
+            return False
+
+        batch = self._raw_batch
+        self._raw_batch = None
+
+        if batch is not None:
+            # A later calculation must read a fresh trajectory batch.
+            self._raw_batch_attempted = False
+
+        if batch is None and not self._raw_batch_attempted:
+            batch = self._raw_reader.try_read_all_frames(
+                expected_n_atoms=self.n_atoms,
+                expected_n_frames=self.n_frames,
+                max_bytes=self._batch_max_bytes,
+                include_cells=False,
+            )
+
+        if batch is None:
+            return False
+
+        values, _cells = batch
+        cells = self.cells
+        legacy_box_lengths = None
+
+        if self._legacy_rdf:
+            legacy_box_lengths = np.ascontiguousarray(
+                [cell.box_lengths for cell in cells],
+                dtype=np.float64,
+            )
+
+        reference_indices = np.ascontiguousarray(
+            self.reference_indices,
+            dtype=np.int64,
+        )
+        target_indices = np.ascontiguousarray(
+            self.target_indices,
+            dtype=np.int64,
+        )
+        total_pairs = (
+            self.n_frames * len(reference_indices) * len(target_indices)
+        )
+        useful_workers = max(
+            1,
+            total_pairs // self._batch_pairs_per_worker,
+        )
+        n_workers = min(
+            self._batch_max_workers,
+            cpu_count() or 1,
+            self.n_frames,
+            useful_workers,
+        )
+
+        boundaries = np.linspace(
+            0,
+            self.n_frames,
+            n_workers + 1,
+            dtype=np.intp,
+        )
+        arguments = [
+            (
                 values,
+                cells,
+                int(start),
+                int(stop),
                 reference_indices,
                 target_indices,
-                box_lengths,
-                box,
-                inv_box,
-                is_orthorhombic,
                 self.r_min,
                 self.delta_r,
                 self.n_bins,
-                hist,
+                self._legacy_rdf,
+                legacy_box_lengths,
             )
+            for start, stop in zip(boundaries[:-1], boundaries[1:])
+            if start < stop
+        ]
+
+        if n_workers == 1:
+            histograms = [_raw_histogram_range(*arguments[0])]
+        else:
+            with ThreadPoolExecutor(max_workers=n_workers) as executor:
+                futures = [
+                    executor.submit(_raw_histogram_range, *args)
+                    for args in arguments
+                ]
+                histograms = [future.result() for future in futures]
+
+        hist = np.zeros(self.n_bins, dtype=np.int64)
+        for private_histogram in histograms:
+            hist += private_histogram
 
         self.bins += hist
+
+        return True
 
     def _finalize_run(
         self
     ) -> Tuple[Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray,
-        Np1DNumberArray]:
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray,
+               Np1DNumberArray]:
         """
         Finalizes the RDF analysis after running.
 
@@ -858,6 +1145,9 @@ class RDF:
             The pair-count residual relative to the ideal-gas shell count.
         """
 
+        if self._legacy_rdf:
+            return self._finalize_legacy_run()
+
         if self.no_intra_molecular:
             target_density = len(self.target_index_combinations[0])
         else:
@@ -876,9 +1166,7 @@ class RDF:
         self.normalized_bins = self.bins / norm
 
         self.integrated_bins = self._integration(
-            self.bins,
-            len(self.reference_indices),
-            self.n_frames
+            self.bins, len(self.reference_indices), self.n_frames
         )
 
         self.normalized_bins2 = self.bins / target_density
@@ -893,6 +1181,50 @@ class RDF:
             self.integrated_bins,
             self.normalized_bins2,
             self.differential_bins
+        )
+
+    def _finalize_legacy_run(self):
+        """Finalizes with the scalar operation order of legacy RDF."""
+        n_reference = float(len(self.reference_indices))
+        n_target = float(len(self.target_indices))
+        n_frames = float(self.n_frames)
+        target_density = n_target / self._average_volume
+        pi = 3.1415926535897932384626433832795028841971693993751058209749445923078
+
+        self.normalized_bins = np.empty(self.n_bins, dtype=np.float64)
+        self.integrated_bins = np.empty(self.n_bins, dtype=np.float64)
+        self.normalized_bins2 = np.empty(self.n_bins, dtype=np.float64)
+        self.differential_bins = np.empty(self.n_bins, dtype=np.float64)
+
+        integration = 0.0
+
+        for index in range(self.n_bins):
+            inner_radius = float(index) * self.delta_r
+            outer_radius = (float(index) + 1.0) * self.delta_r
+            shell = (math.pow(outer_radius, 3.0) - math.pow(inner_radius, 3.0))
+            norm = 4.0 / 3.0
+            norm = norm * pi
+            norm = norm * target_density
+            norm = norm * shell
+            norm = norm * n_reference
+            norm = norm * n_frames
+
+            count = float(self.bins[index])
+            integration = integration + count / n_reference / n_frames
+
+            self.normalized_bins[index] = count / norm
+            self.integrated_bins[index] = integration
+            self.normalized_bins2[index] = (
+                count / target_density / n_reference / n_frames
+            )
+            self.differential_bins[index] = count - norm
+
+        return (
+            self.bin_middle_points,
+            self.normalized_bins,
+            self.integrated_bins,
+            self.normalized_bins2,
+            self.differential_bins,
         )
 
     @property
@@ -1039,11 +1371,11 @@ class RDF:
         if check_trajectory_pbc(cells) and r_max > cls._infer_r_max(cells):
             cls.logger.warning(
                 (
-                f"The calculated r_max {r_max} is larger "
-                "than the maximum allowed radius according "
-                "to the box vectors of the trajectory "
-                f"{cls._infer_r_max(cells)}. r_max will be "
-                "set to the maximum allowed radius."
+                    f"The calculated r_max {r_max} is larger "
+                    "than the maximum allowed radius according "
+                    "to the box vectors of the trajectory "
+                    f"{cls._infer_r_max(cells)}. r_max will be "
+                    "set to the maximum allowed radius."
                 ),
             )
 
@@ -1053,12 +1385,8 @@ class RDF:
 
     @classmethod
     def _calculate_n_bins(
-        cls,
-        delta_r: PositiveReal,
-        r_max: PositiveReal,
-        r_min: PositiveReal
-    ) -> Tuple[PositiveInt,
-        PositiveReal]:
+        cls, delta_r: PositiveReal, r_max: PositiveReal, r_min: PositiveReal
+    ) -> Tuple[PositiveInt, PositiveReal]:
         """
         Calculates the number of bins of the RDF analysis from the provided parameters.
 
@@ -1118,10 +1446,10 @@ class RDF:
         if not check_trajectory_pbc(cells):
             cls.logger.error(
                 (
-                "To infer r_max of the RDF analysis, "
-                "the trajectory cannot be a vacuum trajectory. "
-                "Please specify r_max manually or use the "
-                "combination n_bins and delta_r."
+                    "To infer r_max of the RDF analysis, "
+                    "the trajectory cannot be a vacuum trajectory. "
+                    "Please specify r_max manually or use the "
+                    "combination n_bins and delta_r."
                 ),
                 exception=RDFError
             )
@@ -1174,10 +1502,7 @@ class RDF:
 
     @classmethod
     def _integration(
-        cls,
-        bins: Np1DNumberArray,
-        n_reference_indices: int,
-        n_frames: int
+        cls, bins: Np1DNumberArray, n_reference_indices: int, n_frames: int
     ) -> Np1DNumberArray:
         """
         Calculates the integrated RDF analysis. 

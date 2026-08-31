@@ -2,6 +2,7 @@
 A module containing the Selection class and related functions/classes.
 """
 # library imports
+from functools import lru_cache
 import logging
 import numpy as np
 
@@ -336,12 +337,19 @@ def _selection_of_string(
     Np1DIntArray
         The indices of the atoms selected by the selection object.
     """
-    grammar_file = "selection.lark"
-    grammar_path = __base_path__ / "grammar"
+    stripped_string = string.strip()
 
-    parser = Lark.open(grammar_path / grammar_file, propagate_positions=True)
+    # SelectionTransformer.atomtype performs this exact lookup. Plain atom
+    # types can skip parser construction without changing their semantics.
+    if (
+        stripped_string != "all" and
+        stripped_string.isascii() and
+        stripped_string.isalnum() and
+        not stripped_string.isdigit()
+    ):
+        return _indices_by_atom_type_name(stripped_string, topology)
 
-    tree = parser.parse(string)
+    tree = _selection_parser().parse(string)
     transformed_tree = SelectionTransformer(
         topology=topology,
         visit_tokens=True,
@@ -350,6 +358,14 @@ def _selection_of_string(
     visitor = SelectionVisitor()
 
     return np.sort(visitor.visit(transformed_tree))
+
+
+@lru_cache(maxsize=1)
+def _selection_parser() -> Lark:
+    """Builds the shared selection grammar parser once per process."""
+    grammar_path = __base_path__ / "grammar" / "selection.lark"
+
+    return Lark.open(grammar_path, propagate_positions=True)
 
 
 
@@ -464,9 +480,9 @@ class SelectionTransformer(Transformer):
         int
             The unsigned integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
-    def INT(self, items: List[Token] | Token) -> int:  # pylint: disable=invalid-name
+    def INT(self, items: Token | List[Token]) -> int:  # pylint: disable=invalid-name
         """
         Returns the integer of the given token.
 
@@ -480,7 +496,7 @@ class SelectionTransformer(Transformer):
         int
             The integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
     def atomtype(self, items: Any) -> Np1DIntArray:
         """

@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from PQAnalysis.topology import Selection, Topology
+from PQAnalysis.topology import selection as selection_module
 from PQAnalysis.core import Atom, Element, Residue
 from PQAnalysis.exceptions import PQValueError
 
@@ -17,10 +18,46 @@ class TestSelection:
         indices = selection.select(self.topology)
         assert np.all(indices == np.arange(0, 3))
 
+    def test__selection_multi_digit_index(self):
+        topology = Topology([Atom("H", 1) for _ in range(30)])
+
+        assert np.all(Selection("12").select(topology) == np.array([12]))
+        assert np.all(Selection("25").select(topology) == np.array([25]))
+        assert np.all(
+            Selection("20..23").select(topology) == np.arange(20, 24)
+        )
+        assert np.all(Selection("12,25").select(topology) == np.array([12, 25]))
+
     def test__selection_atomtype(self):
         selection = Selection("C1")
         indices = selection.select(self.topology)
         assert np.all(indices == np.array([0, 2]))
+
+    def test_plain_atomtype_does_not_build_parser(self, monkeypatch):
+
+        def fail_parser():
+            raise AssertionError("plain atom types must bypass the parser")
+
+        monkeypatch.setattr(selection_module, "_selection_parser", fail_parser)
+
+        indices = Selection(" C1 ").select(self.topology)
+
+        assert np.array_equal(indices, np.array([0, 2]))
+
+    def test_complex_selections_reuse_parser(self):
+        selection_module._selection_parser.cache_clear()
+
+        try:
+            indices = Selection("C1, C2").select(self.topology)
+            numeric_indices = Selection("1").select(self.topology)
+            cache_info = selection_module._selection_parser.cache_info()
+        finally:
+            selection_module._selection_parser.cache_clear()
+
+        assert np.array_equal(indices, np.array([0, 1, 2]))
+        assert np.array_equal(numeric_indices, np.array([1]))
+        assert cache_info.misses == 1
+        assert cache_info.hits == 1
 
     def test__selection_indices(self):
 

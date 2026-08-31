@@ -8,7 +8,7 @@ Cython kernel for the MSD accumulation hot loop.
 
 The kernel advances the running Diffcalc-style MSD state by one
 trajectory frame: it gathers the selected atom positions of the frame
-(float32 -> float64, exact), unwraps them with a running minimum image
+into float64 scratch arrays, unwraps them with a running minimum image
 convention applied to the per-frame displacement vectors, spawns,
 replaces and drains time origins following the legacy Diffcalc
 bookkeeping and accumulates the per-axis squared displacements of all
@@ -27,12 +27,17 @@ import numpy as np
 
 cimport numpy as np
 
-from libc.math cimport rint
-from libc.string cimport memcpy, memmove
+from libc.math cimport fabs, fma, rint
+from libc.string cimport memcpy, memmove, memset
+
+
+ctypedef fused input_float_t:
+    np.float32_t
+    np.float64_t
 
 
 def msd_frame_update(
-    const np.float32_t[:, ::1] values,
+    const input_float_t[:, ::1] values,
     const np.int64_t[::1] indices,
     const np.float64_t[:, ::1] box,
     const np.float64_t[:, ::1] inv_box,
@@ -53,8 +58,8 @@ def msd_frame_update(
     """
     Advances the running MSD state by one trajectory frame.
 
-    The selected rows of ``values`` are gathered into ``pos`` (exact
-    float32 -> float64 conversion). For every frame after the first
+    The selected rows of ``values`` are gathered into float64 ``pos``.
+    For every frame after the first
     one the per-frame displacement ``pos - prev_pos`` is folded back
     into the minimum image convention and the resulting change is
     accumulated into ``shift`` (skipped for vacuum cells). The
@@ -68,7 +73,7 @@ def msd_frame_update(
 
     Parameters
     ----------
-    values : np.float32 array of shape (n_atoms, 3), C-contiguous
+    values : np.float32 or np.float64 array of shape (n_atoms, 3), C-contiguous
         The raw frame values (positions) of all atoms of the frame.
     indices : np.int64 array of shape (n_sel,)
         The indices of the selected atoms.
@@ -130,8 +135,8 @@ def msd_frame_update(
     cdef double sx, sy, sz
     cdef double dx, dy, dz
 
-    # gather the selected positions (exact float32 -> float64) and
-    # unwrap them with the running minimum image convention
+    # gather the selected positions and unwrap them with the running
+    # minimum image convention
     for a in range(n_sel):
         row = <Py_ssize_t> indices[a]
         p0 = <double> values[row, 0]
@@ -247,3 +252,318 @@ def msd_frame_update(
         msd[lag, 0] += sx
         msd[lag, 1] += sy
         msd[lag, 2] += sz
+
+
+def legacy_msd_frame_update(
+    const np.float64_t[:, ::1] values,
+    const np.int64_t[::1] indices,
+    const np.float64_t[::1] box_lengths,
+    np.float64_t[:, ::1] pos,
+    np.float64_t[:, ::1] prev_pos,
+    np.float64_t[:, ::1] image_steps,
+    np.float64_t[:, :, ::1] origins,
+    np.float64_t[:, :, ::1] images,
+    np.float64_t[:, ::1] msd,
+    np.int64_t[::1] state,
+    long long counter,
+    long long gap,
+    long long window,
+    long long n_start,
+    long long stop_frame,
+):
+    """Advances the exact orthorhombic Diffcalc state by one frame."""
+    cdef Py_ssize_t n_sel = indices.shape[0]
+    cdef Py_ssize_t n_origins_max = origins.shape[0]
+    cdef long long n_active = state[0]
+    cdef long long last = state[1]
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t axis
+    cdef Py_ssize_t origin_index
+    cdef Py_ssize_t row
+    cdef long long lag
+    cdef double box
+    cdef double delta
+    cdef double displacement
+    cdef double rounded
+
+    for atom in range(n_sel):
+        row = <Py_ssize_t> indices[atom]
+        pos[atom, 0] = values[row, 0]
+        pos[atom, 1] = values[row, 1]
+        pos[atom, 2] = values[row, 2]
+
+    if counter < n_start:
+        memcpy(
+            &prev_pos[0, 0],
+            &pos[0, 0],
+            n_sel * 3 * sizeof(double),
+        )
+        return
+
+    for atom in range(n_sel):
+        for axis in range(3):
+            box = box_lengths[axis]
+            delta = pos[atom, axis] - prev_pos[atom, axis]
+
+            if fabs(delta) < 0.5 * box:
+                image_steps[atom, axis] = 0.0
+            else:
+                image_steps[atom, axis] = rint(delta / box)
+
+    if counter % gap == 0:
+        if n_active != <long long> n_origins_max and counter <= stop_frame:
+            if n_active == 0:
+                last = counter
+
+            memcpy(
+                &origins[n_active, 0, 0],
+                &pos[0, 0],
+                n_sel * 3 * sizeof(double),
+            )
+            memset(
+                &images[n_active, 0, 0],
+                0,
+                n_sel * 3 * sizeof(double),
+            )
+            n_active += 1
+
+        elif n_active > 0 and last + window == counter:
+            for atom in range(n_sel):
+                for axis in range(3):
+                    box = box_lengths[axis]
+                    rounded = image_steps[atom, axis]
+
+                    if rounded != 0.0:
+                        images[0, atom, axis] = fma(
+                            -box,
+                            rounded,
+                            images[0, atom, axis],
+                        )
+                    displacement = (
+                        pos[atom, axis] - origins[0, atom, axis]
+                    ) + images[0, atom, axis]
+                    msd[window, axis] = fma(
+                        displacement,
+                        displacement,
+                        msd[window, axis],
+                    )
+
+            if n_active > 1:
+                memmove(
+                    &origins[0, 0, 0],
+                    &origins[1, 0, 0],
+                    (n_active - 1) * n_sel * 3 * sizeof(double),
+                )
+                memmove(
+                    &images[0, 0, 0],
+                    &images[1, 0, 0],
+                    (n_active - 1) * n_sel * 3 * sizeof(double),
+                )
+
+            if counter > stop_frame:
+                n_active -= 1
+            else:
+                memcpy(
+                    &origins[n_active - 1, 0, 0],
+                    &pos[0, 0],
+                    n_sel * 3 * sizeof(double),
+                )
+                memset(
+                    &images[n_active - 1, 0, 0],
+                    0,
+                    n_sel * 3 * sizeof(double),
+                )
+
+            last += gap
+
+    for origin_index in range(<Py_ssize_t> n_active):
+        lag = counter - last - gap * <long long> origin_index
+
+        for atom in range(n_sel):
+            for axis in range(3):
+                if lag != 0:
+                    box = box_lengths[axis]
+                    rounded = image_steps[atom, axis]
+
+                    if rounded != 0.0:
+                        images[origin_index, atom, axis] = fma(
+                            -box,
+                            rounded,
+                            images[origin_index, atom, axis],
+                        )
+
+                displacement = (
+                    pos[atom, axis] - origins[origin_index, atom, axis]
+                ) + images[origin_index, atom, axis]
+                msd[lag, axis] = fma(
+                    displacement,
+                    displacement,
+                    msd[lag, axis],
+                )
+
+    memcpy(
+        &prev_pos[0, 0],
+        &pos[0, 0],
+        n_sel * 3 * sizeof(double),
+    )
+    state[0] = n_active
+    state[1] = last
+
+
+def direct_msd_image_steps(
+    const double[:, :, ::1] positions,
+    const double[:, ::1] boxes,
+):
+    """Precomputes the per-frame orthorhombic image step."""
+    cdef Py_ssize_t n_frames = positions.shape[0]
+    cdef Py_ssize_t n_atoms = positions.shape[1]
+    cdef Py_ssize_t frame
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t axis
+    cdef double box
+    cdef double delta
+
+    result_array = np.zeros_like(positions)
+    cdef double[:, :, ::1] result = result_array
+
+    with nogil:
+        for frame in range(1, n_frames):
+            for atom in range(n_atoms):
+                for axis in range(3):
+                    box = boxes[frame, axis]
+                    delta = (
+                        positions[frame, atom, axis]
+                        - positions[frame - 1, atom, axis]
+                    )
+
+                    if fabs(delta) >= 0.5 * box:
+                        result[frame, atom, axis] = rint(delta / box)
+
+    return result_array
+
+
+def direct_msd_boundary_states(
+    const double[:, :, ::1] positions,
+    const double[:, ::1] boxes,
+    const double[:, :, ::1] image_steps,
+    const long long[::1] origin_indices,
+    const long long[::1] lag_starts,
+    Py_ssize_t origin_start,
+    Py_ssize_t origin_stop,
+    double[:, :, :, ::1] boundary_states,
+):
+    """Builds Diffcalc image states at parallel lag boundaries."""
+    cdef Py_ssize_t n_atoms = positions.shape[1]
+    cdef Py_ssize_t n_boundaries = lag_starts.shape[0]
+    cdef Py_ssize_t origin_index
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t axis
+    cdef Py_ssize_t boundary
+    cdef Py_ssize_t lag
+    cdef Py_ssize_t frame
+    cdef Py_ssize_t origin
+    cdef double box
+    cdef double rounded
+
+    image_array = np.zeros((n_atoms, 3), dtype=np.float64)
+    cdef double[:, ::1] images = image_array
+
+    with nogil:
+        for origin_index in range(origin_start, origin_stop):
+            memset(&images[0, 0], 0, n_atoms * 3 * sizeof(double))
+            origin = <Py_ssize_t> origin_indices[origin_index]
+            boundary = 1
+
+            while boundary < n_boundaries:
+                for lag in range(
+                    <Py_ssize_t> lag_starts[boundary - 1] + 1,
+                    <Py_ssize_t> lag_starts[boundary] + 1,
+                ):
+                    frame = origin + lag
+
+                    for atom in range(n_atoms):
+                        for axis in range(3):
+                            box = boxes[frame, axis]
+                            rounded = image_steps[frame, atom, axis]
+
+                            if rounded != 0.0:
+                                images[atom, axis] = fma(
+                                    -box,
+                                    rounded,
+                                    images[atom, axis],
+                                )
+
+                for atom in range(n_atoms):
+                    for axis in range(3):
+                        boundary_states[
+                            boundary,
+                            origin_index,
+                            atom,
+                            axis,
+                        ] = images[atom, axis]
+
+                boundary += 1
+
+
+def direct_msd_lag_range(
+    const double[:, :, ::1] positions,
+    const double[:, ::1] boxes,
+    const double[:, :, ::1] image_steps,
+    const long long[::1] origin_indices,
+    const double[:, :, ::1] boundary_states,
+    Py_ssize_t lag_start,
+    Py_ssize_t lag_stop,
+    double[:, ::1] msd,
+):
+    """Accumulates disjoint lags with optimized Diffcalc arithmetic."""
+    cdef Py_ssize_t n_origins = origin_indices.shape[0]
+    cdef Py_ssize_t n_atoms = positions.shape[1]
+    cdef Py_ssize_t origin_index
+    cdef Py_ssize_t atom
+    cdef Py_ssize_t axis
+    cdef Py_ssize_t lag
+    cdef Py_ssize_t frame
+    cdef Py_ssize_t origin
+    cdef double box
+    cdef double displacement
+    cdef double rounded
+
+    image_array = np.empty((n_atoms, 3), dtype=np.float64)
+    cdef double[:, ::1] images = image_array
+
+    with nogil:
+        for origin_index in range(n_origins):
+            memcpy(
+                &images[0, 0],
+                &boundary_states[origin_index, 0, 0],
+                n_atoms * 3 * sizeof(double),
+            )
+            origin = <Py_ssize_t> origin_indices[origin_index]
+
+            for lag in range(lag_start, lag_stop):
+                frame = origin + lag
+
+                if lag > lag_start:
+                    for atom in range(n_atoms):
+                        for axis in range(3):
+                            box = boxes[frame, axis]
+                            rounded = image_steps[frame, atom, axis]
+
+                            if rounded != 0.0:
+                                images[atom, axis] = fma(
+                                    -box,
+                                    rounded,
+                                    images[atom, axis],
+                                )
+
+                for atom in range(n_atoms):
+                    for axis in range(3):
+                        displacement = (
+                            positions[frame, atom, axis]
+                            - positions[origin, atom, axis]
+                        ) + images[atom, axis]
+                        msd[lag, axis] = fma(
+                            displacement,
+                            displacement,
+                            msd[lag, axis],
+                        )

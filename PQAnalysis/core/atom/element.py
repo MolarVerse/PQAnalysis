@@ -426,4 +426,8 @@ atomicNumbers = {
     "dum": 1
 }
 
-atomicNumbersReverse = {v: k for k, v in atomicNumbers.items()}
+atomicNumbersReverse = {}
+for _symbol, _atomic_number in atomicNumbers.items():
+    # several symbols share an atomic number (e.g. h/d/t/dum for 1,
+    # q/x for 999) - the first, canonical one has to win
+    atomicNumbersReverse.setdefault(_atomic_number, _symbol)
