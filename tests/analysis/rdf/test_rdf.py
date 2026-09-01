@@ -561,8 +561,16 @@ class TestRDF:
             r_min=3.0,
         )
 
-        system1 = AtomicSystem(cell=Cell(10, 10, 10, 90, 90, 90))
-        system2 = AtomicSystem(cell=Cell(16, 13, 12, 90, 90, 90))
+        system1 = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(16, 13, 12, 90, 90, 90)
+        )
 
         traj = Trajectory([system1, system2])
 
@@ -659,8 +667,12 @@ class TestRDF:
 
         assert np.isclose(rdf.r_max, 5.0)
 
-        system1 = AtomicSystem(cell=Cell())
-        system2 = AtomicSystem(cell=Cell())
+        system1 = AtomicSystem(
+            atoms=[Atom("h")], pos=np.array([[0, 0, 0]]), cell=Cell()
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h")], pos=np.array([[0, 0, 0]]), cell=Cell()
+        )
 
         traj = Trajectory([system1, system2])
 
@@ -733,6 +745,135 @@ class TestRDF:
         )
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
+
+    def test__init__empty_selection(self, caplog):
+        system = AtomicSystem(
+            atoms=[Atom("O"), Atom("H")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        traj = Trajectory([system])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The reference selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["Na"],
+            target_species=["H"],
+            delta_r=0.5,
+            r_max=4.0,
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The target selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["O"],
+            target_species=["Na"],
+            delta_r=0.5,
+            r_max=4.0,
+        )
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test__init__empty_selection_legacy_path(
+        self, caplog, test_with_data_dir
+    ):
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The reference selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=TrajectoryReader("traj.xyz"),
+            reference_species=["Na"],
+            target_species=["X"],
+            delta_r=0.1,
+        )
+
+    def test__init__delta_r_zero(self, caplog):
+        system = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        traj = Trajectory([system])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The delta_r value of the RDF analysis has to be "
+            "greater than zero - it actually is 0.0!"
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.0,
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The delta_r value of the RDF analysis has to be "
+            "greater than zero - it actually is 0.0!"
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            n_bins=5,
+            delta_r=0.0,
+        )
+
+    def test_run_vacuum_trajectory(self, caplog):
+        system1 = AtomicSystem(
+            atoms=[Atom("h"), Atom("h")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell()
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h"), Atom("h")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell()
+        )
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["h"], ["h"], delta_r=1.0, r_max=5.0)
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The provided trajectory is in vacuum, so the "
+            "normalization of the RDF analysis requires a "
+            "finite cell volume. Please provide a trajectory "
+            "with box information."
+            ),
+            exception=RDFError,
+            function=rdf.run,
+        )
 
     @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
     def test__init__uses_first_frame_topology_without_reader_topology(

@@ -237,6 +237,11 @@ class RDF:
         RDFError
             If n_bins, delta_r and r_max are all specified.
             This would lead to ambiguous results.
+        RDFError
+            If delta_r is specified but not greater than zero.
+        RDFError
+            If the reference or target selection does not
+            select any atoms.
 
         Notes
         -----        
@@ -352,9 +357,21 @@ class RDF:
             self.topology, self.use_full_atom_info
         )
 
+        if len(self.reference_indices) == 0:
+            self.logger.error(
+                "The reference selection does not select any atoms.",
+                exception=RDFError
+            )
+
         self.target_indices = self.target_selection.select(
             self.topology, self.use_full_atom_info
         )
+
+        if len(self.target_indices) == 0:
+            self.logger.error(
+                "The target selection does not select any atoms.",
+                exception=RDFError
+            )
 
     def _use_raw_fast_path(self, traj: Trajectory | TrajectoryReader) -> bool:
         """
@@ -436,6 +453,15 @@ class RDF:
         r_min: PositiveReal,
     ):
         """Selects legacy-compatible or general RDF bin semantics."""
+        if delta_r is not None and delta_r <= 0.0:
+            self.logger.error(
+                (
+                    "The delta_r value of the RDF analysis has to be "
+                    f"greater than zero - it actually is {delta_r}!"
+                ),
+                exception=RDFError
+            )
+
         self._legacy_rdf = self._use_legacy_rdf(
             n_bins=n_bins,
             delta_r=delta_r,
@@ -824,10 +850,27 @@ class RDF:
 
         This method is called by the run method of the RDF class.
         It initializes the RDF analysis for running by calculating
-        the average volume of the trajectory, the reference 
-        density of the RDF analysis and the target index 
+        the average volume of the trajectory, the reference
+        density of the RDF analysis and the target index
         combinations of the RDF analysis.
+
+        Raises
+        ------
+        RDFError
+            If the trajectory is in vacuum, as the normalization
+            of g(r) requires a finite cell volume.
         """
+
+        if check_trajectory_vacuum(self._setup_cells):
+            self.logger.error(
+                (
+                    "The provided trajectory is in vacuum, so the "
+                    "normalization of the RDF analysis requires a "
+                    "finite cell volume. Please provide a trajectory "
+                    "with box information."
+                ),
+                exception=RDFError
+            )
 
         self._average_volume = self._calculate_average_volume()
 
