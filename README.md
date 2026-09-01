@@ -7,9 +7,14 @@
 [![codecov](https://codecov.io/gh/MolarVerse/PQAnalysis/graph/badge.svg?token=IDFK8L6IIQ)](https://codecov.io/gh/MolarVerse/PQAnalysis)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-The main purpose of this package is to provide useful tools for the analysis of the Molecular Dynamics software package [PQ](https://github.com/MolarVerse/PQ). Furthermore, the intent of this package is to enable straightforward implementations of newly developed analysis tools on top of the provided API.
+PQAnalysis reads structures, trajectories, velocities and Hessians produced by
+[PQ](https://github.com/MolarVerse/PQ). Its command-line and Python interfaces
+share parsers, numerical kernels and schema-defined outputs for RDF, MSD, VACF,
+vibrational, spectral and momentum analyses.
 
-The future development of this package focuses on two main goals. On the one hand the enhancement of the provided analysis tools and extending its API to be compatible with many other different Molecular Dynamics engines. As this project is only a *hobby* project of the maintainers, any contributions considering enhancement or bug fixes are highly welcomed.
+Development focuses on validated analysis methods and support for additional
+molecular-dynamics engines. The maintainers develop PQAnalysis in their free
+time; focused analysis contributions and bug fixes are welcome.
 
 ## Installation
 
@@ -19,22 +24,29 @@ Install with pip:
 
 ## Development
 
-Clone the PQAnalysis GitHub repository and navigate into the directory:
+Clone the repository and install the development, test and documentation
+dependencies in an isolated environment:
 
     git clone https://github.com/MolarVerse/PQAnalysis.git
     cd PQAnalysis
+    python -m venv .venv
+    source .venv/bin/activate
+    python -m pip install -e ".[dev,test,docs]"
 
-Install in editable mode with test dependencies:
+Run the test suite with both debug and release runtime type checking:
 
-    pip install -e ".[test]"
+    bash pytest.sh
 
-Run the test suite:
+The [developer documentation](https://molarverse.github.io/PQAnalysis/developerGuide/developerGuide.html)
+covers package architecture, adding an analysis, scientific validation and the
+tag-driven release process. The
+[function index](https://molarverse.github.io/PQAnalysis/reference/functions.html)
+lists the supported Python entry points directly.
 
-    python -m pytest
-
-Use squash merges for pull requests. The pull request title becomes the commit
-message on the target branch, so PR titles must follow
-[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/):
+Pull request titles must follow
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/); CI
+validates them. Keep individual commits scoped because multi-commit pull
+requests may retain their commit history:
 
     feat: add a new analysis command
     fix(io): handle missing trajectory data
