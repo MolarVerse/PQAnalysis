@@ -142,7 +142,7 @@ class Trajectory:
             A copy of the trajectory.
         """
 
-        return Trajectory(self.frames.copy())
+        return Trajectory([frame.copy() for frame in self.frames])
 
     def __len__(self) -> int:
         """

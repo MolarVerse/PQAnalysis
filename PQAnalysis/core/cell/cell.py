@@ -159,6 +159,20 @@ class Cell(_StandardPropertiesMixin):
         """bool: Returns whether the unit cell is a vacuum."""
         return bool(self.volume > 1e100)
 
+    def copy(self) -> "Cell":
+        """
+        Returns a copy of the cell.
+
+        Returns
+        -------
+        Cell
+            A copy of the cell.
+        """
+        if self.is_vacuum:
+            return Cell()
+
+        return Cell(self.x, self.y, self.z, self.alpha, self.beta, self.gamma)
+
     @runtime_type_checking
     def image(self, pos: NpnDNumberArray) -> NpnDNumberArray:
         """

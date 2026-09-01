@@ -109,6 +109,21 @@ class TestCell:
             cell.box_matrix, np.array([[2, 0, 0], [0, 3, 0], [0, 0, 4]])
         )
 
+    def test_copy(self):
+        cell = Cell(1, 2, 3, 60, 90, 120)
+        copied = cell.copy()
+
+        assert copied == cell
+        assert copied is not cell
+
+        copied.box_lengths = np.array([2, 3, 4])
+        assert np.allclose(cell.box_lengths, np.array([1, 2, 3]))
+
+        vacuum = Cell()
+        vacuum_copy = vacuum.copy()
+        assert vacuum_copy.is_vacuum
+        assert vacuum_copy is not vacuum
+
     def test_box_angles(self):
         cell = Cell(1, 2, 3)
         assert np.allclose(cell.box_angles, np.array([90, 90, 90]))
