@@ -270,7 +270,9 @@ def rotational_modes(
     Calculate normalized rotational modes.
     """
     atom_coords_cm = center_to_com(atom_coords, atom_masses)
-    _, eigenvectors = np.linalg.eigh(inertia_tensor(atom_coords, atom_masses))
+    _, eigenvectors = np.linalg.eigh(
+        inertia_tensor(atom_coords_cm, atom_masses)
+    )
 
     x_frame = eigenvectors
     p_frame = atom_coords_cm @ eigenvectors
