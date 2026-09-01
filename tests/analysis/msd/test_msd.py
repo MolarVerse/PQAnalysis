@@ -765,3 +765,33 @@ class TestMSD:
         shift = MSD._unwrap_shift(displacement, cell)
 
         assert np.allclose(shift, [[-10.0, 12.0, 0.0]])
+
+    def test_run_twice_raises(self, caplog):
+        """
+        An MSD object is single-use: the first run returns the
+        correct MSD, a second run raises a clear MSDError
+        (previously the second call consumed the exhausted frame
+        generator and silently returned all zeros).
+        """
+        positions = [
+            [[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]],
+            [[0.5, 0.0, 0.0], [1.0, 1.0, 2.0]],
+        ]
+        traj = _make_trajectory(positions)
+
+        msd = MSD(traj, "O", window=1, gap=1)
+        *_, msd_tot = msd.run()
+
+        assert np.allclose(msd_tot, [0.0, 0.625])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="MSD",
+            logging_level="ERROR",
+            message_to_test=(
+                "This MSD analysis object has already been run; "
+                "construct a new one to run the analysis again."
+            ),
+            exception=MSDError,
+            function=msd.run,
+        )
