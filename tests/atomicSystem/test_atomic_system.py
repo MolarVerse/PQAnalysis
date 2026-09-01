@@ -357,6 +357,16 @@ class TestAtomicSystem:
 
         assert system[:] == system
 
+        system = AtomicSystem(
+            pos=np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(10.0, 10.0, 10.0),
+        )
+        subset = system[0]
+        assert subset.cell is not system.cell
+        subset.cell.box_lengths = np.array([20.0, 20.0, 20.0])
+        assert np.allclose(system.cell.box_lengths, [10.0, 10.0, 10.0])
+
     def test_n_atoms(self, caplog):
         system = AtomicSystem()
         assert system.n_atoms == 0
