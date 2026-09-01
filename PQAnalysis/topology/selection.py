@@ -382,7 +382,7 @@ class SelectionTransformer(Transformer):
 
     def __init__(
         self,
-        topology=Topology(),
+        topology=None,
         visit_tokens=False,
         use_full_atom_info=False
     ):
@@ -399,7 +399,7 @@ class SelectionTransformer(Transformer):
         self.__visit_tokens__ = visit_tokens
         super().__init__(visit_tokens=visit_tokens)
 
-        self.topology = topology
+        self.topology = Topology() if topology is None else topology
         self.use_full_atom_info = use_full_atom_info
 
     def word(self, items: List[Token]) -> str:
@@ -480,9 +480,9 @@ class SelectionTransformer(Transformer):
         int
             The unsigned integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
-    def INT(self, items: List[Token] | Token) -> int:  # pylint: disable=invalid-name
+    def INT(self, items: Token | List[Token]) -> int:  # pylint: disable=invalid-name
         """
         Returns the integer of the given token.
 
@@ -496,7 +496,7 @@ class SelectionTransformer(Transformer):
         int
             The integer of the given token.
         """
-        return int(items[0])
+        return int(items[0] if isinstance(items, list) else items)
 
     def atomtype(self, items: Any) -> Np1DIntArray:
         """

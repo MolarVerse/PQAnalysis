@@ -142,6 +142,9 @@ class MSD:
     _direct_batch_max_bytes = 512 * 1024 * 1024
     _direct_batch_max_workers = 16
 
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -495,7 +498,25 @@ class MSD:
             The z-component of the MSD in Angstrom^2.
         msd_tot : Np1DNumberArray
             The total MSD (x + y + z) in Angstrom^2.
+
+        Raises
+        ------
+        MSDError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
         """
+
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This MSD analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=MSDError
+            )
+
+        self._run_consumed = True
 
         if self._raw_reader is not None:
             self._calculate_msd_raw()
@@ -822,6 +843,7 @@ class MSD:
             boxes = np.empty((self.n_frames, 3), dtype=np.float64)
             last_cell = None
             box_lengths = None
+            n_read = 0
 
             for frame_index, (values, cell) in enumerate(
                 tqdm(
@@ -851,6 +873,19 @@ class MSD:
 
                 positions[frame_index] = values[indices]
                 boxes[frame_index] = box_lengths
+                n_read = frame_index + 1
+
+            if n_read != self.n_frames:
+                self.logger.error(
+                    (
+                        f"The position trajectory yielded {n_read} "
+                        f"frame(s), but {self.n_frames} frame(s) were "
+                        "expected from the frame count of the trajectory "
+                        "file(s). Please check them for surplus blank "
+                        "lines or incomplete frames."
+                    ),
+                    exception=MSDError,
+                )
 
         origin_indices, boundaries, _ = self._raw_batch_shape()
         image_steps = direct_msd_image_steps(positions, boxes)

@@ -63,7 +63,8 @@ class Traj2QMCFCCLI(CLIBase):
         parser.add_argument(
             'trajectory_file',
             type=str,
-            help='The trajectory file to be converted.'
+            nargs='+',
+            help='The trajectory file(s) to be converted.'
         )
 
         parser.parse_mode()

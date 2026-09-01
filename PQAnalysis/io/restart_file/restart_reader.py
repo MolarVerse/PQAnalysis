@@ -190,7 +190,7 @@ class RestartFileReader(BaseReader):
     def _parse_atoms(
         cls,
         lines: List[str],
-        cell: Cell = Cell(),
+        cell: Cell | None = None,
         reference_residues: Residues | None = None
     ) -> AtomicSystem:
         """
@@ -258,6 +258,8 @@ class RestartFileReader(BaseReader):
         RestartFileReaderError
             If no atoms are found in the restart file.
         """
+        cell = Cell() if cell is None else cell
+
         atoms = []
         positions = []
         velocities = []

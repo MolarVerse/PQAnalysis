@@ -725,3 +725,43 @@ class TestVACF:
             exception=VACFError,
             function=vacf.run,
         )
+
+    def test_run_twice_raises(self, caplog):
+        """
+        A VACF object is single-use: the first run returns the
+        correct correlation function, a second run raises a clear
+        VACFError (previously the second call worked from the
+        exhausted frame generator and raised a confusing
+        frame-count error or returned garbage).
+        """
+        rng = np.random.default_rng(1)
+        velocities = rng.normal(size=(8, 2, 3))
+
+        vacf = VACF(
+            _make_velocity_trajectory(velocities),
+            window_size=3,
+            time_step=0.1,
+        )
+        _, correlation = vacf.run()
+
+        reference = VACF(
+            _make_velocity_trajectory(velocities),
+            window_size=3,
+            time_step=0.1,
+        )
+        _, reference_correlation = reference.run()
+
+        assert correlation[0] == pytest.approx(1.0)
+        assert np.allclose(correlation, reference_correlation)
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="VACF",
+            logging_level="ERROR",
+            message_to_test=(
+                "This VACF analysis object has already been run; "
+                "construct a new one to run the analysis again."
+            ),
+            exception=VACFError,
+            function=vacf.run,
+        )

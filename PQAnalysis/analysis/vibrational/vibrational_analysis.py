@@ -270,7 +270,9 @@ def rotational_modes(
     Calculate normalized rotational modes.
     """
     atom_coords_cm = center_to_com(atom_coords, atom_masses)
-    _, eigenvectors = np.linalg.eigh(inertia_tensor(atom_coords, atom_masses))
+    _, eigenvectors = np.linalg.eigh(
+        inertia_tensor(atom_coords_cm, atom_masses)
+    )
 
     x_frame = eigenvectors
     p_frame = atom_coords_cm @ eigenvectors
@@ -409,6 +411,11 @@ def hessian_sign_factor(
     """
     Resolve a Hessian sign setting into a numeric factor.
     """
+    if isinstance(hessian_sign, str) and hessian_sign.strip() in {
+        "1", "+1", "-1"
+    }:
+        hessian_sign = float(hessian_sign)
+
     if isinstance(hessian_sign, (int, float)):
         if hessian_sign in {1, -1}:
             return float(hessian_sign)

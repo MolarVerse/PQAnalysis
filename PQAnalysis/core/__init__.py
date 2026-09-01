@@ -17,6 +17,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .cell import Cell, Cells
     from .exceptions import (
         AtomError,
+        CellError,
         ElementNotFoundError,
         ResidueError,
         ResidueWarning,
@@ -28,6 +29,7 @@ _EXPORTS = {
     "ResidueError": ".exceptions",
     "ResidueWarning": ".exceptions",
     "AtomError": ".exceptions",
+    "CellError": ".exceptions",
     "Cell": ".cell",
     "Cells": ".cell",
     "Atom": ".atom",
