@@ -6,6 +6,7 @@ from . import pytestmark
 from collections import defaultdict
 
 from PQAnalysis.io import EnergyFileReader, InfoFileReader
+from PQAnalysis.io.exceptions import EnergyFileReaderError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 from PQAnalysis.exceptions import PQFileNotFoundError
@@ -191,3 +192,52 @@ class TestEnergyReader:
         assert energy.units == defaultdict(lambda: None)
         assert energy.info_given == False
         assert energy.units_given == False
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_skips_blank_lines(self):
+        with open("md-blank.en", "w", encoding="utf-8") as file:
+            print("1 2.0 3.0", file=file)
+            print("", file=file)
+            print("2 4.0 5.0", file=file)
+            print("", file=file)
+
+        reader = EnergyFileReader("md-blank.en", use_info_file=False)
+        energy = reader.read()
+
+        assert energy.data.shape == (3, 2)
+        assert np.allclose(
+            energy.data,
+            np.array([[1.0, 2.0], [2.0, 4.0], [3.0, 5.0]])
+        )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_invalid_number_of_columns(self):
+        with open("md-ragged.en", "w", encoding="utf-8") as file:
+            print("1 2.0 3.0", file=file)
+            print("2 4.0 5.0 6.0", file=file)
+
+        reader = EnergyFileReader("md-ragged.en", use_info_file=False)
+
+        with pytest.raises(EnergyFileReaderError) as exception:
+            reader.read()
+        assert str(exception.value) == (
+            "Invalid number of columns in energy file md-ragged.en line 2. "
+            "Expected 3 columns."
+        )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_inconsistent_columns_across_files(self):
+        with open("md-a.en", "w", encoding="utf-8") as file:
+            print("1 2.0 3.0", file=file)
+
+        with open("md-b.en", "w", encoding="utf-8") as file:
+            print("1 2.0 3.0 4.0", file=file)
+
+        reader = EnergyFileReader(["md-a.en", "md-b.en"], use_info_file=False)
+
+        with pytest.raises(EnergyFileReaderError) as exception:
+            reader.read()
+        assert str(exception.value) == (
+            "Energy file md-b.en has 4 columns, but the previously read "
+            "energy files have 3 columns."
+        )

@@ -195,7 +195,10 @@ class _ArgumentParser(argparse.ArgumentParser):
         The progress argument is an optional argument and defaults to True.
         """
         super().add_argument(
-            '--progress', action='store_false', help='Show progress bar.'
+            '--progress',
+            action=argparse.BooleanOptionalAction,
+            default=True,
+            help='Show progress bar.'
         )
 
     def _parse_version(self):
