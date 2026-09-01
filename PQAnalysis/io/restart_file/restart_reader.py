@@ -196,9 +196,12 @@ class RestartFileReader(BaseReader):
         """
         Parses the atom lines of the restart file.
 
-        An atom line can have 12 or 21 arguments.
-        if it has 12 arguments, the atom line is assumed to be from a PQ restart file.
-        if it has 21 arguments, the atom line is assumed to be from a QMCFC restart file.
+        An atom line can have 6, 12 or 21 arguments.
+        If it has 6 arguments, the atom line is a positions-only PQ
+        restart line (as written when the frame has no velocities or
+        forces); velocities and forces are then set to zero.
+        If it has 12 arguments, the atom line is a full PQ restart line.
+        If it has 21 arguments, the atom line is a QMCFC restart line.
 
         For the PQ restart file, the arguments are:
             - atom name
@@ -207,12 +210,12 @@ class RestartFileReader(BaseReader):
             - x position
             - y position
             - z position
-            - x velocity
-            - y velocity
-            - z velocity
-            - x force
-            - y force
-            - z force
+            - x velocity (optional; zero if omitted)
+            - y velocity (optional; zero if omitted)
+            - z velocity (optional; zero if omitted)
+            - x force (optional; zero if omitted)
+            - y force (optional; zero if omitted)
+            - z force (optional; zero if omitted)
 
         For the QMCFC restart file, the arguments are:
             - atom name
@@ -254,7 +257,7 @@ class RestartFileReader(BaseReader):
         Raises
         ------
         RestartFileReaderError
-            If the number of arguments is not 12 or 21.
+            If the number of arguments is not 6, 12 or 21.
         RestartFileReaderError
             If no atoms are found in the restart file.
         """
@@ -269,7 +272,7 @@ class RestartFileReader(BaseReader):
         for line in lines:
             line = line.strip().split()
 
-            if len(line) != 12 and len(line) != 21:
+            if len(line) not in (6, 12, 21):
                 cls.logger.error(
                     f"Invalid number of arguments for atom: {len(line)}",
                     exception=RestartFileReaderError
@@ -278,8 +281,12 @@ class RestartFileReader(BaseReader):
             atoms.append(Atom(line[0]))
             residues.append(int(line[2]))
             positions.append(np.array([float(l) for l in line[3:6]]))
-            velocities.append(np.array([float(l) for l in line[6:9]]))
-            forces.append(np.array([float(l) for l in line[9:12]]))
+            if len(line) == 6:
+                velocities.append(np.zeros(3))
+                forces.append(np.zeros(3))
+            else:
+                velocities.append(np.array([float(l) for l in line[6:9]]))
+                forces.append(np.array([float(l) for l in line[9:12]]))
 
         if not atoms:
             cls.logger.error(
