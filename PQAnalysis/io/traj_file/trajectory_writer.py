@@ -236,7 +236,7 @@ class TrajectoryWriter(BaseWriter):
             The elements of the frame.
         """
 
-        if self.format == MDEngineFormat.QMCFC and self._type == TrajectoryFormat.XYZ:
+        if self.format == MDEngineFormat.QMCFC:
             print("X   0.0 0.0 0.0", file=self.file)
 
         for i, atom in enumerate(atoms):
@@ -419,6 +419,8 @@ class TrajectoryWriter(BaseWriter):
         """
         Writes the charges of the frame to the file.
 
+        If format is 'qmcfc', an additional X 0.0 line is written.
+
         Parameters
         ----------
         scalar : np.array
@@ -426,6 +428,9 @@ class TrajectoryWriter(BaseWriter):
         atoms : Elements
             The elements of the frame.
         """
+
+        if self.format == MDEngineFormat.QMCFC:
+            print("X 0.0", file=self.file)
 
         for i, atom in enumerate(atoms):
             print(f"{atom.name} {scalar[i]}", file=self.file)
