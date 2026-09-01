@@ -38,6 +38,12 @@ def test_traj_to_com_traj():
     assert np.allclose(traj_output[1].pos, [[1, 1, 2]])
     assert traj_output[1].combined_name == 'CCC'
 
+    # selection=None must mean "all atoms of each frame", not a
+    # slice frozen from the first frame's atom count.
+    traj_output = traj_to_com_traj(traj, selection=None)
+    assert np.allclose(traj_output[0].pos, [[1, 1, 1]])
+    assert np.allclose(traj_output[1].pos, [[1, 1, 2]])
+
     traj_output = traj_to_com_traj(traj, selection=slice(0, 2))
     assert np.allclose(traj_output[0].pos, [[0.5, 0.5, 0.5]])
     assert traj_output[0].combined_name == 'CC'
