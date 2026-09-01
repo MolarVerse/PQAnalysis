@@ -921,3 +921,120 @@ class TestTrajectoryReader:
             ),
             function=reader._cell_generator().__next__,
         )
+
+    # -------------------------------------------------------------------------------- #
+    @pytest.mark.usefixtures("tmpdir")
+    def test_cells_extxyz(self):
+        file = open("tmp.extxyz", "w")
+        print("2", file=file)
+        print(
+            'Lattice="1.0 0.0 0.0 0.0 2.0 0.0 0.0 0.0 3.0" '
+            'Properties=species:S:1:pos:R:3',
+            file=file
+        )
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("2", file=file)
+        print(
+            'Lattice="4.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 6.0" '
+            'Properties=species:S:1:pos:R:3',
+            file=file
+        )
+        print("h 1.0 0.0 0.0", file=file)
+        print("o 1.0 1.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader("tmp.extxyz")
+        assert reader.traj_format is TrajectoryFormat.EXTXYZ
+
+        assert reader.cells == [Cell(1.0, 2.0, 3.0), Cell(4.0, 5.0, 6.0)]
+        assert reader.cells == [frame.cell for frame in reader.read()]
+
+    # -------------------------------------------------------------------------------- #
+    @pytest.mark.usefixtures("tmpdir")
+    def test_cells_variable_size_extxyz(self):
+        file = open("tmp.extended.xyz", "w")
+        print("2", file=file)
+        print(
+            'Lattice="1.0 0.0 0.0 0.0 2.0 0.0 0.0 0.0 3.0" '
+            'Properties=species:S:1:pos:R:3',
+            file=file
+        )
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("1", file=file)
+        print(
+            'Lattice="4.0 0.0 0.0 0.0 5.0 0.0 0.0 0.0 6.0" '
+            'Properties=species:S:1:pos:R:3',
+            file=file
+        )
+        print("c 1.0 0.0 0.0", file=file)
+        print("3", file=file)
+        print("Properties=species:S:1:pos:R:3", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        print("c 1.0 0.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader("tmp.extended.xyz")
+
+        # the last frame does not define a Lattice and
+        # therefore reuses the cell of the previous frame
+        assert reader.cells == [
+            Cell(1.0, 2.0, 3.0),
+            Cell(4.0, 5.0, 6.0),
+            Cell(4.0, 5.0, 6.0),
+        ]
+        assert reader.cells == [frame.cell for frame in reader.read().frames]
+
+    # -------------------------------------------------------------------------------- #
+    @pytest.mark.usefixtures("tmpdir")
+    def test_cells_variable_size_xyz_files(self):
+        file = open("tmp1.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        file = open("tmp2.xyz", "w")
+        print("1 2.0 2.0 2.0", file=file)
+        print("", file=file)
+        print("c 1.0 0.0 0.0", file=file)
+        print("1 3.0 3.0 3.0", file=file)
+        print("", file=file)
+        print("c 2.0 0.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader(["tmp1.xyz", "tmp2.xyz"])
+
+        assert reader.cells == [
+            Cell(1.0, 1.0, 1.0),
+            Cell(2.0, 2.0, 2.0),
+            Cell(3.0, 3.0, 3.0),
+        ]
+
+    # -------------------------------------------------------------------------------- #
+    @pytest.mark.usefixtures("tmpdir")
+    def test_cells_unsupported_format(self, caplog):
+        file = open("tmp.xyz", "w")
+        print("2 1.0 1.0 1.0", file=file)
+        print("", file=file)
+        print("h 0.0 0.0 0.0", file=file)
+        print("o 0.0 1.0 0.0", file=file)
+        file.close()
+
+        reader = TrajectoryReader("tmp.xyz")
+        reader.traj_format = TrajectoryFormat.AUTO
+
+        assert_logging_with_exception(
+            caplog,
+            TrajectoryReader.__qualname__,
+            exception=TrajectoryReaderError,
+            logging_level="ERROR",
+            message_to_test=(
+                "Reading the cells is not implemented for the "
+                "trajectory format TrajectoryFormat.AUTO."
+            ),
+            function=reader._cell_generator().__next__,
+        )
