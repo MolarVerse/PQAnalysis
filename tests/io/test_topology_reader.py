@@ -69,6 +69,22 @@ class TestTopologyFileReader:
             "Invalid number of columns in j-coupling block. Expected 5."
         )
 
+    def test_read_j_couplings_duplicate_atoms(self, tmp_path):
+        """
+        Test that repeated atom indices in a j-coupling raise.
+        """
+        filename = str(tmp_path / "topology.top")
+        content = "J_COUPLINGS 1 1 1 1\n1 2 2 4 1\nEND\n"
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+
+        with pytest.raises(TopologyFileError) as exception:
+            TopologyFileReader(filename).read()
+        assert str(exception.value) == (
+            "Atoms in j-coupling block cannot be the same."
+        )
+
     def test_read_distance_constraints(self, tmp_path):
         """
         Test that a dist_constraints block is parsed into
@@ -125,6 +141,41 @@ class TestTopologyFileReader:
         assert str(exception.value) == (
             "Invalid number of columns in distance constraints "
             "block. Expected 6."
+        )
+
+    def test_read_distance_constraints_same_atoms(self, tmp_path):
+        """
+        Test that identical atom indices in a distance constraint raise.
+        """
+        filename = str(tmp_path / "topology.top")
+        content = "DIST_CONSTRAINTS 1 1\n1 1 1.0 2.0 100.0 -0.1\nEND\n"
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+
+        with pytest.raises(TopologyFileError) as exception:
+            TopologyFileReader(filename).read()
+        assert str(exception.value) == (
+            "Atoms in distance constraints block cannot be the same."
+        )
+
+    def test_read_distance_constraints_lower_greater_than_upper(
+        self, tmp_path
+    ):
+        """
+        Test that lower > upper distance raises, matching PQ.
+        """
+        filename = str(tmp_path / "topology.top")
+        content = "DIST_CONSTRAINTS 1 1\n1 2 2.0 1.0 100.0 -0.1\nEND\n"
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+
+        with pytest.raises(TopologyFileError) as exception:
+            TopologyFileReader(filename).read()
+        assert str(exception.value) == (
+            "Lower distance cannot be greater than upper distance "
+            "in distance constraints block."
         )
 
     def test_round_trip_all_sections(self, tmp_path):

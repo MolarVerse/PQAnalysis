@@ -523,6 +523,8 @@ class TopologyFileReader(BaseReader):
         ------
         TopologyFileError
             If the number of columns in the block is not 5.
+        TopologyFileError
+            If any of the four atom indices are the same.
         """
         j_couplings = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
@@ -543,12 +545,23 @@ class TopologyFileReader(BaseReader):
                     exception=TopologyFileError
                 )
 
+            index1 = int(index1)
+            index2 = int(index2)
+            index3 = int(index3)
+            index4 = int(index4)
+
+            if len({index1, index2, index3, index4}) != 4:
+                self.logger.error(
+                    "Atoms in j-coupling block cannot be the same.",
+                    exception=TopologyFileError
+                )
+
             j_couplings.append(
                 JCoupling(
-                    index1=int(index1),
-                    index2=int(index2),
-                    index3=int(index3),
-                    index4=int(index4),
+                    index1=index1,
+                    index2=index2,
+                    index3=index3,
+                    index4=index4,
                     j_coupling_type=int(j_coupling_type),
                     comment=comment
                 )
@@ -583,6 +596,10 @@ class TopologyFileReader(BaseReader):
         ------
         TopologyFileError
             If the number of columns in the block is not 6.
+        TopologyFileError
+            If the two atom indices are the same.
+        TopologyFileError
+            If the lower distance is greater than the upper distance.
         """
         distance_constraints = []
         for line in block[:-1]:  # [-1] to avoid the "END" line of the block
@@ -612,12 +629,30 @@ class TopologyFileReader(BaseReader):
                     exception=TopologyFileError
                 )
 
+            index1 = int(index1)
+            index2 = int(index2)
+            lower_distance = float(lower_distance)
+            upper_distance = float(upper_distance)
+
+            if index1 == index2:
+                self.logger.error(
+                    "Atoms in distance constraints block cannot be the same.",
+                    exception=TopologyFileError
+                )
+
+            if lower_distance > upper_distance:
+                self.logger.error(
+                    "Lower distance cannot be greater than upper distance "
+                    "in distance constraints block.",
+                    exception=TopologyFileError
+                )
+
             distance_constraints.append(
                 DistanceConstraint(
-                    index1=int(index1),
-                    index2=int(index2),
-                    lower_distance=float(lower_distance),
-                    upper_distance=float(upper_distance),
+                    index1=index1,
+                    index2=index2,
+                    lower_distance=lower_distance,
+                    upper_distance=upper_distance,
                     spring_constant=float(spring_constant),
                     d_spring_constant_dt=float(d_spring_constant_dt),
                     comment=comment
