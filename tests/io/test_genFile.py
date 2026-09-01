@@ -4,6 +4,7 @@ import numpy as np
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom
 from PQAnalysis.io import gen2xyz, read_gen_file, write_gen_file, xyz2gen
+from PQAnalysis.io.gen_file.exceptions import GenFileReaderError
 
 from . import pytestmark  # pylint: disable=unused-import
 
@@ -95,3 +96,69 @@ class TestGenFileConversion:
             lines = file.read().splitlines()
 
         assert [line.split()[0] for line in lines[2:]] == ["C", "Cl", "Br"]
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_gen_truncated_coordinates_raises(self):
+        with open("truncated.gen", "w", encoding="utf-8") as file:
+            print("4 C", file=file)
+            print("C H", file=file)
+            print("1 1 0.0 0.0 0.0", file=file)
+            print("2 2 1.0 0.0 0.0", file=file)
+
+        with pytest.raises(GenFileReaderError) as exception:
+            read_gen_file("truncated.gen")
+
+        assert "truncated.gen" in str(exception.value)
+        assert "4" in str(exception.value)
+        assert "2" in str(exception.value)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_gen_truncated_cell_raises(self):
+        with open("truncated_cell.gen", "w", encoding="utf-8") as file:
+            print("2 S", file=file)
+            print("C H", file=file)
+            print("1 1 0.0 0.0 0.0", file=file)
+            print("2 2 1.0 0.0 0.0", file=file)
+            print("0.0 0.0 0.0", file=file)
+            print("10.0 0.0 0.0", file=file)
+            print("0.0 10.0 0.0", file=file)
+
+        with pytest.raises(GenFileReaderError) as exception:
+            read_gen_file("truncated_cell.gen")
+
+        assert "truncated_cell.gen" in str(exception.value)
+        assert "4 cell lines" in str(exception.value)
+        assert "3" in str(exception.value)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_gen_out_of_range_atom_id_raises(self):
+        for filename, bad_id in [("id_high.gen", 5), ("id_low.gen", 0)]:
+            with open(filename, "w", encoding="utf-8") as file:
+                print("2 C", file=file)
+                print("C H", file=file)
+                print("1 1 0.0 0.0 0.0", file=file)
+                print(f"2 {bad_id} 1.0 0.0 0.0", file=file)
+
+            with pytest.raises(GenFileReaderError) as exception:
+                read_gen_file(filename)
+
+            assert filename in str(exception.value)
+            assert str(bad_id) in str(exception.value)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_read_gen_well_formed_periodic_parses(self):
+        with open("periodic.gen", "w", encoding="utf-8") as file:
+            print("2 S", file=file)
+            print("C H", file=file)
+            print("1 1 0.0 0.0 0.0", file=file)
+            print("2 2 1.0 0.0 0.0", file=file)
+            print("0.0 0.0 0.0", file=file)
+            print("10.0 0.0 0.0", file=file)
+            print("0.0 10.0 0.0", file=file)
+            print("0.0 0.0 10.0", file=file)
+
+        system = read_gen_file("periodic.gen")
+
+        assert [atom.name for atom in system.atoms] == ["C", "H"]
+        assert np.allclose(system.pos, [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+        assert np.allclose(system.cell.box_lengths, [10.0, 10.0, 10.0])
