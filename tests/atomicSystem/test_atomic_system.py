@@ -176,6 +176,22 @@ class TestAtomicSystem:
             exception.value
         ) == "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology"
 
+    def test_default_cell_not_shared(self):
+        """
+        Two default-constructed AtomicSystems must not share the same Cell
+        object, so mutating one system's cell in place must leave the other
+        system's cell untouched.
+        """
+        system1 = AtomicSystem()
+        system2 = AtomicSystem()
+
+        assert system1.cell is not system2.cell
+
+        system1.cell.box_lengths = np.array([10.0, 10.0, 10.0])
+
+        assert system2.cell == Cell()
+        assert system2.pbc is False
+
     def test__eq__(self):
         system1 = AtomicSystem()
         system2 = AtomicSystem()
