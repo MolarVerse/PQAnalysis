@@ -21,7 +21,7 @@ from beartype.typing import List, Tuple
 from PQAnalysis.utils.progress import tqdm
 
 # local absolute imports
-from PQAnalysis.config import with_progress_bar
+from PQAnalysis import config
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
 from PQAnalysis.core import distance, Cell, Cells
 from PQAnalysis.traj import (
@@ -183,6 +183,10 @@ class RDF:
     _batch_max_bytes = 512 * 1024 * 1024
     _batch_max_workers = 16
     _batch_pairs_per_worker = 250_000
+
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -237,6 +241,11 @@ class RDF:
         RDFError
             If n_bins, delta_r and r_max are all specified.
             This would lead to ambiguous results.
+        RDFError
+            If delta_r is specified but not greater than zero.
+        RDFError
+            If the reference or target selection does not
+            select any atoms.
 
         Notes
         -----        
@@ -352,9 +361,21 @@ class RDF:
             self.topology, self.use_full_atom_info
         )
 
+        if len(self.reference_indices) == 0:
+            self.logger.error(
+                "The reference selection does not select any atoms.",
+                exception=RDFError
+            )
+
         self.target_indices = self.target_selection.select(
             self.topology, self.use_full_atom_info
         )
+
+        if len(self.target_indices) == 0:
+            self.logger.error(
+                "The target selection does not select any atoms.",
+                exception=RDFError
+            )
 
     def _use_raw_fast_path(self, traj: Trajectory | TrajectoryReader) -> bool:
         """
@@ -436,6 +457,15 @@ class RDF:
         r_min: PositiveReal,
     ):
         """Selects legacy-compatible or general RDF bin semantics."""
+        if delta_r is not None and delta_r <= 0.0:
+            self.logger.error(
+                (
+                    "The delta_r value of the RDF analysis has to be "
+                    f"greater than zero - it actually is {delta_r}!"
+                ),
+                exception=RDFError
+            )
+
         self._legacy_rdf = self._use_legacy_rdf(
             n_bins=n_bins,
             delta_r=delta_r,
@@ -587,8 +617,8 @@ class RDF:
         """Sets bins with the scalar semantics of ``thh_tools/RDF``."""
         self.r_min = 0.0
         self.delta_r = float(np.float32(delta_r))
-        self.n_bins = max(
-            int(max(cell.box_lengths) / 2.0 / self.delta_r)
+        self.n_bins = min(
+            int(min(cell.box_lengths) / 2.0 / self.delta_r)
             for cell in self.cells
         )
         self.r_max = self.delta_r * self.n_bins
@@ -807,7 +837,25 @@ class RDF:
             The density-normalized shell population in Angstrom^3.
         differential_bins : Np1DNumberArray
             The pair-count residual relative to the ideal-gas shell count.
+
+        Raises
+        ------
+        RDFError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
         """
+
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This RDF analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=RDFError
+            )
+
+        self._run_consumed = True
 
         self._initialize_run()
 
@@ -824,10 +872,27 @@ class RDF:
 
         This method is called by the run method of the RDF class.
         It initializes the RDF analysis for running by calculating
-        the average volume of the trajectory, the reference 
-        density of the RDF analysis and the target index 
+        the average volume of the trajectory, the reference
+        density of the RDF analysis and the target index
         combinations of the RDF analysis.
+
+        Raises
+        ------
+        RDFError
+            If the trajectory is in vacuum, as the normalization
+            of g(r) requires a finite cell volume.
         """
+
+        if check_trajectory_vacuum(self._setup_cells):
+            self.logger.error(
+                (
+                    "The provided trajectory is in vacuum, so the "
+                    "normalization of the RDF analysis requires a "
+                    "finite cell volume. Please provide a trajectory "
+                    "with box information."
+                ),
+                exception=RDFError
+            )
 
         self._average_volume = self._calculate_average_volume()
 
@@ -852,8 +917,9 @@ class RDF:
 
         if self.no_intra_molecular:
             for reference_index in self.reference_indices:
+                residue_number = self.topology.residue_numbers[reference_index]
                 residue_indices = self.topology.residue_atom_indices[
-                    reference_index]
+                    residue_number]
                 self.target_index_combinations.append(
                     np.setdiff1d(self.target_indices, residue_indices)
                 )
@@ -873,7 +939,7 @@ class RDF:
         for frame in tqdm(
             itertools.chain([self.first_frame], self.frame_generator),
             total=self.n_frames,
-            disable=not with_progress_bar
+            disable=not config.with_progress_bar
         ):
             for i, reference_index in enumerate(self.reference_indices):
 
@@ -953,7 +1019,7 @@ class RDF:
         for values, cell in tqdm(
             self._raw_reader.raw_frame_generator(),
             total=self.n_frames,
-            disable=not with_progress_bar):
+            disable=not config.with_progress_bar):
 
             counter += 1
 

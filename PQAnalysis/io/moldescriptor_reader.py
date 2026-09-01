@@ -61,6 +61,9 @@ class MoldescriptorReader(BaseReader):
         ------
         MoldescriptorReaderError
             If the number of columns in the header of a mol type is not 3.
+        MoldescriptorReaderError
+            If a mol type declares more atoms than atom lines follow
+            before the end of the file.
         """
         with open(self.filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -102,6 +105,17 @@ class MoldescriptorReader(BaseReader):
                         )
 
                     n_atoms = int(splitted_line[1])
+
+                    if counter + n_atoms + 1 > len(lines):
+                        self.logger.error(
+                            (
+                            f"The mol type {splitted_line[0]} declares "
+                            f"{n_atoms} atoms, but only "
+                            f"{len(lines) - counter - 1} atom lines follow "
+                            "before the end of the file.\n"
+                            ),
+                            exception=MoldescriptorReaderError
+                        )
 
                     mol_types.append(
                         self._read_mol_type(

@@ -47,8 +47,9 @@ For a file-backed periodic orthorhombic trajectory, this minimal form with
 RDF path. Coordinates are parsed directly as float64, while ``delta_r`` is
 represented as float32 as it was by the legacy C input reader. Histogram
 binning and all five output columns preserve the legacy arithmetic order.
-Explicit ``r_max`` or ``n_bins`` values, triclinic cells, vacuum trajectories
-and intra-molecular exclusion use the general PQAnalysis RDF definition.
+Explicit ``r_max`` or ``n_bins`` values, triclinic cells and intra-molecular
+exclusion use the general PQAnalysis RDF definition. Vacuum trajectories are
+rejected, as the normalization of g(r) requires a finite cell volume.
 
 Restart files and moldescriptor files are only needed when the calculation
 requires molecular topology information. For example,

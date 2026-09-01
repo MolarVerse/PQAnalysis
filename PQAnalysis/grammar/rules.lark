@@ -6,6 +6,8 @@
             
 ?array: "[" (primitive ",")* primitive "]"
 
+bare_array: primitive ("," primitive)+
+
 ?range:     integer "-" integer "-" integer
          |  integer ".." integer ".." integer
          |  integer "-" integer

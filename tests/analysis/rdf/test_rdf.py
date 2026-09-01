@@ -1,14 +1,17 @@
+import sys
+
 import numpy as np
 import pytest
 
+from PQAnalysis import config
 from PQAnalysis.analysis.rdf.exceptions import RDFError
 from PQAnalysis.analysis import RDF
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, Element, Residue
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.io import TrajectoryReader
-from PQAnalysis.topology import SelectionCompatible
+from PQAnalysis.topology import SelectionCompatible, Topology
 from PQAnalysis.types import PositiveReal, PositiveInt
 from PQAnalysis.exceptions import PQTypeError
 
@@ -32,6 +35,49 @@ def _make_no_intra_trajectory():
     )
 
     return Trajectory([system1, system2])
+
+
+def _make_residue_trajectory(n_water: int, n_sodium: int):
+    """
+    Builds a trajectory whose topology has real residues:
+    ``n_water`` water molecules (3 atoms each) followed by
+    ``n_sodium`` single-atom sodium residues.
+    """
+    water = Residue(
+        name="WAT",
+        residue_id=1,
+        total_charge=0.0,
+        elements=[Element("O"), Element("H"), Element("H")],
+        atom_types=np.array([0, 1, 1]),
+        partial_charges=np.array([-0.8, 0.4, 0.4]),
+    )
+
+    atoms = [Atom("O"), Atom("H"), Atom("H")] * n_water
+    atoms += [Atom("Na")] * n_sodium
+    residue_ids = np.array([1] * (3 * n_water) + [0] * n_sodium)
+
+    topology = Topology(
+        atoms=atoms,
+        residue_ids=residue_ids,
+        reference_residues=[water],
+    )
+
+    positions = []
+    for i in range(n_water):
+        origin = 4.3 * i
+        positions.append([origin, 0.0, 0.0])
+        positions.append([origin + 1.0, 0.0, 0.0])
+        positions.append([origin, 1.0, 0.0])
+    for i in range(n_sodium):
+        positions.append([float(i), 12.0, 12.0])
+
+    system = AtomicSystem(
+        pos=np.array(positions),
+        cell=Cell(30, 30, 30, 90, 90, 90),
+        topology=topology,
+    )
+
+    return Trajectory([system])
 
 
 def _make_partial_rdf_reference_trajectory():
@@ -298,6 +344,31 @@ def test__add_to_bins():
 
 
 
+def test_progress_bar_binds_config_at_call_time(monkeypatch):
+    # config.with_progress_bar is set by the CLI after the module
+    # import, so it must be read at call time, not bound by value
+    # at import time
+    captured = {}
+
+    def fake_tqdm(iterable, **kwargs):
+        captured.update(kwargs)
+        return iterable
+
+    rdf_module = sys.modules[RDF.__module__]
+    monkeypatch.setattr(rdf_module, "tqdm", fake_tqdm)
+
+    monkeypatch.setattr(config, "with_progress_bar", False)
+    RDF(_make_no_intra_trajectory(), ["H"], ["C"], delta_r=0.5, n_bins=5).run()
+    assert captured["disable"] is True
+
+    captured.clear()
+
+    monkeypatch.setattr(config, "with_progress_bar", True)
+    RDF(_make_no_intra_trajectory(), ["H"], ["C"], delta_r=0.5, n_bins=5).run()
+    assert captured["disable"] is False
+
+
+
 class TestRDF:
 
     def test__init__type_checking(self, caplog):
@@ -490,8 +561,16 @@ class TestRDF:
             r_min=3.0,
         )
 
-        system1 = AtomicSystem(cell=Cell(10, 10, 10, 90, 90, 90))
-        system2 = AtomicSystem(cell=Cell(16, 13, 12, 90, 90, 90))
+        system1 = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(16, 13, 12, 90, 90, 90)
+        )
 
         traj = Trajectory([system1, system2])
 
@@ -588,8 +667,12 @@ class TestRDF:
 
         assert np.isclose(rdf.r_max, 5.0)
 
-        system1 = AtomicSystem(cell=Cell())
-        system2 = AtomicSystem(cell=Cell())
+        system1 = AtomicSystem(
+            atoms=[Atom("h")], pos=np.array([[0, 0, 0]]), cell=Cell()
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h")], pos=np.array([[0, 0, 0]]), cell=Cell()
+        )
 
         traj = Trajectory([system1, system2])
 
@@ -663,6 +746,135 @@ class TestRDF:
         assert rdf.n_bins == 5
         assert np.isclose(rdf.delta_r, 1.0)
 
+    def test__init__empty_selection(self, caplog):
+        system = AtomicSystem(
+            atoms=[Atom("O"), Atom("H")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        traj = Trajectory([system])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The reference selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["Na"],
+            target_species=["H"],
+            delta_r=0.5,
+            r_max=4.0,
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The target selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["O"],
+            target_species=["Na"],
+            delta_r=0.5,
+            r_max=4.0,
+        )
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test__init__empty_selection_legacy_path(
+        self, caplog, test_with_data_dir
+    ):
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The reference selection does not select any atoms."
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=TrajectoryReader("traj.xyz"),
+            reference_species=["Na"],
+            target_species=["X"],
+            delta_r=0.1,
+        )
+
+    def test__init__delta_r_zero(self, caplog):
+        system = AtomicSystem(
+            atoms=[Atom("h")],
+            pos=np.array([[0, 0, 0]]),
+            cell=Cell(10, 10, 10, 90, 90, 90)
+        )
+        traj = Trajectory([system])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The delta_r value of the RDF analysis has to be "
+            "greater than zero - it actually is 0.0!"
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            delta_r=0.0,
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The delta_r value of the RDF analysis has to be "
+            "greater than zero - it actually is 0.0!"
+            ),
+            exception=RDFError,
+            function=RDF,
+            traj=traj,
+            reference_species=["h"],
+            target_species=["h"],
+            n_bins=5,
+            delta_r=0.0,
+        )
+
+    def test_run_vacuum_trajectory(self, caplog):
+        system1 = AtomicSystem(
+            atoms=[Atom("h"), Atom("h")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell()
+        )
+        system2 = AtomicSystem(
+            atoms=[Atom("h"), Atom("h")],
+            pos=np.array([[0, 0, 0], [1, 0, 0]]),
+            cell=Cell()
+        )
+        traj = Trajectory([system1, system2])
+
+        rdf = RDF(traj, ["h"], ["h"], delta_r=1.0, r_max=5.0)
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=RDF.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+            "The provided trajectory is in vacuum, so the "
+            "normalization of the RDF analysis requires a "
+            "finite cell volume. Please provide a trajectory "
+            "with box information."
+            ),
+            exception=RDFError,
+            function=rdf.run,
+        )
+
     @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
     def test__init__uses_first_frame_topology_without_reader_topology(
         self, test_with_data_dir
@@ -704,6 +916,57 @@ class TestRDF:
         assert np.isfinite(normalized_bins).all()
         assert np.isfinite(normalized_bins2).all()
         assert np.isfinite(differential_bins).all()
+
+    def test_no_intra_molecular_excludes_own_residue(self):
+        # two water molecules (atoms 0-5) followed by eight sodium
+        # residues, so that every reference index is smaller than the
+        # number of residues and no IndexError can hide the bug.
+        rdf = RDF(
+            _make_residue_trajectory(n_water=2, n_sodium=8),
+            ["O"],
+            ["H"],
+            delta_r=0.5,
+            n_bins=12,
+            no_intra_molecular=True
+        )
+
+        assert rdf.reference_indices.tolist() == [0, 3]
+        assert rdf.target_indices.tolist() == [1, 2, 4, 5]
+
+        rdf.run()
+
+        # each oxygen has to lose exactly the hydrogens of its own water
+        assert len(rdf.target_index_combinations) == 2
+        assert rdf.target_index_combinations[0].tolist() == [4, 5]
+        assert rdf.target_index_combinations[1].tolist() == [1, 2]
+
+        # hand-computed inter-molecular distances:
+        # O(0) - H(4) = 5.3          -> bin 10
+        # O(0) - H(5) = sqrt(19.49)  -> bin 8
+        # O(3) - H(1) = 3.3          -> bin 6
+        # O(3) - H(2) = sqrt(19.49)  -> bin 8
+        # the intra-molecular O-H distances of 1.0 (bin 2) are excluded
+        expected_bins = np.array([0, 0, 0, 0, 0, 0, 1, 0, 2, 0, 1, 0])
+        assert np.array_equal(rdf.bins, expected_bins)
+
+    def test_no_intra_molecular_with_more_atoms_than_residues(self):
+        # three water molecules, i.e. nine atoms but only three residues
+        rdf = RDF(
+            _make_residue_trajectory(n_water=3, n_sodium=0),
+            ["O"],
+            ["H"],
+            delta_r=0.5,
+            n_bins=12,
+            no_intra_molecular=True
+        )
+
+        assert rdf.reference_indices.tolist() == [0, 3, 6]
+
+        rdf.run()
+
+        assert rdf.target_index_combinations[0].tolist() == [4, 5, 7, 8]
+        assert rdf.target_index_combinations[1].tolist() == [1, 2, 7, 8]
+        assert rdf.target_index_combinations[2].tolist() == [1, 2, 4, 5]
 
     def test_run_skips_self_pairs_for_overlapping_selections(self):
         system = AtomicSystem(
@@ -802,3 +1065,41 @@ class TestRDF:
             expected_bins,
         )
         np.testing.assert_allclose(normalized_bins, ase_reference_bins)
+
+    def test_run_twice_raises(self, caplog):
+        """
+        An RDF object is single-use: the first run returns the
+        correct g(r), a second run raises a clear RDFError before
+        the accumulators are touched again (previously the second
+        call silently accumulated into self.bins and returned a
+        doubled g(r)).
+        """
+        rdf = RDF(
+            _make_no_intra_trajectory(), ["H"], ["H"], delta_r=0.5, n_bins=5
+        )
+        _, normalized_bins, *_ = rdf.run()
+
+        reference = RDF(
+            _make_no_intra_trajectory(), ["H"], ["H"], delta_r=0.5, n_bins=5
+        )
+        _, reference_bins, *_ = reference.run()
+
+        assert np.allclose(normalized_bins, reference_bins)
+
+        bins_after_first_run = rdf.bins.copy()
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="RDF",
+            logging_level="ERROR",
+            message_to_test=(
+                "This RDF analysis object has already been run; "
+                "construct a new one to run the analysis again."
+            ),
+            exception=RDFError,
+            function=rdf.run,
+        )
+
+        # the guard preempts the accumulation, so the bin counts
+        # are not doubled by the failed second call
+        assert np.array_equal(rdf.bins, bins_after_first_run)

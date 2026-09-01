@@ -176,6 +176,22 @@ class TestAtomicSystem:
             exception.value
         ) == "The number of atoms already found in the AtomicSystem object have to be equal to the number of atoms in the new topology"
 
+    def test_default_cell_not_shared(self):
+        """
+        Two default-constructed AtomicSystems must not share the same Cell
+        object, so mutating one system's cell in place must leave the other
+        system's cell untouched.
+        """
+        system1 = AtomicSystem()
+        system2 = AtomicSystem()
+
+        assert system1.cell is not system2.cell
+
+        system1.cell.box_lengths = np.array([10.0, 10.0, 10.0])
+
+        assert system2.cell == Cell()
+        assert system2.pbc is False
+
     def test__eq__(self):
         system1 = AtomicSystem()
         system2 = AtomicSystem()
@@ -757,6 +773,62 @@ class TestAtomicSystem:
         system = AtomicSystem()
         assert not system.has_stress
         assert system.stress is None
+
+    def test_copy(self):
+        """
+        Test that copy carries all fields and does not alias the arrays.
+        """
+        system = AtomicSystem(
+            atoms=[Atom('C'), Atom('H')],
+            pos=np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]]),
+            vel=np.array([[0.1, 0.0, 0.0], [0.2, 0.0, 0.0]]),
+            forces=np.array([[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]),
+            charges=np.array([-1.0, 1.0]),
+            energy=-123.456,
+            virial=np.eye(3),
+            stress=2 * np.eye(3),
+            cell=Cell(10, 10, 10),
+        )
+
+        copy = system.copy()
+
+        assert np.isclose(copy.energy, -123.456)
+        assert np.allclose(copy.virial, np.eye(3))
+        assert np.allclose(copy.stress, 2 * np.eye(3))
+        assert copy.cell == system.cell
+        assert copy.topology == system.topology
+
+        assert copy.pos is not system.pos
+        assert copy.vel is not system.vel
+        assert copy.forces is not system.forces
+        assert copy.charges is not system.charges
+        assert copy.virial is not system.virial
+        assert copy.stress is not system.stress
+
+        copy.center(np.array([5.0, 0.0, 0.0]), image=False)
+        copy.vel[0] = [9.0, 9.0, 9.0]
+        copy.forces[0] = [9.0, 9.0, 9.0]
+        copy.charges[0] = 9.0
+        copy.virial[0, 0] = 9.0
+        copy.stress[0, 0] = 9.0
+
+        assert np.allclose(
+            system.pos, np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+        )
+        assert np.allclose(
+            system.vel, np.array([[0.1, 0.0, 0.0], [0.2, 0.0, 0.0]])
+        )
+        assert np.allclose(
+            system.forces, np.array([[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+        )
+        assert np.allclose(system.charges, np.array([-1.0, 1.0]))
+        assert np.allclose(system.virial, np.eye(3))
+        assert np.allclose(system.stress, 2 * np.eye(3))
+
+        empty_copy = AtomicSystem().copy()
+        assert empty_copy.energy is None
+        assert empty_copy.virial is None
+        assert empty_copy.stress is None
 
     def test_center_of_mass_resiudes(self):
         system = AtomicSystem()

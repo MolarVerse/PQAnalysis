@@ -79,6 +79,42 @@ class TestWavenumberGrid:
         grid = wavenumber_grid(0.0, 1.0, 0.5)
         assert np.array_equal(grid, [0.0, 0.5])
 
+    @pytest.mark.parametrize(
+        "wavenumber_min, wavenumber_max, wavenumber_step",
+        [
+            (49.73, 168.31, 0.847),
+            (31.87, 180.61, 0.074),
+            (0.0, 1.0, 0.1),
+            (10.0, 4000.0, 0.25),
+            (0.1, 0.35, 0.05),
+        ],
+    )
+    def test_exclusive_upper_bound(
+        self, wavenumber_min, wavenumber_max, wavenumber_step
+    ):
+        """
+        The last grid point always stays strictly below the maximum
+        wavenumber, even when floating-point accumulation would cross
+        the bound (e.g. min=49.73, max=168.31, step=0.847).
+        """
+        grid = wavenumber_grid(
+            wavenumber_min, wavenumber_max, wavenumber_step
+        )
+
+        assert grid.size > 0
+        assert grid[0] == wavenumber_min
+        assert grid[-1] < wavenumber_max
+
+    def test_default_grid_unchanged(self):
+        """
+        The bound fix leaves the default grid byte-identical to the
+        plain np.arange construction used before.
+        """
+        grid = wavenumber_grid()
+        legacy = np.arange(10.0, 4000.0, 0.25, dtype=np.float64)
+
+        assert grid.tobytes() == legacy.tobytes()
+
     def test_invalid_grid_settings(self):
         """
         Invalid grid settings are rejected.

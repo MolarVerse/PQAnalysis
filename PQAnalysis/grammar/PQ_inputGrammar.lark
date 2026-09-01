@@ -2,14 +2,17 @@ start:  expression
             
 expression: assign+
             
-?assign.5:   key "=" value ";"
-        |  key "=" value ";" assign
+?assign.5:   key "=" pq_value ";"
+        |  key "=" pq_value ";" assign
+
+?pq_value: value | bare_array
             
 %import .rules.key
 %import .rules.value
 %import .rules.primitive
 %import .rules.range
 %import .rules.array
+%import .rules.bare_array
 
 // just for namespace reasons
 %import .rules.glob
