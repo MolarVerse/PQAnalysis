@@ -172,7 +172,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def _write_header(self, n_atoms: int, cell: Cell = Cell()) -> None:
+    def _write_header(self, n_atoms: int, cell: Cell | None = None) -> None:
         """
         Writes the header line of the frame to the file.
 
@@ -183,6 +183,8 @@ class TrajectoryWriter(BaseWriter):
         cell : Cell
             The cell of the frame. Default is Cell().
         """
+
+        cell = Cell() if cell is None else cell
 
         # If the format is QMCFC, an additional atom is added to the count.
         if self.format == MDEngineFormat.QMCFC:
@@ -236,7 +238,7 @@ class TrajectoryWriter(BaseWriter):
             The elements of the frame.
         """
 
-        if self.format == MDEngineFormat.QMCFC and self._type == TrajectoryFormat.XYZ:
+        if self.format == MDEngineFormat.QMCFC:
             print("X   0.0 0.0 0.0", file=self.file)
 
         for i, atom in enumerate(atoms):
@@ -419,6 +421,8 @@ class TrajectoryWriter(BaseWriter):
         """
         Writes the charges of the frame to the file.
 
+        If format is 'qmcfc', an additional X 0.0 line is written.
+
         Parameters
         ----------
         scalar : np.array
@@ -426,6 +430,9 @@ class TrajectoryWriter(BaseWriter):
         atoms : Elements
             The elements of the frame.
         """
+
+        if self.format == MDEngineFormat.QMCFC:
+            print("X 0.0", file=self.file)
 
         for i, atom in enumerate(atoms):
             print(f"{atom.name} {scalar[i]}", file=self.file)

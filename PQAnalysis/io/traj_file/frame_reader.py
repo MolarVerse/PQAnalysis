@@ -505,6 +505,12 @@ class ExtXYZFrameReader(BaseFrameReader):
             cell=self._read_cell(metadata),
         )
 
+    def read_cell(self, comment_line: str) -> Cell:
+        """
+        Reads the cell from the comment line of an extended xyz frame.
+        """
+        return self._read_cell(self._read_metadata(comment_line))
+
     def _read_atom_count(  # pylint: disable=inconsistent-return-statements
         self,
         line: str

@@ -7,6 +7,8 @@ Command Line Tool for Converting XYZ Files to GEN Files
 
 """
 
+import argparse
+
 from PQAnalysis.config import code_base_url
 from PQAnalysis.io import xyz2gen
 from ._argument_parser import _ArgumentParser
@@ -24,6 +26,35 @@ __epilog__ += "\n"
 __epilog__ += "\n"
 
 __doc__ += __outputdoc__
+
+
+
+def _periodic(string: str) -> bool | None:
+    """
+    Converts a command line string to the periodic value.
+
+    Parameters
+    ----------
+    string : str
+        The command line string to be converted.
+
+    Returns
+    -------
+    bool | None
+        True for 'True', False for 'False' and None for 'None'
+        (case-insensitive).
+
+    Raises
+    ------
+    argparse.ArgumentTypeError
+        If the string is not one of 'True', 'False' or 'None'.
+    """
+    try:
+        return {'true': True, 'false': False, 'none': None}[string.lower()]
+    except KeyError:
+        raise argparse.ArgumentTypeError(
+            f"invalid choice: '{string}' (choose from True, False, None)"
+        ) from None
 
 
 
@@ -65,6 +96,7 @@ class XYZ2GENCLI(CLIBase):
 
         parser.add_argument(
             '--periodic',
+            type=_periodic,
             choices=[True, False, None],
             default=None,
             help=(
