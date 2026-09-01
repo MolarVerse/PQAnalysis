@@ -711,7 +711,7 @@ class AtomicSystem(
             vel=vel,
             forces=forces,
             charges=charges,
-            cell=self.cell,
+            cell=self.cell.copy(),
             topology=self.topology[keys]
         )
 
