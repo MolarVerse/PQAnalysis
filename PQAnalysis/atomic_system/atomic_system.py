@@ -568,7 +568,7 @@ class AtomicSystem(
             energy=self.energy,
             virial=None if self.virial is None else self.virial.copy(),
             stress=None if self.stress is None else self.stress.copy(),
-            cell=self.cell,
+            cell=self.cell.copy(),
             topology=self.topology
         )
 
