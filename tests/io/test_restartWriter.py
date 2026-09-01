@@ -5,6 +5,7 @@ import numpy as np
 from . import pytestmark
 
 from PQAnalysis.io import RestartFileWriter
+from PQAnalysis.io.restart_file.api import read_restart_file, write_restart_file
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.atomic_system import AtomicSystem
@@ -184,9 +185,9 @@ H    2    0    2.0 2.0 2.0
         captured = capsys.readouterr()
         assert captured.out == """
 Box  10.0 10.0 10.0  90 90 90
-C    0    0    0.0 0.0 0.0
-H    1    0    1.0 1.0 1.0
-H    2    0    2.0 2.0 2.0
+C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0
+H    1    0    1.0 1.0 1.0 1.0 1.0 1.0 0.0 0.0 0.0
+H    2    0    2.0 2.0 2.0 2.0 2.0 2.0 0.0 0.0 0.0
 """
 
         forces = np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0], [2.0, 2.0, 2.0]])
@@ -214,3 +215,26 @@ C    0    0    0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0
 H    1    0    1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0
 H    2    0    2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0
 """
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_write_only_velocities_or_forces_round_trip(self):
+        atoms = [Atom("C"), Atom("H")]
+        positions = np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
+        values = np.array([[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]])
+        cell = Cell(10.0, 10.0, 10.0)
+
+        frame = AtomicSystem(atoms=atoms, pos=positions, vel=values, cell=cell)
+        write_restart_file(frame, "vel_only.rst", mode="o")
+        system = read_restart_file("vel_only.rst")
+
+        assert np.allclose(system.vel, values)
+        assert np.allclose(system.forces, np.zeros((2, 3)))
+
+        frame = AtomicSystem(
+            atoms=atoms, pos=positions, forces=values, cell=cell
+        )
+        write_restart_file(frame, "forces_only.rst", mode="o")
+        system = read_restart_file("forces_only.rst")
+
+        assert np.allclose(system.forces, values)
+        assert np.allclose(system.vel, np.zeros((2, 3)))

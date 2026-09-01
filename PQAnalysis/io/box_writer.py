@@ -58,6 +58,7 @@ class BoxWriter(BaseWriter):
 
         super().__init__(filename, FileWritingMode(mode))
         self.output_format = BoxFileFormat(output_format)
+        self._n_frames_written = 0
 
     @runtime_type_checking
     def write(self, traj: Trajectory, reset_counter: bool = True) -> None:
@@ -117,7 +118,7 @@ class BoxWriter(BaseWriter):
     def write_box_file(
         self,
         traj: Trajectory,
-        reset_counter: bool = True  # pylint: disable=unused-argument # is needed for the decorator
+        reset_counter: bool = True
     ) -> None:
         """
         Writes the given trajectory to the file in data file format.
@@ -141,8 +142,10 @@ class BoxWriter(BaseWriter):
         """
         self.__check_pbc__(traj)
 
-        counter = self.counter[BoxWriter.write_box_file.__name__]  # pylint: disable=no-member # is added via decorator
-        counter = len(traj) * (counter - 1)
+        if reset_counter:
+            self._n_frames_written = 0
+
+        counter = self._n_frames_written
 
         for i, frame in enumerate(traj):
             cell = frame.cell
@@ -154,6 +157,8 @@ class BoxWriter(BaseWriter):
                 ),
                 file=self.file
             )
+
+        self._n_frames_written += len(traj)
 
     def __check_pbc__(self, traj: Trajectory) -> None:
         """
