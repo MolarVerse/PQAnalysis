@@ -55,7 +55,7 @@ package_logger = logging.getLogger(__name__)
 
 log_file_env_var = os.getenv("PQANALYSIS_LOG_FILE")
 
-if log_file_env_var and logging_env_var.lower() != "off":
+if log_file_env_var and log_file_env_var.lower() != "off":
     config.use_log_file = True
 
     if log_file_env_var.lower() != "on" and len(log_file_env_var) > 0:
