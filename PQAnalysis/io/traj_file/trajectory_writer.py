@@ -172,7 +172,7 @@ class TrajectoryWriter(BaseWriter):
 
         self.close()
 
-    def _write_header(self, n_atoms: int, cell: Cell = Cell()) -> None:
+    def _write_header(self, n_atoms: int, cell: Cell | None = None) -> None:
         """
         Writes the header line of the frame to the file.
 
@@ -183,6 +183,8 @@ class TrajectoryWriter(BaseWriter):
         cell : Cell
             The cell of the frame. Default is Cell().
         """
+
+        cell = Cell() if cell is None else cell
 
         # If the format is QMCFC, an additional atom is added to the count.
         if self.format == MDEngineFormat.QMCFC:

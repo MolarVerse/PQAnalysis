@@ -123,7 +123,7 @@ class AtomicSystem(
         energy: float | None = None,
         virial: Np3x3NumberArray | None = None,
         stress: Np3x3NumberArray | None = None,
-        cell: Cell = Cell()
+        cell: Cell | None = None
     ) -> None:
         """
         For the initialization of an AtomicSystem all parameters are optional.
@@ -192,7 +192,7 @@ class AtomicSystem(
         self._energy = energy
         self._virial = virial
         self._stress = stress
-        self._cell = cell
+        self._cell = Cell() if cell is None else cell
 
     # TODO: check why dynamic formatting does
     #      not work here for "AtomicSystem"
