@@ -109,6 +109,16 @@ class TestCell:
             cell.box_matrix, np.array([[2, 0, 0], [0, 3, 0], [0, 0, 4]])
         )
 
+    def test_box_lengths_in_place_assignment_rejected(self):
+        cell = Cell(1, 2, 3)
+        with pytest.raises(ValueError):
+            cell.box_lengths[0] = 9
+
+        assert np.allclose(cell.box_lengths, np.array([1, 2, 3]))
+        assert np.allclose(
+            cell.box_matrix, np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+        )
+
     def test_box_angles(self):
         cell = Cell(1, 2, 3)
         assert np.allclose(cell.box_angles, np.array([90, 90, 90]))
@@ -123,6 +133,16 @@ class TestCell:
                 [[1, -1, 0], [0, 1.73205081, 1.73205081], [0, 0, 2.44948974]]
             )
         )
+
+    def test_box_angles_in_place_assignment_rejected(self):
+        cell = Cell(1, 2, 3)
+        matrix_before = cell.box_matrix.copy()
+
+        with pytest.raises(ValueError):
+            cell.box_angles[0] = 60
+
+        assert np.allclose(cell.box_angles, np.array([90, 90, 90]))
+        assert np.allclose(cell.box_matrix, matrix_before)
 
     def test_volume(self):
         cell = Cell(1, 2, 3, 60, 90, 120)
