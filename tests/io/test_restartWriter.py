@@ -238,3 +238,11 @@ H    2    0    2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2
 
         assert np.allclose(system.forces, values)
         assert np.allclose(system.vel, np.zeros((2, 3)))
+
+        frame = AtomicSystem(atoms=atoms, pos=positions, cell=cell)
+        write_restart_file(frame, "pos_only.rst", mode="o")
+        system = read_restart_file("pos_only.rst")
+
+        assert np.allclose(system.pos, positions)
+        assert np.allclose(system.vel, np.zeros((2, 3)))
+        assert np.allclose(system.forces, np.zeros((2, 3)))

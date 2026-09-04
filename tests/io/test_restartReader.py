@@ -83,11 +83,18 @@ class Test_RestartFileReader:
         assert str(exception.value) == "No atoms found in restart file."
 
         with pytest.raises(RestartFileReaderError) as exception:
-            lines = ["C 0 1 1.0 1.0 1.0"]
+            lines = ["C 0 1 1.0 1.0"]
             RestartFileReader._parse_atoms(lines, Cell())
         assert str(
             exception.value
-        ) == "Invalid number of arguments for atom: 6"
+        ) == "Invalid number of arguments for atom: 5"
+
+        lines = ["C 0 1 1.0 1.0 1.0"]
+        frame = RestartFileReader._parse_atoms(lines, Cell())
+        assert frame.n_atoms == 1
+        assert np.allclose(frame.pos, np.array([[1.0, 1.0, 1.0]]))
+        assert np.allclose(frame.vel, np.zeros((1, 3)))
+        assert np.allclose(frame.forces, np.zeros((1, 3)))
 
         lines = [
             "C 0 1 1.0 1.0 1.0 1.1 1.2 1.3 1.4 1.5 1.6",
