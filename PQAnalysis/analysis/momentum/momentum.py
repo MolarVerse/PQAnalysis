@@ -83,6 +83,9 @@ class Momentum:
     _use_full_atom_default = False
     _batch_max_bytes = 512 * 1024 * 1024
 
+    #: Whether this single-use analysis object has already been run.
+    _run_consumed = False
+
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
@@ -224,9 +227,24 @@ class Momentum:
         Raises
         ------
         MomentumError
+            If this analysis object has already been run. The
+            object is single-use; construct a new one to run the
+            analysis again.
+        MomentumError
             If a frame does not contain velocity information for all
             atoms of the topology.
         """
+        if self._run_consumed:
+            self.logger.error(
+                (
+                    "This Momentum analysis object has already been run; "
+                    "construct a new one to run the analysis again."
+                ),
+                exception=MomentumError
+            )
+
+        self._run_consumed = True
+
         if self._raw_reader is not None:
             batch_norms = self._run_raw_file_batch()
 
