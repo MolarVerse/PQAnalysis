@@ -39,11 +39,7 @@ def traj_to_com_traj(
 
     com_traj = Trajectory()
     for frame in trajectory:
-
-        if selection is None:
-            selection = slice(0, frame.n_atoms)
-
-        frame = frame[selection]
-        com_traj.append(frame.compute_com_atomic_system(group=group))
+        selected = frame if selection is None else frame[selection]
+        com_traj.append(selected.compute_com_atomic_system(group=group))
 
     return com_traj
