@@ -191,6 +191,34 @@ class TestMomentum:
 
         assert momentum.n_frames == 2
 
+    def test_run_twice_raises(self, caplog):
+        """
+        A Momentum object is single-use: the first run returns the
+        correct norms, a second run raises a clear MomentumError
+        (previously the second call reused the exhausted frame
+        generator and silently returned only the first-frame value).
+        """
+        system = AtomicSystem(
+            atoms=[Atom("H")], vel=np.array([[1.0, 0.0, 0.0]])
+        )
+        momentum = Momentum(Trajectory([system, system]))
+        norms = momentum.run()
+
+        assert norms.shape == (2, )
+        assert np.allclose(norms, [1.00794e-15, 1.00794e-15])
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name=Momentum.__qualname__,
+            logging_level="ERROR",
+            message_to_test=(
+                "This Momentum analysis object has already been run; "
+                "construct a new one to run the analysis again."
+            ),
+            exception=MomentumError,
+            function=momentum.run,
+        )
+
     def test_empty_trajectory(self, caplog):
         """
         An empty trajectory is rejected.
