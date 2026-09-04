@@ -357,6 +357,16 @@ class TestAtomicSystem:
 
         assert system[:] == system
 
+        system = AtomicSystem(
+            pos=np.array([[0.0, 0.0, 0.0], [1.0, 1.0, 1.0]]),
+            atoms=[Atom('C'), Atom('H')],
+            cell=Cell(10.0, 10.0, 10.0),
+        )
+        subset = system[0]
+        assert subset.cell is not system.cell
+        subset.cell.box_lengths = np.array([20.0, 20.0, 20.0])
+        assert np.allclose(system.cell.box_lengths, [10.0, 10.0, 10.0])
+
     def test_n_atoms(self, caplog):
         system = AtomicSystem()
         assert system.n_atoms == 0
@@ -804,6 +814,7 @@ class TestAtomicSystem:
         assert copy.charges is not system.charges
         assert copy.virial is not system.virial
         assert copy.stress is not system.stress
+        assert copy.cell is not system.cell
 
         copy.center(np.array([5.0, 0.0, 0.0]), image=False)
         copy.vel[0] = [9.0, 9.0, 9.0]
@@ -811,6 +822,7 @@ class TestAtomicSystem:
         copy.charges[0] = 9.0
         copy.virial[0, 0] = 9.0
         copy.stress[0, 0] = 9.0
+        copy.cell.box_lengths = np.array([20.0, 20.0, 20.0])
 
         assert np.allclose(
             system.pos, np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]])
@@ -824,11 +836,14 @@ class TestAtomicSystem:
         assert np.allclose(system.charges, np.array([-1.0, 1.0]))
         assert np.allclose(system.virial, np.eye(3))
         assert np.allclose(system.stress, 2 * np.eye(3))
+        assert np.allclose(system.cell.box_lengths, np.array([10.0, 10.0, 10.0]))
 
         empty_copy = AtomicSystem().copy()
         assert empty_copy.energy is None
         assert empty_copy.virial is None
         assert empty_copy.stress is None
+        assert empty_copy.cell is not AtomicSystem().cell
+        assert empty_copy.cell.is_vacuum
 
     def test_center_of_mass_resiudes(self):
         system = AtomicSystem()
