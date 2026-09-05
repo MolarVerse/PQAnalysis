@@ -7,6 +7,7 @@ import pytest
 
 from PQAnalysis.analysis.vibrational.vibrational_analysis import (
     calculate,
+    center_to_com,
     hessian_sign_factor,
     internal_subspace,
     mode_displacement,
@@ -15,6 +16,7 @@ from PQAnalysis.analysis.vibrational.vibrational_analysis import (
     rotational_modes,
     select_mode_indices,
     symmetrize_addition,
+    translational_modes,
     wavenumber,
     write_calculate_output,
     write_extxyz_modes,
@@ -270,6 +272,68 @@ class TestVibrationalAnalysis:
         assert reference.wavenumbers[-1] == pytest.approx(1436.17, abs=1e-2)
         assert translated.wavenumbers[-1] == pytest.approx(
             reference.wavenumbers[-1], abs=1e-6
+        )
+
+    def test_rotational_modes_span_true_rotations(self):
+        coords = np.array(
+            [
+                [0.10, 0.20, 0.30],
+                [1.05, 0.15, 0.40],
+                [-0.25, 1.10, 0.55],
+            ]
+        )
+        masses = np.array([15.999, 1.008, 1.008])
+
+        rotation = rotational_modes(coords, masses)
+        translation = translational_modes(masses)
+
+        assert rotation.shape == (9, 3)
+        np.testing.assert_allclose(
+            translation.T @ rotation,
+            np.zeros((3, 3)),
+            atol=1.0e-12,
+        )
+
+        coords_cm = center_to_com(coords, masses)
+        generators = np.zeros((9, 3))
+        for axis_index in range(3):
+            displacement = np.cross(np.eye(3)[axis_index], coords_cm)
+            generators[:, axis_index] = (
+                np.sqrt(masses)[:, None] * displacement
+            ).ravel()
+        basis, _ = np.linalg.qr(generators)
+        residual = rotation - basis @ (basis.T @ rotation)
+
+        np.testing.assert_allclose(
+            residual,
+            np.zeros((9, 3)),
+            atol=1.0e-12,
+        )
+
+    @pytest.mark.parametrize("example_dir", ["vibrational"], indirect=False)
+    def test_calculate_h2o_wavenumbers_reference(self, test_with_data_dir):
+        system = RestartFileReader("h2o.rst").read()
+        hessian = read_hessian_file("hessian.dat")
+
+        result = calculate(system.atomic_masses, system.pos, hessian)
+
+        np.testing.assert_allclose(
+            result.wavenumbers,
+            np.array(
+                [
+                    -49.9928168,
+                    -41.9676644,
+                    -36.8818128,
+                    0.0207414,
+                    0.2248148,
+                    0.3001455,
+                    1492.5348853,
+                    3669.0240059,
+                    3784.3274697,
+                ]
+            ),
+            rtol=0.0,
+            atol=1.0e-3,
         )
 
     def test_wavenumber_units(self):

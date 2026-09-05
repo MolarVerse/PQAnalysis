@@ -274,7 +274,7 @@ def rotational_modes(
         inertia_tensor(atom_coords_cm, atom_masses)
     )
 
-    x_frame = eigenvectors
+    x_frame = eigenvectors.T
     p_frame = atom_coords_cm @ eigenvectors
     sqrt_masses = np.sqrt(atom_masses)[:, None]
 
@@ -285,19 +285,19 @@ def rotational_modes(
             p_frame[:, 1, None] * x_frame[2, :][None, :] -
             p_frame[:, 2, None] * x_frame[1, :][None, :]
         ) * sqrt_masses
-    ).ravel(order="F")
+    ).ravel()
     rotation[:, 1] = (
         (
             p_frame[:, 2, None] * x_frame[0, :][None, :] -
             p_frame[:, 0, None] * x_frame[2, :][None, :]
         ) * sqrt_masses
-    ).ravel(order="F")
+    ).ravel()
     rotation[:, 2] = (
         (
             p_frame[:, 0, None] * x_frame[1, :][None, :] -
             p_frame[:, 1, None] * x_frame[0, :][None, :]
         ) * sqrt_masses
-    ).ravel(order="F")
+    ).ravel()
 
     rotation_norms = np.sqrt(np.sum(rotation**2, axis=0))
     threshold = LINEAR_ROTATION_RTOL * max(1.0, float(np.max(rotation_norms)))
