@@ -375,7 +375,30 @@ Output and API
 See :ref:`analysis-output-vibrations` for every table and file schema. The main
 entry point is :func:`PQAnalysis.analysis.vibrational.api.vibrations`; direct
 calculations use
-:func:`PQAnalysis.analysis.vibrational.vibrational_analysis.calculate_from_system`.
+:func:`PQAnalysis.analysis.vibrational.vibrational_analysis.calculate`.
+
+.. code-block:: python
+
+   from PQAnalysis.analysis import vibrations, read_analysis_table
+   from PQAnalysis.analysis.vibrational import calculate, read_hessian_file
+   from PQAnalysis.io import read_restart_file
+
+   vibrations("vibrations.in", export_files=["wavenumbers.csv"])
+   table = read_analysis_table("wavenumbers.csv")
+   print(table.column("wavenumber")[:10])
+
+   system = read_restart_file("structure.rst")
+   hessian = read_hessian_file("hessian.dat")
+   result = calculate(
+       system.atomic_masses,
+       system.pos,
+       hessian,
+       unit="kcal",
+   )
+   print(result.wavenumbers[:10])
+   print(result.force_constants[:10])
+
+See :doc:`../python-api` for shared table patterns.
 
 References
 ----------

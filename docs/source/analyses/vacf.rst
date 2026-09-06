@@ -265,9 +265,34 @@ calculations use :class:`PQAnalysis.analysis.vacf.vacf.VACF`, while
 transform. A ``VACF`` instance may be run only once; construct a new object for
 a second calculation.
 
+.. code-block:: python
+
+   from PQAnalysis.analysis import VACF, vacf, read_analysis_table
+   from PQAnalysis.analysis.vacf import vacf_spectrum
+   from PQAnalysis.io import TrajectoryReader
+
+   vacf("vacf.in", export_files=["vacf.csv"])
+   table = read_analysis_table("vacf.csv")
+   correlation = table.column("normalized_correlation")
+
+   time, correlation = VACF(
+       TrajectoryReader("trajectory.vel"),
+       time_step=0.001,
+       window_size=2500,
+       gap=5,
+   ).run()
+   wavenumbers, amplitudes, windowed = vacf_spectrum(
+       time,
+       correlation,
+       ftsize=5000,
+       window_function="exponential",
+       window_param=4.0,
+   )
+
 Discrete line spectra can be broadened independently with
 ``pqanalysis build_spectrum``; see :ref:`analysis-output-spectrum` for its
-output convention.
+output convention. See :doc:`../python-api` for shared table and trajectory
+patterns.
 
 References
 ----------

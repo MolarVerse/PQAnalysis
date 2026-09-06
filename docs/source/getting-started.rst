@@ -70,9 +70,30 @@ support tools such as ``convert`` accept ``--mode o`` to request
 replacement explicitly; the input-file driven analyses have no overwrite
 flag, so move or delete the old output first.
 
+Use the Python API
+------------------
+
+The same input file works from Python. The wrapper writes the table; 
+:func:`~PQAnalysis.analysis.output.read_analysis_table` reloads it with
+column metadata:
+
+.. code-block:: python
+
+   from PQAnalysis.analysis import rdf, read_analysis_table
+
+   rdf("rdf.in", export_files=["rdf.csv"])
+   table = read_analysis_table("rdf.csv")
+   print(table.column("r_i")[:5])
+   print(table.column("g_r_i")[:5])
+
+For in-memory trajectories, analysis objects such as
+:class:`~PQAnalysis.analysis.rdf.rdf.RDF` and recipes for every method, see
+:doc:`python-api`.
+
 Next steps
 ----------
 
+* :doc:`python-api` covers file wrappers, analysis objects and tables.
 * :doc:`analyses/index` compares the physical observables and required data.
 * :doc:`reference/functions` lists public Python workflows and numerical
   functions.
