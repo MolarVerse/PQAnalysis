@@ -249,6 +249,29 @@ point is :func:`PQAnalysis.analysis.msd.api.msd`; direct workflows can use
 results. An ``MSD`` instance may be run only once; construct a new object for a
 second calculation.
 
+.. code-block:: python
+
+   from PQAnalysis.analysis import MSD, msd, read_analysis_table
+   from PQAnalysis.io import TrajectoryReader
+
+   msd("msd.in", export_files=["msd.csv"])
+   table = read_analysis_table("msd.csv")
+   lag = table.column("lag")
+   msd_x = table.column("msd_x")
+
+   analysis = MSD(
+       TrajectoryReader("trajectory.xyz"),
+       target_species="O",
+       window=1000,
+       gap=10,
+       time_step=0.001,
+       fit_window=200,
+   )
+   lags, msd_x, msd_y, msd_z, msd_tot = analysis.run()
+   print(analysis.fit_results)  # D components in m²·s⁻¹ when time_step is set
+
+See :doc:`../python-api` for shared table and trajectory patterns.
+
 References
 ----------
 
