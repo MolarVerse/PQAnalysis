@@ -246,7 +246,8 @@ Output and API
 See :ref:`analysis-output-msd` for the exact table layout. The input-file entry
 point is :func:`PQAnalysis.analysis.msd.api.msd`; direct workflows can use
 :class:`PQAnalysis.analysis.msd.msd.MSD` and inspect its total MSD and fit
-results.
+results. An ``MSD`` instance may be run only once; construct a new object for a
+second calculation.
 
 References
 ----------
