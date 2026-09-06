@@ -49,12 +49,14 @@ Legacy-compatible arithmetic
 
 For a file-backed periodic orthorhombic trajectory, specifying ``delta_r``
 alone with the default ``r_min = 0`` selects the legacy-compatible RDF path.
-Coordinates are parsed as float64; histogram binning and all five output
-columns preserve the corrected operation order of the legacy ``RDF`` C code
-[thhTools]_. Explicit ``r_max`` or
-``n_bins``, triclinic or vacuum cells, and intramolecular exclusion use the
-general PQAnalysis path. The minimal example above sets ``r_max`` explicitly
-and therefore uses the general path.
+Coordinates are parsed as float64, while ``delta_r`` is stored as float32 as
+in the legacy C input reader. Histogram binning and all five output columns
+preserve the corrected operation order of the legacy ``RDF`` C code
+[thhTools]_. Explicit ``r_max`` or ``n_bins``, triclinic cells, and
+intramolecular exclusion use the general PQAnalysis path. Vacuum trajectories
+are rejected: :math:`g(r)` normalization needs a finite cell volume. The
+minimal example above sets ``r_max`` explicitly and therefore uses the general
+path.
 
 Interpretation
 --------------
@@ -93,17 +95,6 @@ box in the whole trajectory sets the limit. If a run covers a shorter range
 than requested, this clamp is why.
 
 .. warning::
-
-   Two cases escape the bound and must be checked by hand.
-
-   **Non-cubic boxes on the legacy path.** With ``delta_r`` alone on a periodic
-   orthorhombic trajectory, the bin count is derived from *half the longest*
-   box vector, while the legacy kernel discards every pair beyond half the
-   *shortest* one. A 10 × 14 × 30 Å box with ``delta_r = 0.1`` therefore
-   produces bins out to 14.9 Å, of which everything past 5.0 Å is exactly
-   zero — an artifact, not a depletion zone. Ignore all bins beyond
-   :math:`\tfrac{1}{2}\min(a,b,c)`, or set ``r_max`` explicitly to take the
-   general path.
 
    **Triclinic cells.** The bound uses box-vector lengths, not the
    perpendicular widths of the cell, and for a skewed cell the inscribed sphere
@@ -215,7 +206,8 @@ Output and API
 See :ref:`analysis-output-rdf` for the five output columns and their exact
 normalization. The main Python entry point is
 :func:`PQAnalysis.analysis.rdf.api.rdf`; lower-level calculations use
-:class:`PQAnalysis.analysis.rdf.rdf.RDF`.
+:class:`PQAnalysis.analysis.rdf.rdf.RDF`. An ``RDF`` instance may be run only
+once; construct a new object for a second calculation.
 
 The complete input-key table is documented with
 :class:`PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader`.

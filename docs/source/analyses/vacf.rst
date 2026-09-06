@@ -34,8 +34,7 @@ Correlation and spectrum
 ------------------------
 
 .. plot:: _plots/vacf.py
-   :alt: Analytical normalized VACF, its exponentially windowed copy and the
-      resulting spectrum
+   :alt: Analytical normalized VACF, its exponentially windowed copy and the resulting spectrum
    :caption: Analytical normalized VACF for two Gaussian-broadened bands
       centered at 300 and 600 cm⁻¹, with dephasing times of 0.22 and 0.12 ps.
       The dashed curve applies an exponential window with a decay coefficient
@@ -263,7 +262,8 @@ See :ref:`analysis-output-vacf` for correlation and spectrum columns. The
 input-file entry point is :func:`PQAnalysis.analysis.vacf.api.vacf`. Direct
 calculations use :class:`PQAnalysis.analysis.vacf.vacf.VACF`, while
 :func:`PQAnalysis.analysis.vacf.spectrum.vacf_spectrum` performs the spectral
-transform.
+transform. A ``VACF`` instance may be run only once; construct a new object for
+a second calculation.
 
 Discrete line spectra can be broadened independently with
 ``pqanalysis build_spectrum``; see :ref:`analysis-output-spectrum` for its
