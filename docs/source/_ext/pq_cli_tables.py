@@ -47,7 +47,7 @@ def _registered_commands():
     with :py:mod:`ast` instead of importing it. During the documentation
     build the api-doc generator imports the package itself, so an import
     here can observe a partially initialized module; reading the source
-    is independent of import order and needs no import at all.
+    only needs the package location, not the dispatcher module.
 
     Returns
     -------

@@ -8,12 +8,16 @@ from _style import COLORS, PROJECT_ROOT, apply_style
 
 apply_style((7.2, 4.3))
 
+# the fixture carries no time step; the interval is chosen for the figure
+FRAME_INTERVAL_PS = 0.5
+FIT_POINTS = 20
+
 data = np.loadtxt(PROJECT_ROOT / "tests/data/msd/msd_ref_O.dat")
-time = data[:, 0] * 0.5
+time = data[:, 0] * FRAME_INTERVAL_PS
 components = data[:, 1:4]
 total = np.sum(components, axis=1)
 
-fit_start = len(time) - 20
+fit_start = len(time) - FIT_POINTS
 fit_coefficients = np.polyfit(time[fit_start:], total[fit_start:], 1)
 fit = np.polyval(fit_coefficients, time[fit_start:])
 

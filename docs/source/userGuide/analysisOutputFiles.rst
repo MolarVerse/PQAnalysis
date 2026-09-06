@@ -368,7 +368,7 @@ reading the value as float64 preserves the calculated bit pattern.
    * - 1
      - Frame index
      - One-based index across all input trajectory files
-     - Frames
+     - Dimensionless
    * - 2
      - Scaled momentum norm
      - ``scale`` multiplied by :math:`\left|\sum_i m_i\mathbf{v}_i\right|`

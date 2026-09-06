@@ -47,8 +47,8 @@ Output and conversion
 ---------------------
 
 Native, CSV, TSV and PQAnalysis-generated XVG tables are mutually convertible.
-The converter detects input content rather than trusting the extension and can
-write several outputs atomically:
+The converter detects input content rather than trusting the extension and
+validates every destination before writing any:
 
 .. code-block:: console
 
