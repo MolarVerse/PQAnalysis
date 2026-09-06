@@ -19,13 +19,12 @@ accumulated. In an isotropic diffusive regime the Einstein relation
    D = \frac{1}{6}\frac{d}{dt}\mathrm{MSD}_{\mathrm{total}}(t),
 
 and each Cartesian component is fitted with the one-dimensional factor
-:math:`\tfrac{1}{2}`.
+:math:`\tfrac{1}{2}`. Below, the bundled oxygen-atom fixture is plotted with
+an assumed 0.5 ps frame interval; the dashed line fits the last 20 total-MSD
+points.
 
 .. plot:: _plots/msd.py
    :alt: Cartesian and total mean square displacement with a linear fit
-   :caption: Bundled oxygen-atom validation fixture, plotted with an assumed
-      0.5 ps frame interval. The dashed line fits the final 20 total-MSD
-      samples to illustrate fit-window selection.
 
 Input
 -----

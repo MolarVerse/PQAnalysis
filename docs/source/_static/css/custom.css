@@ -44,14 +44,6 @@ img.plot-directive {
     background: var(--pq-plot-background);
 }
 
-img.plot-directive + figcaption {
-    margin-top: 0.65rem;
-    color: var(--color-foreground-secondary);
-    font-size: 0.9rem;
-    line-height: 1.45;
-    text-align: left;
-}
-
 .table-wrapper,
 [role="main"] .table-wrapper.container {
     overflow-x: auto;

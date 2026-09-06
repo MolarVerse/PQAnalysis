@@ -22,15 +22,13 @@ the Wiener-Khinchin theorem allows [Wiener1930]_, [Khintchine1934]_.
 The cosine transform of the correlation is the vibrational density of states
 [Dickey1969]_, [Thomas2013]_. If partial charges are supplied, PQAnalysis
 correlates :math:`q_i\mathbf{v}_i` instead and the transform approximates an
-infrared spectrum [Thomas2013]_.
+infrared spectrum [Thomas2013]_. The analytic example below has two
+Gaussian-broadened bands at 300 and 600 cm⁻¹ with dephasing times of 0.22 and
+0.12 ps; the dashed curve is the same correlation under an exponential window
+of 4 ps⁻¹, and both spectra are scaled to unit maximum.
 
 .. plot:: _plots/vacf.py
    :alt: Analytical normalized VACF, its exponentially windowed copy and the resulting spectrum
-   :caption: Analytical normalized VACF for two Gaussian-broadened bands
-      centered at 300 and 600 cm⁻¹, with dephasing times of 0.22 and 0.12 ps.
-      The dashed curve applies an exponential window with a decay coefficient
-      of 4 ps⁻¹ before the PQAnalysis cosine transform. Spectrum amplitudes
-      are scaled to unit maximum.
 
 Input
 -----
