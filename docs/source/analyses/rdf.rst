@@ -61,19 +61,11 @@ are rejected: :math:`g(r)` normalization needs a finite cell volume. The
 minimal example above sets ``r_max`` explicitly and therefore uses the general
 path.
 
-Interpretation
---------------
-
-* Peaks mark preferred pair separations; minima separate coordination shells.
-* :math:`g(r) \approx 1` indicates bulk-like, uncorrelated pair density at that
-  distance.
-* The cumulative coordination column gives the mean number of eligible target
-  atoms per reference atom inside the current upper bin edge.
-* Self pairs are excluded. Intramolecular pairs are included unless molecular
-  topology is supplied and explicitly excluded.
-
 Validity and interpretation
 ---------------------------
+
+Peaks mark preferred pair separations, minima separate coordination shells,
+and :math:`g(r) \approx 1` is uncorrelated bulk-like pair density.
 
 r_max and the minimum-image limit
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -209,17 +201,12 @@ Output and API
 See :ref:`analysis-output-rdf` for the five output columns and their exact
 normalization. The main Python entry point is
 :func:`PQAnalysis.analysis.rdf.api.rdf`; lower-level calculations use
-:class:`PQAnalysis.analysis.rdf.rdf.RDF`. An ``RDF`` instance may be run only
-once; construct a new object for a second calculation.
+:class:`PQAnalysis.analysis.rdf.rdf.RDF`.
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import RDF, rdf, read_analysis_table
+   from PQAnalysis.analysis import RDF
    from PQAnalysis.io import TrajectoryReader
-
-   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
-   table = read_analysis_table("rdf.csv")
-   g = table.column("g_r_i")
 
    r, g, n, shell, residual = RDF(
        TrajectoryReader("examples/water/trajectory.xyz"),
@@ -231,7 +218,6 @@ once; construct a new object for a second calculation.
 
 The complete input-key table is documented with
 :class:`PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader`.
-See :doc:`../python-api` for the shared table and trajectory patterns.
 
 References
 ----------
@@ -241,7 +227,3 @@ References
 * [Allen2017]_ and [Frenkel2002]_ give the histogram estimator, its
   spherical-shell normalization and the finite-size caveats that apply to a
   periodic simulation cell.
-* [thhTools]_ is the legacy program whose operation order the
-  legacy-compatible path reproduces.
-
-Full entries are listed in :doc:`../references`.

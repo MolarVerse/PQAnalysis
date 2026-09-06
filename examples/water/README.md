@@ -1,8 +1,8 @@
 # Water tutorial fixture
 
 A 25-frame isolated water molecule in a 10 Å cubic cell, plus the H₂O Hessian
-used by the vibrational example. It is small enough to run every analysis in
-the documentation. It is not a bulk-liquid benchmark.
+used by the vibrational example. Every analysis in the documentation runs on
+it; the numbers are tutorial output, not bulk-liquid results.
 
 From the repository root:
 
@@ -15,5 +15,5 @@ pqanalysis vibrations vibrations.in
 pqanalysis check_momentum trajectory.vel --selection all --output momentum.dat
 ```
 
-`window` values in `msd.in` and `vacf.in` are sized to this 25-frame file, not
-to a production trajectory. See the documentation page *Example data*.
+`window` in `msd.in` and `vacf.in` is sized to these 25 frames. See the
+documentation page *Example data*.
