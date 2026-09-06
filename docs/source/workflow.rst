@@ -62,8 +62,8 @@ MSD of the oxygen
    print(analysis.fit_results)
 
 Check: one oxygen is selected. The Einstein fit uses the last four lag points
-of an eight-frame window; see :doc:`analyses/msd` for choosing a real fit
-interval.
+of an eight-frame window; see :doc:`analyses/msd-details` for choosing a real
+fit interval.
 
 Plot
 ----

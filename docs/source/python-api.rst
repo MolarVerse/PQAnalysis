@@ -127,7 +127,7 @@ Atom strings such as ``"O"``, ``"0..2"`` and ``"*|H"`` are documented in
 Where each method is documented
 -------------------------------
 
-Each method page ends with a Python recipe next to its CLI input:
+Each method page has a Python recipe next to its CLI input:
 
 .. list-table::
    :header-rows: 1
