@@ -122,3 +122,26 @@ Before requesting review, run the focused tests for the modified ownership
 boundary and every relevant strict documentation build. Pull requests and
 ``dev`` pushes build documentation without deploying it; deployment occurs
 from ``main``.
+
+Performance validation
+----------------------
+
+File-backed VACF, MSD, RDF and momentum analyses use bounded compiled fast
+paths. A batch path must preserve the numeric operation order of its streaming
+fallback and must return to that fallback when the configured memory limit is
+exceeded. Parallel work is restricted to independent lag ranges, frames or
+private integer histograms; floating-point reductions within one legacy result
+must not be reordered.
+
+Install the benchmark dependency and run the focused benchmark suite with:
+
+.. code-block:: console
+
+   $ pip install -e ".[test,benchmark]"
+   $ pytest -c benchmarks/pytest.ini benchmarks --benchmark-only
+
+Store a baseline with ``--benchmark-json=baseline.json`` and compare a changed
+branch with ``--benchmark-compare=baseline.json``. Runtime assertions do not
+belong in CI because host load is variable. Every optimization must instead
+pass the compiled and fallback tests plus the relevant fixed-bit legacy oracle
+before its benchmark result is considered.
