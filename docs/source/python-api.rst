@@ -127,16 +127,27 @@ Atom strings such as ``"O"``, ``"0..2"`` and ``"*|H"`` are documented in
 Where each method is documented
 -------------------------------
 
-Method pages give a focused Python recipe next to the CLI input:
+Each method page ends with a Python recipe next to its CLI input:
 
-* :doc:`analyses/rdf` — ``rdf()`` and :class:`~PQAnalysis.analysis.rdf.rdf.RDF`
-* :doc:`analyses/msd` — ``msd()`` and :class:`~PQAnalysis.analysis.msd.msd.MSD`
-* :doc:`analyses/vacf` — ``vacf()``, :class:`~PQAnalysis.analysis.vacf.vacf.VACF`
-  and :func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`
-* :doc:`analyses/vibrations` — ``vibrations()`` and
-  :func:`~PQAnalysis.analysis.vibrational.vibrational_analysis.calculate`
-* :doc:`analyses/momentum` — ``check_momentum()`` and
-  :class:`~PQAnalysis.analysis.momentum.momentum.Momentum`
+.. list-table::
+   :header-rows: 1
+   :widths: 24 76
+
+   * - Page
+     - Objects
+   * - :doc:`analyses/rdf`
+     - ``rdf()``, :class:`~PQAnalysis.analysis.rdf.rdf.RDF`
+   * - :doc:`analyses/msd`
+     - ``msd()``, :class:`~PQAnalysis.analysis.msd.msd.MSD`
+   * - :doc:`analyses/vacf`
+     - ``vacf()``, :class:`~PQAnalysis.analysis.vacf.vacf.VACF`,
+       :func:`~PQAnalysis.analysis.vacf.spectrum.vacf_spectrum`
+   * - :doc:`analyses/vibrations`
+     - ``vibrations()``,
+       :func:`~PQAnalysis.analysis.vibrational.vibrational_analysis.calculate`
+   * - :doc:`analyses/momentum`
+     - ``check_momentum()``,
+       :class:`~PQAnalysis.analysis.momentum.momentum.Momentum`
 
 The full callable index is :doc:`reference/functions`. Generated class pages
 live under :doc:`reference/api`.
