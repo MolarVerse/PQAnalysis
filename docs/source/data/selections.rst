@@ -62,22 +62,32 @@ A selection string is parsed with a Lark grammar. The atoms of
      - Intersection
      - both H
 
-Operators and precedence
-------------------------
+Operators
+---------
 
 Statements combine with:
 
-* ``,`` — union
-* ``&`` — intersection
-* ``|`` — set difference (left minus right)
+``,``
+   union
 
-They bind in the order ``|`` then ``&`` then ``,`` (``|`` is strongest).
-Parentheses change the grouping.
+``&``
+   intersection
+
+``|``
+   set difference (left minus right)
+
+Use parentheses whenever you mix operators. The parser's implicit grouping
+does not follow the order the class docstring describes (``O,H&H`` is read as
+``(O,H)&H``; see `issue #185
+<https://github.com/MolarVerse/PQAnalysis/issues/185>`_), so an
+unparenthesized mix is not portable across versions.
 
 Python
 ------
 
 .. code-block:: python
+
+   import numpy as np
 
    from PQAnalysis.io import read_trajectory
    from PQAnalysis.topology import Selection
@@ -88,11 +98,11 @@ Python
    Selection("O").select(topology)          # array([0])
    Selection("H").select(topology)          # array([1, 2])
    Selection("*|H").select(topology)        # array([0])
-   Selection([0, 2]).select(topology)       # array([0, 2])
+   Selection(np.array([0, 2])).select(topology)  # array([0, 2])
    Selection(None).select(topology)         # all atoms
 
-``Selection`` also accepts an ``Atom``, an ``Element``, a list of those, or a
-NumPy integer array of indices.
+``Selection`` also accepts a single ``Atom`` or ``Element``. A plain Python
+list of integers is rejected; pass a NumPy integer array.
 
 ``use_full_atom_info``
 ----------------------
