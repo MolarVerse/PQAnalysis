@@ -92,12 +92,14 @@ Common forms include:
 Filenames
 ---------
 
-Relative filenames are interpreted from the command's working directory. The
+Relative filenames in an input file, including outputs and glob patterns, are
+interpreted from the directory that contains the input file, so
+``pqanalysis rdf runs/water/rdf.in`` reads ``runs/water/trajectory.xyz`` and
+writes ``runs/water/rdf.dat`` whatever the working directory is. Absolute
+filenames are used as written. Command-line arguments such as ``--export``
+are resolved from the working directory, as in any shell command. The
 ordinary filename grammar accepts letters, digits, ``_``, ``-``, ``.`` and
-``/``;
-``*`` provides glob matching. For a portable analysis directory, keep the
-input file and its referenced data together and run the command from that
-directory.
+``/``; ``*`` provides glob matching.
 
 Complete example
 ----------------
