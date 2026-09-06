@@ -8,12 +8,14 @@ from _style import COLORS, apply_style
 
 apply_style((7.2, 5.0))
 
+first_minimum = 3.55
+
 r = np.linspace(0.02, 8.0, 800)
 excluded_volume = 1.0 - np.exp(-(r / 1.65)**8)
 structure = (
     1.0
     + 2.2 * np.exp(-0.5 * ((r - 2.80) / 0.22)**2)
-    - 0.55 * np.exp(-0.5 * ((r - 3.55) / 0.30)**2)
+    - 0.55 * np.exp(-0.5 * ((r - first_minimum) / 0.30)**2)
     + 0.65 * np.exp(-0.5 * ((r - 4.65) / 0.38)**2)
     - 0.18 * np.exp(-0.5 * ((r - 5.55) / 0.45)**2)
 )
@@ -30,7 +32,6 @@ coordination = np.concatenate((
     ),
 ))
 
-first_minimum = 3.55
 figure, (rdf_axis, coordination_axis) = plt.subplots(
     2,
     1,

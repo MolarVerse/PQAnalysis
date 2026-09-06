@@ -82,7 +82,7 @@ Two different parameters control the two different properties of the spectrum,
 and they are easy to confuse. Write :math:`\Delta t` for ``time_step`` in ps,
 :math:`W` for ``window`` in frames and :math:`F` for ``ftsize``.
 
-**The grid spacing is set by** ``ftsize``. PQAnalysis mirrors the padded
+The grid spacing is set by ``ftsize``. PQAnalysis mirrors the padded
 correlation into an even extension and labels the transform with
 
 .. math::
@@ -90,11 +90,11 @@ correlation into an even extension and labels the transform with
    \Delta\tilde\nu = \frac{1}{2(F-1)\,\Delta t\,c}
    \approx \frac{16.68}{(F-1)\,\Delta t[\mathrm{ps}]}\ \mathrm{cm}^{-1}.
 
-The axis starts at :math:`\Delta\tilde\nu` — there is no :math:`\tilde\nu = 0`
-point — and runs up to :math:`F\,\Delta\tilde\nu`. For ``time_step = 0.001``
+The axis starts at :math:`\Delta\tilde\nu` (there is no :math:`\tilde\nu = 0`
+point) and runs up to :math:`F\,\Delta\tilde\nu`. For ``time_step = 0.001``
 and ``ftsize = 5000`` that is a 3.34 cm⁻¹ grid reaching 16682 cm⁻¹.
 
-**The upper limit is the Nyquist wavenumber**, set by the sampling interval
+The upper limit is the Nyquist wavenumber, set by the sampling interval
 alone:
 
 .. math::
@@ -142,11 +142,11 @@ a longer trajectory.
 
 .. warning::
 
-   ``ftsize`` also truncates. The correlation is zero-padded **or cut** to
+   ``ftsize`` also truncates. The correlation is zero-padded or cut to
    ``ftsize`` points, so with ``ftsize`` smaller than ``window + 1`` everything
    beyond the first ``ftsize`` lags is silently discarded before the transform.
    The default ``ftsize`` is 2000 while the default ``window`` is 1000, so the
-   defaults are safe — but raising ``window`` without raising ``ftsize`` throws
+   defaults are safe, but raising ``window`` without raising ``ftsize`` throws
    the extra correlation away. Keep ``ftsize`` at least ``window + 1``.
 
 Apodization: leakage against band shape
@@ -180,7 +180,7 @@ property of the window, not of the dynamics.
    ``hann`` and ``blackman`` do nothing at their default settings. Both are
    built from ``window_start`` (default 0.0 ps) and ``window_stop``
    (default 1000.0 ps), and over a correlation of a few ps the resulting
-   factors deviate from unity by less than :math:`3\times10^{-5}` — the
+   factors deviate from unity by less than :math:`3\times10^{-5}`, so the
    spectrum is indistinguishable from ``window_function = none``. To use them,
    set ``window_stop`` to the correlation length ``window * time_step``. With
    ``window_stop = 2.5`` on a 2.5 ps correlation, ``hann`` widened the test
@@ -188,8 +188,8 @@ property of the window, not of the dynamics.
    falling by 38 % and 45 %. The ``exponential`` window is unaffected by this,
    since it decays from ``window_start`` onwards.
 
-   The legacy ``hann`` and ``blackman`` formulas are additionally non-standard
-   — the Hann window is mirrored and the Blackman denominators use the stop
+   The legacy ``hann`` and ``blackman`` formulas are additionally non-standard:
+   the Hann window is mirrored and the Blackman denominators use the stop
    index rather than the window width. Both quirks are reproduced deliberately;
    see :func:`PQAnalysis.analysis.vacf.spectrum.apodization_window`.
 
@@ -201,14 +201,14 @@ the ``direct`` estimator divides each time origin by its own aggregate squared
 velocity norm, and the ``fft`` estimator divides by its lag-zero value. The
 cosine transform is linear, so the spectrum inherits that normalization and its
 amplitudes are in arbitrary units. Relative peak *areas* within one spectrum are
-meaningful — apodization broadens bands but conserves their area — while peak
+meaningful, since apodization broadens bands but conserves their area; peak
 *heights* are only comparable between spectra that used the same apodization.
 Zero-padding does not rescale amplitudes; it samples the same envelope more
 finely, so a coarse grid can under-read the apex of a narrow band by a few per
 cent. Absolute intensities are not available at all, for the velocity spectrum
 as much as for the charge-flux spectrum.
 
-The sums over atoms are also unweighted — no masses enter anywhere in the VACF
+The sums over atoms are also unweighted; no masses enter anywhere in the VACF
 code. Each atom therefore contributes in proportion to its own mean squared
 velocity, which at equipartition is proportional to :math:`1/m`, so light atoms
 dominate a mixed-element selection. This is not the mass-weighted vibrational
@@ -224,7 +224,7 @@ energy, no harmonic quantum correction factor to the intensities, no frequency
 scaling factor. Band positions therefore carry the classical-nuclei error and
 the full anharmonic and thermal shift of the underlying dynamics at the
 simulated temperature, and are not directly comparable to harmonic normal-mode
-wavenumbers — see :doc:`vibrations` for the harmonic route. Comparisons with
+wavenumbers (see :doc:`vibrations` for the harmonic route). Comparisons with
 experiment must state the temperature, the level of theory and the fact that
 the peak positions are classical.
 
@@ -236,10 +236,9 @@ Estimator choice changes the statistics of the tail
   from 0 to ``window`` is averaged over the same number of origins.
 * ``method = fft`` uses every frame as an origin and ignores ``gap``, but
   divides lag :math:`\tau` by its own origin count :math:`N-\tau`. Its origin
-  count *does* fall off with lag, so the far tail of the correlation is
-  progressively noisier — precisely the part of the correlation that determines
-  the low-wavenumber structure of the spectrum. It also holds all velocities in
-  memory.
+  count *does* fall off with lag, so the far tail of the correlation, which
+  determines the low-wavenumber structure of the spectrum, is progressively
+  noisier. It also holds all velocities in memory.
 
 .. warning::
 

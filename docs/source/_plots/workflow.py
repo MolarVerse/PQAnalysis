@@ -40,12 +40,13 @@ figure, (rdf_axis, msd_axis) = plt.subplots(
 
 rdf_axis.plot(r, g, color=COLORS["blue"], label=r"$g(r)$")
 rdf_axis.set_ylabel(r"$g(r)$")
-rdf_axis.set_xlabel(r"$r$ / Å")
+rdf_axis.set_xlabel(r"$r$ / $\mathrm{\AA}$")
 rdf_axis.legend(loc="upper right")
 
 msd_axis.plot(time, msd_tot, color=COLORS["green"], label="total MSD")
-msd_axis.set_ylabel(r"MSD / Å$^2$")
+msd_axis.set_ylabel(r"MSD / $\mathrm{\AA}^2$")
 msd_axis.set_xlabel(r"$t$ / ps")
 msd_axis.legend(loc="upper left")
 
 figure.tight_layout()
+plt.show()
