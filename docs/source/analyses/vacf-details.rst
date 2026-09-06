@@ -11,8 +11,7 @@ Validity
 The frequency axis, and what sets it
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Two different parameters control the two different properties of the spectrum,
-and they are easy to confuse. Write :math:`\Delta t` for ``time_step`` in ps,
+Write :math:`\Delta t` for ``time_step`` in ps,
 :math:`W` for ``window`` in frames and :math:`F` for ``ftsize``.
 
 The grid spacing is set by ``ftsize``. PQAnalysis mirrors the padded
@@ -92,7 +91,7 @@ every peak [Harris1978]_. Always report which window and which parameters were
 used; band widths from differently apodized spectra are not comparable.
 
 The ``exponential`` window multiplies the correlation by
-:math:`\exp(-a\,t)` with :math:`a` = ``window_param`` in ps⁻¹. It simply adds
+:math:`\exp(-a\,t)` with :math:`a` = ``window_param`` in ps⁻¹. It adds
 :math:`a` to the decay rate of the correlation, which broadens a Lorentzian
 band by roughly
 

@@ -123,9 +123,7 @@ the volume fluctuates.
    Ordinary NPT volume fluctuations are far smaller and the effect is usually
    negligible, but it is worth checking: the plateau of :math:`g(r)` at large
    :math:`r` should sit at 1. If it does not, and the sampling is converged,
-   the volume distribution is the first thing to look at. Note also that
-   ``r_max`` is bounded by the *smallest* box in the trajectory, so a
-   fluctuating cell shortens the usable range.
+   the volume distribution is the first thing to look at.
 
 Selections, exclusions and comparability
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -133,9 +131,9 @@ Selections, exclusions and comparability
 Self pairs are always excluded. Intramolecular pairs are *included* by default,
 which for a molecular liquid puts intramolecular bond and angle distances into
 the first bins of the histogram; they are real distances, but they are not the
-intermolecular structure most RDFs are meant to show. Set
-``no_intra_molecular = True``, with the topology files it requires, to remove
-them.
+intermolecular structure most RDFs are meant to show. ``no_intra_molecular =
+True`` removes them and requires ``restart_file`` and ``moldescriptor_file``;
+an input file that names both enables the exclusion without the key.
 
 .. note::
 

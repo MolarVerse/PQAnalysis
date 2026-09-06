@@ -26,7 +26,7 @@ output filename selects the format:
      - Native PQAnalysis text
      - Self-describing scientific data and legacy workflows
 
-This means that ``out_file = table.csv`` in an RDF, MSD, VACF or vibrations input
+``out_file = table.csv`` in an RDF, MSD, VACF or vibrations input
 file writes CSV directly. Names ending in ``.dat``, ``.out``, ``.txt`` or no
 extension retain the native format.
 
@@ -40,8 +40,8 @@ scientific notation in Unicode, and ``UNITS`` lists the units in the same
 order. Values remain single whitespace-free tokens; compound units use a
 middle dot. Examples include ``ν̃``, ``Å``, ``Å³`` and ``cm⁻¹``. The tables
 below give the full quantities and definitions. Numeric rows retain the legacy
-ordering and formatting. Readers such as ``numpy.loadtxt`` ignore the comment
-block automatically and continue to work without special options.
+ordering and formatting. Readers such as ``numpy.loadtxt`` skip the comment
+block by default.
 
 For example, an RDF data file begins with:
 
@@ -79,7 +79,7 @@ can be opened directly with ``xmgrace rdf.xvg``; PQAnalysis does not launch the
 GUI itself. Each original analysis-table column is stored as one Grace data set
 with the selected x axis. Columns outside the selected quick plot are retained
 as hidden Grace sets. PQAnalysis metadata records the original schema and plot
-projection, making its XVG output fully convertible back to native, CSV, TSV or
+projection, making its XVG output convertible back to native, CSV, TSV or
 XVG without losing analysis columns. The default quick plots are:
 
 .. list-table::

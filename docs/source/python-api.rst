@@ -105,8 +105,8 @@ and computes a short RDF without an input file:
 
 Readers from :func:`~PQAnalysis.io.traj_file.api.read_trajectory` and
 :class:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader` are valid
-``traj`` arguments as well. File-backed orthorhombic inputs can still take the
-legacy-compatible fast paths documented on each method page.
+``traj`` arguments as well. File-backed orthorhombic inputs still take the
+legacy-compatible RDF path described on :doc:`analyses/rdf-details`.
 
 Reading trajectories
 --------------------

@@ -17,9 +17,8 @@ Analysis configuration
 
 RDF, MSD, VACF and vibrational calculations use key-value input files. Lists
 may be written in brackets or as multiline values according to the
-:ref:`inputFile` grammar. Relative filenames are resolved by the process
-running the command, so reproducible workflows should execute from a known run
-directory.
+:ref:`inputFile` grammar. Relative filenames inside an input file resolve
+against the directory that contains the file.
 
 Trajectories and engines
 ------------------------
