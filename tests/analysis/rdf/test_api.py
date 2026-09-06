@@ -2,6 +2,9 @@
 A module to test the RDF API.
 """
 
+import shutil
+from pathlib import Path
+
 import pytest  # pylint: disable=unused-import
 
 from PQAnalysis.analysis.rdf.api import rdf
@@ -11,6 +14,7 @@ from PQAnalysis.exceptions import PQTypeError
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
 
+EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
 
 
 class TestRDFAPI:
@@ -44,3 +48,21 @@ class TestRDFAPI:
             input_file="test",
             md_format=1,
         )
+
+
+class TestRDFAPIFromOtherDirectory:
+
+    def test_input_file_in_subdirectory(self, tmp_path, monkeypatch):
+        """
+        The bundled example runs from a parent directory: filenames in the
+        input file resolve against the input file, export files against
+        the working directory.
+        """
+        shutil.copytree(EXAMPLES_WATER, tmp_path / "examples" / "water")
+        monkeypatch.chdir(tmp_path)
+
+        rdf("examples/water/rdf.in", export_files=["rdf.csv"])
+
+        assert (tmp_path / "examples" / "water" / "rdf.dat").is_file()
+        assert (tmp_path / "rdf.csv").is_file()
+        assert not (tmp_path / "rdf.dat").exists()

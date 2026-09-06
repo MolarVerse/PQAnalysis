@@ -183,21 +183,27 @@ class VACFInputFileReader(Reader):
         """
         str | None: The static charge file for the charge-flux mode.
         """
-        return _parse_string(self.dictionary, self.charge_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.charge_file_key)
+        )
 
     @property
     def charge_files(self) -> List[str] | None:
         """
         List[str] | None: The charge trajectory files for the charge-flux mode.
         """
-        return _parse_files(self.dictionary, self.charge_files_key)
+        return self.resolve_paths(
+            _parse_files(self.dictionary, self.charge_files_key)
+        )
 
     @property
     def spectrum_file(self) -> str | None:
         """
         str | None: The output file for the VACF spectrum.
         """
-        return _parse_string(self.dictionary, self.spectrum_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.spectrum_file_key)
+        )
 
     @property
     def ftsize(self) -> PositiveInt | None:
@@ -239,7 +245,9 @@ class VACFInputFileReader(Reader):
         """
         str | None: The output file for the windowed correlation function.
         """
-        return _parse_string(self.dictionary, self.windowed_out_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.windowed_out_file_key)
+        )
 
 
 
@@ -247,7 +255,9 @@ input_keys_documentation = f"""
 
 For the VACF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
-.. list-table:: Required keys
+The following keys are required:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
@@ -265,7 +275,9 @@ For the VACF analysis input file several keys are available of which some are re
       - The time step between two frames in ps. It is used to build the
         time axis of the VACF and the frequency axis of the spectrum.
 
-.. list-table:: Optional keys
+The following keys are optional:
+
+.. list-table::
     :header-rows: 1
 
     * - Key

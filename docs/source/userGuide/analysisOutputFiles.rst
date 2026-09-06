@@ -1,13 +1,12 @@
 .. _analysisOutputFiles:
 
-#####################
 Analysis Output Files
-#####################
+=====================
 
 PQAnalysis analysis commands can write native text, CSV, TSV or XVG tables. The
 output filename selects the format:
 
-.. list-table:: Analysis output formats
+.. list-table::
    :header-rows: 1
    :widths: 18 30 52
 
@@ -27,7 +26,7 @@ output filename selects the format:
      - Native PQAnalysis text
      - Self-describing scientific data and legacy workflows
 
-This means that ``out_file table.csv`` in an RDF, MSD, VACF or vibrations input
+``out_file = table.csv`` in an RDF, MSD, VACF or vibrations input
 file writes CSV directly. Names ending in ``.dat``, ``.out``, ``.txt`` or no
 extension retain the native format.
 
@@ -41,10 +40,10 @@ scientific notation in Unicode, and ``UNITS`` lists the units in the same
 order. Values remain single whitespace-free tokens; compound units use a
 middle dot. Examples include ``ν̃``, ``Å``, ``Å³`` and ``cm⁻¹``. The tables
 below give the full quantities and definitions. Numeric rows retain the legacy
-ordering and formatting. Readers such as ``numpy.loadtxt`` ignore the comment
-block automatically and continue to work without special options.
+ordering and formatting. Readers such as ``numpy.loadtxt`` skip the comment
+block by default.
 
-For example, an RDF data file begins with
+For example, an RDF data file begins with:
 
 .. code-block:: text
 
@@ -80,10 +79,10 @@ can be opened directly with ``xmgrace rdf.xvg``; PQAnalysis does not launch the
 GUI itself. Each original analysis-table column is stored as one Grace data set
 with the selected x axis. Columns outside the selected quick plot are retained
 as hidden Grace sets. PQAnalysis metadata records the original schema and plot
-projection, making its XVG output fully convertible back to native, CSV, TSV or
+projection, making its XVG output convertible back to native, CSV, TSV or
 XVG without losing analysis columns. The default quick plots are:
 
-.. list-table:: Default XVG plots
+.. list-table::
    :header-rows: 1
    :widths: 34 28 38
 
@@ -117,7 +116,7 @@ Additional outputs
 
 All tabular analysis CLIs accept repeatable ``--export FILE`` options. The
 primary output is still controlled by ``out_file`` or ``--output``; every
-export filename independently selects its format.
+export filename independently selects its format:
 
 .. code-block:: console
 
@@ -148,16 +147,14 @@ The conversion also works in the other direction:
 
 .. code-block:: console
 
-   $ pqanalysis convert rdf.xvg \
-       -o rdf.out \
-       -o rdf.csv
+   $ pqanalysis convert rdf.xvg -o rdf.out
 
 Input format is detected from the file content rather than its extension, so a
 CSV table named ``table.dat`` or an XVG table named ``table.out`` can still be
 converted. Exact ``FIELDS`` headers restore the known scientific schema and XVG
 plot preset. ``--x FIELD`` and repeatable ``--y FIELD`` options override the
-default XVG projection without removing unplotted data from the XVG file. Input
-and output paths, and all output paths, must be distinct.
+default XVG projection without removing unplotted data from the XVG file. The
+input path and every output path must be pairwise distinct.
 
 By default, conversion stops with an error naming the existing file if any
 output path already exists. No requested output is written in that case. Use
@@ -181,9 +178,9 @@ and spherical-shell volume are
    \Delta V_i = \frac{4\pi}{3}\left((r_i^+)^3 - (r_i^-)^3\right).
 
 The ideal-gas pair count for the shell is
-:math:`E_i = \rho_T N_R N_F \Delta V_i`.
+:math:`E_i = \rho_T N_R N_F \Delta V_i`. The columns of ``out_file`` are:
 
-.. list-table:: RDF ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 24 48 20
@@ -224,9 +221,9 @@ density.
 MSD
 ===
 
-The ``msd`` command writes the legacy Diffcalc layout to ``out_file``.
+The ``msd`` command writes the legacy Diffcalc layout to ``out_file``:
 
-.. list-table:: MSD ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 32 40 20
@@ -265,7 +262,10 @@ VACF and charge-flux correlation
 The ``vacf`` command can write three two-column files. Correlations are
 normalized by their zero-lag value, including charge-weighted correlations.
 
-.. list-table:: VACF ``out_file`` columns
+``out_file``
+------------
+
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -283,7 +283,10 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - VACF, or charge-flux autocorrelation when charges are supplied
      - Dimensionless
 
-.. list-table:: VACF ``spectrum_file`` columns
+``spectrum_file``
+-----------------
+
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -302,7 +305,10 @@ normalized by their zero-lag value, including charge-weighted correlations.
        normalized correlation
      - Arbitrary units
 
-.. list-table:: VACF ``windowed_out_file`` columns
+``windowed_out_file``
+---------------------
+
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -326,9 +332,9 @@ Broadened spectrum
 ==================
 
 The ``build_spectrum`` command writes two columns to ``--output`` or standard
-output.
+output:
 
-.. list-table:: ``build_spectrum`` output columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -354,10 +360,9 @@ Total linear momentum
 =====================
 
 The ``check_momentum`` command writes two columns to ``--output`` or standard
-output. Native output uses 17 significant digits for the momentum norm, so
-reading the value as float64 preserves the calculated bit pattern.
+output:
 
-.. list-table:: ``check_momentum`` output columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -369,7 +374,7 @@ reading the value as float64 preserves the calculated bit pattern.
    * - 1
      - Frame index
      - One-based index across all input trajectory files
-     - Frames
+     - Dimensionless
    * - 2
      - Scaled momentum norm
      - ``scale`` multiplied by :math:`\left|\sum_i m_i\mathbf{v}_i\right|`
@@ -388,10 +393,9 @@ normal-mode representations.
 
 Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
-columns. The file's ``FIELDS`` and ``UNITS`` lines reflect the selected layout.
-The accompanying ``SYMBOLS`` line provides the Unicode scientific notation.
+columns; the header lines reflect the selected layout:
 
-.. list-table:: Vibrational ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 34 38 20

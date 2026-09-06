@@ -1,0 +1,76 @@
+Example data
+============
+
+The repository ships a checkout-only tutorial fixture under
+``examples/water``. It is an isolated water molecule in a 10 Å cubic cell
+(25 frames) plus the bundled H₂O Hessian. It exists so that the Python and
+CLI recipes can be copied and run; its numbers are not bulk-liquid data.
+
+Get the files
+-------------
+
+Clone the repository (the fixture is not installed by pip):
+
+.. code-block:: console
+
+   $ git clone https://github.com/MolarVerse/PQAnalysis.git
+   $ cd PQAnalysis/examples/water
+
+What is in the folder
+---------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 28 72
+
+   * - File
+     - Role
+   * - ``trajectory.xyz``
+     - 25 PQ XYZ frames of one water molecule (O, H, H)
+   * - ``trajectory.vel``
+     - Matching velocity frames for VACF and momentum
+   * - ``restart.rst``
+     - Restart with the same topology (residue ids for exclusions)
+   * - ``moldescriptor.dat``
+     - H₂O residue template with partial charges
+   * - ``structure.rst`` / ``hessian.dat``
+     - Isolated-molecule Hessian fixture for vibrations
+   * - ``rdf.in``, ``msd.in``, ``vacf.in``, ``vibrations.in``
+     - Input files sized to this 25-frame trajectory
+
+``msd.in`` and ``vacf.in`` use ``window = 8``. Production trajectories need
+much larger windows; those keys are documented on the method pages.
+
+Run the first RDF
+-----------------
+
+.. code-block:: console
+
+   $ pqanalysis rdf rdf.in
+
+The table begins (trailing digits omitted):
+
+.. code-block:: text
+
+   # PQAnalysis: Radial distribution function
+   # FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
+   # SYMBOLS ...
+   # UNITS ...
+   0.25 0.0 ...
+   0.75 261.9 ...
+
+The large :math:`g(r)` near 0.75 Å is the intramolecular O–H peak. See
+:ref:`analysis-output-rdf` for column definitions.
+
+The other commands in this folder are:
+
+.. code-block:: console
+
+   $ pqanalysis msd msd.in
+   $ pqanalysis vacf vacf.in
+   $ pqanalysis vibrations vibrations.in
+   $ pqanalysis check_momentum trajectory.vel \
+       --selection all --output momentum.dat
+
+Python recipes that load these files are on :doc:`python-api`; a continuous
+session from loading to a figure is on :doc:`workflow`.
