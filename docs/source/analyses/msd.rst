@@ -48,7 +48,7 @@ Saved as ``msd.in``, it runs with:
 ``window`` is the largest lag in frames and must be divisible by ``gap``, the
 spacing between time origins. ``time_step`` in ps enables the diffusion fit;
 ``fit_window`` is the number of trailing points it uses (default
-``window // 5``). The bundled :doc:`../examples` fixture uses ``window = 8``
+``max(2, window // 5)``). The bundled :doc:`../examples` fixture uses ``window = 8``
 because it has only 25 frames. The full key table is on
 :class:`~PQAnalysis.analysis.msd.msd_input_file_reader.MSDInputFileReader`.
 

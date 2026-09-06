@@ -58,7 +58,7 @@ Units
 PQ velocity trajectories store velocities in Å·s⁻¹, so :math:`\mathbf{P}` is in
 amu·Å·s⁻¹. The default :math:`\sigma = 10^{-15}` converts that to
 amu·Å·fs⁻¹, the unit of the second output column. Any other value of
-``--scale`` simply multiplies the norm, and it is then the user's
+``--scale`` multiplies the norm, and it is then the user's
 responsibility to make :math:`\sigma` match the velocity convention of the
 input trajectory.
 
@@ -77,7 +77,7 @@ accumulator, which is always float64:
    \lVert\mathbf{P}\rVert \gtrsim
    \varepsilon\sum_i m_i\lVert\mathbf{v}_i\rVert .
 
-Two code paths set :math:`\varepsilon` differently:
+Three code paths set :math:`\varepsilon` differently:
 
 * File-backed PQ and QMCFC velocity trajectories (``.vel`` or ``.velocs``
   files read through ``check_momentum``) are parsed directly as float64. Here :math:`\varepsilon` is the precision of the text itself, that
