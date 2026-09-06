@@ -40,6 +40,8 @@ Input
    time_step = 0.001
    fit_window = 200
 
+Saved as ``msd.in``, it runs with:
+
 .. code-block:: console
 
    $ pqanalysis msd msd.in
