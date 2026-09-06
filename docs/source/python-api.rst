@@ -10,8 +10,8 @@ line uses. There are two layers:
   trajectory or reader and return NumPy arrays. Use them when the data are
   already in memory or when you want to post-process without writing a file.
 
-Both layers are single-use for a given analysis object: call ``run()`` once,
-then construct a new object for another calculation.
+Analysis objects (``RDF``, ``MSD``, ``VACF``, ``Momentum``) are single-use:
+call ``run()`` once, then construct a new object for another calculation.
 
 File wrappers and analysis tables
 ---------------------------------
@@ -32,8 +32,8 @@ using :doc:`examples`:
    print(r[:5], g[:5])
 
 :func:`~PQAnalysis.analysis.output.read_analysis_table` accepts native text,
-CSV, TSV or XVG and reconstructs the scientific column schema. Stable field
-names (``r_i``, ``g_r_i``, ``lag``, ``normalized_correlation``, …) are listed
+CSV, TSV or XVG and reconstructs the scientific column schema. Field names
+such as ``r_i``, ``g_r_i``, ``lag`` and ``normalized_correlation`` are listed
 in :ref:`analysisOutputFiles`.
 
 The same pattern works for the other file-driven analyses:
@@ -121,7 +121,7 @@ Use ``read_trajectory`` for small systems and interactive work. Prefer
 frames are not held in memory at once.
 
 Atom strings such as ``"O"``, ``"0..2"`` and ``"*|H"`` are documented in
-:doc:`data/selections`. A continuous load → RDF → MSD → figure session is
+:doc:`data/selections`. A continuous session from loading to a figure is on
 :doc:`workflow`.
 
 Where each method is documented

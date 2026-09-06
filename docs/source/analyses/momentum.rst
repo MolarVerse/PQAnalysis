@@ -122,21 +122,12 @@ Output and API
 
 See :ref:`analysis-output-momentum` for the output schema. Python workflows
 can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use
-:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly. A
-``Momentum`` instance may be run only once; construct a new object for a second
-calculation.
+:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly.
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import Momentum, check_momentum
+   from PQAnalysis.analysis import Momentum
    from PQAnalysis.io import TrajectoryReader
-
-   norms = check_momentum(
-       "examples/water/trajectory.vel",
-       output="momentum.dat",
-       selection="all",
-       export_files=["momenta.csv"],
-   )
 
    norms = Momentum(
        TrajectoryReader("examples/water/trajectory.vel"),
@@ -144,14 +135,8 @@ calculation.
    ).run()
    print(norms[:5])
 
-See :doc:`../python-api` for shared table and trajectory patterns.
-
 References
 ----------
 
 * [Allen2017]_ describes conserved quantities in a molecular-dynamics run and
   the removal of center-of-mass motion.
-* [thhTools]_ is the legacy program whose summation order the compatibility
-  path reproduces.
-
-Full entries are listed in :doc:`../references`.

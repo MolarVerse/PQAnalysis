@@ -57,20 +57,8 @@ Analysis methods
 Python interface
 ----------------
 
-The public analysis functions use the same validated input readers and
-scientific kernels as the command line:
-
-.. code-block:: python
-
-   from PQAnalysis.analysis import rdf, read_analysis_table
-
-   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
-   table = read_analysis_table("rdf.csv")
-
-:doc:`Learn the Python API <python-api>` covers file wrappers, in-memory
-analysis objects and scientific tables. The
-:doc:`function index <reference/functions>` groups every public callable by
-task.
+The same input files and kernels are callable from Python; see
+:doc:`python-api` and the :doc:`function index <reference/functions>`.
 
 Development
 -----------

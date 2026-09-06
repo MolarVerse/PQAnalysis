@@ -247,18 +247,12 @@ Output and API
 See :ref:`analysis-output-msd` for the exact table layout. The input-file entry
 point is :func:`PQAnalysis.analysis.msd.api.msd`; direct workflows can use
 :class:`PQAnalysis.analysis.msd.msd.MSD` and inspect its total MSD and fit
-results. An ``MSD`` instance may be run only once; construct a new object for a
-second calculation.
+results.
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import MSD, msd, read_analysis_table
+   from PQAnalysis.analysis import MSD
    from PQAnalysis.io import TrajectoryReader
-
-   msd("examples/water/msd.in", export_files=["msd.csv"])
-   table = read_analysis_table("msd.csv")
-   lag = table.column("lag")
-   msd_x = table.column("msd_x")
 
    analysis = MSD(
        TrajectoryReader("examples/water/trajectory.xyz"),
@@ -271,8 +265,6 @@ second calculation.
    lags, msd_x, msd_y, msd_z, msd_tot = analysis.run()
    print(analysis.fit_results)  # D components in m²·s⁻¹ when time_step is set
 
-See :doc:`../python-api` for shared table and trajectory patterns.
-
 References
 ----------
 
@@ -283,7 +275,3 @@ References
 * [Allen2017]_ and [Frenkel2002]_ cover the multiple-time-origin estimator,
   coordinate unwrapping in a periodic cell and the practical limits of
   extracting :math:`D` from a finite trajectory.
-* [thhTools]_ is the legacy program whose operation order the compatibility
-  path reproduces.
-
-Full entries are listed in :doc:`../references`.

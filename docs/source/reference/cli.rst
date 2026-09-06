@@ -32,9 +32,8 @@ to produce several output formats without repeating the calculation.
 Table conversion
 ----------------
 
-``pqanalysis convert`` reads native, CSV, TSV or PQAnalysis-generated XVG
-analysis tables and writes one or more target formats. It preserves complete
-schemas and hidden XVG data sets. See
+``pqanalysis convert`` rewrites analysis tables between formats; see
+:ref:`analysisOutputFiles` and
 :doc:`the generated option reference <../code/PQAnalysis.cli.convert>`.
 
 .. pq-cli-covered::
