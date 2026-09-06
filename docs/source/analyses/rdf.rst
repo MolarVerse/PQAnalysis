@@ -19,9 +19,10 @@ Structural interpretation
 
 .. plot:: _plots/rdf.py
    :alt: Radial distribution function and cumulative coordination number
-   :caption: Analytic schematic, not simulation output. The shaded interval
-      ends at the first minimum. The lower panel evaluates
-      N(r) = 4πρ∫₀ʳ g(s)s² ds with ρ = 0.0334 Å⁻³.
+   :caption: Analytic schematic rather than simulation output. The shaded
+      interval ends at the first minimum. The lower panel evaluates
+      :math:`N(r) = 4\pi\rho\int_0^r g(s)\,s^2\,\mathrm{d}s` with
+      :math:`\rho = 0.0334` Å⁻³.
 
 Minimal input
 -------------
@@ -82,8 +83,8 @@ half the shortest box vector,
 
    r_{\max} \le \tfrac{1}{2}\min(a, b, c).
 
-PQAnalysis enforces this on the general path: a requested ``r_max`` — whether
-given directly, or implied by ``n_bins`` and ``delta_r`` — that exceeds
+PQAnalysis enforces this on the general path: a requested ``r_max`` (given
+directly, or implied by ``n_bins`` and ``delta_r``) that exceeds
 :math:`\tfrac{1}{2}\min(a,b,c)` is clamped down to it, with a warning in the
 log. The bound is taken over *all* frames, so for a variable cell the smallest
 box in the whole trajectory sets the limit. If a run covers a shorter range
@@ -91,7 +92,7 @@ than requested, this clamp is why.
 
 .. warning::
 
-   **Triclinic cells.** The bound uses box-vector lengths, not the
+   Triclinic cells: the bound uses box-vector lengths rather than the
    perpendicular widths of the cell, and for a skewed cell the inscribed sphere
    is smaller than half the shortest vector. For :math:`a=b=c=10` Å with
    :math:`\gamma = 60^\circ`, the clamp allows :math:`r_{\max} = 5.0` Å while
@@ -117,9 +118,9 @@ ragged long before the plateau does. The three levers are the number of frames
 :math:`N_F`, the size of the reference and target selections, and ``delta_r``:
 halving ``delta_r`` halves the counts per bin and raises the relative noise by
 :math:`\sqrt{2}`. Choose
-``delta_r`` fine enough to locate the first peak and the first minimum — 0.02
-to 0.05 Å is typical — and then buy the smoothness back with frames, not by
-widening bins. Curves that still wobble around 1 in the plateau region are not
+``delta_r`` fine enough to locate the first peak and the first minimum (0.02
+to 0.05 Å is typical), then buy the smoothness back with more frames rather
+than wider bins. Curves that still wobble around 1 in the plateau region are not
 converged, whatever the first peak looks like.
 
 Coordination numbers and the first minimum
@@ -160,8 +161,8 @@ the volume fluctuates.
 .. important::
 
    The bias is uniform in :math:`r`, so it moves the plateau away from 1
-   without changing peak positions. A deliberately extreme test — an ideal gas
-   in a trajectory alternating between 1000 Å³ and 2197 Å³ — returns
+   without changing peak positions. A deliberately extreme test, an ideal gas
+   in a trajectory alternating between 1000 Å³ and 2197 Å³, returns
    :math:`g(r) \approx 1.16` where the exact answer is 1.00, matching
    :math:`\langle V\rangle\langle 1/V\rangle = 1.163`.
 

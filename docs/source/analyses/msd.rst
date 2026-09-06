@@ -150,7 +150,7 @@ The same expression sets the trajectory length you need. Choosing ``window``
 close to the trajectory length starves the entire curve, not only its tail:
 1100 frames with ``window = 1000`` and ``gap = 10`` leave 10 origins for every
 lag. A defensible :math:`D` requires a trajectory much longer than the longest
-fitted lag — that lag must already lie beyond the velocity correlation time so
+fitted lag: that lag must already lie beyond the velocity correlation time so
 that the motion is diffusive, and the trajectory must then be long enough to
 contain many independent windows of that length.
 
@@ -169,7 +169,7 @@ strongly correlated, so the quoted error systematically understates the true
 uncertainty. PQAnalysis performs no block averaging, no averaging over
 independent trajectories and no correction for the correlation between lags.
 Treat the printed uncertainty as a lower bound, and obtain a realistic error
-bar from independent runs — or at least from the spread of :math:`D` under
+bar from independent runs, or at least from the spread of :math:`D` under
 variation of the fit window and between the three Cartesian components.
 
 Finite-size effects on D

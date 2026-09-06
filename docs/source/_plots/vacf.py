@@ -48,7 +48,7 @@ correlation_axis.plot(
     color=COLORS["green"],
     linestyle="--",
     linewidth=1.6,
-    label="Exponential, 4 ps⁻¹",
+    label=r"Exponential, 4 ps$^{-1}$",
 )
 correlation_axis.axhline(
     0.0,
@@ -56,15 +56,8 @@ correlation_axis.axhline(
     linestyle=":",
     linewidth=1.0,
 )
-correlation_axis.set_title(
-    "(a) Normalized VACF",
-    loc="left",
-    fontsize=9.5,
-    fontweight="bold",
-    pad=8,
-)
-correlation_axis.set_xlabel("Lag time, t / ps")
-correlation_axis.set_ylabel("Cᵥᵥ(t)")
+correlation_axis.set_xlabel(r"Lag time $t$ / ps")
+correlation_axis.set_ylabel(r"$C_{vv}(t)$")
 correlation_axis.set_xlim(time[0], time[-1])
 correlation_axis.set_ylim(-0.65, 1.05)
 correlation_axis.legend(loc="upper right")
@@ -74,14 +67,7 @@ spectrum_axis.plot(
     amplitudes,
     color=COLORS["orange"],
 )
-spectrum_axis.set_title(
-    "(b) Exponential-window spectrum",
-    loc="left",
-    fontsize=9.5,
-    fontweight="bold",
-    pad=8,
-)
-spectrum_axis.set_xlabel("Wavenumber, ν̃ / cm⁻¹")
+spectrum_axis.set_xlabel(r"Wavenumber $\tilde{\nu}$ / cm$^{-1}$")
 spectrum_axis.set_ylabel("Relative amplitude")
 spectrum_axis.set_xlim(0.0, 1000.0)
 spectrum_axis.set_ylim(0.0, 1.05)

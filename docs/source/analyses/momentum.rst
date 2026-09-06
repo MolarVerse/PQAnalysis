@@ -61,9 +61,8 @@ accumulator, which is always float64:
 
 Two code paths set :math:`\varepsilon` differently:
 
-* File-backed PQ and QMCFC velocity trajectories — files recognized as ``.vel``
-  or ``.velocs`` and read through ``check_momentum`` — are parsed directly as
-  float64. Here :math:`\varepsilon` is the precision of the text itself, that
+* File-backed PQ and QMCFC velocity trajectories (``.vel`` or ``.velocs``
+  files read through ``check_momentum``) are parsed directly as float64. Here :math:`\varepsilon` is the precision of the text itself, that
   is, the number of significant digits the MD engine wrote.
 * Other xyz-family trajectory formats read from file keep the single-precision
   arrays produced by the general frame reader, giving
@@ -87,35 +86,43 @@ Validity and interpretation
 ---------------------------
 
 A trustworthy result is a flat trace: :math:`p(t)` fluctuating around the noise
-floor with no trend over the whole trajectory. The shape of the series carries
-the information, not any single value.
+floor with no trend over the whole trajectory. Read the shape of the series
+rather than any single value.
 
-* **A systematic increase** indicates center-of-mass drift — the classic
-  signature of an integration time step that is too large, of accumulated
-  round-off, or of a thermostat that adds momentum without removing it.
-* **A step** at one frame usually marks a restart, a velocity reassignment or a
-  change of ensemble rather than a physical process.
-* **A flat trace at a large value** means the simulation started with non-zero
-  total momentum. It is conserved, but the center of mass is translating, and
-  MSD or diffusion coefficients from that trajectory are biased unless the
-  drift is removed.
+Systematic increase
+   Center-of-mass drift: an integration time step that is too large,
+   accumulated round-off, or a thermostat that adds momentum without removing
+   it.
 
-The diagnostic does not apply, or must be read differently, in these cases:
+Step at one frame
+   Usually a restart, a velocity reassignment or a change of ensemble.
 
-* **Partial selections.** Momentum conservation is a statement about the whole
-  system. The momentum of a subset of atoms obeys no conservation law and
-  fluctuates by construction, so ``--selection`` is useful for locating which
-  species carries a drift, not for testing conservation.
-* **Systems with external forces.** Walls, position restraints, frozen atoms,
-  external fields and momentum-removing thermostats break translational
-  invariance on purpose. A non-conserved momentum is then the expected result.
-* **Unknown masses.** Every selected atom must have a known mass; the analysis
-  refuses to run otherwise, because a missing mass would silently change the
-  sum.
-* **Equipartition and temperature.** This is a single vector sum over the
-  system. It says nothing about how kinetic energy is distributed over degrees
-  of freedom, and a conserved total momentum is no evidence of a correct
-  temperature or of proper thermostatting.
+Flat trace at a large value
+   The simulation started with non-zero total momentum. It is conserved, but
+   the center of mass is translating, and MSD or diffusion coefficients from
+   that trajectory are biased unless the drift is removed.
+
+The diagnostic must be read differently in these cases:
+
+Partial selections
+   Momentum conservation is a statement about the whole system. A subset of
+   atoms obeys no conservation law, so ``--selection`` locates which species
+   carries a drift; it cannot test conservation.
+
+External forces
+   Walls, position restraints, frozen atoms, external fields and
+   momentum-removing thermostats break translational invariance on purpose. A
+   non-conserved momentum is then the expected result.
+
+Unknown masses
+   Every selected atom must have a known mass; the analysis refuses to run
+   otherwise, because a missing mass would silently change the sum.
+
+Equipartition and temperature
+   This is a single vector sum over the system. It says nothing about how
+   kinetic energy is distributed over degrees of freedom, and a conserved total
+   momentum is no evidence of a correct temperature or of proper
+   thermostatting.
 
 Output and API
 --------------
