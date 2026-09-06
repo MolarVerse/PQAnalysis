@@ -126,6 +126,26 @@ can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use
 ``Momentum`` instance may be run only once; construct a new object for a second
 calculation.
 
+.. code-block:: python
+
+   from PQAnalysis.analysis import Momentum, check_momentum
+   from PQAnalysis.io import TrajectoryReader
+
+   norms = check_momentum(
+       "velocity.vel",
+       output="momentum.dat",
+       selection="all",
+       export_files=["momenta.csv"],
+   )
+
+   norms = Momentum(
+       TrajectoryReader("velocity.vel"),
+       selection="all",
+   ).run()
+   print(norms[:5])
+
+See :doc:`../python-api` for shared table and trajectory patterns.
+
 References
 ----------
 
