@@ -17,7 +17,6 @@ Analysis commands
 -----------------
 
 .. pq-cli-table::
-   :title: Analysis commands
 
    rdf -- Radial distribution and cumulative coordination -- Input file
    msd -- Mean square displacement and diffusion fits -- Input file
@@ -44,7 +43,6 @@ Structure and trajectory conversion
 -----------------------------------
 
 .. pq-cli-table::
-   :title: Structure and trajectory commands
 
    rst2xyz -- Convert a PQ restart structure to XYZ
    xyz2rst -- Convert XYZ coordinates to a PQ restart structure
@@ -58,7 +56,6 @@ Simulation-support commands
 ---------------------------
 
 .. pq-cli-table::
-   :title: Simulation-support commands
 
    continue_input -- Continue indexed PQ or QMCFC input/output sequences
    add_molecules -- Add molecular structures to an existing system
