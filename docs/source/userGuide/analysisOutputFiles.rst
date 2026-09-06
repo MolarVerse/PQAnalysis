@@ -6,7 +6,7 @@ Analysis Output Files
 PQAnalysis analysis commands can write native text, CSV, TSV or XVG tables. The
 output filename selects the format:
 
-.. list-table:: Analysis output formats
+.. list-table::
    :header-rows: 1
    :widths: 18 30 52
 
@@ -82,7 +82,7 @@ as hidden Grace sets. PQAnalysis metadata records the original schema and plot
 projection, making its XVG output fully convertible back to native, CSV, TSV or
 XVG without losing analysis columns. The default quick plots are:
 
-.. list-table:: Default XVG plots
+.. list-table::
    :header-rows: 1
    :widths: 34 28 38
 
@@ -180,7 +180,7 @@ and spherical-shell volume are
 The ideal-gas pair count for the shell is
 :math:`E_i = \rho_T N_R N_F \Delta V_i`.
 
-.. list-table:: RDF ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 24 48 20
@@ -223,7 +223,7 @@ MSD
 
 The ``msd`` command writes the legacy Diffcalc layout to ``out_file``.
 
-.. list-table:: MSD ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 32 40 20
@@ -262,7 +262,7 @@ VACF and charge-flux correlation
 The ``vacf`` command can write three two-column files. Correlations are
 normalized by their zero-lag value, including charge-weighted correlations.
 
-.. list-table:: VACF ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -280,7 +280,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - VACF, or charge-flux autocorrelation when charges are supplied
      - Dimensionless
 
-.. list-table:: VACF ``spectrum_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -299,7 +299,7 @@ normalized by their zero-lag value, including charge-weighted correlations.
        normalized correlation
      - Arbitrary units
 
-.. list-table:: VACF ``windowed_out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -325,7 +325,7 @@ Broadened spectrum
 The ``build_spectrum`` command writes two columns to ``--output`` or standard
 output.
 
-.. list-table:: ``build_spectrum`` output columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -354,7 +354,7 @@ The ``check_momentum`` command writes two columns to ``--output`` or standard
 output. Native output uses 17 significant digits for the momentum norm, so
 reading the value as float64 preserves the calculated bit pattern.
 
-.. list-table:: ``check_momentum`` output columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 42 30 20
@@ -387,7 +387,7 @@ Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
 columns; the header lines reflect the selected layout.
 
-.. list-table:: Vibrational ``out_file`` columns
+.. list-table::
    :class: analysis-output-columns
    :header-rows: 1
    :widths: 8 34 38 20

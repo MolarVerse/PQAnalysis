@@ -8,7 +8,7 @@ establish physical correctness.
 Evidence classes
 ----------------
 
-.. list-table:: Validation evidence
+.. list-table::
    :class: pq-record-table pq-validation-table
    :header-rows: 1
    :widths: 25 35 40
