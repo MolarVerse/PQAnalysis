@@ -163,7 +163,7 @@ class PQCliTable(SphinxDirective):
             rows.append(parts)
             n_columns = max(n_columns, len(parts))
 
-        title = self.options.get("title", "Commands")
+        title = self.options.get("title", "")
         widths = "24 50 26" if n_columns == 3 else "28 72"
         headers = ["Command", "Purpose"]
 
@@ -175,7 +175,7 @@ class PQCliTable(SphinxDirective):
         def emit(line):
             text.append(line, "pq-cli-table")
 
-        emit(f".. list-table:: {title}")
+        emit(f".. list-table:: {title}".rstrip())
         emit("   :class: pq-command-table")
         emit("   :header-rows: 1")
         emit(f"   :widths: {widths}")
