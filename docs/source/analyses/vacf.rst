@@ -48,6 +48,8 @@ Input
    window_function = exponential
    window_param = 4.0
 
+Saved as ``vacf.in``, it runs with:
+
 .. code-block:: console
 
    $ pqanalysis vacf vacf.in

@@ -28,6 +28,8 @@ Input
    unit = kcal
    hessian_sign = auto
 
+Saved as ``vibrations.in``, it runs with:
+
 .. code-block:: console
 
    $ pqanalysis vibrations vibrations.in
