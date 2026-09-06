@@ -8,6 +8,29 @@ When partial charges are supplied, point-charge infrared intensities are
 reported as well. The whole calculation is the harmonic approximation applied
 to one isolated structure: no dynamics, temperature or anharmonicity enters it.
 
+Minimal input
+-------------
+
+.. code-block:: text
+
+   structure_file = structure.rst
+   hessian_file = hessian.dat
+   out_file = wavenumbers.dat
+   normal_modes_file = normal_modes.dat
+   modes_file = modes.xyz
+   modes = positive
+   unit = kcal
+   hessian_sign = auto
+
+.. code-block:: console
+
+   $ pqanalysis vibrations vibrations.in
+
+``structure_file`` may be a PQ restart or a single-frame XYZ file. ``unit``
+describes the Hessian energy unit and accepts ``kcal``, ``hartree`` or ``ev``.
+IR intensities are written only when a ``moldescriptor_file`` supplies partial
+charges. The bundled :doc:`../examples` fixture is ``examples/water``.
+
 Throughout this page :math:`N` is the number of atoms, :math:`i` indexes atoms,
 :math:`a,b\in\{x,y,z\}` index Cartesian directions, and
 :math:`\alpha,\beta\in\{1,\dots,3N\}` index Cartesian coordinates in the file
@@ -276,29 +299,6 @@ Internal-mode spectrum
       structure, Hessian and partial-charge fixtures. Only internal modes above
       100 cm⁻¹ are shown; translational and rotational modes are omitted.
 
-Minimal input
--------------
-
-.. code-block:: text
-
-   structure_file = structure.rst
-   hessian_file = hessian.dat
-   out_file = wavenumbers.dat
-   normal_modes_file = normal_modes.dat
-   modes_file = modes.xyz
-   modes = positive
-   unit = kcal
-   hessian_sign = auto
-
-.. code-block:: console
-
-   $ pqanalysis vibrations vibrations.in
-
-``structure_file`` may be a PQ restart or a single-frame XYZ file. ``unit``
-describes the Hessian energy unit and accepts ``kcal``, ``hartree`` or ``ev``.
-IR intensities are written only when a ``moldescriptor_file`` supplies partial
-charges.
-
 Mode output
 -----------
 
@@ -383,12 +383,12 @@ calculations use
    from PQAnalysis.analysis.vibrational import calculate, read_hessian_file
    from PQAnalysis.io import read_restart_file
 
-   vibrations("vibrations.in", export_files=["wavenumbers.csv"])
+   vibrations("examples/water/vibrations.in", export_files=["wavenumbers.csv"])
    table = read_analysis_table("wavenumbers.csv")
    print(table.column("wavenumber")[:10])
 
-   system = read_restart_file("structure.rst")
-   hessian = read_hessian_file("hessian.dat")
+   system = read_restart_file("examples/water/structure.rst")
+   hessian = read_hessian_file("examples/water/hessian.dat")
    result = calculate(
        system.atomic_masses,
        system.pos,

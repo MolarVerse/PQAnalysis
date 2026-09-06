@@ -16,14 +16,14 @@ then construct a new object for another calculation.
 File wrappers and analysis tables
 ---------------------------------
 
-The shortest Python path mirrors the command line. Write ``rdf.in`` as in
-:doc:`getting-started`, then:
+The shortest Python path mirrors the command line. From the repository root,
+using :doc:`examples`:
 
 .. code-block:: python
 
    from PQAnalysis.analysis import rdf, read_analysis_table
 
-   rdf("rdf.in", export_files=["rdf.csv"])
+   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
    table = read_analysis_table("rdf.csv")
 
    r = table.column("r_i")
@@ -42,11 +42,11 @@ The same pattern works for the other file-driven analyses:
 
    from PQAnalysis.analysis import msd, vacf, vibrations, check_momentum
 
-   msd("msd.in", export_files=["msd.csv"])
-   vacf("vacf.in", export_files=["vacf.csv"])
-   vibrations("vibrations.in", export_files=["wavenumbers.csv"])
+   msd("examples/water/msd.in", export_files=["msd.csv"])
+   vacf("examples/water/vacf.in", export_files=["vacf.csv"])
+   vibrations("examples/water/vibrations.in", export_files=["wavenumbers.csv"])
    norms = check_momentum(
-       "velocity.vel",
+       "examples/water/trajectory.vel",
        output="momentum.dat",
        selection="all",
    )
@@ -113,12 +113,16 @@ Reading trajectories
 
    from PQAnalysis.io import read_trajectory, TrajectoryReader
 
-   traj = read_trajectory("trajectory.xyz")          # loads all frames
-   reader = TrajectoryReader("trajectory.xyz")       # streams frame by frame
+   traj = read_trajectory("examples/water/trajectory.xyz")  # loads all frames
+   reader = TrajectoryReader("examples/water/trajectory.xyz")  # streams frames
 
 Use ``read_trajectory`` for small systems and interactive work. Prefer
 ``TrajectoryReader`` (or the analysis file wrappers) for long trajectories so
 frames are not held in memory at once.
+
+Atom strings such as ``"O"``, ``"0..2"`` and ``"*|H"`` are documented in
+:doc:`data/selections`. A continuous load → RDF → MSD → figure session is
+:doc:`workflow`.
 
 Where each method is documented
 -------------------------------

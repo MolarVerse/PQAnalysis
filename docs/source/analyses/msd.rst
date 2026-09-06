@@ -43,7 +43,8 @@ Minimal input
 ``window`` is the largest lag in frames and must be divisible by ``gap``.
 ``gap`` controls the spacing between time origins. ``time_step`` is expressed
 in ps and enables diffusion fitting; ``fit_window`` selects the trailing
-points used by that fit.
+points used by that fit. The bundled :doc:`../examples` fixture uses
+``window = 8`` because it has only 25 frames.
 
 File-backed orthorhombic trajectories use a bounded compatibility path that
 preserves the operation order of the legacy ``Diffcalc`` program [thhTools]_.
@@ -254,18 +255,18 @@ second calculation.
    from PQAnalysis.analysis import MSD, msd, read_analysis_table
    from PQAnalysis.io import TrajectoryReader
 
-   msd("msd.in", export_files=["msd.csv"])
+   msd("examples/water/msd.in", export_files=["msd.csv"])
    table = read_analysis_table("msd.csv")
    lag = table.column("lag")
    msd_x = table.column("msd_x")
 
    analysis = MSD(
-       TrajectoryReader("trajectory.xyz"),
+       TrajectoryReader("examples/water/trajectory.xyz"),
        target_species="O",
-       window=1000,
-       gap=10,
+       window=8,
+       gap=2,
        time_step=0.001,
-       fit_window=200,
+       fit_window=4,
    )
    lags, msd_x, msd_y, msd_z, msd_tot = analysis.run()
    print(analysis.fit_results)  # D components in m²·s⁻¹ when time_step is set

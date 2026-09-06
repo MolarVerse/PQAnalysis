@@ -39,10 +39,13 @@ Minimal input
 
    $ pqanalysis rdf rdf.in
 
-``restart_file`` and ``moldescriptor_file`` are unnecessary for a basic
-species RDF. They are required when ``no_intra_molecular = True`` is used to
-exclude pairs belonging to the same molecule. PQAnalysis can infer the usual
-PQ companion filenames when they are beside the trajectory.
+The keys above are typical for a bulk trajectory. The bundled
+:doc:`../examples` fixture uses ``delta_r = 0.5`` and ``r_max = 4.0`` because
+it is one molecule in a 10 Å box. ``restart_file`` and ``moldescriptor_file``
+are unnecessary for a basic species RDF. They are required when
+``no_intra_molecular = True`` is used to exclude pairs belonging to the same
+molecule. PQAnalysis can infer the usual PQ companion filenames when they are
+beside the trajectory.
 
 Legacy-compatible arithmetic
 ----------------------------
@@ -214,16 +217,16 @@ once; construct a new object for a second calculation.
    from PQAnalysis.analysis import RDF, rdf, read_analysis_table
    from PQAnalysis.io import TrajectoryReader
 
-   rdf("rdf.in", export_files=["rdf.csv"])
+   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
    table = read_analysis_table("rdf.csv")
    g = table.column("g_r_i")
 
    r, g, n, shell, residual = RDF(
-       TrajectoryReader("trajectory.xyz"),
+       TrajectoryReader("examples/water/trajectory.xyz"),
        reference_species="O",
        target_species="H",
-       delta_r=0.05,
-       r_max=8.0,
+       delta_r=0.5,
+       r_max=4.0,
    ).run()
 
 The complete input-key table is documented with

@@ -36,7 +36,7 @@ Run the diagnostic
 
 .. code-block:: console
 
-   $ pqanalysis check_momentum velocity.vel \
+   $ pqanalysis check_momentum examples/water/trajectory.vel \
        --selection all \
        --output momentum.dat
 
@@ -132,14 +132,14 @@ calculation.
    from PQAnalysis.io import TrajectoryReader
 
    norms = check_momentum(
-       "velocity.vel",
+       "examples/water/trajectory.vel",
        output="momentum.dat",
        selection="all",
        export_files=["momenta.csv"],
    )
 
    norms = Momentum(
-       TrajectoryReader("velocity.vel"),
+       TrajectoryReader("examples/water/trajectory.vel"),
        selection="all",
    ).run()
    print(norms[:5])

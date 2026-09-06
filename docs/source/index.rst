@@ -7,7 +7,7 @@ velocities and Hessians, then produces documented scientific tables for
 structural, transport and vibrational observables.
 
 :doc:`Get started <getting-started>` | :doc:`Python API <python-api>` |
-:doc:`Choose an analysis <analyses/index>` |
+:doc:`Example data <examples>` | :doc:`Choose an analysis <analyses/index>` |
 :doc:`Python functions <reference/functions>` | :doc:`Develop PQAnalysis <developerGuide/developerGuide>`
 
 Quick start
@@ -64,7 +64,7 @@ scientific kernels as the command line:
 
    from PQAnalysis.analysis import rdf, read_analysis_table
 
-   rdf("rdf.in", export_files=["rdf.csv"])
+   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
    table = read_analysis_table("rdf.csv")
 
 :doc:`Learn the Python API <python-api>` covers file wrappers, in-memory
@@ -88,6 +88,8 @@ package ownership boundaries.
 
    getting-started
    python-api
+   examples
+   workflow
    analyses/index
    Python Functions <reference/functions>
    Command Line <reference/cli>
