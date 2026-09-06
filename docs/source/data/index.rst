@@ -37,28 +37,14 @@ The Python format definitions are documented by
 Selections
 ----------
 
-Atom strings, index ranges, ``elem()`` and the ``,`` / ``&`` / ``|`` operators
-are documented in :doc:`selections`. Analysis keys such as
-``reference_selection`` use that language. Always verify that the selection
-contains the intended atoms; normalization and statistical quality depend
-directly on its population.
+Analysis keys such as ``reference_selection`` use the string language
+documented in :doc:`selections`.
 
 Output and conversion
 ---------------------
 
-Native, CSV, TSV and PQAnalysis-generated XVG tables are mutually convertible.
-The converter detects input content rather than trusting the extension and
-validates every destination before writing any:
-
-.. code-block:: console
-
-   $ pqanalysis convert rdf.xvg \
-       -o rdf.dat \
-       -o rdf.csv \
-       -o rdf.tsv
-
-No output is written if any requested destination already exists. Use
-``--mode o`` only when intentional replacement is acceptable.
+Native, CSV, TSV and PQAnalysis-generated XVG tables are mutually convertible
+with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
 
 .. toctree::
    :hidden:
