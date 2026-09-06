@@ -290,7 +290,9 @@ input_keys_documentation = f"""
 
 For the vibrational analysis input file several keys are available.
 
-.. list-table:: Required keys
+The following keys are required:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
@@ -304,7 +306,9 @@ For the vibrational analysis input file several keys are available.
         :ref:`vibrational-analysis output <analysis-output-vibrations>`
         for its columns and the optional mode-file layouts.
 
-.. list-table:: Optional keys
+The following keys are optional:
+
+.. list-table::
     :header-rows: 1
 
     * - Key

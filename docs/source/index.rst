@@ -13,7 +13,8 @@ structural, transport and vibrational observables.
 Quick start
 -----------
 
-PQAnalysis requires Python 3.12 or newer.
+PQAnalysis requires Python 3.12 or newer. Install it and run an analysis
+from its input file:
 
 .. code-block:: console
 
@@ -21,7 +22,7 @@ PQAnalysis requires Python 3.12 or newer.
    $ pqanalysis rdf rdf.in
 
 The output filename in an analysis input file selects native text, CSV, TSV or
-XVG. Repeat ``--export`` to write several formats in the same run.
+XVG. Repeat ``--export`` to write several formats in the same run:
 
 .. code-block:: console
 

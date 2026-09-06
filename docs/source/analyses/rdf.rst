@@ -35,6 +35,8 @@ Input
    r_max = 8.0
    out_file = rdf.dat
 
+Saved as ``rdf.in``, it runs with:
+
 .. code-block:: console
 
    $ pqanalysis rdf rdf.in

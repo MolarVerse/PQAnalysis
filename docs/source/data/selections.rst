@@ -12,8 +12,9 @@ MSD statistics and VACF amplitudes all scale with that population.
 String language
 ---------------
 
-A selection string is parsed with a Lark grammar. The atoms of
-``examples/water/trajectory.xyz`` are O (index 0), H (1) and H (2).
+A selection string is parsed with a Lark grammar. Applied to
+``examples/water/trajectory.xyz``, whose atoms are O (index 0), H (1) and
+H (2), the common forms select:
 
 .. list-table::
    :header-rows: 1

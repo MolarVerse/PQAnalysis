@@ -255,7 +255,9 @@ input_keys_documentation = f"""
 
 For the VACF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
-.. list-table:: Required keys
+The following keys are required:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
@@ -273,7 +275,9 @@ For the VACF analysis input file several keys are available of which some are re
       - The time step between two frames in ps. It is used to build the
         time axis of the VACF and the frequency axis of the spectrum.
 
-.. list-table:: Optional keys
+The following keys are optional:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
