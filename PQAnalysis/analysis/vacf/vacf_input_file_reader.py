@@ -183,21 +183,27 @@ class VACFInputFileReader(Reader):
         """
         str | None: The static charge file for the charge-flux mode.
         """
-        return _parse_string(self.dictionary, self.charge_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.charge_file_key)
+        )
 
     @property
     def charge_files(self) -> List[str] | None:
         """
         List[str] | None: The charge trajectory files for the charge-flux mode.
         """
-        return _parse_files(self.dictionary, self.charge_files_key)
+        return self.resolve_paths(
+            _parse_files(self.dictionary, self.charge_files_key)
+        )
 
     @property
     def spectrum_file(self) -> str | None:
         """
         str | None: The output file for the VACF spectrum.
         """
-        return _parse_string(self.dictionary, self.spectrum_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.spectrum_file_key)
+        )
 
     @property
     def ftsize(self) -> PositiveInt | None:
@@ -239,7 +245,9 @@ class VACFInputFileReader(Reader):
         """
         str | None: The output file for the windowed correlation function.
         """
-        return _parse_string(self.dictionary, self.windowed_out_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.windowed_out_file_key)
+        )
 
 
 

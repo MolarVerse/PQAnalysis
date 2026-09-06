@@ -90,10 +90,10 @@ written above with its column metadata:
    print(table.column("r_i")[:5])
    print(table.column("g_r_i")[:5])
 
-The analysis itself runs from Python as ``rdf("rdf.in", export_files=["rdf.csv"])``,
-from the same directory and after removing the earlier outputs: filenames
-inside an input file resolve against the working directory, exactly as on the
-command line. :doc:`python-api` covers the wrappers and the in-memory analysis
+The analysis itself runs from Python as ``rdf("rdf.in", export_files=["rdf.csv"])``
+once the earlier outputs are removed. The input file can also be given by
+path from another directory; filenames inside it resolve relative to the
+input file. :doc:`python-api` covers the wrappers and the in-memory analysis
 objects such as :class:`~PQAnalysis.analysis.rdf.rdf.RDF`.
 
 Next steps
