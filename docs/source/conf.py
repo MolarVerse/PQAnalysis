@@ -17,10 +17,8 @@ project = "PQAnalysis"
 author = "the PQAnalysis authors"
 copyright = "2023-2026, the PQAnalysis authors"
 
-try:
-    from PQAnalysis import __version__ as release
-except Exception:  # runtime dependencies may be missing in a docs-only env
-    release = ""
+from PQAnalysis import __version__ as release  # noqa: E402
+
 version = release
 
 extensions = [

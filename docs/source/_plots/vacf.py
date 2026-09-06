@@ -7,6 +7,7 @@ from PQAnalysis.analysis.vacf.spectrum import vacf_spectrum
 
 from _style import COLORS, apply_style
 
+WINDOW_PARAM = 4.0  # ps^-1
 
 apply_style((6.2, 5.5))
 
@@ -23,7 +24,7 @@ wavenumbers, amplitudes, windowed_correlation = vacf_spectrum(
     correlation,
     ftsize=5000,
     window_function="exponential",
-    window_param=4.0,
+    window_param=WINDOW_PARAM,
 )
 display_range = wavenumbers <= 1000.0
 wavenumbers = wavenumbers[display_range]
@@ -48,7 +49,7 @@ correlation_axis.plot(
     color=COLORS["green"],
     linestyle="--",
     linewidth=1.6,
-    label=r"Exponential, 4 ps$^{-1}$",
+    label=rf"Exponential, {WINDOW_PARAM:g} ps$^{{-1}}$",
 )
 correlation_axis.axhline(
     0.0,

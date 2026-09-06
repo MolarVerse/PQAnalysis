@@ -25,7 +25,6 @@ from pathlib import Path
 import PQAnalysis.cli as cli_module
 
 from docutils import nodes
-from docutils.parsers.rst import directives
 from docutils.statemachine import ViewList
 from sphinx.util import logging
 from sphinx.util.docutils import SphinxDirective
@@ -121,7 +120,7 @@ class PQCliTable(SphinxDirective):
     has_content = True
     required_arguments = 0
     optional_arguments = 0
-    option_spec = {"title": directives.unchanged}
+    option_spec = {}
 
     def run(self):
         """
@@ -163,7 +162,6 @@ class PQCliTable(SphinxDirective):
             rows.append(parts)
             n_columns = max(n_columns, len(parts))
 
-        title = self.options.get("title", "")
         widths = "24 50 26" if n_columns == 3 else "28 72"
         headers = ["Command", "Purpose"]
 
@@ -175,7 +173,7 @@ class PQCliTable(SphinxDirective):
         def emit(line):
             text.append(line, "pq-cli-table")
 
-        emit(f".. list-table:: {title}".rstrip())
+        emit(".. list-table::")
         emit("   :class: pq-command-table")
         emit("   :header-rows: 1")
         emit(f"   :widths: {widths}")
