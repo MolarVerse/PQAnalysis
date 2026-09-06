@@ -53,46 +53,48 @@ The output filename selects the table format. ``.csv`` and ``.tsv`` open
 directly in spreadsheet software, ``.xvg`` opens in xmgrace, and any other
 extension uses native PQAnalysis text.
 
-Additional outputs do not require another analysis run:
-
-.. code-block:: console
-
-   $ pqanalysis rdf rdf.in \
-       --export rdf.csv \
-       --export rdf.tsv \
-       --export rdf.xvg
-
-Existing analysis tables can be converted later:
+The ``rdf.dat`` from the previous step converts without rerunning the
+analysis:
 
 .. code-block:: console
 
    $ pqanalysis convert rdf.dat -o rdf.csv -o rdf.xvg
 
-PQAnalysis refuses to overwrite an existing output file. Conversion and
-support tools such as ``convert`` accept ``--mode o`` to request
-replacement explicitly; the input-file driven analyses have no overwrite
-flag, so move or delete the old output first.
+To write several formats in a single analysis run, repeat ``--export``:
+
+.. code-block:: console
+
+   $ rm rdf.dat rdf.csv rdf.xvg
+   $ pqanalysis rdf rdf.in \
+       --export rdf.csv \
+       --export rdf.tsv \
+       --export rdf.xvg
+
+The ``rm`` is needed because PQAnalysis refuses to overwrite an existing
+output file. ``convert`` and the other support tools accept ``--mode o`` to
+request replacement explicitly; the input-file driven analyses have no
+overwrite flag, so move or delete the old output first.
 
 Use the Python API
 ------------------
 
-The same input file works from Python. Paths below are from the repository
-root. The wrapper writes the table;
-:func:`~PQAnalysis.analysis.output.read_analysis_table` reloads it with
-column metadata:
+Still in ``examples/water``,
+:func:`~PQAnalysis.analysis.output.read_analysis_table` reloads the table
+written above with its column metadata:
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import rdf, read_analysis_table
+   from PQAnalysis.analysis import read_analysis_table
 
-   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
    table = read_analysis_table("rdf.csv")
    print(table.column("r_i")[:5])
    print(table.column("g_r_i")[:5])
 
-For in-memory trajectories, analysis objects such as
-:class:`~PQAnalysis.analysis.rdf.rdf.RDF` and recipes for every method, see
-:doc:`python-api`.
+The analysis itself runs from Python as ``rdf("rdf.in", export_files=["rdf.csv"])``,
+from the same directory and after removing the earlier outputs: filenames
+inside an input file resolve against the working directory, exactly as on the
+command line. :doc:`python-api` covers the wrappers and the in-memory analysis
+objects such as :class:`~PQAnalysis.analysis.rdf.rdf.RDF`.
 
 Next steps
 ----------

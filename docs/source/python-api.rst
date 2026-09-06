@@ -16,15 +16,20 @@ call ``run()`` once, then construct a new object for another calculation.
 File wrappers and analysis tables
 ---------------------------------
 
-The shortest Python path mirrors the command line. From the repository root,
-using :doc:`examples`:
+The shortest Python path mirrors the command line. Filenames inside an input
+file (``traj_files = trajectory.xyz``) resolve against the working directory,
+as they do on the command line, so run the wrappers from the directory that
+holds the input file. With :doc:`examples`, from the repository root:
 
 .. code-block:: python
 
+   from contextlib import chdir
+
    from PQAnalysis.analysis import rdf, read_analysis_table
 
-   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
-   table = read_analysis_table("rdf.csv")
+   with chdir("examples/water"):
+       rdf("rdf.in", export_files=["rdf.csv"])
+   table = read_analysis_table("examples/water/rdf.csv")
 
    r = table.column("r_i")
    g = table.column("g_r_i")
@@ -42,9 +47,10 @@ The same pattern works for the other file-driven analyses:
 
    from PQAnalysis.analysis import msd, vacf, vibrations, check_momentum
 
-   msd("examples/water/msd.in", export_files=["msd.csv"])
-   vacf("examples/water/vacf.in", export_files=["vacf.csv"])
-   vibrations("examples/water/vibrations.in", export_files=["wavenumbers.csv"])
+   with chdir("examples/water"):
+       msd("msd.in", export_files=["msd.csv"])
+       vacf("vacf.in", export_files=["vacf.csv"])
+       vibrations("vibrations.in", export_files=["wavenumbers.csv"])
    norms = check_momentum(
        "examples/water/trajectory.vel",
        output="momentum.dat",
