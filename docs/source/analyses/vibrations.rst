@@ -191,16 +191,16 @@ the counts :math:`n_+ = \#\{\lambda^{\mathrm{int}}_j > \tau\}` and
 :math:`s=-1` when :math:`n_- > n_+`, and :math:`s=+1` when :math:`n_+ > n_-`.
 A tie is broken by the larger of
 :math:`\sum\lvert\lambda^{\mathrm{int}}\rvert` over the positive and the
-negative set. If the structure has no internal subspace at all — a single atom,
-whose three coordinates are exhausted by the translations — the heuristic
+negative set. If the structure has no internal subspace at all (a single atom,
+whose three coordinates are exhausted by the translations), the heuristic
 returns :math:`s=+1`.
 
 The heuristic exists because a bound structure must have positive curvature
 along most of its internal coordinates, so the sign that makes the majority of
 internal eigenvalues positive is the physical one. This is also the only place
 where the internal subspace is genuinely projected out. Being a majority vote,
-it is reliable for minima and for transition states — one imaginary mode among
-many real ones — and unreliable for structures far from any stationary point.
+it is reliable for minima and for transition states (one imaginary mode among
+many real ones) and unreliable for structures far from any stationary point.
 Set ``hessian_sign`` explicitly whenever the convention of the producing code
 is known.
 
@@ -335,39 +335,49 @@ scalings are display conventions, not physical vibrational amplitudes.
 Validity and interpretation
 ---------------------------
 
-A trustworthy result has :math:`3N` modes in total, of which six — five for a
-linear structure — are external and small compared with the softest internal
-mode, and :math:`3N-6` are internal and positive at a minimum, or positive
-except for exactly one imaginary mode at a transition state. Residual external
-modes of a few tens of cm⁻¹, sometimes negative, indicate an incompletely
-optimized geometry or a numerically noisy Hessian rather than physical soft
-modes.
+A trustworthy result has :math:`3N` modes in total. Six of them (five for a
+linear structure) are external and small compared with the softest internal
+mode; the remaining :math:`3N-6` are internal and positive at a minimum, or
+positive except for exactly one imaginary mode at a transition state. Residual
+external modes of a few tens of cm⁻¹, sometimes negative, indicate an
+incompletely optimized geometry or a numerically noisy Hessian.
 
-The method does not apply, or needs care, in these situations:
+The method needs care in these situations:
 
-* **Away from a stationary point.** The harmonic expansion assumes vanishing
-  gradients. PQAnalysis projects out neither the gradient nor the external
-  modes, so residual forces leak into the translational and rotational modes
-  and mix into the low-wavenumber internal modes.
-* **Periodic systems.** The external-mode construction uses a center of mass
-  and an inertia tensor, which presumes an isolated structure. A Hessian from a
-  periodic calculation can still be diagonalized, but the rotational trial
-  vectors and the interpretation of the near-zero modes are not meaningful.
-* **Unit and ordering mismatches.** The Hessian coordinate order must match the
-  structure atom order exactly, and the energy unit must match ``unit``,
-  including the bohr length convention implied by ``hartree``. A mismatch
-  yields a plausible-looking spectrum on the wrong scale, not an error.
-* **Comparison with experiment.** These are harmonic wavenumbers. They
-  systematically exceed observed fundamentals, and PQAnalysis applies no
-  empirical scaling factor. Finite-temperature and anharmonic band shapes come
-  from the time-correlation route in :doc:`vacf` instead [Thomas2013]_.
-* **IR intensities.** Fixed atomic point charges carry no charge flux and no
-  electronic polarization, so :math:`I_j` reproduces relative band strengths of
-  strongly polar motions at best. Do not report them as quantitative
-  absorption coefficients.
-* **Degenerate modes.** Within a degenerate set the individual eigenvectors are
-  arbitrary up to a rotation inside that subspace. Wavenumbers, force constants
-  and the summed intensity are well defined; individual mode vectors are not.
+Away from a stationary point
+   The harmonic expansion assumes vanishing gradients. PQAnalysis projects out
+   neither the gradient nor the external modes, so residual forces leak into
+   the translational and rotational modes and mix into the low-wavenumber
+   internal modes.
+
+Periodic systems
+   The external-mode construction uses a center of mass and an inertia tensor,
+   which presumes an isolated structure. A Hessian from a periodic calculation
+   can still be diagonalized, but the rotational trial vectors and the
+   near-zero modes lose their meaning.
+
+Unit and ordering mismatches
+   The Hessian coordinate order must match the structure atom order exactly,
+   and the energy unit must match ``unit``, including the bohr length
+   convention implied by ``hartree``. A mismatch yields a plausible-looking
+   spectrum on the wrong scale without raising an error.
+
+Comparison with experiment
+   These are harmonic wavenumbers. They systematically exceed observed
+   fundamentals, and PQAnalysis applies no empirical scaling factor.
+   Finite-temperature and anharmonic band shapes come from the
+   time-correlation route in :doc:`vacf` [Thomas2013]_.
+
+IR intensities
+   Fixed atomic point charges carry no charge flux and no electronic
+   polarization, so :math:`I_j` reproduces relative band strengths of strongly
+   polar motions at best. Do not report them as quantitative absorption
+   coefficients.
+
+Degenerate modes
+   Within a degenerate set the individual eigenvectors are arbitrary up to a
+   rotation inside that subspace. Wavenumbers, force constants and the summed
+   intensity are well defined; individual mode vectors are not.
 
 Output and API
 --------------
