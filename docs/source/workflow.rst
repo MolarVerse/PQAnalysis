@@ -68,8 +68,22 @@ fit interval.
 Plot
 ----
 
-The figure is produced from the arrays above during the documentation build
-(``docs/source/_plots/workflow.py``):
+The arrays are plain NumPy arrays, so plotting is ordinary Matplotlib:
+
+.. code-block:: python
+
+   import matplotlib.pyplot as plt
+
+   fig, (ax_rdf, ax_msd) = plt.subplots(2, 1)
+   ax_rdf.plot(r, g)
+   ax_rdf.set(xlabel=r"$r$ / $\mathrm{\AA}$", ylabel=r"$g(r)$")
+   ax_msd.plot(lags * 0.001, msd_tot)
+   ax_msd.set(xlabel=r"$t$ / ps", ylabel=r"MSD / $\mathrm{\AA}^2$")
+   fig.tight_layout()
+   plt.show()
+
+The same figure, with the documentation's styling, is regenerated from
+``docs/source/_plots/workflow.py`` at every build:
 
 .. plot:: _plots/workflow.py
    :alt: RDF and MSD of the bundled isolated-water tutorial fixture
