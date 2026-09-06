@@ -51,20 +51,11 @@ img.plot-directive {
 }
 
 /* Tables sit in the text column like paragraphs: left edge on the text
-   margin, caption above and left-aligned, header and body cells left-aligned
-   and top-anchored. Furo centers captions and the browser centers th. */
+   margin, header and body cells left-aligned and top-anchored. Sphinx
+   centers narrow tables and the browser centers th. */
 article table.docutils.align-default {
     margin-left: 0;
     margin-right: 0;
-}
-
-article table.docutils > caption {
-    caption-side: top;
-    padding: 0 0 0.4rem;
-    color: var(--color-foreground-secondary);
-    font-size: 0.9rem;
-    line-height: 1.45;
-    text-align: left;
 }
 
 article table.docutils th,

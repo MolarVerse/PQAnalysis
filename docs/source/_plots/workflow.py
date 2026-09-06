@@ -8,6 +8,8 @@ from PQAnalysis.io import TrajectoryReader
 
 from _style import COLORS, PROJECT_ROOT, apply_style
 
+TIME_STEP_PS = 0.001
+
 config.with_progress_bar = False
 
 water = PROJECT_ROOT / "examples" / "water"
@@ -26,10 +28,10 @@ lags, _msd_x, _msd_y, _msd_z, msd_tot = MSD(
     target_species="O",
     window=8,
     gap=2,
-    time_step=0.001,
+    time_step=TIME_STEP_PS,
     fit_window=4,
 ).run()
-time = lags * 0.001
+time = lags * TIME_STEP_PS
 
 apply_style((6.4, 5.4))
 figure, (rdf_axis, msd_axis) = plt.subplots(

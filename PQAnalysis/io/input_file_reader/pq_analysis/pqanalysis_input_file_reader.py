@@ -2,7 +2,6 @@
 A module for reading the input file for the PQAnalysis.
 """
 import logging
-import os
 from pathlib import Path
 
 from beartype.typing import List
@@ -62,9 +61,9 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
 
     def __init__(self, filename: str) -> None:
         """
-        It sets the format to InputFileFormat.PQANALYSIS and the
-        filename to the given filename. It also creates a 
-        InputFileParser with the given filename.
+        Sets the format to InputFileFormat.PQANALYSIS, remembers the
+        filename and its directory, and creates an InputFileParser that
+        expands glob values in that directory.
 
         Parameters
         ----------
@@ -74,10 +73,7 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         self.format = InputFileFormat.PQANALYSIS
         self.filename = filename
         self.base_dir = Path(filename).parent
-        self.parser = InputFileParser(
-            filename,
-            glob_root=os.path.dirname(filename) or None,
-        )
+        self.parser = InputFileParser(filename, glob_root=str(self.base_dir))
 
         self.dictionary = None
         self.raw_input_file = None
