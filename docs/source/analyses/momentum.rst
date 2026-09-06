@@ -122,7 +122,9 @@ Output and API
 
 See :ref:`analysis-output-momentum` for the output schema. Python workflows
 can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use
-:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly.
+:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly. A
+``Momentum`` instance may be run only once; construct a new object for a second
+calculation.
 
 References
 ----------
