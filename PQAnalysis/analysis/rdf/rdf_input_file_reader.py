@@ -9,6 +9,7 @@ from pathlib import Path
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
 from PQAnalysis.io.input_file_reader.exceptions import InputFileError
+from PQAnalysis.io.input_file_reader.pq_analysis._parse import _parse_files
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
@@ -167,7 +168,10 @@ class RDFInputFileReader(Reader):
         if restart_file is None:
             return None
 
-        return restart_file if Path(restart_file).is_file() else None
+        if Path(self.resolve_path(restart_file)).is_file():
+            return restart_file
+
+        return None
 
     def _infer_moldescriptor_file(self) -> str | None:
         """
@@ -178,7 +182,10 @@ class RDFInputFileReader(Reader):
         if moldescriptor_file is None:
             return None
 
-        return moldescriptor_file if Path(moldescriptor_file).is_file() else None
+        if Path(self.resolve_path(moldescriptor_file)).is_file():
+            return moldescriptor_file
+
+        return None
 
     def _restart_file_candidate(self) -> str | None:
         """
@@ -204,9 +211,13 @@ class RDFInputFileReader(Reader):
 
     def _first_traj_file(self) -> str | None:
         """
-        Gets the first trajectory file from the input file.
+        Gets the first trajectory file as written in the input file.
+
+        The candidates derived from it are stored back into the input
+        dictionary, so they must stay relative to the input file like
+        every other filename there; the file properties resolve them.
         """
-        traj_files = self.traj_files
+        traj_files = _parse_files(self.dictionary, self.traj_files_key)
 
         if not traj_files:
             return None
