@@ -37,11 +37,11 @@ The Python format definitions are documented by
 Selections
 ----------
 
-Analysis selections are parsed by :class:`PQAnalysis.topology.selection.Selection`.
-Use elemental or atom-name selections for simple systems and full atom
-information when residue-aware selection is required. Always verify that the
-selection contains the intended atoms; normalization and statistical quality
-depend directly on its population.
+Atom strings, index ranges, ``elem()`` and the ``,`` / ``&`` / ``|`` operators
+are documented in :doc:`selections`. Analysis keys such as
+``reference_selection`` use that language. Always verify that the selection
+contains the intended atoms; normalization and statistical quality depend
+directly on its population.
 
 Output and conversion
 ---------------------
@@ -65,4 +65,5 @@ No output is written if any requested destination already exists. Use
    :maxdepth: 1
 
    Analysis input files <../userGuide/inputFile>
+   Atom selections <selections>
    Analysis output files <../userGuide/analysisOutputFiles>
