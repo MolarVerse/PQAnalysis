@@ -147,9 +147,7 @@ The conversion also works in the other direction:
 
 .. code-block:: console
 
-   $ pqanalysis convert rdf.xvg \
-       -o rdf.out \
-       -o rdf.csv
+   $ pqanalysis convert rdf.xvg -o rdf.out
 
 Input format is detected from the file content rather than its extension, so a
 CSV table named ``table.dat`` or an XVG table named ``table.out`` can still be
