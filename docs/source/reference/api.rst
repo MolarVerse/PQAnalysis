@@ -8,7 +8,7 @@ reference.
 Core types
 ----------
 
-.. list-table:: Principal data types
+.. list-table::
    :class: pq-record-table pq-types-table
    :header-rows: 1
    :widths: 34 66
@@ -31,7 +31,7 @@ Core types
 Package areas
 -------------
 
-.. list-table:: Generated package reference
+.. list-table::
    :class: pq-record-table pq-package-reference-table
    :header-rows: 1
    :widths: 34 66
