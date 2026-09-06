@@ -78,13 +78,8 @@ Python
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import vibrations, read_analysis_table
    from PQAnalysis.analysis.vibrational import calculate, read_hessian_file
    from PQAnalysis.io import read_restart_file
-
-   vibrations("examples/water/vibrations.in", export_files=["wavenumbers.csv"])
-   table = read_analysis_table("wavenumbers.csv")
-   print(table.column("wavenumber")[:10])
 
    system = read_restart_file("examples/water/structure.rst")
    hessian = read_hessian_file("examples/water/hessian.dat")
@@ -96,6 +91,9 @@ Python
    )
    print(result.wavenumbers[:10])
    print(result.force_constants[:10])
+
+:func:`~PQAnalysis.analysis.vibrational.api.vibrations` runs an input file
+instead.
 
 Before you trust it
 -------------------
