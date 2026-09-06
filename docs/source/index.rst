@@ -21,12 +21,7 @@ from its input file:
    $ python -m pip install pqanalysis
    $ pqanalysis rdf rdf.in
 
-The output filename in an analysis input file selects native text, CSV, TSV or
-XVG. Repeat ``--export`` to write several formats in the same run:
-
-.. code-block:: console
-
-   $ pqanalysis rdf rdf.in --export rdf.csv --export rdf.xvg
+:doc:`getting-started` walks through this run on the bundled example.
 
 Analysis methods
 ----------------

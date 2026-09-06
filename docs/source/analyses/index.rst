@@ -33,9 +33,9 @@ Choose by input data
      - Velocities and atomic masses
      - :math:`|\sum_i m_i\mathbf{v}_i|` per frame
 
-Each method page gives the estimator, a working input file, the output layout,
-a Python recipe and a short checklist. The derivations and validity limits
-behind the checklist sit on a "Theory and Validity" subpage. File columns and
+Each method page gives the estimator, a working input file, the output layout
+and a Python recipe. RDF, MSD, VACF and vibrations end with a checklist whose
+derivations sit on a "Theory and Validity" subpage. File columns and
 units are specified once in :ref:`analysisOutputFiles`; the bundled fixture is
 :doc:`../examples`.
 

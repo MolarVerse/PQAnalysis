@@ -35,7 +35,7 @@ Saved as ``vibrations.in``, it runs with:
 
 ``structure_file`` may be a PQ restart or a single-frame XYZ file. ``unit``
 names the Hessian energy unit: ``kcal`` and ``ev`` expect Å⁻², ``hartree``
-expects bohr⁻². ``hessian_sign`` is ``positive``, ``negative`` or ``auto``
+expects bohr⁻². ``hessian_sign`` is ``positive``, ``negative``, ``1``, ``-1`` or ``auto``
 (majority vote over internal curvatures). IR intensities are written only when
 a ``moldescriptor_file`` supplies partial charges. The bundled
 :doc:`../examples` fixture is ``examples/water``; the full key table is on
@@ -68,7 +68,7 @@ Output
 ------
 
 ``out_file`` lists wavenumber (negative means imaginary), optional IR
-intensity, reduced mass and force constant per mode
+intensity, force constant and reduced mass per mode
 (:ref:`analysis-output-vibrations`). ``normal_modes_file`` stores the
 dimensionless Cartesian mode matrix, ``modes_file`` one extended-XYZ image per
 selected mode, and ``modes_prefix`` one sinusoidal animation per mode scaled by
