@@ -37,7 +37,7 @@ The method pages define each estimator, its assumptions and its interpretation
 limits. File columns and units are specified once in
 :ref:`analysisOutputFiles`. Programmatic entry points are listed in the
 :doc:`../reference/functions`. Worked Python recipes for every method are in
-:doc:`../python-api`.
+:doc:`../python-api`. The bundled fixture is :doc:`../examples`.
 
 .. toctree::
    :hidden:

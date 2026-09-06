@@ -6,7 +6,8 @@ Function Index
 Callable Python interfaces are grouped below by task. Analysis wrappers accept
 the same input files as their command-line counterparts. Lower-level numerical
 functions operate on arrays or PQAnalysis objects and do not parse command-line
-arguments. For worked recipes, see :doc:`../python-api`.
+arguments. For worked recipes, see :doc:`../python-api`. The bundled files
+are in :doc:`../examples`.
 
 Analysis workflows
 ------------------

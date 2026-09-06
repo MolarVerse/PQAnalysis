@@ -63,7 +63,8 @@ Minimal input
 
 The time step is specified in ps. ``window`` is the maximum correlation lag in
 frames; it is distinct from the apodization selected by ``window_function``.
-The example multiplies only the spectrum input by
+The bundled :doc:`../examples` fixture uses ``window = 8``. The example
+multiplies only the spectrum input by
 :math:`\exp[-(4\ \mathrm{ps}^{-1})t]`. ``window_function`` also accepts
 ``hann``, ``blackman`` and ``none``; ``none`` is the default. The default
 sliding-origin method matches the legacy calculation. ``gap`` controls the
@@ -271,15 +272,15 @@ a second calculation.
    from PQAnalysis.analysis.vacf import vacf_spectrum
    from PQAnalysis.io import TrajectoryReader
 
-   vacf("vacf.in", export_files=["vacf.csv"])
+   vacf("examples/water/vacf.in", export_files=["vacf.csv"])
    table = read_analysis_table("vacf.csv")
    correlation = table.column("normalized_correlation")
 
    time, correlation = VACF(
-       TrajectoryReader("trajectory.vel"),
+       TrajectoryReader("examples/water/trajectory.vel"),
        time_step=0.001,
-       window_size=2500,
-       gap=5,
+       window_size=8,
+       gap=2,
    ).run()
    wavenumbers, amplitudes, windowed = vacf_spectrum(
        time,
