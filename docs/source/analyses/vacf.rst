@@ -25,11 +25,6 @@ of states [Dickey1969]_, [Thomas2013]_. If static or time-dependent partial
 charges are supplied, it correlates :math:`q_i\mathbf{v}_i` instead, producing
 a charge-flux spectrum that approximates an infrared spectrum [Thomas2013]_.
 
-The correlation written to ``out_file`` is not apodized. When a spectrum is
-requested, ``window_function`` multiplies a copy of the correlation before the
-cosine transform [Harris1978]_. The optional ``windowed_out_file`` records that
-copy.
-
 Correlation and spectrum
 ------------------------
 
@@ -62,23 +57,20 @@ Minimal input
    $ pqanalysis vacf vacf.in
 
 The time step is specified in ps. ``window`` is the maximum correlation lag in
-frames; it is distinct from the apodization selected by ``window_function``.
-The bundled :doc:`../examples` fixture uses ``window = 8``. The example
-multiplies only the spectrum input by
-:math:`\exp[-(4\ \mathrm{ps}^{-1})t]`. ``window_function`` also accepts
-``hann``, ``blackman`` and ``none``; ``none`` is the default. The default
-sliding-origin method matches the legacy calculation. ``gap`` controls the
-spacing between its time origins, not the lag-time spacing in ``out_file``;
-``method = fft`` selects a denser-origin Wiener-Khinchin estimator.
+frames (the bundled :doc:`../examples` fixture uses ``window = 8``); ``gap``
+spaces the time origins. ``method = fft`` selects the denser-origin
+Wiener-Khinchin estimator.
 
-Interpretation
---------------
+The correlation written to ``out_file`` is never apodized. When a spectrum is
+requested, ``window_function`` (``exponential``, ``hann``, ``blackman`` or the
+default ``none``) multiplies a copy before the cosine transform
+[Harris1978]_; the example applies :math:`\exp[-(4\ \mathrm{ps}^{-1})t]`. The
+optional ``windowed_out_file`` records that copy.
 
-* A rapidly decaying VACF indicates fast velocity decorrelation.
-* In liquids, negative regions often indicate backscattering or cage motion;
-  in solids, sign oscillations reflect bound vibrational motion.
-* Charge-flux spectra require physically meaningful partial charges and should
-  not be interpreted as absolute IR intensities without further calibration.
+In liquids, negative regions of the VACF indicate backscattering or cage
+motion; in solids, sign oscillations reflect bound vibrational motion.
+Charge-flux spectra are only as good as the partial charges behind them and
+are not absolute IR intensities.
 
 Validity and interpretation
 ---------------------------
@@ -263,18 +255,13 @@ See :ref:`analysis-output-vacf` for correlation and spectrum columns. The
 input-file entry point is :func:`PQAnalysis.analysis.vacf.api.vacf`. Direct
 calculations use :class:`PQAnalysis.analysis.vacf.vacf.VACF`, while
 :func:`PQAnalysis.analysis.vacf.spectrum.vacf_spectrum` performs the spectral
-transform. A ``VACF`` instance may be run only once; construct a new object for
-a second calculation.
+transform.
 
 .. code-block:: python
 
-   from PQAnalysis.analysis import VACF, vacf, read_analysis_table
+   from PQAnalysis.analysis import VACF
    from PQAnalysis.analysis.vacf import vacf_spectrum
    from PQAnalysis.io import TrajectoryReader
-
-   vacf("examples/water/vacf.in", export_files=["vacf.csv"])
-   table = read_analysis_table("vacf.csv")
-   correlation = table.column("normalized_correlation")
 
    time, correlation = VACF(
        TrajectoryReader("examples/water/trajectory.vel"),
@@ -292,8 +279,7 @@ a second calculation.
 
 Discrete line spectra can be broadened independently with
 ``pqanalysis build_spectrum``; see :ref:`analysis-output-spectrum` for its
-output convention. See :doc:`../python-api` for shared table and trajectory
-patterns.
+output convention.
 
 References
 ----------
@@ -317,7 +303,3 @@ References
   sidelobe suppression and main-lobe broadening.
 * [Allen2017]_ gives the time-origin averaging and sampling requirements for
   correlation functions.
-* [thhTools]_ is the legacy program family whose estimator and Fourier
-  conventions the default path reproduces.
-
-Full entries are listed in :doc:`../references`.

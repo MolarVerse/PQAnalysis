@@ -2,8 +2,7 @@ From trajectory to figure
 =========================
 
 This page runs one continuous Python session on ``examples/water``: load the
-trajectory, inspect it, compute an RDF and an MSD, write a table, and plot.
-The figure is the tutorial fixture, not a material property.
+trajectory, inspect it, compute an RDF and an MSD, and plot.
 
 Load and inspect
 ----------------
@@ -63,31 +62,20 @@ MSD of the oxygen
    print(analysis.fit_results)
 
 Check: one oxygen is selected. The Einstein fit uses the last four lag points
-of an eight-frame window. That is enough to exercise the API; it is not a
-diffusion measurement. See :doc:`analyses/msd`.
+of an eight-frame window; see :doc:`analyses/msd` for choosing a real fit
+interval.
 
-Write a table and plot
-----------------------
+Plot
+----
 
-.. code-block:: python
-
-   from PQAnalysis.analysis import rdf, read_analysis_table
-
-   rdf("examples/water/rdf.in", export_files=["rdf.csv"])
-   table = read_analysis_table("rdf.csv")
-   r = table.column("r_i")
-   g = table.column("g_r_i")
-
-The figure below is produced from the same fixture during the documentation
-build:
+The figure is produced from the arrays above during the documentation build
+(``docs/source/_plots/workflow.py``):
 
 .. plot:: _plots/workflow.py
    :alt: RDF and MSD of the bundled isolated-water tutorial fixture
    :caption: Isolated water molecule, 25 frames, 10 Å box. The RDF peak is the
-      intramolecular O–H distance. The MSD is the oxygen of that one molecule.
-      Neither panel is a bulk-liquid result.
+      intramolecular O–H distance; the MSD is that molecule's oxygen.
 
-``read_trajectory`` loads every frame. For long files use
-:class:`~PQAnalysis.io.traj_file.trajectory_reader.TrajectoryReader` instead,
-as the RDF and MSD constructors do above. Next: :doc:`data/selections` and the
-method pages under :doc:`analyses/index`.
+To write the table instead of keeping arrays, use the file wrappers on
+:doc:`python-api`. Next: :doc:`data/selections` and the method pages under
+:doc:`analyses/index`.

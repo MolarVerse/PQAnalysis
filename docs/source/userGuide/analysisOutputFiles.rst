@@ -155,8 +155,8 @@ Input format is detected from the file content rather than its extension, so a
 CSV table named ``table.dat`` or an XVG table named ``table.out`` can still be
 converted. Exact ``FIELDS`` headers restore the known scientific schema and XVG
 plot preset. ``--x FIELD`` and repeatable ``--y FIELD`` options override the
-default XVG projection without removing unplotted data from the XVG file. Input
-and output paths, and all output paths, must be distinct.
+default XVG projection without removing unplotted data from the XVG file. The
+input path and every output path must be pairwise distinct.
 
 By default, conversion stops with an error naming the existing file if any
 output path already exists. No requested output is written in that case. Use
@@ -387,8 +387,7 @@ normal-mode representations.
 
 Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
-columns. The file's ``FIELDS`` and ``UNITS`` lines reflect the selected layout.
-The accompanying ``SYMBOLS`` line provides the Unicode scientific notation.
+columns; the header lines reflect the selected layout.
 
 .. list-table:: Vibrational ``out_file`` columns
    :class: analysis-output-columns

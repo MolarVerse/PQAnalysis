@@ -398,8 +398,6 @@ calculations use
    print(result.wavenumbers[:10])
    print(result.force_constants[:10])
 
-See :doc:`../python-api` for shared table patterns.
-
 References
 ----------
 
@@ -412,5 +410,3 @@ References
 * [Thomas2013]_ compares this static normal-mode route with spectra obtained
   from molecular-dynamics time correlation functions, which PQAnalysis
   provides through :doc:`vacf`.
-
-Full entries are listed in :doc:`../references`.

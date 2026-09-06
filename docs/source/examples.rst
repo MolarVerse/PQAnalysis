@@ -3,9 +3,8 @@ Example data
 
 The repository ships a checkout-only tutorial fixture under
 ``examples/water``. It is an isolated water molecule in a 10 Å cubic cell
-(25 frames) plus the bundled H₂O Hessian. Use it to copy-paste the Python and
-CLI recipes. Do not treat the numerical results as bulk-liquid RDF, diffusion
-or infrared data.
+(25 frames) plus the bundled H₂O Hessian. It exists so that the Python and
+CLI recipes can be copied and run; its numbers are not bulk-liquid data.
 
 Get the files
 -------------
@@ -73,5 +72,5 @@ The other commands in this folder are:
    $ pqanalysis check_momentum trajectory.vel \
        --selection all --output momentum.dat
 
-Python recipes that load these files are on :doc:`python-api`. A continuous
-load → RDF → MSD → figure script is on :doc:`workflow`.
+Python recipes that load these files are on :doc:`python-api`; a continuous
+session from loading to a figure is on :doc:`workflow`.
