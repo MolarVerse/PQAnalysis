@@ -258,7 +258,9 @@ input_keys_documentation = f"""
 
 For the RDF analysis input file several keys are available of which some are required and some are optional. For more details on the grammar and syntax of the input file see :ref:`inputFile`.
 
-.. list-table:: Required keys
+The following keys are required:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
@@ -272,7 +274,9 @@ For the RDF analysis input file several keys are available of which some are req
     * - {Reader.out_file_key}
         - The output file to write the RDF data to; see :ref:`RDF output files <analysis-output-rdf>` for its columns, units and normalization formulas.
 
-.. list-table:: Optional keys
+The following keys are optional:
+
+.. list-table::
     :header-rows: 1
 
     * - Key

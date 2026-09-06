@@ -43,7 +43,7 @@ below give the full quantities and definitions. Numeric rows retain the legacy
 ordering and formatting. Readers such as ``numpy.loadtxt`` ignore the comment
 block automatically and continue to work without special options.
 
-For example, an RDF data file begins with
+For example, an RDF data file begins with:
 
 .. code-block:: text
 
@@ -116,7 +116,7 @@ Additional outputs
 
 All tabular analysis CLIs accept repeatable ``--export FILE`` options. The
 primary output is still controlled by ``out_file`` or ``--output``; every
-export filename independently selects its format.
+export filename independently selects its format:
 
 .. code-block:: console
 
@@ -178,7 +178,7 @@ and spherical-shell volume are
    \Delta V_i = \frac{4\pi}{3}\left((r_i^+)^3 - (r_i^-)^3\right).
 
 The ideal-gas pair count for the shell is
-:math:`E_i = \rho_T N_R N_F \Delta V_i`.
+:math:`E_i = \rho_T N_R N_F \Delta V_i`. The columns of ``out_file`` are:
 
 .. list-table::
    :class: analysis-output-columns
@@ -221,7 +221,7 @@ density.
 MSD
 ===
 
-The ``msd`` command writes the legacy Diffcalc layout to ``out_file``.
+The ``msd`` command writes the legacy Diffcalc layout to ``out_file``:
 
 .. list-table::
    :class: analysis-output-columns
@@ -262,6 +262,9 @@ VACF and charge-flux correlation
 The ``vacf`` command can write three two-column files. Correlations are
 normalized by their zero-lag value, including charge-weighted correlations.
 
+``out_file``
+------------
+
 .. list-table::
    :class: analysis-output-columns
    :header-rows: 1
@@ -279,6 +282,9 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - Normalized correlation
      - VACF, or charge-flux autocorrelation when charges are supplied
      - Dimensionless
+
+``spectrum_file``
+-----------------
 
 .. list-table::
    :class: analysis-output-columns
@@ -298,6 +304,9 @@ normalized by their zero-lag value, including charge-weighted correlations.
      - Absolute cosine-transform amplitude of the optionally windowed
        normalized correlation
      - Arbitrary units
+
+``windowed_out_file``
+---------------------
 
 .. list-table::
    :class: analysis-output-columns
@@ -323,7 +332,7 @@ Broadened spectrum
 ==================
 
 The ``build_spectrum`` command writes two columns to ``--output`` or standard
-output.
+output:
 
 .. list-table::
    :class: analysis-output-columns
@@ -351,8 +360,7 @@ Total linear momentum
 =====================
 
 The ``check_momentum`` command writes two columns to ``--output`` or standard
-output. Native output uses 17 significant digits for the momentum norm, so
-reading the value as float64 preserves the calculated bit pattern.
+output:
 
 .. list-table::
    :class: analysis-output-columns
@@ -385,7 +393,7 @@ normal-mode representations.
 
 Without a ``moldescriptor_file``, the table has three columns. With partial
 charges, the IR-intensity column is inserted as column 2 and the table has four
-columns; the header lines reflect the selected layout.
+columns; the header lines reflect the selected layout:
 
 .. list-table::
    :class: analysis-output-columns
