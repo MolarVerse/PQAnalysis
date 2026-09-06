@@ -44,7 +44,7 @@ a ``moldescriptor_file`` supplies partial charges. The bundled
 compared against ``modes_threshold`` :math:`\theta` (default
 :math:`10^{-8}` cm⁻¹):
 
-.. list-table:: ``modes`` selection rules
+.. list-table::
    :class: pq-record-table
    :header-rows: 1
    :widths: 24 76

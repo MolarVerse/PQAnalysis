@@ -30,7 +30,7 @@ XVG. Repeat ``--export`` to write several formats in the same run.
 Analysis methods
 ----------------
 
-.. list-table:: Implemented observables
+.. list-table::
    :class: pq-record-table pq-method-table
    :header-rows: 1
    :widths: 24 38 38

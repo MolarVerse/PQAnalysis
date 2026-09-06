@@ -99,7 +99,7 @@ with :math:`\omega_j` in rad·s⁻¹ and :math:`\tilde{\nu}_j` in cm⁻¹. The
 constant :math:`C_u` is fixed by the ``unit`` key and carries the entire unit
 chain from the Hessian file to s⁻²:
 
-.. list-table:: Conversion constants selected by ``unit``
+.. list-table::
    :class: pq-record-table
    :header-rows: 1
    :widths: 14 30 56

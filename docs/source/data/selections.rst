@@ -15,7 +15,7 @@ String language
 A selection string is parsed with a Lark grammar. The atoms of
 ``examples/water/trajectory.xyz`` are O (index 0), H (1) and H (2).
 
-.. list-table:: Selection strings on the water fixture
+.. list-table::
    :header-rows: 1
    :widths: 22 38 40
 

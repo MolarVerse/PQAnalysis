@@ -60,7 +60,7 @@ Value conversion
 The parser converts strings to the type required by each documented key.
 Common forms include:
 
-.. list-table:: Input value forms
+.. list-table::
    :header-rows: 1
    :widths: 30 30 40
 

@@ -9,7 +9,7 @@ the simulation.
 Choose by input data
 --------------------
 
-.. list-table:: Analysis inputs and primary observables
+.. list-table::
    :class: pq-record-table pq-observable-table
    :header-rows: 1
    :widths: 24 32 44

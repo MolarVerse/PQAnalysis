@@ -21,7 +21,7 @@ it should not contain a second implementation of the scientific method.
 Package boundaries
 ------------------
 
-.. list-table:: Source ownership
+.. list-table::
    :class: pq-record-table pq-package-table
    :header-rows: 1
    :widths: 30 70
