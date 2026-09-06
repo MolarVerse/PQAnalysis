@@ -209,8 +209,26 @@ normalization. The main Python entry point is
 :class:`PQAnalysis.analysis.rdf.rdf.RDF`. An ``RDF`` instance may be run only
 once; construct a new object for a second calculation.
 
+.. code-block:: python
+
+   from PQAnalysis.analysis import RDF, rdf, read_analysis_table
+   from PQAnalysis.io import TrajectoryReader
+
+   rdf("rdf.in", export_files=["rdf.csv"])
+   table = read_analysis_table("rdf.csv")
+   g = table.column("g_r_i")
+
+   r, g, n, shell, residual = RDF(
+       TrajectoryReader("trajectory.xyz"),
+       reference_species="O",
+       target_species="H",
+       delta_r=0.05,
+       r_max=8.0,
+   ).run()
+
 The complete input-key table is documented with
 :class:`PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader`.
+See :doc:`../python-api` for the shared table and trajectory patterns.
 
 References
 ----------
