@@ -10,7 +10,7 @@ release operations.
 Extension path
 --------------
 
-.. list-table:: Analysis implementation path
+.. list-table::
    :class: pq-record-table pq-extension-table
    :header-rows: 1
    :widths: 24 38 38
