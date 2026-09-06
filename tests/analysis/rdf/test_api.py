@@ -14,6 +14,7 @@ from PQAnalysis.exceptions import PQTypeError
 from .. import pytestmark  # pylint: disable=unused-import
 from ...conftest import assert_logging_with_exception
 
+EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
 
 
 class TestRDFAPI:
@@ -47,9 +48,6 @@ class TestRDFAPI:
             input_file="test",
             md_format=1,
         )
-
-
-EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
 
 
 class TestRDFAPIFromOtherDirectory:
