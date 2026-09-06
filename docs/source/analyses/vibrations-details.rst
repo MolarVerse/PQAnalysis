@@ -39,12 +39,10 @@ translational columns are
 
 and its rotational columns are mass-weighted rigid-body rotations, built from
 the atomic positions relative to the center of mass and projected onto the
-eigenvectors of the inertia tensor of those centered coordinates. Any
-complete orthogonal basis leaves the spectrum unchanged, so this choice does
-not affect the wavenumbers. A rotational column whose norm falls below
-:math:`10^{-6}` times the larger of one and the biggest column norm is
-discarded, which is what leaves a linear molecule with two rotations instead of
-three.
+eigenvectors of the inertia tensor of those centered coordinates. A rotational
+column whose norm falls below :math:`10^{-6}` times the larger of one and the
+biggest column norm is discarded, which is what leaves a linear molecule with
+two rotations instead of three.
 
 A complete QR factorization of :math:`D` supplies an orthonormal basis
 :math:`Q\in\mathbb{R}^{3N\times 3N}` whose leading columns span these external
@@ -143,9 +141,9 @@ negative curvature of the potential-energy surface along that mode.
 
 The sign convention of the input file matters because Hessians are written
 either as second derivatives of the energy or as derivatives of the forces,
-which differ by a factor of :math:`-1`. In an input file ``hessian_sign``
-accepts ``positive`` (:math:`s=+1`), ``negative`` (:math:`s=-1`) and ``auto``.
-The Python interface additionally accepts the numbers ``1`` and ``-1``.
+which differ by a factor of :math:`-1`. ``hessian_sign`` accepts
+``positive`` (:math:`s=+1`), ``negative`` (:math:`s=-1`), ``auto``, and the
+numbers ``1`` and ``-1``.
 
 ``auto`` resolves the convention from the curvature statistics of the internal
 subspace. Let :math:`U` be the block of :math:`Q` spanning the complement of
@@ -237,12 +235,11 @@ may be slightly negative, because the Hessian was computed at a finite
 convergence threshold and in finite precision.
 
 Because the default ``modes_threshold`` is only :math:`10^{-8}` cm⁻¹,
-``modes = positive`` does not by itself remove residual external modes. For the bundled H₂O fixture it
-keeps the three translational modes at 0.02, 0.22 and 0.30 cm⁻¹ alongside the
+``modes = positive`` does not by itself remove residual external modes. For the
+bundled H₂O fixture it keeps the three translational modes at 0.02, 0.22 and 0.30 cm⁻¹ alongside the
 three internal modes at 1493, 3669 and 3784 cm⁻¹, and drops the three
 rotational modes, which come out imaginary between :math:`-50` and
-:math:`-37` cm⁻¹. Raise ``modes_threshold`` to a few cm⁻¹, or higher, when the
-intent is "internal modes only".
+:math:`-37` cm⁻¹.
 
 Animation scaling
 -----------------

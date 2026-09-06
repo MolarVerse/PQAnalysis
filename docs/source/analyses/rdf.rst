@@ -43,11 +43,11 @@ Saved as ``rdf.in``, it runs with:
 
 The keys above are typical for a bulk trajectory. The bundled
 :doc:`../examples` fixture uses ``delta_r = 0.5`` and ``r_max = 4.0`` because
-it is one molecule in a 10 Å box. ``restart_file`` and ``moldescriptor_file``
-are needed only with ``no_intra_molecular = True``, which drops pairs inside
-the same molecule; PQAnalysis infers the usual PQ companion filenames when
-they sit beside the trajectory. Selection strings are described in
-:doc:`../data/selections`; the full key table is on
+it is one molecule in a 10 Å box. ``no_intra_molecular = True`` drops pairs
+inside the same molecule and needs ``restart_file`` and ``moldescriptor_file``;
+naming both files enables it by itself. PQAnalysis infers the usual PQ
+companion filenames when they sit beside the trajectory. Selection strings
+are described in :doc:`../data/selections`; the full key table is on
 :class:`~PQAnalysis.analysis.rdf.rdf_input_file_reader.RDFInputFileReader`.
 
 Output
@@ -85,7 +85,8 @@ Before you trust it
   Add frames rather than widening ``delta_r``.
 * The plateau at large :math:`r` should sit at 1. If it does not, look at the
   volume distribution (NPT) or the selections.
-* Intramolecular pairs are included unless excluded explicitly.
+* Intramolecular pairs are included unless ``no_intra_molecular`` is on;
+  naming both topology files turns it on.
 
 Each point is derived in :doc:`rdf-details`.
 
