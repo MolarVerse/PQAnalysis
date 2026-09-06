@@ -1,0 +1,6 @@
+traj_files = trajectory.xyz
+reference_selection = O
+target_selection = H
+delta_r = 0.5
+r_max = 4.0
+out_file = rdf.dat
