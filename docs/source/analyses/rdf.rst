@@ -14,14 +14,14 @@ where :math:`H_i` is the eligible pair count, :math:`\rho_T` the target number
 density, :math:`N_R` the number of reference atoms, :math:`N_F` the number of
 frames and :math:`\Delta V_i` the spherical-shell volume. Peaks mark preferred
 pair separations, minima separate coordination shells, and
-:math:`g(r) \approx 1` is uncorrelated bulk-like pair density.
+:math:`g(r) \approx 1` is uncorrelated bulk-like pair density. The analytic
+schematic below (not simulation output) shades the first coordination shell
+up to the first minimum; the lower panel is the running coordination number
+:math:`N(r) = 4\pi\rho\int_0^r g(s)\,s^2\,\mathrm{d}s` for
+:math:`\rho = 0.0334` Å⁻³.
 
 .. plot:: _plots/rdf.py
    :alt: Radial distribution function and cumulative coordination number
-   :caption: Analytic schematic rather than simulation output. The shaded
-      interval ends at the first minimum. The lower panel evaluates
-      :math:`N(r) = 4\pi\rho\int_0^r g(s)\,s^2\,\mathrm{d}s` with
-      :math:`\rho = 0.0334` Å⁻³.
 
 Input
 -----

@@ -7,12 +7,11 @@ its eigenvalues give signed wavenumbers, force constants and reduced masses.
 When partial charges are supplied, point-charge infrared intensities are
 reported as well. The whole calculation is the harmonic approximation applied
 to one isolated structure: no dynamics, temperature or anharmonicity enters it.
+The IR stick spectrum below is computed from the bundled H₂O fixture; only
+internal modes above 100 cm⁻¹ are shown.
 
 .. plot:: _plots/vibrations.py
    :alt: Infrared stick spectrum for the water validation fixture
-   :caption: IR stick spectrum calculated by PQAnalysis from the bundled H₂O
-      structure, Hessian and partial-charge fixtures. Only internal modes above
-      100 cm⁻¹ are shown; translational and rotational modes are omitted.
 
 Input
 -----
