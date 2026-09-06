@@ -17,8 +17,6 @@ Clone the repository (the fixture is not installed by pip):
    $ git clone https://github.com/MolarVerse/PQAnalysis.git
    $ cd PQAnalysis/examples/water
 
-After this pull request lands, the same folder is on the default branch.
-
 What is in the folder
 ---------------------
 
@@ -33,7 +31,7 @@ What is in the folder
    * - ``trajectory.vel``
      - Matching velocity frames for VACF and momentum
    * - ``restart.rst``
-     - Restart of the first frame (topology / residue ids)
+     - Restart with the same topology (residue ids for exclusions)
    * - ``moldescriptor.dat``
      - H₂O residue template with partial charges
    * - ``structure.rst`` / ``hessian.dat``
@@ -51,17 +49,18 @@ Run the first RDF
 
    $ pqanalysis rdf rdf.in
 
-The table begins (values will match bit-for-bit on this fixture):
+The table begins (trailing digits omitted):
 
 .. code-block:: text
 
    # PQAnalysis: Radial distribution function
    # FIELDS r_i g_r_i N_r_i g_r_i_dV_i H_i_minus_E_i
+   # SYMBOLS ...
+   # UNITS ...
    0.25 0.0 ...
    0.75 261.9 ...
 
-The large :math:`g(r)` near 0.75 Å is the intramolecular O–H peak of a single
-molecule in a large box, not a liquid first shell. See
+The large :math:`g(r)` near 0.75 Å is the intramolecular O–H peak. See
 :ref:`analysis-output-rdf` for column definitions.
 
 The other commands in this folder are:

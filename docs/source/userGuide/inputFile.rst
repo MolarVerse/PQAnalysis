@@ -93,7 +93,8 @@ Filenames
 ---------
 
 Relative filenames are interpreted from the command's working directory. The
-ordinary filename grammar accepts letters, digits, ``_``, ``-`` and ``.``;
+ordinary filename grammar accepts letters, digits, ``_``, ``-``, ``.`` and
+``/``;
 ``*`` provides glob matching. For a portable analysis directory, keep the
 input file and its referenced data together and run the command from that
 directory.

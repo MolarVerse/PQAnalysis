@@ -65,7 +65,7 @@ translational columns are
 
 and its rotational columns are mass-weighted rigid-body rotations, built from
 the atomic positions relative to the center of mass and projected onto the
-eigenvectors of the inertia tensor of the uncentered coordinates. Any
+eigenvectors of the inertia tensor of those centered coordinates. Any
 complete orthogonal basis leaves the spectrum unchanged, so this choice does
 not affect the wavenumbers. A rotational column whose norm falls below
 :math:`10^{-6}` times the larger of one and the biggest column norm is

@@ -19,7 +19,7 @@ copyright = "2023-2026, the PQAnalysis authors"
 
 try:
     from PQAnalysis import __version__ as release
-except Exception:  # pragma: no cover - package may be absent in a bare checkout
+except Exception:  # runtime dependencies may be missing in a docs-only env
     release = ""
 version = release
 

@@ -18,10 +18,9 @@ Estimator and fit interval
 
 .. plot:: _plots/msd.py
    :alt: Cartesian and total mean square displacement with a linear fit
-   :caption: Bundled oxygen-atom validation fixture with a 0.5 ps frame
-      interval. The dashed line fits the final 20 total-MSD samples and
-      illustrates fit-window selection; the fixture is not a material
-      diffusion benchmark.
+   :caption: Bundled oxygen-atom validation fixture, plotted with an assumed
+      0.5 ps frame interval. The dashed line fits the final 20 total-MSD
+      samples to illustrate fit-window selection.
 
 Minimal input
 -------------
@@ -222,12 +221,13 @@ Two normalization traps
 
 .. warning::
 
-   ``n_start`` shrinks the MSD. Frames before ``n_start`` are read so that the
-   unwrapping stays continuous, but they spawn no time origins — while the
+   A late start frame (``first_frame`` or ``start`` in the input file,
+   ``n_start`` in Python) shrinks the MSD. Earlier frames are read so that the
+   unwrapping stays continuous, but they spawn no time origins, while the
    divisor keeps its legacy value ``stop_frame // gap``, which still counts
    them. The whole curve, and therefore :math:`D`, is scaled by the ratio of
    origins that actually spawned to that divisor. With 60 frames,
-   ``window = 20`` and ``gap = 5``, ``n_start = 20`` leaves 5 of 8 counted
+   ``window = 20`` and ``gap = 5``, a start frame of 20 leaves 5 of 8 counted
    origins and returns 62.5 % of the correct MSD. This legacy Diffcalc
    convention is deliberate. To start later without the bias, truncate the
    trajectory file instead, or rescale the result yourself.
