@@ -21,16 +21,6 @@ and :math:`\sigma` is the ``scale`` factor. This is a diagnostic for
 center-of-mass drift and momentum conservation [Allen2017]_, not a substitute
 for inspecting the thermostat, constraints or integration scheme.
 
-Units
------
-
-PQ velocity trajectories store velocities in Å·s⁻¹, so :math:`\mathbf{P}` is in
-amu·Å·s⁻¹. The default :math:`\sigma = 10^{-15}` converts that to
-amu·Å·fs⁻¹, the unit of the second output column. Any other value of
-``--scale`` simply multiplies the norm, and it is then the user's
-responsibility to make :math:`\sigma` match the velocity convention of the
-input trajectory.
-
 Run the diagnostic
 ------------------
 
@@ -43,6 +33,34 @@ Run the diagnostic
 The output contains a one-based frame index and the scaled momentum norm. Use
 ``--scale`` when the input convention differs from Å·s⁻¹, and ``--selection``
 to restrict the sum to a subset of atoms.
+
+Output and API
+--------------
+
+See :ref:`analysis-output-momentum` for the output schema. Python workflows
+can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use
+:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly.
+
+.. code-block:: python
+
+   from PQAnalysis.analysis import Momentum
+   from PQAnalysis.io import TrajectoryReader
+
+   norms = Momentum(
+       TrajectoryReader("examples/water/trajectory.vel"),
+       selection="all",
+   ).run()
+   print(norms[:5])
+
+Units
+-----
+
+PQ velocity trajectories store velocities in Å·s⁻¹, so :math:`\mathbf{P}` is in
+amu·Å·s⁻¹. The default :math:`\sigma = 10^{-15}` converts that to
+amu·Å·fs⁻¹, the unit of the second output column. Any other value of
+``--scale`` simply multiplies the norm, and it is then the user's
+responsibility to make :math:`\sigma` match the velocity convention of the
+input trajectory.
 
 Precision and the noise floor
 -----------------------------
@@ -123,24 +141,6 @@ Equipartition and temperature
    kinetic energy is distributed over degrees of freedom, and a conserved total
    momentum is no evidence of a correct temperature or of proper
    thermostatting.
-
-Output and API
---------------
-
-See :ref:`analysis-output-momentum` for the output schema. Python workflows
-can call :func:`PQAnalysis.analysis.momentum.api.check_momentum` or use
-:class:`PQAnalysis.analysis.momentum.momentum.Momentum` directly.
-
-.. code-block:: python
-
-   from PQAnalysis.analysis import Momentum
-   from PQAnalysis.io import TrajectoryReader
-
-   norms = Momentum(
-       TrajectoryReader("examples/water/trajectory.vel"),
-       selection="all",
-   ).run()
-   print(norms[:5])
 
 References
 ----------

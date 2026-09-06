@@ -33,15 +33,15 @@ Choose by input data
      - Velocities and atomic masses
      - :math:`|\sum_i m_i\mathbf{v}_i|` per frame
 
-The method pages define each estimator, its assumptions and its interpretation
-limits. File columns and units are specified once in
-:ref:`analysisOutputFiles`. Programmatic entry points are listed in the
-:doc:`../reference/functions`. Worked Python recipes for every method are in
-:doc:`../python-api`. The bundled fixture is :doc:`../examples`.
+Each method page gives the estimator, a working input file, the output layout,
+a Python recipe and a short checklist. The derivations and validity limits
+behind the checklist sit on a "Theory and Validity" subpage. File columns and
+units are specified once in :ref:`analysisOutputFiles`; the bundled fixture is
+:doc:`../examples`.
 
 .. toctree::
    :hidden:
-   :maxdepth: 1
+   :maxdepth: 2
 
    rdf
    msd
