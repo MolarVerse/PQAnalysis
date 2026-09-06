@@ -87,8 +87,6 @@ The same figure, with the documentation's styling, is regenerated from
 
 .. plot:: _plots/workflow.py
    :alt: RDF and MSD of the bundled isolated-water tutorial fixture
-   :caption: Isolated water molecule, 25 frames, 10 Å box. The RDF peak is the
-      intramolecular O–H distance; the MSD is that molecule's oxygen.
 
 To write the table instead of keeping arrays, use the file wrappers on
 :doc:`python-api`. Next: :doc:`data/selections` and the method pages under
