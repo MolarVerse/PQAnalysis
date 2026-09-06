@@ -17,8 +17,7 @@ Clone the repository (the fixture is not installed by pip):
    $ git clone https://github.com/MolarVerse/PQAnalysis.git
    $ cd PQAnalysis/examples/water
 
-The same folder is at
-https://github.com/MolarVerse/PQAnalysis/tree/dev/examples/water.
+After this pull request lands, the same folder is on the default branch.
 
 What is in the folder
 ---------------------
