@@ -7,6 +7,7 @@ build/
 *.cpython-*.so
 PQAnalysis/analysis/msd/_msd_kernel.c
 PQAnalysis/analysis/vacf/_vacf_kernel.c
+PQAnalysis/analysis/momentum/_momentum_kernel.c
 PQAnalysis/analysis/rdf/_rdf_kernel.c
 PQAnalysis/io/traj_file/_slab_parser.c
 
@@ -34,3 +35,7 @@ venv.bak/
 .mypy_cache
 .pytest_cache
 .qodo
+
+# generated api documentation (better-apidoc regenerates at every docs build)
+docs/source/code/
+docs/build/

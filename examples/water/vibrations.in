@@ -1,0 +1,6 @@
+structure_file = structure.rst
+hessian_file = hessian.dat
+moldescriptor_file = moldescriptor.dat
+out_file = wavenumbers.dat
+unit = kcal
+hessian_sign = auto
