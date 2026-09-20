@@ -43,7 +43,8 @@ class InputFileParser(BaseReader):
     def __init__(
         self,
         filename: str,
-        input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS
+        input_format: InputFileFormat | str = InputFileFormat.PQANALYSIS,
+        glob_root: str | None = None,
     ) -> None:
         """
         Parameters
@@ -52,9 +53,13 @@ class InputFileParser(BaseReader):
             The name of the input file.
         input_format : InputFileFormat | str, optional
             The format of the input file, by default InputFileFormat.PQANALYSIS
+        glob_root : str | None, optional
+            Directory in which glob values are expanded. Matches are returned
+            relative to it. By default globs expand in the working directory.
         """
         super().__init__(filename)
         self.input_format = InputFileFormat(input_format)
+        self.glob_root = glob_root
 
         ########################
         # dummy initialization #
@@ -108,7 +113,8 @@ class InputFileParser(BaseReader):
         self.transformed_tree = PrimitiveTransformer(visit_tokens=True
                                                      ).transform(self.tree)
         self.transformed_tree = ComposedDatatypesTransformer(
-            visit_tokens=True
+            visit_tokens=True,
+            glob_root=self.glob_root,
         ).transform(self.transformed_tree)
 
         visitor = InputFileVisitor()
@@ -394,7 +400,7 @@ class ComposedDatatypesTransformer(Transformer):
 
     primitive_types = ["float", "int", "str", "bool"]
 
-    def __init__(self, visit_tokens=False):
+    def __init__(self, visit_tokens=False, glob_root: str | None = None):
         """
         initialize the transformer
 
@@ -402,8 +408,12 @@ class ComposedDatatypesTransformer(Transformer):
         ----------
         visit_tokens : bool, optional
             boolean to visit tokens, by default False
+        glob_root : str | None, optional
+            directory in which glob patterns are expanded; matches are
+            returned relative to it. None expands in the working directory.
         """
         self.__visit_tokens__ = visit_tokens
+        self.glob_root = glob_root
         super().__init__(self.__visit_tokens__)
 
     def _infer_most_general_type(self, types: List[str]) -> str:
@@ -554,7 +564,9 @@ class ComposedDatatypesTransformer(Transformer):
             tuple containing the glob value, the string "glob",
             and the line where the token was defined.
         """
-        return glob("".join(items).strip()), "glob", str(items[0].end_line)
+        pattern = "".join(items).strip()
+        matches = glob(pattern, root_dir=self.glob_root)
+        return matches, "glob", str(items[0].end_line)
 
     def qmcfc_atom(self, items) -> Tuple[str, str, str]:
         """

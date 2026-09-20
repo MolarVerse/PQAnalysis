@@ -130,3 +130,28 @@ class TestRDFInputFileReader:
             "moldescriptor file. Could not infer missing files because no "
             "trajectory files were available."
         )
+
+
+
+class TestRDFInputFileReaderPathResolution:
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test_inference_from_subdirectory(self, test_with_data_dir):
+        """
+        Companion files are inferred beside the trajectory as written in
+        the input file and resolved once, not twice.
+        """
+        run = Path("run")
+        run.mkdir()
+        for name in ("input_no_intra_molecular_infer.in", "infer.xyz", "infer.rst"):
+            Path(name).rename(run / name)
+        (run / "moldescriptor.dat").write_text("C 1 0.0\nC 0 0.0\n", encoding="utf-8")
+
+        reader = RDFInputFileReader("run/input_no_intra_molecular_infer.in")
+        reader.read()
+
+        assert reader.no_intra_molecular is True
+        assert reader.traj_files == ["run/infer.xyz"]
+        assert reader.restart_file == "run/infer.rst"
+        assert reader.moldescriptor_file == "run/moldescriptor.dat"
+        assert reader.out_file == "run/rdf.out"
