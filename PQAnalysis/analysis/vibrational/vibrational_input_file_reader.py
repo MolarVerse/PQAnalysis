@@ -126,14 +126,18 @@ class VibrationalAnalysisInputFileReader(Reader):
         """
         str: The structure file.
         """
-        return _parse_string(self.dictionary, self.structure_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.structure_file_key)
+        )
 
     @property
     def hessian_file(self) -> str:
         """
         str: The Hessian file.
         """
-        return _parse_string(self.dictionary, self.hessian_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.hessian_file_key)
+        )
 
     @property
     def unit(self) -> str:
@@ -169,21 +173,27 @@ class VibrationalAnalysisInputFileReader(Reader):
         """
         str | None: The normal-mode matrix output file.
         """
-        return _parse_string(self.dictionary, self.normal_modes_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.normal_modes_file_key)
+        )
 
     @property
     def modes_prefix(self) -> str | None:
         """
         str | None: The XYZ mode file prefix.
         """
-        return _parse_string(self.dictionary, self.modes_prefix_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.modes_prefix_key)
+        )
 
     @property
     def modes_file(self) -> str | None:
         """
         str | None: The extended XYZ mode file.
         """
-        return _parse_string(self.dictionary, self.modes_file_key)
+        return self.resolve_path(
+            _parse_string(self.dictionary, self.modes_file_key)
+        )
 
     @property
     def modes(self) -> str | list[int]:
@@ -280,7 +290,9 @@ input_keys_documentation = f"""
 
 For the vibrational analysis input file several keys are available.
 
-.. list-table:: Required keys
+The following keys are required:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
@@ -294,7 +306,9 @@ For the vibrational analysis input file several keys are available.
         :ref:`vibrational-analysis output <analysis-output-vibrations>`
         for its columns and the optional mode-file layouts.
 
-.. list-table:: Optional keys
+The following keys are optional:
+
+.. list-table::
     :header-rows: 1
 
     * - Key
