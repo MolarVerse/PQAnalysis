@@ -22,6 +22,23 @@ class BoxReaderError(PQException):
 
 
 
+class EnergyFileReaderError(PQException):
+
+    """
+    Exception raised for errors related to the EnergyFileReader class
+    """
+
+
+
+class VirialFileReaderError(PQException):
+
+    """
+    Exception raised for errors related to the VirialFileReader
+    and StressFileReader classes
+    """
+
+
+
 class OptimizerReaderError(PQException):
 
     """

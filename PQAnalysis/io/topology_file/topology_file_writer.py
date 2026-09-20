@@ -8,7 +8,7 @@ import logging
 
 from _io import TextIOWrapper as File  # type: ignore
 
-from beartype.typing import List
+from beartype.typing import Iterable, List
 
 from PQAnalysis import __package_name__
 from PQAnalysis.io.base import BaseWriter
@@ -94,17 +94,57 @@ class TopologyFileWriter(BaseWriter):
                 "Invalid bonded topology.", exception=TopologyFileError
             )
 
-        self.open()
-
         if bonded_topology.ordering_keys is not None:
             keys = bonded_topology.ordering_keys
         else:
             keys = self.key_topology_map.keys()
 
-        for key in keys:
-            self.key_topology_map[key](bonded_topology, self.file)
+        self._check_types_given(bonded_topology, keys)
 
-        self.close()
+        self.open()
+
+        try:
+            for key in keys:
+                self.key_topology_map[key](bonded_topology, self.file)
+        finally:
+            self.close()
+
+    @classmethod
+    def _check_types_given(
+        cls, bonded_topology: BondedTopology, keys: Iterable[str]
+    ) -> None:
+        """
+        Checks that a type is defined for all bonded parameters to be written.
+
+        This check has to be performed before the output file is opened,
+        because opening it truncates an already existing file.
+
+        Parameters
+        ----------
+        bonded_topology : BondedTopology
+            The bonded topology object to check.
+        keys : Iterable[str]
+            The keys of the topology sections that will be written.
+
+        Raises
+        ------
+        TopologyFileError
+            If any bond, angle, dihedral or improper to be written
+            does not have a type defined.
+        """
+
+        type_names = {
+            "bonds": "bond",
+            "angles": "angle",
+            "dihedrals": "dihedral",
+            "impropers": "improper",
+        }
+
+        for key in keys:
+            if key in type_names:
+                cls._check_type_given(
+                    getattr(bonded_topology, key), type_names[key]
+                )
 
     @classmethod
     def _write_bond_info(
@@ -126,8 +166,6 @@ class TopologyFileWriter(BaseWriter):
         TopologyFileError
             If any bond in the bonded topology does not have a bond type defined.
         """
-
-        cls._check_type_given(bonded_topology.bonds, "bond")
 
         if len(bonded_topology.bonds) != 0:
             lines = cls._get_bond_lines(bonded_topology)
@@ -155,8 +193,6 @@ class TopologyFileWriter(BaseWriter):
             If any angle in the bonded topology does not have an angle type defined.
         """
 
-        cls._check_type_given(bonded_topology.angles, "angle")
-
         if len(bonded_topology.angles) != 0:
             lines = cls._get_angle_lines(bonded_topology)
             for line in lines:
@@ -183,8 +219,6 @@ class TopologyFileWriter(BaseWriter):
             If any dihedral in the bonded topology does not have a dihedral type defined.
         """
 
-        cls._check_type_given(bonded_topology.dihedrals, "dihedral")
-
         if len(bonded_topology.dihedrals) != 0:
             lines = cls._get_dihedral_lines(bonded_topology)
             for line in lines:
@@ -204,8 +238,6 @@ class TopologyFileWriter(BaseWriter):
         file : File
             The file object to write the improper information to.
         """
-
-        cls._check_type_given(bonded_topology.impropers, "improper")
 
         if len(bonded_topology.impropers) != 0:
             lines = cls._get_improper_lines(bonded_topology)

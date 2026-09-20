@@ -55,14 +55,48 @@ class GenFileReader(BaseReader):
         with open(self.filename, 'r', encoding='utf-8') as file:
             lines = file.readlines()
 
+            while lines and not lines[-1].strip():
+                lines.pop()
+
             self.n_atoms, is_periodic, atom_names = self._read_header(lines[:2])
+
+            if len(lines) < 2 + self.n_atoms:
+                self.logger.error(
+                    (
+                        f"Truncated gen file {self.filename}: "
+                        f"declared {self.n_atoms} atoms but found only "
+                        f"{max(len(lines) - 2, 0)} coordinate lines."
+                    ),
+                    exception=GenFileReaderError
+                )
 
             coords, ids = self._read_coords(lines[2:2 + self.n_atoms])
 
             cell_start = 2 + self.n_atoms
+            if is_periodic and len(lines) < cell_start + 4:
+                self.logger.error(
+                    (
+                        f"Truncated gen file {self.filename}: periodic files "
+                        f"require 4 cell lines after the coordinates, but "
+                        f"found only {len(lines) - cell_start}."
+                    ),
+                    exception=GenFileReaderError
+                )
+
             cell = self._read_cell(
                 lines[cell_start:cell_start + 4]
             ) if is_periodic else Cell()
+
+            if np.any(ids < 1) or np.any(ids > len(atom_names)):
+                invalid = ids[(ids < 1) | (ids > len(atom_names))]
+                self.logger.error(
+                    (
+                        f"Invalid atom id(s) {invalid.tolist()} in gen file "
+                        f"{self.filename}: ids must be in the range "
+                        f"1..{len(atom_names)}."
+                    ),
+                    exception=GenFileReaderError
+                )
 
             atoms = [self._read_atom(atom_names[id - 1]) for id in ids]
 

@@ -2,6 +2,11 @@
 
 import numpy as np
 
+from .exceptions import FrameReaderError
+
+#: longest atom type label supported by the compiled parser
+_MAX_ATOM_LENGTH = 254
+
 
 def _split_xyz_line(line: str) -> tuple[str, float, float, float]:
     fields = line.split()
@@ -24,6 +29,11 @@ def process_lines_with_atoms(input, n_atoms: int):
 
     for i in range(n_atoms):
         atom, x, y, z = _split_xyz_line(input[i])
+        if len(atom) > _MAX_ATOM_LENGTH:
+            raise FrameReaderError(
+                "Atom type is too long: "
+                "the maximum supported length is 254 characters"
+            )
         xyz[i, 0] = x
         xyz[i, 1] = y
         xyz[i, 2] = z

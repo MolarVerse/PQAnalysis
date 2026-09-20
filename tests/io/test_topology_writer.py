@@ -69,6 +69,24 @@ class TestTopologyFileWriter:
             "all dihedrals must have a dihedral type defined."
         )
 
+    def test_write_does_not_truncate_on_invalid_topology(self, tmp_path):
+        """
+        Test that a failing write leaves an already existing file untouched.
+        """
+        filename = str(tmp_path / "topology.top")
+        content = "BONDS 1 1 0\n    1     2     1\nEND\n"
+
+        with open(filename, "w", encoding="utf-8") as file:
+            file.write(content)
+
+        topology = BondedTopology(bonds=[Bond(index1=1, index2=2)])
+
+        with pytest.raises(TopologyFileError):
+            TopologyFileWriter(filename, mode="o").write(topology)
+
+        with open(filename, "r", encoding="utf-8") as file:
+            assert file.read() == content
+
     def test__get_bond_lines(self):
         """
         Test the _get_bond_lines method.

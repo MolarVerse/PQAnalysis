@@ -356,6 +356,25 @@ class TestTrajectory:
             traj.pop(1)
         assert str(exception.value) == "pop index out of range"
 
+    def test_copy(self):
+        frame = AtomicSystem(
+            atoms=[Atom("H")],
+            pos=np.array([[0.0, 0.0, 0.0]]),
+            cell=Cell(10.0, 10.0, 10.0),
+        )
+        traj = Trajectory([frame])
+        copied = traj.copy()
+
+        assert copied == traj
+        assert copied[0] is not traj[0]
+        assert copied[0].cell is not traj[0].cell
+
+        copied[0].pos[0, 0] = 99.0
+        copied[0].cell.box_lengths = np.array([20.0, 20.0, 20.0])
+
+        assert np.allclose(traj[0].pos, [[0.0, 0.0, 0.0]])
+        assert np.allclose(traj[0].cell.box_lengths, [10.0, 10.0, 10.0])
+
     def test_property_topology(self):
         frame1 = AtomicSystem()
         frame2 = AtomicSystem()
