@@ -467,10 +467,14 @@ class NEPWriter(BaseWriter):
                     exception=NEPError
                 )
 
-        sum_frames = n_train + n_test + n_validation
+        if total_ratios is not None:
+            sum_frames = n_train + n_test + n_validation
 
-        self.test_ratio = n_test / sum_frames
-        self.validation_ratio = n_validation / sum_frames
+            self.test_ratio = n_test / sum_frames
+            self.validation_ratio = n_validation / sum_frames
+        else:
+            self.test_ratio = float(test_ratio)
+            self.validation_ratio = 0.0
 
         if self.test_ratio > 1.0:
             self.logger.error(
@@ -816,7 +820,7 @@ Reading files to write NEP trajectory file:
         self.open()
         for frame in trajectory:
             self.write_from_atomic_system(
-                frame, use_forces, use_stress, use_virial
+                frame, self.file, use_forces, use_stress, use_virial
             )
 
         self.close()
