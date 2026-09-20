@@ -1,0 +1,10 @@
+traj_files = trajectory.vel
+target_selection = all
+out_file = vacf.dat
+time_step = 0.001
+window = 8
+gap = 2
+spectrum_file = spectrum.dat
+ftsize = 16
+window_function = exponential
+window_param = 4.0

@@ -1,0 +1,7 @@
+traj_files = trajectory.xyz
+target_selection = O
+out_file = msd.dat
+window = 8
+gap = 2
+time_step = 0.001
+fit_window = 4
