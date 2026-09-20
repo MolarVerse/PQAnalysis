@@ -6,6 +6,74 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 <!-- insertion marker -->
+## [v1.7.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.7.0) - 2026-09-20
+
+<small>[Compare with v1.6.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.6.0...v1.7.0)</small>
+
+### Docs
+
+- correct five claims and cut restated sentences ([5ddcc8a](https://github.com/MolarVerse/PQAnalysis/commit/5ddcc8a23119b909acd7e5ff3aa597711ecf5f91) by Josef M. Gallmetzer).
+- drop figure captions ([6a0502d](https://github.com/MolarVerse/PQAnalysis/commit/6a0502d3341c9bb8e814eb940b68b39bb8e76280) by Josef M. Gallmetzer).
+- introduce every table and code block in the surrounding text ([53579dc](https://github.com/MolarVerse/PQAnalysis/commit/53579dc866b125ced649ff328fb3bc5423075825) by Josef M. Gallmetzer).
+- drop table captions ([38b2f7a](https://github.com/MolarVerse/PQAnalysis/commit/38b2f7ab0310580803b82907b99796a538a21258) by Josef M. Gallmetzer).
+- left-align tables and captions with the text column ([6a101e8](https://github.com/MolarVerse/PQAnalysis/commit/6a101e824abc319fc8c01df39ef5f57685059dab) by Josef M. Gallmetzer).
+- make every example runnable as written ([8b14c5e](https://github.com/MolarVerse/PQAnalysis/commit/8b14c5e4bab5dfc74fcc4ac81a57ef0068d44413) by Josef M. Gallmetzer).
+- split method pages into usage and theory/validity subpages ([ac60967](https://github.com/MolarVerse/PQAnalysis/commit/ac60967972d7b3ed08b3c26bddb202b4927f80f6) by Josef M. Gallmetzer).
+- replace em-dash asides and bold-lead bullets ([aa66b6a](https://github.com/MolarVerse/PQAnalysis/commit/aa66b6abc352acef22d22e20938979fd77cbd5f7) by Josef M. Gallmetzer).
+- remove repeated snippets and boilerplate closers ([8d91152](https://github.com/MolarVerse/PQAnalysis/commit/8d911522fdfc8be62b68ecea1267f86d32e502c3) by Josef M. Gallmetzer).
+- correct claims the code disproves ([a663e96](https://github.com/MolarVerse/PQAnalysis/commit/a663e967ff1b919686397b4f854056730ba587f7) by Josef M. Gallmetzer).
+- drop the GitHub tree URL for examples/water ([b2093bf](https://github.com/MolarVerse/PQAnalysis/commit/b2093bf84cff9a005e56f9d3fbe9f0f26b557339) by Josef M. Gallmetzer).
+- point recipes at the water fixture and raise vibrations input ([b6713c0](https://github.com/MolarVerse/PQAnalysis/commit/b6713c02f72f20634579115a17a39a44d1c3fb12) by Josef M. Gallmetzer).
+- add a load-RDF-MSD-figure workflow ([a256aa4](https://github.com/MolarVerse/PQAnalysis/commit/a256aa4f594c8b1ee5b8b68a25b3eb6156cf3e22) by Josef M. Gallmetzer).
+- document the atom selection language ([40bc540](https://github.com/MolarVerse/PQAnalysis/commit/40bc54028b765e9cccc2cf5d1ebdfdb6d090fbde) by Josef M. Gallmetzer).
+- add a checkout-only water tutorial fixture ([5d9cce1](https://github.com/MolarVerse/PQAnalysis/commit/5d9cce15415cb1c01d5060c80d3e0019909523fc) by Josef M. Gallmetzer).
+- teach the Python analysis API with worked recipes ([44ca86d](https://github.com/MolarVerse/PQAnalysis/commit/44ca86d8cbf1cd31bedc9a42ac59e96645a37709) by Josef M. Gallmetzer).
+- align guides with current RDF and single-use run() behavior ([f0ebda3](https://github.com/MolarVerse/PQAnalysis/commit/f0ebda36e3c765a18f6e3a07a31abf951f723bd0) by Josef M. Gallmetzer).
+- document the physics, its sources and its limits ([9617d00](https://github.com/MolarVerse/PQAnalysis/commit/9617d00c37fc803e0003e1b6514f69e2a79dfc69) by Josef M. Gallmetzer).
+- validate the command tables against the CLI registry ([4c7384c](https://github.com/MolarVerse/PQAnalysis/commit/4c7384cafa53ca0fc566f68de2ba103aeb27ec79) by Josef M. Gallmetzer).
+- fix deploy, sitemap and reference accuracy ([c82230c](https://github.com/MolarVerse/PQAnalysis/commit/c82230c0cbfc433a5e8f612ee42ed6a579683c65) by Josef M. Gallmetzer).
+- clarify VACF apodization ([579e249](https://github.com/MolarVerse/PQAnalysis/commit/579e249240a74d1af7fa39d4507a650a3d2e0e59) by Josef M. Gallmetzer).
+- use representative VACF model ([00efc6e](https://github.com/MolarVerse/PQAnalysis/commit/00efc6e521480bebce34905c2a6b6ddc11d0ad99) by Josef M. Gallmetzer).
+- fix compact layout and prose ([419798b](https://github.com/MolarVerse/PQAnalysis/commit/419798b5714d0366e6ba1e1ca7548b88b81350f1) by Josef M. Gallmetzer).
+- refine VACF notation and figure ([886a166](https://github.com/MolarVerse/PQAnalysis/commit/886a16605431b84b6374f0c4805852de086011ad) by Josef M. Gallmetzer).
+- expose developer interfaces ([cc58cb7](https://github.com/MolarVerse/PQAnalysis/commit/cc58cb7f259ba1bc0ab86e406d4b8fc1c5d42219) by Josef M. Gallmetzer).
+- refine scientific presentation ([ffe2b9a](https://github.com/MolarVerse/PQAnalysis/commit/ffe2b9a6eba4440b903126ae73483753d9e107ab) by Josef M. Gallmetzer).
+- modernize documentation structure ([486d216](https://github.com/MolarVerse/PQAnalysis/commit/486d216bf76842d4b2dc1249acf140487059eeb5) by Josef M. Gallmetzer).
+
+### Features
+
+- resolve input-file filenames relative to the input file ([ed5615b](https://github.com/MolarVerse/PQAnalysis/commit/ed5615bda98c04e6d277e1a3c97a11a53b3afc83) by Josef M. Gallmetzer).
+
+### Bug Fixes
+
+- copy the cell in AtomicSystem.__getitem__ ([4f921e3](https://github.com/MolarVerse/PQAnalysis/commit/4f921e34de723a9278634b7634116bd2a55efe74) by Josef M. Gallmetzer).
+- treat selection=None as all atoms per frame in traj_to_com_traj ([44c76d2](https://github.com/MolarVerse/PQAnalysis/commit/44c76d2de20e9687d70a957137f1b43bef488eb4) by Josef M. Gallmetzer).
+- return read-only copies from Cell box_lengths and box_angles ([2de6a16](https://github.com/MolarVerse/PQAnalysis/commit/2de6a16b050273f41d01c5a2bb91edbfc923553f) by Josef M. Gallmetzer).
+- deep-copy cells in AtomicSystem and frames in Trajectory ([013ff3e](https://github.com/MolarVerse/PQAnalysis/commit/013ff3e7b2109cde5e0a1bae8f1b387c50d82d08) by Josef M. Gallmetzer).
+- reject a second run() on Momentum ([45e7559](https://github.com/MolarVerse/PQAnalysis/commit/45e7559f07d2a702cf1b09838888a64585a4ade9) by Josef M. Gallmetzer).
+- accept positions-only restart atom lines on read ([b10899b](https://github.com/MolarVerse/PQAnalysis/commit/b10899b73ab3456d5b66d7d80e674a5a30249919) by Josef M. Gallmetzer).
+- keep wavenumber grid strictly below its upper bound ([b2d76c4](https://github.com/MolarVerse/PQAnalysis/commit/b2d76c47c92a234ea6f3760ff354723cc9d8a2d2) by Josef M. Gallmetzer).
+- make MDEngineFormat.is_qmcfc_type match its name ([6c27930](https://github.com/MolarVerse/PQAnalysis/commit/6c279308e05b98b8072b37c0e99de577e1a5cd06) by Josef M. Gallmetzer).
+- validate virial and stress file lines on read ([ed9b6ec](https://github.com/MolarVerse/PQAnalysis/commit/ed9b6ecbf0a948243d9383f2f788a3f8db57282e) by Josef M. Gallmetzer).
+- reject second run() call on RDF, MSD and VACF ([086a966](https://github.com/MolarVerse/PQAnalysis/commit/086a966a1cbca91ab689acebd90b69b1d4bb5171) by Josef M. Gallmetzer).
+- validate rdf selections, delta_r and cell volume ([4741000](https://github.com/MolarVerse/PQAnalysis/commit/474100090e19cc55dd332c79459e5a6b476cc0f6) by Josef M. Gallmetzer).
+- resolve abbreviated root options in lazy CLI dispatch ([ed68c57](https://github.com/MolarVerse/PQAnalysis/commit/ed68c57e30cddca48d9e008e2bd1fe5bb530ef10) by Josef M. Gallmetzer).
+- reject moldescriptor blocks with missing atom lines ([35046e1](https://github.com/MolarVerse/PQAnalysis/commit/35046e127c02df9a638cabe6a554a6c46f6982c1) by Josef M. Gallmetzer).
+- guard log file env var against missing logging level ([9c8389a](https://github.com/MolarVerse/PQAnalysis/commit/9c8389a08ed5daf98b89f105ed81007b27abbb3a) by Josef M. Gallmetzer).
+- make NEP test_ratio splitting and trajectory writing work ([6322198](https://github.com/MolarVerse/PQAnalysis/commit/6322198ab21c17641562632032ec248b12e27fb7) by Josef M. Gallmetzer).
+- write QMCFC dummy atom for vel, force and charge output ([4a49df4](https://github.com/MolarVerse/PQAnalysis/commit/4a49df45184297d42ade04a519b09f0c9a2e6d4a) by Josef M. Gallmetzer).
+- correct box file step indices for unequal trajectories ([c094dfd](https://github.com/MolarVerse/PQAnalysis/commit/c094dfd7e3663e1f0b117fb3c66a57c5f4400c1e) by Josef M. Gallmetzer).
+- make AtomicSystem.copy deep-copy arrays and all fields ([0979870](https://github.com/MolarVerse/PQAnalysis/commit/0979870f0670396bf44881ede0d026ab246c33d5) by Josef M. Gallmetzer).
+- size legacy RDF histogram from smallest box edge ([4d83948](https://github.com/MolarVerse/PQAnalysis/commit/4d83948648c5c534f50fe7c07d1996b5b3672ba9) by Josef M. Gallmetzer).
+- write vel or forces alone in PQ restart files ([e1037d1](https://github.com/MolarVerse/PQAnalysis/commit/e1037d1f95dac7d064b82f09ad9e100ea49ff0c3) by Josef M. Gallmetzer).
+- read cells of extended xyz trajectories ([4c02f93](https://github.com/MolarVerse/PQAnalysis/commit/4c02f93cf0ffbb839a488250d239b03316f43d86) by Josef M. Gallmetzer).
+- read the command names from the dispatch table ([68efc8d](https://github.com/MolarVerse/PQAnalysis/commit/68efc8decce1bf5e71698a4ac938ba5e7351b6cd) by Josef M. Gallmetzer).
+- read the cli registry without importing the dispatcher ([c985244](https://github.com/MolarVerse/PQAnalysis/commit/c98524470726d8e5329469b13e73df2a369b8e36) by Josef M. Gallmetzer).
+
+### Code Refactoring
+
+- remove dead caption plumbing and name plot constants ([e916ae8](https://github.com/MolarVerse/PQAnalysis/commit/e916ae8779c288da3a5375e8f9876c56e0c1562a) by Josef M. Gallmetzer).
+
 ## [v1.6.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.6.0) - 2026-08-31
 
 <small>[Compare with v1.5.0](https://github.com/MolarVerse/PQAnalysis/compare/v1.5.0...v1.6.0)</small>
