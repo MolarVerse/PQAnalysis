@@ -2,6 +2,7 @@
 A module for reading the input file for the PQAnalysis.
 """
 import logging
+from pathlib import Path
 
 from beartype.typing import List
 
@@ -60,9 +61,9 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
 
     def __init__(self, filename: str) -> None:
         """
-        It sets the format to InputFileFormat.PQANALYSIS and the
-        filename to the given filename. It also creates a 
-        InputFileParser with the given filename.
+        Sets the format to InputFileFormat.PQANALYSIS, remembers the
+        filename and its directory, and creates an InputFileParser that
+        expands glob values in that directory.
 
         Parameters
         ----------
@@ -71,7 +72,8 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         """
         self.format = InputFileFormat.PQANALYSIS
         self.filename = filename
-        self.parser = InputFileParser(filename)
+        self.base_dir = Path(filename).parent
+        self.parser = InputFileParser(filename, glob_root=str(self.base_dir))
 
         self.dictionary = None
         self.raw_input_file = None
@@ -83,6 +85,49 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
         """
         self.dictionary = self.parser.parse()
         self.raw_input_file = self.parser.raw_input_file
+
+    def resolve_path(self, path: str | None) -> str | None:
+        """
+        Resolves a filename from the input file against the directory of
+        the input file.
+
+        Relative filenames in an input file refer to the directory that
+        contains the input file, not to the working directory of the
+        process. Absolute filenames are returned unchanged.
+
+        Parameters
+        ----------
+        path : str | None
+            the filename as written in the input file
+
+        Returns
+        -------
+        str | None
+            the resolved filename, or None if path is None
+        """
+        if path is None:
+            return None
+
+        return str(self.base_dir / path)
+
+    def resolve_paths(self, paths: List[str] | None) -> List[str] | None:
+        """
+        Resolves a list of filenames with :meth:`resolve_path`.
+
+        Parameters
+        ----------
+        paths : List[str] | None
+            the filenames as written in the input file
+
+        Returns
+        -------
+        List[str] | None
+            the resolved filenames, or None if paths is None
+        """
+        if paths is None:
+            return None
+
+        return [self.resolve_path(path) for path in paths]
 
     def check_required_keys(self, required_keys: List[str]):
         """

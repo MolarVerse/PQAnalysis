@@ -178,9 +178,11 @@ def wavenumber_grid(
 
     The grid starts at ``wavenumber_min`` and increases in steps of
     ``wavenumber_step`` while staying strictly below ``wavenumber_max``,
-    exactly like the legacy awk loop
-    ``for (i = min; i < max; i += step)``. The default grid therefore
-    contains 15960 points from 10.0 cm^-1 to 3999.75 cm^-1.
+    following the intent of the legacy awk loop
+    ``for (i = min; i < max; i += step)`` but without its floating-point
+    accumulation error, so the exclusive upper bound always holds. The
+    default grid therefore contains 15960 points from 10.0 cm^-1 to
+    3999.75 cm^-1.
 
     Parameters
     ----------
@@ -213,12 +215,16 @@ def wavenumber_grid(
             "minimum wavenumber."
         )
 
-    return np.arange(
-        float(wavenumber_min),
-        float(wavenumber_max),
-        float(wavenumber_step),
-        dtype=np.float64,
+    n_points = int(np.ceil(
+        (float(wavenumber_max) - float(wavenumber_min)) /
+        float(wavenumber_step)
+    ))
+
+    grid = float(wavenumber_min) + float(wavenumber_step) * np.arange(
+        n_points, dtype=np.float64
     )
+
+    return grid[grid < float(wavenumber_max)]
 
 
 
