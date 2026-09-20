@@ -181,7 +181,7 @@ class MDEngineFormat(BaseEnumFormat):
     @classmethod
     def is_qmcfc_type(cls, engine_format: Any) -> bool:
         """
-        This method checks if the given format is a QMCF format.
+        This method checks if the given format is the QMCFC format.
 
         Parameters
         ----------
@@ -191,6 +191,6 @@ class MDEngineFormat(BaseEnumFormat):
         Returns
         -------
         bool
-            True if the format is a QMCF format, False otherwise.
+            True if the format is the QMCFC format, False otherwise.
         """
-        return engine_format in [cls.PQ, cls.QMCFC]
+        return cls(engine_format) == cls.QMCFC

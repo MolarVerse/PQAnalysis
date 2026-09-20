@@ -115,3 +115,25 @@ O 2 -4.6
         assert str(
             exception.value
         ) == "The number of columns in the header of a mol type must be 3.\nGot 2 columns instead in text: '  H2O            3'\n"
+
+    @pytest.mark.parametrize(
+        "example_dir",
+        ["readMoldescriptor"],
+        indirect=False
+    )
+    def test_read_too_few_atom_lines(self, test_with_data_dir):
+        reader = MoldescriptorReader("moldescriptor_tooFewAtoms.dat")
+        with pytest.raises(MoldescriptorReaderError) as exception:
+            reader.read()
+        assert str(exception.value) == (
+            "The mol type H2O declares 3 atoms, but only 2 atom lines "
+            "follow before the end of the file.\n"
+        )
+
+        reader = MoldescriptorReader("moldescriptor_tooFewAtoms_midFile.dat")
+        with pytest.raises(MoldescriptorReaderError) as exception:
+            reader.read()
+        assert str(exception.value) == (
+            "The mol type Ar declares 2 atoms, but only 0 atom lines "
+            "follow before the end of the file.\n"
+        )

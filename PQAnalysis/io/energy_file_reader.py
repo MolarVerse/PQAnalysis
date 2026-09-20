@@ -14,6 +14,7 @@ from PQAnalysis.exceptions import PQFileNotFoundError
 from PQAnalysis.type_checking import runtime_type_checking
 
 from .base import BaseReader
+from .exceptions import EnergyFileReaderError
 from .info_file_reader import InfoFileReader
 
 
@@ -107,23 +108,46 @@ class EnergyFileReader(BaseReader):
         data = []
 
         for filename in self._filenames_to_read():
-            data.extend(self._read_data_from_file(filename))
+            file_data = self._read_data_from_file(filename)
+
+            if data and file_data and len(file_data[0]) != len(data[0]):
+                self.logger.error(
+                    (
+                        f"Energy file {filename} has {len(file_data[0])} "
+                        f"columns, but the previously read energy files "
+                        f"have {len(data[0])} columns."
+                    ),
+                    exception=EnergyFileReaderError
+                )
+
+            data.extend(file_data)
 
         return Energy(np.array(data).T, info, units)
 
-    @staticmethod
-    def _read_data_from_file(filename: str) -> list[list[float]]:
+    @classmethod
+    def _read_data_from_file(cls, filename: str) -> list[list[float]]:
         """
         Reads energy data from a single file.
         """
         data = []
 
         with open(filename, "r", encoding='utf-8') as file:
-            for line in file:
-                if line.startswith("#"):
+            for line_number, line in enumerate(file, start=1):
+                if not line.strip() or line.startswith("#"):
                     continue
 
                 data_line = [float(x) for x in line.split()]
+
+                if data and len(data_line) != len(data[0]):
+                    cls.logger.error(
+                        (
+                            f"Invalid number of columns in energy file "
+                            f"{filename} line {line_number}. Expected "
+                            f"{len(data[0])} columns."
+                        ),
+                        exception=EnergyFileReaderError
+                    )
+
                 data.append(list(data_line))
 
         return data

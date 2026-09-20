@@ -220,7 +220,7 @@ class RestartFileWriter(BaseWriter):
             line += f"{atom.name}    {atom_counter[i]}    {residue}    "
             line += f"{pos[0]} {pos[1]} {pos[2]}"
 
-            if (frame.has_vel and frame.has_forces) or md_engine_format != MDEngineFormat.PQ:
+            if (frame.has_vel or frame.has_forces) or md_engine_format != MDEngineFormat.PQ:
                 line += f" {vel[0]} {vel[1]} {vel[2]}"
                 line += f" {force[0]} {force[1]} {force[2]}"
 

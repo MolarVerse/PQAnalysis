@@ -23,14 +23,18 @@ class _StandardPropertiesMixin:
         """
         Np1DNumberArray: The lengths of the box vectors.
 
+        A copy is returned. In-place item assignment does not update
+        the cell; assign a new array to ``box_lengths`` instead.
         When setting the box lengths, the box matrix is recalculated.
         """
-        return self._box_lengths
+        lengths = self._box_lengths.copy()
+        lengths.flags.writeable = False
+        return lengths
 
     @box_lengths.setter
     @runtime_type_checking_setter
     def box_lengths(self, box_lengths: Np1DNumberArray) -> None:
-        self._box_lengths = box_lengths
+        self._box_lengths = np.array(box_lengths, dtype=float, copy=True)
         self._box_matrix = self.setup_box_matrix()
 
     @property
@@ -38,14 +42,18 @@ class _StandardPropertiesMixin:
         """
         Np1DNumberArray: The angles between the box vectors.
 
+        A copy is returned. In-place item assignment does not update
+        the cell; assign a new array to ``box_angles`` instead.
         When setting the box angles, the box matrix is recalculated.
         """
-        return self._box_angles
+        angles = self._box_angles.copy()
+        angles.flags.writeable = False
+        return angles
 
     @box_angles.setter
     @runtime_type_checking_setter
     def box_angles(self, box_angles: Np1DNumberArray) -> None:
-        self._box_angles = box_angles
+        self._box_angles = np.array(box_angles, dtype=float, copy=True)
         self._box_matrix = self.setup_box_matrix()
 
     @property
