@@ -8,8 +8,8 @@ generated ``PQAnalysis/_version.py`` file.
 Release boundary
 ----------------
 
-The release workflow matches every pushed tag. A tag push can publish to PyPI
-and TestPyPI, create a GitHub release, sign release artifacts and update
+The release workflow matches every pushed tag. A tag push can publish to PyPI,
+create a GitHub release, sign release artifacts and update
 ``CHANGELOG.md`` on ``main``.
 
 .. warning::
