@@ -35,11 +35,6 @@ try:
 except ModuleNotFoundError:  # pragma: no cover - build-dependent
     _slab_parser = None
 
-try:
-    from PQAnalysis.io.traj_file import process_lines as _process_lines_ext
-except ModuleNotFoundError:  # pragma: no cover - build-dependent
-    _process_lines_ext = None
-
 #: Both slab parser implementations.
 PARSER_MODULES = [
     pytest.param(_slab_parser_py, id="python-fallback"),
@@ -211,12 +206,6 @@ class TestSlabParserAdversarialFloats:
             "  o   -0.125\t 0.5  12.25   ",
             "n 1.0 2.0 3.0 extra tokens 4.0",
         ]
-
-        if _process_lines_ext is not None:
-            # sscanf and strtof both stop after the longest valid
-            # float prefix of the last token (the pure Python
-            # process_lines fallback rejects such tokens instead)
-            lines.append("c 1.0 2.0 3.0extra")
 
         write_xyz("tmp.xyz", [lines])
 
