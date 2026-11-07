@@ -1,13 +1,38 @@
 name: Test Coverage
 
+# Only changes that can affect the tests or the coverage start this workflow:
+# documentation, changelog and other workflow edits do not. The tests read
+# tests/data and the example fixtures under examples/.
 on:
   push:
-    branches: 
+    branches:
       - main
       - dev
+    paths:
+      - 'PQAnalysis/**'
+      - 'tests/**'
+      - 'examples/**'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'pyproject.toml'
+      - 'MANIFEST.in'
+      - 'pytest.ini'
+      - 'pytest.sh'
+      - '.github/workflows/ci.yml'
   pull_request:
     branches:
       - '*'
+    paths:
+      - 'PQAnalysis/**'
+      - 'tests/**'
+      - 'examples/**'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'pyproject.toml'
+      - 'MANIFEST.in'
+      - 'pytest.ini'
+      - 'pytest.sh'
+      - '.github/workflows/ci.yml'
   workflow_dispatch:
 
 jobs:
