@@ -1,0 +1,1 @@
+- Run the Test Coverage workflow only when package, test, example fixture or packaging files change, so documentation, changelog and other workflow edits no longer start it.
