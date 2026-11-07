@@ -1,0 +1,193 @@
+# AGENTS.md — Contributor Guide for PQAnalysis
+
+This file documents the codebase structure, development workflows, and conventions that contributors and coding assistants must follow when contributing to PQAnalysis. The full developer documentation lives in `docs/source/developerGuide/`.
+
+---
+
+## Project Overview
+
+PQAnalysis is a **Python (>= 3.12)** package for analysing [PQ](https://github.com/MolarVerse/PQ) molecular dynamics simulations (RDF, MSD, VACF, momentum, vibrations, format conversion). It ships a `pqanalysis` CLI plus a Python API, uses **Cython** kernels with NumPy/Python fallbacks, and enforces types at runtime with **beartype**. Licensed under MIT. Versions are derived from Git tags by `setuptools_scm`; never edit the generated `PQAnalysis/_version.py`.
+
+---
+
+## Git Workflow — CRITICAL RULES
+
+> **Contributors and coding assistants must follow these rules without exception.**
+
+`main` is the release branch and `dev` is the integration branch.
+
+1. **Never push directly to `main` or `dev`.**
+2. **Always create a branch from an up-to-date `dev`** for any change: `git fetch origin && git checkout -b <type>/<short-description> origin/dev`.
+3. **Open pull requests targeting `dev`**, not `main`. Only release PRs go from `dev` to `main`.
+4. **Never amend or force-push** shared branches; add new commits instead.
+5. Use `git push -u origin <branch-name>` when pushing a new branch.
+6. Do not push or move release tags (see [Releases](#releases)).
+
+```bash
+git fetch origin
+git checkout -b feat/my-feature origin/dev
+# ... make changes, commit ...
+git push -u origin feat/my-feature
+# Then open a PR targeting dev
+```
+
+---
+
+## Commit and PR Title Convention
+
+PRs are squash-merged and **the PR title becomes the commit message**, so it must follow Conventional Commits. This is enforced by `.github/workflows/pr-title.yml` with the pattern:
+
+```
+^(feat|fix|revert|ref|refactor|perf|build|chore|ci|deps|doc|docs|style|test|tests)(\([a-z0-9._-]+\))?!?: .+
+```
+
+Examples: `feat: add a new analysis command`, `fix(io): handle missing trajectory data`, `refactor: simplify trajectory parsing`. Use the same style for commit subjects.
+
+PRs use `.github/pull_request_template.md` (a `## Summary` section).
+
+---
+
+## Repository Structure
+
+```
+PQAnalysis/
+├── .github/workflows/     # ci.yml, pylint.yml, docs.yml, pr-title.yml, release.yml
+├── .github/scripts/       # parse_pylint.py (pylint score/comment helper)
+├── PQAnalysis/            # The package (see below)
+├── tests/                 # pytest suite, mirrors the package layout; tests/data holds fixtures
+├── benchmarks/            # pytest-benchmark suite (own pytest.ini), not run in CI
+├── docs/source/           # Sphinx documentation (user guide, developer guide, reference)
+├── examples/              # Tutorial fixtures (e.g. examples/water) used by the docs
+├── conda-recipes/         # conda packaging
+├── pyproject.toml         # Metadata, dependencies, entry points, setuptools_scm
+├── pytest.sh              # Runs the suite twice (beartype DEBUG, then RELEASE)
+├── pytest.ini             # Markers, doctest options, coverage options
+├── .pylintrc              # Pylint configuration
+├── .style.yapf            # Formatter configuration
+└── .docstr.yaml           # Docstring-coverage configuration
+```
+
+### Package boundaries (`PQAnalysis/`)
+
+| Path | Responsibility |
+| --- | --- |
+| `analysis/` | Scientific estimators, spectra, result models, analysis-table output |
+| `cli/` | Argument definitions and dispatch to public API functions |
+| `io/` | Simulation-file readers, writers, format conversion |
+| `traj/` | Trajectory containers, engine formats, trajectory-wide checks |
+| `atomic_system/`, `core/` | Atomic coordinates, cells, atoms, residues |
+| `topology/` | Selections, molecular identity, bonded topology |
+| `tools/`, `utils/`, `physical_data/` | Helper tools, utilities, physical constants |
+
+An input-file analysis flows: CLI class → public `api.py` function → input reader → trajectory/structure reader → analysis object and kernel → `AnalysisTable` with an `AnalysisSchema` → writers. **The CLI must not contain a second implementation of the scientific method**; it parses arguments and calls the public API.
+
+Adding an analysis: follow `docs/source/developerGuide/adding-analysis.rst` (`PQAnalysis/analysis/<name>/`, `api.py`, `PQAnalysis/cli/<name>.py`, `analysis/_output_schemas.py`, tests in `tests/analysis/<name>/` and `tests/data/<name>/`).
+
+---
+
+## Development Environment
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev,test,docs]"      # add ",benchmark" for benchmarks
+```
+
+Optional extras: `test` (pytest, pylint, coverage, docstr-coverage, ase), `dev` (yapf), `docs` (Sphinx toolchain), `benchmark` (pytest-benchmark).
+
+---
+
+## Build, Test and Quality Gates
+
+```bash
+bash pytest.sh                       # full suite: beartype DEBUG, then RELEASE
+bash pytest.sh tests/analysis/rdf -q # focused run (args are forwarded to pytest)
+python -m pylint PQAnalysis --persistent n
+docstr-coverage PQAnalysis
+```
+
+- **Run both runtime-type-checking configurations** (`pytest.sh` does) before requesting review; `PQANALYSIS_BEARTYPE_LEVEL` is `DEBUG` then `RELEASE`.
+- `pytest.ini` collects `tests` and `PQAnalysis` with `--doctest-modules`, so docstring examples are tests.
+- Tests use markers (`atomicSystem`, `core`, `topology`, `traj`, `io`, `analysis`, `utils`, `integration`). Tests mirror the package layout under `tests/`.
+- Public interfaces use **NumPy-style docstrings** documenting parameters, returns, raised exceptions, units and array shapes.
+- Format with `yapf` using `.style.yapf` (79-column limit).
+
+### Numerical kernels
+
+RDF, MSD, VACF and momentum use compiled Cython kernels (`*.pyx`) with NumPy/Python fallbacks. Both implementations must keep the same signature, normalization and edge-case behavior, and a kernel change needs tests for both plus a direct parity test. Keep file parsing and logging out of kernels. Optimized batch paths must preserve the numeric operation order of the streaming fallback and fall back when the memory limit is exceeded. Do not reorder floating-point reductions.
+
+Benchmarks (not CI gates):
+
+```bash
+pip install -e ".[test,benchmark]"
+pytest -c benchmarks/pytest.ini benchmarks --benchmark-only
+```
+
+### Public contracts
+
+Treat as compatibility surfaces: non-underscored names imported by a package `__init__.py`, CLI command names/arguments/input-file keys, result attributes and array shapes, output field identifiers/units/column order, accepted file formats, and exception types for invalid input. Underscore-prefixed names are internal. Changing a public contract requires tests, documentation, and backward compatibility or an explicit deprecation path.
+
+---
+
+## CI/CD Workflows (`.github/workflows/`)
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `ci.yml` (Test Coverage) | push to `main`/`dev`, all PRs | `pip install -e ".[test]"`, `bash pytest.sh`, upload coverage to Codecov (fails CI on upload error) |
+| `pylint.yml` | push to `main`/`dev`, all PRs | Pylint on `PQAnalysis`; **fails if the score is not above 9.75** |
+| `docs.yml` | push and PRs to `main`/`dev` | Strict Sphinx build (`-W --keep-going`); deploys to GitHub Pages only from `main` |
+| `pr-title.yml` | PR opened/edited/synchronized | Validates the Conventional Commits PR title |
+| `release.yml` | any pushed tag | Builds the sdist, publishes to PyPI, creates the signed GitHub release, updates `CHANGELOG.md` on `main` |
+
+Python 3.12 is used throughout CI.
+
+---
+
+## Documentation
+
+Sphinx sources are in `docs/source/`. Build with warnings as errors:
+
+```bash
+python -m sphinx -E -W --keep-going -b html docs/source docs/build/html
+python -m sphinx -E -W --keep-going -b linkcheck docs/source docs/build/linkcheck
+```
+
+- API reference is generated from package modules at Sphinx start; **do not hand-edit generated files under `docs/source/code`**.
+- Add public callables to `docs/source/reference/functions.rst`; put implementation guidance in `docs/source/developerGuide/`.
+- Executable figures in `docs/source/_plots` must be deterministic.
+- User-facing behavior changes need matching updates in `docs/source/analyses/`, `data/`, `reference/` or `userGuide/`.
+
+---
+
+## Changelog
+
+`CHANGELOG.md` is **generated by the release workflow** (commits like `Docs: Update CHANGELOG.md on release event`) from the Conventional Commits history. Feature and fix PRs **never edit `CHANGELOG.md`**; a meaningful PR title is what produces a good release note.
+
+---
+
+## Releases
+
+Releases are cut by maintainers only; coding assistants must not do this.
+
+1. Release PR from `dev` to `main`.
+2. Run `bash pytest.sh` and the strict docs build + link check.
+3. After merge, tag `main` with `vMAJOR.MINOR.PATCH` (annotated tag).
+
+**A tag push is the publication action**: it publishes to PyPI, which is immutable. Never create or push tags. Correct a defective release with a new patch release. Details: `docs/source/developerGuide/release.rst`.
+
+---
+
+## Contribution Checklist
+
+Before submitting any change:
+
+- [ ] Branch created from `origin/dev` (not `main`); PR targets `dev`
+- [ ] PR title follows Conventional Commits (`type(scope): description`)
+- [ ] `bash pytest.sh` passes (both beartype levels), including focused tests for the modified module
+- [ ] Tests added/updated under `tests/` mirroring the changed module; kernel changes test both Cython and fallback plus parity
+- [ ] `python -m pylint PQAnalysis` score stays above 9.75
+- [ ] New/changed public code has NumPy-style docstrings (`docstr-coverage PQAnalysis`)
+- [ ] Documentation updated; strict Sphinx build passes (`-W`)
+- [ ] CLI contains no duplicated analysis logic; public contracts preserved or deprecated
+- [ ] No edits to `CHANGELOG.md`, `PQAnalysis/_version.py` or generated `docs/source/code`
+- [ ] No tags created or pushed
