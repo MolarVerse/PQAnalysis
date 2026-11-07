@@ -146,8 +146,9 @@ Install the benchmark dependency and run the focused benchmark suite with:
    $ pytest -c benchmarks/pytest.ini benchmarks --benchmark-only
 
 Store a baseline with ``--benchmark-json=baseline.json`` and compare a changed
-branch with ``--benchmark-compare=baseline.json``. Runtime assertions do not
-belong in CI because host load is variable. Every optimization must instead
+branch with ``--benchmark-compare=baseline.json``. Absolute runtime assertions do
+not belong in CI because host load is variable; only the base-versus-head
+ratio measured on one runner is checked. Every optimization must also
 pass the compiled and fallback tests plus the relevant fixed-bit legacy oracle
 before its benchmark result is considered.
 
@@ -160,3 +161,22 @@ sizes and paths relative to the repository, so they run from any working
 directory. The *Benchmark Smoke* workflow runs the whole suite once with
 ``--benchmark-disable`` on pull requests that touch the package or the
 benchmarks, so a benchmark cannot silently break; it measures nothing.
+
+The *Performance* workflow times the base of a pull request and its head on the
+same runner. ``scripts/perf_compare.py`` installs both revisions in separate
+environments, runs the benchmark suite of the head against both installations
+and alternates base and head for three rounds. A benchmark is reported as
+slower when the median head/base ratio and every round exceed 1.5; benchmarks
+that stay under 100 microseconds on both sides are listed but not judged. The
+check fails on a slower benchmark, and the table is written to the job summary
+and uploaded as the ``perf-report`` artifact. A pull request with an intended
+slowdown carries the ``perf-regression-accepted`` label, which keeps the report
+but lets the check pass. The same comparison runs locally:
+
+.. code-block:: console
+
+   $ python scripts/perf_compare.py \
+       --base-python base-venv/bin/python --base-src ../base \
+       --head-python head-venv/bin/python --head-src . --threshold 1.5
+
+Release pull requests (``release/*`` and ``dev`` to ``main``) are not timed.

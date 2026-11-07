@@ -1,1 +1,2 @@
-- Add a Benchmark Smoke workflow that runs every benchmark once without timing, run kernel-dependent benchmarks with both compiled and pure Python kernels through a kernel_impl fixture, and make the trajectory reader benchmarks independent of the working directory.
+- Add a Benchmark Smoke workflow (every benchmark runs once, untimed) and a Performance workflow that times base and head of a pull request on one runner and fails on a much slower benchmark (scripts/perf_compare.py).
+- Run kernel-dependent benchmarks with compiled and pure Python kernels (kernel_impl fixture) and make the trajectory reader benchmarks independent of the working directory.
