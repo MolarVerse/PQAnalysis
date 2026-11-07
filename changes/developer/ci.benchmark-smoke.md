@@ -1,0 +1,1 @@
+- Add a Benchmark Smoke workflow that runs every benchmark once without timing, run kernel-dependent benchmarks with both compiled and pure Python kernels through a kernel_impl fixture, and make the trajectory reader benchmarks independent of the working directory.

@@ -57,7 +57,7 @@ PQAnalysis/
 ├── scripts/               # Changelog tooling and its tests (scripts/tests)
 ├── PQAnalysis/            # The package (see below)
 ├── tests/                 # pytest suite, mirrors the package layout; tests/data holds fixtures
-├── benchmarks/            # pytest-benchmark suite (own pytest.ini), not run in CI
+├── benchmarks/            # pytest-benchmark suite (own pytest.ini); CI only smoke-runs it, no timing
 ├── docs/source/           # Sphinx documentation (user guide, developer guide, reference)
 ├── examples/              # Tutorial fixtures (e.g. examples/water) used by the docs
 ├── conda-recipes/         # conda packaging
@@ -118,7 +118,7 @@ docstr-coverage PQAnalysis
 
 RDF, MSD, VACF and momentum use compiled Cython kernels (`*.pyx`) with NumPy/Python fallbacks. Both implementations must keep the same signature, normalization and edge-case behavior, and a kernel change needs tests for both plus a direct parity test. Keep file parsing and logging out of kernels. Optimized batch paths must preserve the numeric operation order of the streaming fallback and fall back when the memory limit is exceeded. Do not reorder floating-point reductions.
 
-Benchmarks (not CI gates):
+Benchmarks (the `Benchmark Smoke` workflow runs them once with `--benchmark-disable`; timings are not CI gates). Kernel-dependent benchmarks use the `kernel_impl` fixture and run as `[compiled]` and `[fallback]`; give new ones seeded, fixed-size data and no cwd-relative paths:
 
 ```bash
 pip install -e ".[test,benchmark]"
@@ -140,6 +140,7 @@ Treat as compatibility surfaces: non-underscored names imported by a package `__
 | `docs.yml` | push and PRs to `main`/`dev` | Strict Sphinx build (`-W --keep-going`); deploys to GitHub Pages only from `main` |
 | `pr-title.yml` | PR opened/edited/synchronized | Validates the Conventional Commits PR title |
 | `release.yml` | any pushed tag | Builds the sdist, publishes to PyPI, creates the signed GitHub release with notes taken from the prepared changelogs |
+| `benchmarks.yml` | push to `main`/`dev` and PRs touching the package or benchmarks | Runs every benchmark once without timing so the suite cannot rot |
 | `changelog.yml` | PRs to `dev` | Runs the changelog tooling tests and requires a valid changelog fragment (or the `skip-changelog` label) |
 | `create-release-pr.yml` | Manual | Creates `release/vX.Y.Z` from `dev`, stamps the changelogs, opens the release PR to `main` |
 | `linked-issue.yml` | PRs, manual | Requires a linked issue (`Closes #N`, `Fixes #N`, `Resolves #N` or `Related to #N`); release PRs are exempt |

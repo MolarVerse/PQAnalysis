@@ -150,3 +150,13 @@ branch with ``--benchmark-compare=baseline.json``. Runtime assertions do not
 belong in CI because host load is variable. Every optimization must instead
 pass the compiled and fallback tests plus the relevant fixed-bit legacy oracle
 before its benchmark result is considered.
+
+Benchmarks that depend on a compiled kernel run twice, once as
+``[compiled]`` and once as ``[fallback]``. The ``kernel_impl`` fixture in
+``benchmarks/conftest.py`` wires the pure Python kernels in exactly as the
+importing modules do when the extensions are missing; the compiled variant is
+skipped when the extensions are not built. Benchmarks use seeded data, fixed
+sizes and paths relative to the repository, so they run from any working
+directory. The *Benchmark Smoke* workflow runs the whole suite once with
+``--benchmark-disable`` on pull requests that touch the package or the
+benchmarks, so a benchmark cannot silently break; it measures nothing.

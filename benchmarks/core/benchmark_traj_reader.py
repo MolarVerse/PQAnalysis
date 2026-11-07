@@ -1,6 +1,11 @@
+from pathlib import Path
+
 import pytest
 
 from PQAnalysis.io.traj_file import RawTrajectoryReader, TrajectoryReader
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+TEST_FILE = str(REPO_ROOT / "tests" / "data" / "traj2box" / "test.xyz")
 
 
 
@@ -24,23 +29,24 @@ def _write_raw_trajectory(path, n_frames=2000, n_atoms=100):
 
 
 @pytest.mark.benchmark(group="TrajectoryReader")
+@pytest.mark.usefixtures("kernel_impl")
 class BenchmarkTrajReader:
 
     def benchmark_read_2frames(self, benchmark):
         traj_reader = TrajectoryReader(
-            "tests/data/traj2box/test.xyz"
+            TEST_FILE
         )  # 2 frames
         benchmark(traj_reader.read)
 
     def benchmark_read_10frames(self, benchmark):
         traj_reader = TrajectoryReader(
-            ["tests/data/traj2box/test.xyz" for _ in range(5)]
+            [TEST_FILE for _ in range(5)]
         )  # 10 frames
         benchmark(traj_reader.read)
 
     def benchmark_windows(self, benchmark):
         traj_reader = TrajectoryReader(
-            ["tests/data/traj2box/test.xyz" for _ in range(5)]
+            [TEST_FILE for _ in range(5)]
         )
 
         def read_windows():
@@ -51,7 +57,7 @@ class BenchmarkTrajReader:
 
     def benchmark_window_half(self, benchmark):
         traj_reader = TrajectoryReader(
-            ["tests/data/traj2box/test.xyz" for _ in range(5)]
+            [TEST_FILE for _ in range(5)]
         )
 
         def read_windows():
@@ -64,7 +70,7 @@ class BenchmarkTrajReader:
 
     def benchmark_frames(self, benchmark):
         traj_reader = TrajectoryReader(
-            ["tests/data/traj2box/test.xyz" for _ in range(5)]
+            [TEST_FILE for _ in range(5)]
         )
 
         def read_frames():
@@ -75,7 +81,7 @@ class BenchmarkTrajReader:
 
     def benchmark_frame_half(self, benchmark):
         traj_reader = TrajectoryReader(
-            ["tests/data/traj2box/test.xyz" for _ in range(5)]
+            [TEST_FILE for _ in range(5)]
         )
 
         def read_frames():
@@ -89,6 +95,7 @@ class BenchmarkTrajReader:
 
 
 @pytest.mark.benchmark(group="RawTrajectoryReader")
+@pytest.mark.usefixtures("kernel_impl")
 class BenchmarkRawTrajReader:
 
     @staticmethod
