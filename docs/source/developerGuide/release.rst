@@ -9,8 +9,9 @@ Release boundary
 ----------------
 
 The release workflow matches every pushed tag. A tag push can publish to PyPI,
-create a GitHub release, sign release artifacts and update
-``CHANGELOG.md`` on ``main``.
+create a GitHub release with the notes of that version and sign release
+artifacts. It does not modify the repository: ``CHANGELOG.md`` and
+``DEV-CHANGELOG.md`` are prepared in the release pull request.
 
 .. warning::
 
@@ -20,11 +21,15 @@ create a GitHub release, sign release artifacts and update
 Pre-release checks
 ------------------
 
-1. Open a release pull request from ``dev`` to ``main``.
-2. Confirm that the release PR contains only reviewed integration changes.
-3. Run both runtime-type-checking configurations with ``bash pytest.sh``.
-4. Build the HTML documentation and link check with warnings as errors.
-5. Confirm the Conventional Commits history produces meaningful release notes.
+1. Merge ``main`` into ``dev`` when ``main`` has commits that ``dev`` lacks.
+2. Run the *Create Release PR* workflow with the intended ``vX.Y.Z`` version.
+   It creates ``release/vX.Y.Z`` from ``dev``, moves the changelog fragments
+   into ``CHANGELOG.md`` and ``DEV-CHANGELOG.md`` and opens the pull request
+   to ``main``.
+3. Confirm that the release PR contains only reviewed integration changes and
+   that the generated changelog entries are meaningful.
+4. Run both runtime-type-checking configurations with ``bash pytest.sh``.
+5. Build the HTML documentation and link check with warnings as errors.
 6. Verify the intended version is greater than every existing release tag.
 
 The local verification commands are:
@@ -37,6 +42,22 @@ The local verification commands are:
        -b html docs/source docs/build/html
    $ python -m sphinx -E -W --keep-going \
        -b linkcheck docs/source docs/build/linkcheck
+
+Changelog fragments
+-------------------
+
+Every regular pull request adds a fragment under ``changes/user/`` or
+``changes/developer/``; ``changes/README.md`` lists the categories. The
+*Changelog Fragment Check* workflow enforces this on pull requests to ``dev``.
+A maintainer can apply the ``skip-changelog`` label to a pull request that needs
+no entry. The release pull request consumes the fragments, so ``CHANGELOG.md``
+and ``DEV-CHANGELOG.md`` change only there.
+
+The *Create Release PR* workflow pushes with ``GITHUB_TOKEN`` unless the
+repository secret ``RELEASE_TOKEN`` is set. Pull requests and pushes made with
+``GITHUB_TOKEN`` do not start other workflows, so set ``RELEASE_TOKEN`` to a
+fine-grained token with contents and pull-request write access if the release
+pull request should run its checks automatically.
 
 Tagging
 -------
@@ -63,7 +84,7 @@ Do not consider the release complete until all of these are confirmed:
 * the release workflow succeeded;
 * the new version is available from PyPI;
 * the GitHub release contains the signed distribution artifacts;
-* ``CHANGELOG.md`` was updated on ``main``;
+* the GitHub release notes match the changelog entries of the release PR;
 * the documentation workflow deployed the verified ``main`` build;
 * a clean environment can install the published version and run
   ``pqanalysis --version``.

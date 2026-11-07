@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+User-visible changes to PQAnalysis are documented here. Build, CI, test, and
+implementation changes are documented in
+[DEV-CHANGELOG.md](DEV-CHANGELOG.md).
+
+## Next Release
+
 <!-- insertion marker -->
 ## [v1.7.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.7.1) - 2026-09-21
 

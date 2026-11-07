@@ -11,12 +11,13 @@ on:
 
 jobs:
   check-linked-issue:
-    # Not for a release pull request (dev -> main): it merges already
-    # reviewed work and closes no issue of its own. Every other pull request
-    # needs its issue.
+    # Not for a release pull request (release/vX.Y.Z or dev -> main): it
+    # merges already reviewed work and closes no issue of its own. Every other
+    # pull request needs its issue.
     if: >-
       github.event_name != 'pull_request' ||
-      !(github.head_ref == 'dev' && github.base_ref == 'main')
+      !(startsWith(github.head_ref, 'release/') ||
+      (github.head_ref == 'dev' && github.base_ref == 'main'))
     runs-on: ubuntu-24.04
     permissions:
       contents: read

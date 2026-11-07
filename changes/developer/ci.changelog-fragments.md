@@ -1,0 +1,1 @@
+- Add changelog fragments in changes/, a fragment check on pull requests to dev, a Create Release PR workflow and DEV-CHANGELOG.md; releases now stamp both changelogs from the fragments instead of running git-changelog after the tag push.

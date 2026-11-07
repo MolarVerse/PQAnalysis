@@ -112,6 +112,11 @@ merge ``dev`` into ``main``. Use a Conventional Commits PR title, such as
 ``fix(io): handle missing trajectory data``; the title becomes the squash-merge
 commit message.
 
+Add a changelog fragment under ``changes/user/`` or ``changes/developer/`` as
+described in ``changes/README.md``; the *Changelog Fragment Check* workflow
+fails otherwise. Do not edit ``CHANGELOG.md`` or ``DEV-CHANGELOG.md`` in a
+regular pull request.
+
 Enable the optional local commit-message hook with:
 
 .. code-block:: console
