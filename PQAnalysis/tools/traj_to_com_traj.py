@@ -6,14 +6,19 @@ import logging
 
 import numpy as np
 
+from beartype.typing import List
+
 from PQAnalysis import __package_name__
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system._center_of_mass import center_of_mass_groups
 from PQAnalysis.core import Atom
 from PQAnalysis.exceptions import PQValueError
-from PQAnalysis.topology import Topology
-from PQAnalysis.traj import Trajectory
+from PQAnalysis.io import TrajectoryReader, TrajectoryWriter, read_restart_file
+from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.topology import Selection, SelectionCompatible, Topology
+from PQAnalysis.traj import MDEngineFormat, Trajectory
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.types import PositiveInt
 from PQAnalysis.utils.custom_logging import setup_logger
 
 logger = logging.getLogger(__package_name__).getChild("traj_to_com_traj")
@@ -210,3 +215,112 @@ def _warn_about_placeholder_atoms(atoms, indices) -> None:
                 "mass of their molecule; exclude them with the selection."
             )
         )
+
+
+
+@runtime_type_checking
+def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+    trajectory_files: List[str],
+    output: str | None = None,
+    mode: FileWritingMode | str = "w",
+    md_format: MDEngineFormat | str = MDEngineFormat.PQ,
+    selection: SelectionCompatible = None,
+    use_full_atom_info: bool = False,
+    group: PositiveInt | None = None,
+    by_residue: bool = False,
+    restart_file: str | None = None,
+    moldescriptor_file: str | None = None,
+) -> None:
+    """
+    Reads xyz trajectory files, computes the center of mass trajectory with
+    :py:func:`traj_to_com_traj` and writes it to a file or to stdout.
+
+    For by_residue, the molecules are defined by a restart file together with
+    the moldescriptor file, as for the other analyses: the restart file gives
+    the molecule of every atom and the moldescriptor file the molecule types.
+    The molecule types may contain the WATER_TYPE and AMMONIA_TYPE lines of PQ.
+
+    Parameters
+    ----------
+    trajectory_files : list of str
+        The xyz trajectory file(s) to read.
+    output : str, optional
+        The output file. If not specified, the output is printed to stdout.
+    mode : FileWritingMode | str, optional
+        The writing mode, by default "w". The following modes are available:
+        - "w": write
+        - "a": append
+        - "o": overwrite
+    md_format : MDEngineFormat | str, optional
+        The format of the input trajectory. The default is MDEngineFormat.PQ.
+    selection : SelectionCompatible, optional
+        The atoms that define the centers of mass, as a selection string
+        (see :py:class:`~PQAnalysis.topology.selection.Selection`). If None,
+        all atoms are selected.
+    use_full_atom_info : bool, optional
+        Whether the selection uses the full atom information (atom type
+        names and elements) or the elements only, by default False.
+    group : PositiveInt, optional
+        The number of consecutive atoms for each center of mass. If neither
+        group nor by_residue is given, the center of mass of all selected
+        atoms is computed.
+    by_residue : bool, optional
+        Compute the center of mass of every molecule, by default False. Needs
+        restart_file and moldescriptor_file. Cannot be combined with group.
+    restart_file : str, optional
+        The restart file that defines the molecules of the system.
+    moldescriptor_file : str, optional
+        The moldescriptor file with the molecule types, needs restart_file.
+
+    Raises
+    ------
+    PQValueError
+        If moldescriptor_file is given without restart_file, if the selection
+        contains no atoms or for the errors of :py:func:`traj_to_com_traj`.
+    """
+
+    if moldescriptor_file is not None and restart_file is None:
+        logger.error(
+            "The moldescriptor file needs a restart file that defines the "
+            "molecules.",
+            exception=PQValueError,
+        )
+
+    topology = None
+    if restart_file is not None:
+        topology = read_restart_file(
+            restart_file,
+            moldescriptor_file,
+            md_engine_format=md_format,
+        ).topology
+
+    trajectory = TrajectoryReader(
+        trajectory_files,
+        md_format=md_format,
+        topology=topology,
+    ).read()
+
+    indices = None
+    if selection is not None and len(trajectory) > 0:
+        indices = Selection(selection).select(
+            trajectory.topology, use_full_atom_info
+        )
+
+        if len(indices) == 0:
+            logger.error(
+                "The selection does not select any atoms.",
+                exception=PQValueError,
+            )
+
+    com_traj = traj_to_com_traj(
+        trajectory,
+        selection=indices,
+        group=group,
+        by_residue=by_residue,
+    )
+
+    TrajectoryWriter(
+        filename=output,
+        engine_format=md_format,
+        mode=mode,
+    ).write(com_traj)

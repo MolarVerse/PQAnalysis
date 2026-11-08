@@ -370,3 +370,87 @@ class TestByResidueValidation:
 
         assert com_traj[0].atoms[0].name == "WAT"
         assert not com_traj[0].topology.residues
+
+
+class TestTraj2COM:
+
+    """Tests of the file based traj2com function."""
+
+    @staticmethod
+    def write_xyz(filename, frames=2):
+        with open(filename, "w", encoding="utf-8") as file:
+            for frame in range(frames):
+                shift = 0.1 * frame
+                print("4 10.0 10.0 10.0 90.0 90.0 90.0\n", file=file)
+                print(f"C {shift} 0.0 0.0", file=file)
+                print(f"C {2.0 + shift} 0.0 0.0", file=file)
+                print(f"H {shift} 2.0 0.0", file=file)
+                print(f"H {shift} 4.0 0.0", file=file)
+
+    @staticmethod
+    def read_positions(filename):
+        from PQAnalysis.io import TrajectoryReader
+
+        return [frame.pos for frame in TrajectoryReader(filename).read()]
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_groups_of_atoms(self):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz")
+
+        traj2com(["traj.xyz"], output="com.xyz", group=2)
+
+        first, second = self.read_positions("com.xyz")
+        assert np.allclose(first, [[1.0, 0, 0], [0, 3.0, 0]], atol=1e-6)
+        assert np.allclose(second, [[1.1, 0, 0], [0.1, 3.0, 0]], atol=1e-6)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_selection_string(self):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz", frames=1)
+
+        traj2com(["traj.xyz"], output="com.xyz", selection="C")
+
+        (positions,) = self.read_positions("com.xyz")
+        assert np.allclose(positions, [[1.0, 0, 0]], atol=1e-6)
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_stdout_without_output_file(self, capsys):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz", frames=1)
+
+        traj2com(["traj.xyz"], selection="H")
+
+        assert capsys.readouterr().out.splitlines()[0].split()[0] == "1"
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_an_empty_selection_raises(self):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz", frames=1)
+
+        with pytest.raises(PQValueError, match="does not select any atoms"):
+            traj2com(["traj.xyz"], output="com.xyz", selection="N")
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_a_moldescriptor_file_needs_a_restart_file(self):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz", frames=1)
+
+        with pytest.raises(PQValueError, match="needs a restart file"):
+            traj2com(
+                ["traj.xyz"], output="com.xyz", moldescriptor_file="mol.dat"
+            )
+
+    @pytest.mark.usefixtures("tmpdir")
+    def test_by_residue_without_molecules_raises(self):
+        from PQAnalysis.tools import traj2com
+
+        self.write_xyz("traj.xyz", frames=1)
+
+        with pytest.raises(PQValueError, match="no residues"):
+            traj2com(["traj.xyz"], output="com.xyz", by_residue=True)
