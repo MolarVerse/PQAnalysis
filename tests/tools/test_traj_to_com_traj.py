@@ -1,3 +1,5 @@
+import logging
+
 import numpy as np
 import pytest
 
@@ -6,6 +8,10 @@ from PQAnalysis.tools import traj_to_com_traj
 from PQAnalysis.traj import Trajectory
 from PQAnalysis.core import Atom, Cell, Element, Residue
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system.exceptions import (
+    AtomicSystemError,
+    AtomicSystemMassError,
+)
 from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.topology import Topology
 
@@ -171,7 +177,7 @@ class TestByResidue:
         for com_frame, frame in zip(com_traj, traj):
             assert com_frame.n_atoms == 3
             assert [atom.name for atom in com_frame.atoms] == [
-                "OHH", "CHHHH", "OHH"
+                "WAT", "MET", "WAT"
             ]
             for index, atoms in enumerate(molecules):
                 self.assert_equal_modulo_box(
@@ -208,8 +214,9 @@ class TestByResidue:
         by_array = traj_to_com_traj(traj, selection=hydrogens, by_residue=True)
         by_atom = traj_to_com_traj(traj, selection=Atom("H"), by_residue=True)
 
+        # named by the molecule, not by the selected atoms
         assert [atom.name for atom in by_array[0].atoms] == [
-            "HH", "HHHH", "HH"
+            "WAT", "MET", "WAT"
         ]
         assert np.allclose(by_array[0].pos, by_atom[0].pos)
         for index, atoms in enumerate([[1, 2], [4, 5, 6, 7], [9, 10]]):
@@ -228,7 +235,7 @@ class TestByResidue:
         com_traj = traj_to_com_traj(traj, selection=Atom("C"), by_residue=True)
 
         assert com_traj[0].n_atoms == 1
-        assert com_traj[0].atoms[0].name == "C"
+        assert com_traj[0].atoms[0].name == "MET"
         self.assert_equal_modulo_box(com_traj[0].pos[0], traj[0].pos[3])
 
     def test_selection_by_slice_and_index(self):
@@ -260,3 +267,106 @@ class TestByResidue:
 
         with pytest.raises(PQValueError, match="atoms per frame"):
             traj_to_com_traj(short, by_residue=True, topology=self.topology())
+
+
+class TestByResidueValidation:
+
+    """
+    Wrong results that must fail loudly: molecules larger than half of the
+    box, placeholder masses and atoms without a mass.
+    """
+
+    @staticmethod
+    def system(
+        elements, positions, cell, residue_name="MOL", atom_names=None
+    ):
+        residue = Residue(
+            name=residue_name,
+            elements=[Element(name) for name in elements],
+            residue_id=1,
+            total_charge=0,
+            atom_types=np.arange(len(elements)),
+            partial_charges=np.zeros(len(elements)),
+        )
+        topology = Topology(
+            atoms=[
+                Atom(name) if atom_names is None else Atom(
+                    name, use_guess_element=False
+                ) for name in (elements if atom_names is None else atom_names)
+            ],
+            residue_ids=np.ones(len(elements), dtype=int),
+            reference_residues=[residue],
+        )
+
+        return AtomicSystem(
+            topology=topology, pos=np.array(positions, float), cell=cell
+        )
+
+    def test_a_molecule_larger_than_half_the_box_raises(self):
+        # 6.4 A long molecule in a 10 A box: its atoms cannot be told apart
+        # from their periodic images (without the check the center of mass
+        # is -0.13 A instead of 3.2 A)
+        frame = self.system("CCC", [[0, 0, 0], [3.2, 0, 0], [6.4, 0, 0]], Cell(10, 10, 10))
+
+        with pytest.raises(AtomicSystemError, match="spans half of the box"):
+            traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+    def test_a_molecule_smaller_than_half_the_box_is_accepted(self):
+        frame = self.system("CCC", [[0, 0, 0], [2.4, 0, 0], [4.8, 0, 0]], Cell(10, 10, 10))
+
+        com_traj = traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+        assert np.allclose(com_traj[0].pos, [[2.4, 0, 0]])
+
+    def test_a_large_molecule_is_fine_in_a_vacuum_cell(self):
+        frame = self.system("CCC", [[0, 0, 0], [30, 0, 0], [60, 0, 0]], Cell())
+
+        com_traj = traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+        assert np.allclose(com_traj[0].pos, [[30, 0, 0]])
+
+    def test_group_mode_does_not_check_the_extent(self):
+        frame = self.system("CCC", [[0, 0, 0], [3.2, 0, 0], [6.4, 0, 0]], Cell(10, 10, 10))
+
+        com_traj = traj_to_com_traj(Trajectory([frame]), group=3)
+
+        assert com_traj[0].n_atoms == 1
+
+    def test_atoms_with_a_placeholder_mass_log_a_warning(self, caplog):
+        frame = self.system("OHX", [[0, 0, 0], [1, 0, 0], [0, 1, 0]], Cell(10, 10, 10))
+
+        with caplog.at_level(logging.WARNING):
+            traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+        assert "placeholder mass (x)" in caplog.text.lower()
+
+    def test_the_placeholder_warning_is_not_logged_when_they_are_excluded(
+        self, caplog
+    ):
+        frame = self.system("OHX", [[0, 0, 0], [1, 0, 0], [0, 1, 0]], Cell(10, 10, 10))
+
+        with caplog.at_level(logging.WARNING):
+            traj_to_com_traj(
+                Trajectory([frame]), selection=slice(0, 2), by_residue=True
+            )
+
+        assert "placeholder" not in caplog.text
+
+    def test_atoms_without_a_mass_raise(self):
+        frame = self.system(
+            "OHH",
+            [[0, 0, 0], [1, 0, 0], [0, 1, 0]],
+            Cell(10, 10, 10),
+            atom_names=["O1", "H1", "H2"],
+        )
+
+        with pytest.raises(AtomicSystemMassError):
+            traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+    def test_the_result_carries_no_residues(self):
+        frame = self.system("OHH", [[0, 0, 0], [1, 0, 0], [0, 1, 0]], Cell(10, 10, 10), "WAT")
+
+        com_traj = traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+        assert com_traj[0].atoms[0].name == "WAT"
+        assert not com_traj[0].topology.residues
