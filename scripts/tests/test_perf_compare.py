@@ -49,6 +49,20 @@ class ClassifyTests(unittest.TestCase):
         )
 
 
+class TenPercentLimitTests(unittest.TestCase):
+    def verdict(self, ratios):
+        return PERF.classify(ratios, 0.01, 0.01 * ratios[0], 1.10, MIN_TIME)
+
+    def test_a_consistent_slowdown_above_ten_percent_is_slower(self):
+        self.assertEqual("slower", self.verdict([1.12, 1.15, 1.11]))
+
+    def test_a_slowdown_below_ten_percent_is_the_same(self):
+        self.assertEqual("same", self.verdict([1.08, 1.09, 1.07]))
+
+    def test_one_round_below_half_the_limit_prevents_a_regression(self):
+        self.assertEqual("same", self.verdict([1.15, 1.14, 1.04]))
+
+
 class CompareTests(unittest.TestCase):
     def test_rounds_are_paired_and_summarized(self):
         base = [{"a": 0.010}, {"a": 0.012}, {"a": 0.011}]
@@ -113,7 +127,7 @@ class ReportTests(unittest.TestCase):
 
         report = PERF.render_markdown(results, THRESHOLD, 3)
 
-        self.assertIn("1 of 2 benchmarks are slower than 1.5x", report)
+        self.assertIn("1 of 2 benchmarks are slower than +50.0%", report)
         self.assertLess(report.index("`slow`"), report.index("`fast`"))
 
     def test_report_without_regressions_says_so(self):
@@ -123,7 +137,28 @@ class ReportTests(unittest.TestCase):
 
         report = PERF.render_markdown(results, THRESHOLD, 3)
 
-        self.assertIn("No benchmark is slower than 1.5x", report)
+        self.assertIn("No benchmark is slower than +50.0%", report)
+
+    def test_changes_are_reported_as_signed_percentages(self):
+        results = PERF.compare(
+            [{"up": 0.010, "down": 0.010, "flat": 0.010}] * 3,
+            [{"up": 0.0112, "down": 0.0095, "flat": 0.010}] * 3,
+            1.10,
+            MIN_TIME,
+        )
+
+        report = PERF.render_markdown(results, 1.10, 3)
+
+        self.assertIn("| +12.0% | slower |", report)
+        self.assertIn("| -5.0% | same |", report)
+        self.assertIn("| +0.0% | same |", report)
+        self.assertIn("slower than +10.0% compared with the base", report)
+
+    def test_format_change(self):
+        self.assertEqual("+3.2%", PERF.format_change(1.032))
+        self.assertEqual("-10.0%", PERF.format_change(0.9))
+        self.assertEqual("+0.0%", PERF.format_change(1.0))
+        self.assertEqual("+0.0%", PERF.format_change(0.9996))
 
     def test_format_time_picks_a_unit(self):
         self.assertEqual("1.5 s", PERF.format_time(1.5))

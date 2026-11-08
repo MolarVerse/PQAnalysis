@@ -34,10 +34,10 @@ on:
         required: true
         default: dev
         type: string
-      threshold:
-        description: Head/base ratio above which a benchmark is slower
+      threshold_percent:
+        description: Slowdown in percent above which a benchmark is slower
         required: false
-        default: '1.5'
+        default: '10'
         type: string
 
 permissions:
@@ -48,7 +48,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PERF_THRESHOLD: ${{ inputs.threshold || '1.5' }}
+  PERF_THRESHOLD_PERCENT: ${{ inputs.threshold_percent || '10' }}
 
 jobs:
   compare:
@@ -106,7 +106,7 @@ jobs:
           head-venv/bin/python head/scripts/perf_compare.py \
             --base-python "$PWD/base-venv/bin/python" --base-src "$PWD/base" \
             --head-python "$PWD/head-venv/bin/python" --head-src "$PWD/head" \
-            --threshold "$PERF_THRESHOLD" --report perf_report.md "${extra[@]}"
+            --threshold-percent "$PERF_THRESHOLD_PERCENT" --report perf_report.md "${extra[@]}"
 
       - name: Publish the report
         if: always()

@@ -166,7 +166,8 @@ The *Performance* workflow times the base of a pull request and its head on the
 same runner. ``scripts/perf_compare.py`` installs both revisions in separate
 environments, runs the benchmark suite of the head against both installations
 and alternates base and head for three rounds. A benchmark is reported as
-slower when the median head/base ratio and every round exceed 1.5; benchmarks
+slower when its median change exceeds +10 % and every round shows at least
++5 %; the report lists the signed change of every benchmark. Benchmarks
 that stay under 100 microseconds on both sides are listed but not judged. The
 check fails on a slower benchmark. The table is written to the job summary,
 uploaded as the ``perf-report`` artifact and kept as one comment on the pull
@@ -178,6 +179,6 @@ but lets the check pass. The same comparison runs locally:
 
    $ python scripts/perf_compare.py \
        --base-python base-venv/bin/python --base-src ../base \
-       --head-python head-venv/bin/python --head-src . --threshold 1.5
+       --head-python head-venv/bin/python --head-src . --threshold-percent 10
 
 Release pull requests (``release/*`` and ``dev`` to ``main``) are not timed.

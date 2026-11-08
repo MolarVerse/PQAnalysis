@@ -5,13 +5,13 @@ Both revisions are installed in their own environment on the same machine.
 The benchmark suite of the *head* revision is run against both installations,
 alternating base and head for several rounds, so that slow drift of the
 machine hits both sides alike. A benchmark is reported as slower only if the
-median of the per-round head/base ratios exceeds the threshold and every
-single round points the same way; benchmarks that are too fast to be timed
+median change of the per-round head/base ratios exceeds the threshold (+10 %
+by default) and every single round shows at least half of it; benchmarks that are too fast to be timed
 reliably are reported but never gate.
 
 Usage:
     perf_compare.py --base-python BASE/bin/python --base-src BASE_SRC \
-        --head-python HEAD/bin/python --head-src HEAD_SRC [--threshold 1.5]
+        --head-python HEAD/bin/python --head-src HEAD_SRC [--threshold-percent 10]
 """
 
 import argparse
@@ -22,7 +22,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-DEFAULT_THRESHOLD = 1.5
+DEFAULT_THRESHOLD_PERCENT = 10.0
 DEFAULT_ROUNDS = 3
 DEFAULT_MIN_TIME = 1e-4
 
@@ -102,6 +102,12 @@ def compare(base_rounds, head_rounds, threshold, min_time):
     return results
 
 
+def format_change(ratio):
+    """Format a head/base ratio as a signed percentage change."""
+    change = round((ratio - 1.0) * 100.0, 1) + 0.0  # no "-0.0"
+    return f"{change:+.1f}%"
+
+
 def format_time(seconds):
     """Format seconds with a readable unit."""
     for unit, factor in (("s", 1.0), ("ms", 1e-3), ("us", 1e-6)):
@@ -116,6 +122,9 @@ def render_markdown(results, threshold, rounds, header=None):
     faster = [r for r in results if r["verdict"] == "faster"]
     compared = [r for r in results if "ratio" in r]
 
+    limit = format_change(threshold)
+    half = format_change(1.0 + (threshold - 1.0) / 2.0)
+
     lines = ["## Performance: base vs head", ""]
     if header:
         lines.extend([header, ""])
@@ -123,20 +132,22 @@ def render_markdown(results, threshold, rounds, header=None):
     if slower:
         lines.append(
             f"**{len(slower)} of {len(compared)} benchmarks are slower than "
-            f"{threshold:g}x the base.**"
+            f"{limit} compared with the base.**"
         )
     else:
         lines.append(
-            f"No benchmark is slower than {threshold:g}x the base "
+            f"No benchmark is slower than {limit} compared with the base "
             f"({len(compared)} compared, {len(faster)} faster)."
         )
     lines.extend([
         "",
-        f"Median of {rounds} interleaved rounds on the same runner; a "
-        "benchmark counts as slower only if the median ratio and every "
-        "round exceed the threshold. Benchmarks that stay under 100 us on both sides are not gated.",
+        f"Change is head versus base, the median of {rounds} interleaved "
+        f"rounds on the same runner. A benchmark counts as slower only if its "
+        f"median change exceeds {limit} and every round shows at least "
+        f"{half}. Benchmarks that stay under 100 us on both sides are not "
+        "gated.",
         "",
-        "| Benchmark | Base | Head | Head / base | Verdict |",
+        "| Benchmark | Base | Head | Change | Verdict |",
         "| --- | ---: | ---: | ---: | --- |",
     ])
 
@@ -148,7 +159,7 @@ def render_markdown(results, threshold, rounds, header=None):
         if "ratio" in result:
             lines.append(
                 f"| `{result['name']}` | {format_time(result['base'])} | "
-                f"{format_time(result['head'])} | {result['ratio']:.2f} | "
+                f"{format_time(result['head'])} | {format_change(result['ratio'])} | "
                 f"{result['verdict']} |"
             )
         else:
@@ -196,7 +207,12 @@ def main():
     parser.add_argument("--base-src", required=True)
     parser.add_argument("--head-python", required=True)
     parser.add_argument("--head-src", required=True)
-    parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
+    parser.add_argument(
+        "--threshold-percent",
+        type=float,
+        default=DEFAULT_THRESHOLD_PERCENT,
+        help="slowdown in percent above which a benchmark counts as slower",
+    )
     parser.add_argument("--rounds", type=int, default=DEFAULT_ROUNDS)
     parser.add_argument("--min-time", type=float, default=DEFAULT_MIN_TIME)
     parser.add_argument("--report", default="perf_report.md")
@@ -206,6 +222,8 @@ def main():
         help="always exit 0 (the report still lists regressions)",
     )
     args = parser.parse_args()
+
+    threshold = 1.0 + args.threshold_percent / 100.0
 
     base_src = Path(args.base_src).resolve()
     head_src = Path(args.head_src).resolve()
@@ -241,9 +259,9 @@ def main():
                 )
 
     results = compare(
-        base_rounds, head_rounds, args.threshold, args.min_time
+        base_rounds, head_rounds, threshold, args.min_time
     )
-    report = render_markdown(results, args.threshold, args.rounds)
+    report = render_markdown(results, threshold, args.rounds)
     Path(args.report).write_text(report, encoding="utf-8")
     print(report)
 
