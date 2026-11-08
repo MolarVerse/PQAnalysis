@@ -1,0 +1,1 @@
+- Make the add_molecules integration tests assert their results: the framework and box must match the reference, the placed molecule is checked for names, rigid shape and the distance cutoff, and the stale reference restart file was regenerated.
