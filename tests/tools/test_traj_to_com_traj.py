@@ -1,10 +1,13 @@
 import numpy as np
+import pytest
 
 from PQAnalysis.tools import traj_to_com_traj
 
 from PQAnalysis.traj import Trajectory
-from PQAnalysis.core import Atom
+from PQAnalysis.core import Atom, Cell, Element, Residue
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.topology import Topology
 
 
 
@@ -77,3 +80,183 @@ def test_traj_to_com_traj():
         use_guess_element=False)
     ]
     assert traj_output[1].combined_name == 'CCHH'
+
+
+
+class TestByResidue:
+
+    """
+    Tests of the by_residue option: water, methane, water in a periodic box.
+    Molecules of different sizes cannot be grouped by a number of atoms.
+    """
+
+    CELL = Cell(10, 10, 10)
+
+    @staticmethod
+    def topology():
+        residues = [
+            Residue(
+                name="WAT",
+                elements=[Element("O"), Element("H"), Element("H")],
+                residue_id=1,
+                total_charge=0,
+                atom_types=np.array([0, 1, 1]),
+                partial_charges=np.array([0, 0, 0]),
+            ),
+            Residue(
+                name="MET",
+                elements=[Element("C")] + [Element("H")] * 4,
+                residue_id=2,
+                total_charge=0,
+                atom_types=np.array([0, 1, 1, 1, 1]),
+                partial_charges=np.zeros(5),
+            ),
+        ]
+        names = "OHH" + "CHHHH" + "OHH"
+
+        return Topology(
+            atoms=[Atom(name) for name in names],
+            residue_ids=np.array([1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1]),
+            reference_residues=residues,
+        )
+
+    def positions(self, shift=0.0):
+        water = np.array([[0, 0, 0], [0.96, 0, 0], [-0.24, 0.93, 0]])
+        methane = np.array(
+            [[0, 0, 0], [0.63, 0.63, 0.63], [-0.63, -0.63, 0.63],
+             [-0.63, 0.63, -0.63], [0.63, -0.63, -0.63]]
+        )
+        # the first water is split by the x boundary, the methane by y
+        pos = np.vstack([
+            water + [4.7, 1.0, 1.0],
+            methane + [1.0, 4.8, -2.0],
+            water + [-2.0, -3.0, 3.0],
+        ]) + shift
+
+        return self.CELL.image(pos)
+
+    def trajectory(self, n_frames=2, with_topology=True):
+        topology = self.topology()
+        frames = [
+            AtomicSystem(
+                topology=topology if with_topology else None,
+                atoms=None if with_topology else topology.atoms,
+                pos=self.positions(shift=0.1 * frame),
+                cell=self.CELL,
+            ) for frame in range(n_frames)
+        ]
+
+        return Trajectory(frames)
+
+    @staticmethod
+    def expected(positions, atoms, cell):
+        masses = np.array([atom.mass for atom in atoms])
+        relative = cell.image(positions - positions[0])
+        center = positions[0] + (
+            relative * masses[:, None]
+        ).sum(axis=0) / masses.sum()
+
+        return center
+
+    def assert_equal_modulo_box(self, actual, expected):
+        assert np.abs(self.CELL.image(actual - expected)).max() < 1e-10
+
+    def test_every_molecule_gets_its_center_of_mass(self):
+        traj = self.trajectory()
+        molecules = [slice(0, 3), slice(3, 8), slice(8, 11)]
+
+        com_traj = traj_to_com_traj(traj, by_residue=True)
+
+        assert len(com_traj) == 2
+        for com_frame, frame in zip(com_traj, traj):
+            assert com_frame.n_atoms == 3
+            assert [atom.name for atom in com_frame.atoms] == [
+                "OHH", "CHHHH", "OHH"
+            ]
+            for index, atoms in enumerate(molecules):
+                self.assert_equal_modulo_box(
+                    com_frame.pos[index],
+                    self.expected(frame.pos[atoms], frame.atoms[atoms], self.CELL),
+                )
+
+    def test_molecules_split_by_the_boundary_are_handled(self):
+        frame = self.trajectory(1)[0]
+
+        # without imaging the water at x = 4.7 would have its H at -4.34
+        assert frame.pos[1, 0] < 0 < frame.pos[0, 0]
+
+        com = traj_to_com_traj(Trajectory([frame]), by_residue=True)[0].pos[0]
+
+        assert abs(com[0]) > 4.5  # next to the boundary, not near the middle
+
+    def test_the_topology_argument_replaces_the_one_of_the_trajectory(self):
+        with_topology = traj_to_com_traj(self.trajectory(), by_residue=True)
+        bare = self.trajectory(with_topology=False)
+
+        explicit = traj_to_com_traj(
+            bare, by_residue=True, topology=self.topology()
+        )
+
+        for a, b in zip(with_topology, explicit):
+            assert np.allclose(a.pos, b.pos)
+
+    def test_the_selection_picks_the_atoms_of_every_molecule(self):
+        traj = self.trajectory(1)
+        frame = traj[0]
+        hydrogens = np.array([1, 2, 4, 5, 6, 7, 9, 10])
+
+        by_array = traj_to_com_traj(traj, selection=hydrogens, by_residue=True)
+        by_atom = traj_to_com_traj(traj, selection=Atom("H"), by_residue=True)
+
+        assert [atom.name for atom in by_array[0].atoms] == [
+            "HH", "HHHH", "HH"
+        ]
+        assert np.allclose(by_array[0].pos, by_atom[0].pos)
+        for index, atoms in enumerate([[1, 2], [4, 5, 6, 7], [9, 10]]):
+            self.assert_equal_modulo_box(
+                by_array[0].pos[index],
+                self.expected(
+                    frame.pos[atoms],
+                    [frame.atoms[i] for i in atoms],
+                    self.CELL,
+                ),
+            )
+
+    def test_molecules_without_a_selected_atom_are_left_out(self):
+        traj = self.trajectory(1)
+
+        com_traj = traj_to_com_traj(traj, selection=Atom("C"), by_residue=True)
+
+        assert com_traj[0].n_atoms == 1
+        assert com_traj[0].atoms[0].name == "C"
+        self.assert_equal_modulo_box(com_traj[0].pos[0], traj[0].pos[3])
+
+    def test_selection_by_slice_and_index(self):
+        traj = self.trajectory(1)
+
+        sliced = traj_to_com_traj(traj, selection=slice(0, 8), by_residue=True)
+        single = traj_to_com_traj(traj, selection=3, by_residue=True)
+
+        assert sliced[0].n_atoms == 2
+        assert single[0].n_atoms == 1
+        self.assert_equal_modulo_box(single[0].pos[0], traj[0].pos[3])
+
+    def test_an_empty_trajectory_gives_an_empty_trajectory(self):
+        assert traj_to_com_traj(Trajectory(), by_residue=True) == Trajectory()
+
+    def test_group_and_by_residue_cannot_be_combined(self):
+        with pytest.raises(PQValueError, match="cannot be combined"):
+            traj_to_com_traj(self.trajectory(), group=3, by_residue=True)
+
+    def test_a_topology_without_residues_raises(self):
+        bare = self.trajectory(with_topology=False)
+
+        with pytest.raises(PQValueError, match="no residues"):
+            traj_to_com_traj(bare, by_residue=True)
+
+    def test_a_topology_with_another_number_of_atoms_raises(self):
+        traj = self.trajectory()[0:1]
+        short = Trajectory([traj[0][0:8]])
+
+        with pytest.raises(PQValueError, match="atoms per frame"):
+            traj_to_com_traj(short, by_residue=True, topology=self.topology())
