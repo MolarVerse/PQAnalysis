@@ -7,6 +7,10 @@ name: Performance
 #
 # A pull request with an intended slowdown carries the label
 # perf-regression-accepted: the report is still written, the check passes.
+#
+# The report is also kept as one sticky comment on the pull request, updated on
+# every run. Pull requests from forks get no comment (their token is read-only);
+# the report is in the job summary and the perf-report artifact.
 on:
   pull_request:
     branches:
@@ -58,6 +62,9 @@ jobs:
       (github.head_ref == 'dev' && github.base_ref == 'main')))
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout head
@@ -106,6 +113,43 @@ jobs:
         run: |
           if [[ -f perf_report.md ]]; then
             cat perf_report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Comment on the pull request
+        if: >-
+          always() && github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MARKER: '<!-- perf-report -->'
+        run: |
+          {
+            echo "$MARKER"
+            if [[ -f perf_report.md ]]; then
+              cat perf_report.md
+            else
+              echo "## Performance: base vs head"
+              echo
+              echo "The comparison did not produce a report."
+            fi
+            echo
+            echo "[Workflow run]($RUN_URL)"
+          } > comment.md
+
+          comment_id="$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | sed -n 1p)"
+
+          if [[ -n "$comment_id" ]]; then
+            gh api --method PATCH \
+              "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
+              -F body=@comment.md >/dev/null
+          else
+            gh api --method POST \
+              "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
+              -F body=@comment.md >/dev/null
           fi
 
       - name: Upload the report

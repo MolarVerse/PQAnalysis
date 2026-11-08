@@ -168,8 +168,9 @@ environments, runs the benchmark suite of the head against both installations
 and alternates base and head for three rounds. A benchmark is reported as
 slower when the median head/base ratio and every round exceed 1.5; benchmarks
 that stay under 100 microseconds on both sides are listed but not judged. The
-check fails on a slower benchmark, and the table is written to the job summary
-and uploaded as the ``perf-report`` artifact. A pull request with an intended
+check fails on a slower benchmark. The table is written to the job summary,
+uploaded as the ``perf-report`` artifact and kept as one comment on the pull
+request that each run updates (pull requests from forks get no comment). A pull request with an intended
 slowdown carries the ``perf-regression-accepted`` label, which keeps the report
 but lets the check pass. The same comparison runs locally:
 

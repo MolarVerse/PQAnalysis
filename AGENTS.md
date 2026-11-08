@@ -141,7 +141,7 @@ Treat as compatibility surfaces: non-underscored names imported by a package `__
 | `pr-title.yml` | PR opened/edited/synchronized | Validates the Conventional Commits PR title |
 | `release.yml` | any pushed tag | Builds the sdist, publishes to PyPI, creates the signed GitHub release with notes taken from the prepared changelogs |
 | `benchmarks.yml` | push to `main`/`dev` and PRs touching the package or benchmarks | Runs every benchmark once without timing so the suite cannot rot |
-| `perf.yml` | PRs touching the package or benchmarks, manual | Times base and head on one runner (`scripts/perf_compare.py`), fails if a benchmark is more than 1.5x slower; maintainers can set `perf-regression-accepted` |
+| `perf.yml` | PRs touching the package or benchmarks, manual | Times base and head on one runner (`scripts/perf_compare.py`), fails if a benchmark is more than 1.5x slower and keeps the table in a sticky PR comment; maintainers can set `perf-regression-accepted` |
 | `changelog.yml` | PRs to `dev` | Runs the changelog tooling tests and requires a valid changelog fragment (or the `skip-changelog` label) |
 | `create-release-pr.yml` | Manual | Creates `release/vX.Y.Z` from `dev`, stamps the changelogs, opens the release PR to `main` |
 | `linked-issue.yml` | PRs, manual | Requires a linked issue (`Closes #N`, `Fixes #N`, `Resolves #N` or `Related to #N`); release PRs are exempt |
