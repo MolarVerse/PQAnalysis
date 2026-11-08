@@ -14,6 +14,7 @@ import pytest
 
 from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.core import Atom
+from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.io import (
     TrajectoryReader,
     TrajectoryWriter,
@@ -261,3 +262,39 @@ class TestWaterBox:
         assert read_back[0].n_atoms == self.N_MOLECULES
         assert read_back[0].cell == com_traj[0].cell
         assert np.allclose(read_back[0].pos, com_traj[0].pos, atol=1e-5)
+
+    def test_by_residue_gives_the_same_as_groups_of_three(self, water_box):
+        system, (names, positions, box) = water_box
+        traj = Trajectory([system])
+
+        by_residue = traj_to_com_traj(traj, by_residue=True)[0]
+        by_group = traj_to_com_traj(traj, group=3)[0]
+
+        assert by_residue.n_atoms == self.N_MOLECULES
+        assert by_residue.atoms == by_group.atoms
+        assert np.allclose(by_residue.pos, by_group.pos, atol=1e-12)
+        assert_equal_modulo_box(
+            by_residue.pos, reference_coms(names, positions, box, 3), box
+        )
+
+    def test_by_residue_for_an_xyz_trajectory_with_the_restart_topology(
+        self, water_box
+    ):
+        # the usual workflow: a trajectory without molecule information (xyz)
+        # and the topology from the restart file and the moldescriptor file
+        system, _ = water_box
+        TrajectoryWriter("water.xyz").write(Trajectory([system]))
+        traj = TrajectoryReader("water.xyz").read()
+
+        with pytest.raises(PQValueError, match="no residues"):
+            traj_to_com_traj(traj, by_residue=True)
+
+        com_traj = traj_to_com_traj(
+            traj, by_residue=True, topology=system.topology
+        )
+        expected = traj_to_com_traj(Trajectory([system]), by_residue=True)
+
+        assert com_traj[0].n_atoms == self.N_MOLECULES
+        assert_equal_modulo_box(
+            com_traj[0].pos, expected[0].pos, expected[0].cell.box_lengths, atol=1e-4
+        )
