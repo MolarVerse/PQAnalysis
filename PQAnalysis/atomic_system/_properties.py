@@ -11,6 +11,7 @@ from beartype.typing import List
 from PQAnalysis.core import Cell, CustomElement
 from PQAnalysis.types import Np1DNumberArray
 
+from ._center_of_mass import center_of_mass_groups
 from ._decorators import check_atoms_has_mass, check_atoms_pos
 from .exceptions import AtomicSystemError
 
@@ -81,15 +82,12 @@ class _PropertiesMixin:
         if self.n_atoms == 0:
             return np.zeros(3)
 
-        relative_pos = self.cell.image(self.pos - self.pos[0]) + self.pos[0]
-
-        weighted_average_pos = np.sum(
-            relative_pos * self.atomic_masses[:, None], axis=0
-        ) / self.mass
-
-        center_of_mass = self.cell.image(weighted_average_pos)
-
-        return center_of_mass
+        return center_of_mass_groups(
+            self.pos,
+            self.atomic_masses,
+            np.zeros(self.n_atoms, dtype=int),
+            self.cell,
+        )[0]
 
     @property
     def combined_name(self) -> str:

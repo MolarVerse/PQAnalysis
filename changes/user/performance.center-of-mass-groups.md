@@ -1,0 +1,1 @@
+- Speed up traj_to_com_traj, AtomicSystem.compute_com_atomic_system and AtomicSystem.center_of_mass_residues by computing the centers of mass of all groups in one vectorized step; on 2000 water molecules about 75 times faster (1.7 s and 2.6 s down to about 20 ms and 35 ms). Results are unchanged.
