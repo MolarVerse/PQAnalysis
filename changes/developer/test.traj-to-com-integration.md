@@ -1,0 +1,1 @@
+- Add an integration test of traj_to_com_traj on the UMCM-9 example: grouped and whole-selection centers of mass are compared with an independent calculation, written and read back, and the group-size error is checked.
