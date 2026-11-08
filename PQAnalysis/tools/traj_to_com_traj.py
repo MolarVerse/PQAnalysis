@@ -19,6 +19,10 @@ from PQAnalysis.utils.custom_logging import setup_logger
 logger = logging.getLogger(__package_name__).getChild("traj_to_com_traj")
 logger = setup_logger(logger)
 
+#: Elements from this atomic number on (X, Q, Cav, Sup) are placeholders
+#: with a made-up mass, not real atoms.
+PLACEHOLDER_ATOMIC_NUMBER = 999
+
 
 
 # TODO: add atom to element mapper if atom name not element names
@@ -43,7 +47,15 @@ def traj_to_com_traj(
     works for molecules of different sizes and types. The center of mass of
     a molecule is computed from its selected atoms; molecules without a
     selected atom are left out. The result has one atom per molecule, ordered
-    by the residue number, named by the names of the selected atoms.
+    by the residue number and named by the residue name of the molecule
+    (e.g. the name given in the moldescriptor file). It carries no residues
+    itself. A molecule has to be smaller than half of the box in every
+    direction; an error is raised for molecules whose atoms spread over half
+    of the box or more around the first atom (larger molecules in which this
+    is not visible, such as a pair of atoms farther apart than half the box,
+    cannot be detected). A warning is logged if selected
+    atoms have a placeholder mass (elements X, Q, Cav, Sup), because they
+    dominate the center of mass of their molecule.
 
     Parameters
     ----------
@@ -75,6 +87,10 @@ def traj_to_com_traj(
         If group and by_residue are combined, if by_residue is used with a
         topology without residues or if the number of atoms of the topology
         and of a frame differ.
+    AtomicSystemError
+        With by_residue, if a molecule spans half of the box or more.
+    AtomicSystemMassError
+        If a selected atom has no mass.
     """
 
     if by_residue and group is not None:
@@ -147,14 +163,12 @@ def _traj_to_com_traj_by_residue(
     indices = _selected_indices(first_frame.atoms, selection)
     group_ids = topology.residue_numbers[indices]
 
-    # one atom per residue named by its selected atoms
-    unique_ids, inverse = np.unique(group_ids, return_inverse=True)
-    names = [[] for _ in unique_ids]
-    for index, group_index in zip(indices, inverse.reshape(-1)):
-        names[group_index].append(first_frame.atoms[index].name)
+    _warn_about_placeholder_atoms(first_frame.atoms, indices)
+
+    # one atom per residue, named by the residue name
     com_atoms = [
-        Atom(''.join(group_names), use_guess_element=False)
-        for group_names in names
+        Atom(topology.residues[residue_number].name, use_guess_element=False)
+        for residue_number in np.unique(group_ids)
     ]
 
     com_traj = Trajectory()
@@ -170,9 +184,29 @@ def _traj_to_com_traj_by_residue(
             frame.atomic_masses[indices],
             group_ids,
             frame.cell,
+            check_extent=True,
         )
         com_traj.append(
             AtomicSystem(pos=positions, atoms=com_atoms, cell=frame.cell)
         )
 
     return com_traj
+
+
+def _warn_about_placeholder_atoms(atoms, indices) -> None:
+    """Warns if selected atoms have a placeholder mass (X, Q, Cav, Sup)."""
+
+    placeholders = sorted({
+        atoms[index].name
+        for index in indices
+        if (atoms[index].atomic_number or 0) >= PLACEHOLDER_ATOMIC_NUMBER
+    })
+
+    if placeholders:
+        logger.warning(
+            (
+                f"The selection contains atoms with a placeholder mass "
+                f"({', '.join(placeholders)}). They dominate the center of "
+                "mass of their molecule; exclude them with the selection."
+            )
+        )

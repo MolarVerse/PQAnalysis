@@ -175,6 +175,102 @@ class TestCenterOfMassGroups:
             )
 
 
+class TestCheckExtent:
+
+    """
+    The optional check for groups that span half of the box or more.
+
+    The positions of a group are imaged around its first atom, so the check
+    sees groups with atoms on both sides of the first atom.
+    """
+
+    CELL = Cell(10, 10, 10)
+
+    @staticmethod
+    def run(positions, cell, group_ids=None, check_extent=True):
+        positions = np.array(positions, float)
+
+        return center_of_mass_groups(
+            positions,
+            np.ones(len(positions)),
+            np.zeros(len(positions), int) if group_ids is None else group_ids,
+            cell,
+            check_extent=check_extent,
+        )
+
+    def test_the_example_of_a_molecule_larger_than_half_the_box(self):
+        positions = [[0, 0, 0], [3.2, 0, 0], [6.4, 0, 0]]
+
+        with pytest.raises(AtomicSystemError, match="spans half of the box"):
+            self.run(positions, self.CELL)
+
+        # without the check the center of mass is silently wrong
+        wrong = self.run(positions, self.CELL, check_extent=False)
+        assert abs(wrong[0, 0] - 3.2) > 3
+
+    def test_the_extent_limit_is_half_the_box(self):
+        inside = [[0, 0, 0], [-2.4, 0, 0], [2.4, 0, 0]]  # spans 4.8 A
+        outside = [[0, 0, 0], [-2.6, 0, 0], [2.6, 0, 0]]  # spans 5.2 A
+
+        assert self.run(inside, self.CELL).shape == (1, 3)
+        with pytest.raises(AtomicSystemError):
+            self.run(outside, self.CELL)
+
+    def test_every_direction_is_checked(self):
+        for direction in np.eye(3):
+            with pytest.raises(AtomicSystemError):
+                self.run(
+                    [[0, 0, 0], -2.6 * direction, 2.6 * direction], self.CELL
+                )
+
+    def test_the_check_uses_the_cell_vectors_of_a_triclinic_cell(self):
+        cell = Cell(10, 10, 10, 90, 90, 60)
+        a_vector = cell.box_matrix[:, 0]
+
+        assert self.run(
+            [[0, 0, 0], -0.24 * a_vector, 0.24 * a_vector], cell
+        ).shape == (1, 3)
+        with pytest.raises(AtomicSystemError):
+            self.run([[0, 0, 0], -0.26 * a_vector, 0.26 * a_vector], cell)
+
+    def test_a_vacuum_cell_has_no_limit(self):
+        positions = [[0, 0, 0], [-1e4, 0, 0], [1e4, 0, 0]]
+
+        assert self.run(positions, Cell()).shape == (1, 3)
+
+    def test_only_the_large_groups_are_reported(self):
+        positions = [
+            [0, 0, 0], [-1, 0, 0], [1, 0, 0],
+            [0, 0, 0], [-2.6, 0, 0], [2.6, 0, 0],
+            [0, 0, 0], [0, -1, 0], [0, 1, 0],
+        ]
+        group_ids = np.repeat([5, 7, 9], 3)
+
+        with pytest.raises(AtomicSystemError, match=r"group 7 .*\(1 of 3 groups"):
+            self.run(positions, self.CELL, group_ids)
+
+    def test_a_pair_farther_apart_than_half_the_box_cannot_be_detected(self):
+        # 5.1 A apart cannot be told from the image 4.9 A apart (documented
+        # limit of the check): the center of mass is taken of the image
+        com = self.run([[0, 0, 0], [5.1, 0, 0]], self.CELL)
+
+        assert np.isclose(com[0, 0], -2.45)
+
+    def test_it_is_off_by_default(self):
+        positions = np.array([[0.0, 0, 0], [3.2, 0, 0], [6.4, 0, 0]])
+
+        com = center_of_mass_groups(
+            positions, np.ones(3), np.zeros(3, int), self.CELL
+        )
+
+        assert com.shape == (1, 3)
+
+    def test_no_atoms_pass_the_check(self):
+        com = self.run(np.zeros((0, 3)), self.CELL, np.zeros(0, int))
+
+        assert com.shape == (0, 3)
+
+
 class TestAtomicSystemUsesTheFunction:
 
     """

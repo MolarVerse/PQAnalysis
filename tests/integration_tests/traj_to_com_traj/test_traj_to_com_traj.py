@@ -271,7 +271,9 @@ class TestWaterBox:
         by_group = traj_to_com_traj(traj, group=3)[0]
 
         assert by_residue.n_atoms == self.N_MOLECULES
-        assert by_residue.atoms == by_group.atoms
+        # named by the moldescriptor name instead of the atom names
+        assert all(atom.name == "TIP3P-Water" for atom in by_residue.atoms)
+        assert all(atom.name == "OHH" for atom in by_group.atoms)
         assert np.allclose(by_residue.pos, by_group.pos, atol=1e-12)
         assert_equal_modulo_box(
             by_residue.pos, reference_coms(names, positions, box, 3), box
@@ -298,3 +300,17 @@ class TestWaterBox:
         assert_equal_modulo_box(
             com_traj[0].pos, expected[0].pos, expected[0].cell.box_lengths, atol=1e-4
         )
+
+    def test_by_residue_result_is_written_and_read_back(self, water_box):
+        system, _ = water_box
+        com_traj = traj_to_com_traj(Trajectory([system]), by_residue=True)
+
+        TrajectoryWriter("com.xyz").write(com_traj)
+        read_back = TrajectoryReader("com.xyz").read()
+
+        # the reader logs an element lookup error for names that are no
+        # element, then keeps the name; the data must survive
+        assert read_back[0].n_atoms == self.N_MOLECULES
+        assert all(atom.name == "TIP3P-Water" for atom in read_back[0].atoms)
+        assert read_back[0].cell == com_traj[0].cell
+        assert np.allclose(read_back[0].pos, com_traj[0].pos, atol=1e-5)
