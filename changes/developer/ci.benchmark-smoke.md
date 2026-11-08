@@ -1,0 +1,2 @@
+- Add a Benchmark Smoke workflow (every benchmark runs once, untimed) and a Performance workflow that times base and head of a pull request on one runner and fails on a much slower benchmark and keeps the table in a sticky PR comment (scripts/perf_compare.py).
+- Run kernel-dependent benchmarks with compiled and pure Python kernels (kernel_impl fixture) and make the trajectory reader benchmarks independent of the working directory.

@@ -1,0 +1,58 @@
+name: Benchmark Smoke
+
+# Runs every benchmark once, without timing, so that the benchmark suite keeps
+# working with the code it measures. Nothing is measured or compared here.
+on:
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - 'PQAnalysis/**'
+      - 'benchmarks/**'
+      - 'tests/data/**'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'pyproject.toml'
+      - 'MANIFEST.in'
+      - '.github/workflows/benchmarks.yml'
+  pull_request:
+    branches:
+      - '*'
+    paths:
+      - 'PQAnalysis/**'
+      - 'benchmarks/**'
+      - 'tests/data/**'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'pyproject.toml'
+      - 'MANIFEST.in'
+      - '.github/workflows/benchmarks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install PQAnalysis and the benchmark dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[test,benchmark]"
+
+      - name: Run every benchmark once
+        run: >-
+          python -m pytest -c benchmarks/pytest.ini benchmarks
+          --benchmark-disable -q
