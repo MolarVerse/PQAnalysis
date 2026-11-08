@@ -74,6 +74,11 @@ _COMMANDS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
         "Traj2BoxCLI",
         "Convert trajectory files to box files.",
     ),
+    "traj2com": (
+        ".traj2com",
+        "Traj2COMCLI",
+        "Compute center of mass trajectories.",
+    ),
     "traj2extxyz": (
         ".traj2extxyz",
         "Traj2ExtXYZCLI",
