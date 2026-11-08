@@ -1,0 +1,1 @@
+- Add an integration test of traj_to_com_traj on the UMCM-9 example and on a 2000-molecule TIP3P water box (from the PQ example h2o_mm-mshake): centers of mass are compared with an independent calculation, written and read back, and the group-size error is checked.
