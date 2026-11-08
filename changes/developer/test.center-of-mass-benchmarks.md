@@ -1,0 +1,1 @@
+- Add benchmarks for the center of mass: the group routine (500, 2000 and 8000 molecules, with the extent check), AtomicSystem.center_of_mass_residues, and traj_to_com_traj for groups of three atoms, by residue (also with a selection) and for all atoms on seeded water boxes of several sizes and frame counts.
