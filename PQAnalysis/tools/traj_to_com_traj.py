@@ -10,7 +10,10 @@ from beartype.typing import List
 
 from PQAnalysis import __package_name__
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.atomic_system._center_of_mass import center_of_mass_groups
+from PQAnalysis.atomic_system._center_of_mass import (
+    center_of_mass_groups,
+    placeholder_atom_names,
+)
 from PQAnalysis.core import Atom
 from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.io import TrajectoryReader, TrajectoryWriter, read_restart_file
@@ -23,10 +26,6 @@ from PQAnalysis.utils.custom_logging import setup_logger
 
 logger = logging.getLogger(__package_name__).getChild("traj_to_com_traj")
 logger = setup_logger(logger)
-
-#: Elements from this atomic number on (X, Q, Cav, Sup) are placeholders
-#: with a made-up mass, not real atoms.
-PLACEHOLDER_ATOMIC_NUMBER = 999
 
 
 
@@ -201,11 +200,7 @@ def _traj_to_com_traj_by_residue(
 def _warn_about_placeholder_atoms(atoms, indices) -> None:
     """Warns if selected atoms have a placeholder mass (X, Q, Cav, Sup)."""
 
-    placeholders = sorted({
-        atoms[index].name
-        for index in indices
-        if (atoms[index].atomic_number or 0) >= PLACEHOLDER_ATOMIC_NUMBER
-    })
+    placeholders = placeholder_atom_names(atoms, indices)
 
     if placeholders:
         logger.warning(

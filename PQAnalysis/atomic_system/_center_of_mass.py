@@ -19,6 +19,10 @@ from .exceptions import AtomicSystemError, AtomicSystemPositionsError
 logger = logging.getLogger(__package_name__).getChild("center_of_mass_groups")
 logger = setup_logger(logger)
 
+#: Elements from this atomic number on (X, Q, Cav, Sup) are placeholders
+#: with a made-up mass, not real atoms.
+PLACEHOLDER_ATOMIC_NUMBER = 999
+
 
 
 def center_of_mass_groups(
@@ -170,3 +174,31 @@ def _check_extent(
             ),
             exception=AtomicSystemError,
         )
+
+
+
+def placeholder_atom_names(atoms, indices) -> list:
+    """
+    Returns the names of the atoms with a placeholder mass.
+
+    Atoms of the elements X, Q, Cav and Sup have a made-up mass of 999 or
+    more. They dominate the center of mass of their molecule.
+
+    Parameters
+    ----------
+    atoms : list of Atom
+        The atoms of the system.
+    indices : np.ndarray
+        The indices of the atoms to check.
+
+    Returns
+    -------
+    list of str
+        The sorted, distinct names of the atoms with a placeholder mass.
+    """
+
+    return sorted({
+        atoms[index].name
+        for index in indices
+        if (atoms[index].atomic_number or 0) >= PLACEHOLDER_ATOMIC_NUMBER
+    })
