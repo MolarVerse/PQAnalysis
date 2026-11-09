@@ -87,6 +87,8 @@ Before you trust it
   volume distribution (NPT) or the selections.
 * Intramolecular pairs are included unless ``no_intra_molecular`` is on;
   naming both topology files turns it on.
+* The RDF between the centers of mass of molecules is available from Python
+  with ``reference_com`` and ``target_com``; see :doc:`rdf-details`.
 
 Each point is derived in :doc:`rdf-details`.
 

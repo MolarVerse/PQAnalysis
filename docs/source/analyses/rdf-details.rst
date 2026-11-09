@@ -148,6 +148,51 @@ selections and the average volume, two RDFs are only comparable when the
 selections, the exclusion setting, the thermodynamic state and the sampled
 :math:`r` range all match. State them with the curve.
 
+Centers of mass of molecules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With ``reference_com=True`` and ``target_com=True`` the RDF is calculated
+between the centers of mass of molecules instead of between atoms, for example
+a water-water RDF that does not depend on which atom of the molecule is looked
+at. The molecules are the residues of the topology, so the trajectory has to
+carry a topology made from a restart file and a moldescriptor file:
+
+.. code-block:: python
+
+   from PQAnalysis.io import TrajectoryReader, read_restart_file
+
+   topology = read_restart_file("input.rst", "moldescriptor.dat").topology
+
+   RDF(
+       TrajectoryReader("trajectory.xyz", topology=topology),
+       reference_species="*",
+       target_species="*",
+       delta_r=0.05,
+       r_max=8.0,
+       reference_com=True,
+       target_com=True,
+   ).run()
+
+* The selection picks the atoms that define the center of mass of each
+  molecule: ``*`` uses all atoms, ``H`` the hydrogens of every molecule. A
+  molecule without a selected atom is left out. A molecule that is in the
+  reference and in the target selection needs the same selected atoms in both.
+* The reference count :math:`N_R` and the target density :math:`\rho_T` count
+  molecules, and the coordination number is a number of molecules. The pair of
+  a center with itself is excluded; the density is :math:`N_T / \langle V
+  \rangle` as for atoms, so for uniformly placed molecules the plateau of
+  :math:`g(r)` is :math:`(N-1)/N`.
+* A pair of centers is never inside one molecule, so ``no_intra_molecular`` has
+  no effect.
+* Both sides have to use centers; the RDF between atoms and centers is not
+  available.
+* Atoms are imaged relative to the first atom of their molecule. A molecule
+  whose atoms spread over half of the box or more around that atom raises an
+  error while the analysis runs; a pair of atoms of one molecule that are
+  farther apart than half the box cannot be told from their periodic image and
+  is not detected. Atoms with a placeholder mass (``X``, ``Q``, ``Cav``,
+  ``Sup``) dominate the center of mass and are reported with a warning.
+
 References
 ----------
 

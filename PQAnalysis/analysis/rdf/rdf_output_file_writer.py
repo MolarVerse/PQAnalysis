@@ -152,19 +152,26 @@ class RDFLogWriter(BaseWriter):
         print(f"    Number of atoms:  {rdf.n_atoms}", file=self.file)
         print(file=self.file)
 
+        reference_entity = (
+            "molecules (centers of mass)" if rdf.reference_com else "atoms"
+        )
+        target_entity = (
+            "molecules (centers of mass)" if rdf.target_com else "atoms"
+        )
+
         print(
             "    Reference selection:",
             rdf.reference_selection,
             file=self.file
         )
         print(
-            "    total number of atoms in reference selection:",
+            f"    total number of {reference_entity} in reference selection:",
             len(rdf.reference_indices),
             file=self.file
         )
         print("    Target selection:   ", rdf.target_selection, file=self.file)
         print(
-            "    total number of atoms in target selection:   ",
+            f"    total number of {target_entity} in target selection:   ",
             len(rdf.target_indices),
             file=self.file
         )
