@@ -175,17 +175,30 @@ carry a topology made from a restart file and a moldescriptor file:
 
 * The selection picks the atoms that define the center of mass of each
   molecule: ``*`` uses all atoms, ``H`` the hydrogens of every molecule. A
-  molecule without a selected atom is left out. A molecule that is in the
-  reference and in the target selection needs the same selected atoms in both.
+  molecule without a selected atom is left out. With centers on both sides, a
+  molecule that is in the reference and in the target selection needs the same
+  selected atoms in both.
 * The reference count :math:`N_R` and the target density :math:`\rho_T` count
   molecules, and the coordination number is a number of molecules. The pair of
   a center with itself is excluded; the density is :math:`N_T / \langle V
   \rangle` as for atoms, so for uniformly placed molecules the plateau of
   :math:`g(r)` is :math:`(N-1)/N`.
 * A pair of centers is never inside one molecule, so ``no_intra_molecular`` has
-  no effect.
-* Both sides have to use centers; the RDF between atoms and centers is not
-  available.
+  no effect when both sides use centers.
+* One side can also keep its atoms, for example oxygens around the centers of
+  the waters (``reference_com=False, target_com=True``) or the centers of a
+  solute around all atoms (``reference_com=True, target_com=False``). The
+  selection of the side with centers defines the centers, the selection of the
+  other side picks atoms as usual. An atom and a center are different entities,
+  so no pair is ever "with itself". The pair of an atom with the center of its
+  *own* molecule is an intramolecular pair: it is kept by default (a rigid
+  water oxygen sits 0.065 Å from its center and fills the first bin) and
+  removed by ``no_intra_molecular=True``, as for atoms. The effective target
+  density is then the mean number of targets that remain for a reference
+  divided by the average volume; this is exact when all references exclude the
+  same number of targets and the right average otherwise, for example for the
+  centers of waters and methanes around all hydrogens, where a water center
+  excludes two hydrogens and a methane center four.
 * Atoms are imaged relative to the first atom of their molecule. A molecule
   whose atoms spread over half of the box or more around that atom raises an
   error while the analysis runs; a pair of atoms of one molecule that are
