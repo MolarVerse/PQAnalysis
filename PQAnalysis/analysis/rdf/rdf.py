@@ -244,7 +244,8 @@ class RDF:
             molecules without a selected atom are left out. The molecules
             are the residues of the topology of the trajectory (restart file
             with a moldescriptor file), which therefore has to contain
-            residues. Has to be used together with target_com.
+            residues. Either side or both can use centers: with only one of
+            them the other side keeps its selected atoms.
         target_com : bool, optional
             Whether the target entities are the centers of mass of the
             molecules instead of atoms, by default False, see reference_com.
@@ -267,10 +268,9 @@ class RDF:
             If the reference or target selection does not
             select any atoms.
         RDFError
-            If only one of reference_com and target_com is used, if the
-            topology has no residues, if a selected atom has no mass, or if
-            a molecule that is selected for both has different selected
-            atoms for reference and target.
+            If the topology has no residues, if a selected atom of a center
+            has no mass, or if a molecule that is selected for the reference
+            and the target centers has different selected atoms for them.
         AtomicSystemError
             While running, if a molecule spans half of the box or more.
 
@@ -279,10 +279,16 @@ class RDF:
         With reference_com and target_com the g(r) of the centers of mass is
         calculated: the reference count and the target density count the
         molecules, the coordination number is a number of molecules and the
-        pair of a molecule center with itself is excluded. Pairs of the same
-        molecule do not exist, so no_intra_molecular has no effect. The
-        attributes reference_indices and target_indices then hold the rows
-        of the centers, which are appended after the atoms of every frame.
+        pair of a molecule center with itself is excluded. Pairs of two
+        centers of the same molecule do not exist, so no_intra_molecular has
+        no effect for them. With only one of them, the centers are paired
+        with the selected atoms of the other side, and no_intra_molecular
+        excludes the pairs of an atom with the center of its own molecule.
+        The effective target density is then the mean number of targets
+        that are left for a reference, divided by the volume. The attributes
+        reference_indices and target_indices hold the rows of the centers,
+        which are appended after the atoms of every frame, for the sides
+        that use centers.
 
         Furthermore, to initialize the RDF analysis object at least
         one of the parameters n_bins or delta_r must be specified. 
@@ -427,34 +433,24 @@ class RDF:
     def _setup_centers(self):
         """
         Replaces the atoms of the selections by the centers of mass of
-        their molecules, if reference_com or target_com is used.
+        their molecules, for the sides that use reference_com or target_com.
 
         The selected atoms of each molecule define its center. The center of
         a molecule that is selected for the reference and the target is one
         and the same row of the extended positions, so that the kernels
-        exclude the pair of a molecule with itself.
+        exclude the pair of a molecule with itself. A side without centers
+        keeps its atoms.
 
         Raises
         ------
         RDFError
-            If only one of reference_com and target_com is used, if the
-            topology has no residues, if a selected atom has no mass or if
-            a molecule that is selected for both has different selected
-            atoms for reference and target.
+            If the topology has no residues, if a selected atom of a center
+            has no mass or if a molecule that is selected for the reference
+            and the target centers has different selected atoms for them.
         """
 
         if not (self.reference_com or self.target_com):
             return
-
-        if self.reference_com != self.target_com:
-            self.logger.error(
-                (
-                    "reference_com and target_com have to be used together: "
-                    "the RDF between atoms and centers of mass of molecules "
-                    "is not supported."
-                ),
-                exception=RDFError
-            )
 
         if not self.topology.residues:
             self.logger.error(
@@ -472,24 +468,32 @@ class RDF:
         reference_molecules = residue_numbers[reference_atoms]
         target_molecules = residue_numbers[target_atoms]
 
-        shared = np.intersect1d(reference_molecules, target_molecules)
-        if not np.array_equal(
-            np.sort(reference_atoms[np.isin(reference_molecules, shared)]),
-            np.sort(target_atoms[np.isin(target_molecules, shared)]),
-        ):
-            self.logger.error(
-                (
-                    "A molecule that is in the reference and in the target "
-                    "selection needs the same selected atoms in both, "
-                    "otherwise its center of mass is not the same."
-                ),
-                exception=RDFError
-            )
+        if self.reference_com and self.target_com:
+            shared = np.intersect1d(reference_molecules, target_molecules)
+            if not np.array_equal(
+                np.sort(reference_atoms[np.isin(reference_molecules, shared)]),
+                np.sort(target_atoms[np.isin(target_molecules, shared)]),
+            ):
+                self.logger.error(
+                    (
+                        "A molecule that is in the reference and in the "
+                        "target selection needs the same selected atoms in "
+                        "both, otherwise its center of mass is not the same."
+                    ),
+                    exception=RDFError
+                )
 
-        atoms = np.union1d(reference_atoms, target_atoms)
+        center_atoms = np.unique(
+            np.concatenate([
+                atoms for atoms, used in (
+                    (reference_atoms, self.reference_com),
+                    (target_atoms, self.target_com),
+                ) if used
+            ])
+        )
         topology_atoms = self.topology.atoms
 
-        if any(topology_atoms[index].mass is None for index in atoms):
+        if any(topology_atoms[index].mass is None for index in center_atoms):
             self.logger.error(
                 (
                     "The center of mass needs the mass of every selected "
@@ -498,7 +502,7 @@ class RDF:
                 exception=RDFError
             )
 
-        placeholders = placeholder_atom_names(topology_atoms, atoms)
+        placeholders = placeholder_atom_names(topology_atoms, center_atoms)
         if placeholders:
             self.logger.warning(
                 (
@@ -511,15 +515,40 @@ class RDF:
 
         self._centers = MoleculeCenters(
             n_atoms=self.topology.n_atoms,
-            atom_indices=atoms,
-            molecule_ids=residue_numbers[atoms],
-            masses=np.array([topology_atoms[index].mass for index in atoms]),
+            atom_indices=center_atoms,
+            molecule_ids=residue_numbers[center_atoms],
+            masses=np.array(
+                [topology_atoms[index].mass for index in center_atoms]
+            ),
         )
 
-        self.reference_indices = self._centers.rows(
-            np.unique(reference_molecules)
-        )
-        self.target_indices = self._centers.rows(np.unique(target_molecules))
+        if self.reference_com:
+            self.reference_indices = self._centers.rows(
+                np.unique(reference_molecules)
+            )
+        if self.target_com:
+            self.target_indices = self._centers.rows(
+                np.unique(target_molecules)
+            )
+
+    def _molecules_of(self, indices: np.ndarray) -> np.ndarray:
+        """
+        Returns the molecule of each atom or center in the given indices
+        of the (extended) positions.
+        """
+
+        n_atoms = self.topology.n_atoms
+        indices = np.asarray(indices)
+        is_center = indices >= n_atoms
+        molecules = np.empty(len(indices), dtype=int)
+
+        molecules[~is_center] = self.topology.residue_numbers[
+            indices[~is_center]]
+        if is_center.any():
+            molecules[is_center] = self._centers.molecules[
+                indices[is_center] - n_atoms]
+
+        return molecules
 
     def _extend_positions(self, positions, cell: Cell):
         """
@@ -1086,7 +1115,15 @@ class RDF:
 
         self.target_index_combinations = []
 
-        if self.no_intra_molecular:
+        if self.no_intra_molecular and self._centers is not None:
+            target_molecules = self._molecules_of(self.target_indices)
+            for reference_molecule in self._molecules_of(
+                self.reference_indices
+            ):
+                self.target_index_combinations.append(
+                    self.target_indices[target_molecules != reference_molecule]
+                )
+        elif self.no_intra_molecular:
             for reference_index in self.reference_indices:
                 residue_number = self.topology.residue_numbers[reference_index]
                 residue_indices = self.topology.residue_atom_indices[
@@ -1180,7 +1217,16 @@ class RDF:
                 )
             )
         else:
-            max_index = int(self._centers.atom_indices.max(initial=-1))
+            n_atoms = self._centers.n_atoms
+            max_index = int(
+                max(
+                    self._centers.atom_indices.max(initial=-1),
+                    reference_indices[reference_indices < n_atoms].max(
+                        initial=-1
+                    ),
+                    target_indices[target_indices < n_atoms].max(initial=-1),
+                )
+            )
 
         # loop-invariant cell data, recomputed only when the yielded
         # Cell object changes identity
@@ -1393,7 +1439,12 @@ class RDF:
         if self._legacy_rdf:
             return self._finalize_legacy_run()
 
-        if self.no_intra_molecular:
+        if self.no_intra_molecular and self._centers is not None:
+            # the targets left for a reference differ between molecules
+            target_density = np.mean([
+                len(targets) for targets in self.target_index_combinations
+            ])
+        elif self.no_intra_molecular:
             target_density = len(self.target_index_combinations[0])
         else:
             target_density = len(self.target_indices)
