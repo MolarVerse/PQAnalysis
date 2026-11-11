@@ -82,6 +82,8 @@ def rdf(
         target_species=input_reader.target_selection,
         use_full_atom_info=input_reader.use_full_atom_info,
         no_intra_molecular=input_reader.no_intra_molecular,
+        reference_com=bool(input_reader.reference_com),
+        target_com=bool(input_reader.target_com),
         n_bins=input_reader.n_bins,
         delta_r=input_reader.delta_r,
         r_max=input_reader.r_max,

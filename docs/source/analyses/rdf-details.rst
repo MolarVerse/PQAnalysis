@@ -154,8 +154,25 @@ Centers of mass of molecules
 With ``reference_com=True`` and ``target_com=True`` the RDF is calculated
 between the centers of mass of molecules instead of between atoms, for example
 a water-water RDF that does not depend on which atom of the molecule is looked
-at. The molecules are the residues of the topology, so the trajectory has to
-carry a topology made from a restart file and a moldescriptor file:
+at. The molecules are the residues of the topology, so the topology has to be
+made from a restart file and a moldescriptor file. In an input file the two
+keys do this for you, and the two files are inferred beside the trajectory like
+for ``no_intra_molecular``:
+
+.. code-block:: text
+
+   traj_files = trajectory.xyz
+   reference_selection = all
+   target_selection = all
+   delta_r = 0.05
+   r_max = 8.0
+   restart_file = input.rst
+   moldescriptor_file = moldescriptor.dat
+   reference_com = True
+   target_com = True
+   out_file = rdf.dat
+
+From Python the topology is attached to the trajectory:
 
 .. code-block:: python
 
@@ -184,7 +201,9 @@ carry a topology made from a restart file and a moldescriptor file:
   \rangle` as for atoms, so for uniformly placed molecules the plateau of
   :math:`g(r)` is :math:`(N-1)/N`.
 * A pair of centers is never inside one molecule, so ``no_intra_molecular`` has
-  no effect when both sides use centers.
+  no effect when both sides use centers. In an input file it still defaults to
+  ``True`` when both topology files are given, which only matters for centers on
+  one side.
 * One side can also keep its atoms, for example oxygens around the centers of
   the waters (``reference_com=False, target_com=True``) or the centers of a
   solute around all atoms (``reference_com=True, target_com=False``). The

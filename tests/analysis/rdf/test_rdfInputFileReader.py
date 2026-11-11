@@ -62,6 +62,81 @@ class TestRDFInputFileReader:
         assert reader.no_intra_molecular is False
 
     @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    @pytest.mark.parametrize(
+        "keys, expected",
+        [
+            ("reference_com = True\ntarget_com = True\n", (True, True)),
+            ("reference_com = False\n", (False, None)),
+            ("target_com = True\n", (None, True)),
+            ("", (None, None)),
+        ],
+    )
+    def test_center_of_mass_keys(self, test_with_data_dir, keys, expected):
+        base = Path("input_topology_files_default.in").read_text(
+            encoding="utf-8"
+        )
+        Path("input_com.in").write_text(base + keys, encoding="utf-8")
+        reader = RDFInputFileReader("input_com.in")
+
+        reader.read()
+
+        assert (reader.reference_com, reader.target_com) == expected
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    @pytest.mark.parametrize(
+        "keys", ["reference_com = True", "target_com = True"]
+    )
+    def test_center_of_mass_keys_need_the_topology_files(
+        self, test_with_data_dir, keys
+    ):
+        base = Path("input_no_restart.in").read_text(encoding="utf-8")
+        Path("input_com.in").write_text(base + "\n" + keys + "\n", encoding="utf-8")
+        reader = RDFInputFileReader("input_com.in")
+
+        with pytest.raises(InputFileError) as exception:
+            reader.read()
+
+        assert str(exception.value).startswith(
+            "The reference_com or target_com key requires both a restart "
+            "file and a moldescriptor file. Could not infer missing files "
+            "from trajectory file"
+        )
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test_center_of_mass_keys_infer_the_topology_files(
+        self, test_with_data_dir
+    ):
+        Path("moldescriptor.dat").write_text(
+            "C 1 0.0\nC 0 0.0\n", encoding="utf-8"
+        )
+        base = Path("input_no_intra_molecular_infer.in").read_text(
+            encoding="utf-8"
+        ).replace("no_intra_molecular = True", "")
+        Path("input_com.in").write_text(
+            base + "\nreference_com = True\ntarget_com = True\n",
+            encoding="utf-8",
+        )
+        reader = RDFInputFileReader("input_com.in")
+
+        reader.read()
+
+        assert reader.restart_file == "infer.rst"
+        assert reader.moldescriptor_file == "moldescriptor.dat"
+        assert reader.reference_com is True
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
+    def test_center_of_mass_false_does_not_require_topology(
+        self, test_with_data_dir
+    ):
+        base = Path("input_no_restart.in").read_text(encoding="utf-8")
+        Path("input_com.in").write_text(
+            base + "\nreference_com = False\ntarget_com = False\n",
+            encoding="utf-8",
+        )
+
+        RDFInputFileReader("input_com.in").read()
+
+    @pytest.mark.parametrize("example_dir", ["rdf"], indirect=False)
     def test_moldescriptor_no_restart(self, test_with_data_dir):
         reader = RDFInputFileReader("input_moldescriptor_restart.in")
         with pytest.raises(InputFileError) as exception:
