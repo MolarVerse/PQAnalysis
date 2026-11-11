@@ -6,7 +6,12 @@ import numpy as np
 import pytest
 
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.atomic_system._center_of_mass import center_of_mass_groups
+from PQAnalysis.atomic_system._center_of_mass import (
+    center_of_mass_groups,
+    center_of_mass_properties,
+    group_mass_weighted_mean,
+    group_sums,
+)
 from PQAnalysis.atomic_system.exceptions import (
     AtomicSystemError,
     AtomicSystemPositionsError,
@@ -363,3 +368,194 @@ class TestAtomicSystemUsesTheFunction:
             assert difference_modulo_box(
                 com_system.pos[index], expected, cell
             ) < 1e-12
+
+
+class TestGroupReductions:
+
+    GROUPS = np.array([4, 4, 1, 4, 1])
+    MASSES = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
+    VALUES = np.arange(15, dtype=float).reshape(5, 3)
+
+    def test_mass_weighted_mean(self):
+        mean = group_mass_weighted_mean(self.VALUES, self.MASSES, self.GROUPS)
+
+        # ascending ids: group 1 (atoms 2 and 4), then group 4 (0, 1, 3)
+        assert mean.shape == (2, 3)
+        assert np.allclose(
+            mean[0],
+            (3 * self.VALUES[2] + 5 * self.VALUES[4]) / 8,
+        )
+        assert np.allclose(
+            mean[1],
+            (self.VALUES[0] + 2 * self.VALUES[1] + 4 * self.VALUES[3]) / 7,
+        )
+
+    def test_sums_of_vectors_and_scalars(self):
+        vectors = group_sums(self.VALUES, self.GROUPS)
+        scalars = group_sums(self.MASSES, self.GROUPS)
+
+        assert np.allclose(vectors[0], self.VALUES[[2, 4]].sum(0))
+        assert np.allclose(vectors[1], self.VALUES[[0, 1, 3]].sum(0))
+        assert np.allclose(scalars, [8.0, 7.0])
+
+    def test_a_single_group_of_one_atom(self):
+        assert np.allclose(
+            group_mass_weighted_mean(
+                self.VALUES[:1], self.MASSES[:1], np.array([0])
+            ),
+            self.VALUES[:1],
+        )
+
+
+class TestCenterOfMassProperties:
+
+    CELL = Cell(10, 10, 10)
+
+    def arrays(self):
+        rng = np.random.default_rng(2)
+
+        return {
+            "positions": rng.uniform(0, 10, (6, 3)),
+            "velocities": rng.normal(size=(6, 3)),
+            "forces": rng.normal(size=(6, 3)),
+            "charges": rng.normal(size=6),
+        }
+
+    def test_everything_that_is_given_is_returned(self):
+        data = self.arrays()
+        masses = np.arange(1.0, 7.0)
+        groups = np.array([0, 0, 0, 1, 1, 1])
+
+        result = center_of_mass_properties(masses, groups, self.CELL, **data)
+
+        assert set(result) == {"pos", "vel", "forces", "charges"}
+        assert np.allclose(
+            result["pos"],
+            center_of_mass_groups(data["positions"], masses, groups, self.CELL),
+        )
+        assert np.allclose(
+            result["vel"],
+            group_mass_weighted_mean(data["velocities"], masses, groups),
+        )
+        assert np.allclose(result["forces"], group_sums(data["forces"], groups))
+        assert np.allclose(result["charges"], group_sums(data["charges"], groups))
+
+    def test_none_and_empty_data_are_left_out(self):
+        data = self.arrays()
+
+        result = center_of_mass_properties(
+            np.ones(6), np.zeros(6, int), self.CELL,
+            positions=np.zeros((0, 3)),
+            velocities=data["velocities"],
+            forces=None,
+            charges=np.zeros(0),
+        )
+
+        assert set(result) == {"vel"}
+
+    def test_nothing_given_returns_nothing(self):
+        assert center_of_mass_properties(np.ones(3), np.zeros(3, int), self.CELL) == {}
+
+    def test_data_with_another_number_of_atoms_raises(self):
+        with pytest.raises(AtomicSystemPositionsError, match="velocities of 3"):
+            center_of_mass_properties(
+                np.ones(6), np.zeros(6, int), self.CELL,
+                velocities=np.zeros((3, 3)),
+            )
+
+    def test_a_group_without_mass_raises_even_without_positions(self):
+        with pytest.raises(AtomicSystemError, match="total mass"):
+            center_of_mass_properties(
+                np.array([1.0, 0.0]), np.array([0, 1]), self.CELL,
+                velocities=np.ones((2, 3)),
+            )
+
+    def test_the_extent_check_is_passed_on(self):
+        with pytest.raises(AtomicSystemError, match="spans half of the box"):
+            center_of_mass_properties(
+                np.ones(3), np.zeros(3, int), self.CELL,
+                positions=np.array([[0.0, 0, 0], [3.2, 0, 0], [6.4, 0, 0]]),
+                check_extent=True,
+            )
+
+
+class TestAtomicSystemWithVelocitiesForcesAndCharges:
+
+    @staticmethod
+    def system(positions=True):
+        water = TestAtomicSystemUsesTheFunction.water_box(n_molecules=4)
+        rng = np.random.default_rng(9)
+        kwargs = {
+            "vel": rng.normal(size=(12, 3)),
+            "forces": rng.normal(size=(12, 3)),
+            "charges": rng.normal(size=12),
+        }
+        reference_residues = [
+            Residue(
+                name="WAT",
+                elements=[Element("O"), Element("H"), Element("H")],
+                residue_id=1,
+                total_charge=0,
+                atom_types=np.array([0, 1, 1]),
+                partial_charges=np.zeros(3),
+            )
+        ]
+        topology = Topology(
+            atoms=water.atoms,
+            residue_ids=np.ones(12, dtype=int),
+            reference_residues=reference_residues,
+        )
+
+        return AtomicSystem(
+            topology=topology,
+            pos=water.pos if positions else None,
+            cell=water.cell,
+            **kwargs,
+        )
+
+    @staticmethod
+    def expected(system, molecule):
+        atoms = slice(3 * molecule, 3 * molecule + 3)
+        masses = system.atomic_masses[atoms]
+
+        return (
+            (system.vel[atoms] * masses[:, None]).sum(0) / masses.sum(),
+            system.forces[atoms].sum(0),
+            system.charges[atoms].sum(),
+        )
+
+    @pytest.mark.parametrize("positions", [True, False])
+    def test_center_of_mass_residues(self, positions):
+        system = self.system(positions)
+
+        com = system.center_of_mass_residues
+
+        assert com.n_atoms == 4
+        assert com.has_pos == positions
+        for molecule in range(4):
+            vel, forces, charge = self.expected(system, molecule)
+            assert np.allclose(com.vel[molecule], vel)
+            assert np.allclose(com.forces[molecule], forces)
+            assert com.charges[molecule] == pytest.approx(charge)
+
+    def test_compute_com_atomic_system(self):
+        system = self.system()
+
+        com = system.compute_com_atomic_system(group=3)
+
+        assert com.n_atoms == 4
+        for molecule in range(4):
+            vel, forces, charge = self.expected(system, molecule)
+            assert np.allclose(com.vel[molecule], vel)
+            assert np.allclose(com.forces[molecule], forces)
+            assert com.charges[molecule] == pytest.approx(charge)
+
+    def test_the_results_agree_with_each_other(self):
+        system = self.system()
+
+        by_residue = system.center_of_mass_residues
+        by_group = system.compute_com_atomic_system(group=3)
+
+        assert np.allclose(by_residue.vel, by_group.vel)
+        assert np.allclose(by_residue.forces, by_group.forces)
+        assert np.allclose(by_residue.charges, by_group.charges)

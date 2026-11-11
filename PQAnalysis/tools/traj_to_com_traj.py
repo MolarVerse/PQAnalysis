@@ -11,7 +11,7 @@ from beartype.typing import List
 from PQAnalysis import __package_name__
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.atomic_system._center_of_mass import (
-    center_of_mass_groups,
+    center_of_mass_properties,
     placeholder_atom_names,
 )
 from PQAnalysis.core import Atom
@@ -38,9 +38,17 @@ def traj_to_com_traj(
     group=None,
     by_residue: bool = False,
     topology: Topology | None = None,
+    continuous: bool = False,
 ) -> Trajectory:
     """
     Function that computes the center of mass trajectory for a given selection.
+
+    The velocities, forces and charges of the frames, if they have them, are
+    combined as well: a center of mass has the mass weighted mean of the
+    velocities of its atoms, the sum of their forces and the sum of their
+    charges. A trajectory that only has velocities (a vel file) gives a
+    trajectory of center of mass velocities, which can be used for the
+    velocity autocorrelation function.
 
     With the group parameter, the trajectory will be group according to the given group.
     For example if group = 2, the trajectory will be grouped in pairs of 2 and the center
@@ -79,6 +87,16 @@ def traj_to_com_traj(
         The topology with the residues to use with by_residue. If None, the
         topology of the trajectory is used. It has to contain residues, e.g.
         by reading a restart file together with the moldescriptor file.
+    continuous : bool, optional
+        If True, the positions of the centers of mass follow their way over
+        the periodic boundary from frame to frame instead of being folded
+        back into the cell, so that they can be used for the mean square
+        displacement. Every frame is placed at the image of the center that
+        is closest to the previous frame (in fractional coordinates, so a
+        cell that changes in size is handled), so a center must not move
+        farther than half of the box between two frames. The first frame is
+        folded into the cell. Has no effect in a vacuum cell. By default
+        False.
 
     Returns
     -------
@@ -95,6 +113,8 @@ def traj_to_com_traj(
         With by_residue, if a molecule spans half of the box or more.
     AtomicSystemMassError
         If a selected atom has no mass.
+    PQValueError
+        If continuous is used for a trajectory without positions.
     """
 
     if by_residue and group is not None:
@@ -106,15 +126,60 @@ def traj_to_com_traj(
     if len(trajectory) == 0:
         return Trajectory()
 
-    if by_residue:
-        return _traj_to_com_traj_by_residue(trajectory, selection, topology)
+    if continuous and not trajectory[0].has_pos:
+        logger.error(
+            "A continuous center of mass needs the positions.",
+            exception=PQValueError,
+        )
 
-    com_traj = Trajectory()
-    for frame in trajectory:
-        selected = frame if selection is None else frame[selection]
-        com_traj.append(selected.compute_com_atomic_system(group=group))
+    if by_residue:
+        com_traj = _traj_to_com_traj_by_residue(
+            trajectory, selection, topology
+        )
+    else:
+        com_traj = Trajectory()
+        for frame in trajectory:
+            selected = frame if selection is None else frame[selection]
+            com_traj.append(selected.compute_com_atomic_system(group=group))
+
+    if continuous:
+        _make_continuous(com_traj)
 
     return com_traj
+
+
+def _make_continuous(com_traj: Trajectory) -> None:
+    """
+    Places every frame at the periodic image closest to the previous frame.
+
+    The first frame stays as it is. The images are followed in fractional
+    coordinates, so that a cell that changes in size from frame to frame is
+    handled correctly. A vacuum cell has no periodic images, nothing changes.
+    """
+
+    previous = None
+
+    for frame in com_traj:
+        cell = frame.cell
+
+        if cell.is_vacuum:
+            previous = None
+            continue
+
+        fractional = frame.pos @ cell.inverse_box_matrix.T
+
+        if previous is not None:
+            step = fractional - previous
+            fractional = previous + step - np.round(step)
+            frame.pos = fractional @ cell.box_matrix.T
+
+        previous = fractional
+
+
+def _take(values: np.ndarray, indices: np.ndarray) -> np.ndarray | None:
+    """Returns the values of the given atoms, or None if there are none."""
+
+    return values[indices] if len(values) > 0 else None
 
 
 def _selected_indices(atoms, selection) -> np.ndarray:
@@ -183,15 +248,18 @@ def _traj_to_com_traj_by_residue(
                 exception=PQValueError,
             )
 
-        positions = center_of_mass_groups(
-            frame.pos[indices],
+        properties = center_of_mass_properties(
             frame.atomic_masses[indices],
             group_ids,
             frame.cell,
+            positions=_take(frame.pos, indices),
+            velocities=_take(frame.vel, indices),
+            forces=_take(frame.forces, indices),
+            charges=_take(frame.charges, indices),
             check_extent=True,
         )
         com_traj.append(
-            AtomicSystem(pos=positions, atoms=com_atoms, cell=frame.cell)
+            AtomicSystem(atoms=com_atoms, cell=frame.cell, **properties)
         )
 
     return com_traj
@@ -225,10 +293,16 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
     by_residue: bool = False,
     restart_file: str | None = None,
     moldescriptor_file: str | None = None,
+    continuous: bool = False,
 ) -> None:
     """
-    Reads xyz trajectory files, computes the center of mass trajectory with
+    Reads trajectory files, computes the center of mass trajectory with
     :py:func:`traj_to_com_traj` and writes it to a file or to stdout.
+
+    The format of the trajectory is inferred from the file extension (xyz,
+    vel, force or charge) and the result is written in the same format. A vel
+    trajectory therefore gives the velocities of the centers of mass, a force
+    trajectory their forces and a charge trajectory their charges.
 
     For by_residue, the molecules are defined by a restart file together with
     the moldescriptor file, as for the other analyses: the restart file gives
@@ -266,6 +340,9 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
         The restart file that defines the molecules of the system.
     moldescriptor_file : str, optional
         The moldescriptor file with the molecule types, needs restart_file.
+    continuous : bool, optional
+        Follow the centers over the periodic boundary instead of folding them
+        back into the cell, see :py:func:`traj_to_com_traj`. By default False.
 
     Raises
     ------
@@ -289,11 +366,12 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
             md_engine_format=md_format,
         ).topology
 
-    trajectory = TrajectoryReader(
+    reader = TrajectoryReader(
         trajectory_files,
         md_format=md_format,
         topology=topology,
-    ).read()
+    )
+    trajectory = reader.read()
 
     indices = None
     if selection is not None and len(trajectory) > 0:
@@ -312,10 +390,11 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
         selection=indices,
         group=group,
         by_residue=by_residue,
+        continuous=continuous,
     )
 
     TrajectoryWriter(
         filename=output,
         engine_format=md_format,
         mode=mode,
-    ).write(com_traj)
+    ).write(com_traj, traj_type=reader.traj_format)

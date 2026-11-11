@@ -8,7 +8,7 @@ import numpy as np
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.core import Atom, Cell, CustomElement, Element, Residue
 from PQAnalysis.topology import Topology
-from PQAnalysis.exceptions import PQTypeError, PQNotImplementedError
+from PQAnalysis.exceptions import PQTypeError
 from PQAnalysis.type_checking import get_type_error_message
 
 from PQAnalysis.atomic_system.exceptions import (
@@ -851,42 +851,6 @@ class TestAtomicSystem:
         with pytest.raises(AtomicSystemError) as exception:
             system.center_of_mass_residues  # pylint: disable=pointless-statement
         assert str(exception.value) == "No residues in the system."
-
-        system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            vel=np.array([[0, 0, 0], [1, 1, 1]]),
-        )
-
-        with pytest.raises(PQNotImplementedError) as exception:
-            system.center_of_mass_residues  # pylint: disable=pointless-statement
-        assert str(exception.value) == (
-            "Center of mass of residues not implemented for "
-            "systems with forces, velocities or charges."
-        )
-
-        system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            forces=np.array([[0, 0, 0], [1, 1, 1]]),
-        )
-
-        with pytest.raises(PQNotImplementedError) as exception:
-            system.center_of_mass_residues  # pylint: disable=pointless-statement
-        assert str(exception.value) == (
-            "Center of mass of residues not implemented for "
-            "systems with forces, velocities or charges."
-        )
-
-        system = AtomicSystem(
-            atoms=[Atom('C'), Atom('H')],
-            charges=np.array([0, 1]),
-        )
-
-        with pytest.raises(PQNotImplementedError) as exception:
-            system.center_of_mass_residues  # pylint: disable=pointless-statement
-        assert str(exception.value) == (
-            "Center of mass of residues not implemented for "
-            "systems with forces, velocities or charges."
-        )
 
         topology = Topology(
             atoms=[Atom('C'), Atom('H')],

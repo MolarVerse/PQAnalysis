@@ -10,9 +10,11 @@ import numpy as np
 import pytest
 
 from PQAnalysis.cli.main import main as pqanalysis_main
+from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.io import (
     TrajectoryReader,
+    TrajectoryWriter,
     read_restart_file,
     rst2xyz,
 )
@@ -158,6 +160,121 @@ class TestWaterBox:
     def test_by_residue_needs_the_restart_file(self, water, monkeypatch):
         with pytest.raises(PQValueError, match="no residues"):
             run_cli(monkeypatch, "water.xyz", "--by-residue", "-o", "com.xyz")
+
+
+@pytest.mark.parametrize("example_dir", ["h2o_mm-mshake"], indirect=False)
+class TestWaterBoxVelocities:
+
+    """
+    A vel file of the water box (the restart file has the velocities): the
+    result is the velocity of the center of mass of every molecule.
+    """
+
+    @pytest.fixture
+    def velocities(self, test_integration_folder):
+        system = read_restart_file("input.rst", "moldescriptor.dat")
+        TrajectoryWriter("water.vel").write(
+            Trajectory([system, system]), traj_type="vel"
+        )
+        masses = system.atomic_masses.reshape(-1, 3)
+        expected = (
+            system.vel.reshape(-1, 3, 3) * masses[:, :, None]
+        ).sum(1) / masses.sum(1)[:, None]
+
+        return expected
+
+    def test_by_residue_gives_the_center_of_mass_velocities(
+        self, velocities, monkeypatch
+    ):
+        run_cli(
+            monkeypatch, "water.vel", "--by-residue",
+            "--restart-file", "input.rst",
+            "--moldescriptor-file", "moldescriptor.dat",
+            "-o", "com.vel",
+        )
+
+        written = read_com("com.vel")
+
+        assert len(written) == 2
+        for frame in written:
+            assert frame.n_atoms == N_MOLECULES
+            assert frame.has_vel and not frame.has_pos
+            assert np.allclose(
+                frame.vel, velocities, rtol=1e-5, atol=1e-5 * np.abs(velocities).max()
+            )
+
+    def test_groups_of_three_atoms_give_the_same_velocities(
+        self, velocities, monkeypatch
+    ):
+        run_cli(monkeypatch, "water.vel", "--group", "3", "-o", "groups.vel")
+
+        written = read_com("groups.vel")
+
+        assert np.allclose(
+            written[0].vel, velocities, rtol=1e-5,
+            atol=1e-5 * np.abs(velocities).max(),
+        )
+
+    def test_the_velocity_of_the_center_of_all_atoms_is_the_total_momentum(
+        self, test_integration_folder, monkeypatch
+    ):
+        system = read_restart_file("input.rst", "moldescriptor.dat")
+        TrajectoryWriter("water.vel").write(Trajectory([system]), traj_type="vel")
+
+        run_cli(monkeypatch, "water.vel", "-o", "total.vel")
+
+        # the single center is named after all 6000 atoms, which is too long
+        # for the reader, so the numbers are taken from the line itself
+        line = open("total.vel", encoding="utf-8").read().splitlines()[2]
+        velocity = np.array([float(value) for value in line.split()[-3:]])
+        masses = system.atomic_masses
+        momentum = (system.vel * masses[:, None]).sum(0)
+
+        assert np.allclose(
+            velocity * masses.sum(), momentum,
+            rtol=1e-5, atol=1e-5 * np.abs(momentum).max(),
+        )
+
+    def test_continuous_needs_positions(self, velocities, monkeypatch):
+        with pytest.raises(PQValueError, match="needs the positions"):
+            run_cli(
+                monkeypatch, "water.vel", "--group", "3", "--continuous",
+                "-o", "x.vel",
+            )
+
+
+@pytest.mark.parametrize("example_dir", ["h2o_mm-mshake"], indirect=False)
+class TestContinuousCli:
+
+    def test_the_option_follows_the_centers_over_the_boundary(self, test_integration_folder, monkeypatch):
+        # one water that moves 0.3 of the box per frame along x
+        system = read_restart_file("input.rst", "moldescriptor.dat")
+        box = system.cell.box_lengths[0]
+        frames = []
+        for frame in range(6):
+            moved = system.pos.copy()
+            moved[:, 0] += 0.3 * box * frame
+            frames.append(
+                AtomicSystem(
+                    topology=system.topology, pos=system.cell.image(moved),
+                    cell=system.cell,
+                )
+            )
+        TrajectoryWriter("moving.xyz").write(Trajectory(frames))
+        arguments = [
+            "moving.xyz", "--by-residue", "--restart-file", "input.rst",
+            "--moldescriptor-file", "moldescriptor.dat",
+        ]
+
+        run_cli(monkeypatch, *arguments, "-o", "folded.xyz")
+        run_cli(monkeypatch, *arguments, "--continuous", "-o", "continuous.xyz")
+
+        folded = np.array([f.pos[0] for f in read_com("folded.xyz")])
+        continuous = np.array([f.pos[0] for f in read_com("continuous.xyz")])
+
+        assert np.diff(continuous[:, 0]).min() == pytest.approx(0.3 * box, abs=1e-4)
+        assert np.abs(np.diff(folded[:, 0])).max() > 0.5 * box
+        assert np.allclose(continuous[0], folded[0])
 
 
 @pytest.mark.parametrize("example_dir", ["traj2comtraj"], indirect=False)
