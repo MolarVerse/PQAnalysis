@@ -42,6 +42,7 @@ class TestTraj2COMCLI:
             by_residue=True,
             restart_file="input.rst",
             moldescriptor_file="moldescriptor.dat",
+            continuous=True,
         )
 
         with mock.patch.object(traj2com_cli, "traj2com") as tool:
@@ -58,6 +59,7 @@ class TestTraj2COMCLI:
             by_residue=True,
             restart_file="input.rst",
             moldescriptor_file="moldescriptor.dat",
+            continuous=True,
         )
 
     def test_main_parses_the_options(self, monkeypatch):
@@ -70,7 +72,8 @@ class TestTraj2COMCLI:
             "argv",
             [
                 "traj2com", "traj.xyz", "--group", "3", "--selection", "O",
-                "--use-full-atom-info", "-o", "com.xyz", "--log-file", "off",
+                "--use-full-atom-info", "--continuous", "-o", "com.xyz",
+                "--log-file", "off",
             ],
         )
 
@@ -79,6 +82,7 @@ class TestTraj2COMCLI:
         assert called[0]["trajectory_files"] == ["traj.xyz"]
         assert called[0]["group"] == 3
         assert called[0]["by_residue"] is False
+        assert called[0]["continuous"] is True
         assert called[0]["selection"] == "O"
         assert called[0]["use_full_atom_info"] is True
         assert called[0]["output"] == "com.xyz"

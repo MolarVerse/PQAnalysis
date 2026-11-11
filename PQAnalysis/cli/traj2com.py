@@ -12,10 +12,13 @@ from ._argument_parser import _ArgumentParser
 from ._cli_base import CLIBase
 
 __outputdoc__ = """
-Computes the center of mass trajectory of xyz trajectory files. The center of
+Computes the center of mass trajectory of trajectory files. The center of
 mass is computed for all selected atoms, for groups of consecutive atoms
 (--group) or for every molecule (--by-residue). Molecules are defined by a
-restart file together with a moldescriptor file.
+restart file together with a moldescriptor file. The format is inferred from
+the file extension: an xyz file gives the positions of the centers of mass,
+a vel file their velocities, a force file their forces and a charge file
+their charges.
 """
 
 __epilog__ = "\n"
@@ -116,6 +119,18 @@ class Traj2COMCLI(CLIBase):
             help='The moldescriptor file with the molecule types.'
         )
 
+        parser.add_argument(
+            '--continuous',
+            action='store_true',
+            default=False,
+            help=(
+                'Follow the centers over the periodic boundary instead of '
+                'folding them back into the cell, e.g. for the mean square '
+                'displacement. Needs positions and a center that moves less '
+                'than half of the box between two frames.'
+            )
+        )
+
         parser.parse_engine()
         parser.parse_mode()
 
@@ -140,6 +155,7 @@ class Traj2COMCLI(CLIBase):
             by_residue=args.by_residue,
             restart_file=args.restart_file,
             moldescriptor_file=args.moldescriptor_file,
+            continuous=args.continuous,
         )
 
 

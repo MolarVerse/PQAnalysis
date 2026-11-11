@@ -135,6 +135,192 @@ def center_of_mass_groups(
 
 
 
+def group_mass_weighted_mean(
+    values: np.ndarray,
+    masses: np.ndarray,
+    group_ids: np.ndarray,
+) -> np.ndarray:
+    """
+    Calculates the mass weighted mean of vectors for every group of atoms.
+
+    This is the velocity of the center of mass for velocities. Unlike the
+    positions, vectors need no periodic images.
+
+    Parameters
+    ----------
+    values : np.ndarray
+        The vector of every atom with shape (n_atoms, 3).
+    masses : np.ndarray
+        The masses of the atoms with shape (n_atoms,).
+    group_ids : np.ndarray
+        The group of every atom with shape (n_atoms,).
+
+    Returns
+    -------
+    np.ndarray
+        The mass weighted means with shape (n_groups, 3), one row per
+        distinct group id in ascending order of the ids.
+    """
+
+    values = np.asarray(values, dtype=float)
+    masses = np.asarray(masses, dtype=float)
+    _, inverse = np.unique(np.asarray(group_ids), return_inverse=True)
+    inverse = inverse.reshape(-1)
+    total_mass = np.bincount(inverse, weights=masses)
+
+    return np.stack(
+        [
+            np.bincount(inverse, weights=values[:, k] * masses)
+            for k in range(3)
+        ],
+        axis=1,
+    ) / total_mass[:, None]
+
+
+
+def group_sums(values: np.ndarray, group_ids: np.ndarray) -> np.ndarray:
+    """
+    Calculates the sum of the values of every group of atoms.
+
+    This is the force on the center of mass for forces and the total charge
+    of a group for charges.
+
+    Parameters
+    ----------
+    values : np.ndarray
+        The value of every atom with shape (n_atoms,) or (n_atoms, 3).
+    group_ids : np.ndarray
+        The group of every atom with shape (n_atoms,).
+
+    Returns
+    -------
+    np.ndarray
+        The sums with shape (n_groups,) or (n_groups, 3), one row per
+        distinct group id in ascending order of the ids.
+    """
+
+    values = np.asarray(values, dtype=float)
+    _, inverse = np.unique(np.asarray(group_ids), return_inverse=True)
+    inverse = inverse.reshape(-1)
+
+    if values.ndim == 1:
+        return np.bincount(inverse, weights=values)
+
+    return np.stack(
+        [np.bincount(inverse, weights=values[:, k]) for k in range(3)],
+        axis=1,
+    )
+
+
+
+# The arrays are the natural arguments of the function.
+# pylint: disable-next=too-many-arguments,too-many-positional-arguments
+def center_of_mass_properties(
+    masses: np.ndarray,
+    group_ids: np.ndarray,
+    cell: Cell,
+    positions: np.ndarray | None = None,
+    velocities: np.ndarray | None = None,
+    forces: np.ndarray | None = None,
+    charges: np.ndarray | None = None,
+    check_extent: bool = False,
+) -> dict:
+    """
+    Calculates the properties of the center of mass of every group of atoms
+    for all the data that is given.
+
+    The center of mass has the mass weighted mean of the velocities, the
+    sum of the forces on the atoms as force, and the sum of the charges as
+    charge. Data that is None or empty is left out.
+
+    Parameters
+    ----------
+    masses : np.ndarray
+        The masses of the atoms with shape (n_atoms,).
+    group_ids : np.ndarray
+        The group of every atom with shape (n_atoms,).
+    cell : Cell
+        The cell of the system used for the periodic boundary conditions.
+    positions : np.ndarray, optional
+        The positions with shape (n_atoms, 3).
+    velocities : np.ndarray, optional
+        The velocities with shape (n_atoms, 3).
+    forces : np.ndarray, optional
+        The forces with shape (n_atoms, 3).
+    charges : np.ndarray, optional
+        The charges with shape (n_atoms,).
+    check_extent : bool, optional
+        See :py:func:`center_of_mass_groups`, by default False.
+
+    Returns
+    -------
+    dict
+        The arrays of the data that was given, with the keys ``pos``,
+        ``vel``, ``forces`` and ``charges`` and one row per distinct group
+        id in ascending order of the ids.
+
+    Raises
+    ------
+    AtomicSystemPositionsError
+        If given data does not have the same number of atoms as the masses.
+    AtomicSystemError
+        For the errors of :py:func:`center_of_mass_groups`.
+    """
+
+    given = {
+        "pos": positions,
+        "vel": velocities,
+        "forces": forces,
+        "charges": charges,
+    }
+    given = {
+        key: np.asarray(value, dtype=float)
+        for key, value in given.items()
+        if value is not None and np.size(value) > 0
+    }
+
+    names = {
+        "pos": "positions",
+        "vel": "velocities",
+        "forces": "forces",
+        "charges": "charges",
+    }
+
+    for key, value in given.items():
+        if len(value) != len(masses):
+            logger.error(
+                (
+                    f"The {names[key]} of {len(value)} atoms do not fit to "
+                    f"the {len(masses)} masses."
+                ),
+                exception=AtomicSystemPositionsError,
+            )
+
+    if np.any(group_sums(masses, group_ids) <= 0.0):
+        logger.error(
+            "The total mass of every group must be positive.",
+            exception=AtomicSystemError,
+        )
+
+    result = {}
+
+    if "pos" in given:
+        result["pos"] = center_of_mass_groups(
+            given["pos"], masses, group_ids, cell, check_extent
+        )
+    if "vel" in given:
+        result["vel"] = group_mass_weighted_mean(
+            given["vel"], masses, group_ids
+        )
+    if "forces" in given:
+        result["forces"] = group_sums(given["forces"], group_ids)
+    if "charges" in given:
+        result["charges"] = group_sums(given["charges"], group_ids)
+
+    return result
+
+
+
 def _check_extent(
     relative: np.ndarray,
     inverse: np.ndarray,
