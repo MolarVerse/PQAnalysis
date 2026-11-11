@@ -1,0 +1,1 @@
+- Add the input-file keys reference_com and target_com to the rdf command: the RDF between the centers of mass of molecules (or of atoms and centers) can be run from an input file; the restart_file and moldescriptor_file are required and inferred beside the trajectory like for no_intra_molecular, so no center of mass trajectory has to be written first.

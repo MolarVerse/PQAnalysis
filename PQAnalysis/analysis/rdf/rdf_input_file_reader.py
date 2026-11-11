@@ -43,6 +43,8 @@ class RDFInputFileReader(Reader):
         Reader.log_file_key,
         Reader.use_full_atom_info_key,
         Reader.no_intra_molecular_key,
+        Reader.reference_com_key,
+        Reader.target_com_key,
         Reader.restart_file_key,
         Reader.moldescriptor_file_key,
     ]
@@ -75,6 +77,9 @@ class RDFInputFileReader(Reader):
         InputFileError
             if the no_intra_molecular key is used without a moldescriptor file
         InputFileError
+            if the reference_com or target_com key is used without a restart
+            file and a moldescriptor file
+        InputFileError
             if the moldescriptor_file key is used without a restart file
         """
         super().read()
@@ -89,7 +94,20 @@ class RDFInputFileReader(Reader):
             not self._infer_required_topology_files()
         ):
             self.logger.error(
-                self._missing_topology_files_error_message(),
+                self._missing_topology_files_error_message(
+                    self.no_intra_molecular_key
+                ),
+                exception=InputFileError,
+            )
+
+        if (
+            (self.reference_com is True or self.target_com is True) and
+            not self._infer_required_topology_files()
+        ):
+            self.logger.error(
+                self._missing_topology_files_error_message(
+                    f"{self.reference_com_key} or {self.target_com_key}"
+                ),
                 exception=InputFileError,
             )
 
@@ -224,21 +242,26 @@ class RDFInputFileReader(Reader):
 
         return traj_files[0]
 
-    def _missing_topology_files_error_message(self) -> str:
+    def _missing_topology_files_error_message(self, key: str) -> str:
         """
         Gets the error message for missing topology files.
+
+        Parameters
+        ----------
+        key : str
+            The key (or keys) that require the topology files.
         """
         traj_file = self._first_traj_file()
 
         if traj_file is None:
             return (
-                "The no_intra_molecular key requires both a restart file "
+                f"The {key} key requires both a restart file "
                 "and a moldescriptor file. Could not infer missing files "
                 "because no trajectory files were available."
             )
 
         return (
-            "The no_intra_molecular key requires both a restart file "
+            f"The {key} key requires both a restart file "
             "and a moldescriptor file. Could not infer missing files "
             f"from trajectory file '{traj_file}'. "
             f"Tried restart_file='{self._restart_file_candidate()}' "
@@ -295,6 +318,10 @@ The following keys are optional:
         - Whether to use full atom information for the selections.
     * - {Reader.no_intra_molecular_key}
         - Whether to exclude intra molecular pairs.
+    * - {Reader.reference_com_key}
+        - Whether the reference entities are the centers of mass of the molecules instead of atoms; the reference selection then picks the atoms that define each center. Needs the restart file and the moldescriptor file.
+    * - {Reader.target_com_key}
+        - Whether the target entities are the centers of mass of the molecules instead of atoms, see :code:`{Reader.reference_com_key}`.
     * - {Reader.restart_file_key}
         - The restart file to read the topology from.
     * - {Reader.moldescriptor_file_key}
@@ -320,6 +347,12 @@ other keywords might be required. For example:
   files are inferred from the first trajectory file if possible:
   :code:`trajectory.xyz` maps to :code:`trajectory.rst`, and
   :code:`moldescriptor.dat` is searched in the trajectory directory.
+- If :code:`{Reader.reference_com_key}` or :code:`{Reader.target_com_key}`
+  is enabled, both files are required as well and are inferred in the same
+  way. With centers on both sides, :code:`{Reader.no_intra_molecular_key}`
+  has no effect. With centers on one side it removes the pairs of an atom
+  with the center of its own molecule and, as for atoms, defaults to
+  :code:`True` when both files are given.
 - If the :code:`{Reader.moldescriptor_file_key}` key is specified,
   the :code:`{Reader.restart_file_key}` key is required in order
   to use the reference residues in any meaningful way.

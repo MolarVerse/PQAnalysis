@@ -55,6 +55,8 @@ class PQAnalysisInputFileReader(_FileMixin, _SelectionMixin, _PositionsMixin):
     out_file_key = "out_file"; known_keys.append(out_file_key) # pylint: disable=multiple-statements
     log_file_key = "log_file"; known_keys.append(log_file_key) # pylint: disable=multiple-statements
     no_intra_molecular_key = "no_intra_molecular"; known_keys.append(no_intra_molecular_key) # pylint: disable=multiple-statements
+    reference_com_key = "reference_com"; known_keys.append(reference_com_key) # pylint: disable=multiple-statements
+    target_com_key = "target_com"; known_keys.append(target_com_key) # pylint: disable=multiple-statements
     moldescriptor_file_key = "moldescriptor_file"; known_keys.append(moldescriptor_file_key) # pylint: disable=multiple-statements
     restart_file_key = "restart_file"; known_keys.append(restart_file_key) # pylint: disable=multiple-statements
     #fmt: on
