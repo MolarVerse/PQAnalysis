@@ -43,6 +43,7 @@ class TestTraj2COMCLI:
             restart_file="input.rst",
             moldescriptor_file="moldescriptor.dat",
             continuous=True,
+            molecule_types=["water", 2],
         )
 
         with mock.patch.object(traj2com_cli, "traj2com") as tool:
@@ -60,6 +61,7 @@ class TestTraj2COMCLI:
             restart_file="input.rst",
             moldescriptor_file="moldescriptor.dat",
             continuous=True,
+            molecule_types=["water", 2],
         )
 
     def test_main_parses_the_options(self, monkeypatch):
@@ -73,6 +75,7 @@ class TestTraj2COMCLI:
             [
                 "traj2com", "traj.xyz", "--group", "3", "--selection", "O",
                 "--use-full-atom-info", "--continuous", "-o", "com.xyz",
+                "--molecule-type", "water", "--molecule-type", "2",
                 "--log-file", "off",
             ],
         )
@@ -83,6 +86,7 @@ class TestTraj2COMCLI:
         assert called[0]["group"] == 3
         assert called[0]["by_residue"] is False
         assert called[0]["continuous"] is True
+        assert called[0]["molecule_types"] == ["water", 2]
         assert called[0]["selection"] == "O"
         assert called[0]["use_full_atom_info"] is True
         assert called[0]["output"] == "com.xyz"

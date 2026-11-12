@@ -11,6 +11,8 @@ import pytest
 
 from PQAnalysis.cli.main import main as pqanalysis_main
 from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.core import Atom
+from PQAnalysis.topology import Topology
 from PQAnalysis.exceptions import PQValueError
 from PQAnalysis.io import (
     TrajectoryReader,
@@ -328,3 +330,98 @@ class TestUMCM9:
         )
 
         assert capsys.readouterr().out.count("Zn") >= self.N_FRAMES
+
+
+class TestMoleculeTypes:
+
+    """
+    12 waters, 5 ammonias and 3 ions in a 15 A box, with a moldescriptor file
+    that names the water and the ammonia type: the centers of one kind of
+    molecules through the command line.
+    """
+
+    MOLDESCRIPTOR = (
+        "WATER_TYPE 2\nAMMONIA_TYPE 3\n\n"
+        "Sodium 1 1.0\nNa 0 1.0\n\n"
+        "H2O 3 0.0\nO 0 -0.8\nH 1 0.4\nH 1 0.4\n\n"
+        "NH3 4 0.0\nN 0 -0.8\nH 1 0.27\nH 1 0.27\nH 1 0.27\n"
+    )
+    KINDS = [("H2O", 2, "OHH", 12), ("NH3", 3, "NHHH", 5), ("Sodium", 1, ("Na",), 3)]
+
+    @pytest.fixture
+    def mixed(self, tmp_path, monkeypatch):
+        from PQAnalysis.core import Cell
+        from PQAnalysis.io import MoldescriptorReader
+        from PQAnalysis.io.restart_file.api import write_restart_file
+
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / "moldescriptor.dat").write_text(self.MOLDESCRIPTOR, encoding="utf-8")
+        residues = MoldescriptorReader("moldescriptor.dat").read()
+        by_name = {residue.name: residue for residue in residues}
+
+        rng = np.random.default_rng(4)
+        atoms, residue_ids, centers = [], [], []
+        for name, number, symbols, count in self.KINDS:
+            for _ in range(count):
+                atoms += [Atom(symbol) for symbol in symbols]
+                residue_ids += [number] * len(symbols)
+                centers.append(rng.uniform(0.0, 15.0, 3))
+        positions = np.vstack([
+            c + 0.5 * rng.normal(size=(n, 3))
+            for c, n in zip(centers, [len(s) for _, _, s, k in self.KINDS for _ in range(k)])
+        ])
+        topology = Topology(
+            atoms=atoms, residue_ids=np.array(residue_ids),
+            reference_residues=residues,
+        )
+        system = AtomicSystem(
+            topology=topology, pos=Cell(15, 15, 15).image(positions),
+            cell=Cell(15, 15, 15),
+        )
+        TrajectoryWriter("mixed.xyz").write(Trajectory([system]))
+        write_restart_file(system, "mixed.rst")
+
+        return system, by_name
+
+    def run(self, monkeypatch, *types, output="out.xyz"):
+        arguments = [
+            "mixed.xyz", "--by-residue", "--restart-file", "mixed.rst",
+            "--moldescriptor-file", "moldescriptor.dat", "-o", output,
+        ]
+        for molecule_type in types:
+            arguments += ["--molecule-type", molecule_type]
+        run_cli(monkeypatch, *arguments)
+
+        return read_com(output)[0]
+
+    @pytest.mark.parametrize(
+        "types, names",
+        [
+            (["water"], ["H2O"] * 12),
+            (["Water"], ["H2O"] * 12),
+            (["ammonia"], ["NH3"] * 5),
+            (["2"], ["H2O"] * 12),
+            (["NH3"], ["NH3"] * 5),
+            (["water", "Sodium"], ["H2O"] * 12 + ["Sodium"] * 3),
+            ([], ["H2O"] * 12 + ["NH3"] * 5 + ["Sodium"] * 3),
+        ],
+    )
+    def test_the_selected_molecules(self, mixed, monkeypatch, types, names):
+        com = self.run(monkeypatch, *types)
+
+        assert [atom.name for atom in com.atoms] == names
+
+    def test_the_water_centers_are_those_of_all_molecules(self, mixed, monkeypatch):
+        everything = self.run(monkeypatch, output="all.xyz")
+        waters = self.run(monkeypatch, "water")
+
+        # the molecules are in the order of the file: the waters come first
+        assert np.allclose(waters.pos, everything.pos[:12], atol=1e-5)
+
+    def test_water_without_a_water_type_line_raises(self, mixed, monkeypatch, tmp_path):
+        (tmp_path / "moldescriptor.dat").write_text(
+            self.MOLDESCRIPTOR.replace("WATER_TYPE 2\n", ""), encoding="utf-8"
+        )
+
+        with pytest.raises(PQValueError, match="has no WATER_TYPE line"):
+            self.run(monkeypatch, "water")
