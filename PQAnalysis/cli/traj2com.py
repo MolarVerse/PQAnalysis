@@ -120,6 +120,22 @@ class Traj2COMCLI(CLIBase):
         )
 
         parser.add_argument(
+            '--molecule-type',
+            dest='molecule_types',
+            action='append',
+            type=lambda value: int(value) if value.isdigit() else value,
+            default=None,
+            metavar='TYPE',
+            help=(
+                'With --by-residue, only compute the centers of the '
+                'molecules of this type: the name or the number of the mol '
+                'type in the moldescriptor file, or "water" or "ammonia" for '
+                'the types named by its WATER_TYPE and AMMONIA_TYPE lines. '
+                'Repeat for several types.'
+            )
+        )
+
+        parser.add_argument(
             '--continuous',
             action='store_true',
             default=False,
@@ -156,6 +172,7 @@ class Traj2COMCLI(CLIBase):
             restart_file=args.restart_file,
             moldescriptor_file=args.moldescriptor_file,
             continuous=args.continuous,
+            molecule_types=args.molecule_types,
         )
 
 

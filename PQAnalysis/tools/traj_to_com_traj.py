@@ -6,7 +6,7 @@ import logging
 
 import numpy as np
 
-from beartype.typing import List
+from beartype.typing import List, Sequence
 
 from PQAnalysis import __package_name__
 from PQAnalysis.atomic_system import AtomicSystem
@@ -16,7 +16,12 @@ from PQAnalysis.atomic_system._center_of_mass import (
 )
 from PQAnalysis.core import Atom
 from PQAnalysis.exceptions import PQValueError
-from PQAnalysis.io import TrajectoryReader, TrajectoryWriter, read_restart_file
+from PQAnalysis.io import (
+    MoldescriptorReader,
+    TrajectoryReader,
+    TrajectoryWriter,
+    read_restart_file,
+)
 from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.topology import Selection, SelectionCompatible, Topology
 from PQAnalysis.traj import MDEngineFormat, Trajectory
@@ -32,13 +37,14 @@ logger = setup_logger(logger)
 # TODO: add atom to element mapper if atom name not element names
 # TODO rethink concept of selection/getitem/slices
 @runtime_type_checking
-def traj_to_com_traj(
+def traj_to_com_traj(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     trajectory: Trajectory,
     selection=None,
     group=None,
     by_residue: bool = False,
     topology: Topology | None = None,
     continuous: bool = False,
+    molecule_types: Sequence[str | int] | None = None,
 ) -> Trajectory:
     """
     Function that computes the center of mass trajectory for a given selection.
@@ -97,6 +103,13 @@ def traj_to_com_traj(
         farther than half of the box between two frames. The first frame is
         folded into the cell. Has no effect in a vacuum cell. By default
         False.
+    molecule_types : Sequence[str | int], optional
+        With by_residue, only the molecules of these types get a center of
+        mass, e.g. ``["TIP3P-Water"]`` or ``[1]``. A type is given by the name
+        of the mol type in the moldescriptor file or by its number (the id of
+        the residue). Combined with the selection, the center of a molecule
+        is computed from the selected atoms of the molecules of these types.
+        By default None (all molecules).
 
     Returns
     -------
@@ -114,12 +127,20 @@ def traj_to_com_traj(
     AtomicSystemMassError
         If a selected atom has no mass.
     PQValueError
-        If continuous is used for a trajectory without positions.
+        If continuous is used for a trajectory without positions, if
+        molecule_types is used without by_residue, or if a molecule type
+        does not exist in the topology.
     """
 
     if by_residue and group is not None:
         logger.error(
             "The parameters group and by_residue cannot be combined.",
+            exception=PQValueError,
+        )
+
+    if molecule_types is not None and not by_residue:
+        logger.error(
+            "The parameter molecule_types needs by_residue.",
             exception=PQValueError,
         )
 
@@ -134,7 +155,7 @@ def traj_to_com_traj(
 
     if by_residue:
         com_traj = _traj_to_com_traj_by_residue(
-            trajectory, selection, topology
+            trajectory, selection, topology, molecule_types
         )
     else:
         com_traj = Trajectory()
@@ -176,6 +197,39 @@ def _make_continuous(com_traj: Trajectory) -> None:
         previous = fractional
 
 
+def _in_molecule_types(
+    topology: Topology, molecule_types: Sequence[str | int]
+) -> np.ndarray:
+    """
+    Returns for every residue of the topology whether it is of one of the
+    given types, which are given by name or by number.
+    """
+
+    names = {m for m in molecule_types if isinstance(m, str)}
+    numbers = {m for m in molecule_types if not isinstance(m, str)}
+    available_names = sorted({residue.name for residue in topology.residues})
+    available_numbers = sorted({residue.id for residue in topology.residues})
+
+    unknown = [
+        m for m in molecule_types
+        if (m not in available_names and m not in available_numbers)
+    ]
+    if unknown:
+        logger.error(
+            (
+                f"The molecule types {unknown} are not in the topology, which "
+                f"has the types {available_names} with the numbers "
+                f"{available_numbers}."
+            ),
+            exception=PQValueError,
+        )
+
+    return np.array([
+        residue.name in names or residue.id in numbers
+        for residue in topology.residues
+    ])
+
+
 def _take(values: np.ndarray, indices: np.ndarray) -> np.ndarray | None:
     """Returns the values of the given atoms, or None if there are none."""
 
@@ -204,6 +258,7 @@ def _traj_to_com_traj_by_residue(
     trajectory: Trajectory,
     selection,
     topology: Topology | None,
+    molecule_types: Sequence[str | int] | None = None,
 ) -> Trajectory:
     """Center of mass trajectory of the residues of a topology."""
 
@@ -230,6 +285,13 @@ def _traj_to_com_traj_by_residue(
         )
 
     indices = _selected_indices(first_frame.atoms, selection)
+
+    if molecule_types is not None:
+        indices = indices[
+            _in_molecule_types(topology, molecule_types)[
+                topology.residue_numbers[indices]]
+        ]
+
     group_ids = topology.residue_numbers[indices]
 
     _warn_about_placeholder_atoms(first_frame.atoms, indices)
@@ -282,6 +344,7 @@ def _warn_about_placeholder_atoms(atoms, indices) -> None:
 
 
 @runtime_type_checking
+# pylint: disable-next=too-many-locals
 def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     trajectory_files: List[str],
     output: str | None = None,
@@ -294,6 +357,7 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
     restart_file: str | None = None,
     moldescriptor_file: str | None = None,
     continuous: bool = False,
+    molecule_types: Sequence[str | int] | None = None,
 ) -> None:
     """
     Reads trajectory files, computes the center of mass trajectory with
@@ -343,6 +407,12 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
     continuous : bool, optional
         Follow the centers over the periodic boundary instead of folding them
         back into the cell, see :py:func:`traj_to_com_traj`. By default False.
+    molecule_types : Sequence[str | int], optional
+        With by_residue, only the molecules of these types get a center of
+        mass, see :py:func:`traj_to_com_traj`. In addition to the names and
+        numbers of the mol types, the keywords ``water`` and ``ammonia``
+        (any case) select the mol types that the moldescriptor file names
+        with its WATER_TYPE and AMMONIA_TYPE lines.
 
     Raises
     ------
@@ -357,6 +427,8 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
             "molecules.",
             exception=PQValueError,
         )
+
+    molecule_types = _resolve_type_keywords(molecule_types, moldescriptor_file)
 
     topology = None
     if restart_file is not None:
@@ -391,6 +463,7 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
         group=group,
         by_residue=by_residue,
         continuous=continuous,
+        molecule_types=molecule_types,
     )
 
     TrajectoryWriter(
@@ -398,3 +471,57 @@ def traj2com(  # pylint: disable=too-many-arguments,too-many-positional-argument
         engine_format=md_format,
         mode=mode,
     ).write(com_traj, traj_type=reader.traj_format)
+
+
+
+def _resolve_type_keywords(
+    molecule_types: Sequence[str | int] | None,
+    moldescriptor_file: str | None,
+) -> Sequence[str | int] | None:
+    """
+    Replaces the keywords water and ammonia by the mol type numbers that the
+    moldescriptor file names with its WATER_TYPE and AMMONIA_TYPE lines.
+    """
+
+    if molecule_types is None:
+        return None
+
+    keywords = {"water": "water_type", "ammonia": "ammonia_type"}
+    resolved = []
+    reader = None
+
+    for molecule_type in molecule_types:
+        attribute = keywords.get(str(molecule_type).lower())
+
+        if attribute is None:
+            resolved.append(molecule_type)
+            continue
+
+        if moldescriptor_file is None:
+            logger.error(
+                (
+                    f"The molecule type '{molecule_type}' is a keyword of the "
+                    "WATER_TYPE and AMMONIA_TYPE lines and needs the "
+                    "moldescriptor file."
+                ),
+                exception=PQValueError,
+            )
+
+        if reader is None:
+            reader = MoldescriptorReader(moldescriptor_file)
+            reader.read()
+
+        number = getattr(reader, attribute)
+        if number is None:
+            logger.error(
+                (
+                    f"The moldescriptor file '{moldescriptor_file}' has no "
+                    f"{attribute.upper()} line for the molecule type "
+                    f"'{molecule_type}'."
+                ),
+                exception=PQValueError,
+            )
+
+        resolved.append(number)
+
+    return resolved

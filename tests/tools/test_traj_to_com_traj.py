@@ -769,3 +769,104 @@ class TestVelocitiesForcesAndCharges:
 
         with pytest.raises(AtomicSystemMassError):
             traj_to_com_traj(Trajectory([frame]), by_residue=True)
+
+
+class TestMoleculeTypes:
+
+    """Only the molecules of some types, by name or number (WAT, MET, WAT)."""
+
+    @staticmethod
+    def traj():
+        return TestByResidue().trajectory(1)
+
+    @pytest.mark.parametrize(
+        "types, names",
+        [(["WAT"], ["WAT", "WAT"]), ([2], ["MET"]), (["WAT", 2], ["WAT", "MET", "WAT"]), ([1], ["WAT", "WAT"])],
+    )
+    def test_only_the_molecules_of_the_types(self, types, names):
+        com = traj_to_com_traj(self.traj(), by_residue=True, molecule_types=types)[0]
+
+        assert [atom.name for atom in com.atoms] == names
+
+    def test_the_centers_equal_those_of_all_molecules(self):
+        traj = self.traj()
+        everything = traj_to_com_traj(traj, by_residue=True)[0]
+        waters = traj_to_com_traj(traj, by_residue=True, molecule_types=["WAT"])[0]
+        methane = traj_to_com_traj(traj, by_residue=True, molecule_types=["MET"])[0]
+
+        assert np.array_equal(waters.pos, everything.pos[[0, 2]])
+        assert np.array_equal(methane.pos, everything.pos[[1]])
+
+    def test_the_selection_is_combined_with_the_types(self):
+        traj = self.traj()
+        hydrogens = np.array([1, 2, 4, 5, 6, 7, 9, 10])
+
+        com = traj_to_com_traj(
+            traj, selection=hydrogens, by_residue=True, molecule_types=["MET"]
+        )[0]
+        reference = traj_to_com_traj(
+            traj, selection=hydrogens[2:6], by_residue=True
+        )[0]
+
+        assert com.n_atoms == 1
+        assert np.array_equal(com.pos, reference.pos)
+
+    def test_velocities_of_the_waters_only(self):
+        frame, _ = with_properties(vel=True)
+        masses = np.array([atom.mass for atom in frame.atoms])
+        waters = np.r_[0:3, 8:11]
+
+        com = traj_to_com_traj(
+            Trajectory([frame]), by_residue=True, molecule_types=["WAT"]
+        )[0]
+
+        for row, atoms in enumerate((waters[:3], waters[3:])):
+            assert np.allclose(
+                com.vel[row],
+                (frame.vel[atoms] * masses[atoms, None]).sum(0) / masses[atoms].sum(),
+            )
+
+    def test_an_unknown_type_raises_and_lists_the_known_ones(self):
+        with pytest.raises(PQValueError, match=r"\['ION'\] are not in the topology.*\['MET', 'WAT'\].*\[1, 2\]"):
+            traj_to_com_traj(self.traj(), by_residue=True, molecule_types=["ION"])
+
+    def test_types_need_by_residue(self):
+        with pytest.raises(PQValueError, match="needs by_residue"):
+            traj_to_com_traj(self.traj(), group=3, molecule_types=["WAT"])
+
+
+class TestTypeKeywords:
+
+    TEXT = (
+        "WATER_TYPE 2\nAMMONIA_TYPE 3\n"
+        "Na 1 1.0\nNa 0 1.0\n"
+        "H2O 3 0.0\nO 0 -0.8\nH 1 0.4\nH 1 0.4\n"
+        "NH3 4 0.0\nN 0 -0.8\nH 1 0.27\nH 1 0.27\nH 1 0.27\n"
+    )
+
+    @staticmethod
+    def resolve(types, text=None, tmp_path=None):
+        from PQAnalysis.tools.traj_to_com_traj import _resolve_type_keywords
+
+        path = None
+        if text is not None:
+            path = tmp_path / "moldescriptor.dat"
+            path.write_text(text, encoding="utf-8")
+            path = str(path)
+
+        return _resolve_type_keywords(types, path)
+
+    def test_keywords_become_the_numbers_of_the_file(self, tmp_path):
+        assert self.resolve(["Water", "AMMONIA", "Na", 1], self.TEXT, tmp_path) == [2, 3, "Na", 1]
+
+    def test_nothing_to_resolve(self):
+        assert self.resolve(None) is None
+        assert self.resolve(["WAT", 2]) == ["WAT", 2]
+
+    def test_a_keyword_needs_the_moldescriptor_file(self):
+        with pytest.raises(PQValueError, match="needs the moldescriptor file"):
+            self.resolve(["water"])
+
+    def test_a_keyword_needs_its_line(self, tmp_path):
+        with pytest.raises(PQValueError, match="has no AMMONIA_TYPE line"):
+            self.resolve(["ammonia"], "WATER_TYPE 1\nH2O 3 0.0\nO 0 -0.8\nH 1 0.4\nH 1 0.4\n", tmp_path)
