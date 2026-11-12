@@ -1,0 +1,113 @@
+name: Create Release PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Release version in vX.Y.Z format
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Validate version
+        id: release
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if [[ ! "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Version must use vX.Y.Z format."
+            exit 1
+          fi
+
+          echo "branch=release/$VERSION" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      # Pull requests and pushes made with the default GITHUB_TOKEN do not
+      # trigger other workflows, so the release PR would get no checks. Set the
+      # repository secret RELEASE_TOKEN (a fine-grained token with contents and
+      # pull-requests write access) to make them run.
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: dev
+          token: ${{ secrets.RELEASE_TOKEN || github.token }}
+
+      - name: Check the release does not exist
+        env:
+          BRANCH: ${{ steps.release.outputs.branch }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$VERSION" >/dev/null; then
+            echo "Tag $VERSION already exists."
+            exit 1
+          fi
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            echo "Branch $BRANCH already exists."
+            exit 1
+          fi
+
+      - name: Check that main is merged into dev
+        run: |
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            echo "main has commits that are not in dev; merge main into dev first."
+            exit 1
+          fi
+
+      - name: Test changelog tooling
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+
+      - name: Prepare changelogs
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          python3 scripts/update_changelog.py --check
+          python3 scripts/update_changelog.py "$VERSION"
+
+      - name: Create release branch
+        env:
+          BRANCH: ${{ steps.release.outputs.branch }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add CHANGELOG.md DEV-CHANGELOG.md changes/
+          git commit -m "docs: prepare changelogs for $VERSION"
+          git push --set-upstream origin "$BRANCH"
+
+      - name: Open release pull request
+        env:
+          BRANCH: ${{ steps.release.outputs.branch }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          python3 scripts/update_changelog.py --notes "$VERSION" > notes.md
+          {
+            echo "Release $VERSION."
+            echo
+            cat notes.md
+            echo
+            echo "After merging, tag the merge commit on main: \`git tag -a $VERSION -m \"PQAnalysis $VERSION\" && git push origin $VERSION\`."
+          } > body.md
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(release): $VERSION" \
+            --body-file body.md
