@@ -1,1 +1,0 @@
-- `selection`, `reference_selection` and `target_selection` in input files accept a bare atom index (`72`) or an index range (`72-80`).
