@@ -185,3 +185,19 @@ class TestPathResolution:
 
         assert reader.resolve_path(None) is None
         assert reader.resolve_paths(None) is None
+
+    def test_selection_accepts_indices(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        self._write(
+            tmp_path / "input.in",
+            "reference_selection = 72\n"
+            "target_selection = 3-5\n"
+            "selection = O\n",
+        )
+
+        reader = PQAnalysisInputFileReader("input.in")
+        reader.read()
+
+        assert reader.reference_selection == "72"
+        assert reader.target_selection == "3-5"
+        assert reader.selection == "O"

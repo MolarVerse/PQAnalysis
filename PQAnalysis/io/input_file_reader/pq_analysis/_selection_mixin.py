@@ -3,7 +3,7 @@ A module containing a mixin class to read all selection
 related keywords from the input dictionary
 """
 
-from ._parse import _parse_bool, _parse_string
+from ._parse import _parse_bool, _parse_selection
 
 
 
@@ -22,17 +22,17 @@ class _SelectionMixin:
     @property
     def selection(self) -> str | None:
         """str | None: The selection of the simulation."""
-        return _parse_string(self.dictionary, self.selection_key)
+        return _parse_selection(self.dictionary, self.selection_key)
 
     @property
     def reference_selection(self) -> str | None:
         """str | None: The reference selection of the simulation."""
-        return _parse_string(self.dictionary, self.reference_selection_key)
+        return _parse_selection(self.dictionary, self.reference_selection_key)
 
     @property
     def target_selection(self) -> str | None:
         """str | None: The target selection of the simulation."""
-        return _parse_string(self.dictionary, self.target_selection_key)
+        return _parse_selection(self.dictionary, self.target_selection_key)
 
     @property
     def use_full_atom_info(self) -> bool | None:
