@@ -80,6 +80,8 @@ Format conversion
    ~PQAnalysis.io.conversion_api.traj2box
    ~PQAnalysis.io.conversion_api.traj2extxyz
    ~PQAnalysis.io.conversion_api.traj2qmcfc
+   ~PQAnalysis.tools.traj_to_com_traj.traj2com
+   ~PQAnalysis.tools.traj_to_com_traj.traj_to_com_traj
 
 See :doc:`api` for classes, enums, exceptions and the generated module
 hierarchy.

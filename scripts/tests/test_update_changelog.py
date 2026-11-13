@@ -1,0 +1,358 @@
+import importlib.util
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest import mock
+
+
+SCRIPT = Path(__file__).resolve().parents[1] / "update_changelog.py"
+sys.path.insert(0, str(SCRIPT.parent))
+SPEC = importlib.util.spec_from_file_location("update_changelog", SCRIPT)
+CHANGELOG = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(CHANGELOG)
+
+
+class ChangelogTests(unittest.TestCase):
+    def test_retry_after_interrupted_writes_or_fragment_cleanup_keeps_each_note_once(self):
+        for failure in ("write", "unlink"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary)
+                paths = {audience: root / f"{audience}.md" for audience in ("user", "developer")}
+                fragments = {}
+                for audience, path in paths.items():
+                    path.write_text("# Changelog\n\n## Next Release\n\n")
+                    folder = root / "changes" / audience
+                    folder.mkdir(parents=True)
+                    fragments[audience] = folder / "bugfix.correction.md"
+                    fragments[audience].write_text(f"- Correct the {audience} output.\n")
+
+                write_text = Path.write_text
+                unlink = Path.unlink
+
+                def interrupt_write(path, *args, **kwargs):
+                    if path == paths["developer"]:
+                        raise OSError("simulated interrupted write")
+                    return write_text(path, *args, **kwargs)
+
+                def interrupt_unlink(path, *args, **kwargs):
+                    if path == fragments["user"]:
+                        raise OSError("simulated interrupted cleanup")
+                    return unlink(path, *args, **kwargs)
+
+                with (
+                    mock.patch.object(CHANGELOG, "USER_CHANGELOG", paths["user"]),
+                    mock.patch.object(CHANGELOG, "DEV_CHANGELOG", paths["developer"]),
+                    mock.patch.object(CHANGELOG, "CHANGES_DIR", root / "changes"),
+                ):
+                    with (
+                        mock.patch.object(Path, "write_text", interrupt_write if failure == "write" else write_text),
+                        mock.patch.object(Path, "unlink", interrupt_unlink if failure == "unlink" else unlink),
+                        self.assertRaisesRegex(OSError, "simulated interrupted"),
+                    ):
+                        CHANGELOG.update_changelogs("v1.1.0")
+                    CHANGELOG.update_changelogs("v1.1.0")
+                    for audience, path in paths.items():
+                        text = path.read_text()
+                        self.assertEqual(text.count(f"- Correct the {audience} output."), 1)
+                        self.assertEqual(text.count("## [v1.1.0]"), 1)
+                        self.assertFalse(fragments[audience].exists())
+
+    def test_release_notes_require_a_bullet(self):
+        self.assertFalse(
+            CHANGELOG.has_release_notes(
+                ["", "### Bug Fixes", "", "No release notes yet."]
+            )
+        )
+        self.assertTrue(
+            CHANGELOG.has_release_notes(
+                ["", "### Bug Fixes", "", "- Fix trajectory output."]
+            )
+        )
+
+    def test_release_section_returns_only_the_requested_release(self):
+        lines = [
+            "# Changelog",
+            "<!-- insertion marker -->",
+            "## [v1.1.0](url) - 2026-01-02",
+            "",
+            "### Bug Fixes",
+            "",
+            "- Fix trajectory output.",
+            "",
+            "## [v1.0.0](url) - 2026-01-01",
+            "",
+            "- Old entry.",
+        ]
+
+        self.assertEqual(
+            ["### Bug Fixes", "", "- Fix trajectory output."],
+            CHANGELOG.release_section(lines, "v1.1.0"),
+        )
+        self.assertEqual([], CHANGELOG.release_section(lines, "v2.0.0"))
+
+    def test_print_release_notes_combines_both_audiences(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            user_changelog = root / "CHANGELOG.md"
+            dev_changelog = root / "DEV-CHANGELOG.md"
+            user_changelog.write_text(
+                "# Changelog\n\n## Next Release\n\n<!-- insertion marker -->\n"
+                "## [v1.1.0](url) - 2026-01-02\n\n### Bug Fixes\n\n- Fix output.\n",
+                encoding="utf-8",
+            )
+            dev_changelog.write_text(
+                "# Developer Changelog\n\n## Next Release\n\n<!-- insertion marker -->\n"
+                "## [v1.1.0](url) - 2026-01-02\n\n### CI\n\n- Add a check.\n",
+                encoding="utf-8",
+            )
+
+            with mock.patch.object(
+                CHANGELOG, "USER_CHANGELOG", user_changelog
+            ), mock.patch.object(
+                CHANGELOG, "DEV_CHANGELOG", dev_changelog
+            ), mock.patch("builtins.print") as printed:
+                CHANGELOG.print_release_notes("v1.1.0")
+
+            notes = printed.call_args.args[0]
+            self.assertIn("- Fix output.", notes)
+            self.assertIn("## Developer Changes", notes)
+            self.assertIn("- Add a check.", notes)
+
+            with mock.patch.object(
+                CHANGELOG, "USER_CHANGELOG", user_changelog
+            ), mock.patch.object(CHANGELOG, "DEV_CHANGELOG", dev_changelog):
+                with self.assertRaises(SystemExit):
+                    CHANGELOG.print_release_notes("v9.9.9")
+
+    def test_stamp_keeps_empty_next_release_and_history(self):
+        lines = [
+            "# Changelog",
+            "",
+            "## Next Release",
+            "",
+            "### Bug Fixes",
+            "",
+            "- Fix trajectory output.",
+            "",
+            "<!-- insertion marker -->",
+            "## [v1.0.0](release-url) - 2025-01-01",
+        ]
+
+        head, body, tail = CHANGELOG.split_next_release(
+            lines, "CHANGELOG.md"
+        )
+        stamped = CHANGELOG.stamp_release(
+            head, body, tail, "v1.1.0", "MolarVerse/PQAnalysis"
+        )
+
+        next_index = stamped.index("## Next Release")
+        marker_index = stamped.index("<!-- insertion marker -->")
+        release_index = next(
+            index
+            for index, line in enumerate(stamped)
+            if line.startswith("## [v1.1.0]")
+        )
+        old_release_index = stamped.index(
+            "## [v1.0.0](release-url) - 2025-01-01"
+        )
+
+        self.assertLess(next_index, marker_index)
+        self.assertLess(marker_index, release_index)
+        self.assertLess(release_index, old_release_index)
+        self.assertIn(
+            "- Fix trajectory output.",
+            stamped[release_index:old_release_index],
+        )
+        self.assertFalse(
+            CHANGELOG.has_release_notes(
+                stamped[next_index + 1 : marker_index]
+            )
+        )
+
+    def test_release_routes_fragments_and_preserves_unreleased_entries(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            user_changelog = root / "CHANGELOG.md"
+            dev_changelog = root / "DEV-CHANGELOG.md"
+            changes_dir = root / "changes"
+            changes_dir.mkdir()
+
+            user_changelog.write_text(
+                "# Changelog\n\n"
+                "## Next Release\n\n"
+                "### Bug Fixes\n\n"
+                "- Fix trajectory output.\n\n"
+                "<!-- insertion marker -->\n"
+                "## [v1.0.0](release-url) - 2025-01-01\n",
+                encoding="utf-8",
+            )
+            dev_changelog.write_text(
+                "# Developer Changelog\n\n"
+                "## Next Release\n\n"
+                "### Internal\n\n"
+                "- Existing developer note.\n\n"
+                "<!-- insertion marker -->\n"
+                "## [v1.0.0](release-url) - 2025-01-01\n",
+                encoding="utf-8",
+            )
+            (changes_dir / "user").mkdir()
+            (changes_dir / "developer").mkdir()
+            user_fragment = (
+                changes_dir / "user" / "enhancement.trajectory.md"
+            )
+            user_fragment.write_text(
+                "- Add effective step metadata to trajectory output.\n",
+                encoding="utf-8",
+            )
+            developer_fragment = (
+                changes_dir / "developer" / "test.parser.md"
+            )
+            developer_fragment.write_text(
+                "- Cover changelog fragment parsing.\n"
+                "- Add a regression fixture.\n",
+                encoding="utf-8",
+            )
+
+            with (
+                mock.patch.object(
+                    CHANGELOG, "USER_CHANGELOG", user_changelog
+                ),
+                mock.patch.object(
+                    CHANGELOG, "DEV_CHANGELOG", dev_changelog
+                ),
+                mock.patch.object(CHANGELOG, "CHANGES_DIR", changes_dir),
+            ):
+                CHANGELOG.update_changelogs("v1.1.0")
+
+            user_text = user_changelog.read_text(encoding="utf-8")
+            dev_text = dev_changelog.read_text(encoding="utf-8")
+
+            self.assertIn("## Next Release\n\n<!-- insertion marker -->", user_text)
+            self.assertIn("- Fix trajectory output.", user_text)
+            self.assertIn(
+                "- Add effective step metadata to trajectory output.",
+                user_text,
+            )
+            self.assertNotIn("Cover changelog fragment parsing", user_text)
+            self.assertIn("- Existing developer note.", dev_text)
+            self.assertIn("- Cover changelog fragment parsing.", dev_text)
+            self.assertIn("- Add a regression fixture.", dev_text)
+            self.assertNotIn("effective step metadata", dev_text)
+            self.assertFalse(user_fragment.exists())
+            self.assertFalse(developer_fragment.exists())
+
+            developer_fragment.write_text(
+                "- Include a later release correction.\n", encoding="utf-8"
+            )
+            with (
+                mock.patch.object(CHANGELOG, "USER_CHANGELOG", user_changelog),
+                mock.patch.object(CHANGELOG, "DEV_CHANGELOG", dev_changelog),
+                mock.patch.object(CHANGELOG, "CHANGES_DIR", changes_dir),
+            ):
+                CHANGELOG.update_changelogs("v1.1.0")
+                updated = dev_changelog.read_text(encoding="utf-8")
+                self.assertEqual(updated.count("## [v1.1.0]"), 1)
+                self.assertEqual(updated.count("- Existing developer note."), 1)
+                self.assertEqual(updated.count("- Cover changelog fragment parsing."), 1)
+                self.assertIn("- Include a later release correction.", updated)
+                self.assertIn("## [v1.0.0](release-url) - 2025-01-01", updated)
+                self.assertEqual(user_changelog.read_text(encoding="utf-8"), user_text)
+                self.assertFalse(developer_fragment.exists())
+                CHANGELOG.update_changelogs("v1.1.0")
+                self.assertEqual(dev_changelog.read_text(encoding="utf-8"), updated)
+
+    def test_release_keeps_the_placeholder_files_of_the_fragment_folders(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            user_changelog = root / "CHANGELOG.md"
+            dev_changelog = root / "DEV-CHANGELOG.md"
+            for path, title in (
+                (user_changelog, "# Changelog"),
+                (dev_changelog, "# Developer Changelog"),
+            ):
+                path.write_text(
+                    f"{title}\n\n## Next Release\n\n"
+                    "<!-- insertion marker -->\n"
+                    "## [v1.0.0](release-url) - 2025-01-01\n",
+                    encoding="utf-8",
+                )
+            changes_dir = root / "changes"
+            for audience in ("user", "developer"):
+                (changes_dir / audience).mkdir(parents=True)
+                (changes_dir / audience / ".gitkeep").touch()
+            fragment = changes_dir / "user" / "bugfix.output.md"
+            fragment.write_text("- Fix the output.\n", encoding="utf-8")
+
+            with (
+                mock.patch.object(CHANGELOG, "USER_CHANGELOG", user_changelog),
+                mock.patch.object(CHANGELOG, "DEV_CHANGELOG", dev_changelog),
+                mock.patch.object(CHANGELOG, "CHANGES_DIR", changes_dir),
+            ):
+                CHANGELOG.update_changelogs("v1.1.0")
+
+            self.assertFalse(fragment.exists())
+            self.assertTrue((changes_dir / "user" / ".gitkeep").is_file())
+            self.assertTrue((changes_dir / "developer" / ".gitkeep").is_file())
+
+    def test_the_repository_tracks_a_placeholder_in_each_fragment_folder(self):
+        # Git does not track empty folders, so without these files a release
+        # (which consumes every fragment) removes changes/user and
+        # changes/developer from the tree.
+        changes_dir = Path(__file__).resolve().parents[2] / "changes"
+        for audience in ("user", "developer"):
+            self.assertTrue((changes_dir / audience / ".gitkeep").is_file(), audience)
+
+    def test_developer_only_release_leaves_user_changelog_unchanged(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            user_changelog = root / "CHANGELOG.md"
+            dev_changelog = root / "DEV-CHANGELOG.md"
+            changes_dir = root / "changes"
+            changes_dir.mkdir()
+
+            user_text = (
+                "# Changelog\n\n"
+                "## Next Release\n\n"
+                "<!-- insertion marker -->\n"
+                "## [v1.0.0](release-url) - 2025-01-01\n"
+            )
+            user_changelog.write_text(user_text, encoding="utf-8")
+            dev_changelog.write_text(
+                "# Developer Changelog\n\n"
+                "## Next Release\n\n"
+                "<!-- insertion marker -->\n"
+                "## [v1.0.0](release-url) - 2025-01-01\n",
+                encoding="utf-8",
+            )
+            (changes_dir / "developer").mkdir()
+            developer_fragment = (
+                changes_dir / "developer" / "ci.workflow.md"
+            )
+            developer_fragment.write_text(
+                "- Enforce changelog audiences.\n", encoding="utf-8"
+            )
+
+            with (
+                mock.patch.object(
+                    CHANGELOG, "USER_CHANGELOG", user_changelog
+                ),
+                mock.patch.object(
+                    CHANGELOG, "DEV_CHANGELOG", dev_changelog
+                ),
+                mock.patch.object(CHANGELOG, "CHANGES_DIR", changes_dir),
+            ):
+                CHANGELOG.check_release_changelogs()
+                CHANGELOG.update_changelogs("v1.1.0")
+
+            self.assertEqual(
+                user_text, user_changelog.read_text(encoding="utf-8")
+            )
+            dev_text = dev_changelog.read_text(encoding="utf-8")
+            self.assertIn("## [v1.1.0]", dev_text)
+            self.assertIn("- Enforce changelog audiences.", dev_text)
+            self.assertFalse(developer_fragment.exists())
+
+
+if __name__ == "__main__":
+    unittest.main()

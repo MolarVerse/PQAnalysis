@@ -31,6 +31,13 @@ class MoldescriptorReader(BaseReader):
 
     Calling the read method returns a list of mol types. Each mol
     type is a :py:class:`~PQAnalysis.core.residue.Residue` object.
+
+    The lines ``WATER_TYPE n`` and ``AMMONIA_TYPE n`` of the file name the
+    mol type (by its number, i.e. the ``id`` of the residue) of the water and
+    the ammonia molecules. They are available after reading as the attributes
+    ``water_type`` and ``ammonia_type`` (None if the line is missing). They
+    only point to a mol type of the file, the mol type itself still needs its
+    own entry.
     """
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
@@ -45,6 +52,12 @@ class MoldescriptorReader(BaseReader):
             The filename of the moldescriptor file.
         """
         super().__init__(filename)
+
+        #: int | None: The mol type number of the water molecules.
+        self.water_type = None
+
+        #: int | None: The mol type number of the ammonia molecules.
+        self.ammonia_type = None
 
     def read(self) -> Residues:
         """
@@ -64,7 +77,20 @@ class MoldescriptorReader(BaseReader):
         MoldescriptorReaderError
             If a mol type declares more atoms than atom lines follow
             before the end of the file.
+        MoldescriptorReaderError
+            If the number of a WATER_TYPE or AMMONIA_TYPE line is not an
+            integer.
+
+        Notes
+        -----
+        A warning is logged if the water type does not point to a mol type
+        of the file or the mol type is not made of the three atoms O, H and
+        H in this order (as PQ requires), and if the ammonia type does not
+        point to a mol type of the file.
         """
+        self.water_type = None
+        self.ammonia_type = None
+
         with open(self.filename, 'r', encoding='utf-8') as f:
             lines = f.readlines()
 
@@ -87,10 +113,10 @@ class MoldescriptorReader(BaseReader):
                 splitted_line = splitted_line.strip().split()
 
                 if splitted_line[0].lower() == "water_type":
-                    # TODO: water_type = int(splitted_line[1])
+                    self.water_type = self._read_type_number(splitted_line)
                     counter += 1
                 elif splitted_line[0].lower() == "ammonia_type":
-                    # TODO: ammonia_type = int(splitted_line[1])
+                    self.ammonia_type = self._read_type_number(splitted_line)
                     counter += 1
                 else:
                     if len(splitted_line) != 3:
@@ -126,7 +152,57 @@ class MoldescriptorReader(BaseReader):
 
                     counter += n_atoms + 1
 
+        self._check_special_types(mol_types)
+
         return mol_types
+
+    def _read_type_number(self, splitted_line: List[str]) -> int:
+        """Parses the number of a WATER_TYPE or AMMONIA_TYPE line."""
+
+        try:
+            if len(splitted_line) != 2:
+                raise ValueError
+            return int(splitted_line[1])
+        except ValueError:
+            self.logger.error(
+                (
+                    f"The line of {splitted_line[0]} needs exactly one "
+                    f"integer, got: '{' '.join(splitted_line)}'"
+                ),
+                exception=MoldescriptorReaderError
+            )
+
+        return None  # pragma: no cover - the error above raises
+
+    def _check_special_types(self, mol_types: Residues) -> None:
+        """Warns about water and ammonia types that do not fit the file."""
+
+        numbers = {mol_type.id: mol_type for mol_type in mol_types}
+
+        for key, number in (
+            ("WATER_TYPE", self.water_type),
+            ("AMMONIA_TYPE", self.ammonia_type),
+        ):
+            if number is not None and number not in numbers:
+                self.logger.warning(
+                    (
+                        f"{key} {number} points to a mol type that is not in "
+                        f"the file, which has the mol types 1 to "
+                        f"{len(mol_types)}."
+                    )
+                )
+
+        water = numbers.get(self.water_type)
+        if water is not None and [e.symbol.lower() for e in water.elements] != [
+            "o", "h", "h"
+        ]:
+            self.logger.warning(
+                (
+                    f"WATER_TYPE {self.water_type} points to the mol type "
+                    f"'{water.name}', which is not made of the atoms O, H "
+                    "and H in this order, as PQ requires."
+                )
+            )
 
     @classmethod
     def _read_mol_type(cls, lines: List[str], mol_type_id: int) -> Residue:

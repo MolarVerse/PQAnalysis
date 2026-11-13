@@ -40,6 +40,16 @@ class _SelectionMixin:
         return _parse_bool(self.dictionary, self.use_full_atom_info_key)
 
     @property
+    def reference_com(self) -> bool | None:
+        """bool | None: Whether the reference entities are molecule centers."""
+        return _parse_bool(self.dictionary, self.reference_com_key)
+
+    @property
+    def target_com(self) -> bool | None:
+        """bool | None: Whether the target entities are molecule centers."""
+        return _parse_bool(self.dictionary, self.target_com_key)
+
+    @property
     def no_intra_molecular(self) -> bool | None:
         """bool | None: Whether intra molecular interactions should be excluded."""
         return _parse_bool(self.dictionary, self.no_intra_molecular_key)

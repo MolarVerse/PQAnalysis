@@ -49,6 +49,7 @@ Structure and trajectory conversion
    xyz2gen -- Convert XYZ to DFTB+ GEN
    gen2xyz -- Convert DFTB+ GEN to XYZ
    traj2box -- Extract periodic box data from trajectories
+   traj2com -- Compute center of mass trajectories (positions, velocities, forces or charges) of atoms, groups or molecules
    traj2extxyz -- Write extended XYZ trajectories with selected metadata
    traj2qmcfc -- Convert trajectories to QMCFC conventions
 

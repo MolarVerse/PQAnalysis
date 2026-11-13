@@ -74,23 +74,11 @@ jobs:
         python-version: '3.12'
         cache: pip
 
-    - name: build git-changelog
+    - name: Extract release notes from the prepared changelogs
+      env:
+        TAG: ${{ github.ref_name }}
       run: |
-        python3 -m pip install git-changelog
-
-    - name: Get previous tag
-      id: previousTag
-      run: |
-        name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        echo "previousTag: $name"
-        echo "previousTag=$name" >> $GITHUB_ENV
-        echo "previousTag=$name" >> $GITHUB_OUTPUT
-
-    - name: generate new changelog
-      id: generate_changelog
-      run: |
-        name=$(git --no-pager tag --sort=creatordate --merged ${{ github.ref_name }} | tail -2 | head -1)
-        git-changelog --sections :all: -F "$name.." -c angular > changelog.tmp
+        python3 scripts/update_changelog.py --notes "$TAG" > changelog.tmp
 
     - name: Create GitHub Release
       env:
@@ -99,26 +87,7 @@ jobs:
         gh release create
         '${{ github.ref_name }}'
         --repo '${{ github.repository }}'
-        --notes "$(cat changelog.tmp)"
-
-    - name: Build CHANGELOG.md
-      run: |
-        git-changelog --sections :all: -o CHANGELOG.md -c angular --in-place
-
-    - name: Add CHANGELOG.md to commit
-      run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-
-        git add CHANGELOG.md
-        git commit -m "Docs: Update CHANGELOG.md on release event"
-
-    - name: Push changes
-      if: github.event_name == 'push'
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: 'main'
+        --notes-file changelog.tmp
 
   pypi-release-update:
     name: >-

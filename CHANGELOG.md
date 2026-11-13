@@ -5,7 +5,35 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+User-visible changes to PQAnalysis are documented here. Build, CI, test, and
+implementation changes are documented in
+[DEV-CHANGELOG.md](DEV-CHANGELOG.md).
+
+## Next Release
+
 <!-- insertion marker -->
+## [v1.8.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.0) - 2026-11-13
+
+### New Features
+
+- Add a continuous option to traj_to_com_traj and --continuous to traj2com: the centers of mass follow their way over the periodic boundary (also in a box that changes in size), so they can be used for the mean square displacement.
+- Combine velocities, forces and charges in the center of mass tools: traj_to_com_traj, traj2com (vel, force and charge files give the center of mass velocities, forces and charges), AtomicSystem.compute_com_atomic_system and center_of_mass_residues, which no longer raises for these data.
+- Select molecules by type in the center of mass tools: traj_to_com_traj(by_residue=True, molecule_types=[...]) and traj2com --molecule-type take the name or number of a mol type of the moldescriptor file, and traj2com also the keywords water and ammonia for the mol types named by its WATER_TYPE and AMMONIA_TYPE lines.
+- Add by_residue and topology to traj_to_com_traj: the centers of mass are computed per molecule (residue) of the topology, e.g. from a restart file with a moldescriptor file, so molecules of different sizes and types work and no equal group size is needed; the selection picks the atoms that define the center of mass of each molecule.
+- The moldescriptor reader keeps the WATER_TYPE and AMMONIA_TYPE numbers as the attributes water_type and ammonia_type, and logs a warning if they point to a mol type that is not in the file or if the water type is not made of the atoms O, H and H.
+- The RDF with reference_com or target_com now also works with centers of mass on one side only (for example oxygens around the centers of the waters); no_intra_molecular removes the pair of an atom with the center of its own molecule, and the density then uses the mean number of remaining targets.
+- Add the input-file keys reference_com and target_com to the rdf command: the RDF between the centers of mass of molecules (or of atoms and centers) can be run from an input file; the restart_file and moldescriptor_file are required and inferred beside the trajectory like for no_intra_molecular, so no center of mass trajectory has to be written first.
+- Add reference_com and target_com to the RDF class: the radial distribution function between the centers of mass of molecules, with the molecules taken from the residues of the topology (restart file with moldescriptor file) and the selection choosing the atoms that define each center; reference count, density and coordination number then count molecules.
+- Add the traj2com command (pqanalysis traj2com) that writes the center of mass trajectory of xyz trajectories for all selected atoms, for groups of N consecutive atoms (--group) or for every molecule (--by-residue with --restart-file and --moldescriptor-file); the Python function is PQAnalysis.tools.traj2com.
+
+### Changes
+
+- traj_to_com_traj with by_residue names the center of mass atoms after the residue name of the molecule (e.g. from the moldescriptor), raises an error for molecules whose atoms spread over half of the box or more around the first atom, and logs a warning for selected atoms with a placeholder mass (X, Q, Cav, Sup).
+
+### Performance
+
+- Speed up traj_to_com_traj, AtomicSystem.compute_com_atomic_system and AtomicSystem.center_of_mass_residues by computing the centers of mass of all groups in one vectorized step; on 2000 water molecules about 75 times faster (1.7 s and 2.6 s down to about 20 ms and 35 ms). Results are unchanged.
+
 ## [v1.7.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.7.1) - 2026-09-21
 
 ### Maintenance

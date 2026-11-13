@@ -1,0 +1,161 @@
+name: Performance
+
+# Times the benchmark suite on the base of a pull request and on its head, on
+# the same runner, and fails if the head is much slower. Base and head run in
+# their own environments, alternating for several rounds, so that load changes
+# of the runner hit both sides alike (scripts/perf_compare.py).
+#
+# A pull request with an intended slowdown carries the label
+# perf-regression-accepted: the report is still written, the check passes.
+#
+# The report is also kept as one sticky comment on the pull request, updated on
+# every run. Pull requests from forks get no comment (their token is read-only);
+# the report is in the job summary and the perf-report artifact.
+on:
+  pull_request:
+    branches:
+      - dev
+      - main
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    paths:
+      - 'PQAnalysis/**'
+      - 'benchmarks/**'
+      - 'tests/data/**'
+      - 'setup.py'
+      - 'setup.cfg'
+      - 'pyproject.toml'
+      - 'MANIFEST.in'
+      - 'scripts/perf_compare.py'
+      - '.github/workflows/perf.yml'
+  workflow_dispatch:
+    inputs:
+      base_ref:
+        description: Base revision to compare the selected ref against
+        required: true
+        default: dev
+        type: string
+      threshold_percent:
+        description: Slowdown in percent above which a benchmark is slower
+        required: false
+        default: '10'
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: perf-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  PERF_THRESHOLD_PERCENT: ${{ inputs.threshold_percent || '10' }}
+
+jobs:
+  compare:
+    # Not for a release pull request (release/vX.Y.Z or dev -> main): it
+    # holds every change since the last release and is compared per change.
+    if: >-
+      (github.event_name != 'pull_request' ||
+      ((github.event.action != 'labeled' && github.event.action != 'unlabeled') ||
+      github.event.label.name == 'perf-regression-accepted') &&
+      !(startsWith(github.head_ref, 'release/') ||
+      (github.head_ref == 'dev' && github.base_ref == 'main')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout head
+        uses: actions/checkout@v4
+        with:
+          path: head
+
+      - name: Checkout base
+        uses: actions/checkout@v4
+        with:
+          path: base
+          ref: ${{ github.event.pull_request.base.sha || inputs.base_ref }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: head/pyproject.toml
+
+      - name: Install base and head in separate environments
+        run: |
+          python -m venv base-venv
+          python -m venv head-venv
+          base-venv/bin/python -m pip install --upgrade pip
+          head-venv/bin/python -m pip install --upgrade pip
+          base-venv/bin/python -m pip install -e base pytest pytest-benchmark
+          head-venv/bin/python -m pip install -e head pytest pytest-benchmark
+
+      - name: Compare benchmark timings
+        env:
+          ACCEPTED: ${{ contains(github.event.pull_request.labels.*.name, 'perf-regression-accepted') }}
+        run: |
+          extra=()
+          if [[ "$ACCEPTED" == "true" ]]; then
+            echo "::notice::perf-regression-accepted is set, regressions do not fail the check."
+            extra+=(--no-fail)
+          fi
+          head-venv/bin/python head/scripts/perf_compare.py \
+            --base-python "$PWD/base-venv/bin/python" --base-src "$PWD/base" \
+            --head-python "$PWD/head-venv/bin/python" --head-src "$PWD/head" \
+            --threshold-percent "$PERF_THRESHOLD_PERCENT" --report perf_report.md "${extra[@]}"
+
+      - name: Publish the report
+        if: always()
+        run: |
+          if [[ -f perf_report.md ]]; then
+            cat perf_report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Comment on the pull request
+        if: >-
+          always() && github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          MARKER: '<!-- perf-report -->'
+        run: |
+          {
+            echo "$MARKER"
+            if [[ -f perf_report.md ]]; then
+              cat perf_report.md
+            else
+              echo "## Performance: base vs head"
+              echo
+              echo "The comparison did not produce a report."
+            fi
+            echo
+            echo "[Workflow run]($RUN_URL)"
+          } > comment.md
+
+          comment_id="$(gh api --paginate \
+            "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | sed -n 1p)"
+
+          if [[ -n "$comment_id" ]]; then
+            gh api --method PATCH \
+              "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
+              -F body=@comment.md >/dev/null
+          else
+            gh api --method POST \
+              "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
+              -F body=@comment.md >/dev/null
+          fi
+
+      - name: Upload the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: perf-report
+          path: perf_report.md
+          if-no-files-found: ignore

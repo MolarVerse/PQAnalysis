@@ -148,6 +148,83 @@ selections and the average volume, two RDFs are only comparable when the
 selections, the exclusion setting, the thermodynamic state and the sampled
 :math:`r` range all match. State them with the curve.
 
+Centers of mass of molecules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With ``reference_com=True`` and ``target_com=True`` the RDF is calculated
+between the centers of mass of molecules instead of between atoms, for example
+a water-water RDF that does not depend on which atom of the molecule is looked
+at. The molecules are the residues of the topology, so the topology has to be
+made from a restart file and a moldescriptor file. In an input file the two
+keys do this for you, and the two files are inferred beside the trajectory like
+for ``no_intra_molecular``:
+
+.. code-block:: text
+
+   traj_files = trajectory.xyz
+   reference_selection = all
+   target_selection = all
+   delta_r = 0.05
+   r_max = 8.0
+   restart_file = input.rst
+   moldescriptor_file = moldescriptor.dat
+   reference_com = True
+   target_com = True
+   out_file = rdf.dat
+
+From Python the topology is attached to the trajectory:
+
+.. code-block:: python
+
+   from PQAnalysis.io import TrajectoryReader, read_restart_file
+
+   topology = read_restart_file("input.rst", "moldescriptor.dat").topology
+
+   RDF(
+       TrajectoryReader("trajectory.xyz", topology=topology),
+       reference_species="*",
+       target_species="*",
+       delta_r=0.05,
+       r_max=8.0,
+       reference_com=True,
+       target_com=True,
+   ).run()
+
+* The selection picks the atoms that define the center of mass of each
+  molecule: ``*`` uses all atoms, ``H`` the hydrogens of every molecule. A
+  molecule without a selected atom is left out. With centers on both sides, a
+  molecule that is in the reference and in the target selection needs the same
+  selected atoms in both.
+* The reference count :math:`N_R` and the target density :math:`\rho_T` count
+  molecules, and the coordination number is a number of molecules. The pair of
+  a center with itself is excluded; the density is :math:`N_T / \langle V
+  \rangle` as for atoms, so for uniformly placed molecules the plateau of
+  :math:`g(r)` is :math:`(N-1)/N`.
+* A pair of centers is never inside one molecule, so ``no_intra_molecular`` has
+  no effect when both sides use centers. In an input file it still defaults to
+  ``True`` when both topology files are given, which only matters for centers on
+  one side.
+* One side can also keep its atoms, for example oxygens around the centers of
+  the waters (``reference_com=False, target_com=True``) or the centers of a
+  solute around all atoms (``reference_com=True, target_com=False``). The
+  selection of the side with centers defines the centers, the selection of the
+  other side picks atoms as usual. An atom and a center are different entities,
+  so no pair is ever "with itself". The pair of an atom with the center of its
+  *own* molecule is an intramolecular pair: it is kept by default (a rigid
+  water oxygen sits 0.065 Å from its center and fills the first bin) and
+  removed by ``no_intra_molecular=True``, as for atoms. The effective target
+  density is then the mean number of targets that remain for a reference
+  divided by the average volume; this is exact when all references exclude the
+  same number of targets and the right average otherwise, for example for the
+  centers of waters and methanes around all hydrogens, where a water center
+  excludes two hydrogens and a methane center four.
+* Atoms are imaged relative to the first atom of their molecule. A molecule
+  whose atoms spread over half of the box or more around that atom raises an
+  error while the analysis runs; a pair of atoms of one molecule that are
+  farther apart than half the box cannot be told from their periodic image and
+  is not detected. Atoms with a placeholder mass (``X``, ``Q``, ``Cav``,
+  ``Sup``) dominate the center of mass and are reported with a warning.
+
 References
 ----------
 

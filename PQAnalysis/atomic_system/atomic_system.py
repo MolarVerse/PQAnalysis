@@ -12,11 +12,10 @@ from beartype.typing import Any
 # just for forwardref type hinting
 from beartype.typing import List  # pylint: disable=unused-import
 
-from PQAnalysis.core import Atom, Atoms, Cell, distance
+from PQAnalysis.core import Atom, Atoms, Cell, CustomElement, distance
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt, Bool
 from PQAnalysis.type_checking import runtime_type_checking
-from PQAnalysis.exceptions import PQNotImplementedError
 from PQAnalysis.utils.random import get_random_seed
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.utils.math import allclose_vectorized
@@ -29,6 +28,7 @@ from PQAnalysis.types import (
     Np3x3NumberArray,
 )
 
+from ._center_of_mass import center_of_mass_properties
 from ._properties import _PropertiesMixin
 from ._standard_properties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
@@ -413,30 +413,14 @@ class AtomicSystem(
         AtomicSystemError
             If the number of residues in the system is not a 
             multiple of the number of atoms.
-        PQNotImplementedError
-            if system has forces, velocities or charges.
 
-        TODO:
+        Notes
         -----
-        Include also center of mass velocities, forces and so on...
+        The center of mass of a residue has the mass weighted mean of the
+        velocities of its atoms, the sum of their forces and the sum of their
+        charges, for the data that the system has.
         """
-        if self.has_pos:
-            residue_pos = np.zeros(
-                (len(self.topology.residue_atom_indices), 3)
-            )
-        else:
-            residue_pos = np.zeros((0, 3))
-
         residue_atoms = []
-
-        if self.has_forces or self.has_vel or self.has_charges:
-            self.logger.error(
-                (
-                    "Center of mass of residues not implemented for "
-                    "systems with forces, velocities or charges."
-                ),
-                exception=PQNotImplementedError,
-            )
 
         if len(self.topology.residue_ids) == 0:
             self.logger.error(
@@ -447,25 +431,36 @@ class AtomicSystem(
         if len(self.topology.residue_ids) == 1:
             return self.copy()
 
+        properties = {}
+        if self.has_pos or self.has_vel or self.has_forces or self.has_charges:
+            properties = center_of_mass_properties(
+                self.atomic_masses,
+                self.topology.residue_numbers,
+                self.cell,
+                positions=self.pos,
+                velocities=self.vel,
+                forces=self.forces,
+                charges=self.charges,
+            )
+
+        atoms = self.atoms
+
         for i, residue_indices in enumerate(self.topology.residue_atom_indices):
 
-            residue_system = self[residue_indices]
-
-            # check if residue_system has more than one atom otherwise return atom element
-            if (
-                residue_system.n_atoms != 1 and
-                len(self.topology.residues) != 0
-            ):
-                custom_element = residue_system.build_custom_element
+            # a residue with more than one atom gets a custom element,
+            # otherwise the element of its atom is kept
+            if len(residue_indices) != 1 and len(self.topology.residues) != 0:
+                custom_element = CustomElement(
+                    ''.join(atoms[j].name for j in residue_indices),
+                    -1,
+                    np.sum([atoms[j].mass for j in residue_indices]),
+                )
                 custom_element.symbol = self.topology.residues[i].name
                 custom_atom = Atom(custom_element)
             else:
-                custom_atom = residue_system.atoms[0]
+                custom_atom = atoms[residue_indices[0]]
 
             residue_atoms.append(custom_atom)
-
-            if residue_system.has_pos:
-                residue_pos[i] = residue_system.center_of_mass
 
         topology = Topology(
             atoms=residue_atoms,
@@ -473,12 +468,11 @@ class AtomicSystem(
         )
 
         return AtomicSystem(
-            pos=residue_pos,
             cell=self.cell,
             topology=topology,
+            **properties,
         )
 
-    # TODO: refactor or discard this method
     def compute_com_atomic_system(self, group=None) -> "AtomicSystem":
         """
         Computes a new AtomicSystem with the center of mass of the system or groups of atoms.
@@ -497,6 +491,11 @@ class AtomicSystem(
         ------
         AtomicSystemError
             If the number of atoms in the selection is not a multiple of group.
+
+        Notes
+        -----
+        The velocities, forces and charges of the system, if it has them, are
+        combined as for :py:attr:`center_of_mass_residues`.
         """
         if group is None:
             group = self.n_atoms
@@ -506,22 +505,25 @@ class AtomicSystem(
                 'Number of atoms in selection is not a multiple of group.'
             )
 
-        pos = []
-        names = []
+        properties = center_of_mass_properties(
+            self.atomic_masses,
+            np.arange(self.n_atoms) // group,
+            self.cell,
+            positions=self.pos,
+            velocities=self.vel,
+            forces=self.forces,
+            charges=self.charges,
+        )
 
-        for i in range(0, self.n_atoms, group):
-            atomic_system = AtomicSystem(
-                atoms=self.atoms[i:i + group],
-                pos=self.pos[i:i + group],
-                cell=self.cell
-            )
+        atoms = self.atoms
+        names = [
+            Atom(
+                ''.join(atom.name for atom in atoms[i:i + group]),
+                use_guess_element=False,
+            ) for i in range(0, self.n_atoms, group)
+        ]
 
-            pos.append(atomic_system.center_of_mass)
-            names.append(atomic_system.combined_name)
-
-        names = [Atom(name, use_guess_element=False) for name in names]
-
-        return AtomicSystem(pos=np.array(pos), atoms=names, cell=self.cell)
+        return AtomicSystem(atoms=names, cell=self.cell, **properties)
 
     def randomize_positions(
         self,

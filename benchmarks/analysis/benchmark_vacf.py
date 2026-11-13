@@ -57,6 +57,7 @@ def _write_charge_file(path, n_frames, n_atoms, seed=4711):
 
 
 @pytest.mark.benchmark(group="VACF")
+@pytest.mark.usefixtures("kernel_impl")
 class BenchmarkVACF:
 
     def benchmark_run_direct(self, benchmark):
@@ -134,6 +135,10 @@ class BenchmarkVACF:
                 ),
             ).run()
         )
+
+
+@pytest.mark.benchmark(group="VACF")
+class BenchmarkVACFSpectrum:
 
     def benchmark_spectrum(self, benchmark):
         time = np.arange(1001) * 0.002

@@ -45,6 +45,7 @@ def _write_random_walk_file(path, n_frames, n_atoms, box=20.0, seed=42):
 
 
 @pytest.mark.benchmark(group="MSD")
+@pytest.mark.usefixtures("kernel_impl")
 class BenchmarkMSD:
 
     def benchmark_run(self, benchmark):

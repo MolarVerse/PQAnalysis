@@ -30,6 +30,7 @@ def _write_velocity_file(path, n_frames, n_atoms, seed=42):
 
 
 @pytest.mark.benchmark(group="Momentum")
+@pytest.mark.usefixtures("kernel_impl")
 class BenchmarkMomentum:
 
     def benchmark_run(self, benchmark):
