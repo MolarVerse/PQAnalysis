@@ -1,2 +1,0 @@
-- Add a continuous option to traj_to_com_traj and --continuous to traj2com: the centers of mass follow their way over the periodic boundary (also in a box that changes in size), so they can be used for the mean square displacement.
-- Combine velocities, forces and charges in the center of mass tools: traj_to_com_traj, traj2com (vel, force and charge files give the center of mass velocities, forces and charges), AtomicSystem.compute_com_atomic_system and center_of_mass_residues, which no longer raises for these data.

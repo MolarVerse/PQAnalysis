@@ -1,1 +1,0 @@
-- Add center_of_mass_groups (PQAnalysis/atomic_system/_center_of_mass.py), an array function that returns the center of mass of every group of atoms, and use it for AtomicSystem.center_of_mass, center_of_mass_residues and compute_com_atomic_system; unit tests compare it with the previous per-group formula.

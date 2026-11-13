@@ -1,1 +1,0 @@
-- The RDF with reference_com or target_com now also works with centers of mass on one side only (for example oxygens around the centers of the waters); no_intra_molecular removes the pair of an atom with the center of its own molecule, and the density then uses the mean number of remaining targets.

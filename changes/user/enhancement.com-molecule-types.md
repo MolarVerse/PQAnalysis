@@ -1,1 +1,0 @@
-- Select molecules by type in the center of mass tools: traj_to_com_traj(by_residue=True, molecule_types=[...]) and traj2com --molecule-type take the name or number of a mol type of the moldescriptor file, and traj2com also the keywords water and ammonia for the mol types named by its WATER_TYPE and AMMONIA_TYPE lines.

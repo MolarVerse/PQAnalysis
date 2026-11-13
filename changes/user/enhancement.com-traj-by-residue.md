@@ -1,1 +1,0 @@
-- Add by_residue and topology to traj_to_com_traj: the centers of mass are computed per molecule (residue) of the topology, e.g. from a restart file with a moldescriptor file, so molecules of different sizes and types work and no equal group size is needed; the selection picks the atoms that define the center of mass of each molecule.
