@@ -12,6 +12,12 @@ implementation changes are documented in
 ## Next Release
 
 <!-- insertion marker -->
+## [v1.8.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.1) - 2026-11-13
+
+### Bug Fixes
+
+- `selection`, `reference_selection` and `target_selection` in input files accept a bare atom index (`72`) or an index range (`72-80`).
+
 ## [v1.8.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.0) - 2026-11-13
 
 ### New Features
