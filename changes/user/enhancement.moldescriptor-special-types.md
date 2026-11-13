@@ -1,1 +1,0 @@
-- The moldescriptor reader keeps the WATER_TYPE and AMMONIA_TYPE numbers as the attributes water_type and ammonia_type, and logs a warning if they point to a mol type that is not in the file or if the water type is not made of the atoms O, H and H.

@@ -1,1 +1,0 @@
-- Add reference_com and target_com to the RDF class: the radial distribution function between the centers of mass of molecules, with the molecules taken from the residues of the topology (restart file with moldescriptor file) and the selection choosing the atoms that define each center; reference count, density and coordination number then count molecules.
