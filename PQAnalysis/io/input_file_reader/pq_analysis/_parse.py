@@ -259,6 +259,49 @@ def _parse_string(input_dict: InputDictionary, key: str) -> str | None:
 
 
 
+def _parse_selection(input_dict: InputDictionary, key: str) -> str | None:
+    """
+    Gets a selection string from the input dictionary.
+
+    A bare index like ``72`` is parsed as an int and an index range
+    like ``72-80`` as a range. Both are turned back into the selection
+    string the user wrote.
+
+    Parameters
+    ----------
+    dict : InputDictionary
+        the input dictionary
+    key : str
+        the key to get the value from
+
+    Returns
+    -------
+    str | None
+        the selection string or None if the key is not in the dictionary
+
+    Raises
+    ------
+    InputFileError
+        if the value is not a string, an int or a range
+    """
+    try:
+        data = input_dict[key]
+    except PQKeyError:
+        return None
+
+    if data[1] == "int":
+        return str(data[0])
+
+    if data[1] == "range":
+        value = data[0]
+        if value.step == 1:
+            return f"{value.start}-{value.stop}"
+        return f"{value.start}..{value.step}..{value.stop}"
+
+    return _parse_string(input_dict, key)
+
+
+
 def _parse_bool(input_dict: InputDictionary, key: str) -> bool | None:
     """
     Gets the value of a key from the input dictionary and checks if it is a bool.

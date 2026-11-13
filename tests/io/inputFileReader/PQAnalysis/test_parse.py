@@ -140,6 +140,28 @@ def test_parse_string():
 
 
 
+def test_parse_selection():
+    input_dict = InputDictionary()
+    input_dict["word"] = ("O", "str", "1")
+    input_dict["index"] = (72, "int", "1")
+    input_dict["indices"] = (range(72, 80), "range", "1")
+    input_dict["step"] = (range(0, 9, 3), "range", "1")
+    input_dict["float"] = (2.0, "float", "1")
+
+    assert parse._parse_selection(input_dict, "notAKey") is None
+    assert parse._parse_selection(input_dict, "word") == "O"
+    assert parse._parse_selection(input_dict, "index") == "72"
+    assert parse._parse_selection(input_dict, "indices") == "72-80"
+    assert parse._parse_selection(input_dict, "step") == "0..3..9"
+
+    with pytest.raises(InputFileError) as exception:
+        parse._parse_selection(input_dict, "float")
+    assert str(
+        exception.value
+    ) == "The \"float\" value has to be of string type - actually it is parsed as a float"
+
+
+
 def test_parse_bool():
     input_dict = InputDictionary()
     input_dict["a"] = (True, "bool", "1")
