@@ -1,1 +1,0 @@
-- traj_to_com_traj with by_residue names the center of mass atoms after the residue name of the molecule (e.g. from the moldescriptor), raises an error for molecules whose atoms spread over half of the box or more around the first atom, and logs a warning for selected atoms with a placeholder mass (X, Q, Cav, Sup).

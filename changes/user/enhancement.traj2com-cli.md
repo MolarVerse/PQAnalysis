@@ -1,1 +1,0 @@
-- Add the traj2com command (pqanalysis traj2com) that writes the center of mass trajectory of xyz trajectories for all selected atoms, for groups of N consecutive atoms (--group) or for every molecule (--by-residue with --restart-file and --moldescriptor-file); the Python function is PQAnalysis.tools.traj2com.
