@@ -1,0 +1,1 @@
+- Add the input-file key target_com to the msd command: the mean square displacement and the diffusion coefficients of the centers of mass of molecules can be run from an input file; the restart_file and moldescriptor_file keys are required for it and inferred beside the trajectory like for the RDF.

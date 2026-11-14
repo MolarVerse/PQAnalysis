@@ -59,6 +59,26 @@ Output
 sum is the total MSD (:ref:`analysis-output-msd`). Diffusion coefficients,
 their standard errors and :math:`R^2` go to the log file in m²·s⁻¹.
 
+To get the diffusion of the molecules instead of atoms, add the centers of mass
+as targets. The molecules come from a restart file and a moldescriptor file,
+which are inferred beside the trajectory (``trajectory.xyz`` maps to
+``trajectory.rst``, plus ``moldescriptor.dat``) or named explicitly; the target
+selection then picks the atoms that define each center:
+
+.. code-block:: text
+
+   traj_files = trajectory.xyz
+   target_selection = all
+   window = 200
+   gap = 10
+   time_step = 0.002
+   restart_file = input.rst
+   moldescriptor_file = moldescriptor.dat
+   target_com = True
+   out_file = msd.dat
+
+The MSD is then the mean over the molecules. See :doc:`msd-details`.
+
 Python
 ------
 

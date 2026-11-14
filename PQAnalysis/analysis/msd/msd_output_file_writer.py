@@ -151,8 +151,9 @@ class MSDLogWriter(BaseWriter):
         print(file=self.file)
 
         print("    Target selection:", msd.target_selection, file=self.file)
+        entity = "molecules (centers of mass)" if msd.target_com else "atoms"
         print(
-            "    total number of atoms in target selection:",
+            f"    total number of {entity} in target selection:",
             len(msd.target_indices),
             file=self.file
         )

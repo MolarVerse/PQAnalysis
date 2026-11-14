@@ -225,6 +225,9 @@ to be made from a restart file and a moldescriptor file:
   warning.
 * The compiled kernels work on the centers as on atoms. The multi-threaded
   batch kernel reads the frames one by one for centers instead of in bulk.
+* In an input file the key ``target_com = True`` does this and needs
+  ``restart_file`` and ``moldescriptor_file``, which are inferred beside the
+  trajectory if omitted, as for the RDF.
 
 References
 ----------
