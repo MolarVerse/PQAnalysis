@@ -1,15 +1,19 @@
 """
-A module containing the centers of mass of molecules for the RDF analysis.
+A module containing the centers of mass of molecules for the analyses.
 
 The centers are appended to the positions of every frame as additional rows,
-so that the distance kernels of the RDF analysis (compiled and fallback)
-work on them like on atoms.
+so that the kernels of the RDF and MSD analyses (compiled and fallback) work
+on them like on atoms.
 """
 
 import numpy as np
 
-from PQAnalysis.atomic_system._center_of_mass import center_of_mass_groups
+from PQAnalysis.atomic_system._center_of_mass import (
+    center_of_mass_groups,
+    placeholder_atom_names,
+)
 from PQAnalysis.core import Cell
+from PQAnalysis.topology import Topology
 
 
 
@@ -49,6 +53,81 @@ class MoleculeCenters:
         self.molecule_ids = np.asarray(molecule_ids)
         self.masses = np.asarray(masses, dtype=float)
         self.molecules = np.unique(self.molecule_ids)
+
+    @classmethod
+    def from_topology(
+        cls,
+        topology: Topology,
+        atoms: np.ndarray,
+        logger,
+        exception,
+    ) -> "MoleculeCenters":
+        """
+        Creates the centers of the molecules of the given atoms.
+
+        The molecules are the residues of the topology and the atoms define
+        the center of their molecule.
+
+        Parameters
+        ----------
+        topology : Topology
+            The topology with the residues.
+        atoms : np.ndarray
+            The indices of the atoms that define the centers.
+        logger : logging.Logger
+            The logger of the analysis, used for the errors and the warning.
+        exception : type
+            The exception class of the analysis that is raised for errors.
+
+        Returns
+        -------
+        MoleculeCenters
+            The centers, one per molecule that has a given atom.
+
+        Raises
+        ------
+        exception
+            If the topology has no residues or if an atom has no mass.
+        """
+
+        if not topology.residues:
+            logger.error(
+                (
+                    "The centers of mass need the molecules of the system, "
+                    "but the topology has no residues. Provide a restart "
+                    "file together with a moldescriptor file."
+                ),
+                exception=exception
+            )
+
+        topology_atoms = topology.atoms
+
+        if any(topology_atoms[index].mass is None for index in atoms):
+            logger.error(
+                (
+                    "The center of mass needs the mass of every selected "
+                    "atom, but some selected atoms have no mass."
+                ),
+                exception=exception
+            )
+
+        placeholders = placeholder_atom_names(topology_atoms, atoms)
+        if placeholders:
+            logger.warning(
+                (
+                    "The selection contains atoms with a placeholder mass "
+                    f"({', '.join(placeholders)}). They dominate the center "
+                    "of mass of their molecule; exclude them with the "
+                    "selection."
+                )
+            )
+
+        return cls(
+            n_atoms=topology.n_atoms,
+            atom_indices=atoms,
+            molecule_ids=topology.residue_numbers[atoms],
+            masses=np.array([topology_atoms[index].mass for index in atoms]),
+        )
 
     @property
     def n_centers(self) -> int:

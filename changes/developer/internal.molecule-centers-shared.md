@@ -1,0 +1,1 @@
+- Move the molecule centers of the RDF to PQAnalysis/analysis/_molecule_centers.py with a from_topology factory shared with the MSD, and add MSD benchmarks for the centers of mass (file fast path and in-memory, compiled and fallback kernel).
