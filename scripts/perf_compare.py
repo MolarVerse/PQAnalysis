@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """Compare the benchmark timings of a base and a head revision.
 
 Both revisions are installed in their own environment on the same machine.
@@ -37,6 +38,7 @@ PYTEST_ARGS = [
 ]
 
 
+
 def load_medians(path):
     """Return a mapping of benchmark name to median seconds from a JSON."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
@@ -44,6 +46,7 @@ def load_medians(path):
         bench["fullname"]: bench["stats"]["median"]
         for bench in data.get("benchmarks", [])
     }
+
 
 
 def classify(ratios, base_median, head_median, threshold, min_time):
@@ -59,6 +62,7 @@ def classify(ratios, base_median, head_median, threshold, min_time):
     if middle < 1.0 / threshold and max(ratios) < 1.0 / slower_round:
         return "faster"
     return "same"
+
 
 
 def compare(base_rounds, head_rounds, threshold, min_time):
@@ -84,28 +88,38 @@ def compare(base_rounds, head_rounds, threshold, min_time):
             continue
 
         ratios = [
-            h / b
-            for b_round, h_round in zip(base_rounds, head_rounds)
+            h / b for b_round, h_round in zip(base_rounds, head_rounds)
             if name in b_round and name in h_round
             for b, h in [(b_round[name], h_round[name])]
         ]
         base_median = statistics.median(base)
         head_median = statistics.median(head)
-        results.append({
-            "name": name,
-            "base": base_median,
-            "head": head_median,
-            "ratio": statistics.median(ratios),
-            "verdict": classify(ratios, base_median, head_median, threshold, min_time),
-        })
+        results.append(
+            {
+                "name":
+                name,
+                "base":
+                base_median,
+                "head":
+                head_median,
+                "ratio":
+                statistics.median(ratios),
+                "verdict":
+                classify(
+                    ratios, base_median, head_median, threshold, min_time
+                ),
+            }
+        )
 
     return results
+
 
 
 def format_change(ratio):
     """Format a head/base ratio as a signed percentage change."""
     change = round((ratio - 1.0) * 100.0, 1) + 0.0  # no "-0.0"
     return f"{change:+.1f}%"
+
 
 
 def format_time(seconds):
@@ -116,58 +130,65 @@ def format_time(seconds):
     return f"{seconds / 1e-9:.3g} ns"
 
 
+
 def render_markdown(results, threshold, rounds, header=None):
-    """Render the results as a markdown report."""
+    """Render a short result with expandable timings and comparison rules."""
     slower = [r for r in results if r["verdict"] == "slower"]
     faster = [r for r in results if r["verdict"] == "faster"]
     compared = [r for r in results if "ratio" in r]
-
-    limit = format_change(threshold)
-    half = format_change(1.0 + (threshold - 1.0) / 2.0)
-
-    lines = ["## Performance: base vs head", ""]
+    if not compared:
+        title = "Performance comparison unavailable"
+    elif slower:
+        noun = "regression" if len(slower) == 1 else "regressions"
+        title = f"{len(slower)} confirmed performance {noun}"
+    else:
+        title = "No confirmed performance regressions"
+    lines = [f"**{title}**", ""]
     if header:
         lines.extend([header, ""])
+    lines.extend(
+        [f"{len(compared)} benchmarks compared across {rounds} rounds.", ""]
+    )
 
-    if slower:
-        lines.append(
-            f"**{len(slower)} of {len(compared)} benchmarks are slower than "
-            f"{limit} compared with the base.**"
+    def entry(result):
+        name = result["name"]
+        if "ratio" not in result:
+            return f"- `{name}`: {result['verdict']}"
+        return (
+            f"- `{name}`: {format_time(result['base'])} → "
+            f"{format_time(result['head'])} "
+            f"({format_change(result['ratio'])}; {result['verdict']})"
         )
-    else:
-        lines.append(
-            f"No benchmark is slower than {limit} compared with the base "
-            f"({len(compared)} compared, {len(faster)} faster)."
-        )
-    lines.extend([
-        "",
-        f"Change is head versus base, the median of {rounds} interleaved "
-        f"rounds on the same runner. A benchmark counts as slower only if its "
-        f"median change exceeds {limit} and every round shows at least "
-        f"{half}. Benchmarks that stay under 100 us on both sides are not "
-        "gated.",
-        "",
-        "| Benchmark | Base | Head | Change | Verdict |",
-        "| --- | ---: | ---: | ---: | --- |",
-    ])
 
-    def order(result):
-        rank = {"slower": 0, "faster": 1, "same": 2, "too fast": 3}
-        return (rank.get(result["verdict"], 4), result["name"])
-
-    for result in sorted(results, key=order):
-        if "ratio" in result:
-            lines.append(
-                f"| `{result['name']}` | {format_time(result['base'])} | "
-                f"{format_time(result['head'])} | {format_change(result['ratio'])} | "
-                f"{result['verdict']} |"
-            )
-        else:
-            lines.append(
-                f"| `{result['name']}` | | | | {result['verdict']} |"
-            )
-
+    changed = slower + faster
+    lines.extend(entry(r) for r in changed[:5])
+    if len(changed) > 5:
+        lines.append(f"{len(changed) - 5} more changes in the full results.")
+    if changed:
+        lines.append("")
+    lines.extend(
+        [
+            "<details>",
+            "<summary>Full results and comparison rules</summary>",
+            "",
+            f"A regression needs a median paired-round change above "
+            f"{format_change(threshold)} and every paired round above "
+            f"{format_change(1.0 + (threshold - 1.0) / 2.0)}.",
+            "",
+            "Base and head are separate medians. Change is the median of the "
+            "paired head/base ratios, so it need not equal the ratio of the "
+            "displayed times. Tiny benchmarks are reported but not gated.",
+            "",
+        ]
+    )
+    rank = {"slower": 0, "faster": 1, "same": 2, "too fast": 3}
+    lines.extend(
+        entry(r) for r in
+        sorted(results, key=lambda r: (rank.get(r["verdict"], 4), r["name"]))
+    )
+    lines.extend(["", "</details>"])
     return "\n".join(lines) + "\n"
+
 
 
 def package_location(python, cwd):
@@ -180,6 +201,7 @@ def package_location(python, cwd):
         check=True,
     ).stdout.strip()
     return Path(output).resolve().parent.parent
+
 
 
 def run_benchmarks(python, benchmarks, config, output, cwd):
@@ -199,6 +221,7 @@ def run_benchmarks(python, benchmarks, config, output, cwd):
         check=False,
     )
     return result.returncode
+
 
 
 def main():
@@ -254,13 +277,10 @@ def main():
                 if side == "head" and code != 0:
                     head_failed = True
                 medians = load_medians(output) if output.is_file() else {}
-                (base_rounds if side == "base" else head_rounds).append(
-                    medians
-                )
+                (base_rounds
+                 if side == "base" else head_rounds).append(medians)
 
-    results = compare(
-        base_rounds, head_rounds, threshold, args.min_time
-    )
+    results = compare(base_rounds, head_rounds, threshold, args.min_time)
     report = render_markdown(results, threshold, args.rounds)
     Path(args.report).write_text(report, encoding="utf-8")
     print(report)
@@ -274,6 +294,7 @@ def main():
     if head_failed or (slower and not args.no_fail):
         return 1
     return 0
+
 
 
 if __name__ == "__main__":

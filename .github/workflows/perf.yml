@@ -9,8 +9,8 @@ name: Performance
 # perf-regression-accepted: the report is still written, the check passes.
 #
 # The report is also kept as one sticky comment on the pull request, updated on
-# every run. Pull requests from forks get no comment (their token is read-only);
-# the report is in the job summary and the perf-report artifact.
+# every run by a separate publisher workflow. App credentials never reach
+# benchmark execution. The report is also in the job summary and artifact.
 on:
   pull_request:
     branches:
@@ -64,18 +64,19 @@ jobs:
     timeout-minutes: 45
     permissions:
       contents: read
-      pull-requests: write
 
     steps:
       - name: Checkout head
         uses: actions/checkout@v4
         with:
           path: head
+          persist-credentials: false
 
       - name: Checkout base
         uses: actions/checkout@v4
         with:
           path: base
+          persist-credentials: false
           ref: ${{ github.event.pull_request.base.sha || inputs.base_ref }}
 
       - name: Setup Python
@@ -113,43 +114,6 @@ jobs:
         run: |
           if [[ -f perf_report.md ]]; then
             cat perf_report.md >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-      - name: Comment on the pull request
-        if: >-
-          always() && github.event_name == 'pull_request' &&
-          github.event.pull_request.head.repo.full_name == github.repository
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          MARKER: '<!-- perf-report -->'
-        run: |
-          {
-            echo "$MARKER"
-            if [[ -f perf_report.md ]]; then
-              cat perf_report.md
-            else
-              echo "## Performance: base vs head"
-              echo
-              echo "The comparison did not produce a report."
-            fi
-            echo
-            echo "[Workflow run]($RUN_URL)"
-          } > comment.md
-
-          comment_id="$(gh api --paginate \
-            "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
-            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | sed -n 1p)"
-
-          if [[ -n "$comment_id" ]]; then
-            gh api --method PATCH \
-              "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
-              -F body=@comment.md >/dev/null
-          else
-            gh api --method POST \
-              "repos/$GITHUB_REPOSITORY/issues/$PR_NUMBER/comments" \
-              -F body=@comment.md >/dev/null
           fi
 
       - name: Upload the report
