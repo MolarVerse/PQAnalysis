@@ -1,0 +1,1 @@
+- Add target_com to the MSD class: the mean square displacement and the diffusion coefficients of the centers of mass of molecules, with the molecules taken from the residues of the topology (restart file with moldescriptor file) and the selection choosing the atoms that define each center; the MSD is the mean over the molecules.

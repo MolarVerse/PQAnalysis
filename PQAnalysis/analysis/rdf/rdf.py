@@ -23,7 +23,6 @@ from PQAnalysis.utils.progress import tqdm
 # local absolute imports
 from PQAnalysis import config
 from PQAnalysis.types import Np1DNumberArray, PositiveInt, PositiveReal
-from PQAnalysis.atomic_system._center_of_mass import placeholder_atom_names
 from PQAnalysis.core import distance, Cell, Cells
 from PQAnalysis.traj import (
     Trajectory,
@@ -40,8 +39,8 @@ from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
+from .._molecule_centers import MoleculeCenters
 from .exceptions import RDFError
-from ._molecule_centers import MoleculeCenters
 
 try:
     from ._rdf_kernel import (  # pylint: disable=import-error
@@ -452,16 +451,6 @@ class RDF:
         if not (self.reference_com or self.target_com):
             return
 
-        if not self.topology.residues:
-            self.logger.error(
-                (
-                    "reference_com and target_com need the molecules of the "
-                    "system, but the topology has no residues. Provide a "
-                    "restart file together with a moldescriptor file."
-                ),
-                exception=RDFError
-            )
-
         residue_numbers = self.topology.residue_numbers
         reference_atoms = self.reference_indices
         target_atoms = self.target_indices
@@ -491,35 +480,8 @@ class RDF:
                 ) if used
             ])
         )
-        topology_atoms = self.topology.atoms
-
-        if any(topology_atoms[index].mass is None for index in center_atoms):
-            self.logger.error(
-                (
-                    "The center of mass needs the mass of every selected "
-                    "atom, but some selected atoms have no mass."
-                ),
-                exception=RDFError
-            )
-
-        placeholders = placeholder_atom_names(topology_atoms, center_atoms)
-        if placeholders:
-            self.logger.warning(
-                (
-                    "The selection contains atoms with a placeholder mass "
-                    f"({', '.join(placeholders)}). They dominate the center "
-                    "of mass of their molecule; exclude them with the "
-                    "selection."
-                )
-            )
-
-        self._centers = MoleculeCenters(
-            n_atoms=self.topology.n_atoms,
-            atom_indices=center_atoms,
-            molecule_ids=residue_numbers[center_atoms],
-            masses=np.array(
-                [topology_atoms[index].mass for index in center_atoms]
-            ),
+        self._centers = MoleculeCenters.from_topology(
+            self.topology, center_atoms, self.logger, RDFError
         )
 
         if self.reference_com:

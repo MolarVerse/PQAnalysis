@@ -3,8 +3,9 @@ import pytest
 
 from PQAnalysis.analysis.msd import MSD
 from PQAnalysis.atomic_system import AtomicSystem
-from PQAnalysis.core import Atom, Cell
+from PQAnalysis.core import Atom, Cell, Element, Residue
 from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.topology import Topology
 from PQAnalysis.traj import Trajectory
 
 
@@ -78,4 +79,73 @@ class BenchmarkMSD:
         benchmark(
             lambda:
             MSD(TrajectoryReader(filename), "O", window=1000, gap=10).run()
+        )
+
+
+
+def _water_topology(n_molecules):
+    residue = Residue(
+        name="WAT",
+        elements=[Element("O"), Element("H"), Element("H")],
+        residue_id=1,
+        total_charge=0,
+        atom_types=np.array([0, 1, 1]),
+        partial_charges=np.zeros(3),
+    )
+
+    return Topology(
+        atoms=[Atom(name) for name in "OHH" * n_molecules],
+        residue_ids=np.ones(3 * n_molecules, dtype=int),
+        reference_residues=[residue],
+    )
+
+
+def _water_walk(n_molecules, n_frames, box=20.0, seed=42):
+    """Waters whose centers do a seeded random walk, atoms wrapped."""
+
+    rng = np.random.default_rng(seed)
+    water = np.array([[0.0, 0.0, 0.0], [0.96, 0.0, 0.0], [-0.24, 0.93, 0.0]])
+    centers = np.cumsum(
+        rng.normal(0.0, 0.1, (n_frames, n_molecules, 1, 3)), axis=0
+    ) + rng.uniform(0.0, box, (1, n_molecules, 1, 3))
+
+    return (centers + water).reshape(n_frames, -1, 3) % box, box
+
+
+@pytest.mark.benchmark(group="MSD")
+@pytest.mark.usefixtures("kernel_impl")
+class BenchmarkMSDCenters:
+
+    def benchmark_run_centers_reader_fast_path(self, benchmark, tmp_path):
+        positions, box = _water_walk(100, 1000)
+        topology = _water_topology(100)
+        lines = []
+        for frame in positions:
+            lines.append(f"{len(frame)} {box} {box} {box}\n\n")
+            for name, (x, y, z) in zip("OHH" * 100, frame):
+                lines.append(f"{name} {x:.6f} {y:.6f} {z:.6f}\n")
+        filename = tmp_path / "water.xyz"
+        filename.write_text("".join(lines), encoding="utf-8")
+
+        benchmark(
+            lambda: MSD(
+                TrajectoryReader(str(filename), topology=topology),
+                "*",
+                window=100,
+                gap=10,
+                target_com=True,
+            ).run()
+        )
+
+    def benchmark_run_centers_in_memory(self, benchmark):
+        positions, box = _water_walk(50, 300)
+        topology = _water_topology(50)
+        cell = Cell(box, box, box)
+        traj = Trajectory([
+            AtomicSystem(topology=topology, pos=frame, cell=cell)
+            for frame in positions
+        ])
+
+        benchmark(
+            lambda: MSD(traj, "*", window=50, gap=10, target_com=True).run()
         )
