@@ -2,83 +2,85 @@ name: Pylint
 
 on:
   push:
-    branches: 
-      - main
-      - dev
+    branches: [main, dev]
   pull_request:
-    branches:
-      - '*'
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   pylint:
-
     runs-on: ubuntu-latest
-
     permissions:
       contents: read
       pull-requests: write
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          path: head
+          persist-credentials: false
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        cache: pip
+      - uses: actions/checkout@v4
+        if: github.event_name == 'pull_request'
+        with:
+          path: base
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
 
-    - name: build PQAnalysis
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install -e ".[test]"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: head/pyproject.toml
 
-    - name: Lint with pylint
-      id: run_pylint
-      run: |
-        mkdir -p .github/.pylint_cache
-        export PYLINTHOME=$(pwd)/.github/.pylint_cache
-        pylint PQAnalysis --exit-zero --persistent n | tee pylint_output.txt
-        python .github/scripts/parse_pylint.py pylint_output.txt | tee comment.txt
+      - name: Install head and lint dependencies
+        run: |
+          python -m venv head-venv
+          head-venv/bin/python -m pip install -e 'head[test]'
+          head-venv/bin/python -m pip freeze --exclude-editable > lint-requirements.txt
 
-    - name: Check if pylint score is higher than 9.75
-      id: check_pylint_score
-      run: |
-        head -n3 comment.txt | tail -n 1
-        head -n3 comment.txt | tail -n 1 | awk '{print $7}'
-        head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1
-        score=$(head -n3 comment.txt | tail -n 1 | awk '{print $7}' | cut -d '/' -f 1)
-        if (( $(echo "$score > 9.75" | bc -l) )); then
-          echo "Pylint score is higher than 9.75 and is $score"
-        else
-          echo "Pylint score is lower than 9.75 and is $score"
-          exit 1
-        fi
-      shell: bash
+      - name: Lint head
+        working-directory: head
+        run: ../head-venv/bin/pylint PQAnalysis --exit-zero --persistent=n --output-format=json2 > ../pylint-head.json
 
-    #check if previous scor is not empty
-    #if it is not empty then fail if change is lower than -0.05
-    - name: Check if previous score is not empty
-      id: check_previous_score
-      run: |
-        previous_score=$(head -n3 comment.txt | tail -n 1 | awk '{print $11}' | cut -d ')' -f 1)
-        if [ -z "$previous_score" ]; then
-          echo "Previous score is empty"
-        else
-          echo "Previous score is $previous_score"
-          if (( $(echo "$previous_score < -0.05" | bc -l) )); then
-            echo "Changes score is lower than -0.05"
-            exit 1
-          fi
-        fi
-      shell: bash
+      - name: Lint PR base with the same dependencies
+        if: github.event_name == 'pull_request'
+        run: |
+          python -m venv base-venv
+          base-venv/bin/python -m pip install -r lint-requirements.txt
+          base-venv/bin/python -m pip install --no-deps -e base
+          cd base
+          ../base-venv/bin/pylint PQAnalysis --exit-zero --persistent=n --output-format=json2 > ../pylint-base.json
 
-    - uses: marocchino/sticky-pull-request-comment@v2
-      if: (success() || failure()) && github.event.pull_request
-      with:
-        recreate: true
-        path: comment.txt
-    - if: (success() || failure()) && !github.event.pull_request
-      run: |
-        cat comment.txt >> "${GITHUB_STEP_SUMMARY}"
+      - name: Render report and check scores
+        env:
+          SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}
+        run: |
+          extra=()
+          if [[ -f pylint-base.json ]]; then extra+=(--base pylint-base.json); fi
+          head-venv/bin/python head/.github/scripts/parse_pylint.py pylint-head.json \
+            "${extra[@]}" --source-url "$SOURCE_URL" --report comment.txt
 
+      - name: Publish summary
+        if: always()
+        run: |
+          if [[ -f comment.txt ]]; then cat comment.txt >> "$GITHUB_STEP_SUMMARY"; fi
+
+      - uses: marocchino/sticky-pull-request-comment@v2
+        if: >-
+          always() && hashFiles('comment.txt') != '' &&
+          github.event_name == 'pull_request' &&
+          github.event.pull_request.head.repo.full_name == github.repository
+        with:
+          header: pylint
+          path: comment.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pylint-report
+          path: |
+            pylint-head.json
+            pylint-base.json
+            comment.txt

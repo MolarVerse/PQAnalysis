@@ -1,0 +1,1 @@
+- Make Pylint and performance reports concise, with expandable diagnostics instead of large tables. Compare Pylint with the PR base and publish performance comments through an isolated pq-perf-bot workflow.
