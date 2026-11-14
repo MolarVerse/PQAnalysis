@@ -1,0 +1,1 @@
+- Add target_com to the VACF class: the velocity autocorrelation function of the centers of mass of molecules (the mass weighted mean of the velocities of their atoms), with the molecules taken from the residues of the topology and the selection choosing the atoms that define each center; not available together with the charge-flux mode.
