@@ -3,25 +3,23 @@ A module containing a class to read input files to setup the
 :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
 """
 import logging
-from pathlib import Path
 
 # local imports
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis.io import PQAnalysisInputFileReader as Reader
-from PQAnalysis.io.input_file_reader.exceptions import InputFileError
-from PQAnalysis.io.input_file_reader.pq_analysis._parse import _parse_files
+from PQAnalysis.io.input_file_reader.pq_analysis._topology_files_mixin import (
+    _TopologyFilesMixin,
+)
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 
 
-class RDFInputFileReader(Reader):
+class RDFInputFileReader(_TopologyFilesMixin, Reader):
 
     """
     A class to read input files to setup the :py:class:`~PQAnalysis.analysis.rdf.rdf.RDF` class.
     """
-
-    _moldescriptor_file_default = "moldescriptor.dat"
 
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
@@ -89,36 +87,15 @@ class RDFInputFileReader(Reader):
 
         self._set_default_no_intra_molecular()
 
-        if (
-            self.no_intra_molecular is True and
-            not self._infer_required_topology_files()
-        ):
-            self.logger.error(
-                self._missing_topology_files_error_message(
-                    self.no_intra_molecular_key
-                ),
-                exception=InputFileError,
+        if self.no_intra_molecular is True:
+            self._require_topology_files(self.no_intra_molecular_key)
+
+        if self.reference_com is True or self.target_com is True:
+            self._require_topology_files(
+                f"{self.reference_com_key} or {self.target_com_key}"
             )
 
-        if (
-            (self.reference_com is True or self.target_com is True) and
-            not self._infer_required_topology_files()
-        ):
-            self.logger.error(
-                self._missing_topology_files_error_message(
-                    f"{self.reference_com_key} or {self.target_com_key}"
-                ),
-                exception=InputFileError,
-            )
-
-        if self.moldescriptor_file is not None and self.restart_file is None:
-            self.logger.error(
-                (
-                    "The moldescriptor_file key can only be "
-                    "used in a meaningful way if a restart file is given."
-                ),
-                exception=InputFileError,
-            )
+        self._check_moldescriptor_needs_restart()
 
     def _set_default_no_intra_molecular(self):
         """
@@ -139,141 +116,6 @@ class RDFInputFileReader(Reader):
             )
         )
 
-    def _infer_required_topology_files(self) -> bool:
-        """
-        Infers missing topology files required by no_intra_molecular.
-        """
-        if self.restart_file is None:
-            restart_file = self._infer_restart_file()
-
-            if restart_file is not None:
-                self._set_inferred_key(
-                    self.restart_file_key,
-                    restart_file,
-                    "str",
-                )
-                self.logger.info(
-                    f"Inferred restart_file='{restart_file}' from traj_files."
-                )
-
-        if self.moldescriptor_file is None:
-            moldescriptor_file = self._infer_moldescriptor_file()
-
-            if moldescriptor_file is not None:
-                self._set_inferred_key(
-                    self.moldescriptor_file_key,
-                    moldescriptor_file,
-                    "str",
-                )
-                self.logger.info(
-                    (
-                        "Inferred moldescriptor_file="
-                        f"'{moldescriptor_file}' from traj_files."
-                    )
-                )
-
-        return (
-            self.restart_file is not None and
-            self.moldescriptor_file is not None
-        )
-
-    def _infer_restart_file(self) -> str | None:
-        """
-        Infers the restart file from the first trajectory filename.
-        """
-        restart_file = self._restart_file_candidate()
-
-        if restart_file is None:
-            return None
-
-        if Path(self.resolve_path(restart_file)).is_file():
-            return restart_file
-
-        return None
-
-    def _infer_moldescriptor_file(self) -> str | None:
-        """
-        Infers the moldescriptor file from the first trajectory directory.
-        """
-        moldescriptor_file = self._moldescriptor_file_candidate()
-
-        if moldescriptor_file is None:
-            return None
-
-        if Path(self.resolve_path(moldescriptor_file)).is_file():
-            return moldescriptor_file
-
-        return None
-
-    def _restart_file_candidate(self) -> str | None:
-        """
-        Gets the restart file candidate inferred from the first trajectory.
-        """
-        traj_file = self._first_traj_file()
-
-        if traj_file is None:
-            return None
-
-        return str(Path(traj_file).with_suffix(".rst"))
-
-    def _moldescriptor_file_candidate(self) -> str | None:
-        """
-        Gets the moldescriptor file candidate inferred from the first trajectory.
-        """
-        traj_file = self._first_traj_file()
-
-        if traj_file is None:
-            return None
-
-        return str(Path(traj_file).parent / self._moldescriptor_file_default)
-
-    def _first_traj_file(self) -> str | None:
-        """
-        Gets the first trajectory file as written in the input file.
-
-        The candidates derived from it are stored back into the input
-        dictionary, so they must stay relative to the input file like
-        every other filename there; the file properties resolve them.
-        """
-        traj_files = _parse_files(self.dictionary, self.traj_files_key)
-
-        if not traj_files:
-            return None
-
-        return traj_files[0]
-
-    def _missing_topology_files_error_message(self, key: str) -> str:
-        """
-        Gets the error message for missing topology files.
-
-        Parameters
-        ----------
-        key : str
-            The key (or keys) that require the topology files.
-        """
-        traj_file = self._first_traj_file()
-
-        if traj_file is None:
-            return (
-                f"The {key} key requires both a restart file "
-                "and a moldescriptor file. Could not infer missing files "
-                "because no trajectory files were available."
-            )
-
-        return (
-            f"The {key} key requires both a restart file "
-            "and a moldescriptor file. Could not infer missing files "
-            f"from trajectory file '{traj_file}'. "
-            f"Tried restart_file='{self._restart_file_candidate()}' "
-            "and moldescriptor_file="
-            f"'{self._moldescriptor_file_candidate()}'."
-        )
-
-    def _set_inferred_key(self, key: str, value, value_type: str):
-        """
-        Sets a value in the input dictionary after it was inferred.
-        """
-        self.dictionary.dict[key] = (value, value_type, "inferred")
 
 
 

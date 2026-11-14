@@ -1,0 +1,1 @@
+- Move the inference of the topology files of the RDF input file reader into a shared mixin (_TopologyFilesMixin) that the MSD input file reader uses as well.

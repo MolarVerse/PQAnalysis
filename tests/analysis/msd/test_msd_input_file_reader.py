@@ -229,3 +229,71 @@ class TestMSDInputFileReader:
             ),
             function=reader.read,
         )
+
+
+class TestCenterOfMassKeys:
+
+    """The keys of the MSD of the centers of mass of molecules."""
+
+    @staticmethod
+    def write(keys, name="input_com.in"):
+        base = Path("input_defaults.in").read_text(encoding="utf-8")
+        Path(name).write_text(base + "\n" + keys + "\n", encoding="utf-8")
+
+        return MSDInputFileReader(name)
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    @pytest.mark.parametrize(
+        "keys, expected",
+        [
+            ("target_com = True\nrestart_file = a.rst\nmoldescriptor_file = m.dat", True),
+            ("target_com = False", False),
+            ("", None),
+        ],
+    )
+    def test_the_key_is_parsed(self, test_with_data_dir, keys, expected):
+        reader = self.write(keys)
+
+        reader.read()
+
+        assert reader.target_com is expected
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_the_files_are_required(self, test_with_data_dir):
+        reader = self.write("target_com = True")
+
+        with pytest.raises(InputFileError) as exception:
+            reader.read()
+
+        assert str(exception.value).startswith(
+            "The target_com key requires both a restart file and a "
+            "moldescriptor file. Could not infer missing files from "
+            "trajectory file"
+        )
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_the_files_are_inferred(self, test_with_data_dir):
+        Path("traj.rst").write_text("", encoding="utf-8")
+        Path("moldescriptor.dat").write_text("", encoding="utf-8")
+        reader = self.write("target_com = True")
+
+        reader.read()
+
+        assert reader.restart_file == "traj.rst"
+        assert reader.moldescriptor_file == "moldescriptor.dat"
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_false_needs_no_files(self, test_with_data_dir):
+        self.write("target_com = False").read()
+
+    @pytest.mark.parametrize("example_dir", ["msd"], indirect=False)
+    def test_a_moldescriptor_file_needs_a_restart_file(self, test_with_data_dir):
+        reader = self.write("moldescriptor_file = m.dat")
+
+        with pytest.raises(InputFileError) as exception:
+            reader.read()
+
+        assert str(exception.value) == (
+            "The moldescriptor_file key can only be used in a meaningful "
+            "way if a restart file is given."
+        )
