@@ -1,0 +1,1 @@
+- Add the input-file key target_com to the vacf command: the velocity autocorrelation function (and spectrum) of the centers of mass of molecules can be run from an input file; the restart_file and moldescriptor_file keys are required for it and inferred beside the trajectory like for the RDF and MSD; it cannot be combined with the charge-flux keys.

@@ -212,6 +212,9 @@ from a restart file and a moldescriptor file:
   the number of molecules.
 * The charge-flux mode (``charges`` or a charge trajectory) is not available
   for centers, and combining it with ``target_com`` is an error.
+* In an input file the key ``target_com = True`` does this and needs
+  ``restart_file`` and ``moldescriptor_file``, which are inferred beside the
+  trajectory if omitted, as for the RDF and MSD.
 
 References
 ----------
