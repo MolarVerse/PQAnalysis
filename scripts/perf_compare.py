@@ -17,6 +17,7 @@ Usage:
 
 import argparse
 import json
+import re
 import statistics
 import subprocess
 import sys
@@ -162,8 +163,17 @@ def render_markdown(results, threshold, rounds, header=None):
 
     changed = slower + faster
     for result in changed[:5]:
-        name = result["name"].rsplit("::", 1)[-1]
-        name = name.removeprefix("test_").replace("_", " ")
+        parts = result["name"].split("::")
+        if len(parts) > 1:
+            parts = parts[1:]
+        labels = []
+        for part in parts:
+            part = re.sub(r"^(Benchmark|Test|benchmark_|test_)", "", part)
+            part = re.sub(
+                r"(?<=[a-z0-9])(?=[A-Z])|(?<=[A-Z])(?=[A-Z][a-z])", " ", part
+            )
+            labels.append(part.replace("_", " "))
+        name = " · ".join(labels).replace("[", " (").replace("]", ")")
         change = abs((result["ratio"] - 1.0) * 100)
         lines.append(
             f"- {name}: **{change:.1f}% {result['verdict']}** "

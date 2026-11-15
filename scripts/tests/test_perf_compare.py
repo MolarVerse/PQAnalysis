@@ -180,9 +180,35 @@ class ReportTests(unittest.TestCase):
         )
         report = PERF.render_markdown(results, 1.10, 3)
         visible, details = report.split('<details>', 1)
-        self.assertIn('rdf reader[compiled]: **20.0% slower**', visible)
+        self.assertIn('rdf reader (compiled): **20.0% slower**', visible)
         self.assertNotIn('benchmarks/', visible)
         self.assertIn(f'`{name}`', details)
+
+    def test_actual_benchmark_names_keep_the_analysis_context(self):
+        rdf = (
+            'benchmarks/analysis/benchmark_rdf.py::BenchmarkRDF::'
+            'benchmark_run_reader_fast_path[compiled]'
+        )
+        msd = (
+            'benchmarks/analysis/benchmark_msd.py::BenchmarkMSD::'
+            'benchmark_run_reader_fast_path[compiled]'
+        )
+        results = PERF.compare(
+            [{
+                rdf: 0.01, msd: 0.01
+            }] * 3, [{
+                rdf: 0.02, msd: 0.02
+            }] * 3,
+            1.10,
+            MIN_TIME
+        )
+        report = PERF.render_markdown(results, 1.10, 3)
+        visible, details = report.split('<details>', 1)
+        self.assertIn('RDF · run reader fast path (compiled)', visible)
+        self.assertIn('MSD · run reader fast path (compiled)', visible)
+        self.assertNotIn('Benchmark', visible)
+        self.assertIn(f'`{rdf}`', details)
+        self.assertIn(f'`{msd}`', details)
 
     def test_changes_are_reported_as_signed_percentages(self):
         results = PERF.compare(
