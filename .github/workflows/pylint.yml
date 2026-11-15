@@ -56,11 +56,12 @@ jobs:
       - name: Render report and check scores
         env:
           SOURCE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.sha }}
+          ARTIFACT_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts
         run: |
           extra=()
           if [[ -f pylint-base.json ]]; then extra+=(--base pylint-base.json); fi
           head-venv/bin/python head/.github/scripts/parse_pylint.py pylint-head.json \
-            "${extra[@]}" --source-url "$SOURCE_URL" --report comment.txt
+            "${extra[@]}" --source-url "$SOURCE_URL" --artifact-url "$ARTIFACT_URL" --report comment.txt
 
       - name: Publish summary
         if: always()

@@ -2,12 +2,20 @@ CI report comments
 ==================
 
 Pylint reports the score, its change from the PR base, and new diagnostics.
+Only the result and finding count are visible by default. Expand New findings
+for short, linked summaries; duplicate-code findings link to the compared files.
+Raw multiline diagnostics stay in the downloadable artifact. Failed score gates
+are explained in the visible comment; passing gate rules stay collapsed.
+Duplicate-code comparisons use the reported file ranges, not Pylint's choice of
+example excerpt, so a different excerpt does not become a new finding.
 Both revisions use the same dependency versions. The score must exceed 9.75
 and must not fall by more than 0.05. Push and manual runs have no base and say
 so explicitly. Full JSON diagnostics are saved as the pylint-report artifact.
 
-Performance reports lead with confirmed regressions and improvements. Full
-results and comparison rules are expandable; unchanged timings stay there.
+Performance reports lead with confirmed regressions and improvements.
+Visible changes use readable benchmark names and state how much slower or faster
+they are; exact benchmark identifiers remain in the full results.
+Results and comparison rules are expandable; unchanged timings stay there.
 The displayed change is the median of paired-round ratios, not necessarily
 the ratio of the separate base and head medians.
 

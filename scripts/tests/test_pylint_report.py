@@ -56,6 +56,100 @@ class PylintReportTests(unittest.TestCase):
         self.assertIn('/PQAnalysis/x.py#L8)', report)
         self.assertNotIn('|', report)
 
+    def test_diagnostics_and_rules_do_not_fill_the_visible_comment(self):
+        diagnostic = message()
+        diagnostic['message'] = 'Unused import x\nraw code\n<details open>'
+        report, _ = REPORT.render(result(9.78, [diagnostic]), result(9.78))
+        visible = report.split('<details>')[0]
+        self.assertIn('1 new finding.', visible)
+        self.assertNotIn('Unused import', visible)
+        self.assertNotIn('9.75', visible)
+        self.assertIn('- Unused import x', report)
+        self.assertNotIn('raw code', report)
+        self.assertNotIn('<details open>', report)
+
+    def test_duplicate_code_links_the_actual_files_not_the_reporter(self):
+        diagnostic = message()
+        diagnostic.update(
+            symbol='duplicate-code',
+            message='Similar lines in 2 files\n'
+            '==PQAnalysis.analysis.msd.msd:[272:279]\n'
+            '==PQAnalysis.analysis.vacf.vacf:[247:254]\nraw code',
+            path='PQAnalysis/tools/__init__.py',
+            line=1
+        )
+        report, _ = REPORT.render(result(9.78, [diagnostic]), result(9.78),
+                                  'https://example.com/blob/abc')
+        self.assertIn('/PQAnalysis/analysis/msd/msd.py#L273)', report)
+        self.assertIn('/PQAnalysis/analysis/vacf/vacf.py#L248)', report)
+        self.assertNotIn('tools/__init__', report)
+        self.assertNotIn('raw code', report)
+
+    def test_failure_reason_stays_visible(self):
+        report, passed = REPORT.render(result(9.70), result(9.80))
+        self.assertFalse(passed)
+        visible = report.split('<details>')[0]
+        self.assertIn('score must be above 9.75', visible)
+        self.assertIn('dropped by more than', visible)
+
+    def test_duplicate_code_sample_changes_are_not_new_findings(self):
+        base = message()
+        base.update(
+            symbol='duplicate-code',
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[10:20]\n'
+                '==PQAnalysis.b:[30:40]\nexample from a'
+            )
+        )
+        head = dict(
+            base,
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.b:[30:40]\n'
+                '==PQAnalysis.a:[10:20]\nexample from b'
+            )
+        )
+        report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
+        self.assertIn('No new findings.', report)
+
+    def test_an_extra_duplicate_code_occurrence_is_still_new(self):
+        diagnostic = message()
+        diagnostic.update(
+            symbol='duplicate-code',
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[10:20]\n'
+                '==PQAnalysis.b:[30:40]\nexample'
+            )
+        )
+        report, _ = REPORT.render(result(9.78, [diagnostic, diagnostic]),
+                                  result(9.78, [diagnostic]))
+        self.assertIn('1 new finding.', report)
+
+    def test_different_duplicate_code_regions_are_new(self):
+        base = message()
+        base.update(
+            symbol='duplicate-code',
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[10:20]\n'
+                '==PQAnalysis.b:[30:40]\nexample'
+            )
+        )
+        head = dict(
+            base, message=base['message'].replace('[10:20]', '[50:60]')
+        )
+        report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
+        self.assertIn('1 new finding.', report)
+
+    def test_artifact_link_and_long_message_summary(self):
+        diagnostic = message()
+        diagnostic['message'] = 'x' * 500
+        report, _ = REPORT.render(result(9.78, [diagnostic]),
+                                  artifact_url='https://example.com/artifacts')
+        self.assertIn(
+            '[Download pylint-report](https://example.com/artifacts)', report
+        )
+        self.assertIn('x' * 177 + '...', report)
+        self.assertNotIn('x' * 181, report)
+
 
 
 if __name__ == '__main__':

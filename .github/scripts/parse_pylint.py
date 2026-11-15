@@ -5,19 +5,26 @@ from collections import Counter
 import html
 import json
 from pathlib import Path
+import re
 from urllib.parse import quote
 
 
 
 def finding_key(message):
-    """Compare diagnostics independently of shifted line numbers."""
+    """Match diagnostics without relying on duplicate-code example excerpts."""
+    if message.get("symbol") == "duplicate-code":
+        regions = re.findall(
+            r"^==([\w.]+):\[(\d+):(\d+)\]", message["message"], re.MULTILINE
+        )
+        if regions:
+            return ("duplicate-code", tuple(sorted(regions)))
     return tuple(
         message.get(k, "") for k in ("symbol", "module", "obj", "message")
     )
 
 
 
-def render(head, base=None, source_url=""):
+def render(head, base=None, source_url="", artifact_url=""):
     """Return a readable report and whether both score gates pass."""
     score = head["statistics"]["score"]
     delta = None if base is None else score - base["statistics"]["score"]
@@ -29,10 +36,13 @@ def render(head, base=None, source_url=""):
             ", unchanged from base"
             if abs(delta) < 0.005 else f", {delta:+.2f} from base"
         )
-    lines = [title + "**", ""]
-    lines.append("Minimum required: above 9.75; maximum score drop: 0.05.")
+    lines = [title + "**"]
+    if score <= 9.75:
+        lines.extend(["", "The score must be above 9.75."])
+    if delta is not None and delta < -0.05 - 1e-9:
+        lines.extend(["", "The score dropped by more than the allowed 0.05."])
     if base is None:
-        lines.append("Base comparison unavailable.")
+        lines.extend(["", "Base comparison unavailable."])
     messages = head["messages"]
     if base is not None:
         remaining = Counter(finding_key(m) for m in base["messages"])
@@ -52,31 +62,56 @@ def render(head, base=None, source_url=""):
         )
     else:
         new = messages
+        lines.extend(["", f"{len(messages)} findings."])
 
-    def entry(message):
-        path = message["path"].replace("\\\\", "/")
-        line = message["line"]
+    def location(path, line):
+        path = path.replace("\\", "/")
         label = f"{path}:{line}"
         if source_url:
-            location = f"[{label}]({source_url}/{quote(path)}#L{line})"
-        else:
-            location = f"`{label}`"
-        text = html.escape(message["message"]).replace("`", "'")
-        return f"- {location}: {text} (`{message['symbol']}`)"
+            return f"[{label}]({source_url}/{quote(path)}#L{line})"
+        return f"`{label}`"
+
+    def entry(message):
+        text = (message["message"].splitlines() or [message["symbol"]])[0]
+        text = text[:177] + "..." if len(text) > 180 else text
+        text = html.escape(text).replace("`", "'")
+        text = re.sub(r"([\\*_[\]])", r"\\\1", text)
+        duplicates = re.findall(
+            r"^==([\w.]+):\[(\d+):\d+\]", message["message"], re.MULTILINE
+        ) if message["symbol"] == "duplicate-code" else []
+        places = [
+            location(module.replace(".", "/") + ".py", int(start) + 1)
+            for module, start in duplicates
+        ] or [location(message["path"], message["line"])]
+        return f"- {text} — {', '.join(places)}"
 
     if new:
-        lines.append("")
-        lines.extend(entry(m) for m in new[:5])
-        if len(new) > 5:
-            lines.append(f"{len(new) - 5} more in the details.")
-    lines.extend(
-        ["", "<details>", "<summary>Findings and full report</summary>", ""]
-    )
-    lines.extend(entry(m) for m in messages[:50])
+        label = "New findings" if base is not None else "Findings"
+        lines.extend(
+            ["", "<details>", f"<summary>{label} ({len(new)})</summary>", ""]
+        )
+        lines.extend(entry(m) for m in new[:50])
+        if len(new) > 50:
+            lines.append(f"\n{len(new) - 50} more in the downloadable report.")
+        lines.extend(["", "</details>"])
     lines.extend(
         [
             "",
-            "All diagnostics are in the pylint-report artifact.",
+            "<details>",
+            "<summary>Full diagnostics and gate rules</summary>",
+            ""
+        ]
+    )
+    diagnostics = (
+        f"[Download pylint-report]({artifact_url}) for all diagnostics."
+        if artifact_url else
+        "All diagnostics are in the pylint-report artifact on the workflow run."
+    )
+    lines.extend(
+        [
+            "The score must be above 9.75 and must not drop by more than 0.05.",
+            "",
+            diagnostics,
             "",
             "</details>"
         ]
@@ -90,6 +125,7 @@ def main():
     parser.add_argument("head")
     parser.add_argument("--base")
     parser.add_argument("--source-url", default="")
+    parser.add_argument("--artifact-url", default="")
     parser.add_argument("--report", default="comment.txt")
     args = parser.parse_args()
     head = json.loads(Path(args.head).read_text(encoding="utf-8"))
@@ -97,7 +133,7 @@ def main():
         json.loads(Path(args.base).read_text(encoding="utf-8"))
         if args.base else None
     )
-    report, passed = render(head, base, args.source_url)
+    report, passed = render(head, base, args.source_url, args.artifact_url)
     Path(args.report).write_text(report, encoding="utf-8")
     print(report)
     return 0 if passed else 1
