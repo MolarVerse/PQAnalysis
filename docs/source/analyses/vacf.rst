@@ -64,6 +64,13 @@ default ``none``) multiplies a copy before the cosine transform
 optional ``windowed_out_file`` records that copy. The full key table is on
 :class:`~PQAnalysis.analysis.vacf.vacf_input_file_reader.VACFInputFileReader`.
 
+For the VACF of the molecules instead of atoms, add the centers of mass as
+targets with ``target_com = True``. The velocity of a center is the mass
+weighted mean of the velocities of its atoms, the target selection picks the
+atoms that define each center, and the molecules come from ``restart_file`` and
+``moldescriptor_file`` (inferred beside the trajectory if omitted). It cannot
+be combined with the charge-flux keys; see :doc:`vacf-details`.
+
 Output
 ------
 

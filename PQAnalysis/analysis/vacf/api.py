@@ -6,7 +6,7 @@ function (VACF) analysis.
 import numpy as np
 from beartype.typing import Sequence
 
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import TrajectoryReader, read_restart_file
 from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.type_checking import runtime_type_checking
@@ -152,8 +152,16 @@ def vacf(
     input_reader = VACFInputFileReader(input_file)
     input_reader.read()
 
+    topology = None
+    if input_reader.target_com:
+        topology = read_restart_file(
+            input_reader.restart_file,
+            input_reader.moldescriptor_file,
+            md_engine_format=md_format,
+        ).topology
+
     traj_reader = TrajectoryReader(
-        input_reader.traj_files, md_format=md_format
+        input_reader.traj_files, md_format=md_format, topology=topology
     )
 
     charges = None
@@ -182,6 +190,7 @@ def vacf(
         charge_traj=charge_traj,
         method=input_reader.method,
         use_full_atom_info=input_reader.use_full_atom_info,
+        target_com=bool(input_reader.target_com),
     )
 
     # all output writers are constructed before the run so that a

@@ -17,6 +17,9 @@ from PQAnalysis.io.input_file_reader.pq_analysis._parse import (
     _parse_positive_real,
     _parse_string,
 )
+from PQAnalysis.io.input_file_reader.pq_analysis._topology_files_mixin import (
+    _TopologyFilesMixin,
+)
 from PQAnalysis.types import PositiveInt, PositiveReal
 from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
@@ -26,7 +29,7 @@ from .spectrum import WINDOW_FUNCTIONS
 
 
 
-class VACFInputFileReader(Reader):
+class VACFInputFileReader(_TopologyFilesMixin, Reader):
 
     """
     A class to read input files to setup the
@@ -74,6 +77,9 @@ class VACFInputFileReader(Reader):
         windowed_out_file_key,
         Reader.log_file_key,
         Reader.use_full_atom_info_key,
+        Reader.target_com_key,
+        Reader.restart_file_key,
+        Reader.moldescriptor_file_key,
     ]
 
     @runtime_type_checking
@@ -107,6 +113,12 @@ class VACFInputFileReader(Reader):
             spectrum file
         InputFileError
             if the window function is unknown
+        InputFileError
+            if the target_com key is used together with a charge file or
+            charge trajectory files, or without a restart file and a
+            moldescriptor file that can be given or inferred
+        InputFileError
+            if the moldescriptor_file key is used without a restart file
         """
         super().read()
         super().check_required_keys(self.required_keys)
@@ -149,6 +161,22 @@ class VACFInputFileReader(Reader):
                 ),
                 exception=InputFileError,
             )
+
+        if self.target_com is True:
+            if self.charge_file is not None or self.charge_files is not None:
+                self.logger.error(
+                    (
+                        f"The key '{self.target_com_key}' cannot be used "
+                        f"together with '{self.charge_file_key}' or "
+                        f"'{self.charge_files_key}': the centers of mass of "
+                        "molecules have no charge flux."
+                    ),
+                    exception=InputFileError,
+                )
+
+            self._require_topology_files(self.target_com_key)
+
+        self._check_moldescriptor_needs_restart()
 
     @property
     def window(self) -> PositiveInt | None:
@@ -325,6 +353,12 @@ The following keys are optional:
       - The log file to write the log information to.
     * - {Reader.use_full_atom_info_key}
       - Whether to use full atom information for the selections.
+    * - {Reader.target_com_key}
+      - Whether the targets are the centers of mass of the molecules instead of atoms, so that the VACF is that of the molecules (the velocity of a center is the mass weighted mean of the velocities of its atoms). The target selection then picks the atoms that define each center. Needs the restart file and the moldescriptor file and cannot be combined with the charge-flux keys. Default is false.
+    * - {Reader.restart_file_key}
+      - The restart file that defines the molecules, needed for {Reader.target_com_key}. Inferred from the first trajectory file if omitted (:code:`trajectory.vel` maps to :code:`trajectory.rst`).
+    * - {Reader.moldescriptor_file_key}
+      - The moldescriptor file with the molecule types, needed for {Reader.target_com_key}. Inferred from the trajectory directory (:code:`moldescriptor.dat`) if omitted.
 
 Note
 ----
