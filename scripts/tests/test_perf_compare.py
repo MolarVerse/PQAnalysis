@@ -169,6 +169,21 @@ class ReportTests(unittest.TestCase):
 
         self.assertIn("No confirmed performance regressions", report)
 
+    def test_visible_changes_use_readable_names_and_plain_language(self):
+        name = 'benchmarks/test_io.py::test_rdf_reader[compiled]'
+        results = PERF.compare(
+            [{
+                name: 0.01
+            }] * 3, [{
+                name: 0.012
+            }] * 3, 1.10, MIN_TIME
+        )
+        report = PERF.render_markdown(results, 1.10, 3)
+        visible, details = report.split('<details>', 1)
+        self.assertIn('rdf reader[compiled]: **20.0% slower**', visible)
+        self.assertNotIn('benchmarks/', visible)
+        self.assertIn(f'`{name}`', details)
+
     def test_changes_are_reported_as_signed_percentages(self):
         results = PERF.compare(
             [{

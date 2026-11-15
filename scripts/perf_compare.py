@@ -161,7 +161,14 @@ def render_markdown(results, threshold, rounds, header=None):
         )
 
     changed = slower + faster
-    lines.extend(entry(r) for r in changed[:5])
+    for result in changed[:5]:
+        name = result["name"].rsplit("::", 1)[-1]
+        name = name.removeprefix("test_").replace("_", " ")
+        change = abs((result["ratio"] - 1.0) * 100)
+        lines.append(
+            f"- {name}: **{change:.1f}% {result['verdict']}** "
+            f"({format_time(result['base'])} → {format_time(result['head'])})."
+        )
     if len(changed) > 5:
         lines.append(f"{len(changed) - 5} more changes in the full results.")
     if changed:
