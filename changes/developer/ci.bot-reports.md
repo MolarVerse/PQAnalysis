@@ -1,3 +1,0 @@
-- Make Pylint and performance reports concise, with expandable diagnostics instead of large tables. Compare Pylint with the PR base and publish performance comments through an isolated pq-perf-bot workflow.
-- Keep raw Pylint diagnostics out of comments, collapse linked finding summaries and passing gate rules, and use readable benchmark names with plain-language timing changes.
-- Match duplicate-code findings by file ranges rather than example excerpts, avoiding false new findings when Pylint chooses a different example.
