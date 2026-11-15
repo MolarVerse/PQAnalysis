@@ -1,0 +1,1 @@
+- Add MoleculeCenters.mean_velocities (vectorized and chunked over frames) and VACF benchmarks for the centers of mass of molecules (file fast path and in-memory, compiled and fallback kernel).

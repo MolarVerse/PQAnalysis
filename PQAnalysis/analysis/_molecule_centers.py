@@ -54,6 +54,18 @@ class MoleculeCenters:
         self.masses = np.asarray(masses, dtype=float)
         self.molecules = np.unique(self.molecule_ids)
 
+        # the atoms ordered by molecule, the start of every molecule in that
+        # order and the mass fraction of every atom in its molecule
+        order = np.argsort(self.molecule_ids, kind="stable")
+        _, starts = np.unique(self.molecule_ids[order], return_index=True)
+        total_mass = np.add.reduceat(self.masses[order], starts)
+        self._ordered_atoms = self.atom_indices[order]
+        self._starts = starts
+        self._weights = (
+            self.masses[order] /
+            np.repeat(total_mass, np.diff(np.append(starts, len(order))))
+        )
+
     @classmethod
     def from_topology(
         cls,
@@ -133,6 +145,52 @@ class MoleculeCenters:
     def n_centers(self) -> int:
         """int: The number of centers of mass."""
         return len(self.molecules)
+
+    def mean_velocities(
+        self, values: np.ndarray, chunk_frames: int = 256
+    ) -> np.ndarray:
+        """
+        Calculates the velocities of the centers of mass: the mass weighted
+        mean of the velocities of the atoms of every molecule. Vectors need
+        no periodic images.
+
+        Parameters
+        ----------
+        values : np.ndarray
+            The velocities of all atoms with shape (n_atoms, 3) or of many
+            frames with shape (n_frames, n_atoms, 3).
+        chunk_frames : int, optional
+            The number of frames that are reduced at once for many frames,
+            which bounds the size of the temporary arrays, by default 256.
+
+        Returns
+        -------
+        np.ndarray
+            A new float64 array with shape (n_centers, 3) or
+            (n_frames, n_centers, 3), the centers in ascending order of the
+            molecule ids.
+        """
+
+        values = np.asarray(values)
+        weights = self._weights[:, None]
+
+        if values.ndim == 2:
+            return np.add.reduceat(
+                values[self._ordered_atoms] * weights, self._starts, axis=0
+            )
+
+        result = np.empty(
+            (values.shape[0], self.n_centers, 3), dtype=np.float64
+        )
+        for start in range(0, values.shape[0], chunk_frames):
+            stop = start + chunk_frames
+            result[start:stop] = np.add.reduceat(
+                values[start:stop][:, self._ordered_atoms, :] * weights,
+                self._starts,
+                axis=1,
+            )
+
+        return result
 
     def rows(self, molecule_ids: np.ndarray) -> np.ndarray:
         """

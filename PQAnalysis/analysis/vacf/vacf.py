@@ -43,6 +43,7 @@ from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
+from .._molecule_centers import MoleculeCenters
 from .exceptions import VACFError
 from ._raw_charge_reader import RawChargeTrajectoryReader
 
@@ -128,6 +129,7 @@ class VACF:
         charge_traj: Trajectory | TrajectoryReader | None = None,
         method: str | None = None,
         use_full_atom_info: bool | None = False,
+        target_com: bool = False,
     ):
         """
         Parameters
@@ -163,6 +165,17 @@ class VACF:
         use_full_atom_info : bool | None, optional
             Whether to use the full atom information for the target
             selection, by default None (False).
+        target_com : bool, optional
+            Whether the targets are the centers of mass of the molecules
+            instead of atoms, by default False. The velocity of a center
+            is the mass weighted mean of the velocities of its atoms, so
+            the VACF is that of the molecules (e.g. the translational part
+            of a spectrum). The target selection then picks the atoms that
+            define the center of each molecule (molecules without a
+            selected atom are left out). The molecules are the residues of
+            the topology of the trajectory (restart file with a
+            moldescriptor file), which therefore has to contain residues.
+            It cannot be combined with the charge-flux mode.
 
         Raises
         ------
@@ -172,6 +185,10 @@ class VACF:
             If the method is unknown.
         VACFError
             If both static charges and a charge trajectory are given.
+        VACFError
+            If target_com is combined with static charges or a charge
+            trajectory, if the topology has no residues or if a selected
+            atom has no mass.
         VACFError
             If the window size is not an integer multiple of the gap.
         VACFError
@@ -214,6 +231,16 @@ class VACF:
                     "Only one charge source can be used for the "
                     "charge-flux mode: either static charges or a "
                     "charge trajectory."
+                ),
+                exception=VACFError,
+            )
+
+        if target_com and (charges is not None or charge_traj is not None):
+            self.logger.error(
+                (
+                    "target_com cannot be combined with the charge-flux "
+                    "mode (charges or a charge trajectory): the centers of "
+                    "mass of molecules have no charge flux."
                 ),
                 exception=VACFError,
             )
@@ -321,6 +348,14 @@ class VACF:
             dtype=np.intp,
         )
 
+        self.target_com = target_com
+        self._centers = None
+
+        if target_com:
+            self._centers = MoleculeCenters.from_topology(
+                self.topology, self.target_indices, self.logger, VACFError
+            )
+
         ##########################
         # Initialize charge mode #
         ##########################
@@ -404,6 +439,14 @@ class VACF:
             )
 
         self._charge_value_stream = self._charge_values()
+
+    @property
+    def n_targets(self) -> int:
+        """int: The number of atoms or, with target_com, of molecules."""
+        if self._centers is not None:
+            return self._centers.n_centers
+
+        return len(self.target_indices)
 
     @property
     def n_atoms(self) -> int:
@@ -534,7 +577,10 @@ class VACF:
                     exception=VACFError,
                 )
 
-            yield weight_frame(values, indices, self._frame_charges())
+            if self._centers is not None:
+                yield self._centers.mean_velocities(values)
+            else:
+                yield weight_frame(values, indices, self._frame_charges())
 
     def _weighted_velocities(self) -> Generator[Np2DNumberArray, None, None]:
         """
@@ -574,6 +620,10 @@ class VACF:
                     ),
                     exception=VACFError,
                 )
+
+            if self._centers is not None:
+                yield self._centers.mean_velocities(vel)
+                continue
 
             vel = vel[self.target_indices]
 
@@ -693,7 +743,7 @@ class VACF:
         ):
             return False
 
-        n_values = self.n_frames * len(self.target_indices) * 3
+        n_values = self.n_frames * self.n_targets * 3
 
         return n_values * np.dtype(np.float64).itemsize <= (
             self._direct_batch_max_bytes
@@ -705,7 +755,7 @@ class VACF:
 
         if velocities is None:
             velocities = np.empty(
-                (self.n_frames, len(self.target_indices), 3),
+                (self.n_frames, self.n_targets, 3),
                 dtype=np.float64,
             )
 
@@ -791,8 +841,8 @@ class VACF:
         if self._raw_reader is None or self._charge_value_stream is not None:
             return None
 
-        n_target = len(self.target_indices)
-        all_atoms_selected = np.array_equal(
+        n_target = self.n_targets
+        all_atoms_selected = self._centers is None and np.array_equal(
             self._target_indices_intp,
             np.arange(self.n_atoms, dtype=np.intp),
         )
@@ -821,6 +871,9 @@ class VACF:
         if all_atoms_selected and self._static_charges is None:
             return values
 
+        if self._centers is not None:
+            return self._centers.mean_velocities(values)
+
         velocities = np.ascontiguousarray(
             values[:, self._target_indices_intp, :],
             dtype=np.float64,
@@ -838,7 +891,7 @@ class VACF:
         stop_frame = self.stop_frame
 
         n_slots = window_size // gap + 1
-        n_target = len(self.target_indices)
+        n_target = self.n_targets
 
         corr = np.zeros(window_size + 1, dtype=np.float64)
         origin_vel = np.zeros((n_slots, n_target, 3), dtype=np.float64)

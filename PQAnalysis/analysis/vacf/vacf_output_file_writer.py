@@ -258,9 +258,10 @@ class VACFLogWriter(BaseWriter):
         print(file=self.file)
 
         print("    Target selection:", vacf.target_selection, file=self.file)
+        entity = "molecules (centers of mass)" if vacf.target_com else "atoms"
         print(
-            "    total number of atoms in target selection:",
-            len(vacf.target_indices),
+            f"    total number of {entity} in target selection:",
+            vacf.n_targets,
             file=self.file
         )
         print(file=self.file)
