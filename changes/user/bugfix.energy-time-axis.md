@@ -1,1 +1,0 @@
-- Fix PQ energy time axes: step 100 at 0.5 fs is 0.05 ps when an explicit timestep or header is available; legacy counts without a timestep are labelled as steps instead of ps.

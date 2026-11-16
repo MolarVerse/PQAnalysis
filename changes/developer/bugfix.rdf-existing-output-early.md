@@ -1,1 +1,0 @@
-- Build the RDF data and log writers right after the input file is read in `rdf()`, before the restart file and trajectory are opened.

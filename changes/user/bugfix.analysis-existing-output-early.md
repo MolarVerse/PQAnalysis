@@ -1,1 +1,0 @@
-- The msd, vacf and check_momentum commands stop right away when an output, log or export file already exists, instead of after the trajectory has been read (#309).
