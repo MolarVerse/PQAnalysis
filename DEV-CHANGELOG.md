@@ -10,11 +10,22 @@ in `CHANGELOG.md`.
 <!-- insertion marker -->
 ## [v1.9.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.9.0) - 2026-11-15
 
+### Bug Fixes
+
+- Build the output writers of `msd()`, `vacf()` and `check_momentum()` before the restart file and trajectory are opened.
+- Resolve PQ energy timesteps from native headers or an explicit reader argument, reject invalid and conflicting metadata, and cover chained offsets, legacy step units and QMCFC compatibility.
+- The `ase` extxyz profile maps the PQ names `D` and `T` to `H`, and `Q`, `cav`, `sup` and `dum` to `X`; other names are written as before (#305).
+- Build the RDF data and log writers right after the input file is read in `rdf()`, before the restart file and trajectory are opened.
+
 ### CI
 
 - Make Pylint and performance reports concise, with expandable diagnostics instead of large tables. Compare Pylint with the PR base and publish performance comments through an isolated pq-perf-bot workflow.
 - Keep raw Pylint diagnostics out of comments, collapse linked finding summaries and passing gate rules, and use readable benchmark names with plain-language timing changes.
 - Match duplicate-code findings by file ranges rather than example excerpts, avoiding false new findings when Pylint chooses a different example.
+
+### Tests
+
+- Add end-to-end tests of the rdf, msd, vacf, check_momentum and vibrations commands on examples/water, checked against independent NumPy calculations, with compiled and fallback kernels and the CSV and XVG exports.
 
 ### Internal
 
