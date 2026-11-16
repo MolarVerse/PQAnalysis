@@ -24,6 +24,11 @@ N_ATOMS = 216
 N_FRAMES = 100
 
 
+#: The standard reader parses xyz values as float32, so converted positions
+#: agree with the input to about seven significant digits.
+FLOAT32 = {"rtol": 2e-7, "atol": 2e-7}
+
+
 def run_cli(monkeypatch, *arguments):
     monkeypatch.setattr(
         sys, "argv", ["pqanalysis", "--log-file", "off", *arguments]
@@ -161,7 +166,7 @@ class TestTraj2QMCFC:
             assert np.allclose(new_box, box)
             assert new_names == ["X", *names]
             assert np.allclose(new_positions[0], 0.0)
-            assert np.allclose(new_positions[1:], positions, atol=1e-9)
+            assert np.allclose(new_positions[1:], positions, **FLOAT32)
 
     def test_the_round_trip_through_the_extended_xyz(self, frames, monkeypatch):
         run_cli(monkeypatch, "traj2qmcfc", FILES[0], "-o", "traj.qmcfc.xyz")
@@ -176,7 +181,7 @@ class TestTraj2QMCFC:
         # the QMCFC engine drops the dummy atom again
         assert len(atoms) == N_FRAMES
         assert all(len(frame) == N_ATOMS for frame in atoms)
-        assert np.allclose(atoms[10].positions, frames[10][2], atol=1e-8)
+        assert np.allclose(atoms[10].positions, frames[10][2], **FLOAT32)
 
     def test_the_writing_modes(self, frames, monkeypatch):
         run_cli(monkeypatch, "traj2qmcfc", FILES[0], "-o", "q.xyz")
@@ -201,8 +206,8 @@ class TestTraj2ExtXYZ:
         assert len(atoms) == 2 * N_FRAMES
         for frame, (box, names, positions) in zip(atoms, frames):
             assert frame.get_chemical_symbols() == names
-            assert np.allclose(frame.positions, positions, atol=1e-8)
-            assert np.allclose(frame.cell.array, lattice(box), atol=1e-8)
+            assert np.allclose(frame.positions, positions, **FLOAT32)
+            assert np.allclose(frame.cell.array, lattice(box), rtol=1e-9, atol=1e-8)
             assert frame.pbc.all()
 
     @pytest.mark.parametrize("profile", ["ase", "pq", "nep"])
@@ -217,7 +222,9 @@ class TestTraj2ExtXYZ:
         atoms = ase_io.read(f"{profile}.extxyz", index=":")
 
         assert len(atoms) == N_FRAMES
-        assert np.allclose(atoms[-1].positions, frames[N_FRAMES - 1][2], atol=1e-8)
+        assert np.allclose(
+            atoms[-1].positions, frames[N_FRAMES - 1][2], **FLOAT32
+        )
 
         # the nep profile writes the lower case keys that GPUMD expects, which
         # ASE does not read as a cell; the lattice is parsed from the line
@@ -226,10 +233,12 @@ class TestTraj2ExtXYZ:
         values = header.split('attice="')[1].split('"')[0].split()
         assert np.allclose(
             np.array(values, dtype=float).reshape(3, 3),
-            lattice(frames[0][0]), atol=1e-8,
+            lattice(frames[0][0]), rtol=1e-9, atol=1e-8,
         )
         if profile != "nep":
-            assert np.allclose(atoms[0].cell.array, lattice(frames[0][0]), atol=1e-8)
+            assert np.allclose(
+                atoms[0].cell.array, lattice(frames[0][0]), rtol=1e-9, atol=1e-8
+            )
 
     def test_the_nep_profile_writes_lower_case_keys(self, frames, monkeypatch):
         run_cli(
