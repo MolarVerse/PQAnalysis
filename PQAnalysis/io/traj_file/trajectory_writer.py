@@ -287,9 +287,13 @@ class TrajectoryWriter(BaseWriter):
                 )
             )
 
-        metadata.append(
-            f'{self._extxyz_properties_key()}="{self._extxyz_properties(frame)}"'
-        )
+        properties = self._extxyz_properties(frame)
+
+        # GPUMD does not strip quotes around the properties value
+        if not self._is_gpumd_extxyz_profile():
+            properties = f'"{properties}"'
+
+        metadata.append(f"{self._extxyz_properties_key()}={properties}")
 
         if frame.has_energy:
             energy = self._convert_extxyz_energy_like(frame.energy)
