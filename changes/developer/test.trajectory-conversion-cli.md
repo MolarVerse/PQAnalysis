@@ -1,0 +1,1 @@
+- Add end-to-end tests of traj2box, traj2qmcfc and traj2extxyz on the triclinic examples: box files, VMD vertices, the QMCFC dummy atom and round trip, extended xyz read back with ASE, and the writing modes.
