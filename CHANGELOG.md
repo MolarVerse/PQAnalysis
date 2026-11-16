@@ -12,6 +12,15 @@ implementation changes are documented in
 ## Next Release
 
 <!-- insertion marker -->
+## [v1.9.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.9.0) - 2026-11-15
+
+### New Features
+
+- Add the input-file key target_com to the msd command: the mean square displacement and the diffusion coefficients of the centers of mass of molecules can be run from an input file; the restart_file and moldescriptor_file keys are required for it and inferred beside the trajectory like for the RDF.
+- Add target_com to the MSD class: the mean square displacement and the diffusion coefficients of the centers of mass of molecules, with the molecules taken from the residues of the topology (restart file with moldescriptor file) and the selection choosing the atoms that define each center; the MSD is the mean over the molecules.
+- Add the input-file key target_com to the vacf command: the velocity autocorrelation function (and spectrum) of the centers of mass of molecules can be run from an input file; the restart_file and moldescriptor_file keys are required for it and inferred beside the trajectory like for the RDF and MSD; it cannot be combined with the charge-flux keys.
+- Add target_com to the VACF class: the velocity autocorrelation function of the centers of mass of molecules (the mass weighted mean of the velocities of their atoms), with the molecules taken from the residues of the topology and the selection choosing the atoms that define each center; not available together with the charge-flux mode.
+
 ## [v1.8.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.1) - 2026-11-13
 
 ### Bug Fixes
