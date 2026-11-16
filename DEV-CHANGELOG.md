@@ -8,6 +8,20 @@ in `CHANGELOG.md`.
 ## Next Release
 
 <!-- insertion marker -->
+## [v1.9.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.9.0) - 2026-11-15
+
+### CI
+
+- Make Pylint and performance reports concise, with expandable diagnostics instead of large tables. Compare Pylint with the PR base and publish performance comments through an isolated pq-perf-bot workflow.
+- Keep raw Pylint diagnostics out of comments, collapse linked finding summaries and passing gate rules, and use readable benchmark names with plain-language timing changes.
+- Match duplicate-code findings by file ranges rather than example excerpts, avoiding false new findings when Pylint chooses a different example.
+
+### Internal
+
+- Add MoleculeCenters.mean_velocities (vectorized and chunked over frames) and VACF benchmarks for the centers of mass of molecules (file fast path and in-memory, compiled and fallback kernel).
+- Move the molecule centers of the RDF to PQAnalysis/analysis/_molecule_centers.py with a from_topology factory shared with the MSD, and add MSD benchmarks for the centers of mass (file fast path and in-memory, compiled and fallback kernel).
+- Move the inference of the topology files of the RDF input file reader into a shared mixin (_TopologyFilesMixin) that the MSD input file reader uses as well.
+
 ## [v1.8.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.0) - 2026-11-13
 
 ### CI

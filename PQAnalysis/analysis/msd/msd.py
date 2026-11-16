@@ -39,6 +39,7 @@ from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
 
 # local relative imports
+from .._molecule_centers import MoleculeCenters
 from .exceptions import MSDError
 
 try:
@@ -159,6 +160,7 @@ class MSD:
         n_start: int | None = None,
         time_step: PositiveReal | None = None,
         fit_window: PositiveInt | None = None,
+        target_com: bool = False,
     ):
         """
         Parameters
@@ -191,6 +193,17 @@ class MSD:
             The number of trailing MSD points used for the
             diffusion fit, by default None (last 20% of the
             window).
+        target_com : bool, optional
+            Whether the targets are the centers of mass of the molecules
+            instead of atoms, by default False. The target selection then
+            picks the atoms that define the center of mass of each molecule
+            (molecules without a selected atom are left out), and the MSD
+            is the mean over the molecules, so the diffusion coefficients
+            are those of the molecules. The molecules are the residues of
+            the topology of the trajectory (restart file with a
+            moldescriptor file), which therefore has to contain residues.
+            A center must not move farther than half of the box between two
+            frames, as for atoms.
 
         Raises
         ------
@@ -216,6 +229,12 @@ class MSD:
         MSDError
             If n_start is larger than stop_frame, so that no
             time origin could spawn.
+        MSDError
+            If target_com is used with a topology without residues or
+            with selected atoms without a mass.
+        AtomicSystemError
+            While running with target_com, if a molecule spans half of the
+            box or more.
 
         See Also
         --------
@@ -235,6 +254,8 @@ class MSD:
         self.msd_tot = np.array([])
         self.fit_results = None
         self._msd_accumulator = None
+        self._centers = None
+        self.target_com = target_com
 
         #####################################################
         # Initialize parameters with default values if None #
@@ -315,11 +336,44 @@ class MSD:
                 exception=MSDError
             )
 
+        self._setup_centers()
+
         ##########################################
         # Setup time origin bookkeeping (legacy) #
         ##########################################
 
         self._setup_origin_bookkeeping()
+
+    def _setup_centers(self):
+        """
+        Replaces the selected atoms by the centers of mass of their
+        molecules, if target_com is used. The centers are appended to the
+        positions of every frame and target_indices holds their rows.
+
+        Raises
+        ------
+        MSDError
+            If the topology has no residues or if a selected atom has no
+            mass.
+        """
+
+        if not self.target_com:
+            return
+
+        self._centers = MoleculeCenters.from_topology(
+            self.topology, self.target_indices, self.logger, MSDError
+        )
+        self.target_indices = self._centers.rows(
+            np.unique(self.topology.residue_numbers[self.target_indices])
+        )
+
+    def _extend_positions(self, positions, cell: Cell):
+        """Appends the centers of mass to a frame, if they are used."""
+
+        if self._centers is None:
+            return positions
+
+        return self._centers.extend(positions, cell)
 
     def _check_parameters(self):
         """
@@ -581,7 +635,7 @@ class MSD:
                     exception=MSDError
                 )
 
-            pos = pos[self.target_indices]
+            pos = self._extend_positions(pos, frame.cell)[self.target_indices]
 
             if prev_pos is not None:
                 shift += self._unwrap_shift(pos - prev_pos, frame.cell)
@@ -723,7 +777,7 @@ class MSD:
                 box_lengths = np.ascontiguousarray(box_lengths)
 
             legacy_msd_frame_update(
-                values,
+                self._extend_positions(values, cell),
                 indices,
                 box_lengths,
                 pos,
@@ -816,7 +870,9 @@ class MSD:
         reader_max_bytes = self._direct_batch_max_bytes - selection_bytes
         batch = None
 
-        if reader_max_bytes > 0:
+        # the centers are appended frame by frame, so the bulk reader is
+        # not used for them
+        if reader_max_bytes > 0 and self._centers is None:
             batch = self._raw_reader.try_read_all_frames(
                 expected_n_atoms=n_atoms,
                 expected_n_frames=self.n_frames,
@@ -871,7 +927,9 @@ class MSD:
                     if box_lengths is None:
                         return False
 
-                positions[frame_index] = values[indices]
+                positions[frame_index] = self._extend_positions(
+                    values, cell
+                )[indices]
                 boxes[frame_index] = box_lengths
                 n_read = frame_index + 1
 
@@ -1039,7 +1097,7 @@ class MSD:
                     )
 
             msd_frame_update(
-                values,
+                self._extend_positions(values, cell),
                 indices,
                 box,
                 inv_box,

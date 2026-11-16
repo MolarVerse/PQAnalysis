@@ -179,6 +179,43 @@ Estimator choice changes the statistics of the tail
    an unaveraged single-origin estimate, and the final lag bin stays exactly
    zero. Use a longer trajectory or a smaller ``window``.
 
+Centers of mass of molecules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With ``target_com=True`` the targets are the centers of mass of molecules. The
+velocity of a center is the mass weighted mean of the velocities of its atoms,
+so the VACF describes the motion of the molecules as a whole (translation) and
+leaves out the internal vibrations, whose momentum cancels within a molecule.
+The molecules are the residues of the topology, so the topology has to be made
+from a restart file and a moldescriptor file:
+
+.. code-block:: python
+
+   from PQAnalysis.io import TrajectoryReader, read_restart_file
+
+   topology = read_restart_file("input.rst", "moldescriptor.dat").topology
+
+   VACF(
+       TrajectoryReader("trajectory.vel", topology=topology),
+       time_step=0.002,
+       window_size=200,
+       target_com=True,
+   ).run()
+
+* The selection picks the atoms that define each center: ``*`` uses all atoms,
+  ``H`` the hydrogens of every molecule. A molecule without a selected atom is
+  left out.
+* Velocities need no cell and no periodic images, so there is no size limit for
+  the molecules. Atoms with a placeholder mass (``X``, ``Q``, ``Cav``, ``Sup``)
+  dominate the center and are reported with a warning.
+* The VACF is normalized per time origin as for atoms, so it does not depend on
+  the number of molecules.
+* The charge-flux mode (``charges`` or a charge trajectory) is not available
+  for centers, and combining it with ``target_com`` is an error.
+* In an input file the key ``target_com = True`` does this and needs
+  ``restart_file`` and ``moldescriptor_file``, which are inferred beside the
+  trajectory if omitted, as for the RDF and MSD.
+
 References
 ----------
 

@@ -187,6 +187,48 @@ Two normalization traps
    that zero is inside any requested diffusion fit and corrupts it. Use a
    longer trajectory or a smaller ``window``.
 
+Centers of mass of molecules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+With ``target_com=True`` the MSD is calculated for the centers of mass of
+molecules instead of atoms, which gives the diffusion coefficient of the
+molecules. The molecules are the residues of the topology, so the topology has
+to be made from a restart file and a moldescriptor file:
+
+.. code-block:: python
+
+   from PQAnalysis.io import TrajectoryReader, read_restart_file
+
+   topology = read_restart_file("input.rst", "moldescriptor.dat").topology
+
+   MSD(
+       TrajectoryReader("trajectory.xyz", topology=topology),
+       target_species="*",
+       window=200,
+       gap=10,
+       time_step=0.002,
+       target_com=True,
+   ).run()
+
+* The selection picks the atoms that define the center of mass of each
+  molecule: ``*`` uses all atoms, ``H`` the hydrogens of every molecule. A
+  molecule without a selected atom is left out.
+* The accumulated displacement is divided by the number of molecules, so the
+  curve and the fit are those of the molecules, not weighted by their size.
+* A center is unwrapped like an atom, with the minimum image of its
+  displacement between two frames, so it must not move farther than half of the
+  box between two written frames.
+* Atoms are imaged relative to the first atom of their molecule. A molecule
+  whose atoms spread over half of the box or more around that atom raises an
+  error while the analysis runs. Atoms with a placeholder mass (``X``, ``Q``,
+  ``Cav``, ``Sup``) dominate the center of mass and are reported with a
+  warning.
+* The compiled kernels work on the centers as on atoms. The multi-threaded
+  batch kernel reads the frames one by one for centers instead of in bulk.
+* In an input file the key ``target_com = True`` does this and needs
+  ``restart_file`` and ``moldescriptor_file``, which are inferred beside the
+  trajectory if omitted, as for the RDF.
+
 References
 ----------
 

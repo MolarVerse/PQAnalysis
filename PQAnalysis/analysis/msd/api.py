@@ -4,7 +4,7 @@ This module provides API functions for the mean square displacement (MSD) analys
 
 from beartype.typing import Sequence
 
-from PQAnalysis.io import TrajectoryReader
+from PQAnalysis.io import TrajectoryReader, read_restart_file
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
 
@@ -49,8 +49,16 @@ def msd(
     input_reader = MSDInputFileReader(input_file)
     input_reader.read()
 
+    topology = None
+    if input_reader.target_com:
+        topology = read_restart_file(
+            input_reader.restart_file,
+            input_reader.moldescriptor_file,
+            md_engine_format=md_format,
+        ).topology
+
     traj_reader = TrajectoryReader(
-        input_reader.traj_files, md_format=md_format
+        input_reader.traj_files, md_format=md_format, topology=topology
     )
 
     _msd = MSD(
@@ -62,6 +70,7 @@ def msd(
         n_start=input_reader.n_start,
         time_step=input_reader.time_step,
         fit_window=input_reader.fit_window,
+        target_com=bool(input_reader.target_com),
     )
 
     data_writer = MSDDataWriter(

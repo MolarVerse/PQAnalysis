@@ -220,3 +220,77 @@ class TestVACFInputFileReader:
             exception=InputFileError,
             function=reader.read,
         )
+
+
+
+class TestCenterOfMassKeys:
+
+    """The keys of the VACF of the centers of mass of molecules."""
+
+    @staticmethod
+    def read(extra):
+        _write_input_file("vacf.in", MINIMAL_INPUT + extra)
+        reader = VACFInputFileReader("vacf.in")
+        reader.read()
+
+        return reader
+
+    @pytest.mark.parametrize(
+        "extra, expected",
+        [
+            (
+                "target_com = True\nrestart_file = a.rst\n"
+                "moldescriptor_file = m.dat\n",
+                True,
+            ),
+            ("target_com = False\n", False),
+            ("", None),
+        ],
+    )
+    def test_the_key_is_parsed(self, tmpdir, extra, expected):  # pylint: disable=unused-argument
+        assert self.read(extra).target_com is expected
+
+    def test_the_files_are_required(self, tmpdir):  # pylint: disable=unused-argument
+        with pytest.raises(InputFileError) as exception:
+            self.read("target_com = True\n")
+
+        assert str(exception.value).startswith(
+            "The target_com key requires both a restart file and a "
+            "moldescriptor file. Could not infer missing files from "
+            "trajectory file 'traj.vel'."
+        )
+
+    def test_the_files_are_inferred(self, tmpdir):  # pylint: disable=unused-argument
+        _write_input_file("traj.rst", "")
+        _write_input_file("moldescriptor.dat", "")
+
+        reader = self.read("target_com = True\n")
+
+        assert reader.restart_file == "traj.rst"
+        assert reader.moldescriptor_file == "moldescriptor.dat"
+
+    @pytest.mark.parametrize(
+        "charge_key", ["charge_file = c.dat\n", "charge_files = c.chrg\n"]
+    )
+    def test_the_charge_flux_cannot_be_combined(self, tmpdir, charge_key):  # pylint: disable=unused-argument
+        with pytest.raises(InputFileError) as exception:
+            self.read(
+                "target_com = True\nrestart_file = a.rst\n"
+                "moldescriptor_file = m.dat\n" + charge_key
+            )
+
+        assert "centers of mass of molecules have no charge flux" in str(
+            exception.value
+        )
+
+    def test_false_needs_no_files(self, tmpdir):  # pylint: disable=unused-argument
+        self.read("target_com = False\n")
+
+    def test_a_moldescriptor_file_needs_a_restart_file(self, tmpdir):  # pylint: disable=unused-argument
+        with pytest.raises(InputFileError) as exception:
+            self.read("moldescriptor_file = m.dat\n")
+
+        assert str(exception.value) == (
+            "The moldescriptor_file key can only be used in a meaningful "
+            "way if a restart file is given."
+        )
