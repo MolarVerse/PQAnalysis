@@ -117,8 +117,14 @@ def test_mixed_known_unknown_metadata_requires_explicit_timestep(tmp_path):
 
 
 
-def test_raw_numeric_read_without_info_keeps_columns(tmp_path):
-    filename = write_energy(tmp_path, header="# timestep = 0.5 fs\n")
+@pytest.mark.parametrize(
+    "header", [
+        "# timestep = 0.5 fs\n",
+        "# timestep = invalid\n",
+    ]
+)
+def test_raw_numeric_read_without_info_keeps_columns(tmp_path, header):
+    filename = write_energy(tmp_path, header=header)
     energy = EnergyFileReader(filename, use_info_file=False).read()
     np.testing.assert_array_equal(energy.data, [[10, 100], [298, 300]])
     assert not energy.info_given

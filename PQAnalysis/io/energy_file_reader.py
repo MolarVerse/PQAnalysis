@@ -127,6 +127,10 @@ class EnergyFileReader(BaseReader):
 
             info, units = reader.read()
 
+        pq_time_axis = (
+            self.format == MDEngineFormat.PQ and info is not None and
+            "SIMULATION-TIME" in info
+        )
         data = []
         timesteps = []
 
@@ -143,21 +147,15 @@ class EnergyFileReader(BaseReader):
                     exception=EnergyFileReaderError
                 )
 
-            timestep = self._file_timestep(filename)
+            timestep = self._file_timestep(filename) if pq_time_axis else None
             timesteps.append(timestep)
-            if (
-                self.format == MDEngineFormat.PQ and info is not None and
-                "SIMULATION-TIME" in info and timestep is not None
-            ):
+            if pq_time_axis and timestep is not None:
                 column = info["SIMULATION-TIME"]
                 for row in file_data:
                     row[column] *= timestep / 1000.0
             data.extend(file_data)
 
-        if (
-            self.format == MDEngineFormat.PQ and info is not None and
-            "SIMULATION-TIME" in info
-        ):
+        if pq_time_axis:
             known = [value is not None for value in timesteps]
             if any(known) and not all(known):
                 raise EnergyFileReaderError(
@@ -180,8 +178,6 @@ class EnergyFileReader(BaseReader):
 
     def _file_timestep(self, filename: str) -> float | None:
         """Resolve one PQ file's explicit or header timestep in fs."""
-        if self.format != MDEngineFormat.PQ:
-            return None
         declared = None
         with open(filename, encoding="utf-8") as handle:
             for line in handle:
