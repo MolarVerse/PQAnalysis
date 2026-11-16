@@ -1,0 +1,1 @@
+- `traj2extxyz --extxyz-profile ase` now writes files that ASE can read when PQ uses deuterium, tritium or dummy atoms (#305).

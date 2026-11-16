@@ -1,0 +1,1 @@
+- The `ase` extxyz profile maps the PQ names `D` and `T` to `H`, and `Q`, `cav`, `sup` and `dum` to `X`; other names are written as before (#305).
