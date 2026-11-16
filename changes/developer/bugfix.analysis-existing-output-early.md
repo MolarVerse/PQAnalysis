@@ -1,0 +1,1 @@
+- Build the output writers of `msd()`, `vacf()` and `check_momentum()` before the restart file and trajectory are opened.

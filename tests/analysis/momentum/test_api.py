@@ -2,10 +2,13 @@
 Tests for the momentum analysis API and output writer.
 """
 
+import importlib
+
 import numpy as np
 import pytest
 
 from PQAnalysis.analysis.momentum import MomentumDataWriter, check_momentum
+from PQAnalysis.io.exceptions import FileWritingModeError
 
 from .. import pytestmark  # pylint: disable=unused-import
 
@@ -105,3 +108,42 @@ class TestMomentumDataWriter:
             "1  1.8714822669470000e-14\n",
             "2  0.0000000000000000e+00\n",
         ]
+
+
+
+def _fail(*_args, **_kwargs):
+    raise AssertionError("trajectory was read")
+
+
+
+class TestCheckMomentumAPIExistingOutput:
+
+    """
+    Tests for existing output files in the check_momentum api function.
+    """
+
+    @pytest.mark.parametrize("existing", ["momentum.dat", "momentum.csv"])
+    def test_fails_before_trajectory_is_read(
+        self, tmp_path, monkeypatch, existing
+    ):
+        """
+        An existing output or export file raises before the trajectory
+        is opened, so no time is lost on large inputs.
+        """
+        monkeypatch.chdir(tmp_path)
+        (tmp_path / existing).write_text("already there\n", encoding="utf-8")
+
+        momentum_api = importlib.import_module(
+            "PQAnalysis.analysis.momentum.api"
+        )
+        monkeypatch.setattr(momentum_api, "TrajectoryReader", _fail)
+
+        with pytest.raises(FileWritingModeError, match="already exists"):
+            check_momentum(
+                ["trajectory.vel"],
+                output="momentum.dat",
+                export_files=["momentum.csv"],
+            )
+
+        content = (tmp_path / existing).read_text(encoding="utf-8")
+        assert content == "already there\n"
