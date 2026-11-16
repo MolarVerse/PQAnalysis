@@ -143,6 +143,7 @@ class TestEnergyReader:
 
         infoFileReader = InfoFileReader("md-01.info")
         info, units = infoFileReader.read()
+        units["SIMULATION-TIME"] = "step"
 
         reader = EnergyFileReader("md-01.en")
         energy = reader.read()

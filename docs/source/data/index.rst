@@ -52,3 +52,30 @@ with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
    Analysis input files <../userGuide/inputFile>
    Atom selections <selections>
    Analysis output files <../userGuide/analysisOutputFiles>
+
+PQ energy time axes
+-------------------
+
+PQ energy files store integration-step counts in their first column. The
+``SIMULATION-TIME`` entry in a PQ ``.info`` file describes the final summary,
+not the unit of those step counts. ``EnergyFileReader`` therefore reports
+``simulation_time_unit == "step"`` when no integration timestep is known.
+The existing ``simulation_time`` attribute keeps its name for compatibility.
+Do not infer a timestep from the final summary or the output frequency.
+
+With PQ info labels and a native ``# timestep = 0.5 fs`` energy header,
+step counts are converted to ps. PQ can write this header using
+``include_output_metadata = true``. For a legacy file, supply an explicit
+constant timestep from its simulation input::
+
+    energy = EnergyFileReader("run.en", timestep_fs=0.5).read()
+
+Step 100 then corresponds to 0.05 ps, irrespective of output stride.
+Restarted files retain their recorded step offsets. This conversion assumes
+that the recorded counts use the supplied constant timestep; it does not
+reconstruct histories with changing timestep sizes or unknown time origins.
+
+Conflicting, non-positive or non-finite timestep metadata are rejected.
+A multi-file read cannot mix known and unknown timestep metadata unless an
+explicit consistent timestep is supplied. QMCFC behavior is unchanged.
+Reading without info labels leaves the raw numeric columns unchanged.

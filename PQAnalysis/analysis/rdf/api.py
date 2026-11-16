@@ -50,6 +50,13 @@ def rdf(
     input_reader = RDFInputFileReader(input_file)
     input_reader.read()
 
+    # writers check for existing output files, so fail before the slow setup
+    data_writer = RDFDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
+    log_writer = RDFLogWriter(input_reader.log_file)
+
     if input_reader.restart_file is not None:
         restart_reader = RestartFileReader(input_reader.restart_file)
         restart_frame = restart_reader.read()
@@ -90,11 +97,6 @@ def rdf(
         r_min=input_reader.r_min,
     )
 
-    data_writer = RDFDataWriter(
-        input_reader.out_file,
-        export_files=export_files,
-    )
-    log_writer = RDFLogWriter(input_reader.log_file)
     log_writer.write_before_run(_rdf)
 
     rdf_data = _rdf.run()

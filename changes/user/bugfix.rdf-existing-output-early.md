@@ -1,0 +1,1 @@
+- The rdf command stops right away when the output or log file already exists, instead of after the trajectory has been read (#307).

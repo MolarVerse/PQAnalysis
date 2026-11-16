@@ -177,6 +177,36 @@ def test_write_extxyz_ase_profile_converts_energy_like_units():
 
 
 @pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_ase_profile_writes_ase_species():
+    from ase.io import read as ase_read
+
+    names = ["D", "t", "Q", "cav", "sup", "dum", "o", "Cl"]
+    frame = AtomicSystem(
+        atoms=[Atom(name, use_guess_element=False) for name in names],
+        pos=np.zeros((len(names), 3)),
+        cell=Cell(10.0, 10.0, 10.0),
+    )
+
+    for profile, expected in [
+        (ExtXYZProfile.ASE, ["H", "H", "X", "X", "X", "X", "o", "Cl"]),
+        (ExtXYZProfile.PQ, names),
+    ]:
+        filename = f"{profile.value}.extxyz"
+        writer = TrajectoryWriter(filename, extxyz_profile=profile)
+        writer.write(frame, traj_type="extxyz")
+
+        with open(filename, "r", encoding="utf-8") as file:
+            labels = [line.split()[0] for line in file.read().splitlines()[2:]]
+
+        assert labels == expected
+
+    ase_frame = ase_read("ase.extxyz", index=0)
+    assert ase_frame.get_chemical_symbols() == [
+        "H", "H", "X", "X", "X", "X", "O", "Cl"
+    ]
+
+
+@pytest.mark.usefixtures("tmpdir")
 def test_write_extxyz_nep_profile_uses_gpumd_convention():
     atoms = [Atom("h"), Atom("o")]
     frame = AtomicSystem(

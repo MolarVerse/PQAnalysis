@@ -4,6 +4,9 @@ A module containing the EnergyFileReader class.
 
 import os
 import logging
+import math
+import re
+from numbers import Real
 import numpy as np
 
 from PQAnalysis.physical_data import Energy
@@ -34,7 +37,8 @@ class EnergyFileReader(BaseReader):
         filename: str | list[str],
         info_filename: str | None = None,
         use_info_file: bool = True,
-        engine_format: MDEngineFormat | str = MDEngineFormat.PQ
+        engine_format: MDEngineFormat | str = MDEngineFormat.PQ,
+        timestep_fs: Real | None = None
     ) -> None:
         """
         For the initialization of the EnergyFileReader, the filename of the energy
@@ -65,9 +69,21 @@ class EnergyFileReader(BaseReader):
         info_filename : str, optional
             The name of the info file to read from, by default None
         use_info_file : bool, optional
-            If True, the info file is searched for, by default True
+            If True, the info file is searched for, by default True.
+            Without info labels, numeric columns are returned unchanged.
         engine_format : MDEngineFormat | str, optional
             The format of the file, by default MDEngineFormat.PQ
+        timestep_fs : Real, optional
+            Constant PQ integration timestep in femtoseconds. It must be
+            finite and positive and agree with any energy header. Native
+            ``# timestep = <value> fs`` headers are used automatically.
+            With PQ info labels but no timestep, the first column remains
+            integration steps and its unit is ``step``, not ``ps``.
+
+        Raises
+        ------
+        EnergyFileReaderError
+            If the explicit timestep is invalid or used with QMCFC input.
         """
         super().__init__(filename)
         self.info_filename = info_filename
@@ -78,6 +94,13 @@ class EnergyFileReader(BaseReader):
             self.with_info_file = False
 
         self.format = MDEngineFormat(engine_format)
+        self.timestep_fs = timestep_fs
+        if timestep_fs is not None:
+            if self.format != MDEngineFormat.PQ:
+                raise EnergyFileReaderError(
+                    "timestep_fs is only supported for PQ energy files."
+                )
+            self._validate_timestep(timestep_fs)
 
     def read(self) -> Energy:
         """
@@ -99,13 +122,17 @@ class EnergyFileReader(BaseReader):
         if self.with_info_file:
 
             reader = InfoFileReader(
-                self.info_filename,
-                engine_format=self.format
+                self.info_filename, engine_format=self.format
             )
 
             info, units = reader.read()
 
+        pq_time_axis = (
+            self.format == MDEngineFormat.PQ and info is not None and
+            "SIMULATION-TIME" in info
+        )
         data = []
+        timesteps = []
 
         for filename in self._filenames_to_read():
             file_data = self._read_data_from_file(filename)
@@ -120,9 +147,95 @@ class EnergyFileReader(BaseReader):
                     exception=EnergyFileReaderError
                 )
 
+            timestep = self._file_timestep(filename) if pq_time_axis else None
+            timesteps.append(timestep)
+            if pq_time_axis and timestep is not None:
+                column = info["SIMULATION-TIME"]
+                for row in file_data:
+                    row[column] *= timestep / 1000.0
             data.extend(file_data)
 
+        if pq_time_axis:
+            known = [value is not None for value in timesteps]
+            if any(known) and not all(known):
+                raise EnergyFileReaderError(
+                    "Cannot combine PQ energy files with and without "
+                    "timestep metadata. Provide timestep_fs or read "
+                    "the files separately."
+                )
+            units = dict(units)
+            units["SIMULATION-TIME"] = "ps" if all(known) else "step"
+
         return Energy(np.array(data).T, info, units)
+
+    @staticmethod
+    def _validate_timestep(value: Real) -> None:
+        """Reject nonphysical integration timestep metadata."""
+        if isinstance(value, bool) or not math.isfinite(value) or value <= 0:
+            raise EnergyFileReaderError(
+                "The PQ energy timestep must be finite and positive."
+            )
+
+    def _file_timestep(self, filename: str) -> float | None:
+        """Resolve one PQ file's explicit or header timestep in fs."""
+        declared = None
+        with open(filename, encoding="utf-8") as handle:
+            for line in handle:
+                text = line.strip()
+                if not text:
+                    continue
+                if not text.startswith("#"):
+                    break
+                value = self._parse_timestep_header(text, filename)
+                if value is None:
+                    continue
+                if declared is not None and not math.isclose(
+                    declared, value, rel_tol=1e-12
+                ):
+                    raise EnergyFileReaderError(
+                        f"Conflicting timestep metadata in {filename}."
+                    )
+                declared = value
+        if self.timestep_fs is not None:
+            if declared is not None and not math.isclose(
+                declared, self.timestep_fs, rel_tol=1e-12
+            ):
+                raise EnergyFileReaderError(
+                    f"timestep_fs conflicts with the header in {filename}."
+                )
+            return float(self.timestep_fs)
+        return declared
+
+    @classmethod
+    def _parse_timestep_header(cls, text: str, filename: str) -> float | None:
+        """Read a timestep declaration, ignoring unrelated comments."""
+        if not re.match(r"#\s*timestep\s*=", text, re.IGNORECASE):
+            return None
+        match = re.fullmatch(
+            r"#\s*timestep\s*=\s*(\S+)\s+(\S+)",
+            text,
+            re.IGNORECASE,
+        )
+        if match is None:
+            raise EnergyFileReaderError(
+                f"Invalid timestep metadata in {filename}. "
+                "Expected '# timestep = <value> fs'."
+            )
+        try:
+            value = float(match[1])
+        except ValueError as error:
+            raise EnergyFileReaderError(
+                f"Invalid timestep metadata in {filename}."
+            ) from error
+        cls._validate_timestep(value)
+        unit = match[2].lower()
+        if unit not in ("fs", "ps"):
+            raise EnergyFileReaderError(
+                f"Unsupported timestep unit {match[2]} in {filename}."
+            )
+        value *= 1000.0 if unit == "ps" else 1.0
+        cls._validate_timestep(value)
+        return value
 
     @classmethod
     def _read_data_from_file(cls, filename: str) -> list[list[float]]:
@@ -133,7 +246,7 @@ class EnergyFileReader(BaseReader):
 
         with open(filename, "r", encoding='utf-8') as file:
             for line_number, line in enumerate(file, start=1):
-                if not line.strip() or line.startswith("#"):
+                if not line.strip() or line.lstrip().startswith("#"):
                     continue
 
                 data_line = [float(x) for x in line.split()]
