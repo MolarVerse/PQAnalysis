@@ -152,6 +152,24 @@ def vacf(
     input_reader = VACFInputFileReader(input_file)
     input_reader.read()
 
+    # writers check for existing output files, so fail before the slow setup
+    data_writer = VACFDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
+    log_writer = VACFLogWriter(input_reader.log_file)
+
+    spectrum_writer = None
+    windowed_writer = None
+
+    if input_reader.spectrum_file is not None:
+        spectrum_writer = VACFSpectrumDataWriter(input_reader.spectrum_file)
+
+        if input_reader.windowed_out_file is not None:
+            windowed_writer = VACFWindowedDataWriter(
+                input_reader.windowed_out_file
+            )
+
     topology = None
     if input_reader.target_com:
         topology = read_restart_file(
@@ -192,25 +210,6 @@ def vacf(
         use_full_atom_info=input_reader.use_full_atom_info,
         target_com=bool(input_reader.target_com),
     )
-
-    # all output writers are constructed before the run so that a
-    # pre-existing output file aborts before the expensive analysis
-    data_writer = VACFDataWriter(
-        input_reader.out_file,
-        export_files=export_files,
-    )
-    log_writer = VACFLogWriter(input_reader.log_file)
-
-    spectrum_writer = None
-    windowed_writer = None
-
-    if input_reader.spectrum_file is not None:
-        spectrum_writer = VACFSpectrumDataWriter(input_reader.spectrum_file)
-
-        if input_reader.windowed_out_file is not None:
-            windowed_writer = VACFWindowedDataWriter(
-                input_reader.windowed_out_file
-            )
 
     log_writer.write_before_run(_vacf)
 

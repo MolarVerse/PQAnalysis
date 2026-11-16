@@ -2,7 +2,10 @@
 Tests for the API functions of the VACF analysis.
 """
 
+import importlib
 import os
+import shutil
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -12,6 +15,9 @@ from PQAnalysis.analysis.vacf.exceptions import VACFError
 from PQAnalysis.io.exceptions import FileWritingModeError
 
 from .. import pytestmark  # pylint: disable=unused-import
+
+EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
+
 
 # pylint: disable=protected-access
 
@@ -217,3 +223,48 @@ class TestVACFApi:
 
         assert not os.path.exists("vacf_out.dat")
         assert not os.path.exists("spectrum_out.dat")
+
+
+
+def _fail(*_args, **_kwargs):
+    raise AssertionError("trajectory was read")
+
+
+
+class TestVACFAPIExistingOutput:
+
+    """
+    Tests that existing output files raise before the trajectory is read.
+    """
+
+    @pytest.mark.parametrize(
+        "existing, input_line",
+        [
+            ("vacf.dat", ""),
+            ("vacf.log", "log_file = vacf.log\n"),
+            ("spectrum.dat", ""),
+            ("windowed.dat", "windowed_out_file = windowed.dat\n"),
+        ],
+    )
+    def test_fails_before_trajectory_is_read(
+        self, tmp_path, monkeypatch, existing, input_line
+    ):
+        """
+        An existing output, log, spectrum or windowed file raises before
+        the trajectory is opened, so no time is lost on large inputs.
+        """
+        shutil.copytree(EXAMPLES_WATER, tmp_path, dirs_exist_ok=True)
+        monkeypatch.chdir(tmp_path)
+        with open("vacf.in", "a", encoding="utf-8") as file:
+            file.write(input_line)
+        (tmp_path / existing).write_text("already there\n", encoding="utf-8")
+
+        vacf_api = importlib.import_module("PQAnalysis.analysis.vacf.api")
+        monkeypatch.setattr(vacf_api, "TrajectoryReader", _fail)
+        monkeypatch.setattr(vacf_api, "read_restart_file", _fail)
+
+        with pytest.raises(FileWritingModeError, match="already exists"):
+            vacf("vacf.in")
+
+        content = (tmp_path / existing).read_text(encoding="utf-8")
+        assert content == "already there\n"
