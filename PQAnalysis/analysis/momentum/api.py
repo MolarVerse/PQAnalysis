@@ -70,6 +70,13 @@ def check_momentum(
         The scaled norms of the total linear momentum, one value
         per frame.
     """
+    # writers check for existing output files, so fail before the slow setup
+    data_writer = MomentumDataWriter(
+        output,
+        mode=mode,
+        export_files=export_files,
+    )
+
     reader = TrajectoryReader(trajectory_files, md_format=md_format)
 
     momentum = Momentum(
@@ -77,12 +84,6 @@ def check_momentum(
         selection=selection,
         use_full_atom_info=use_full_atom_info,
         scale=scale,
-    )
-
-    data_writer = MomentumDataWriter(
-        output,
-        mode=mode,
-        export_files=export_files,
     )
 
     momentum_norms = momentum.run()

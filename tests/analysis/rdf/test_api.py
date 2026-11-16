@@ -7,7 +7,9 @@ from pathlib import Path
 
 import pytest  # pylint: disable=unused-import
 
+from PQAnalysis.analysis.rdf import api as rdf_api
 from PQAnalysis.analysis.rdf.api import rdf
+from PQAnalysis.io.exceptions import FileWritingModeError
 from PQAnalysis.type_checking import get_type_error_message
 from PQAnalysis.exceptions import PQTypeError
 
@@ -66,3 +68,43 @@ class TestRDFAPIFromOtherDirectory:
         assert (tmp_path / "examples" / "water" / "rdf.dat").is_file()
         assert (tmp_path / "rdf.csv").is_file()
         assert not (tmp_path / "rdf.dat").exists()
+
+
+
+class TestRDFAPIExistingOutput:
+
+    """
+    Tests for existing output files in the rdf api function.
+    """
+
+    @pytest.mark.parametrize(
+        "existing, input_line",
+        [
+            ("rdf.dat", ""),
+            ("rdf.log", "log_file = rdf.log\n"),
+        ],
+    )
+    def test_fails_before_trajectory_is_read(
+        self, tmp_path, monkeypatch, existing, input_line
+    ):
+        """
+        An existing output or log file raises before the trajectory is
+        opened, so no time is lost on large inputs.
+        """
+        shutil.copytree(EXAMPLES_WATER, tmp_path, dirs_exist_ok=True)
+        monkeypatch.chdir(tmp_path)
+        with open("rdf.in", "a", encoding="utf-8") as file:
+            file.write(input_line)
+        (tmp_path / existing).write_text("already there\n", encoding="utf-8")
+
+        def fail(*_args, **_kwargs):
+            raise AssertionError("trajectory was read")
+
+        monkeypatch.setattr(rdf_api, "TrajectoryReader", fail)
+        monkeypatch.setattr(rdf_api, "RestartFileReader", fail)
+
+        with pytest.raises(FileWritingModeError, match="already exists"):
+            rdf("rdf.in")
+
+        content = (tmp_path / existing).read_text(encoding="utf-8")
+        assert content == "already there\n"

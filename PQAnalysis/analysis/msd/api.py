@@ -49,6 +49,13 @@ def msd(
     input_reader = MSDInputFileReader(input_file)
     input_reader.read()
 
+    # writers check for existing output files, so fail before the slow setup
+    data_writer = MSDDataWriter(
+        input_reader.out_file,
+        export_files=export_files,
+    )
+    log_writer = MSDLogWriter(input_reader.log_file)
+
     topology = None
     if input_reader.target_com:
         topology = read_restart_file(
@@ -73,11 +80,6 @@ def msd(
         target_com=bool(input_reader.target_com),
     )
 
-    data_writer = MSDDataWriter(
-        input_reader.out_file,
-        export_files=export_files,
-    )
-    log_writer = MSDLogWriter(input_reader.log_file)
     log_writer.write_before_run(_msd)
 
     msd_data = _msd.run()
