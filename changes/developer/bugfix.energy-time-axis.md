@@ -1,1 +1,0 @@
-- Resolve PQ energy timesteps from native headers or an explicit reader argument, reject invalid and conflicting metadata, and cover chained offsets, legacy step units and QMCFC compatibility.

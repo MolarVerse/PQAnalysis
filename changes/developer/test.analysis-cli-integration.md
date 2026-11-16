@@ -1,1 +1,0 @@
-- Add end-to-end tests of the rdf, msd, vacf, check_momentum and vibrations commands on examples/water, checked against independent NumPy calculations, with compiled and fallback kernels and the CSV and XVG exports.

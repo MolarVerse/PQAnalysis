@@ -21,6 +21,13 @@ implementation changes are documented in
 - Add the input-file key target_com to the vacf command: the velocity autocorrelation function (and spectrum) of the centers of mass of molecules can be run from an input file; the restart_file and moldescriptor_file keys are required for it and inferred beside the trajectory like for the RDF and MSD; it cannot be combined with the charge-flux keys.
 - Add target_com to the VACF class: the velocity autocorrelation function of the centers of mass of molecules (the mass weighted mean of the velocities of their atoms), with the molecules taken from the residues of the topology and the selection choosing the atoms that define each center; not available together with the charge-flux mode.
 
+### Bug Fixes
+
+- The msd, vacf and check_momentum commands stop right away when an output, log or export file already exists, instead of after the trajectory has been read (#309).
+- Fix PQ energy time axes: step 100 at 0.5 fs is 0.05 ps when an explicit timestep or header is available; legacy counts without a timestep are labelled as steps instead of ps.
+- `traj2extxyz --extxyz-profile ase` now writes files that ASE can read when PQ uses deuterium, tritium or dummy atoms (#305).
+- The rdf command stops right away when the output or log file already exists, instead of after the trajectory has been read (#307).
+
 ## [v1.8.1](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.8.1) - 2026-11-13
 
 ### Bug Fixes
