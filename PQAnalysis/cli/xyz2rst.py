@@ -90,7 +90,12 @@ class XYZ2RstCLI(CLIBase):
             '--randomize',
             type=float,
             default=0.0,
-            help='Randomize the atom order. Default is 0.0.'
+            help=(
+                'Displace the positions by random numbers from a normal '
+                'distribution with this standard deviation in Angstrom. '
+                'The random numbers are reproducible. Default is 0.0 '
+                '(no displacement).'
+            )
         )
 
         parser.parse_engine()

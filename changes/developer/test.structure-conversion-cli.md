@@ -1,0 +1,1 @@
+- Add end-to-end tests of rst2xyz, xyz2rst, xyz2gen and gen2xyz: restart columns and moldescriptor inference round trip on a 2000 molecule box, velocities, forces, QMCFC, randomize, gen lattice of a triclinic cell, and the writing modes.
