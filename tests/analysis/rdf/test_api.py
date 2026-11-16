@@ -70,7 +70,12 @@ class TestRDFAPIFromOtherDirectory:
         assert not (tmp_path / "rdf.dat").exists()
 
 
+
 class TestRDFAPIExistingOutput:
+
+    """
+    Tests for existing output files in the rdf api function.
+    """
 
     @pytest.mark.parametrize(
         "existing, input_line",
@@ -101,6 +106,5 @@ class TestRDFAPIExistingOutput:
         with pytest.raises(FileWritingModeError, match="already exists"):
             rdf("rdf.in")
 
-        assert (tmp_path / existing).read_text(encoding="utf-8") == (
-            "already there\n"
-        )
+        content = (tmp_path / existing).read_text(encoding="utf-8")
+        assert content == "already there\n"
