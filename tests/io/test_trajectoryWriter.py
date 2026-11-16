@@ -231,7 +231,7 @@ def test_write_extxyz_nep_profile_uses_gpumd_convention():
         lines = file.read().splitlines()
 
     assert lines[1].startswith('lattice="10.0000000000 0.0000000000')
-    assert 'properties="species:S:1:pos:R:3:forces:R:3"' in lines[1]
+    assert " properties=species:S:1:pos:R:3:forces:R:3 " in lines[1]
     assert "Lattice=" not in lines[1]
     assert "Properties=" not in lines[1]
     assert f"energy={-1.5 * conversion_factor:.10f}" in lines[1]
