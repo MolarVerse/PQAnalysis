@@ -21,7 +21,6 @@ EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
 
 
 
-
 class TestMSDAPI:
 
     """

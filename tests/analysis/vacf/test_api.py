@@ -18,7 +18,6 @@ from .. import pytestmark  # pylint: disable=unused-import
 
 EXAMPLES_WATER = Path(__file__).resolve().parents[3] / "examples" / "water"
 
-
 # pylint: disable=protected-access
 
 
