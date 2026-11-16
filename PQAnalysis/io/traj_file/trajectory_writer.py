@@ -15,6 +15,16 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 from PQAnalysis.utils.units import eV, kcal_per_mol
 
+#: PQ atom names that ASE does not know, mapped to an ASE symbol
+_ASE_SPECIES = {
+    "d": "H",
+    "t": "H",
+    "q": "X",
+    "cav": "X",
+    "sup": "X",
+    "dum": "X",
+}
+
 
 
 class TrajectoryWriter(BaseWriter):
@@ -404,6 +414,9 @@ class TrajectoryWriter(BaseWriter):
         """
         if self._is_gpumd_extxyz_profile() and atom.symbol is not None:
             return atom.symbol[0].upper() + atom.symbol[1:]
+
+        if self.extxyz_profile == ExtXYZProfile.ASE:
+            return _ASE_SPECIES.get(atom.name.lower(), atom.name)
 
         return atom.name
 
