@@ -49,6 +49,7 @@ def test_main(test_with_data_dir):
     "acof_triclinic_2.xyz"],
     vmd=False,
     output="test_traj.qmcfc.xyz",
+    mode="w",
     log_file=None,
     logging_level="INFO",
     )
