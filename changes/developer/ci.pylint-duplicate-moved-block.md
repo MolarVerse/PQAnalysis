@@ -1,0 +1,1 @@
+- The Pylint report matches duplicate-code findings by the pair of modules, so a moved or shrunk block is no longer reported as a new finding (#292).

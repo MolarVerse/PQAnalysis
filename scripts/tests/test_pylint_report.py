@@ -124,7 +124,7 @@ class PylintReportTests(unittest.TestCase):
                                   result(9.78, [diagnostic]))
         self.assertIn('1 new finding.', report)
 
-    def test_different_duplicate_code_regions_are_new(self):
+    def test_duplicate_code_in_other_modules_is_new(self):
         base = message()
         base.update(
             symbol='duplicate-code',
@@ -134,10 +134,30 @@ class PylintReportTests(unittest.TestCase):
             )
         )
         head = dict(
-            base, message=base['message'].replace('[10:20]', '[50:60]')
+            base,
+            message=base['message'].replace('PQAnalysis.a:', 'PQAnalysis.c:')
         )
         report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
         self.assertIn('1 new finding.', report)
+
+    def test_moved_duplicate_code_block_is_not_new(self):
+        base = message()
+        base.update(
+            symbol='duplicate-code',
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[49:63]\n'
+                '==PQAnalysis.b:[152:166]\nexample'
+            )
+        )
+        head = dict(
+            base,
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[58:70]\n'
+                '==PQAnalysis.b:[172:184]\nexample'
+            )
+        )
+        report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
+        self.assertIn('No new findings.', report)
 
     def test_artifact_link_and_long_message_summary(self):
         diagnostic = message()
