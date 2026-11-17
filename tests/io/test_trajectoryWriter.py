@@ -242,7 +242,7 @@ def test_write_extxyz_nep_profile_writes_elements(caplog):
 
         assert_logging_with_exception(
             caplog=caplog,
-            logging_name=TrajectoryWriter.__qualname__,
+            logging_name="BaseWriter",
             logging_level="ERROR",
             message_to_test=(
                 f"Atom {name} has no element, but GPUMD NEP only accepts "
