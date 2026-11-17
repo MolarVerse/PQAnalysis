@@ -1,0 +1,1 @@
+- `traj2extxyz --extxyz-profile nep` writes `H` for deuterium and tritium, which GPUMD NEP needs, and stops with a clear error for dummy atoms, which NEP cannot use (#321).

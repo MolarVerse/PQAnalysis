@@ -3,6 +3,7 @@ import sys
 import numpy as np
 
 from . import pytestmark
+from ..conftest import assert_logging_with_exception
 
 from PQAnalysis.io import (
     ExtXYZProfile,
@@ -14,6 +15,7 @@ from PQAnalysis.io import (
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.io.exceptions import ExtXYZProfileError
+from PQAnalysis.io.traj_file.exceptions import TrajectoryWriterError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 from PQAnalysis.utils.units import eV, kcal_per_mol
@@ -204,6 +206,54 @@ def test_write_extxyz_ase_profile_writes_ase_species():
     assert ase_frame.get_chemical_symbols() == [
         "H", "H", "X", "X", "X", "X", "O", "Cl"
     ]
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_nep_profile_writes_elements(caplog):
+    frame = AtomicSystem(
+        atoms=[Atom(name, use_guess_element=False) for name in ["D", "t"]] +
+        [Atom("o"), Atom("cl")],
+        pos=np.zeros((4, 3)),
+        forces=np.zeros((4, 3)),
+        energy=-1.0,
+        cell=Cell(10.0, 10.0, 10.0),
+    )
+
+    writer = TrajectoryWriter("nep.extxyz", extxyz_profile=ExtXYZProfile.NEP)
+    writer.write(frame, traj_type="extxyz")
+    writer.close()
+
+    with open("nep.extxyz", "r", encoding="utf-8") as file:
+        labels = [line.split()[0] for line in file.read().splitlines()[2:]]
+
+    assert labels == ["H", "H", "O", "Cl"]
+
+    for name in ["Q", "X", "cav", "sup", "dum"]:
+        dummy = AtomicSystem(
+            atoms=[Atom(name, use_guess_element=False)],
+            pos=np.zeros((1, 3)),
+            forces=np.zeros((1, 3)),
+            energy=-1.0,
+            cell=Cell(10.0, 10.0, 10.0),
+        )
+        writer = TrajectoryWriter(
+            f"{name}.extxyz", extxyz_profile=ExtXYZProfile.NEP
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="BaseWriter",
+            logging_level="ERROR",
+            message_to_test=(
+                f"Atom {name} has no element, but GPUMD NEP only accepts "
+                "elements of the periodic table. Remove dummy atoms before "
+                "writing the nep profile."
+            ),
+            exception=TrajectoryWriterError,
+            function=writer.write,
+            trajectory=dummy,
+            traj_type="extxyz",
+        )
 
 
 @pytest.mark.usefixtures("tmpdir")
