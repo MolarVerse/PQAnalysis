@@ -1,8 +1,13 @@
 """Build the Cython extensions used by PQAnalysis."""
 
+import sys
+
 from Cython.Build import cythonize
 import numpy as np
 from setuptools import Extension, setup
+
+# MSVC does not contract floating-point operations under its default /fp:precise
+NO_FP_CONTRACT = [] if sys.platform == 'win32' else ['-ffp-contract=off']
 
 extensions = cythonize(
     [
@@ -27,7 +32,7 @@ extensions = cythonize(
             include_dirs=[np.get_include()],
             # Julia rounds every multiply and add separately in the
             # equipartition loop.
-            extra_compile_args=['-ffp-contract=off']
+            extra_compile_args=NO_FP_CONTRACT
         ),
         Extension(
             'PQAnalysis.analysis.vacf._vacf_kernel',
@@ -35,7 +40,7 @@ extensions = cythonize(
             include_dirs=[np.get_include()],
             # Only the explicit fma calls may fuse operations. This
             # keeps the optimized FreqCalc arithmetic reproducible.
-            extra_compile_args=['-ffp-contract=off']
+            extra_compile_args=NO_FP_CONTRACT
         ),
         Extension(
             'PQAnalysis.analysis.rdf._rdf_kernel',
@@ -43,7 +48,7 @@ extensions = cythonize(
             include_dirs=[np.get_include()],
             # no FMA contraction: the kernel must round exactly like
             # the separate numpy operations it replicates
-            extra_compile_args=['-ffp-contract=off']
+            extra_compile_args=NO_FP_CONTRACT
         ),
     ],
     language_level=3,

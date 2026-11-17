@@ -1,2 +1,1 @@
 - Add end-to-end tests of `build_nep_traj`, `build_spectrum` and `continue_input` through the command line, checked against independent NumPy and text references.
-- Fix the NEP profile conversion test for the unquoted `properties` key.

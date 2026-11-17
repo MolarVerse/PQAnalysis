@@ -8,6 +8,9 @@ from pathlib import Path
 import re
 from urllib.parse import quote
 
+# "Too many local variables (20/15)", "The McCabe rating is 13"
+COUNT_RE = re.compile(r"\s*\(\d+/\d+\)$|(?<=McCabe rating is )\d+$")
+
 
 
 def finding_key(message):
@@ -20,8 +23,8 @@ def finding_key(message):
             # moved or shrunk blocks keep their key; a new pair or count is new
             return ("duplicate-code", tuple(sorted(modules)))
     return tuple(
-        message.get(k, "") for k in ("symbol", "module", "obj", "message")
-    )
+        message.get(k, "") for k in ("symbol", "module", "obj")
+    ) + (COUNT_RE.sub("", message.get("message", "")),)
 
 
 

@@ -32,7 +32,7 @@ or their case insensitive string representation: o, a, w"""
             BaseWriter(filename, "w")
         assert str(
             exception.value
-        ) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file."
+        ) == "File tmp already exists. Use mode \'a\' to append to the file or mode 'o' to overwrite the file. On the command line, pass --mode a or --mode o."
 
         writer = BaseWriter(filename, "o")
         assert writer.file is None

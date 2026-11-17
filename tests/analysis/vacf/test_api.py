@@ -267,3 +267,24 @@ class TestVACFAPIExistingOutput:
 
         content = (tmp_path / existing).read_text(encoding="utf-8")
         assert content == "already there\n"
+
+    def test_overwrite_mode_replaces_existing_files(
+        self, tmp_path, monkeypatch
+    ):
+        """
+        With mode "o" existing output, spectrum and log files are replaced.
+        """
+        shutil.copytree(EXAMPLES_WATER, tmp_path, dirs_exist_ok=True)
+        monkeypatch.chdir(tmp_path)
+        with open("vacf.in", "a", encoding="utf-8") as file:
+            file.write("log_file = vacf.log\n")
+        names = ["vacf.dat", "spectrum.dat", "vacf.log"]
+        for name in names:
+            (tmp_path / name).write_text("old\n", encoding="utf-8")
+
+        vacf("vacf.in", mode="o")
+
+        for name in names:
+            content = (tmp_path / name).read_text(encoding="utf-8")
+            assert "old" not in content.splitlines()
+            assert len(content.splitlines()) > 1

@@ -130,6 +130,22 @@ The same option is available for ``msd``, ``vacf``, ``build_spectrum``,
 main correlation table. The configured ``spectrum_file`` and
 ``windowed_out_file`` select their own formats from their filenames.
 
+Existing output files
+=====================
+
+By default, ``rdf``, ``msd``, ``vacf`` and ``check_momentum`` stop with an
+error naming the file if an output, log or export file already exists. They
+stop before the trajectory is read, so no time is lost. Use ``--mode`` to
+choose what happens instead:
+
+.. code-block:: console
+
+   $ pqanalysis rdf rdf.in --mode o    # overwrite existing files
+   $ pqanalysis rdf rdf.in --mode a    # append to existing files
+
+``--mode a`` works only for native text output; CSV, TSV and XVG files
+cannot be appended to.
+
 Converting existing output
 ==========================
 

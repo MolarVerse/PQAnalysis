@@ -1,0 +1,1 @@
+- Match Pylint findings whose limit count or McCabe rating changed with the base finding, so a function that grows from 19 to 20 local variables is not reported as a new finding.

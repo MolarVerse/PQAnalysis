@@ -15,6 +15,8 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 from PQAnalysis.utils.units import eV, kcal_per_mol
 
+from .exceptions import TrajectoryWriterError
+
 #: PQ atom names that ASE does not know, mapped to an ASE symbol
 _ASE_SPECIES = {
     "d": "H",
@@ -311,6 +313,8 @@ class TrajectoryWriter(BaseWriter):
                 f'stress="{self._format_extxyz_matrix(stress)}"'
             )
 
+        metadata.append(f"units={self.extxyz_profile.value}")
+
         print(" ".join(metadata), file=self.file)
 
     def _extxyz_properties(self, frame: AtomicSystem) -> str:
@@ -416,13 +420,40 @@ class TrajectoryWriter(BaseWriter):
         """
         Returns the atom label for the configured extxyz profile.
         """
-        if self._is_gpumd_extxyz_profile() and atom.symbol is not None:
-            return atom.symbol[0].upper() + atom.symbol[1:]
+        if self._is_gpumd_extxyz_profile():
+            return self._nep_atom_label(atom)
 
         if self.extxyz_profile == ExtXYZProfile.ASE:
             return _ASE_SPECIES.get(atom.name.lower(), atom.name)
 
         return atom.name
+
+    def _nep_atom_label(self, atom: Atom) -> str:
+        """
+        Returns the element symbol of an atom for GPUMD NEP, which only knows
+        elements of the periodic table: D and T are written as H.
+
+        Raises
+        ------
+        TrajectoryWriterError
+            If the atom is a dummy atom without an element.
+        """
+        species = _ASE_SPECIES.get(atom.name.lower())
+
+        if species is None and atom.symbol is not None:
+            species = atom.symbol[0].upper() + atom.symbol[1:]
+
+        if species in (None, "X"):
+            self.logger.error(
+                (
+                    f"Atom {atom.name} has no element, but GPUMD NEP only "
+                    "accepts elements of the periodic table. Remove dummy "
+                    "atoms before writing the nep profile."
+                ),
+                exception=TrajectoryWriterError
+            )
+
+        return species
 
     def _format_extxyz_value(self, value) -> str:
         """

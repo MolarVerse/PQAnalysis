@@ -11,6 +11,11 @@ PyPI:
 
    $ python -m pip install pqanalysis
 
+PyPI has prebuilt wheels for Linux (x86_64, aarch64), macOS (arm64,
+x86_64) and Windows (x86_64), so no C compiler is needed there. On other
+platforms pip builds the Cython extensions from the source distribution,
+which needs a C compiler.
+
 Confirm that the command dispatcher and analysis commands are available:
 
 .. code-block:: console

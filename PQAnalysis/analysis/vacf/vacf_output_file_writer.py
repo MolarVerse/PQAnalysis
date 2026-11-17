@@ -9,6 +9,7 @@ from beartype.typing import Sequence, Tuple
 # local imports
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.io import BaseWriter
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.utils import __header__
 from PQAnalysis.type_checking import runtime_type_checking
 from PQAnalysis.analysis._output_header import format_output_header
@@ -44,6 +45,7 @@ class VACFDataWriter(AnalysisDataWriter):
         self,
         filename: str,
         export_files: Sequence[str] | None = None,
+        mode: str | FileWritingMode = "w",
     ) -> None:
         """
         Parameters
@@ -52,8 +54,11 @@ class VACFDataWriter(AnalysisDataWriter):
             The primary output filename. Its extension selects the format.
         export_files : Sequence[str] | None, optional
             Additional output filenames, by default None.
+        mode : str | FileWritingMode, optional
+            The writing mode: "w" stops if a file exists, "a" appends,
+            "o" overwrites, by default "w".
         """
-        super().__init__(filename, export_files=export_files)
+        super().__init__(filename, mode=mode, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -101,6 +106,7 @@ class VACFSpectrumDataWriter(AnalysisDataWriter):
         self,
         filename: str,
         export_files: Sequence[str] | None = None,
+        mode: str | FileWritingMode = "w",
     ) -> None:
         """
         Parameters
@@ -109,8 +115,11 @@ class VACFSpectrumDataWriter(AnalysisDataWriter):
             The primary output filename. Its extension selects the format.
         export_files : Sequence[str] | None, optional
             Additional output filenames, by default None.
+        mode : str | FileWritingMode, optional
+            The writing mode: "w" stops if a file exists, "a" appends,
+            "o" overwrites, by default "w".
         """
-        super().__init__(filename, export_files=export_files)
+        super().__init__(filename, mode=mode, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -157,6 +166,7 @@ class VACFWindowedDataWriter(AnalysisDataWriter):
         self,
         filename: str,
         export_files: Sequence[str] | None = None,
+        mode: str | FileWritingMode = "w",
     ) -> None:
         """
         Parameters
@@ -165,8 +175,11 @@ class VACFWindowedDataWriter(AnalysisDataWriter):
             The primary output filename. Its extension selects the format.
         export_files : Sequence[str] | None, optional
             Additional output filenames, by default None.
+        mode : str | FileWritingMode, optional
+            The writing mode: "w" stops if a file exists, "a" appends,
+            "o" overwrites, by default "w".
         """
-        super().__init__(filename, export_files=export_files)
+        super().__init__(filename, mode=mode, export_files=export_files)
 
     @runtime_type_checking
     def write(self, data: Tuple[Np1DNumberArray, Np1DNumberArray]):
@@ -206,15 +219,22 @@ class VACFLogWriter(BaseWriter):
     """
 
     @runtime_type_checking
-    def __init__(self, filename: str | None) -> None:
+    def __init__(
+        self,
+        filename: str | None,
+        mode: str | FileWritingMode = "w",
+    ) -> None:
         """
         Parameters
         ----------
         filename : str | None
             the filename to write to if None, the output is printed to stdout
+        mode : str | FileWritingMode, optional
+            The writing mode: "w" stops if a file exists, "a" appends,
+            "o" overwrites, by default "w".
         """
         self.filename = filename
-        super().__init__(filename)
+        super().__init__(filename, mode=mode)
 
     @runtime_type_checking
     def write_before_run(self, vacf: VACF):
