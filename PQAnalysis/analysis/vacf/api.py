@@ -7,6 +7,7 @@ import numpy as np
 from beartype.typing import Sequence
 
 from PQAnalysis.io import TrajectoryReader, read_restart_file
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat, TrajectoryFormat
 from PQAnalysis.types import Np1DNumberArray
 from PQAnalysis.type_checking import runtime_type_checking
@@ -116,6 +117,7 @@ def vacf(
     input_file: str,
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     export_files: Sequence[str] | None = None,
+    mode: str | FileWritingMode = FileWritingMode.WRITE,
 ):
     """
     Calculates the velocity auto-correlation function (VACF) using a
@@ -145,6 +147,9 @@ def vacf(
         Additional outputs for the main correlation table. ``.csv``,
         ``.tsv`` and ``.xvg`` select those formats; other extensions use
         native PQAnalysis text.
+    mode : str | FileWritingMode, optional
+        The writing mode for all output files: "w" stops if a file
+        exists, "a" appends, "o" overwrites, by default "w".
     """
 
     md_format = MDEngineFormat(md_format)
@@ -156,18 +161,21 @@ def vacf(
     data_writer = VACFDataWriter(
         input_reader.out_file,
         export_files=export_files,
+        mode=mode,
     )
-    log_writer = VACFLogWriter(input_reader.log_file)
+    log_writer = VACFLogWriter(input_reader.log_file, mode=mode)
 
     spectrum_writer = None
     windowed_writer = None
 
     if input_reader.spectrum_file is not None:
-        spectrum_writer = VACFSpectrumDataWriter(input_reader.spectrum_file)
+        spectrum_writer = VACFSpectrumDataWriter(
+            input_reader.spectrum_file, mode=mode
+        )
 
         if input_reader.windowed_out_file is not None:
             windowed_writer = VACFWindowedDataWriter(
-                input_reader.windowed_out_file
+                input_reader.windowed_out_file, mode=mode
             )
 
     topology = None
