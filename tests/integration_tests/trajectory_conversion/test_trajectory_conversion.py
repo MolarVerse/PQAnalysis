@@ -253,7 +253,8 @@ class TestTraj2ExtXYZ:
         nep = Path("nep.extxyz").read_text(encoding="utf-8").splitlines()[1]
         ase = Path("ase.extxyz").read_text(encoding="utf-8").splitlines()[1]
 
-        assert nep.startswith('lattice="') and 'properties="' in nep
+        assert nep.startswith('lattice="')
+        assert ' properties=species:S:1:pos:R:3' in nep
         assert ase.startswith('Lattice="') and 'Properties="' in ase
 
     def test_the_writing_modes(self, frames, monkeypatch):

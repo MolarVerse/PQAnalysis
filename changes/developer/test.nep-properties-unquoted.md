@@ -1,0 +1,1 @@
+- Expect the unquoted `properties` key of the NEP extxyz profile in the trajectory conversion end-to-end test.
