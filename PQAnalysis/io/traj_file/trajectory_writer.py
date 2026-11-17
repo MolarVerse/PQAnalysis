@@ -311,6 +311,8 @@ class TrajectoryWriter(BaseWriter):
                 f'stress="{self._format_extxyz_matrix(stress)}"'
             )
 
+        metadata.append(f"units={self.extxyz_profile.value}")
+
         print(" ".join(metadata), file=self.file)
 
     def _extxyz_properties(self, frame: AtomicSystem) -> str:

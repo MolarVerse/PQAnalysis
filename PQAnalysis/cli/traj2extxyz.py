@@ -60,7 +60,10 @@ class Traj2ExtXYZCLI(CLIBase):
             'trajectory_file',
             type=str,
             nargs='+',
-            help='The trajectory file(s) to be converted.'
+            help=(
+                'The trajectory file(s) to be converted: PQ xyz files or '
+                'PQ extended xyz files (units=pq).'
+            )
         )
 
         parser.parse_engine()
