@@ -253,7 +253,8 @@ class TestTraj2ExtXYZ:
         nep = Path("nep.extxyz").read_text(encoding="utf-8").splitlines()[1]
         ase = Path("ase.extxyz").read_text(encoding="utf-8").splitlines()[1]
 
-        assert nep.startswith('lattice="') and 'properties="' in nep
+        # GPUMD does not strip quotes around the properties value
+        assert nep.startswith('lattice="') and " properties=species" in nep
         assert ase.startswith('Lattice="') and 'Properties="' in ase
 
     def test_the_writing_modes(self, frames, monkeypatch):
