@@ -5,6 +5,7 @@ This module provides API functions for the mean square displacement (MSD) analys
 from beartype.typing import Sequence
 
 from PQAnalysis.io import TrajectoryReader, read_restart_file
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.type_checking import runtime_type_checking
 
@@ -19,6 +20,7 @@ def msd(
     input_file: str,
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     export_files: Sequence[str] | None = None,
+    mode: str | FileWritingMode = FileWritingMode.WRITE,
 ):
     """
     Calculates the mean square displacement (MSD) using a given input file.
@@ -42,6 +44,9 @@ def msd(
     export_files : Sequence[str] | None, optional
         Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
         those formats; other extensions use native PQAnalysis text.
+    mode : str | FileWritingMode, optional
+        The writing mode for all output files: "w" stops if a file
+        exists, "a" appends, "o" overwrites, by default "w".
     """
 
     md_format = MDEngineFormat(md_format)
@@ -53,8 +58,9 @@ def msd(
     data_writer = MSDDataWriter(
         input_reader.out_file,
         export_files=export_files,
+        mode=mode,
     )
-    log_writer = MSDLogWriter(input_reader.log_file)
+    log_writer = MSDLogWriter(input_reader.log_file, mode=mode)
 
     topology = None
     if input_reader.target_com:

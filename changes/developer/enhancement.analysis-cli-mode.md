@@ -1,0 +1,1 @@
+- Pass a `mode` argument from the rdf, msd and vacf CLIs through `rdf()`, `msd()` and `vacf()` to all their data, log, spectrum and windowed writers.

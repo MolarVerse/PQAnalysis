@@ -81,6 +81,7 @@ class VACFCLI(CLIBase):
         parser.parse_input_file()
         parser.parse_engine()
         parser.parse_export_files()
+        parser.parse_mode()
 
     @classmethod
     def run(cls, args):
@@ -96,7 +97,7 @@ class VACFCLI(CLIBase):
         if args.export_files is not None:
             export_kwargs['export_files'] = args.export_files
 
-        vacf(args.input_file, args.engine, **export_kwargs)
+        vacf(args.input_file, args.engine, mode=args.mode, **export_kwargs)
 
 
 

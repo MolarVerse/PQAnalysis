@@ -153,7 +153,8 @@ class BaseWriter:
                 (
                     f"File {self.filename} already exists. "
                     "Use mode \'a\' to append to the file or mode "
-                    "\'o\' to overwrite the file."
+                    "\'o\' to overwrite the file. On the command line, "
+                    "pass --mode a or --mode o."
                 ),
                 exception=FileWritingModeError
             )
