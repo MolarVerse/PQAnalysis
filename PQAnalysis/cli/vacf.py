@@ -97,9 +97,7 @@ class VACFCLI(CLIBase):
         if args.export_files is not None:
             export_kwargs['export_files'] = args.export_files
 
-        vacf(
-            args.input_file, args.engine, mode=args.mode, **export_kwargs
-        )
+        vacf(args.input_file, args.engine, mode=args.mode, **export_kwargs)
 
 
 

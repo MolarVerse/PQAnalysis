@@ -60,7 +60,9 @@ class TestVACFCLI:
 
         vacf_cli.main()
 
-        assert called == [("vacf.in", MDEngineFormat.QMCFC, FileWritingMode("w"))]
+        assert called == [
+            ("vacf.in", MDEngineFormat.QMCFC, FileWritingMode("w"))
+        ]
 
     def test_main_dispatches_repeated_exports(self, monkeypatch):
         called = []

@@ -38,7 +38,9 @@ class TestMSDCLI:
 
         msd_cli.main()
 
-        assert called == [("input.in", MDEngineFormat.PQ, FileWritingMode("w"))]
+        assert called == [
+            ("input.in", MDEngineFormat.PQ, FileWritingMode("w"))
+        ]
 
     def test_main_dispatches_engine(self, monkeypatch):
         called = []
@@ -58,7 +60,9 @@ class TestMSDCLI:
 
         msd_cli.main()
 
-        assert called == [("input.in", MDEngineFormat.QMCFC, FileWritingMode("w"))]
+        assert called == [
+            ("input.in", MDEngineFormat.QMCFC, FileWritingMode("w"))
+        ]
 
     def test_main_dispatches_repeated_exports(self, monkeypatch):
         called = []

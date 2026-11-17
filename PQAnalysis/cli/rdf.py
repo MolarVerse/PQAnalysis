@@ -92,9 +92,7 @@ class RDFCLI(CLIBase):
         if args.export_files is not None:
             export_kwargs['export_files'] = args.export_files
 
-        rdf(
-            args.input_file, args.engine, mode=args.mode, **export_kwargs
-        )
+        rdf(args.input_file, args.engine, mode=args.mode, **export_kwargs)
 
 
 

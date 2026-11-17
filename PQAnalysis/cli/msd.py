@@ -92,9 +92,7 @@ class MSDCLI(CLIBase):
         if args.export_files is not None:
             export_kwargs['export_files'] = args.export_files
 
-        msd(
-            args.input_file, args.engine, mode=args.mode, **export_kwargs
-        )
+        msd(args.input_file, args.engine, mode=args.mode, **export_kwargs)
 
 
 

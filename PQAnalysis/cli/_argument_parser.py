@@ -181,10 +181,10 @@ class _ArgumentParser(argparse.ArgumentParser):
             '--mode',
             choices=FileWritingMode.values(),
             type=FileWritingMode,
-            default=FileWritingMode("w"),
+            default="w",
             help=(
                 'How to handle output files that already exist: '
-                '"w" stops with an error (default), "a" appends, '
+                '"w" stops with an error, "a" appends, '
                 '"o" overwrites.'
             )
         )
