@@ -2,6 +2,9 @@
 A module containing API functions to convert between different file formats.
 """
 
+import logging
+import shlex
+
 import numpy as np
 
 from beartype.typing import List
@@ -11,6 +14,9 @@ from PQAnalysis.topology import Topology
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.io.formats import ExtXYZProfile, FileWritingMode
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.utils.custom_logging import setup_logger
+from PQAnalysis import __package_name__
 
 from .moldescriptor_reader import MoldescriptorReader
 from .restart_file.exceptions import RestartFileWriterError
@@ -30,6 +36,10 @@ from .restart_file.api import (
 )
 from .traj_file.api import write_trajectory
 
+
+
+logger = logging.getLogger(__package_name__).getChild("io.conversion_api")
+logger = setup_logger(logger)
 
 @runtime_type_checking
 def gen2xyz(
@@ -314,7 +324,7 @@ def traj2box(
     Parameters
     ----------
     trajectory_files : list of str
-        The trajectory file(s) to be converted.
+        The trajectory file(s) to be converted, PQ xyz or PQ extended xyz.
     vmd : bool
         Output in VMD format.
     output : str | None, optional
@@ -383,8 +393,11 @@ def traj2extxyz(
     extxyz_profile: ExtXYZProfile | str = ExtXYZProfile.ASE,
 ) -> None:
     """
-    Converts one or more PQ xyz trajectory files to extended xyz format and
-    prints it to stdout or writes it to a file.
+    Converts one or more PQ xyz or PQ extended xyz trajectory files to
+    extended xyz format and prints it to stdout or writes it to a file.
+
+    Extended xyz input must be in PQ units (``units=pq``, as PQ writes it);
+    a file without units key is read as PQ units with a warning.
 
     Parameters
     ----------
@@ -411,11 +424,82 @@ def traj2extxyz(
     )
 
     for filename in trajectory_files:
+        is_extxyz, units = _read_extxyz_units(filename)
+
+        if is_extxyz:
+            _check_extxyz_units(filename, units)
+
         reader = TrajectoryReader(
             filename,
             md_format=md_format,
-            traj_format="xyz",
+            traj_format="extxyz" if is_extxyz else "xyz",
         )
         trajectory = reader.read()
 
         writer.write(trajectory, traj_type="extxyz")
+
+
+def _read_extxyz_units(filename: str) -> tuple[bool, str | None]:
+    """
+    Reads whether a trajectory file is an extended xyz file and the value of
+    its units key, from the comment line of the first frame.
+
+    Parameters
+    ----------
+    filename : str
+        The trajectory file.
+
+    Returns
+    -------
+    tuple[bool, str | None]
+        Whether the file is an extended xyz file, and its units or None.
+    """
+    with open(filename, "r", encoding="utf-8") as file:
+        file.readline()
+        comment = file.readline()
+
+    is_extxyz = (
+        filename.endswith((".extxyz", ".extended.xyz")) or
+        "properties=" in comment.lower()
+    )
+
+    if not is_extxyz:
+        return False, None
+
+    for token in shlex.split(comment):
+        key, _, value = token.partition("=")
+        if key.lower() == "units":
+            return True, value.lower()
+
+    return True, None
+
+
+def _check_extxyz_units(filename: str, units: str | None) -> None:
+    """
+    Checks that an extended xyz file is in PQ units before it is converted,
+    so that no file is converted twice.
+
+    Parameters
+    ----------
+    filename : str
+        The trajectory file.
+    units : str | None
+        The value of its units key.
+
+    Raises
+    ------
+    PQValueError
+        If the file is in other units than PQ units.
+    """
+    if units is None:
+        logger.warning(
+            f"{filename} has no units key; it is read as PQ units."
+        )
+    elif units != ExtXYZProfile.PQ.value:
+        logger.error(
+            (
+                f"{filename} is in {units} units, but only files in PQ "
+                "units (units=pq) can be converted."
+            ),
+            exception=PQValueError
+        )
