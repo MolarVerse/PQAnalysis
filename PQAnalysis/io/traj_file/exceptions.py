@@ -19,3 +19,11 @@ class FrameReaderError(PQException):
     """
     Exception raised for errors related to the FrameReader class
     """
+
+
+
+class TrajectoryWriterError(PQException):
+
+    """
+    Exception raised for errors related to the TrajectoryWriter class
+    """
