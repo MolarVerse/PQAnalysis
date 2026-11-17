@@ -32,8 +32,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+h5md = [
+    "h5py",
+]
 test = [
     "ase",
+    "h5py",
     "pytest",
     "pytest-cov",
     "pylint",

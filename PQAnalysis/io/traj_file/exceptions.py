@@ -27,3 +27,11 @@ class TrajectoryWriterError(PQException):
     """
     Exception raised for errors related to the TrajectoryWriter class
     """
+
+
+
+class H5MDReaderError(PQException):
+
+    """
+    Exception raised for errors related to the H5MDReader class
+    """
