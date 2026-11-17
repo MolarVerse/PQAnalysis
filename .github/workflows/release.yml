@@ -11,27 +11,7 @@ permissions:
 jobs:
   build:
     name: Build distribution
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.12"
-        cache: pip
-    - name: Install pypa/build
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install build twine
-
-    - name: Build source distribution
-      run: python3 -m build --sdist
-    - name: Store the distribution packages
-      uses: actions/upload-artifact@v4
-      with:
-        name: python-package-distributions
-        path: dist/
+    uses: ./.github/workflows/wheels.yml
 
   publish-to-pypi:
     name: >-
@@ -49,7 +29,8 @@ jobs:
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        pattern: dist-*
+        merge-multiple: true
         path: dist/
     - name: Publish distribution to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
@@ -106,7 +87,8 @@ jobs:
     - name: Download all the dists
       uses: actions/download-artifact@v4
       with:
-        name: python-package-distributions
+        pattern: dist-*
+        merge-multiple: true
         path: dist/
 
     - name: Sign the dists with Sigstore
@@ -114,6 +96,7 @@ jobs:
       with:
         inputs: >-
           ./dist/*.tar.gz
+          ./dist/*.whl
 
     - name: Upload artifact signatures to GitHub Release
       env:

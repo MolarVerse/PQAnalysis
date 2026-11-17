@@ -58,6 +58,13 @@ docs = [
     "docstr-coverage",
 ]
 
+[tool.cibuildwheel]
+build = ["cp312-*", "cp313-*", "cp314-*"]
+skip = ["*-musllinux_*", "*-win32", "*_i686"]
+build-frontend = "build"
+test-extras = ["test"]
+test-command = "python {project}/scripts/test_wheel.py {project}"
+
 [tool.setuptools_scm]
 version_file = "PQAnalysis/_version.py"
 fallback_version = "0.0.0"
