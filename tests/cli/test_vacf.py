@@ -6,6 +6,7 @@ import sys
 
 from PQAnalysis.cli import vacf as vacf_cli
 from PQAnalysis.cli.vacf import VACFCLI
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 
 
@@ -32,13 +33,13 @@ class TestVACFCLI:
         monkeypatch.setattr(
             vacf_cli,
             "vacf",
-            lambda *args: called.append(args),
+            lambda *args, mode: called.append(args + (mode, )),
         )
         monkeypatch.setattr(sys, "argv", ["vacf", "vacf.in"])
 
         vacf_cli.main()
 
-        assert called == [("vacf.in", MDEngineFormat.PQ)]
+        assert called == [("vacf.in", MDEngineFormat.PQ, FileWritingMode("w"))]
 
     def test_main_dispatches_engine(self, monkeypatch):
         """
@@ -49,7 +50,7 @@ class TestVACFCLI:
         monkeypatch.setattr(
             vacf_cli,
             "vacf",
-            lambda *args: called.append(args),
+            lambda *args, mode: called.append(args + (mode, )),
         )
         monkeypatch.setattr(
             sys,
@@ -59,7 +60,7 @@ class TestVACFCLI:
 
         vacf_cli.main()
 
-        assert called == [("vacf.in", MDEngineFormat.QMCFC)]
+        assert called == [("vacf.in", MDEngineFormat.QMCFC, FileWritingMode("w"))]
 
     def test_main_dispatches_repeated_exports(self, monkeypatch):
         called = []
@@ -92,7 +93,8 @@ class TestVACFCLI:
                 "vacf.in",
                 MDEngineFormat.PQ,
                 {
-                    "export_files": ["vacf.csv", "vacf.xvg"]
+                    "export_files": ["vacf.csv", "vacf.xvg"],
+                    "mode": FileWritingMode("w"),
                 },
             )
         ]

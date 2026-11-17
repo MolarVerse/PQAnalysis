@@ -5,6 +5,7 @@ This module provides API functions for the radial distribution function (RDF) an
 from beartype.typing import Sequence
 
 from PQAnalysis.io import TrajectoryReader, RestartFileReader, MoldescriptorReader
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.topology import Topology
 from PQAnalysis.type_checking import runtime_type_checking
@@ -20,6 +21,7 @@ def rdf(
     input_file: str,
     md_format: MDEngineFormat | str = MDEngineFormat.PQ,
     export_files: Sequence[str] | None = None,
+    mode: str | FileWritingMode = FileWritingMode.WRITE,
 ):
     """
     Calculates the radial distribution function (RDF) using a given input file.
@@ -43,6 +45,9 @@ def rdf(
     export_files : Sequence[str] | None, optional
         Additional table outputs. ``.csv``, ``.tsv`` and ``.xvg`` select
         those formats; other extensions use native PQAnalysis text.
+    mode : str | FileWritingMode, optional
+        The writing mode for all output files: "w" stops if a file
+        exists, "a" appends, "o" overwrites, by default "w".
     """
 
     md_format = MDEngineFormat(md_format)
@@ -54,8 +59,9 @@ def rdf(
     data_writer = RDFDataWriter(
         input_reader.out_file,
         export_files=export_files,
+        mode=mode,
     )
-    log_writer = RDFLogWriter(input_reader.log_file)
+    log_writer = RDFLogWriter(input_reader.log_file, mode=mode)
 
     if input_reader.restart_file is not None:
         restart_reader = RestartFileReader(input_reader.restart_file)

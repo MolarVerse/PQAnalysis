@@ -183,9 +183,9 @@ class _ArgumentParser(argparse.ArgumentParser):
             type=FileWritingMode,
             default=FileWritingMode("w"),
             help=(
-                'The writing mode. The following modes '
-                'are available: "w": write, "a": append, '
-                '"o": overwrite.'
+                'How to handle output files that already exist: '
+                '"w" stops with an error (default), "a" appends, '
+                '"o" overwrites.'
             )
         )
 

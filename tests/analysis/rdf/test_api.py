@@ -108,3 +108,23 @@ class TestRDFAPIExistingOutput:
 
         content = (tmp_path / existing).read_text(encoding="utf-8")
         assert content == "already there\n"
+
+    def test_overwrite_mode_replaces_existing_files(
+        self, tmp_path, monkeypatch
+    ):
+        """
+        With mode "o" an existing output and log file are replaced.
+        """
+        shutil.copytree(EXAMPLES_WATER, tmp_path, dirs_exist_ok=True)
+        monkeypatch.chdir(tmp_path)
+        with open("rdf.in", "a", encoding="utf-8") as file:
+            file.write("log_file = rdf.log\n")
+        for name in ["rdf.dat", "rdf.log"]:
+            (tmp_path / name).write_text("old\n", encoding="utf-8")
+
+        rdf("rdf.in", mode="o")
+
+        for name in ["rdf.dat", "rdf.log"]:
+            content = (tmp_path / name).read_text(encoding="utf-8")
+            assert "old" not in content.splitlines()
+            assert len(content.splitlines()) > 1
