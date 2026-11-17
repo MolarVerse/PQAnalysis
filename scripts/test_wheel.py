@@ -1,6 +1,6 @@
 """Test an installed PQAnalysis wheel against the repository test suite.
 
-Usage: python scripts/test_wheel.py PROJECT_DIR
+Usage: python scripts/test_wheel.py PROJECT_DIR [PYTEST_ARGS...]
 
 The tests run from a copy outside PROJECT_DIR, so ``import PQAnalysis``
 loads the installed wheel and not the source tree.
@@ -50,7 +50,7 @@ def check_commands():
 
 
 
-def run_tests(project):
+def run_tests(project, pytest_args):
     """Run the test suite from a copy; type-check levels are tested in ci."""
     with tempfile.TemporaryDirectory() as work:
         for name in ("tests", "examples"):
@@ -63,12 +63,12 @@ def run_tests(project):
                 sys.executable,
                 "-m",
                 "pytest",
-                "tests",
                 "-q",
                 "-o",
                 "addopts=",
                 "-p",
-                "no:cacheprovider"
+                "no:cacheprovider",
+                *(pytest_args or ["tests"]),
             ],
             cwd=work,
             env=env,
@@ -84,7 +84,7 @@ def main():
     project = Path(sys.argv[1]).resolve()
     check_installed(project)
     check_commands()
-    run_tests(project)
+    run_tests(project, sys.argv[2:])
 
 
 

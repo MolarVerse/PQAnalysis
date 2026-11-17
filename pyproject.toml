@@ -65,6 +65,10 @@ build-frontend = "build"
 test-extras = ["test"]
 test-command = "python {project}/scripts/test_wheel.py {project}"
 
+[tool.cibuildwheel.windows]
+# full suite not portable to Windows yet (#330); test the compiled kernels
+test-command = "python {project}/scripts/test_wheel.py {project} tests/analysis -k kernel"
+
 [tool.setuptools_scm]
 version_file = "PQAnalysis/_version.py"
 fallback_version = "0.0.0"
