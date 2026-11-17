@@ -1,0 +1,1 @@
+- Correct the help text of xyz2rst --randomize: it displaces the positions with a normal distribution of the given standard deviation (it was described as randomizing the atom order).
