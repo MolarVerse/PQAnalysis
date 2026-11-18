@@ -29,6 +29,13 @@ consistent atom count; MSD additionally needs periodic cells for unwrapping.
 VACF and momentum analyses require velocity data. Molecular exclusions in RDF
 require topology information from a restart and moldescriptor.
 
+PQ H5MD trajectories (``traj_format = h5md``, files ending in ``.h5md`` or
+``.h5``) are read like the text trajectories, including positions,
+velocities, forces, charges, cells and the potential energy. They need the
+optional ``h5py`` package: ``pip install PQAnalysis[h5md]``. Values are
+converted to the units of the PQ text files, for example velocities from
+Angstrom fs\ :sup:`-1` to Angstrom s\ :sup:`-1`; an unknown unit is an error.
+
 The Python format definitions are documented by
 :class:`PQAnalysis.traj.formats.MDEngineFormat` and
 :class:`PQAnalysis.traj.formats.TrajectoryFormat`.

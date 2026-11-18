@@ -1,0 +1,1 @@
+- Read PQ H5MD trajectories (`traj_format = h5md`, `.h5md` or `.h5` files) with `TrajectoryReader` and the analyses; this needs the optional `h5py` package (`pip install PQAnalysis[h5md]`) (#333).
