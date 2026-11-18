@@ -1,5 +1,7 @@
-import pytest
+import os
 import sys
+
+import pytest
 import numpy as np
 
 from . import pytestmark
@@ -254,6 +256,30 @@ def test_write_extxyz_nep_profile_writes_elements(caplog):
             trajectory=dummy,
             traj_type="extxyz",
         )
+
+
+@pytest.mark.parametrize("traj_type", ["auto", "h5md"])
+@pytest.mark.usefixtures("tmpdir")
+def test_write_unsupported_format_raises(caplog, traj_type):
+    frame = AtomicSystem(atoms=[Atom("C")], pos=np.zeros((1, 3)))
+    writer = TrajectoryWriter("traj.out")
+
+    assert_logging_with_exception(
+        caplog=caplog,
+        logging_name="BaseWriter",
+        logging_level="ERROR",
+        message_to_test=(
+            "TrajectoryWriter cannot write the "
+            f"{TrajectoryFormat(traj_type).value} format. Possible formats "
+            "are XYZ, EXTXYZ, VEL, FORCE and CHARGE."
+        ),
+        exception=TrajectoryWriterError,
+        function=writer.write,
+        trajectory=frame,
+        traj_type=traj_type,
+    )
+
+    assert not os.path.exists("traj.out")
 
 
 @pytest.mark.usefixtures("tmpdir")

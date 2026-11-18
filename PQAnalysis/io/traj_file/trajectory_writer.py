@@ -81,6 +81,11 @@ class TrajectoryWriter(BaseWriter):
             The trajectory to write.
         traj_type : TrajectoryFormat | str, optional
             The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+
+        Raises
+        ------
+        TrajectoryWriterError
+            If the writer cannot write the given format, e.g. auto or h5md.
         """
 
         self.type = TrajectoryFormat(traj_type)
@@ -98,6 +103,15 @@ class TrajectoryWriter(BaseWriter):
             self._write_forces(trajectory)
         elif self.type == TrajectoryFormat.CHARGE:
             self._write_charges(trajectory)
+        else:
+            self.logger.error(
+                (
+                    f"TrajectoryWriter cannot write the {self.type.value} "
+                    "format. Possible formats are XYZ, EXTXYZ, VEL, FORCE "
+                    "and CHARGE."
+                ),
+                exception=TrajectoryWriterError
+            )
 
     def _write_positions(self, trajectory: Trajectory) -> None:
         """
