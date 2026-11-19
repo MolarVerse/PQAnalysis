@@ -1,0 +1,1 @@
+- `TrajectoryWriter.write` gets an `else` branch that raises `TrajectoryWriterError` for `AUTO` and `H5MD` (#334).

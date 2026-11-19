@@ -1,0 +1,1 @@
+- `TrajectoryWriter` now stops with an error for a format it cannot write, such as `h5md` or `auto`; before, it wrote nothing and gave no error (#334).
