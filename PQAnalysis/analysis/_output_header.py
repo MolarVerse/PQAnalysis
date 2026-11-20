@@ -2,7 +2,10 @@
 Formatting helpers for self-describing analysis output files.
 """
 
+import re
 from collections.abc import Sequence
+
+_HEADER_UNIT = re.compile(r"(?P<field>\S+)\s+\[(?P<unit>[^\]\s]+)\]")
 
 
 
@@ -40,3 +43,29 @@ def format_output_header(
             f"# UNITS {units}",
         )
     )
+
+
+
+def header_name(field: str, unit: str, with_unit: bool) -> str:
+    """Return a CSV/TSV header entry, ``FIELD [unit]`` if requested."""
+    if not with_unit or unit == "1":
+        return field
+    return f"{field} [{unit}]"
+
+
+
+def split_header_units(
+    header: Sequence[str],
+) -> tuple[tuple[str, ...], tuple[str | None, ...]]:
+    """
+    Split CSV/TSV header entries into fields and optional units.
+
+    >>> split_header_units(["E(TOT) [kcal/mol]", "N"])
+    (('E(TOT)', 'N'), ('kcal/mol', None))
+    """
+    fields, units = [], []
+    for value in header:
+        match = _HEADER_UNIT.fullmatch(value.strip())
+        fields.append(match["field"] if match else value.strip())
+        units.append(match["unit"] if match else None)
+    return tuple(fields), tuple(units)

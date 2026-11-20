@@ -68,6 +68,27 @@ with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
    Force-field import <force-field-import>
    Analysis output files <../userGuide/analysisOutputFiles>
 
+PQ energy file header
+---------------------
+
+A PQ energy file can name its columns in a header at the top of the file::
+
+    # PQ energy file v1.1.0
+    # timestep = 0.5 fs
+    #SIMULATION-TIME[step] TEMPERATURE[K] PRESSURE[bar] ...
+
+The last comment line above the data has one ``NAME[unit]`` token per data
+column; the timestep line is optional. If the first line is
+``# PQ energy file``, ``EnergyFileReader`` and ``pqanalysis convert`` take
+the column names and units from the header and do not need the ``.info``
+file. They match the names of the ``.info`` file. A ``SIMULATION-TIME``
+column in ``step`` is converted to ps as described below; other units are
+used as written. If an ``.info`` file exists and names different columns or
+units, the header is used and a warning is logged. Files without this header
+keep using the ``.info`` file.
+
+.. _pq-energy-time-axes:
+
 PQ energy time axes
 -------------------
 

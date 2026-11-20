@@ -1,0 +1,1 @@
+- `EnergyFileReader` probes the default `.info` path with `os.path.isfile` instead of constructing a `BaseReader`, which logged an error before the exception was caught (#343).

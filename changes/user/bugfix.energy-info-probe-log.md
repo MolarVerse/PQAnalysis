@@ -1,0 +1,1 @@
+- Reading an energy file without a `.info` file next to it no longer prints a "File ... not found" error, because that file is optional (#343).

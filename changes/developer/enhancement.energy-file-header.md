@@ -1,0 +1,1 @@
+- Add `PQAnalysis/io/energy_file_header.py` (`read_energy_header`); `EnergyFileReader` prefers its labels over the `.info` file, warns when they differ (ignoring the `.info` time unit), applies the step-to-ps conversion only to a `SIMULATION-TIME[step]` column, and checks the header width per file (#343).

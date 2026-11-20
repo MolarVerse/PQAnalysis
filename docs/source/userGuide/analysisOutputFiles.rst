@@ -176,6 +176,86 @@ By default, conversion stops with an error naming the existing file if any
 output path already exists. No requested output is written in that case. Use
 ``--mode o`` only to request replacement explicitly.
 
+Converting energy files
+-----------------------
+
+The converter also reads PQ and QMCFC energy files. Inputs ending in ``.en``
+are read as energy files; ``--energy`` does the same for other names:
+
+.. code-block:: console
+
+   $ pqanalysis convert md-01.en -o md-01.csv -o md-01.xvg
+   $ pqanalysis convert md-01.en -o md-01.xvg --timestep 0.5
+   $ pqanalysis convert qmmm.out -o qmmm.csv --energy \
+       --engine qmcfc --info-file qmmm.info
+
+Column names and units come from the ``.info`` file with the same base name
+(or ``--info-file``). Dimensionless quantities get the unit ``1`` and spaces
+in QMCFC names become ``_``. Without an info file the fields are
+``column_1`` to ``column_n``. PQ energy files store step counts in the time
+column (unit ``step``); ``--timestep FS`` or a ``# timestep = <value> fs``
+header turns them into ps, see :ref:`pq-energy-time-axes`.
+
+CSV and TSV headers carry the unit in brackets, ``NAME [unit]``, and leave
+it out for dimensionless columns:
+
+.. code-block:: text
+
+   SIMULATION-TIME [ps],TEMPERATURE [K],PRESSURE [bar],E(TOT) [kcal/mol],...
+
+The native output keeps the plain names on its ``FIELDS`` line and the units
+on its ``UNITS`` line. Converting such a CSV or TSV back restores names and
+units.
+
+The XVG file is laid out for xmgrace. The x axis is the simulation time.
+By default each energy column that is not zero everywhere gets its own
+stacked graph (at most four), because total, potential and kinetic energies
+differ by orders of magnitude. All other columns stay in the file as hidden
+sets with ``NAME [unit]`` legends; show them with *Edit > Set appearance*
+and rescale with *Autoscale*. ``--y`` picks the plotted quantities instead,
+one graph per unit:
+
+.. code-block:: console
+
+   $ pqanalysis convert md-01.en -o temperature.xvg --y TEMPERATURE
+   $ pqanalysis convert md-01.en -o md-01.xvg \
+       --y "E(TOT)" --y "E(KIN)" --y TEMPERATURE
+
+The second command draws ``E(TOT)`` and ``E(KIN)`` on one
+``Energy [kcal/mol]`` axis and the temperature in a second graph below.
+
+Plotting energies
+-----------------
+
+Open the XVG file in xmgrace, or write a PNG without the GUI:
+
+.. code-block:: console
+
+   $ xmgrace md-01.xvg
+   $ gracebat md-01.xvg -hdevice PNG -printfile md-01.png
+
+With pandas and matplotlib, select columns by their CSV header:
+
+.. code-block:: python
+
+   import matplotlib.pyplot as plt
+   import pandas as pd
+
+   energies = pd.read_csv("md-01.csv")
+   energies.plot(x="SIMULATION-TIME [ps]", y="E(TOT) [kcal/mol]")
+   plt.show()
+
+``energies.columns`` lists all names. The raw ``.en`` file needs no
+conversion for NumPy; its comment header is skipped and the columns follow
+the ``.info`` file order:
+
+.. code-block:: python
+
+   import numpy as np
+
+   data = np.loadtxt("md-01.en")
+   time, temperature = data[:, 0], data[:, 1]
+
 .. _analysis-output-rdf:
 
 RDF
