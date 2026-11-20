@@ -10,9 +10,9 @@ import numpy as np
 from beartype.typing import Any
 
 # just for forwardref type hinting
-from beartype.typing import List  # pylint: disable=unused-import
+from beartype.typing import Iterator, List  # pylint: disable=unused-import
 
-from PQAnalysis.core import Atom, Atoms, Cell, CustomElement, distance
+from PQAnalysis.core import Atom, Atoms, Cell, CustomElement
 from PQAnalysis.topology import Topology
 from PQAnalysis.types import PositiveReal, PositiveInt, Bool
 from PQAnalysis.type_checking import runtime_type_checking
@@ -32,6 +32,8 @@ from ._center_of_mass import center_of_mass_properties
 from ._properties import _PropertiesMixin
 from ._standard_properties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
+from ._overlap_grid import OverlapGrid
+from ._fit_options import FitOptions
 from .exceptions import AtomicSystemError
 
 
@@ -251,15 +253,63 @@ class AtomicSystem(
             of the AtomicSystem within the maximum number of iterations.
         """
 
-        systems = []
+        options = FitOptions(
+            max_iterations=max_iterations,
+            distance_cutoff=distance_cutoff,
+            max_displacement=max_displacement,
+            rotation_angle_step=rotation_angle_step,
+        )
+        systems = list(
+            self.iter_fit_atomic_system(system, number_of_additions, options)
+        )
 
-        for i in range(number_of_additions):
-            # concatenate the positions of this system with the
-            # positions of all systems that have been fitted so far
-            positions_to_fit_into = np.concatenate(
-                [system.pos for system in systems] + [self.pos]
+        return systems if number_of_additions > 1 else systems[0]
+
+    def iter_fit_atomic_system(
+        self,
+        system: "AtomicSystem",
+        number_of_additions: PositiveInt = 1,
+        options: FitOptions | None = None,
+    ) -> "Iterator[AtomicSystem]":
+        """
+        Fit the system into the AtomicSystem and yield each fitted copy.
+
+        Same as :py:meth:`fit_atomic_system`, but yields every fitted
+        system as soon as it is placed, so callers can keep the systems
+        placed before an error or an interruption.
+
+        Parameters
+        ----------
+        system : AtomicSystem
+            The system that should be fitted into the positions of the AtomicSystem.
+        number_of_additions : PositiveInt, optional
+            The number of times the system should be fitted, by default 1
+        options : FitOptions | None, optional
+            The fitting options, by default None (the FitOptions defaults)
+
+        Yields
+        ------
+        AtomicSystem
+            The fitted AtomicSystems, one per addition.
+
+        Raises
+        ------
+        AtomicSystemError
+            If the AtomicSystem has a vacuum cell or an addition could not
+            be fitted within the maximum number of iterations.
+        """
+
+        if self.cell.is_vacuum:
+            raise AtomicSystemError(
+                "Cannot fit into positions of a system with a vacuum cell."
             )
 
+        if options is None:
+            options = FitOptions()
+
+        overlap_grid = OverlapGrid(self.cell, options.distance_cutoff, self.pos)
+
+        for i in range(number_of_additions):
             self.fitting_logger.info(
                 (
                     f"Performing fitting for {i + 1}/{number_of_additions} "
@@ -267,25 +317,22 @@ class AtomicSystem(
                 )
             )
 
-            systems.append(
-                self._fit_atomic_system(
-                    positions_to_fit_into=positions_to_fit_into,
-                    system=system,
-                    max_iterations=max_iterations,
-                    distance_cutoff=distance_cutoff,
-                    max_displacement=max_displacement,
-                    rotation_angle_step=rotation_angle_step
-                )
+            fitted = self._fit_atomic_system(
+                overlap_grid=overlap_grid,
+                system=system,
+                max_iterations=options.max_iterations,
+                max_displacement=options.max_displacement,
+                rotation_angle_step=options.rotation_angle_step
             )
+            overlap_grid.add(fitted.pos)
 
-        return systems if number_of_additions > 1 else systems[0]
+            yield fitted
 
     def _fit_atomic_system(
         self,
-        positions_to_fit_into: Np2DNumberArray,
+        overlap_grid: OverlapGrid,
         system: "AtomicSystem",
         max_iterations: PositiveInt = 100,
-        distance_cutoff: PositiveReal = 1.0,
         max_displacement: PositiveReal | Np1DNumberArray = 0.1,
         rotation_angle_step: PositiveInt = 10,
     ) -> "AtomicSystem":
@@ -299,15 +346,13 @@ class AtomicSystem(
 
         Parameters
         ----------
-        positions_to_fit_into : Np2DNumberArray
-            The positions of the systems were the new system should be fitted into.
+        overlap_grid : OverlapGrid
+            The positions the new system has to keep the distance cutoff from.
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
         max_iterations : PositiveInt, optional
             The maximum number of iterations to try to fit the system into the
             positions of the AtomicSystem, by default 100
-        distance_cutoff : PositiveReal, optional
-            The distance cutoff for the fitting, by default 1.0
         max_displacement : PositiveReal | Np1DNumberArray, optional
             The maximum displacement percentage for the fitting, by default 0.1
         rotation_angle_step : PositiveInt, optional
@@ -374,9 +419,7 @@ class AtomicSystem(
                 )
                 new_pos = rotation.apply(new_pos)
 
-                distances = distance(positions_to_fit_into, new_pos, self.cell)
-
-                if np.all(distances > distance_cutoff):
+                if not overlap_grid.overlaps(new_pos):
                     iter_converged = _iter
                     break
 
