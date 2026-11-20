@@ -1,0 +1,1 @@
+- Add `read_energy_table`, which turns an `EnergyFileReader` result into an `AnalysisTable` (`analysis/_energy_table.py` builds the columns and default plot fields), and route `.en` inputs of `convert_analysis_output` through it, so energy files reuse the existing CSV/TSV/XVG/native writers (#343).

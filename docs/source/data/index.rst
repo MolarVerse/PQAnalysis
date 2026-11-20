@@ -60,6 +60,8 @@ with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
    Atom selections <selections>
    Analysis output files <../userGuide/analysisOutputFiles>
 
+.. _pq-energy-time-axes:
+
 PQ energy time axes
 -------------------
 

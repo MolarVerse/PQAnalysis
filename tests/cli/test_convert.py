@@ -4,10 +4,12 @@ Tests for the analysis output converter CLI.
 
 import sys
 
+from PQAnalysis.analysis.output import EnergyFileOptions
 from PQAnalysis.cli import convert as convert_cli
 from PQAnalysis.cli import main as pqanalysis_cli
 from PQAnalysis.cli.convert import ConvertCLI
 from PQAnalysis.io.formats import FileWritingMode
+from PQAnalysis.traj import MDEngineFormat
 
 
 
@@ -59,7 +61,77 @@ class TestConvertCLI:
                 "x_field": "r_i",
                 "y_fields": ["g_r_i", "N_r_i"],
                 "mode": FileWritingMode.OVERWRITE,
+                "energy": EnergyFileOptions(),
             }
+        ]
+
+    def test_main_passes_energy_options(self, monkeypatch):
+        called = []
+        monkeypatch.setattr(
+            convert_cli,
+            "convert_analysis_output",
+            lambda **kwargs: called.append(kwargs),
+        )
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "convert",
+                "run.dat",
+                "-o",
+                "run.xvg",
+                "--energy",
+                "--info-file",
+                "run.info",
+                "--timestep",
+                "0.5",
+                "--engine",
+                "qmcfc",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        convert_cli.main()
+
+        assert called[0]["energy"] == EnergyFileOptions(
+            as_energy_file=True,
+            info_file="run.info",
+            engine_format=MDEngineFormat.QMCFC,
+            timestep_fs=0.5,
+        )
+
+    def test_main_converts_energy_file(self, tmp_path, monkeypatch):
+        energy = tmp_path / "run.en"
+        energy.write_text("1 300.0\n2 301.5\n", encoding="utf-8")
+        (tmp_path / "run.info").write_text(
+            "header\nheader\nheader\n"
+            "| SIMULATION-TIME 0.001 ps TEMPERATURE 301.5 K |\n"
+            "-----------------------------------------\n",
+            encoding="utf-8",
+        )
+        output = tmp_path / "run.csv"
+        monkeypatch.setattr(
+            sys,
+            "argv",
+            [
+                "convert",
+                str(energy),
+                "-o",
+                str(output),
+                "--timestep",
+                "1",
+                "--log-file",
+                "off",
+            ],
+        )
+
+        convert_cli.main()
+
+        assert output.read_text(encoding="utf-8").splitlines() == [
+            "SIMULATION-TIME,TEMPERATURE",
+            "0.001,300.0",
+            "0.002,301.5",
         ]
 
     def test_convert_is_registered_on_main_cli(self, monkeypatch):

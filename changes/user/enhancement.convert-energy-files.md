@@ -1,0 +1,1 @@
+- `pqanalysis convert` reads PQ and QMCFC `.en` energy files and writes CSV, TSV, XVG or native text, with the column names from the `.info` file as headers and XVG legends and the simulation time as XVG x axis; `--energy`, `--info-file`, `--timestep` and `--engine` cover other file names, QMCFC and step-to-ps conversion (#343).

@@ -16,9 +16,14 @@ from typing import TextIO
 import numpy as np
 
 from PQAnalysis.exceptions import PQException
-from PQAnalysis.io import BaseWriter
+from PQAnalysis.io import BaseWriter, EnergyFileReader
 from PQAnalysis.io.formats import FileWritingMode
 
+from ._energy_table import (
+    EnergyFileOptions,
+    energy_columns,
+    energy_plot_fields,
+)
 from ._output_schemas import (
     AnalysisColumn,
     AnalysisPlotPreset,
@@ -53,6 +58,7 @@ __all__ = [
     "AnalysisSchema",
     "AnalysisTable",
     "AnalysisTableWriter",
+    "EnergyFileOptions",
     "BROADENED_SPECTRUM_SCHEMA",
     "MOMENTUM_SCHEMA",
     "MSD_SCHEMA",
@@ -66,6 +72,7 @@ __all__ = [
     "infer_output_format",
     "normal_mode_schema",
     "read_analysis_table",
+    "read_energy_table",
     "write_analysis_table",
 ]
 
@@ -245,20 +252,73 @@ def read_analysis_table(filename: str) -> AnalysisTable:
 
 
 
-def convert_analysis_output(
+def read_energy_table(
+    filename: str,
+    options: EnergyFileOptions | None = None,
+) -> AnalysisTable:
+    """
+    Read a PQ or QMCFC energy file as an analysis table.
+
+    Column names and units come from
+    :py:class:`~PQAnalysis.io.EnergyFileReader`. The default plot uses
+    the simulation time as x axis and every other quantity except the
+    step counter as y data.
+
+    Parameters
+    ----------
+    filename : str
+        Energy file.
+    options : EnergyFileOptions | None, optional
+        Info file, engine and timestep, by default
+        ``EnergyFileOptions()``.
+
+    Returns
+    -------
+    AnalysisTable
+        One table column per energy-file column.
+    """
+    options = options or EnergyFileOptions()
+    energy = EnergyFileReader(
+        filename,
+        info_filename=options.info_file,
+        engine_format=options.engine_format,
+        timestep_fs=options.timestep_fs,
+    ).read()
+
+    columns = energy_columns(energy)
+    fields = tuple(column.field for column in columns)
+    if len(set(fields)) != len(fields):
+        raise AnalysisOutputError(
+            f"Energy file '{filename}' contains duplicate column names."
+        )
+
+    title = f"{options.engine_format.value} energy file {Path(filename).stem}"
+    schema = AnalysisSchema(title=title, columns=columns)
+    schema = replace(
+        schema,
+        plot=_plot_preset_for_fields(schema, *energy_plot_fields(fields)),
+    )
+    return AnalysisTable(schema=schema, data=np.asarray(energy.data).T)
+
+
+
+def convert_analysis_output(  # pylint: disable=too-many-arguments
     input_file: str,
     output_files: Sequence[str],
     x_field: str | None = None,
     y_fields: Sequence[str] | None = None,
     mode: str | FileWritingMode = "w",
+    *,
+    energy: EnergyFileOptions | None = None,
 ) -> None:
     """
-    Convert one analysis table to one or more output files.
+    Convert one analysis table or energy file to one or more outputs.
 
     Parameters
     ----------
     input_file : str
-        Native, CSV, TSV or PQAnalysis XVG input table.
+        Native, CSV, TSV or PQAnalysis XVG input table, or a PQ/QMCFC
+        ``.en`` energy file.
     output_files : Sequence[str]
         Distinct output paths. Each suffix selects its format.
     x_field : str | None, optional
@@ -267,12 +327,25 @@ def convert_analysis_output(
         XVG y-axis fields, by default None.
     mode : str | FileWritingMode, optional
         Output writing mode, by default ``w``.
+    energy : EnergyFileOptions | None, optional
+        Energy-file reading options. Inputs ending in ``.en`` are read
+        as energy files, others only with ``as_energy_file=True``.
     """
     if not output_files:
         raise AnalysisOutputError("At least one output file is required.")
 
+    energy = energy or EnergyFileOptions()
+    reads_energy = energy.reads_energy(input_file)
+    if not reads_energy and energy.has_file_options:
+        raise AnalysisOutputError(
+            "An info file and a timestep apply only to energy-file input."
+        )
+
     _validate_distinct_paths(input_file, output_files)
-    table = read_analysis_table(input_file)
+    if reads_energy:
+        table = read_energy_table(input_file, energy)
+    else:
+        table = read_analysis_table(input_file)
     writers = tuple(
         AnalysisTableWriter(filename, mode=mode) for filename in output_files
     )

@@ -176,6 +176,31 @@ By default, conversion stops with an error naming the existing file if any
 output path already exists. No requested output is written in that case. Use
 ``--mode o`` only to request replacement explicitly.
 
+Converting energy files
+-----------------------
+
+The converter also reads PQ and QMCFC energy files. Inputs ending in ``.en``
+are read as energy files; ``--energy`` does the same for other names:
+
+.. code-block:: console
+
+   $ pqanalysis convert md-01.en -o md-01.csv -o md-01.xvg
+   $ pqanalysis convert md-01.en -o md-01.xvg --timestep 0.5
+   $ pqanalysis convert qmmm.out -o qmmm.csv --energy \
+       --engine qmcfc --info-file qmmm.info
+
+Column names and units come from the ``.info`` file with the same base name
+(or ``--info-file``). The names become the CSV and TSV headers and the XVG
+fields; the XVG legends show name and unit, for example
+``TEMPERATURE [K]``. Dimensionless quantities get the unit ``1`` and spaces
+in QMCFC names become ``_``. Without an info file the fields are
+``column_1`` to ``column_n``.
+
+The XVG x axis is the simulation time and every other column is a visible
+data set; use ``--y`` to plot fewer. PQ energy files store step counts in the
+time column (unit ``step``); ``--timestep FS`` or a ``# timestep = <value> fs``
+header turns them into ps, see :ref:`pq-energy-time-axes`.
+
 .. _analysis-output-rdf:
 
 RDF

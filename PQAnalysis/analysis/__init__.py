@@ -19,8 +19,10 @@ if TYPE_CHECKING:  # pragma: no cover
         AnalysisOutputFormat,
         AnalysisSchema,
         AnalysisTable,
+        EnergyFileOptions,
         convert_analysis_output,
         read_analysis_table,
+        read_energy_table,
     )
     from .rdf import RDF, RDFDataWriter, RDFInputFileReader, RDFLogWriter, rdf
     from .spectrum_broadening import broaden, build_spectrum
@@ -39,8 +41,10 @@ _EXPORTS = {
     "AnalysisOutputFormat": ".output",
     "AnalysisSchema": ".output",
     "AnalysisTable": ".output",
+    "EnergyFileOptions": ".output",
     "convert_analysis_output": ".output",
     "read_analysis_table": ".output",
+    "read_energy_table": ".output",
     "MSD": ".msd",
     "MSDDiffusionFit": ".msd",
     "MSDInputFileReader": ".msd",
