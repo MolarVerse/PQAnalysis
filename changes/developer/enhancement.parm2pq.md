@@ -1,0 +1,1 @@
+- Add `PQAnalysis.io.force_field` (`parm2pq`, `load_structure`, `convert_structure`, `PQForceFieldSetup`), the `parm2pq` CLI and the `ff` extra; ParmEd is imported lazily and is part of the `test` extra, and the tests build small ParmEd structures and round-trip them through AMBER and CHARMM files (#342).

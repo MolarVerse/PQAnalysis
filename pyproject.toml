@@ -35,9 +35,13 @@ dependencies = [
 h5md = [
     "h5py",
 ]
+ff = [
+    "parmed",
+]
 test = [
     "ase",
     "h5py",
+    "parmed",
     "pytest",
     "pytest-cov",
     "pylint",
@@ -112,6 +116,7 @@ activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
 build_nep_traj = "PQAnalysis.cli.build_nep_traj:main"
 xyz2gen = "PQAnalysis.cli.xyz2gen:main"
 gen2xyz = "PQAnalysis.cli.gen2xyz:main"
+parm2pq = "PQAnalysis.cli.parm2pq:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"
