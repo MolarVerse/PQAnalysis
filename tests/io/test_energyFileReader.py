@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 import numpy as np
 
@@ -10,6 +12,9 @@ from PQAnalysis.io.exceptions import EnergyFileReaderError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 from PQAnalysis.exceptions import PQFileNotFoundError
+from PQAnalysis import __package_name__
+
+from ..conftest import caplog_for_logger
 
 
 
@@ -242,3 +247,17 @@ class TestEnergyReader:
             "Energy file md-b.en has 4 columns, but the previously read "
             "energy files have 3 columns."
         )
+
+
+
+def test_missing_optional_info_file_logs_nothing(tmp_path, caplog):
+    energy_file = tmp_path / "run.en"
+    energy_file.write_text("1 300\n", encoding="utf-8")
+
+    with caplog_for_logger(
+        caplog, f"{__package_name__}.BaseReader", logging.DEBUG
+    ):
+        reader = EnergyFileReader(str(energy_file))
+
+    assert reader.with_info_file is False
+    assert caplog.text == ""

@@ -336,9 +336,7 @@ class EnergyFileReader(BaseReader):
                 self._filenames_to_read()[0]
             )[0] + ".info"
 
-            try:
-                BaseReader(self.info_filename)
-            except PQFileNotFoundError:
+            if not os.path.isfile(self.info_filename):
                 self.info_filename = None
 
         else:
