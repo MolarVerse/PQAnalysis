@@ -574,3 +574,83 @@ def test_periodic_box_and_velocities(chains):
     np.testing.assert_allclose(setup.velocities, 1e12)
     assert setup.restart_lines()[0] == "Box 30 31 32 90 90 90"
     assert setup.restart_lines()[1].split()[6] == "1.00000000e+12"
+
+
+
+def test_special_14_radius_is_unsupported(chains):
+    chains.atoms[7].rmin_14 = 2.0
+
+    with pytest.raises(UnsupportedForceFieldTermError, match="1-4 Lennard"):
+        convert_structure(chains)
+
+
+
+def test_zero_14_scaling_constant_raises(chains):
+    chains.dihedrals[0].type.scee = 0.0
+
+    with pytest.raises(Parm2PQError, match="scaling constant of 0"):
+        convert_structure(chains)
+
+
+
+def test_adjust_without_parameters_raises(chains):
+    _adjusts(chains, 0.5)
+    chains.adjusts[0].type = None
+
+    with pytest.raises(Parm2PQError, match="1-4 pair has no parameters"):
+        convert_structure(chains)
+
+
+
+def test_adjusts_skip_pairs_without_lennard_jones(chains):
+    for atom in chains.atoms:
+        if atom.atomic_number == 1:
+            atom.epsilon = atom.epsilon_14 = 0.0
+    _adjusts(chains, 0.5)
+    setup = convert_structure(chains)
+
+    assert setup.scale_14_vdw == pytest.approx(0.5)
+
+
+
+def test_angle_without_parameters_raises(chains):
+    chains.angles[0].type = None
+
+    with pytest.raises(Parm2PQError, match="angle 1-2-3 has no parameters"):
+        convert_structure(chains)
+
+
+
+def test_amber_pair_without_lennard_jones(chains):
+    from parmed.amber import AmberParm
+    parm = AmberParm.from_structure(chains)
+    n_types = parm.ptr("ntypes")
+    nb_idx = parm.atoms[0].nb_idx
+    parm.parm_data["NONBONDED_PARM_INDEX"][n_types * (nb_idx - 1) + nb_idx -
+                                           1] = 0
+    setup = convert_structure(parm)
+
+    assert setup.lj_pairs[0] == (0, 0, 0.0, 0.0)
+
+
+
+def test_moltype_names_are_unique_and_not_numeric():
+    structure = parmed.Structure()
+    _add_chain(structure, 4, "AAA", 1)
+    _add_chain(structure, 5, "AAA", 2)
+    _add_atom(structure, ("CL", "Cl-", -1.0, 2.47, 0.1, 17, 35.45), "7", 3)
+    setup = convert_structure(_finish(structure))
+
+    assert [m.name for m in setup.moltypes] == ["AAA_1", "AAA_2", "MOL7"]
+
+
+
+def test_restart_counter_restarts_for_adjacent_molecules():
+    structure = parmed.Structure()
+    _add_chain(structure, 4, "AAA", 1)
+    _add_chain(structure, 4, "AAA", 2)
+    lines = convert_structure(_finish(structure)).restart_lines()
+
+    assert [line.split()[1] for line in lines[1:]] == [
+        str(k) for k in (1, 2, 3, 4, 5) * 2
+    ]
