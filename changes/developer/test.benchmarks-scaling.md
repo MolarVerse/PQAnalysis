@@ -1,0 +1,1 @@
+- Add scaling benchmarks of RDF, MSD and VACF over the number of atoms and frames at constant density, so changes of the complexity become visible.
