@@ -3,6 +3,7 @@ Tests for converting PQ and QMCFC energy files to analysis tables.
 """
 
 import csv
+import io
 import shutil
 from pathlib import Path
 
@@ -15,7 +16,13 @@ from PQAnalysis.analysis._energy_table import (
     energy_plot_preset,
     grace_unit,
 )
-from PQAnalysis.analysis._xvg import _tick_precision
+from PQAnalysis.analysis._xvg import (
+    XVGDocument,
+    XVGFormatError,
+    XVGPlotStyle,
+    _tick_precision,
+    write_xvg,
+)
 from PQAnalysis.analysis.output import (
     AnalysisColumn,
     AnalysisOutputError,
@@ -429,3 +436,26 @@ def test_default_xvg_uses_decimal_ticks_for_large_energies(energy_dir):
     assert "@    yaxis ticklabel format decimal" in xvg
     assert "@    xaxis ticklabel off" in xvg
     assert '@    title "PQ energy file pq"' in xvg
+
+
+
+def test_write_xvg_rejects_missing_graph_labels():
+    document = XVGDocument(
+        title="energy",
+        fields=("TIME", "E"),
+        symbols=("t", "E"),
+        units=("ps", "kcal/mol"),
+        x_field="TIME",
+        y_fields=("E", ),
+        data=np.array([[0.0, 1.0], [1.0, 2.0]]),
+        graphs=(("E", ), ),
+    )
+    style = XVGPlotStyle(
+        x_label="t",
+        y_label="E",
+        legends=("t", "E"),
+        x_values=np.array([0.0, 1.0]),
+    )
+
+    with pytest.raises(XVGFormatError, match="graph labels"):
+        write_xvg(io.StringIO(), document, style)
