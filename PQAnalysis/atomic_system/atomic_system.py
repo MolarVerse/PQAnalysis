@@ -33,6 +33,7 @@ from ._properties import _PropertiesMixin
 from ._standard_properties import _StandardPropertiesMixin
 from ._positions import _PositionsMixin
 from ._overlap_grid import OverlapGrid
+from ._fit_options import FitOptions
 from .exceptions import AtomicSystemError
 
 
@@ -252,15 +253,14 @@ class AtomicSystem(
             of the AtomicSystem within the maximum number of iterations.
         """
 
+        options = FitOptions(
+            max_iterations=max_iterations,
+            distance_cutoff=distance_cutoff,
+            max_displacement=max_displacement,
+            rotation_angle_step=rotation_angle_step,
+        )
         systems = list(
-            self.iter_fit_atomic_system(
-                system,
-                number_of_additions,
-                max_iterations,
-                distance_cutoff,
-                max_displacement,
-                rotation_angle_step,
-            )
+            self.iter_fit_atomic_system(system, number_of_additions, options)
         )
 
         return systems if number_of_additions > 1 else systems[0]
@@ -269,10 +269,7 @@ class AtomicSystem(
         self,
         system: "AtomicSystem",
         number_of_additions: PositiveInt = 1,
-        max_iterations: PositiveInt = 100,
-        distance_cutoff: PositiveReal = 1.0,
-        max_displacement: PositiveReal | Np1DNumberArray = 0.1,
-        rotation_angle_step: PositiveInt = 10,
+        options: FitOptions | None = None,
     ) -> "Iterator[AtomicSystem]":
         """
         Fit the system into the AtomicSystem and yield each fitted copy.
@@ -287,14 +284,8 @@ class AtomicSystem(
             The system that should be fitted into the positions of the AtomicSystem.
         number_of_additions : PositiveInt, optional
             The number of times the system should be fitted, by default 1
-        max_iterations : PositiveInt, optional
-            The maximum number of iterations per addition, by default 100
-        distance_cutoff : PositiveReal, optional
-            The distance cutoff for the fitting, by default 1.0
-        max_displacement : PositiveReal | Np1DNumberArray, optional
-            The maximum displacement percentage for the fitting, by default 0.1
-        rotation_angle_step : PositiveInt, optional
-            The angle step for the rotation of the system, by default 10
+        options : FitOptions | None, optional
+            The fitting options, by default None (the FitOptions defaults)
 
         Yields
         ------
@@ -313,7 +304,10 @@ class AtomicSystem(
                 "Cannot fit into positions of a system with a vacuum cell."
             )
 
-        overlap_grid = OverlapGrid(self.cell, distance_cutoff, self.pos)
+        if options is None:
+            options = FitOptions()
+
+        overlap_grid = OverlapGrid(self.cell, options.distance_cutoff, self.pos)
 
         for i in range(number_of_additions):
             self.fitting_logger.info(
@@ -326,9 +320,9 @@ class AtomicSystem(
             fitted = self._fit_atomic_system(
                 overlap_grid=overlap_grid,
                 system=system,
-                max_iterations=max_iterations,
-                max_displacement=max_displacement,
-                rotation_angle_step=rotation_angle_step
+                max_iterations=options.max_iterations,
+                max_displacement=options.max_displacement,
+                rotation_angle_step=options.rotation_angle_step
             )
             overlap_grid.add(fitted.pos)
 

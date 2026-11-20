@@ -11,7 +11,7 @@ import numpy as np
 from beartype.typing import List
 
 from PQAnalysis.io.formats import OutputFileFormat, FileWritingMode
-from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem, FitOptions
 from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.utils.custom_logging import setup_logger
@@ -453,10 +453,12 @@ class AddMolecule:
             for fitted in self.restart_system.iter_fit_atomic_system(
                 system=self.molecule,
                 number_of_additions=self.number_of_additions,
-                max_iterations=self.max_iterations,
-                distance_cutoff=self.distance_cutoff,
-                max_displacement=self.max_displacement,
-                rotation_angle_step=self.rotation_angle_step
+                options=FitOptions(
+                    max_iterations=self.max_iterations,
+                    distance_cutoff=self.distance_cutoff,
+                    max_displacement=self.max_displacement,
+                    rotation_angle_step=self.rotation_angle_step,
+                ),
             ):
                 self.fitted_systems.append(fitted)
 
