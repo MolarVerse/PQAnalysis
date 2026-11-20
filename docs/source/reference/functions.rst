@@ -83,5 +83,14 @@ Format conversion
    ~PQAnalysis.tools.traj_to_com_traj.traj2com
    ~PQAnalysis.tools.traj_to_com_traj.traj_to_com_traj
 
+Force-field import
+------------------
+
+.. autosummary::
+
+   ~PQAnalysis.io.force_field.api.parm2pq
+   ~PQAnalysis.io.force_field.api.load_structure
+   ~PQAnalysis.io.force_field.parmed_converter.convert_structure
+
 See :doc:`api` for classes, enums, exceptions and the generated module
 hierarchy.

@@ -46,6 +46,13 @@ Selections
 Analysis keys such as ``reference_selection`` use the string language
 documented in :doc:`selections`.
 
+Force-field import
+------------------
+
+``parm2pq`` writes the PQ setup files (moldescriptor, topology, parameter,
+intra non-bonded and start file) for a system parametrized with AMBER,
+CHARMM or GROMACS; see :doc:`force-field-import`.
+
 Output and conversion
 ---------------------
 
@@ -58,6 +65,7 @@ with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
 
    Analysis input files <../userGuide/inputFile>
    Atom selections <selections>
+   Force-field import <force-field-import>
    Analysis output files <../userGuide/analysisOutputFiles>
 
 PQ energy time axes

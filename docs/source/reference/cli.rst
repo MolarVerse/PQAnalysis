@@ -60,6 +60,7 @@ Simulation-support commands
 
    continue_input -- Continue indexed PQ or QMCFC input/output sequences
    add_molecules -- Add molecular structures to an existing system
+   parm2pq -- Convert AMBER, CHARMM or GROMACS force fields into PQ setup files
    build_nep_traj -- Build Neuroevolution Potential (NEP) training and test trajectories
 
 Commands refuse unsafe output replacement by default. Consult each generated
