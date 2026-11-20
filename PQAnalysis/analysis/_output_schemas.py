@@ -18,12 +18,24 @@ class AnalysisColumn:
 
 
 @dataclass(frozen=True)
+class AnalysisPlotGraph:
+
+    """One stacked xmgrace graph: a y-axis label and its visible fields."""
+
+    y_label: str
+    y_fields: tuple[str, ...]
+
+
+
+@dataclass(frozen=True)
 class AnalysisPlotPreset:
 
     """
     Default xmgrace projection for an analysis table.
 
     ``x_field=None`` uses a one-based row index as the x axis.
+    Non-empty ``graphs`` split the y fields into stacked Grace graphs
+    with one y axis each, grouped by unit.
     """
 
     x_field: str | None
@@ -31,17 +43,23 @@ class AnalysisPlotPreset:
     x_label: str
     y_label: str
     legends: tuple[str, ...]
+    graphs: tuple[AnalysisPlotGraph, ...] = ()
 
 
 
 @dataclass(frozen=True)
 class AnalysisSchema:
 
-    """Title, columns and optional plot defaults for an analysis table."""
+    """
+    Title, columns and optional plot defaults for an analysis table.
+
+    ``units_in_header`` writes CSV/TSV headers as ``FIELD [unit]``.
+    """
 
     title: str
     columns: tuple[AnalysisColumn, ...]
     plot: AnalysisPlotPreset | None = None
+    units_in_header: bool = False
 
     @property
     def fields(self) -> tuple[str, ...]:

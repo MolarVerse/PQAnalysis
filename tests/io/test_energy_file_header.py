@@ -263,9 +263,12 @@ def test_convert_uses_header_names(energy_dir):
     )
 
     csv_lines = output_csv.read_text(encoding="utf-8").splitlines()
-    assert csv_lines[0] == ",".join(NAMES)
+    assert csv_lines[0].startswith(
+        "SIMULATION-TIME [ps],TEMPERATURE [K],PRESSURE [bar],"
+    )
+    assert csv_lines[0].count(",") == len(NAMES) - 1
     assert csv_lines[1].startswith("0.0005,298.066019722598,")
     xvg = output_xvg.read_text(encoding="utf-8")
-    assert '@    xaxis label "SIMULATION-TIME [ps]"' in xvg
+    assert '@    xaxis label "Simulation time [ps]"' in xvg
     assert "@    s0 hidden true" in xvg
     assert '@    s1 legend "TEMPERATURE [K]"' in xvg

@@ -129,7 +129,7 @@ class TestConvertCLI:
         convert_cli.main()
 
         assert output.read_text(encoding="utf-8").splitlines() == [
-            "SIMULATION-TIME,TEMPERATURE",
+            "SIMULATION-TIME [ps],TEMPERATURE [K]",
             "0.001,300.0",
             "0.002,301.5",
         ]

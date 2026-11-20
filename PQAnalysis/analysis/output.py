@@ -22,8 +22,11 @@ from PQAnalysis.io.formats import FileWritingMode
 from ._energy_table import (
     EnergyFileOptions,
     energy_columns,
-    energy_plot_fields,
+    default_energy_plot,
+    energy_legend,
+    energy_plot_preset,
 )
+from ._output_header import header_name, split_header_units
 from ._output_schemas import (
     AnalysisColumn,
     AnalysisPlotPreset,
@@ -259,10 +262,9 @@ def read_energy_table(
     """
     Read a PQ or QMCFC energy file as an analysis table.
 
-    Column names and units come from
-    :py:class:`~PQAnalysis.io.EnergyFileReader`. The default plot uses
-    the simulation time as x axis and every other quantity except the
-    step counter as y data.
+    Names and units come from :py:class:`~PQAnalysis.io.EnergyFileReader`
+    and appear as ``NAME [unit]`` in CSV/TSV headers. The default plot
+    stacks one XVG graph per non-zero energy over the simulation time.
 
     Parameters
     ----------
@@ -292,13 +294,11 @@ def read_energy_table(
             f"Energy file '{filename}' contains duplicate column names."
         )
 
+    data = np.asarray(energy.data).T
     title = f"{options.engine_format.value} energy file {Path(filename).stem}"
-    schema = AnalysisSchema(title=title, columns=columns)
-    schema = replace(
-        schema,
-        plot=_plot_preset_for_fields(schema, *energy_plot_fields(fields)),
-    )
-    return AnalysisTable(schema=schema, data=np.asarray(energy.data).T)
+    schema = AnalysisSchema(title=title, columns=columns, units_in_header=True)
+    schema = replace(schema, plot=default_energy_plot(schema, data))
+    return AnalysisTable(schema=schema, data=data)
 
 
 
@@ -586,14 +586,12 @@ def _read_xvg_table(text: str, path: Path) -> AnalysisTable:
         symbols=document.symbols,
         units=document.units,
     )
-    schema = replace(
-        schema,
-        plot=_plot_preset_for_fields(
-            schema,
-            document.x_field,
-            document.y_fields,
-        ),
+    projection = (schema, document.x_field, document.y_fields)
+    plot = (
+        energy_plot_preset(*projection, document.graphs)
+        if document.graphs else _plot_preset_for_fields(*projection)
     )
+    schema = replace(schema, plot=plot, units_in_header=bool(document.graphs))
     return AnalysisTable(schema=schema, data=document.data)
 
 
@@ -683,7 +681,7 @@ def _read_delimited_table(
             f"Delimited analysis output file '{path}' contains no data rows."
         )
 
-    fields = tuple(value.strip() for value in rows[0])
+    fields, units = split_header_units(rows[0])
     _validate_fields(fields, path)
 
     if any(len(row) != len(fields) for row in rows[1:]):
@@ -702,6 +700,12 @@ def _read_delimited_table(
         ) from exception
 
     schema = _schema_for_fields(fields, path.stem)
+    if any(unit is not None for unit in units):
+        columns = tuple(
+            replace(column, unit=unit or "1")
+            for column, unit in zip(schema.columns, units)
+        )
+        schema = replace(schema, columns=columns, units_in_header=True)
     return AnalysisTable(schema=schema, data=data)
 
 
@@ -807,7 +811,10 @@ def _write_delimited_table(
     delimiter: str,
 ) -> None:
     writer = csv.writer(file, delimiter=delimiter, lineterminator="\n")
-    writer.writerow(table.schema.fields)
+    writer.writerow(
+        header_name(column.field, column.unit, table.schema.units_in_header)
+        for column in table.schema.columns
+    )
     writer.writerows(
         [_format_number(value) for value in row] for row in table.data
     )
@@ -838,9 +845,17 @@ def _write_xvg_table(
     )
 
     selected_legends = dict(zip(plot.y_fields, plot.legends))
+    if plot.graphs:
+        hidden_legends = tuple(
+            energy_legend(column) for column in table.schema.columns
+        )
+    else:
+        hidden_legends = tuple(
+            _column_label(table.schema, field) for field in table.schema.fields
+        )
     legends = tuple(
-        selected_legends.get(field, _column_label(table.schema, field))
-        for field in table.schema.fields
+        selected_legends.get(field, hidden)
+        for field, hidden in zip(table.schema.fields, hidden_legends)
     )
     write_xvg(
         file=file,
@@ -852,12 +867,14 @@ def _write_xvg_table(
             x_field=selected_x,
             y_fields=selected_y,
             data=table.data,
+            graphs=tuple(graph.y_fields for graph in plot.graphs),
         ),
         style=XVGPlotStyle(
             x_label=plot.x_label,
             y_label=plot.y_label,
             legends=legends,
             x_values=x_values,
+            graph_labels=tuple(graph.y_label for graph in plot.graphs),
         ),
     )
 
@@ -891,6 +908,8 @@ def _plot_preset_for_fields(
         x_field == preset.x_field and y_fields == preset.y_fields
     ):
         return preset
+    if preset is not None and preset.graphs:
+        return energy_plot_preset(schema, x_field, y_fields)
 
     if x_field is None:
         x_label = (
