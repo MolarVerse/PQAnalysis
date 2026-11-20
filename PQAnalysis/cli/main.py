@@ -58,6 +58,11 @@ _COMMANDS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
         "Convert GEN files to XYZ files.",
     ),
     "msd": (".msd", "MSDCLI", "Calculate mean square displacements."),
+    "parm2pq": (
+        ".parm2pq",
+        "Parm2PQCLI",
+        "Import AMBER, CHARMM or GROMACS force fields into PQ setup files.",
+    ),
     "rdf": (".rdf", "RDFCLI", "Calculate radial distribution functions."),
     "rst2xyz": (
         ".rst2xyz",
