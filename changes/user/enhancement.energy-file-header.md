@@ -1,0 +1,1 @@
+- Energy files that start with the PQ header (`# PQ energy file` and a `#NAME[unit] ...` column line above the data) are read without the `.info` file, also by `pqanalysis convert`; step counts become ps with the header timestep as before, and files without the header still use `.info` (#343).
