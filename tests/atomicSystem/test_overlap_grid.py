@@ -5,7 +5,8 @@ Tests for the OverlapGrid cell list against the all-pairs distance check.
 import numpy as np
 import pytest
 
-from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem, FitOptions
+from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.atomic_system._overlap_grid import OverlapGrid
 from PQAnalysis.atomic_system import _overlap_grid
 from PQAnalysis.core import Atom, Cell, distance
@@ -119,6 +120,12 @@ class TestOverlapGrid:
         assert grid.overlaps(np.array([[0.9, 0.25, 0.25]]))
         assert not grid.overlaps(np.array([[2.0, 0.25, 0.25]]))
 
+    def test_adding_no_positions_keeps_the_grid(self):
+        grid = OverlapGrid(Cell(10.0, 10.0, 10.0), 1.0, np.zeros((1, 3)))
+        grid.add(np.empty((0, 3)))
+
+        assert grid.n_positions == 1
+
     def test_grid_size_is_capped(self, monkeypatch):
         monkeypatch.setattr(_overlap_grid, "_MAX_GRID_CELLS", 64)
         cell = Cell(50.0, 50.0, 50.0)
@@ -203,3 +210,21 @@ class TestFitAtomicSystem:
 
         assert isinstance(next(systems), AtomicSystem)
         assert len(list(systems)) == 2
+
+    def test_iter_takes_fit_options(self, monkeypatch):
+        monkeypatch.setenv("CONSTANT_SEED", "5")
+        options = FitOptions(distance_cutoff=1.2, max_iterations=50)
+        systems = list(
+            self.framework().iter_fit_atomic_system(
+                self.water(), number_of_additions=2, options=options
+            )
+        )
+
+        assert len(systems) == 2
+
+    def test_iter_rejects_a_vacuum_cell(self):
+        framework = AtomicSystem(atoms=[Atom("C")], pos=np.zeros((1, 3)))
+        systems = framework.iter_fit_atomic_system(self.water())
+
+        with pytest.raises(AtomicSystemError, match="vacuum cell"):
+            next(systems)
