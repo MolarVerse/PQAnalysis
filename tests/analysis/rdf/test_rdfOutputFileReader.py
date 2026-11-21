@@ -99,3 +99,5 @@ class TestRDFLogWriter:
         contents = log_file.read_text(encoding="utf-8")
         assert "    Target selection:    Q\n" in contents
         assert "{Selection" not in contents
+        assert "    Bin width:      1.0 Å\n" in contents
+        assert "b'" not in contents

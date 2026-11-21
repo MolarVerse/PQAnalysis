@@ -1,0 +1,1 @@
+- The `rdf` log now prints the unit as `Å` instead of `b'\xe2\x84\xab'` (#352).

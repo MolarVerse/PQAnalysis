@@ -1,0 +1,1 @@
+- `RDFLogWriter.write_before_run` uses the `Å` string directly instead of UTF-8 bytes (#352).
