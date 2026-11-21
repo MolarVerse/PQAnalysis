@@ -1,0 +1,33 @@
+# NPT run of solvated Trp-cage: 20 ps at 300 K and 1 bar, from the NVT end
+jobtype = mm-md;
+file_prefix = npt;
+
+# continue from the NVT restart file (positions, velocities, box)
+start_file = nvt.rst;
+moldescriptor_file = moldescriptor.dat;
+topology_file = topology.top;
+parameter_file = parameter.prm;
+intra-nonBonded_file = intra_nonbonded.dat;
+force-field = on;
+
+rcoulomb = 12;
+long_range = wolf;
+wolf_param = 0.2;
+cell-list = on;
+
+shake = on;
+timestep = 2.0;
+nstep = 10000;
+integrator = v-verlet;
+
+temp = 300;
+thermostat = velocity_rescaling;
+t_relaxation = 0.1;
+
+# stochastic cell rescaling to 1 bar, pressure from the molecular virial
+manostat = stochastic_rescaling;
+pressure = 1.0;
+p_relaxation = 1.0;
+virial = molecular;
+
+output_freq = 50;

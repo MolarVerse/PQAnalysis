@@ -74,6 +74,7 @@ package ownership boundaries.
    python-api
    examples
    workflow
+   Tutorial: solvated protein <tutorials/solvated-protein>
    analyses/index
    Python Functions <reference/functions>
    Command Line <reference/cli>

@@ -51,7 +51,9 @@ Force-field import
 
 ``parm2pq`` writes the PQ setup files (moldescriptor, topology, parameter,
 intra non-bonded and start file) for a system parametrized with AMBER,
-CHARMM or GROMACS; see :doc:`force-field-import`.
+CHARMM or GROMACS; see :doc:`force-field-import`. The tutorial
+:doc:`../tutorials/solvated-protein` goes from a PDB file to a running PQ
+simulation.
 
 Output and conversion
 ---------------------
