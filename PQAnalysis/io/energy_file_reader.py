@@ -17,6 +17,7 @@ from PQAnalysis.exceptions import PQFileNotFoundError
 from PQAnalysis.type_checking import runtime_type_checking
 
 from .base import BaseReader
+from .energy_file_header import EnergyLabels, read_energy_header
 from .exceptions import EnergyFileReaderError
 from .info_file_reader import InfoFileReader
 
@@ -79,6 +80,8 @@ class EnergyFileReader(BaseReader):
             ``# timestep = <value> fs`` headers are used automatically.
             With PQ info labels but no timestep, the first column remains
             integration steps and its unit is ``step``, not ``ps``.
+            For files with the PQ column header it is only used if the
+            header gives ``SIMULATION-TIME`` in ``step``.
 
         Raises
         ------
@@ -110,6 +113,10 @@ class EnergyFileReader(BaseReader):
         The data array is stored in a way that each column corresponds to a physical
         quantity. The order of the columns is the same as in the info file.
 
+        If the energy file starts with the PQ header
+        (``# PQ energy file``), the column names and units are taken
+        from its column line instead of the info file.
+
         Returns
         -------
         Energy
@@ -117,19 +124,12 @@ class EnergyFileReader(BaseReader):
             In addition, the info and units of the info file are stored in the Energy
             object, if an info file was found.
         """
-        info, units = None, None
-
-        if self.with_info_file:
-
-            reader = InfoFileReader(
-                self.info_filename, engine_format=self.format
-            )
-
-            info, units = reader.read()
+        info, units, header = self._labels()
 
         pq_time_axis = (
             self.format == MDEngineFormat.PQ and info is not None and
-            "SIMULATION-TIME" in info
+            "SIMULATION-TIME" in info and
+            (header is None or units["SIMULATION-TIME"] == "step")
         )
         data = []
         timesteps = []
@@ -146,6 +146,9 @@ class EnergyFileReader(BaseReader):
                     ),
                     exception=EnergyFileReaderError
                 )
+
+            if header is not None:
+                _check_header_width(filename, file_data, header)
 
             timestep = self._file_timestep(filename) if pq_time_axis else None
             timesteps.append(timestep)
@@ -167,6 +170,40 @@ class EnergyFileReader(BaseReader):
             units["SIMULATION-TIME"] = "ps" if all(known) else "step"
 
         return Energy(np.array(data).T, info, units)
+
+    def _labels(self) -> tuple[dict | None, dict | None, EnergyLabels | None]:
+        """Return info, units and the PQ header labels, header first."""
+        info, units = None, None
+        if self.with_info_file:
+            info, units = InfoFileReader(
+                self.info_filename, engine_format=self.format
+            ).read()
+
+        header = self._header_labels()
+        if header is None:
+            return info, units, None
+
+        if info is not None and not _same_labels((info, units), header):
+            self.logger.warning(
+                f"The columns in the header of the energy file differ "
+                f"from the info file {self.info_filename}. Using the "
+                "header."
+            )
+        return *header, header
+
+    def _header_labels(self) -> EnergyLabels | None:
+        """Return the column labels of the PQ header, if the files have one."""
+        headers = [
+            header for header in (
+                read_energy_header(filename)
+                for filename in self._filenames_to_read()
+            ) if header is not None
+        ]
+        if any(header != headers[0] for header in headers[1:]):
+            raise EnergyFileReaderError(
+                "The energy files have different column headers."
+            )
+        return headers[0] if headers else None
 
     @staticmethod
     def _validate_timestep(value: Real) -> None:
@@ -299,9 +336,7 @@ class EnergyFileReader(BaseReader):
                 self._filenames_to_read()[0]
             )[0] + ".info"
 
-            try:
-                BaseReader(self.info_filename)
-            except PQFileNotFoundError:
+            if not os.path.isfile(self.info_filename):
                 self.info_filename = None
 
         else:
@@ -315,3 +350,31 @@ class EnergyFileReader(BaseReader):
                 )
 
         return self.info_filename is not None
+
+
+
+def _same_labels(info_labels, header_labels) -> bool:
+    """Compare labels; the info file's time unit describes its summary."""
+    info, units = info_labels
+    header_info, header_units = header_labels
+    if info != header_info:
+        return False
+    return all(
+        (units or {}).get(name) == header_units[name]
+        for name in info
+        if name != "SIMULATION-TIME"
+    )
+
+
+
+def _check_header_width(
+    filename: str,
+    file_data: list[list[float]],
+    header: EnergyLabels,
+) -> None:
+    """Raise if the data width differs from the header column count."""
+    if file_data and len(file_data[0]) != len(header[0]):
+        raise EnergyFileReaderError(
+            f"The header of {filename} names {len(header[0])} columns, "
+            f"but the data has {len(file_data[0])}."
+        )

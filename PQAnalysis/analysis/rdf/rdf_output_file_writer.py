@@ -150,7 +150,7 @@ class RDFLogWriter(BaseWriter):
         print("RDF calculation:", file=self.file)
         print(file=self.file)
 
-        angstrom = '\u212B'.encode('utf-8')
+        angstrom = "Å"
 
         # fmt: off
         print(f"    Number of bins: {rdf.n_bins}", file=self.file)

@@ -43,6 +43,7 @@ Analysis tables
 
    ~PQAnalysis.analysis.output.infer_output_format
    ~PQAnalysis.analysis.output.read_analysis_table
+   ~PQAnalysis.analysis.output.read_energy_table
    ~PQAnalysis.analysis.output.write_analysis_table
    ~PQAnalysis.analysis.output.convert_analysis_output
 
