@@ -1,0 +1,31 @@
+# NVT equilibration of solvated Trp-cage: 10 ps at 300 K
+jobtype = mm-md;
+file_prefix = nvt;
+
+# setup files written by parm2pq --shake-h
+start_file = start.rst;
+moldescriptor_file = moldescriptor.dat;
+topology_file = topology.top;
+parameter_file = parameter.prm;
+intra-nonBonded_file = intra_nonbonded.dat;
+force-field = on;
+
+# non-bonded: 12 Angstrom cutoff, damped shifted force (Wolf) Coulomb
+rcoulomb = 12;
+long_range = wolf;
+wolf_param = 0.2;
+cell-list = on;
+
+# 2 fs steps need bonds to hydrogen fixed by SHAKE
+shake = on;
+timestep = 2.0;
+nstep = 5000;
+integrator = v-verlet;
+
+# start velocities at 300 K, stochastic velocity rescaling
+temp = 300;
+init_velocities = true;
+thermostat = velocity_rescaling;
+t_relaxation = 0.1;
+
+output_freq = 50;

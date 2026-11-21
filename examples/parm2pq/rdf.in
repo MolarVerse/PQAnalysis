@@ -1,0 +1,6 @@
+traj_files = npt.xyz
+reference_selection = 304..3..4822
+target_selection = 304..3..4822
+delta_r = 0.05
+r_max = 10.0
+out_file = rdf_OO.dat

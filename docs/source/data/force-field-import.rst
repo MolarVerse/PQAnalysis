@@ -11,6 +11,31 @@ the setup files of a PQ ``mm-md`` run. It reads the input with
 
    $ pip install PQAnalysis[ff]
 
+For a full run from a PDB file to a PQ simulation, see the tutorial
+:doc:`../tutorials/solvated-protein`.
+
+.. admonition:: Before you start
+   :class: warning
+
+   - **Long-range Coulomb.** PQ has no PME or Ewald sum. ``parm2pq`` writes
+     ``long_range = none`` into ``pq_input.in``: a plain shifted-force
+     cutoff, the form used in the validation below. In a periodic box with
+     water and ions it drops all charge-charge interactions beyond the
+     cutoff without damping, which distorts the structure of ions and water. For periodic
+     charged systems use ``long_range = wolf`` with ``wolf_param = 0.2``
+     (damped shifted force, a good match for a 12 Angstrom cutoff), or
+     ``long_range = reaction-field`` with ``rf_epsilon = 78.5`` for water.
+   - **CHARMM proteins are not supported yet.** CHARMM protein force fields
+     need CMAP corrections, which PQ cannot evaluate, so ``parm2pq`` stops
+     with an error. CHARMM files without CMAP, Urey-Bradley terms and
+     harmonic impropers convert.
+   - **Hydrogen mass repartitioning is lost.** PQ takes every mass from the
+     element, so a repartitioned topology runs with normal masses. Use
+     ``--shake-h`` and a 2 fs timestep, not 4 fs.
+   - **Only AMBER is validated against OpenMM.** AMBER energies and forces
+     match OpenMM (see `Validation`_). GROMACS and CHARMM input is only
+     tested by round trips through ParmEd files.
+
 Usage
 -----
 
@@ -101,6 +126,56 @@ PQ cannot evaluate them yet:
 
 The intra non-bonded file lists every pair inside a moltype, so it grows with
 the square of the moltype size (about 45 000 pairs for a 300-atom protein).
+
+Troubleshooting
+---------------
+
+``parm2pq needs ParmEd. Install it with 'pip install PQAnalysis[ff]' ...``
+   ParmEd is missing. Run ``pip install "PQAnalysis[ff]"`` in the same
+   environment.
+
+``The force field contains 18 CHARMM CMAP correction maps; PQ cannot evaluate this term.``
+   The force field uses a term from `Not supported`_; the message names it
+   and counts it. AMBER ff19SB and the CHARMM protein force fields use CMAP.
+   For proteins use AMBER ff14SB.
+
+``The force field contains 1022 virtual sites or extra points (first: atom 308 'M'); ...``
+   The water model has a massless site (TIP4P, TIP4P-Ew, OPC). Use a
+   three-site model such as TIP3P or SPC/E.
+
+``The force field has special 1-4 Lennard-Jones parameters ...`` or ``... uses non-uniform 1-4 scaling ...``
+   PQ has one global 1-4 factor for Coulomb and one for Lennard-Jones.
+   Force fields such as GLYCAM or CHARMM with pair-specific 1-4 values
+   cannot be converted.
+
+``AttributeError: 'NoneType' object has no attribute 'used'`` when ParmEd saves the prmtop
+   The OpenMM system was built with ``constraints=HBonds`` or rigid water,
+   so the constrained bonds have no force constant. Build it with
+   ``constraints=None`` and ``rigidWater=False``; ``--shake-h`` adds the
+   constraints in PQ. If the parameters go missing in another way,
+   ``parm2pq`` itself stops with ``The bond 12-13 has no parameters.`` (or
+   the same for an angle or dihedral).
+
+``The structure has no coordinates; give a coordinate file.``
+   A prmtop, top or psf has no positions. Pass them with ``-c``.
+
+``parm2pq does not replace existing files without --overwrite: ...``
+   The output directory already has setup files. Pick a new ``-d`` or add
+   ``--overwrite``.
+
+The box is too small, or the run has no water box
+   Without a box in the coordinate file, ``parm2pq`` writes a vacuum box
+   (extent plus two cutoffs). For a solvated system make sure the
+   coordinate file has the box: an AMBER inpcrd from tleap or ParmEd does,
+   a PDB without ``CRYST1`` does not. Each box length must be larger than
+   twice ``rcoulomb``.
+
+``intra_nonbonded.dat`` is very large
+   The file lists every atom pair inside a moltype, so it grows with the
+   square of the moltype size: about 45 000 pairs for a 300-atom protein,
+   about 10\ :sup:`7` for a 5000-atom protein. Water and ions are separate
+   small moltypes and add almost nothing. Large proteins work, but the file
+   and the PQ setup time grow.
 
 Validation
 ----------

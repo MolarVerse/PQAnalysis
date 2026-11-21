@@ -1,0 +1,7 @@
+source leaprc.protein.ff14SB
+source leaprc.water.tip3p
+protein = loadpdb 1L2Y_amber.pdb
+solvatebox protein TIP3PBOX 10.0 iso
+addions protein Cl- 0
+saveamberparm protein system.prmtop system.inpcrd
+quit

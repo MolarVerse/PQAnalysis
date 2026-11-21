@@ -1,0 +1,1 @@
+- Add `docs/source/tutorials/solvated-protein.rst` and its files in `examples/parm2pq` (OpenMM build script, PQ and RDF inputs, tleap/sander inputs); the page includes them with `literalinclude`, and the generated outputs are ignored.
