@@ -308,6 +308,7 @@ class AtomicSystem(
             options = FitOptions()
 
         overlap_grid = OverlapGrid(self.cell, options.distance_cutoff, self.pos)
+        rng = np.random.default_rng(seed=get_random_seed())
 
         for i in range(number_of_additions):
             self.fitting_logger.info(
@@ -320,6 +321,7 @@ class AtomicSystem(
             fitted = self._fit_atomic_system(
                 overlap_grid=overlap_grid,
                 system=system,
+                rng=rng,
                 max_iterations=options.max_iterations,
                 max_displacement=options.max_displacement,
                 rotation_angle_step=options.rotation_angle_step
@@ -332,6 +334,7 @@ class AtomicSystem(
         self,
         overlap_grid: OverlapGrid,
         system: "AtomicSystem",
+        rng: np.random.Generator,
         max_iterations: PositiveInt = 100,
         max_displacement: PositiveReal | Np1DNumberArray = 0.1,
         rotation_angle_step: PositiveInt = 10,
@@ -350,6 +353,8 @@ class AtomicSystem(
             The positions the new system has to keep the distance cutoff from.
         system : AtomicSystem
             The system that should be fitted into the positions of the AtomicSystem.
+        rng : np.random.Generator
+            The random generator shared by all additions of one run.
         max_iterations : PositiveInt, optional
             The maximum number of iterations to try to fit the system into the
             positions of the AtomicSystem, by default 100
@@ -392,8 +397,6 @@ class AtomicSystem(
             )
 
         iter_converged = None
-        seed = get_random_seed()
-        rng = np.random.default_rng(seed=seed)
 
         for _iter in range(max_iterations):
             com = rng.random(3)

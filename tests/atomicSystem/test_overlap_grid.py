@@ -202,6 +202,16 @@ class TestFitAtomicSystem:
         for a, b in zip(first, second):
             assert np.array_equal(a.pos, b.pos)
 
+    def test_constant_seed_gives_new_trials_per_addition(self, monkeypatch):
+        monkeypatch.setenv("CONSTANT_SEED", "11")
+        monkeypatch.setattr(OverlapGrid, "overlaps", lambda self, pos: False)
+
+        first, second = self.framework().fit_atomic_system(
+            self.water(), number_of_additions=2
+        )
+
+        assert not np.allclose(first.pos, second.pos)
+
     def test_iter_yields_each_addition(self, monkeypatch):
         monkeypatch.setenv("CONSTANT_SEED", "3")
         systems = self.framework().iter_fit_atomic_system(

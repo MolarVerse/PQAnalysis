@@ -1,0 +1,1 @@
+- `add_molecules` with `CONSTANT_SEED` no longer tries the same positions for every molecule, so large fills finish again (#349).
