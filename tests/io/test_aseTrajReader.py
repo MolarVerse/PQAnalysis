@@ -175,9 +175,7 @@ def test_vacuum_cell(tmp_path):
 
 
 def test_partly_periodic_cell(tmp_path):
-    filename = write_traj(
-        str(tmp_path / "traj.traj"), pbc=[True, True, False]
-    )
+    filename = write_traj(str(tmp_path / "traj.traj"), pbc=[True, True, False])
 
     with pytest.raises(AseTrajReaderError) as exception:
         TrajectoryReader(filename).read()

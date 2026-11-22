@@ -221,10 +221,8 @@ def _read_topology(atoms: Any) -> Topology:
     """
     return Topology(
         atoms=[
-            _atom_from_name_and_species(symbol, int(number))
-            for symbol, number in zip(
-                atoms.get_chemical_symbols(), atoms.numbers
-            )
+            _atom_from_name_and_species(symbol, int(number)) for symbol, number
+            in zip(atoms.get_chemical_symbols(), atoms.numbers)
         ]
     )
 
