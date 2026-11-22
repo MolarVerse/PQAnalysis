@@ -17,14 +17,15 @@ For a full run from a PDB file to a PQ simulation, see the tutorial
 .. admonition:: Before you start
    :class: warning
 
-   - **Long-range Coulomb.** PQ has no PME or Ewald sum. ``parm2pq`` writes
-     ``long_range = none`` into ``pq_input.in``: a plain shifted-force
-     cutoff, the form used in the validation below. In a periodic box with
-     water and ions it drops all charge-charge interactions beyond the
-     cutoff without damping, which distorts the structure of ions and water. For periodic
-     charged systems use ``long_range = wolf`` with ``wolf_param = 0.2``
-     (damped shifted force, a good match for a 12 Angstrom cutoff), or
-     ``long_range = reaction-field`` with ``rf_epsilon = 78.5`` for water.
+   - **Long-range Coulomb.** PQ has no PME or Ewald sum. If the coordinate
+     file has a box, ``parm2pq`` writes ``long_range = wolf`` with
+     ``wolf_param = 0.2`` into ``pq_input.in`` (damped shifted force, a good
+     match for a 12 Angstrom cutoff). A plain cutoff would drop all
+     charge-charge interactions beyond it without damping, which distorts
+     the structure of ions and water. For the vacuum box it writes
+     ``long_range = none``, the form used in the validation below.
+     ``--long-range`` overrides the choice: ``none``, ``wolf`` or
+     ``reaction-field`` (written with ``rf_epsilon = 78.5`` for water).
    - **CHARMM proteins are not supported yet.** CHARMM protein force fields
      need CMAP corrections, which PQ cannot evaluate, so ``parm2pq`` stops
      with an error. CHARMM files without CMAP, Urey-Bradley terms and
@@ -70,7 +71,7 @@ The output directory receives:
        them, velocities
    * - ``pq_input.in``
      - the input keys that load these files (``force-field = on``,
-       ``rcoulomb``, ``long_range = none`` and the file names); add the run
+       ``rcoulomb``, ``long_range`` and the file names); add the run
        keys such as ``nstep``, ``timestep`` and the thermostat
 
 Existing files are only replaced with ``--overwrite``. A structure without a
