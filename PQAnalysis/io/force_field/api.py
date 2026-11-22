@@ -120,7 +120,8 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
 
     The function writes ``moldescriptor.dat``, ``topology.top``,
     ``parameter.prm``, ``intra_nonbonded.dat``, ``start.rst`` and the
-    input snippet ``pq_input.in`` into ``output_dir``.
+    input snippet ``pq_input.in`` into ``output_dir``, and ``mshake.dat``
+    if ``shake_h`` keeps rigid water rigid with M-SHAKE.
 
     Parameters
     ----------
@@ -133,7 +134,8 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     output_dir : str | Path, optional
         The output directory, by default the working directory.
     shake_h : bool, optional
-        Constrain bonds to hydrogen with SHAKE, by default False.
+        Constrain bonds to hydrogen with SHAKE, by default False. Rigid
+        three-site water (with an H-H bond) gets M-SHAKE instead.
     rcoulomb : float, optional
         The Coulomb cutoff in Angstrom for the input snippet and the
         vacuum box of a structure without box, by default 12.0.

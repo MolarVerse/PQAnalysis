@@ -1,0 +1,1 @@
+- `parm2pq --shake-h` keeps rigid water with an H-H bond (tleap TIP3P) rigid with M-SHAKE, so PQ runs with the default SHAKE iterations (#356).

@@ -330,17 +330,17 @@ near-cubic box and adds the chloride ion:
    :language: text
 
 From here, continue with step 3, with one change. tleap's TIP3P water has
-an H-H bond, so ``--shake-h`` makes each water a rigid triangle of three
-constraints. PQ's SHAKE and RATTLE need more than the default 20
-iterations for that. Add these two lines to ``nvt.in`` and ``npt.in``:
+an H-H bond, so it is rigid: ``parm2pq`` writes ``mshake.dat`` with one
+reference water and keeps the waters rigid with M-SHAKE, while the protein
+hydrogens stay in SHAKE. Replace ``shake = on`` in ``nvt.in`` and ``npt.in``
+with the two lines from ``pq_input.in``:
 
 .. code-block:: text
 
-   shake-iter = 500;
-   rattle-iter = 500;
+   shake = mshake;
+   mshake_file = mshake.dat;
 
-Without them PQ stops with ``Error: Shake algorithm did not converge for
-... bonds.`` The tleap box is larger (about 49 Angstrom, 2769 waters, 8612
+The tleap box is larger (about 49 Angstrom, 2769 waters, 8612
 atoms), so each step takes longer. tleap puts the chloride ion before the
 water, so the water oxygens in ``rdf.in`` are ``305..3..8609``.
 

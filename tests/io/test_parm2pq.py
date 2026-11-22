@@ -704,3 +704,149 @@ def test_restart_counter_restarts_for_adjacent_molecules():
     assert [line.split()[1] for line in lines[1:]] == [
         str(k) for k in (1, 2, 3, 4, 5) * 2
     ]
+
+
+
+def _add_water(structure, number, r_hh=1.5136, r_oh=0.9572, angle=True):
+    """A TIP3P water; with ``r_hh`` it has the tleap H-H bond."""
+    from parmed.topologyobjects import Angle, AngleType, Bond, BondType
+    oxygen = _add_atom(
+        structure,
+        ("O", "OW", -0.834, 1.7683, 0.1521, 8, 16.0),
+        "WAT",
+        number,
+    )
+    hydrogens = [
+        _add_atom(
+            structure,
+            (name, "HW", 0.417, 0.0, 0.0, 1, 1.008),
+            "WAT",
+            number,
+        ) for name in ("H1", "H2")
+    ]
+    oh_type = _type(structure.bond_types, BondType(553.0, r_oh))
+    for hydrogen in hydrogens:
+        structure.bonds.append(Bond(oxygen, hydrogen, oh_type))
+    if r_hh is not None:
+        hh_type = _type(structure.bond_types, BondType(553.0, r_hh))
+        structure.bonds.append(Bond(*hydrogens, hh_type))
+    if angle:
+        angle_type = _type(structure.angle_types, AngleType(100.0, 104.52))
+        structure.angles.append(
+            Angle(hydrogens[0], oxygen, hydrogens[1], angle_type)
+        )
+
+
+
+@pytest.fixture
+def solvated(chains):
+    """The chains and ion with two rigid tleap waters."""
+    _add_water(chains, 4)
+    _add_water(chains, 5)
+    return _finish(chains)
+
+
+
+def test_shake_h_rigid_water_uses_mshake(solvated, tmp_path):
+    setup = convert_structure(solvated, shake_h=True)
+
+    assert setup.shake == [(0, 6, 1.09), (8, 14, 1.09)]
+    assert len(setup.bonds) == 10
+    assert len(setup.angles) == 8
+    assert list(setup.mshake) == [3]
+    reference = setup.mshake[3]
+    distances = [
+        np.linalg.norm(reference[i] - reference[j])
+        for i, j in ((0, 1), (0, 2), (1, 2))
+    ]
+    assert np.allclose(distances, [0.9572, 0.9572, 1.5136])
+
+    paths = setup.write(tmp_path, rcoulomb=12.0)
+    lines = paths["mshake"].read_text().splitlines()
+    assert lines[:3] == [
+        "3", "moltype = 3;", "O   0.0000000000 0.0000000000 0.0000000000"
+    ]
+    assert [line.split()[0] for line in lines[3:]] == ["H", "H"]
+    pq_input = paths["input"].read_text()
+    assert "shake = mshake;\nmshake_file = mshake.dat;" in pq_input
+    assert "shake = on;" not in pq_input
+    intra = paths["intra_nonbonded"].read_text()
+    assert "# WAT\n3\nEND" in intra
+
+
+
+def test_rigid_water_without_shake_h_keeps_bonds(solvated, tmp_path):
+    setup = convert_structure(solvated)
+
+    assert not setup.mshake
+    assert len(setup.bonds) == 12 + 6
+    paths = setup.write(tmp_path, rcoulomb=12.0)
+    assert "mshake" not in paths
+    assert not (tmp_path / "mshake.dat").exists()
+
+
+
+def test_flexible_water_keeps_shake(chains):
+    _add_water(chains, 4, r_hh=None)
+    setup = convert_structure(_finish(chains), shake_h=True)
+
+    assert not setup.mshake
+    assert len(setup.shake) == 4
+    assert len(setup.angles) == 9
+    assert "shake = on;" in setup.input_lines(
+        {
+            "start": "s",
+            "moldescriptor": "m",
+            "topology": "t",
+            "parameter": "p",
+            "intra_nonbonded": "i",
+        },
+        12.0,
+    )
+
+
+
+def test_rigid_water_errors(chains):
+    _add_water(chains, 4)
+    _add_water(chains, 5, r_hh=None)
+    with pytest.raises(Parm2PQError, match="not all rigid"):
+        convert_structure(_finish(chains), shake_h=True)
+
+    structure = parmed.Structure()
+    _add_water(structure, 1)
+    _add_water(structure, 2, r_oh=0.95)
+    with pytest.raises(Parm2PQError, match="not all rigid"):
+        convert_structure(_finish(structure), shake_h=True)
+
+    structure = parmed.Structure()
+    _add_water(structure, 1, r_hh=2.0)
+    with pytest.raises(Parm2PQError, match="do not form a triangle"):
+        convert_structure(_finish(structure), shake_h=True)
+
+    structure = parmed.Structure()
+    _add_water(structure, 1)
+    structure.bonds[2].type = None
+    with pytest.raises(Parm2PQError, match="has no parameters"):
+        convert_structure(_finish(structure), shake_h=True)
+
+
+
+def test_only_water_triangles_use_mshake():
+    from parmed.topologyobjects import Bond, BondType
+    structure = parmed.Structure()
+    ring = [
+        _add_atom(structure, ("C", "CT", 0.0, 1.9, 0.1, 6, 12.01), "CYC", 1)
+        for _ in range(3)
+    ]
+    bond_type = _type(structure.bond_types, BondType(300.0, 1.5))
+    for k in range(3):
+        structure.bonds.append(Bond(ring[k], ring[(k + 1) % 3], bond_type))
+    _add_water(structure, 2, r_hh=None)
+    structure.bonds.append(
+        Bond(*structure.atoms[3:5], structure.bonds[3].type)
+    )
+    setup = convert_structure(_finish(structure), shake_h=True)
+
+    assert not setup.mshake
+    assert len(setup.bonds) == 3
+    assert len(setup.shake) == 3
