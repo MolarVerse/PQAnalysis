@@ -14,6 +14,8 @@ from PQAnalysis.io.force_field import (
 )
 from PQAnalysis.io.force_field.api import import_parmed
 
+from ..conftest import caplog_for_logger
+
 parmed = pytest.importorskip("parmed")
 
 # pylint: disable=import-outside-toplevel,redefined-outer-name
@@ -440,11 +442,15 @@ def test_amber_round_trip_and_cli(chains, tmp_path, monkeypatch):
             "--shake-h",
             "--rcoulomb",
             "9",
+            "--long-range",
+            "reaction-field",
         ],
     )
     main()
     assert (out / "topology.top").read_text().count("\nSHAKE\n") == 1
-    assert "rcoulomb = 9;" in (out / "pq_input.in").read_text()
+    snippet = (out / "pq_input.in").read_text()
+    assert "rcoulomb = 9;" in snippet
+    assert "long_range = reaction-field;\nrf_epsilon = 78.5;" in snippet
 
     setup = parm2pq(prmtop, inpcrd, output_dir=out, overwrite=True)
     assert setup.source == "x.prmtop + x.rst7"
@@ -574,6 +580,50 @@ def test_periodic_box_and_velocities(chains):
     np.testing.assert_allclose(setup.velocities, 1e12)
     assert setup.restart_lines()[0] == "Box 30 31 32 90 90 90"
     assert setup.restart_lines()[1].split()[6] == "1.00000000e+12"
+
+
+
+def test_long_range_follows_box(chains):
+    files = {
+        "start": "s",
+        "moldescriptor": "m",
+        "topology": "t",
+        "parameter": "p",
+        "intra_nonbonded": "i"
+    }
+    vacuum = convert_structure(chains).input_lines(files, 12.0)
+    assert "long_range = none;" in vacuum
+    assert "# vacuum box, no periodic images" in vacuum
+
+    chains.box = [30.0, 30.0, 30.0, 90.0, 90.0, 90.0]
+    setup = convert_structure(chains)
+    lines = setup.input_lines(files, 12.0)
+    index = lines.index("long_range = wolf;")
+    assert lines[index - 1] == "# damped Wolf Coulomb, PQ has no PME"
+    assert lines[index + 1] == "wolf_param = 0.2;"
+
+    lines = setup.input_lines(files, 12.0, "none")
+    assert "long_range = none;" in lines
+    assert not any(line.startswith("wolf_param") for line in lines)
+    assert setup.long_range("none")[1].startswith("plain shifted-force")
+
+
+
+def test_parm2pq_logs_and_checks_long_range(chains, tmp_path, caplog):
+    from parmed.amber import AmberParm
+    prmtop, inpcrd = tmp_path / "x.prmtop", tmp_path / "x.rst7"
+    chains.box = [30.0, 30.0, 30.0, 90.0, 90.0, 90.0]
+    parm = AmberParm.from_structure(chains)
+    parm.save(str(prmtop))
+    parm.save(str(inpcrd))
+
+    with caplog_for_logger(caplog, "PQAnalysis.io.force_field", "INFO"):
+        parm2pq(prmtop, inpcrd, output_dir=tmp_path / "out")
+    assert "long_range = wolf" in caplog.text
+    assert "long_range = wolf;" in (tmp_path / "out/pq_input.in").read_text()
+
+    with pytest.raises(Parm2PQError, match="Unknown long-range method"):
+        parm2pq(prmtop, inpcrd, output_dir=tmp_path / "x", long_range="pme")
 
 
 

@@ -787,6 +787,7 @@ def convert_structure(
             if reference is not None
         },
         source=source,
+        periodic=structure.box is not None,
     )
     converter.bonded(setup)
     return setup

@@ -2,16 +2,22 @@
 Public functions of the ParmEd-based force-field import.
 """
 
+import logging
 from numbers import Real
 from pathlib import Path
 
 from beartype.typing import Any, Sequence
 
+from PQAnalysis import __package_name__
 from PQAnalysis.type_checking import runtime_type_checking
+from PQAnalysis.utils.custom_logging import setup_logger
 
 from .exceptions import Parm2PQError
 from .parmed_converter import convert_structure
-from .pq_setup import PQForceFieldSetup
+from .pq_setup import LONG_RANGE_METHODS, PQForceFieldSetup
+
+logger = logging.getLogger(__package_name__).getChild("io.force_field")
+logger = setup_logger(logger)
 
 
 
@@ -107,6 +113,7 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     shake_h: bool = False,
     rcoulomb: Real = 12.0,
     overwrite: bool = False,
+    long_range: str | None = None,
 ) -> PQForceFieldSetup:
     """
     Converts an AMBER, CHARMM or GROMACS force field into PQ setup files.
@@ -134,6 +141,10 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         vacuum box of a structure without box, by default 12.0.
     overwrite : bool, optional
         Replace existing output files, by default False.
+    long_range : str | None, optional
+        The long-range Coulomb method for the input snippet (``none``,
+        ``wolf`` or ``reaction-field``), by default ``wolf`` for a box from
+        the input and ``none`` for a vacuum box.
 
     Returns
     -------
@@ -145,10 +156,16 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     UnsupportedForceFieldTermError
         If the force field contains a term PQ cannot evaluate.
     Parm2PQError
-        If the input cannot be converted.
+        If the input cannot be converted or long_range is unknown.
     FileExistsError
         If an output file exists and overwrite is False.
     """
+    if long_range is not None and long_range not in LONG_RANGE_METHODS:
+        raise Parm2PQError(
+            f"Unknown long-range method '{long_range}'; use one of "
+            f"{', '.join(LONG_RANGE_METHODS)}."
+        )
+
     structure = load_structure(topology_file, coordinate_file, parameter_files)
     source = Path(topology_file).name
     if coordinate_file is not None:
@@ -160,5 +177,12 @@ def parm2pq(  # pylint: disable=too-many-arguments,too-many-positional-arguments
         rcoulomb=rcoulomb,
         source=source,
     )
-    setup.write(output_dir, rcoulomb=rcoulomb, overwrite=overwrite)
+    method, reason = setup.long_range(long_range)
+    logger.info(f"parm2pq writes long_range = {method} ({reason}).")
+    setup.write(
+        output_dir,
+        rcoulomb=rcoulomb,
+        overwrite=overwrite,
+        long_range=long_range,
+    )
     return setup

@@ -23,6 +23,9 @@ DEFAULT_FILE_NAMES = {
     "mshake": "mshake.dat",
 }
 
+#: the long-range Coulomb methods of PQ that parm2pq can write
+LONG_RANGE_METHODS = ("none", "wolf", "reaction-field")
+
 
 
 def _fmt(value: Real) -> str:
@@ -111,6 +114,8 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
     mshake: dict = field(default_factory=dict)
     #: a description of the source force field for the file headers
     source: str = ""
+    #: whether the box comes from the input (periodic) or is a vacuum box
+    periodic: bool = False
 
     @property
     def n_atoms(self) -> int:
@@ -122,6 +127,33 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
         if self.source:
             lines.append(f"# source: {self.source}")
         return lines
+
+    def long_range(self, method: str | None = None) -> tuple[str, str]:
+        """
+        Returns the long-range Coulomb method and the reason for it.
+
+        Parameters
+        ----------
+        method : str | None, optional
+            A method from :py:data:`LONG_RANGE_METHODS` that overrides
+            the choice by box, by default None.
+
+        Returns
+        -------
+        tuple[str, str]
+            The method and a one-line reason.
+        """
+        if method is None:
+            method = "wolf" if self.periodic else "none"
+        if method == "wolf":
+            reason = "damped Wolf Coulomb, PQ has no PME"
+        elif method == "reaction-field":
+            reason = "reaction field with the permittivity of water"
+        elif self.periodic:
+            reason = "plain shifted-force cutoff, no long-range correction"
+        else:
+            reason = "vacuum box, no periodic images"
+        return method, reason
 
     def moldescriptor_lines(self) -> list[str]:
         """
@@ -308,6 +340,7 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
         self,
         file_names: dict[str, str],
         rcoulomb: Real,
+        long_range: str | None = None,
     ) -> list[str]:
         """
         Returns the lines of the PQ input snippet.
@@ -318,6 +351,9 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
             The names of the written setup files.
         rcoulomb : float
             The Coulomb cutoff in Angstrom.
+        long_range : str | None, optional
+            The long-range Coulomb method, by default ``wolf`` for a
+            periodic box and ``none`` for a vacuum box.
 
         Returns
         -------
@@ -330,7 +366,14 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
             "jobtype = mm-md;",
             "force-field = on;",
             f"rcoulomb = {_fmt(rcoulomb)};",
-            "long_range = none;",
+        ]
+        method, reason = self.long_range(long_range)
+        lines += [f"# {reason}", f"long_range = {method};"]
+        if method == "wolf":
+            lines.append("wolf_param = 0.2;")
+        elif method == "reaction-field":
+            lines.append("rf_epsilon = 78.5;")
+        lines += [
             f"start_file = {file_names['start']};",
             f"moldescriptor_file = {file_names['moldescriptor']};",
             f"topology_file = {file_names['topology']};",
@@ -349,6 +392,7 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
         output_dir: str | Path,
         rcoulomb: Real,
         overwrite: bool = False,
+        long_range: str | None = None,
     ) -> dict[str, Path]:
         """
         Writes all PQ setup files into a directory.
@@ -361,6 +405,9 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
             The Coulomb cutoff in Angstrom written to the input snippet.
         overwrite : bool, optional
             Whether existing files may be replaced, by default False.
+        long_range : str | None, optional
+            The long-range Coulomb method of the input snippet, by default
+            chosen by the box.
 
         Returns
         -------
@@ -388,13 +435,14 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
                     f"--overwrite: {', '.join(existing)}"
                 )
 
+        snippet = self.input_lines(DEFAULT_FILE_NAMES, rcoulomb, long_range)
         contents = {
             "moldescriptor": self.moldescriptor_lines(),
             "topology": self.topology_lines(),
             "parameter": self.parameter_lines(),
             "intra_nonbonded": self.intra_nonbonded_lines(),
             "start": self.restart_lines(),
-            "input": self.input_lines(DEFAULT_FILE_NAMES, rcoulomb),
+            "input": snippet,
         }
         if self.mshake:
             contents["mshake"] = self.mshake_lines()
