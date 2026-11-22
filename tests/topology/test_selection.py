@@ -7,6 +7,7 @@ from PQAnalysis.core import Atom, Element, Residue
 from PQAnalysis.exceptions import PQValueError
 
 from . import pytestmark
+from ..conftest import assert_logging, assert_logging_with_exception
 
 
 
@@ -235,3 +236,42 @@ class TestSelection:
 
         selection = Selection([Atom("C1", 6)])
         assert str(selection) == str([Atom("C1", 6)])
+
+
+class TestSelectionRanges:
+    topology = Topology([Atom("H", 1) for _ in range(10)])
+
+    def test_step_range(self):
+        indices = Selection("1..3..7").select(self.topology)
+        assert np.all(indices == np.array([1, 4, 7]))
+
+    @pytest.mark.parametrize("string", ["7..1", "7-1", "7..3..1"])
+    def test_empty_range_warns(self, caplog, string):
+        indices = assert_logging(
+            caplog,
+            "Selection",
+            "WARNING",
+            (
+                f"The range {string.replace('-', '..')} selects no atoms: "
+                "start is larger than stop. The order is start..stop or "
+                "start..step..stop, e.g. 304..3..4822."
+            ),
+            Selection(string).select,
+            self.topology,
+        )
+        assert len(indices) == 0
+
+    @pytest.mark.parametrize("string", ["1..0..5", "1..-2..5"])
+    def test_non_positive_step(self, caplog, string):
+        assert_logging_with_exception(
+            caplog,
+            "Selection",
+            "ERROR",
+            (
+                f"The range {string} needs a positive step. "
+                "The order is start..step..stop."
+            ),
+            PQValueError,
+            Selection(string).select,
+            self.topology,
+        )

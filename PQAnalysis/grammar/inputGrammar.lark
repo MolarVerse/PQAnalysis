@@ -2,8 +2,10 @@ start:  expression
             
 expression: (assign | multiline_statement)+
             
-?assign:  key "=" value
-        | key "=" value "," assign
+?assign:  key "=" assign_value
+        | key "=" assign_value "," assign
+
+?assign_value: value | string
             
 !multiline_statement: key (primitive | range | array)+ "END"
 
@@ -12,6 +14,7 @@ expression: (assign | multiline_statement)+
 %import .rules.primitive
 %import .rules.range
 %import .rules.array
+%import .rules.string
 
 // just for namespace reasons
 %import .rules.glob

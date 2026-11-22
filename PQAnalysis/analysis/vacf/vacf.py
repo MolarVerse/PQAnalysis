@@ -339,7 +339,8 @@ class VACF:
 
         if len(self.target_indices) == 0:
             self.logger.error(
-                "The target selection does not select any atoms.",
+                f"The target selection \"{self.target_selection}\" "
+                "does not select any atoms.",
                 exception=VACFError,
             )
 

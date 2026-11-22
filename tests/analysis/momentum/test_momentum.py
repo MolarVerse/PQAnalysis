@@ -247,7 +247,7 @@ class TestMomentum:
             caplog=caplog,
             logging_name=Momentum.__qualname__,
             logging_level="ERROR",
-            message_to_test="The selection does not select any atoms.",
+            message_to_test="The selection \"O\" does not select any atoms.",
             exception=MomentumError,
             function=Momentum,
             traj=Trajectory([system]),

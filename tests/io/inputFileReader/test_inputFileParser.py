@@ -5,6 +5,7 @@ from .. import pytestmark
 from PQAnalysis.io import InputFileParser
 from PQAnalysis.io.input_file_reader.formats import InputFileFormat, InputFileFormatError
 from PQAnalysis.exceptions import PQFileNotFoundError
+from PQAnalysis.io.input_file_reader.exceptions import InputFileError
 
 
 
@@ -157,3 +158,49 @@ class TestInputFileParser:
 
         assert "A\u00b2*kcal/mol" in parser.raw_input_file
         assert input_dictionary["jobtype"] == ("mm-md", "str", "2")
+
+    def test_parse_quoted_selections(self, tmp_path):
+        input_file = tmp_path / "input.in"
+        input_file.write_text(
+            'reference_selection = "elem(O)|res~0-3"\n'
+            "target_selection = 'elem(H), atom(H1, 1) & *'  # comment\n"
+            'other = "a # b", key = value\n',
+            encoding="utf-8"
+        )
+
+        input_dictionary = InputFileParser(str(input_file)).parse()
+
+        assert input_dictionary["reference_selection"] == (
+            "elem(O)|res~0-3", "str", "1"
+        )
+        assert input_dictionary["target_selection"] == (
+            "elem(H), atom(H1, 1) & *", "str", "2"
+        )
+        assert input_dictionary["other"] == ("a # b", "str", "3")
+        assert input_dictionary["key"] == ("value", "str", "3")
+
+    def test_parse_unquoted_selection_error(self, tmp_path):
+        input_file = tmp_path / "input.in"
+        input_file.write_text(
+            "target_selection = elem(O)|elem(H)\n", encoding="utf-8"
+        )
+
+        with pytest.raises(InputFileError) as exception:
+            InputFileParser(str(input_file)).parse()
+
+        message = str(exception.value)
+        assert "line 1, column 24" in message
+        assert "must be quoted" in message
+        assert 'target_selection = "elem(O)|elem(H)"' in message
+
+    def test_parse_range_with_zero_step(self, tmp_path):
+        input_file = tmp_path / "input.in"
+        input_file.write_text("target_selection = 1..0..5\n", encoding="utf-8")
+
+        with pytest.raises(InputFileError) as exception:
+            InputFileParser(str(input_file)).parse()
+
+        assert str(exception.value) == (
+            "The range in line 1 has a step of 0. "
+            "The order is start..step..stop."
+        )

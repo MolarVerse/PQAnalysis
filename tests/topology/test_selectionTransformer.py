@@ -1,6 +1,8 @@
+import pytest
 from lark import Token
 
 from PQAnalysis.topology.selection import SelectionTransformer
+from PQAnalysis.exceptions import PQValueError
 
 from . import pytestmark
 
@@ -47,3 +49,7 @@ class TestSelectionTransformer:
         transformer = SelectionTransformer()
         token = [Token("UNSIGNED_INT", "12")]
         assert transformer.UNSIGNED_INT(token) == 12
+
+    def test_indices_wrong_length(self):
+        with pytest.raises(PQValueError):
+            SelectionTransformer().indices([1, 2, 3, 4])

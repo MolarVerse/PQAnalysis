@@ -1,0 +1,1 @@
+- Selections in input files can now be quoted, e.g. `target_selection = "elem(O)|elem(H)"`, and empty ranges such as `304..4822..3` log a warning (#357).

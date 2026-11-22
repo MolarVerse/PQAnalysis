@@ -7,6 +7,7 @@ import logging
 from glob import glob
 from numbers import Real
 from lark import Visitor, Transformer, Lark, Tree
+from lark.exceptions import UnexpectedInput, VisitError
 from beartype.typing import Any, List, Tuple
 
 from PQAnalysis import __base_path__, __package_name__
@@ -16,6 +17,12 @@ from PQAnalysis.exceptions import PQKeyError, PQTypeError
 from PQAnalysis.utils.custom_logging import setup_logger
 
 from .formats import InputFileFormat
+from .exceptions import InputFileError
+
+_QUOTE_HINT = (
+    "Values with characters such as ( ) | & , ~ or spaces, like selections, "
+    "must be quoted, e.g. target_selection = \"elem(O)|elem(H)\"."
+)
 
 
 
@@ -108,14 +115,27 @@ class InputFileParser(BaseReader):
 
         self.raw_input_file = _read_input_file(self.filename)
 
-        self.tree = parser.parse(self.raw_input_file)
+        try:
+            self.tree = parser.parse(self.raw_input_file)
+        except UnexpectedInput as error:
+            message = (
+                f"Could not parse input file \"{self.filename}\" at line "
+                f"{error.line}, column {error.column}:\n"
+                f"{error.get_context(self.raw_input_file)}"
+            )
+            if self.input_format == InputFileFormat.PQANALYSIS:
+                message += _QUOTE_HINT
+            InputDictionary.logger.error(message, exception=InputFileError)
 
-        self.transformed_tree = PrimitiveTransformer(visit_tokens=True
-                                                     ).transform(self.tree)
-        self.transformed_tree = ComposedDatatypesTransformer(
-            visit_tokens=True,
-            glob_root=self.glob_root,
-        ).transform(self.transformed_tree)
+        try:
+            primitive_transformer = PrimitiveTransformer(visit_tokens=True)
+            self.transformed_tree = primitive_transformer.transform(self.tree)
+            self.transformed_tree = ComposedDatatypesTransformer(
+                visit_tokens=True,
+                glob_root=self.glob_root,
+            ).transform(self.transformed_tree)
+        except VisitError as error:
+            raise error.orig_exc from error
 
         visitor = InputFileVisitor()
         self.input_dictionary = visitor.visit(self.transformed_tree)
@@ -385,6 +405,23 @@ class PrimitiveTransformer(Transformer):
         """
         return str(items[0]).lower() == "true", "bool", str(items[0].end_line)
 
+    def string(self, items) -> Tuple[str, str, str]:
+        """
+        Method to transform quoted string values
+
+        Parameters
+        ----------
+        items : List[Token]
+            items containing the quoted string
+
+        Returns
+        -------
+        Tuple[str, str, str]
+            tuple containing the string without its quotes, the string
+            "str", and the line where the token was defined.
+        """
+        return str(items[0])[1:-1], "str", str(items[0].end_line)
+
 
 
 class ComposedDatatypesTransformer(Transformer):
@@ -542,6 +579,15 @@ class ComposedDatatypesTransformer(Transformer):
             tuple containing the range value, the string "range",
             and the line where the token was defined.
         """
+
+        if len(items) == 3 and items[1][0] == 0:
+            InputDictionary.logger.error(
+                (
+                    f"The range in line {items[0][2]} has a step of 0. "
+                    "The order is start..step..stop."
+                ),
+                exception=InputFileError
+            )
 
         return_range = range(
             items[0][0], items[1][0]
