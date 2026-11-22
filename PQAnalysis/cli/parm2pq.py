@@ -127,6 +127,18 @@ class Parm2PQCLI(CLIBase):
         )
 
         parser.add_argument(
+            '--long-range',
+            type=str,
+            choices=['none', 'wolf', 'reaction-field'],
+            default=None,
+            help=(
+                'The long-range Coulomb method for the input snippet '
+                '(default: wolf with a box from the coordinates, none for '
+                'the vacuum box).'
+            ),
+        )
+
+        parser.add_argument(
             '--overwrite',
             action='store_true',
             help='Replace existing output files.',
@@ -152,6 +164,7 @@ class Parm2PQCLI(CLIBase):
             shake_h=args.shake_h,
             rcoulomb=args.rcoulomb,
             overwrite=args.overwrite,
+            long_range=args.long_range,
         )
 
 

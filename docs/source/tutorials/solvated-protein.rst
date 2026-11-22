@@ -140,8 +140,9 @@ Step 2: convert with parm2pq
      - 0.4 kB
      - the input keys for these files, a starting point only
 
-``pq_input.in`` contains ``long_range = none``. The input files below
-replace it with Wolf summation; see `Long-range Coulomb`_.
+The system has a box, so ``pq_input.in`` contains ``long_range = wolf``
+with ``wolf_param = 0.2``, as do the input files below; see
+`Long-range Coulomb`_.
 
 Step 3: the PQ input files
 --------------------------
@@ -193,8 +194,8 @@ What the keys do:
 Long-range Coulomb
 ~~~~~~~~~~~~~~~~~~
 
-PQ has no PME. The default ``long_range = none`` cuts the Coulomb
-interaction at ``rcoulomb`` and only shifts it to zero there. In a box of
+PQ has no PME. With ``long_range = none`` (the PQ default) it cuts the
+Coulomb interaction at ``rcoulomb`` and only shifts it to zero there. In a box of
 water with ions, the interactions beyond 12 Angstrom are then dropped
 without damping, which distorts the structure of the solvent and the ions.
 ``long_range = wolf`` damps the interaction with an error function before
