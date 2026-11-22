@@ -36,6 +36,9 @@ venv.bak/
 .pytest_cache
 .qodo
 
+# stray logs in the repo root
+/*.log
+
 # generated api documentation (better-apidoc regenerates at every docs build)
 docs/source/code/
 docs/build/
