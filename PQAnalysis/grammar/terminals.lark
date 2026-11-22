@@ -12,6 +12,8 @@ COMMENT: /#.*/ NEWLINE
 WORD: ("_"|"-"|"."|"/"|LETTER|DIGIT)+
 QMCFC_ATOM.-1: /[^,;#\s]+/
 
+STRING: /"[^"\n]*"/ | /'[^'\n]*'/
+
 URL: /(https?:\/\/[^;\s]+)/
 
 %import common.NEWLINE

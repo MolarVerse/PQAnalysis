@@ -609,7 +609,7 @@ class TestVACF:
             logging_name="VACF",
             logging_level="ERROR",
             message_to_test=(
-                "The target selection does not select any atoms."
+                "The target selection \"C\" does not select any atoms."
             ),
             exception=VACFError,
             function=VACF,

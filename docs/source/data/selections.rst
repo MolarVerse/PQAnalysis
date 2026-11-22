@@ -83,6 +83,40 @@ does not follow the order the class docstring describes (``O,H&H`` is read as
 <https://github.com/MolarVerse/PQAnalysis/issues/185>`_), so an
 unparenthesized mix is not portable across versions.
 
+.. _selections-in-input-files:
+
+Selections in input files
+-------------------------
+
+An unquoted input-file value may contain only letters, digits, ``_``, ``-``,
+``.`` and ``/``. Put any selection with ``(``, ``)``, ``|``, ``&``, ``,``,
+``~``, ``*`` or spaces in double or single quotes:
+
+.. code-block:: text
+
+   reference_selection = O
+   target_selection    = "elem(O)|elem(H)"
+   target_selection    = 'res~0-3, atom(H1, 1)'
+
+Without quotes the parser stops at the first such character and the error
+names the line and column and shows the quoted form.
+
+Ranges
+------
+
+Ranges are inclusive and read ``start..stop`` or ``start..step..stop``. The
+step is the **middle** value:
+
+.. code-block:: text
+
+   target_selection = 304..3..4822   # 304, 307, ..., 4822
+
+``304..4822..3`` means start 304, step 4822 and stop 3, so it selects no
+atoms. PQAnalysis logs a warning for a range whose start is larger than its
+stop and an error for a step of 0 or less. If a whole selection of ``rdf``,
+``msd``, ``vacf`` or ``check_momentum`` selects no atoms, the analysis stops
+with an error that names the selection.
+
 Python
 ------
 
