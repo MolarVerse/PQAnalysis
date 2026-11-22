@@ -35,3 +35,11 @@ class H5MDReaderError(PQException):
     """
     Exception raised for errors related to the H5MDReader class
     """
+
+
+
+class AseTrajReaderError(PQException):
+
+    """
+    Exception raised for errors related to the AseTrajReader class
+    """

@@ -36,6 +36,13 @@ optional ``h5py`` package: ``pip install PQAnalysis[h5md]``. Values are
 converted to the units of the PQ text files, for example velocities from
 Angstrom fs\ :sup:`-1` to Angstrom s\ :sup:`-1`; an unknown unit is an error.
 
+ASE trajectories (``traj_format = ase``, files ending in ``.traj``), as written
+by PQ or ASE, are read the same way. They need the optional ``ase`` package:
+``pip install PQAnalysis[ase]``. ASE values in eV and its own time unit are
+converted to the PQ units, for example forces from eV Angstrom\ :sup:`-1` to
+kcal mol\ :sup:`-1` Angstrom\ :sup:`-1`. Atoms are named by their element
+symbol.
+
 The Python format definitions are documented by
 :class:`PQAnalysis.traj.formats.MDEngineFormat` and
 :class:`PQAnalysis.traj.formats.TrajectoryFormat`.

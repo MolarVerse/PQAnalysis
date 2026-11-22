@@ -59,6 +59,7 @@ if TYPE_CHECKING:  # pragma: no cover
         _FrameReader,
         get_frame_reader,
     )
+    from .traj_file.ase_traj_reader import AseTrajReader
     from .traj_file.h5md_reader import H5MDReader
     from .traj_file.raw_frame_reader import RawTrajectoryReader
     from .traj_file.trajectory_reader import TrajectoryReader
@@ -80,6 +81,7 @@ _EXPORTS = {
     "TrajectoryWriter": ".traj_file.trajectory_writer",
     "RawTrajectoryReader": ".traj_file.raw_frame_reader",
     "H5MDReader": ".traj_file.h5md_reader",
+    "AseTrajReader": ".traj_file.ase_traj_reader",
     "BaseFrameReader": ".traj_file.frame_reader",
     "XYZFrameReader": ".traj_file.frame_reader",
     "ExtXYZFrameReader": ".traj_file.frame_reader",
