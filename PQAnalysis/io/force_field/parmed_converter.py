@@ -10,7 +10,10 @@ conversion maps those onto the PQ energy expressions:
   k (1 + cos(n phi - delta)), so the phase changes sign;
 - Lennard-Jones: one c6/c12 pair per pair of global van der Waals types;
 - exclusions and scaled 1-4 pairs: the PQ intra non-bonded file inside a
-  molecule, linker marks for pairs between molecules.
+  molecule, linker marks for pairs between molecules;
+- rigid three-site water (O-H, O-H and H-H bond, as tleap writes TIP3P):
+  with SHAKE, one M-SHAKE reference geometry per moltype instead of three
+  coupled SHAKE constraints.
 """
 
 import math
@@ -389,6 +392,51 @@ def _molecules(structure: Any) -> list[list[int]]:
 
 
 
+def _rigid_water(bonds: list) -> np.ndarray | None:
+    """
+    Returns the reference positions of a rigid three-site water in the
+    atom order of its molecule, or None if the bonds are not an O-H-H
+    triangle.
+    """
+    if len(bonds) != 3:
+        return None
+    atoms = sorted(
+        {
+            atom.idx: atom
+            for bond in bonds
+            for atom in (bond.atom1, bond.atom2)
+        }.items()
+    )
+    if sorted(atom.atomic_number for _, atom in atoms) != [1, 1, 8]:
+        return None
+
+    local = {index: k for k, (index, _) in enumerate(atoms)}
+    distance = {}
+    for bond in bonds:
+        if bond.type is None:
+            raise Parm2PQError(
+                f"The bond {bond.atom1.idx + 1}-{bond.atom2.idx + 1} has no "
+                "parameters."
+            )
+        pair = _pair(local[bond.atom1.idx], local[bond.atom2.idx])
+        distance[pair] = bond.type.req
+    if len(distance) != 3:
+        return None
+
+    d_01, d_02, d_12 = distance[(0, 1)], distance[(0, 2)], distance[(1, 2)]
+    x = (d_01**2 + d_02**2 - d_12**2) / (2 * d_01)
+    y_squared = d_02**2 - x**2
+    if y_squared <= 0.0:
+        raise Parm2PQError(
+            f"The water bonds {d_01}, {d_02} and {d_12} Angstrom of atoms "
+            f"{atoms[0][0] + 1}-{atoms[-1][0] + 1} do not form a triangle."
+        )
+    return np.array(
+        [[0.0, 0.0, 0.0], [d_01, 0.0, 0.0], [x, math.sqrt(y_squared), 0.0]]
+    )
+
+
+
 def _element(atom: Any) -> str:
     from parmed.periodic_table import Element  # pylint: disable=import-outside-toplevel
     return Element[atom.atomic_number]
@@ -422,12 +470,28 @@ class _Converter:  # pylint: disable=too-many-instance-attributes
         for index, members in enumerate(self.molecules):
             self.molecule_of[members] = index
 
+        self.rigid = self._rigid_waters() if shake_h else {}
+        self.mshake = {}
+
         self.intra = defaultdict(list)
         for pairs, value in ((self.excluded, 0), (self.pairs_14, -1)):
             for index_1, index_2 in pairs:
                 molecule = self.molecule_of[index_1]
                 if molecule == self.molecule_of[index_2]:
                     self.intra[molecule].append((index_1, index_2, value))
+
+    def _rigid_waters(self) -> dict[int, np.ndarray]:
+        """Returns the M-SHAKE reference of each rigid water molecule."""
+        bonds_of = defaultdict(list)
+        for bond in self.structure.bonds:
+            bonds_of[self.molecule_of[bond.atom1.idx]].append(bond)
+        rigid = {}
+        for molecule, members in enumerate(self.molecules):
+            if len(members) == 3:
+                reference = _rigid_water(bonds_of[molecule])
+                if reference is not None:
+                    rigid[molecule] = reference
+        return rigid
 
     def _intra_matrix(self, molecule: int) -> np.ndarray:
         members = self.molecules[molecule]
@@ -460,6 +524,7 @@ class _Converter:  # pylint: disable=too-many-instance-attributes
                 index_of[key] = len(moltypes) + 1
                 moltypes.append(self._moltype(members, matrix))
             atom_moltypes[self.new_index[members]] = index_of[key]
+            self._add_mshake(molecule, index_of[key])
 
         names = defaultdict(int)
         for moltype in moltypes:
@@ -470,6 +535,21 @@ class _Converter:  # pylint: disable=too-many-instance-attributes
                 counter[moltype.name] += 1
                 moltype.name = f"{moltype.name}_{counter[moltype.name]}"
         return moltypes, atom_moltypes
+
+    def _add_mshake(self, molecule: int, moltype: int) -> None:
+        reference = self.rigid.get(molecule)
+        if moltype not in self.mshake:
+            self.mshake[moltype] = reference
+            return
+        known = self.mshake[moltype]
+        if (reference is None) != (known is None) or (
+            known is not None and not np.allclose(reference, known)
+        ):
+            raise Parm2PQError(
+                f"The waters of moltype {moltype} are not all rigid with the "
+                "same bond lengths; M-SHAKE needs one reference geometry per "
+                "moltype."
+            )
 
     def _moltype(self, members: list[int], matrix: np.ndarray) -> PQMolType:
         atoms = [self.structure.atoms[i] for i in members]
@@ -518,6 +598,11 @@ class _BondedBuilder:
         self.setup = setup
         self.new_index = converter.new_index
         molecule_of = converter.molecule_of
+        self.rigid_atoms = {
+            index
+            for molecule in converter.rigid
+            for index in converter.molecules[molecule]
+        }
         self.cross_full = {
             pair
             for pair in converter.excluded
@@ -550,10 +635,18 @@ class _BondedBuilder:
             table.append(key)
         return store[key]
 
+    def _is_rigid(self, indices: list[int]) -> bool:
+        return all(index in self.rigid_atoms for index in indices)
+
     def bonds(self, bonds: Any, shake_h: bool) -> None:
-        """Adds the bonds, or SHAKE constraints for bonds to hydrogen."""
+        """
+        Adds the bonds, or SHAKE constraints for bonds to hydrogen; M-SHAKE
+        replaces the bonds of rigid water.
+        """
         for bond in bonds:
             indices = [bond.atom1.idx, bond.atom2.idx]
+            if self._is_rigid(indices):
+                continue
             if bond.type is None:
                 raise Parm2PQError(
                     f"The bond {indices[0] + 1}-{indices[1] + 1} has no "
@@ -570,9 +663,11 @@ class _BondedBuilder:
             self.setup.bonds.append((*self._new(indices), index, linker))
 
     def angles(self, angles: Any) -> None:
-        """Adds the angles."""
+        """Adds the angles; M-SHAKE replaces the angle of rigid water."""
         for angle in angles:
             indices = [atom.idx for atom in _atoms_of(angle)]
+            if self._is_rigid(indices):
+                continue
             if angle.type is None:
                 raise Parm2PQError(
                     f"The angle {'-'.join(str(i + 1) for i in indices)} has "
@@ -640,7 +735,8 @@ def convert_structure(
         The parametrized structure with coordinates.
     shake_h : bool, optional
         Constrain bonds to hydrogen with SHAKE instead of a bond term, by
-        default False.
+        default False. Rigid three-site water (with an H-H bond) is kept
+        rigid with M-SHAKE instead.
     rcoulomb : float, optional
         The Coulomb cutoff in Angstrom, used for the vacuum box of a
         structure without box, by default 12.0.
@@ -685,6 +781,11 @@ def convert_structure(
         scale_14_coulomb=converter.scale_14[0],
         scale_14_vdw=converter.scale_14[1],
         lj_pairs=converter.lj.all_pairs(),
+        mshake={
+            moltype: reference
+            for moltype, reference in converter.mshake.items()
+            if reference is not None
+        },
         source=source,
     )
     converter.bonded(setup)

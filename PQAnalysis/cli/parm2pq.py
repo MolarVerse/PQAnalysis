@@ -112,7 +112,8 @@ class Parm2PQCLI(CLIBase):
             action='store_true',
             help=(
                 'Constrain bonds to hydrogen with SHAKE instead of writing '
-                'them as bond terms.'
+                'them as bond terms; rigid water with an H-H bond gets '
+                'M-SHAKE (mshake.dat).'
             ),
         )
 

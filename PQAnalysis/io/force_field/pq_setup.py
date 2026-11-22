@@ -20,6 +20,7 @@ DEFAULT_FILE_NAMES = {
     "intra_nonbonded": "intra_nonbonded.dat",
     "start": "start.rst",
     "input": "pq_input.in",
+    "mshake": "mshake.dat",
 }
 
 
@@ -106,6 +107,8 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
     impropers: list = field(default_factory=list)
     #: constrained atom pair and distance in Angstrom
     shake: list = field(default_factory=list)
+    #: M-SHAKE reference positions in Angstrom by one-based moltype
+    mshake: dict = field(default_factory=dict)
     #: a description of the source force field for the file headers
     source: str = ""
 
@@ -213,6 +216,27 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
         )
         return lines
 
+    def mshake_lines(self) -> list[str]:
+        """
+        Returns the lines of the M-SHAKE file: one reference geometry per
+        rigid moltype. PQ reads no comment or empty lines in this file.
+
+        Returns
+        -------
+        list[str]
+            The lines without line breaks.
+        """
+        lines = []
+        for moltype, positions in sorted(self.mshake.items()):
+            elements = self.moltypes[moltype - 1].elements
+            lines.append(f"{len(elements)}")
+            lines.append(f"moltype = {moltype};")
+            for element, position in zip(elements, positions):
+                lines.append(
+                    f"{element:<3} " + " ".join(f"{x:.10f}" for x in position)
+                )
+        return lines
+
     def parameter_lines(self) -> list[str]:
         """
         Returns the lines of the parameter file.
@@ -313,7 +337,10 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
             f"parameter_file = {file_names['parameter']};",
             f"intra-nonBonded_file = {file_names['intra_nonbonded']};",
         ]
-        if self.shake:
+        if self.mshake:
+            lines.append("shake = mshake;")
+            lines.append(f"mshake_file = {file_names['mshake']};")
+        elif self.shake:
             lines.append("shake = on;")
         return lines
 
@@ -350,6 +377,7 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
         paths = {
             kind: output_dir / name
             for kind, name in DEFAULT_FILE_NAMES.items()
+            if kind != "mshake" or self.mshake
         }
 
         if not overwrite:
@@ -368,6 +396,8 @@ class PQForceFieldSetup:  # pylint: disable=too-many-instance-attributes
             "start": self.restart_lines(),
             "input": self.input_lines(DEFAULT_FILE_NAMES, rcoulomb),
         }
+        if self.mshake:
+            contents["mshake"] = self.mshake_lines()
         for kind, lines in contents.items():
             paths[kind].write_text("\n".join(lines) + "\n", encoding="utf-8")
         return paths
