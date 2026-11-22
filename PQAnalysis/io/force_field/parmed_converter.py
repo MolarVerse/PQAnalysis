@@ -686,6 +686,7 @@ def convert_structure(
         scale_14_vdw=converter.scale_14[1],
         lj_pairs=converter.lj.all_pairs(),
         source=source,
+        periodic=structure.box is not None,
     )
     converter.bonded(setup)
     return setup
