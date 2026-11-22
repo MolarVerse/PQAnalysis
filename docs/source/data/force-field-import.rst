@@ -73,6 +73,9 @@ The output directory receives:
      - the input keys that load these files (``force-field = on``,
        ``rcoulomb``, ``long_range`` and the file names); add the run
        keys such as ``nstep``, ``timestep`` and the thermostat
+   * - ``mshake.dat``
+     - only with ``--shake-h`` and rigid water: the reference geometry of
+       each rigid water moltype for M-SHAKE
 
 Existing files are only replaced with ``--overwrite``. A structure without a
 box gets a cubic box of its extent plus two Coulomb cutoffs, so no atom sees a
@@ -103,6 +106,14 @@ ParmEd stores every force field in AMBER units and conventions.
   bond, angle or proper torsion that connects such a pair carries the linker
   mark ``*``, so PQ removes (or scales) the pair it computes as
   intermolecular.
+- **Constraints.** ``--shake-h`` turns every bond to hydrogen into a
+  SHAKE constraint. A water with an H-H bond (as in tleap's TIP3P) is
+  rigid: its two O-H bonds, the H-H bond and the angle are replaced by one
+  M-SHAKE reference geometry built from the three bond lengths, and
+  ``pq_input.in`` sets ``shake = mshake``. M-SHAKE solves the three coupled
+  constraints of each water at once, so the default iteration counts are
+  enough. Water without an H-H bond keeps two O-H constraints and a
+  flexible angle.
 - **1-4 scaling.** PQ has one Coulomb and one Lennard-Jones factor:
   :math:`1/\mathrm{SCEE}` and :math:`1/\mathrm{SCNB}` (AMBER),
   ``fudgeQQ`` and ``fudgeLJ`` (GROMACS), or the ratio of the CHARMM 1-4 to
