@@ -141,7 +141,7 @@ def test_topology_from_numbers(tmp_path):
 
 
 def test_given_topology(traj_file):
-    topology = Topology(atoms=[Atom(name) for name in ["OW", "H", "H"]])
+    topology = Topology(atoms=[Atom("OW", "O"), Atom("H"), Atom("H")])
     reader = TrajectoryReader(traj_file, topology=topology)
 
     frames = list(reader.frame_generator())
