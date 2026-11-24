@@ -100,3 +100,54 @@ def test_rejects_equivalent_source_sites(tmp_path):
     )
     with pytest.raises(ValueError, match="equivalent"):
         prepare_crystal(str(source))
+
+
+
+def test_rejects_invalid_atom_limit():
+    with pytest.raises(ValueError, match="atom limit must be positive"):
+        prepare_crystal("unused.cif", max_atoms=0)
+
+
+
+@pytest.mark.parametrize(
+    ("original", "replacement", "message"),
+    [
+        ("_cell_length_a 8", "_cell_length_a nan", "finite, nonsingular"),
+        ("0.2 0.3 0.4", "1e309 0.3 0.4", "finite atomic positions"),
+    ],
+)
+def test_rejects_invalid_geometry(tmp_path, original, replacement, message):
+    source = tmp_path / "crystal.cif"
+    source.write_text(
+        CIF.format(gamma=90, occupancy=1).replace(original, replacement),
+        encoding="ascii",
+    )
+    with pytest.raises(ValueError, match=message):
+        prepare_crystal(str(source))
+
+
+
+def test_rejects_near_coincident_periodic_sites(tmp_path):
+    source = tmp_path / "crystal.cif"
+    source.write_text(
+        CIF.format(gamma=90, occupancy=1).replace("P -1", "P 1")
+        + "C2 C 1.2011 0.3 0.4 1\n",
+        encoding="ascii",
+    )
+    with pytest.raises(ValueError, match="coincident periodic sites"):
+        prepare_crystal(str(source))
+
+
+
+def test_cli_reports_invalid_cif(tmp_path, monkeypatch):
+    from PQAnalysis.cli.main import main
+
+    source = tmp_path / "crystal.cif"
+    source.write_text(CIF.format(gamma=90, occupancy=0.5), encoding="ascii")
+    output = tmp_path / "supercell.rst"
+    monkeypatch.setattr(
+        "sys.argv", ["pqanalysis", "crystal", str(source), str(output)]
+    )
+    with pytest.raises(SystemExit, match="partial occupancies"):
+        main()
+    assert not output.exists()
