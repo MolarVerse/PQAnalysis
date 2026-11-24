@@ -1,0 +1,1 @@
+- PQ energy files whose header names the first column `STEP[-]` (new PQ name) are read exactly like files with the old `SIMULATION-TIME[step]` column, also by `pqanalysis convert`.

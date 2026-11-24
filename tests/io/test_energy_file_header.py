@@ -208,6 +208,10 @@ def test_multiple_files_with_different_headers(energy_dir):
         ("#STEP[-] TEMPERATURE\n", "Invalid column 'TEMPERATURE'"),
         ("#STEP[-] T[K]x\n", r"Invalid column 'T\[K\]x'"),
         ("#STEP[-] STEP[-]\n", "Duplicate column 'STEP'"),
+        (
+            "#STEP[-] SIMULATION-TIME[step]\n",
+            "Duplicate column 'SIMULATION-TIME'",
+        ),
     ),
 )
 def test_malformed_header(tmp_path, column_lines, message):
@@ -245,6 +249,16 @@ def test_header_line_variants(tmp_path, lines):
 
 
 
+def test_step_with_other_unit_keeps_its_name(tmp_path):
+    filename = tmp_path / "run.en"
+    filename.write_text(HEADER + "#STEP[1] T[K]\n1 2\n", encoding="utf-8")
+
+    assert read_energy_header(str(filename)) == (
+        {"STEP": 0, "T": 1}, {"STEP": "1", "T": "K"}
+    )
+
+
+
 def test_other_comment_is_not_a_header(tmp_path):
     filename = tmp_path / "run.en"
     filename.write_text("# PQ energy files\n#A[-]\n1\n", encoding="utf-8")
@@ -272,3 +286,74 @@ def test_convert_uses_header_names(energy_dir):
     assert '@    xaxis label "Simulation time [ps]"' in xvg
     assert "@    s0 hidden true" in xvg
     assert '@    s1 legend "TEMPERATURE [K]"' in xvg
+
+
+
+def step_header_copy(energy_dir, name):
+    """Copy a header fixture with the first column named STEP[-]."""
+    text = (energy_dir / name).read_text(encoding="utf-8")
+    filename = energy_dir / f"step_{name}"
+    filename.write_text(
+        text.replace("#SIMULATION-TIME[step] ", "#STEP[-] ", 1),
+        encoding="utf-8",
+    )
+    return filename
+
+
+
+def test_step_header_labels(energy_dir):
+    filename = step_header_copy(energy_dir, "header_only.en")
+
+    assert "#STEP[-] " in filename.read_text(encoding="utf-8")
+    assert read_energy_header(str(filename)) == read_energy_header(
+        str(energy_dir / "header_only.en")
+    )
+
+
+
+@pytest.mark.parametrize(
+    ("name", "timestep_fs"),
+    (
+        ("header_only.en", None),
+        ("header_only.en", 0.5),
+        ("header_timestep.en", None),
+    ),
+)
+def test_step_header_reads_like_old_header(energy_dir, name, timestep_fs):
+    energy = read(
+        step_header_copy(energy_dir, name), timestep_fs=timestep_fs
+    )
+    old = read(energy_dir / name, timestep_fs=timestep_fs)
+
+    assert energy.info == old.info
+    assert energy.units == old.units
+    assert energy.simulation_time_unit == old.simulation_time_unit
+    np.testing.assert_array_equal(energy.data, old.data)
+
+
+
+def test_step_header_agreeing_with_info_does_not_warn(energy_dir, caplog):
+    filename = step_header_copy(energy_dir, "header_only.en")
+    shutil.copy(energy_dir / "md-01.info", filename.with_suffix(".info"))
+
+    with caplog_for_logger(caplog, LOGGER, logging.WARNING):
+        energy = read(filename)
+
+    assert "differ from the info file" not in logged(caplog)
+    assert tuple(energy.info) == NAMES
+
+
+
+def test_convert_step_header_like_old_header(energy_dir):
+    filename = step_header_copy(energy_dir, "header_timestep.en")
+    new_csv = energy_dir / "new.csv"
+    old_csv = energy_dir / "old.csv"
+
+    convert_analysis_output(str(filename), [str(new_csv)])
+    convert_analysis_output(
+        str(energy_dir / "header_timestep.en"), [str(old_csv)]
+    )
+
+    assert new_csv.read_text(encoding="utf-8") == old_csv.read_text(
+        encoding="utf-8"
+    )
