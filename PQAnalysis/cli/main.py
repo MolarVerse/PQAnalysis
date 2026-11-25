@@ -52,6 +52,7 @@ _COMMANDS = {  # pylint: disable=consider-using-namedtuple-or-dataclass
         "ConvertCLI",
         "Convert analysis-table output files.",
     ),
+    "crystal": (".crystal", "CrystalCLI", "Prepare an ordered CIF supercell."),
     "gen2xyz": (
         ".gen2xyz",
         "GEN2XYZCLI",

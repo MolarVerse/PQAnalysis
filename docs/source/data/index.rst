@@ -68,6 +68,7 @@ with ``pqanalysis convert``; see :ref:`analysisOutputFiles`.
    Analysis input files <../userGuide/inputFile>
    Atom selections <selections>
    Force-field import <force-field-import>
+   Crystal preparation <crystal-preparation>
    Analysis output files <../userGuide/analysisOutputFiles>
 
 PQ energy file header

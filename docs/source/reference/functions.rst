@@ -95,3 +95,12 @@ Force-field import
 
 See :doc:`api` for classes, enums, exceptions and the generated module
 hierarchy.
+
+Crystal preparation
+-------------------
+
+.. autosummary::
+
+   ~PQAnalysis.io.crystal.prepare_crystal
+
+For a worked example and export limits, see :doc:`../data/crystal-preparation`.
