@@ -81,7 +81,8 @@ class EnergyFileReader(BaseReader):
             With PQ info labels but no timestep, the first column remains
             integration steps and its unit is ``step``, not ``ps``.
             For files with the PQ column header it is only used if the
-            header gives ``SIMULATION-TIME`` in ``step``.
+            header gives ``SIMULATION-TIME`` in ``step`` or ``STEP``
+            in ``-``.
 
         Raises
         ------

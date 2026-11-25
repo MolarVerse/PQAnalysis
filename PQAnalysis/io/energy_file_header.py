@@ -6,10 +6,12 @@ directly above the data::
 
     # PQ energy file v1.1.0
     # timestep = 0.5 fs
-    #SIMULATION-TIME[step] TEMPERATURE[K] PRESSURE[bar] ...
+    #STEP[-] TEMPERATURE[K] PRESSURE[bar] ...
 
 The column line has one ``NAME[unit]`` token per data column; comment
 lines such as the timestep may sit between the first and the last line.
+The step column ``STEP[-]`` is read as the older
+``SIMULATION-TIME[step]``.
 """
 
 import re
@@ -20,6 +22,7 @@ EnergyLabels = tuple[dict[str, int], dict[str, str]]
 
 _HEADER_PATTERN = re.compile(r"#\s*PQ energy file(\s|$)")
 _COLUMN_PATTERN = re.compile(r"(?P<name>[^\[\]\s]+)\[(?P<unit>[^\[\]\s]*)\]")
+_COLUMN_ALIASES = {("STEP", "-"): ("SIMULATION-TIME", "step")}
 
 
 
@@ -64,13 +67,16 @@ def read_energy_header(filename: str) -> EnergyLabels | None:
                 f"Invalid column '{token}' in the header of {filename}. "
                 "Expected NAME[unit]."
             )
-        if match["name"] in info:
+        name, unit = _COLUMN_ALIASES.get(
+            (match["name"], match["unit"]), (match["name"], match["unit"])
+        )
+        if name in info:
             raise EnergyFileReaderError(
                 f"Duplicate column '{match['name']}' in the header of "
                 f"{filename}."
             )
-        info[match["name"]] = index
-        units[match["name"]] = match["unit"]
+        info[name] = index
+        units[name] = unit
 
     return info, units
 
