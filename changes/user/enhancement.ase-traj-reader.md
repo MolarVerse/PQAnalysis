@@ -1,0 +1,1 @@
+- Read ASE trajectories (`traj_format = ase`, `.traj` files) with `TrajectoryReader` and the analyses, converted to PQ units; this needs the optional `ase` package (`pip install PQAnalysis[ase]`) (#364).

@@ -44,6 +44,9 @@ class TrajectoryFormat(BaseEnumFormat):
     #: The H5MD trajectory format (HDF5 based, needs h5py).
     H5MD = "H5MD"
 
+    #: The ASE trajectory format (binary .traj files, needs ase).
+    ASE = "ASE"
+
     @classmethod
     def _missing_(cls, values: Any) -> Any:  # pylint: disable=arguments-differ
         """
@@ -113,6 +116,7 @@ class TrajectoryFormat(BaseEnumFormat):
             (cls.FORCE, (".force", ".forces", ".frc")),
             (cls.CHARGE, (".charge", ".chrg")),
             (cls.H5MD, (".h5md", ".h5")),
+            (cls.ASE, (".traj", )),
         ):
             if file_path.endswith(extensions):
                 return traj_format

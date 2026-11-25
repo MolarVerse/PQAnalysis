@@ -36,6 +36,9 @@ crystal = ["ase"]
 h5md = [
     "h5py",
 ]
+ase = [
+    "ase",
+]
 ff = [
     "parmed",
 ]
