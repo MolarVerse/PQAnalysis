@@ -38,7 +38,7 @@ Create an environment with PQAnalysis, ParmEd and OpenMM:
 
    $ python -m venv pq-tutorial
    $ source pq-tutorial/bin/activate
-   $ pip install "PQAnalysis[ff]" openmm
+   $ pip install "PQAnalysis[protein]"
 
 ``PQAnalysis[ff]`` installs ParmEd, which ``parm2pq`` needs. ``parm2pq`` is
 new: if ``parm2pq --help`` fails, install the development version with
@@ -84,17 +84,9 @@ The script does five things:
 .. literalinclude:: ../../../examples/parm2pq/build_system.py
    :language: python
 
-The output is:
-
-.. code-block:: text
-
-   protein atoms   304
-   water molecules 1507
-   chloride ions   1
-   total atoms     4826
-   cubic box       37.50 Angstrom
-   minimised E     -19245.5 kcal/mol (OpenMM, PME)
-   wrote system.prmtop and system.inpcrd
+The script prints the returned preparation summary, including the output
+paths, atom and water counts, box lengths in Angstrom, and minimized
+OpenMM energy in kcal/mol. It will not replace an existing AMBER pair.
 
 The minimised energy changes a little from run to run, because the
 minimiser runs on several threads. It takes about 15 seconds.
