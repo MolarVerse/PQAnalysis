@@ -1,1 +1,0 @@
-- `PQForceFieldSetup` gets a `periodic` flag and `long_range()`, which pick the method by box; `parm2pq(long_range=...)` and the CLI pass an override (#351).

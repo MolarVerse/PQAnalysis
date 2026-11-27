@@ -1,1 +1,0 @@
-- Add `TrajectoryFormat.ASE` and `AseTrajReader` (lazy `ase.io.Trajectory`), the `ase` extra, and dispatch file-based readers (H5MD, ASE) in `TrajectoryReader` through one table (#364).

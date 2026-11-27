@@ -1,1 +1,0 @@
-- Convert an ordered CIF to a PQ restart with explicit supercell repeats and unresolved occupancy checks.

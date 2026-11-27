@@ -1,1 +1,0 @@
-- Build and test wheels with cibuildwheel in the new `wheels.yml` workflow, used by `release.yml` and by pull requests that change the build. `scripts/test_wheel.py` checks the wheel modules and commands, then runs the tests outside the source tree. MSVC gets no `-ffp-contract=off`.

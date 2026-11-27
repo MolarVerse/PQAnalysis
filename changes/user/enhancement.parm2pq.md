@@ -1,1 +1,0 @@
-- Add `parm2pq`: it converts an AMBER, CHARMM or GROMACS force field with its coordinates into PQ setup files (moldescriptor, topology, parameter, intra non-bonded and start file) plus the matching input keys. It needs ParmEd (`pip install PQAnalysis[ff]`) and stops for terms PQ cannot evaluate, such as CMAP (#342).

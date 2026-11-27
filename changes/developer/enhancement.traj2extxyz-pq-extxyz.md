@@ -1,1 +1,0 @@
-- `traj2extxyz` reads extxyz input (by extension or a `properties=` comment line), accepts `units=pq`, warns without a units key and raises `PQValueError` for other units; `TrajectoryWriter` appends `units=<profile>` to extxyz comment lines (#324).

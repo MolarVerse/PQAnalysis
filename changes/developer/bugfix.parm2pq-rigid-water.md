@@ -1,1 +1,0 @@
-- The converter detects O-H-H bond triangles and writes `mshake.dat` from the bond lengths instead of three SHAKE constraints per water (#356).

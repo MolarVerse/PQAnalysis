@@ -1,1 +1,0 @@
-- Add a tutorial that takes a solvated protein (Trp-cage, AMBER ff14SB + TIP3P) from the PDB file through `parm2pq` to a PQ NVT and NPT run and its analysis, plus a "Before you start" note and a troubleshooting list on the force-field import page.

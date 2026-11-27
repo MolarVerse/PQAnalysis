@@ -1,1 +1,0 @@
-- `AtomicSystem.fit_atomic_system` checks overlaps with a periodic cell list (`atomic_system/_overlap_grid.py`), extended per placed molecule, instead of all-pairs `distance` per trial rotation. Same image and norm arithmetic, so a fixed `CONSTANT_SEED` gives the same output (#341).

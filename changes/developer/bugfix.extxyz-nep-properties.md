@@ -1,1 +1,0 @@
-- The `nep` extxyz profile writes the `properties` value without quotes, because GPUMD splits it at `:` without stripping them (#315).

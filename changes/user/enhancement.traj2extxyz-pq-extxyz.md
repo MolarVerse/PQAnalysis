@@ -1,1 +1,0 @@
-- `traj2extxyz` converts the extended xyz files written by PQ (`traj_format = extxyz`) to the `ase` or `nep` profile, and marks every written file with its units (#324).

@@ -1,1 +1,0 @@
-- New `AtomicSystem.iter_fit_atomic_system` yields each placed molecule; `AddMolecule` writes the placed ones on `AtomicSystemError` or `KeyboardInterrupt` (SIGTERM mapped to it in the main thread), then re-raises. The topology extension uses the placed count (#341).

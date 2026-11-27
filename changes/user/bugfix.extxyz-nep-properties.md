@@ -1,1 +1,0 @@
-- `traj2extxyz --extxyz-profile nep` now writes files that GPUMD NEP can read; before, NEP stopped with "'species' is missing in properties" (#315).

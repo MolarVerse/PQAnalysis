@@ -12,6 +12,46 @@ implementation changes are documented in
 ## Next Release
 
 <!-- insertion marker -->
+## [v1.10.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.10.0) - 2026-11-27
+
+### New Features
+
+- `add_molecules` now writes the molecules placed so far when it is stopped (Ctrl+C or SIGTERM) or cannot place a molecule within `--max-iter`, and logs how many it placed; before, it wrote nothing (#341).
+- The rdf, msd and vacf commands accept `--mode o` to overwrite existing output, log and export files, or `--mode a` to append. The "file already exists" error and `--help` now name this option (#320).
+- Read ASE trajectories (`traj_format = ase`, `.traj` files) with `TrajectoryReader` and the analyses, converted to PQ units; this needs the optional `ase` package (`pip install PQAnalysis[ase]`) (#364).
+- `pqanalysis convert` reads PQ and QMCFC `.en` energy files and writes CSV, TSV, XVG or native text, with the column names from the `.info` file as headers and XVG legends and the simulation time as XVG x axis; `--energy`, `--info-file`, `--timestep` and `--engine` cover other file names, QMCFC and step-to-ps conversion (#343).
+- The `.en` XVG export opens readable in xmgrace: each non-zero energy (up to 4) gets its own stacked graph with "Simulation time [ps]" and "E(TOT) [kcal/mol]" labels, colours and decimal ticks; other columns are hidden sets. `--y` plots chosen quantities, one graph per unit. CSV/TSV headers carry units (`E(TOT) [kcal/mol]`) for pandas (#343).
+- Convert an ordered CIF to a PQ restart with explicit supercell repeats and unresolved occupancy checks.
+- Energy files that start with the PQ header (`# PQ energy file` and a `#NAME[unit] ...` column line above the data) are read without the `.info` file, also by `pqanalysis convert`; step counts become ps with the header timestep as before, and files without the header still use `.info` (#343).
+- PQ energy files whose header names the first column `STEP[-]` (new PQ name) are read exactly like files with the old `SIMULATION-TIME[step]` column, also by `pqanalysis convert`.
+- Read PQ H5MD trajectories (`traj_format = h5md`, `.h5md` or `.h5` files) with `TrajectoryReader` and the analyses; this needs the optional `h5py` package (`pip install PQAnalysis[h5md]`) (#333).
+- `parm2pq` writes `long_range = wolf` for a periodic box and `none` only for the vacuum box; `--long-range` overrides it (#351).
+- Add `parm2pq`: it converts an AMBER, CHARMM or GROMACS force field with its coordinates into PQ setup files (moldescriptor, topology, parameter, intra non-bonded and start file) plus the matching input keys. It needs ParmEd (`pip install PQAnalysis[ff]`) and stops for terms PQ cannot evaluate, such as CMAP (#342).
+- PyPI now has prebuilt wheels for Linux (x86_64, aarch64), macOS (arm64, x86_64) and Windows (x86_64) for Python 3.12 to 3.14, so `pip install pqanalysis` no longer needs a C compiler on these platforms.
+- Prepare an ff14SB/TIP3P protein box and export AMBER input for parm2pq. (#370)
+- `traj2extxyz` converts the extended xyz files written by PQ (`traj_format = extxyz`) to the `ase` or `nep` profile, and marks every written file with its units (#324).
+
+### Bug Fixes
+
+- `add_molecules` with `CONSTANT_SEED` no longer tries the same positions for every molecule, so large fills finish again (#349).
+- Reading an energy file without a `.info` file next to it no longer prints a "File ... not found" error, because that file is optional (#343).
+- `traj2extxyz --extxyz-profile nep` now writes files that GPUMD NEP can read; before, NEP stopped with "'species' is missing in properties" (#315).
+- `traj2extxyz --extxyz-profile nep` writes `H` for deuterium and tritium, which GPUMD NEP needs, and stops with a clear error for dummy atoms, which NEP cannot use (#321).
+- `parm2pq --shake-h` keeps rigid water with an H-H bond (tleap TIP3P) rigid with M-SHAKE, so PQ runs with the default SHAKE iterations (#356).
+- The `rdf` log now prints the unit as `Å` instead of `b'\xe2\x84\xab'` (#352).
+- Selections in input files can now be quoted, e.g. `target_selection = "elem(O)|elem(H)"`, and empty ranges such as `304..4822..3` log a warning (#357).
+- Fix traj2qmcfc ignoring the --mode option: appending (--mode a) or overwriting (--mode o) an existing output file did not work, the default write mode was always used.
+- `TrajectoryWriter` now stops with an error for a format it cannot write, such as `h5md` or `auto`; before, it wrote nothing and gave no error (#334).
+
+### Performance
+
+- `add_molecules` checks for overlaps faster: placing 300 waters around a small protein takes 15 s instead of 31 s, and the output for a fixed seed is unchanged (#341).
+
+### Documentation
+
+- Add a tutorial that takes a solvated protein (Trp-cage, AMBER ff14SB + TIP3P) from the PDB file through `parm2pq` to a PQ NVT and NPT run and its analysis, plus a "Before you start" note and a troubleshooting list on the force-field import page.
+- Correct the help text of xyz2rst --randomize: it displaces the positions with a normal distribution of the given standard deviation (it was described as randomizing the atom order).
+
 ## [v1.9.0](https://github.com/MolarVerse/PQAnalysis/releases/tag/v1.9.0) - 2026-11-15
 
 ### New Features

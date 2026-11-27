@@ -1,1 +1,0 @@
-- Remove the stray `scratch_install.log` from the repo root and ignore `*.log` files there (#359).

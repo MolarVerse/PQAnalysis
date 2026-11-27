@@ -1,1 +1,0 @@
-- Fix traj2qmcfc ignoring the --mode option: appending (--mode a) or overwriting (--mode o) an existing output file did not work, the default write mode was always used.

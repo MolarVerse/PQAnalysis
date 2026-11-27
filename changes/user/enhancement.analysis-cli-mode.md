@@ -1,1 +1,0 @@
-- The rdf, msd and vacf commands accept `--mode o` to overwrite existing output, log and export files, or `--mode a` to append. The "file already exists" error and `--help` now name this option (#320).

@@ -1,1 +1,0 @@
-- PyPI now has prebuilt wheels for Linux (x86_64, aarch64), macOS (arm64, x86_64) and Windows (x86_64) for Python 3.12 to 3.14, so `pip install pqanalysis` no longer needs a C compiler on these platforms.

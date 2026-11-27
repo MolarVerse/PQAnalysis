@@ -1,1 +1,0 @@
-- The `nep` extxyz profile maps `D` and `T` to `H` and raises `TrajectoryWriterError` for `Q`, `X`, `cav`, `sup` and `dum`, because GPUMD only accepts elements of the periodic table in `nep.in` (#321).

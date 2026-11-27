@@ -1,1 +1,0 @@
-- `add_molecules` checks for overlaps faster: placing 300 waters around a small protein takes 15 s instead of 31 s, and the output for a fixed seed is unchanged (#341).

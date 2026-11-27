@@ -1,1 +1,0 @@
-- `iter_fit_atomic_system` seeds one random generator per run and passes it to `_fit_atomic_system` instead of reseeding per addition (#349).

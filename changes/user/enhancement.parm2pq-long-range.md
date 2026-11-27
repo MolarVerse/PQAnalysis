@@ -1,1 +1,0 @@
-- `parm2pq` writes `long_range = wolf` for a periodic box and `none` only for the vacuum box; `--long-range` overrides it (#351).

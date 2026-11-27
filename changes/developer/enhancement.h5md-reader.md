@@ -1,1 +1,0 @@
-- Add `TrajectoryFormat.H5MD` and `H5MDReader`, to which `TrajectoryReader` dispatches frames, frame counts and cells; `h5py` is imported lazily, is the `h5md` extra and is part of the `test` extra (#333).

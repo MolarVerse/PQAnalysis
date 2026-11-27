@@ -1,1 +1,0 @@
-- `read_energy_header` maps the header column `STEP[-]` to `SIMULATION-TIME` in `step`, so the step-to-ps conversion and the `.info` comparison stay unchanged.

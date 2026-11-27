@@ -1,1 +1,0 @@
-- Input-file values accept a quoted `STRING` terminal, parse errors raise `InputFileError` with line, column and a quoting hint, and selection ranges check their step (#357).

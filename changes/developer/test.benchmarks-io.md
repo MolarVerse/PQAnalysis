@@ -1,1 +1,0 @@
-- Add benchmarks for the trajectory writer and the traj2extxyz, traj2qmcfc and traj2box conversions with seeded in-memory trajectories.

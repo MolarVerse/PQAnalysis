@@ -1,1 +1,0 @@
-- `add_molecules` now writes the molecules placed so far when it is stopped (Ctrl+C or SIGTERM) or cannot place a molecule within `--max-iter`, and logs how many it placed; before, it wrote nothing (#341).
