@@ -32,6 +32,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+protein = ["openmm", "parmed"]
 crystal = ["ase"]
 h5md = [
     "h5py",
