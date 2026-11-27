@@ -26,9 +26,11 @@ float.3: FLOAT
 integer.2: INT
 boolean.2: BOOL
 url: URL
+string: STRING
 
 %import .terminals.WORD
 %import .terminals.FLOAT
 %import .terminals.INT
 %import .terminals.BOOL
 %import .terminals.URL
+%import .terminals.STRING

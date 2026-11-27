@@ -186,7 +186,8 @@ class Momentum:
 
         if len(self.indices) == 0:
             self.logger.error(
-                "The selection does not select any atoms.",
+                f"The selection \"{self.selection}\" "
+                "does not select any atoms.",
                 exception=MomentumError
             )
 

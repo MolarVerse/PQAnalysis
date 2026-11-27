@@ -8,6 +8,7 @@ import numpy as np
 
 # 3rd party object imports
 from lark import Visitor, Tree, Lark, Transformer, Token
+from lark.exceptions import VisitError
 from beartype.typing import List, TypeVar, Any
 
 # local imports
@@ -77,7 +78,7 @@ class Selection:
       - <integer1>-<integer2>: the indices from integer1 to integer2
         are selected
       - <integer1>..<integer2>..<integer3>: the indices from integer1 to
-        integer3 with a step size of integer3 are selected
+        integer3 with a step size of integer2 are selected
       - atom(<atomtype>, <atomic_number>): the atom with the given atom
         type and atomic number is selected
       - atom(<atomtype>, <element_symbol>): the atom with the given atom
@@ -350,11 +351,15 @@ def _selection_of_string(
         return _indices_by_atom_type_name(stripped_string, topology)
 
     tree = _selection_parser().parse(string)
-    transformed_tree = SelectionTransformer(
-        topology=topology,
-        visit_tokens=True,
-        use_full_atom_info=use_full_atom_info
-    ).transform(tree)
+    try:
+        transformed_tree = SelectionTransformer(
+            topology=topology,
+            visit_tokens=True,
+            use_full_atom_info=use_full_atom_info
+        ).transform(tree)
+    except VisitError as error:
+        raise error.orig_exc from error
+
     visitor = SelectionVisitor()
 
     return np.sort(visitor.visit(transformed_tree))
@@ -634,20 +639,41 @@ class SelectionTransformer(Transformer):
         Raises
         ------
         PQValueError
-            If the indices Token has more than 3 items. Should never be reached.
+            If the step is not positive or the indices Token has more
+            than 3 items.
         """
 
+        if len(items) not in {2, 3}:
+            # should never be reached
+            Selection.logger.error(
+                "The indices Token must have 2 or 3 items.",
+                exception=PQValueError
+            )
+
+        text = "..".join(str(item) for item in items)
+
         if len(items) == 2:
-            return np.arange(items[0], items[1] + 1)
+            indices = np.arange(items[0], items[1] + 1)
+        else:
+            if items[1] <= 0:
+                Selection.logger.error(
+                    (
+                        f"The range {text} needs a positive step. "
+                        "The order is start..step..stop."
+                    ),
+                    exception=PQValueError
+                )
 
-        if len(items) == 3:
-            return np.arange(items[0], items[2] + 1, items[1])
+            indices = np.arange(items[0], items[2] + 1, items[1])
 
-        # should never be reached
-        Selection.logger.error(
-            "The indices Token must have 2 or 3 items.",
-            exception=PQValueError
-        )
+        if len(indices) == 0:
+            Selection.logger.warning(
+                f"The range {text} selects no atoms: start is larger than "
+                "stop. The order is start..stop or start..step..stop, "
+                "e.g. 304..3..4822."
+            )
+
+        return indices
 
     def all(self, _) -> Np1DIntArray:
         """

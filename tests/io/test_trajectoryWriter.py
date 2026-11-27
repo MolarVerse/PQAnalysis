@@ -1,8 +1,11 @@
-import pytest
+import os
 import sys
+
+import pytest
 import numpy as np
 
 from . import pytestmark
+from ..conftest import assert_logging_with_exception
 
 from PQAnalysis.io import (
     ExtXYZProfile,
@@ -14,6 +17,7 @@ from PQAnalysis.io import (
 from PQAnalysis.traj import Trajectory, TrajectoryFormat, MDEngineFormat
 from PQAnalysis.core import Cell, Atom
 from PQAnalysis.io.exceptions import ExtXYZProfileError
+from PQAnalysis.io.traj_file.exceptions import TrajectoryWriterError
 from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.traj.exceptions import MDEngineFormatError
 from PQAnalysis.utils.units import eV, kcal_per_mol
@@ -207,6 +211,78 @@ def test_write_extxyz_ase_profile_writes_ase_species():
 
 
 @pytest.mark.usefixtures("tmpdir")
+def test_write_extxyz_nep_profile_writes_elements(caplog):
+    frame = AtomicSystem(
+        atoms=[Atom(name, use_guess_element=False) for name in ["D", "t"]] +
+        [Atom("o"), Atom("cl")],
+        pos=np.zeros((4, 3)),
+        forces=np.zeros((4, 3)),
+        energy=-1.0,
+        cell=Cell(10.0, 10.0, 10.0),
+    )
+
+    writer = TrajectoryWriter("nep.extxyz", extxyz_profile=ExtXYZProfile.NEP)
+    writer.write(frame, traj_type="extxyz")
+    writer.close()
+
+    with open("nep.extxyz", "r", encoding="utf-8") as file:
+        labels = [line.split()[0] for line in file.read().splitlines()[2:]]
+
+    assert labels == ["H", "H", "O", "Cl"]
+
+    for name in ["Q", "X", "cav", "sup", "dum"]:
+        dummy = AtomicSystem(
+            atoms=[Atom(name, use_guess_element=False)],
+            pos=np.zeros((1, 3)),
+            forces=np.zeros((1, 3)),
+            energy=-1.0,
+            cell=Cell(10.0, 10.0, 10.0),
+        )
+        writer = TrajectoryWriter(
+            f"{name}.extxyz", extxyz_profile=ExtXYZProfile.NEP
+        )
+
+        assert_logging_with_exception(
+            caplog=caplog,
+            logging_name="BaseWriter",
+            logging_level="ERROR",
+            message_to_test=(
+                f"Atom {name} has no element, but GPUMD NEP only accepts "
+                "elements of the periodic table. Remove dummy atoms before "
+                "writing the nep profile."
+            ),
+            exception=TrajectoryWriterError,
+            function=writer.write,
+            trajectory=dummy,
+            traj_type="extxyz",
+        )
+
+
+@pytest.mark.parametrize("traj_type", ["auto", "h5md"])
+@pytest.mark.usefixtures("tmpdir")
+def test_write_unsupported_format_raises(caplog, traj_type):
+    frame = AtomicSystem(atoms=[Atom("C")], pos=np.zeros((1, 3)))
+    writer = TrajectoryWriter("traj.out")
+
+    assert_logging_with_exception(
+        caplog=caplog,
+        logging_name="BaseWriter",
+        logging_level="ERROR",
+        message_to_test=(
+            "TrajectoryWriter cannot write the "
+            f"{TrajectoryFormat(traj_type).value} format. Possible formats "
+            "are XYZ, EXTXYZ, VEL, FORCE and CHARGE."
+        ),
+        exception=TrajectoryWriterError,
+        function=writer.write,
+        trajectory=frame,
+        traj_type=traj_type,
+    )
+
+    assert not os.path.exists("traj.out")
+
+
+@pytest.mark.usefixtures("tmpdir")
 def test_write_extxyz_nep_profile_uses_gpumd_convention():
     atoms = [Atom("h"), Atom("o")]
     frame = AtomicSystem(
@@ -231,7 +307,7 @@ def test_write_extxyz_nep_profile_uses_gpumd_convention():
         lines = file.read().splitlines()
 
     assert lines[1].startswith('lattice="10.0000000000 0.0000000000')
-    assert 'properties="species:S:1:pos:R:3:forces:R:3"' in lines[1]
+    assert " properties=species:S:1:pos:R:3:forces:R:3 " in lines[1]
     assert "Lattice=" not in lines[1]
     assert "Properties=" not in lines[1]
     assert f"energy={-1.5 * conversion_factor:.10f}" in lines[1]

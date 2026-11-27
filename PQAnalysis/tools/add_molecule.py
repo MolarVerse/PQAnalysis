@@ -2,13 +2,17 @@
 A module containing functions and classes to add a molecule/AtomicSystem to a restart file.
 """
 
+import contextlib
 import logging
+import signal
+import threading
 import numpy as np
 
 from beartype.typing import List
 
 from PQAnalysis.io.formats import OutputFileFormat, FileWritingMode
-from PQAnalysis.atomic_system import AtomicSystem
+from PQAnalysis.atomic_system import AtomicSystem, FitOptions
+from PQAnalysis.atomic_system.exceptions import AtomicSystemError
 from PQAnalysis.traj import MDEngineFormat
 from PQAnalysis.utils.custom_logging import setup_logger
 from PQAnalysis import __package_name__
@@ -129,14 +133,15 @@ def add_molecule(
         md_engine_format=md_engine_format
     )
 
-    _add_molecule.write_restart_file()
-
-    if topology_file is not None:
-        _add_molecule.extend_topology_file(
-            original_shake_file=topology_file,
-            extension_shake_file=topology_file_to_add,
-            output=topology_file_output
-        )
+    try:
+        _add_molecule.write_restart_file()
+    finally:
+        if topology_file is not None and _add_molecule.n_placed > 0:
+            _add_molecule.extend_topology_file(
+                original_shake_file=topology_file,
+                extension_shake_file=topology_file_to_add,
+                output=topology_file_output
+            )
 
 
 
@@ -305,6 +310,7 @@ class AddMolecule:
         # Initialize the variables, just to make sure they are defined
         self.molecule = None
         self.restart_system = None
+        self.fitted_systems = []
 
         self.molecule_file_type = OutputFileFormat(
             (molecule_file_type, self.molecule_file)
@@ -338,8 +344,29 @@ class AddMolecule:
             mode=self.mode
         )
 
-        fitted_systems = self.add_molecules()
+        try:
+            fitted_systems = self.add_molecules()
+        except (AtomicSystemError, KeyboardInterrupt):
+            self.logger.warning(
+                (
+                    f"Fitting stopped after placing {self.n_placed}/"
+                    f"{self.number_of_additions} molecules."
+                )
+            )
+            if self.n_placed > 0:
+                self.logger.warning(
+                    f"Writing the {self.n_placed} molecules placed so far."
+                )
+                self._write_lines(writer, self.fitted_systems)
+            raise
 
+        self._write_lines(writer, fitted_systems)
+
+    def _write_lines(
+        self,
+        writer: RestartFileWriter,
+        fitted_systems: List[AtomicSystem],
+    ) -> None:
         self.restart_system.image()
         lines = writer._get_lines(self.restart_system, atom_counter=0)  # pylint: disable=protected-access
         for i, system in enumerate(fitted_systems):
@@ -347,6 +374,11 @@ class AddMolecule:
             lines += writer._get_atom_lines(system, atom_counter=i + 1)  # pylint: disable=protected-access
 
         writer._write_lines_to_file(lines)  # pylint: disable=protected-access
+
+    @property
+    def n_placed(self) -> int:
+        """int: The number of molecules placed so far."""
+        return len(self.fitted_systems)
 
     @runtime_type_checking
     def extend_topology_file(
@@ -396,7 +428,7 @@ class AddMolecule:
         original_topology.extend_shake_bonds(
             new_topology.shake_bonds,
             n_atoms=self.restart_system.n_atoms,
-            n_extensions=self.number_of_additions,
+            n_extensions=self.n_placed,
             n_atoms_per_extension=self.molecule.n_atoms
         )
 
@@ -406,26 +438,31 @@ class AddMolecule:
         """
         Calculates all newly fitted atomic systems
 
+        The systems placed so far stay in ``fitted_systems`` if the fitting
+        fails or is interrupted (KeyboardInterrupt or SIGTERM).
+
         Returns
         -------
         List[AtomicSystem]
             The fitted atomic systems.
         """
+        self.fitted_systems = []
         self._read_files()
 
-        fitted_systems = self.restart_system.fit_atomic_system(
-            system=self.molecule,
-            number_of_additions=self.number_of_additions,
-            max_iterations=self.max_iterations,
-            distance_cutoff=self.distance_cutoff,
-            max_displacement=self.max_displacement,
-            rotation_angle_step=self.rotation_angle_step
-        )
+        with _sigterm_as_keyboard_interrupt():
+            for fitted in self.restart_system.iter_fit_atomic_system(
+                system=self.molecule,
+                number_of_additions=self.number_of_additions,
+                options=FitOptions(
+                    max_iterations=self.max_iterations,
+                    distance_cutoff=self.distance_cutoff,
+                    max_displacement=self.max_displacement,
+                    rotation_angle_step=self.rotation_angle_step,
+                ),
+            ):
+                self.fitted_systems.append(fitted)
 
-        if isinstance(fitted_systems, AtomicSystem):
-            return [fitted_systems]
-
-        return fitted_systems
+        return self.fitted_systems
 
     def _read_files(self):
         """
@@ -464,3 +501,27 @@ class AddMolecule:
             molecule = next(frame_generator)
 
         return molecule
+
+
+
+@contextlib.contextmanager
+def _sigterm_as_keyboard_interrupt():
+    """
+    Turn SIGTERM into a KeyboardInterrupt while the context is active.
+
+    Only the main thread can set signal handlers, elsewhere this does nothing.
+    """
+    if threading.current_thread() is not threading.main_thread():
+        yield
+        return
+
+    previous = signal.signal(signal.SIGTERM, _raise_interrupt)
+    try:
+        yield
+    finally:
+        signal.signal(signal.SIGTERM, previous)
+
+
+
+def _raise_interrupt(signum, frame):  # pylint: disable=unused-argument
+    raise KeyboardInterrupt(f"Received signal {signum}.")

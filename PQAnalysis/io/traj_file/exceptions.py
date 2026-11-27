@@ -19,3 +19,27 @@ class FrameReaderError(PQException):
     """
     Exception raised for errors related to the FrameReader class
     """
+
+
+
+class TrajectoryWriterError(PQException):
+
+    """
+    Exception raised for errors related to the TrajectoryWriter class
+    """
+
+
+
+class H5MDReaderError(PQException):
+
+    """
+    Exception raised for errors related to the H5MDReader class
+    """
+
+
+
+class AseTrajReaderError(PQException):
+
+    """
+    Exception raised for errors related to the AseTrajReader class
+    """

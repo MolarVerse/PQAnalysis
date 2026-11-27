@@ -9,7 +9,11 @@ from PQAnalysis.core import Atom, Cell
 from PQAnalysis.io import read_trajectory
 from PQAnalysis.traj import TrajectoryFormat
 
+from PQAnalysis.exceptions import PQValueError
+from PQAnalysis.utils.units import eV, kcal_per_mol
+
 from . import ArgparseNamespace
+from ..conftest import assert_logging, assert_logging_with_exception
 
 
 
@@ -124,3 +128,75 @@ def main_pqanalysis_traj2extxyz(mock_args):
     pqanalysis_main()
 
     _assert_extxyz_output("output.extxyz")
+
+
+def _write_pq_extxyz(filename: str, units: str | None = "pq") -> None:
+    units_key = f" units={units}" if units is not None else ""
+    with open(filename, "w", encoding="utf-8") as file:
+        print("2", file=file)
+        print(
+            'Lattice="10 0 0 0 11 0 0 0 12" '
+            "Properties=species:S:1:pos:R:3:vel:R:3:forces:R:3:charge:R:1 "
+            f'pbc="T T T" step=10 energy=-1.5{units_key}',
+            file=file,
+        )
+        print("H 0.0 0.0 0.0 1.0 2.0 3.0 0.5 0.0 0.0 0.41", file=file)
+        print("O 0.0 0.0 1.0 4.0 5.0 6.0 -0.5 0.0 0.0 -0.82", file=file)
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_traj2extxyz_converts_pq_extxyz_to_ase_units():
+    from ase.io import read as ase_read
+
+    _write_pq_extxyz("run.extxyz")
+
+    traj2extxyz(["run.extxyz"], output="ase.extxyz", extxyz_profile="ase")
+
+    with open("ase.extxyz", "r", encoding="utf-8") as file:
+        assert "units=ase" in file.read().splitlines()[1]
+
+    frame = ase_read("ase.extxyz", index=0)
+    factor = eV / kcal_per_mol
+
+    assert np.isclose(frame.get_potential_energy(), -1.5 * factor)
+    assert np.allclose(frame.get_forces()[0], [0.5 * factor, 0.0, 0.0])
+    assert np.allclose(frame.arrays["vel"][1], [4.0, 5.0, 6.0])
+    assert np.allclose(frame.cell.lengths(), [10.0, 11.0, 12.0])
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_traj2extxyz_warns_without_units(caplog):
+    _write_pq_extxyz("run.extxyz", units=None)
+
+    assert_logging(
+        caplog,
+        "io.conversion_api",
+        "WARNING",
+        "run.extxyz has no units key; it is read as PQ units.",
+        traj2extxyz,
+        ["run.extxyz"],
+        output="nep.extxyz",
+        extxyz_profile="nep",
+    )
+
+    with open("nep.extxyz", "r", encoding="utf-8") as file:
+        assert "units=nep" in file.read().splitlines()[1]
+
+
+@pytest.mark.usefixtures("tmpdir")
+def test_traj2extxyz_rejects_converted_files(caplog):
+    _write_pq_extxyz("ase.extxyz", units="ase")
+
+    assert_logging_with_exception(
+        caplog,
+        "io.conversion_api",
+        "ERROR",
+        (
+            "ase.extxyz is in ase units, but only files in PQ units "
+            "(units=pq) can be converted."
+        ),
+        PQValueError,
+        traj2extxyz,
+        ["ase.extxyz"],
+        output="twice.extxyz",
+    )

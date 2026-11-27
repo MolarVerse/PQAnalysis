@@ -407,6 +407,39 @@ def test_duplicate_xvg_y_fields_do_not_create_output(tmp_path, rdf_table):
             "&\n",
             "must use XY data sets",
         ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x\n"
+            "# SYMBOLS x\n"
+            "# UNITS 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS x\n"
+            "@target G1.S0\n"
+            "@type xy\n"
+            "0.0 0.0\n"
+            "&\n",
+            "sequential Grace sets",
+        ),
+        (
+            "# PQAnalysis-XVG: 1\n"
+            "# PQAnalysis: Broken\n"
+            "# FIELDS x y\n"
+            "# SYMBOLS x y\n"
+            "# UNITS 1 1\n"
+            "# XVG_X_FIELD x\n"
+            "# XVG_Y_FIELDS y\n"
+            "# XVG_GRAPH x\n"
+            "@target G0.S0\n"
+            "@type xy\n"
+            "0.0 0.0\n"
+            "&\n"
+            "@target G0.S1\n"
+            "@type xy\n"
+            "0.0 1.0\n"
+            "&\n",
+            "graphs that do not match",
+        ),
     ),
 )
 def test_reader_rejects_nonreversible_or_malformed_xvg(

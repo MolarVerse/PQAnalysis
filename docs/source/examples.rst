@@ -74,3 +74,10 @@ The other commands in this folder are:
 
 Python recipes that load these files are on :doc:`python-api`; a continuous
 session from loading to a figure is on :doc:`workflow`.
+
+Solvated protein
+----------------
+
+``examples/parm2pq`` holds the build script and input files of the tutorial
+:doc:`tutorials/solvated-protein`, which goes from the Trp-cage PDB file to
+a PQ simulation with ``parm2pq``.

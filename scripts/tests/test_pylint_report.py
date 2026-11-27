@@ -124,7 +124,7 @@ class PylintReportTests(unittest.TestCase):
                                   result(9.78, [diagnostic]))
         self.assertIn('1 new finding.', report)
 
-    def test_different_duplicate_code_regions_are_new(self):
+    def test_duplicate_code_in_other_modules_is_new(self):
         base = message()
         base.update(
             symbol='duplicate-code',
@@ -134,8 +134,56 @@ class PylintReportTests(unittest.TestCase):
             )
         )
         head = dict(
-            base, message=base['message'].replace('[10:20]', '[50:60]')
+            base,
+            message=base['message'].replace('PQAnalysis.a:', 'PQAnalysis.c:')
         )
+        report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
+        self.assertIn('1 new finding.', report)
+
+    def test_moved_duplicate_code_block_is_not_new(self):
+        base = message()
+        base.update(
+            symbol='duplicate-code',
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[49:63]\n'
+                '==PQAnalysis.b:[152:166]\nexample'
+            )
+        )
+        head = dict(
+            base,
+            message=(
+                'Similar lines in 2 files\n==PQAnalysis.a:[58:70]\n'
+                '==PQAnalysis.b:[172:184]\nexample'
+            )
+        )
+        report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
+        self.assertIn('No new findings.', report)
+
+    def test_changed_counts_are_not_new_findings(self):
+        for symbol, before, after in (
+            ('too-many-locals', 'Too many local variables (19/15)',
+             'Too many local variables (20/15)'),
+            ('too-complex', "'vacf' is too complex. The McCabe rating is 13",
+             "'vacf' is too complex. The McCabe rating is 14"),
+        ):
+            base = dict(message(), symbol=symbol, obj='vacf', message=before)
+            head = dict(base, message=after)
+            report, _ = REPORT.render(result(9.78, [head]),
+                                      result(9.78, [base]))
+            self.assertIn('No new findings.', report, symbol)
+
+    def test_count_finding_in_another_function_is_new(self):
+        base = dict(message(), symbol='too-many-locals', obj='vacf',
+                    message='Too many local variables (19/15)')
+        head = dict(base, obj='msd')
+        report, _ = REPORT.render(result(9.78, [base, head]),
+                                  result(9.78, [base]))
+        self.assertIn('1 new finding.', report)
+
+    def test_other_numbers_still_identify_a_finding(self):
+        base = dict(message(), symbol='arguments-differ', obj='Logger._log',
+                    message="Number of parameters was 3 in 'A' and is now 4")
+        head = dict(base, message=base['message'].replace('now 4', 'now 5'))
         report, _ = REPORT.render(result(9.78, [head]), result(9.78, [base]))
         self.assertIn('1 new finding.', report)
 

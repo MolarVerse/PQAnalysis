@@ -16,9 +16,17 @@ from typing import TextIO
 import numpy as np
 
 from PQAnalysis.exceptions import PQException
-from PQAnalysis.io import BaseWriter
+from PQAnalysis.io import BaseWriter, EnergyFileReader
 from PQAnalysis.io.formats import FileWritingMode
 
+from ._energy_table import (
+    EnergyFileOptions,
+    energy_columns,
+    default_energy_plot,
+    energy_legend,
+    energy_plot_preset,
+)
+from ._output_header import header_name, split_header_units
 from ._output_schemas import (
     AnalysisColumn,
     AnalysisPlotPreset,
@@ -53,6 +61,7 @@ __all__ = [
     "AnalysisSchema",
     "AnalysisTable",
     "AnalysisTableWriter",
+    "EnergyFileOptions",
     "BROADENED_SPECTRUM_SCHEMA",
     "MOMENTUM_SCHEMA",
     "MSD_SCHEMA",
@@ -66,6 +75,7 @@ __all__ = [
     "infer_output_format",
     "normal_mode_schema",
     "read_analysis_table",
+    "read_energy_table",
     "write_analysis_table",
 ]
 
@@ -245,20 +255,70 @@ def read_analysis_table(filename: str) -> AnalysisTable:
 
 
 
-def convert_analysis_output(
+def read_energy_table(
+    filename: str,
+    options: EnergyFileOptions | None = None,
+) -> AnalysisTable:
+    """
+    Read a PQ or QMCFC energy file as an analysis table.
+
+    Names and units come from :py:class:`~PQAnalysis.io.EnergyFileReader`
+    and appear as ``NAME [unit]`` in CSV/TSV headers. The default plot
+    stacks one XVG graph per non-zero energy over the simulation time.
+
+    Parameters
+    ----------
+    filename : str
+        Energy file.
+    options : EnergyFileOptions | None, optional
+        Info file, engine and timestep, by default
+        ``EnergyFileOptions()``.
+
+    Returns
+    -------
+    AnalysisTable
+        One table column per energy-file column.
+    """
+    options = options or EnergyFileOptions()
+    energy = EnergyFileReader(
+        filename,
+        info_filename=options.info_file,
+        engine_format=options.engine_format,
+        timestep_fs=options.timestep_fs,
+    ).read()
+
+    columns = energy_columns(energy)
+    fields = tuple(column.field for column in columns)
+    if len(set(fields)) != len(fields):
+        raise AnalysisOutputError(
+            f"Energy file '{filename}' contains duplicate column names."
+        )
+
+    data = np.asarray(energy.data).T
+    title = f"{options.engine_format.value} energy file {Path(filename).stem}"
+    schema = AnalysisSchema(title=title, columns=columns, units_in_header=True)
+    schema = replace(schema, plot=default_energy_plot(schema, data))
+    return AnalysisTable(schema=schema, data=data)
+
+
+
+def convert_analysis_output(  # pylint: disable=too-many-arguments
     input_file: str,
     output_files: Sequence[str],
     x_field: str | None = None,
     y_fields: Sequence[str] | None = None,
     mode: str | FileWritingMode = "w",
+    *,
+    energy: EnergyFileOptions | None = None,
 ) -> None:
     """
-    Convert one analysis table to one or more output files.
+    Convert one analysis table or energy file to one or more outputs.
 
     Parameters
     ----------
     input_file : str
-        Native, CSV, TSV or PQAnalysis XVG input table.
+        Native, CSV, TSV or PQAnalysis XVG input table, or a PQ/QMCFC
+        ``.en`` energy file.
     output_files : Sequence[str]
         Distinct output paths. Each suffix selects its format.
     x_field : str | None, optional
@@ -267,12 +327,25 @@ def convert_analysis_output(
         XVG y-axis fields, by default None.
     mode : str | FileWritingMode, optional
         Output writing mode, by default ``w``.
+    energy : EnergyFileOptions | None, optional
+        Energy-file reading options. Inputs ending in ``.en`` are read
+        as energy files, others only with ``as_energy_file=True``.
     """
     if not output_files:
         raise AnalysisOutputError("At least one output file is required.")
 
+    energy = energy or EnergyFileOptions()
+    reads_energy = energy.reads_energy(input_file)
+    if not reads_energy and energy.has_file_options:
+        raise AnalysisOutputError(
+            "An info file and a timestep apply only to energy-file input."
+        )
+
     _validate_distinct_paths(input_file, output_files)
-    table = read_analysis_table(input_file)
+    if reads_energy:
+        table = read_energy_table(input_file, energy)
+    else:
+        table = read_analysis_table(input_file)
     writers = tuple(
         AnalysisTableWriter(filename, mode=mode) for filename in output_files
     )
@@ -513,14 +586,12 @@ def _read_xvg_table(text: str, path: Path) -> AnalysisTable:
         symbols=document.symbols,
         units=document.units,
     )
-    schema = replace(
-        schema,
-        plot=_plot_preset_for_fields(
-            schema,
-            document.x_field,
-            document.y_fields,
-        ),
+    projection = (schema, document.x_field, document.y_fields)
+    plot = (
+        energy_plot_preset(*projection, document.graphs)
+        if document.graphs else _plot_preset_for_fields(*projection)
     )
+    schema = replace(schema, plot=plot, units_in_header=bool(document.graphs))
     return AnalysisTable(schema=schema, data=document.data)
 
 
@@ -610,7 +681,7 @@ def _read_delimited_table(
             f"Delimited analysis output file '{path}' contains no data rows."
         )
 
-    fields = tuple(value.strip() for value in rows[0])
+    fields, units = split_header_units(rows[0])
     _validate_fields(fields, path)
 
     if any(len(row) != len(fields) for row in rows[1:]):
@@ -629,6 +700,12 @@ def _read_delimited_table(
         ) from exception
 
     schema = _schema_for_fields(fields, path.stem)
+    if any(unit is not None for unit in units):
+        columns = tuple(
+            replace(column, unit=unit or "1")
+            for column, unit in zip(schema.columns, units)
+        )
+        schema = replace(schema, columns=columns, units_in_header=True)
     return AnalysisTable(schema=schema, data=data)
 
 
@@ -734,7 +811,10 @@ def _write_delimited_table(
     delimiter: str,
 ) -> None:
     writer = csv.writer(file, delimiter=delimiter, lineterminator="\n")
-    writer.writerow(table.schema.fields)
+    writer.writerow(
+        header_name(column.field, column.unit, table.schema.units_in_header)
+        for column in table.schema.columns
+    )
     writer.writerows(
         [_format_number(value) for value in row] for row in table.data
     )
@@ -765,9 +845,17 @@ def _write_xvg_table(
     )
 
     selected_legends = dict(zip(plot.y_fields, plot.legends))
+    if plot.graphs:
+        hidden_legends = tuple(
+            energy_legend(column) for column in table.schema.columns
+        )
+    else:
+        hidden_legends = tuple(
+            _column_label(table.schema, field) for field in table.schema.fields
+        )
     legends = tuple(
-        selected_legends.get(field, _column_label(table.schema, field))
-        for field in table.schema.fields
+        selected_legends.get(field, hidden)
+        for field, hidden in zip(table.schema.fields, hidden_legends)
     )
     write_xvg(
         file=file,
@@ -779,12 +867,14 @@ def _write_xvg_table(
             x_field=selected_x,
             y_fields=selected_y,
             data=table.data,
+            graphs=tuple(graph.y_fields for graph in plot.graphs),
         ),
         style=XVGPlotStyle(
             x_label=plot.x_label,
             y_label=plot.y_label,
             legends=legends,
             x_values=x_values,
+            graph_labels=tuple(graph.y_label for graph in plot.graphs),
         ),
     )
 
@@ -818,6 +908,8 @@ def _plot_preset_for_fields(
         x_field == preset.x_field and y_fields == preset.y_fields
     ):
         return preset
+    if preset is not None and preset.graphs:
+        return energy_plot_preset(schema, x_field, y_fields)
 
     if x_field is None:
         x_label = (

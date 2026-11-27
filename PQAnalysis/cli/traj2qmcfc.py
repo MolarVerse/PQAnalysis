@@ -79,7 +79,7 @@ class Traj2QMCFCCLI(CLIBase):
         args : _Namespace
             The arguments from the command line.
         """
-        traj2qmcfc(args.trajectory_file, args.output)
+        traj2qmcfc(args.trajectory_file, args.output, args.mode)
 
 
 

@@ -48,6 +48,7 @@ Structure and trajectory conversion
    xyz2rst -- Convert XYZ coordinates to a PQ restart structure
    xyz2gen -- Convert XYZ to DFTB+ GEN
    gen2xyz -- Convert DFTB+ GEN to XYZ
+   crystal -- Prepare an ordered CIF supercell
    traj2box -- Extract periodic box data from trajectories
    traj2com -- Compute center of mass trajectories (positions, velocities, forces or charges) of atoms, groups or molecules
    traj2extxyz -- Write extended XYZ trajectories with selected metadata
@@ -60,6 +61,7 @@ Simulation-support commands
 
    continue_input -- Continue indexed PQ or QMCFC input/output sequences
    add_molecules -- Add molecular structures to an existing system
+   parm2pq -- Convert AMBER, CHARMM or GROMACS force fields into PQ setup files
    build_nep_traj -- Build Neuroevolution Potential (NEP) training and test trajectories
 
 Commands refuse unsafe output replacement by default. Consult each generated

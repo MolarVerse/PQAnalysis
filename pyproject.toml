@@ -32,8 +32,21 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+protein = ["openmm", "parmed"]
+crystal = ["ase"]
+h5md = [
+    "h5py",
+]
+ase = [
+    "ase",
+]
+ff = [
+    "parmed",
+]
 test = [
     "ase",
+    "h5py",
+    "parmed",
     "pytest",
     "pytest-cov",
     "pylint",
@@ -57,6 +70,17 @@ docs = [
     "six",
     "docstr-coverage",
 ]
+
+[tool.cibuildwheel]
+build = ["cp312-*", "cp313-*", "cp314-*"]
+skip = ["*-musllinux_*", "*-win32", "*_i686"]
+build-frontend = "build"
+test-extras = ["test"]
+test-command = "python {project}/scripts/test_wheel.py {project}"
+
+[tool.cibuildwheel.windows]
+# full suite not portable to Windows yet (#330); test the compiled kernels
+test-command = "python {project}/scripts/test_wheel.py {project} tests/analysis -k kernel"
 
 [tool.setuptools_scm]
 version_file = "PQAnalysis/_version.py"
@@ -97,6 +121,7 @@ activate_argcomplete = "PQAnalysis.cli.activate_argcomplete:main"
 build_nep_traj = "PQAnalysis.cli.build_nep_traj:main"
 xyz2gen = "PQAnalysis.cli.xyz2gen:main"
 gen2xyz = "PQAnalysis.cli.gen2xyz:main"
+parm2pq = "PQAnalysis.cli.parm2pq:main"
 
 [project.urls]
 "Homepage" = "https://github.com/MolarVerse/PQAnalysis"

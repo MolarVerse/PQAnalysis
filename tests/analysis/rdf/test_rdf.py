@@ -759,7 +759,7 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "The reference selection does not select any atoms."
+            "The reference selection \"['Na']\" does not select any atoms."
             ),
             exception=RDFError,
             function=RDF,
@@ -775,7 +775,7 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "The target selection does not select any atoms."
+            "The target selection \"['Na']\" does not select any atoms."
             ),
             exception=RDFError,
             function=RDF,
@@ -795,7 +795,7 @@ class TestRDF:
             logging_name=RDF.__qualname__,
             logging_level="ERROR",
             message_to_test=(
-            "The reference selection does not select any atoms."
+            "The reference selection \"['Na']\" does not select any atoms."
             ),
             exception=RDFError,
             function=RDF,

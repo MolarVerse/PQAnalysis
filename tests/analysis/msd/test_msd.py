@@ -520,7 +520,9 @@ class TestMSD:
             caplog=caplog,
             logging_name="MSD",
             logging_level="ERROR",
-            message_to_test="The target selection does not select any atoms.",
+            message_to_test=(
+                "The target selection \"O\" does not select any atoms."
+            ),
             exception=MSDError,
             function=MSD,
             traj=traj,

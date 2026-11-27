@@ -15,6 +15,8 @@ from PQAnalysis.atomic_system import AtomicSystem
 from PQAnalysis.type_checking import runtime_type_checking, runtime_type_checking_setter
 from PQAnalysis.utils.units import eV, kcal_per_mol
 
+from .exceptions import TrajectoryWriterError
+
 #: PQ atom names that ASE does not know, mapped to an ASE symbol
 _ASE_SPECIES = {
     "d": "H",
@@ -79,6 +81,11 @@ class TrajectoryWriter(BaseWriter):
             The trajectory to write.
         traj_type : TrajectoryFormat | str, optional
             The type of the data to write to the file. Default is TrajectoryFormat.XYZ.
+
+        Raises
+        ------
+        TrajectoryWriterError
+            If the writer cannot write the given format, e.g. auto or h5md.
         """
 
         self.type = TrajectoryFormat(traj_type)
@@ -96,6 +103,15 @@ class TrajectoryWriter(BaseWriter):
             self._write_forces(trajectory)
         elif self.type == TrajectoryFormat.CHARGE:
             self._write_charges(trajectory)
+        else:
+            self.logger.error(
+                (
+                    f"TrajectoryWriter cannot write the {self.type.value} "
+                    "format. Possible formats are XYZ, EXTXYZ, VEL, FORCE "
+                    "and CHARGE."
+                ),
+                exception=TrajectoryWriterError
+            )
 
     def _write_positions(self, trajectory: Trajectory) -> None:
         """
@@ -287,9 +303,13 @@ class TrajectoryWriter(BaseWriter):
                 )
             )
 
-        metadata.append(
-            f'{self._extxyz_properties_key()}="{self._extxyz_properties(frame)}"'
-        )
+        properties = self._extxyz_properties(frame)
+
+        # GPUMD does not strip quotes around the properties value
+        if not self._is_gpumd_extxyz_profile():
+            properties = f'"{properties}"'
+
+        metadata.append(f"{self._extxyz_properties_key()}={properties}")
 
         if frame.has_energy:
             energy = self._convert_extxyz_energy_like(frame.energy)
@@ -306,6 +326,8 @@ class TrajectoryWriter(BaseWriter):
             metadata.append(
                 f'stress="{self._format_extxyz_matrix(stress)}"'
             )
+
+        metadata.append(f"units={self.extxyz_profile.value}")
 
         print(" ".join(metadata), file=self.file)
 
@@ -412,13 +434,40 @@ class TrajectoryWriter(BaseWriter):
         """
         Returns the atom label for the configured extxyz profile.
         """
-        if self._is_gpumd_extxyz_profile() and atom.symbol is not None:
-            return atom.symbol[0].upper() + atom.symbol[1:]
+        if self._is_gpumd_extxyz_profile():
+            return self._nep_atom_label(atom)
 
         if self.extxyz_profile == ExtXYZProfile.ASE:
             return _ASE_SPECIES.get(atom.name.lower(), atom.name)
 
         return atom.name
+
+    def _nep_atom_label(self, atom: Atom) -> str:
+        """
+        Returns the element symbol of an atom for GPUMD NEP, which only knows
+        elements of the periodic table: D and T are written as H.
+
+        Raises
+        ------
+        TrajectoryWriterError
+            If the atom is a dummy atom without an element.
+        """
+        species = _ASE_SPECIES.get(atom.name.lower())
+
+        if species is None and atom.symbol is not None:
+            species = atom.symbol[0].upper() + atom.symbol[1:]
+
+        if species in (None, "X"):
+            self.logger.error(
+                (
+                    f"Atom {atom.name} has no element, but GPUMD NEP only "
+                    "accepts elements of the periodic table. Remove dummy "
+                    "atoms before writing the nep profile."
+                ),
+                exception=TrajectoryWriterError
+            )
+
+        return species
 
     def _format_extxyz_value(self, value) -> str:
         """

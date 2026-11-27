@@ -4,7 +4,7 @@ A module containing classes for reading a trajectory from a file.
 
 # 3rd party modules
 import logging
-from beartype.typing import List, Generator
+from beartype.typing import Any, List, Generator
 from PQAnalysis.utils.progress import tqdm
 
 # Local absolute imports
@@ -22,6 +22,14 @@ from PQAnalysis.type_checking import runtime_type_checking
 # Local relative modules
 from .exceptions import TrajectoryReaderError
 from .frame_reader import get_frame_reader, XYZ_FRAME_READER_TRAJ_FORMATS
+from .ase_traj_reader import AseTrajReader
+from .h5md_reader import H5MDReader
+
+# formats read by a file reader instead of a frame reader
+_FILE_READERS = {
+    TrajectoryFormat.H5MD.value: H5MDReader,
+    TrajectoryFormat.ASE.value: AseTrajReader,
+}
 
 
 
@@ -75,9 +83,12 @@ class TrajectoryReader(BaseReader):
         self.traj_format = TrajectoryFormat((traj_format, self.filenames[0]))
 
         self.md_format = MDEngineFormat(md_format)
-        self.frame_reader = get_frame_reader(
-            self.traj_format, md_format=self.md_format
-        )
+        self.frame_reader = None
+        self.file_reader = _FILE_READERS.get(self.traj_format.value)
+        if self.file_reader is None:
+            self.frame_reader = get_frame_reader(
+                self.traj_format, md_format=self.md_format
+            )
         if self.traj_format == TrajectoryFormat.EXTXYZ and topology is None:
             self.constant_topology = False
 
@@ -128,7 +139,7 @@ class TrajectoryReader(BaseReader):
         return traj
 
     @runtime_type_checking
-    def frame_generator(
+    def frame_generator(  # pylint: disable=too-many-statements
         self,
         trajectory_start: int = 0,
         trajectory_stop: int | None = None,
@@ -206,6 +217,15 @@ class TrajectoryReader(BaseReader):
             disable=not self.with_progress_bar
         )
 
+        if self.file_reader is not None:
+            yield from self._file_reader_frame_generator(
+                trajectory_start,
+                trajectory_stop,
+                number_of_frames,
+                progress_bar,
+            )
+            return
+
         # Track the number of frames that have been read
         frame_index = 0
 
@@ -281,6 +301,38 @@ class TrajectoryReader(BaseReader):
 
                     # then increment the frame index
                     frame_index += 1
+
+                if self.constant_topology and self.topology is None:
+                    self.topology = frame.topology
+
+    def _file_reader_frame_generator(
+        self,
+        trajectory_start: int,
+        trajectory_stop: int,
+        number_of_frames: List[int],
+        progress_bar: Any,
+    ) -> Generator[AtomicSystem]:
+        """
+        A generator that yields the frames of H5MD or ASE trajectory files.
+        """
+        frame_index = 0
+
+        for filename, n_frames in zip(self.filenames, number_of_frames):
+            file_start = max(trajectory_start - frame_index, 0)
+            file_stop = min(trajectory_stop - frame_index, n_frames)
+            frame_index += n_frames
+
+            if file_start >= file_stop:
+                continue
+
+            reader = self.file_reader(filename)
+            for frame in reader.frame_generator(
+                file_start,
+                file_stop,
+                self.topology,
+            ):
+                yield frame
+                progress_bar.update(1)
 
                 if self.constant_topology and self.topology is None:
                     self.topology = frame.topology
@@ -487,6 +539,11 @@ class TrajectoryReader(BaseReader):
                 )
                 continue
 
+            if self.file_reader is not None:
+                reader = self.file_reader(filename)
+                n_frames_list.append(reader.number_of_frames)
+                continue
+
             with open(filename, "r", encoding="utf-8") as f:
 
                 lines = f.readlines()
@@ -598,8 +655,13 @@ class TrajectoryReader(BaseReader):
         list of Cell
             The list of cells read from the trajectory.
         """
-        if self.traj_format == TrajectoryFormat.EXTXYZ:
-            yield from self._extxyz_cell_generator()
+        cell_generators = {
+            TrajectoryFormat.EXTXYZ.value: self._extxyz_cell_generator,
+            TrajectoryFormat.H5MD.value: self._file_reader_cell_generator,
+            TrajectoryFormat.ASE.value: self._file_reader_cell_generator,
+        }
+        if self.traj_format.value in cell_generators:
+            yield from cell_generators[self.traj_format.value]()
             return
 
         if self.traj_format not in XYZ_FRAME_READER_TRAJ_FORMATS:
@@ -669,6 +731,13 @@ class TrajectoryReader(BaseReader):
 
                     for _ in range(n_atoms + 1):
                         next(f, None)  # Skip the next n_atoms+1 lines
+
+    def _file_reader_cell_generator(self) -> Generator[Cell]:
+        """
+        A generator that yields the cells of H5MD or ASE trajectories.
+        """
+        for filename in self.filenames:
+            yield from self.file_reader(filename).cell_generator()
 
     def _extxyz_cell_generator(self) -> Generator[Cell]:
         """

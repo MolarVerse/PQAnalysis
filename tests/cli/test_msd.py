@@ -6,6 +6,7 @@ import sys
 
 from PQAnalysis.cli import msd as msd_cli
 from PQAnalysis.cli.msd import MSDCLI
+from PQAnalysis.io.formats import FileWritingMode
 from PQAnalysis.traj import MDEngineFormat
 
 
@@ -25,7 +26,9 @@ class TestMSDCLI:
         monkeypatch.setattr(
             msd_cli,
             "msd",
-            lambda input_file, engine: called.append((input_file, engine)),
+            lambda input_file, engine, mode: called.append(
+                (input_file, engine, mode)
+            ),
         )
         monkeypatch.setattr(
             sys,
@@ -35,7 +38,9 @@ class TestMSDCLI:
 
         msd_cli.main()
 
-        assert called == [("input.in", MDEngineFormat.PQ)]
+        assert called == [
+            ("input.in", MDEngineFormat.PQ, FileWritingMode("w"))
+        ]
 
     def test_main_dispatches_engine(self, monkeypatch):
         called = []
@@ -43,7 +48,9 @@ class TestMSDCLI:
         monkeypatch.setattr(
             msd_cli,
             "msd",
-            lambda input_file, engine: called.append((input_file, engine)),
+            lambda input_file, engine, mode: called.append(
+                (input_file, engine, mode)
+            ),
         )
         monkeypatch.setattr(
             sys,
@@ -53,7 +60,9 @@ class TestMSDCLI:
 
         msd_cli.main()
 
-        assert called == [("input.in", MDEngineFormat.QMCFC)]
+        assert called == [
+            ("input.in", MDEngineFormat.QMCFC, FileWritingMode("w"))
+        ]
 
     def test_main_dispatches_repeated_exports(self, monkeypatch):
         called = []
@@ -86,7 +95,8 @@ class TestMSDCLI:
                 "input.in",
                 MDEngineFormat.PQ,
                 {
-                    "export_files": ["msd.csv", "msd.tsv"]
+                    "export_files": ["msd.csv", "msd.tsv"],
+                    "mode": FileWritingMode("w"),
                 },
             )
         ]

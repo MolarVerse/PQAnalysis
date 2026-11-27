@@ -88,6 +88,10 @@ Common forms include:
    * - ``frame-*.xyz``
      - Matching file list
      - Expanded with Python glob semantics
+   * - ``"elem(O)|elem(H)"`` or ``'O, H'``
+     - String
+     - Quotes are removed; needed for values with ``( ) | & , ~``, ``#`` or
+       spaces, see :ref:`selections-in-input-files`
 
 Filenames
 ---------
