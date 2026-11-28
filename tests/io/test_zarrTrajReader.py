@@ -39,6 +39,7 @@ def write_zarr(
     energy=True,
     frames_per_chunk=1,
     frames_per_shard=None,
+    names_as_array=False,
 ):
     """Writes a small Zarr store in the H5MD layout of PQ."""
     units = {**UNITS, **(units or {})}
@@ -104,10 +105,12 @@ def write_zarr(
             units.get("energy", "kcal mol-1"),
         )
 
-    if names is not None:
+    if names is not None and names_as_array:
         root.create_group("parameters").create_array(
             "atom_names", data=np.array(names, dtype=str)
         )
+    elif names is not None:
+        root.create_group("parameters").attrs["atom_names"] = list(names)
 
     return filename
 
@@ -202,6 +205,30 @@ def test_topology_from_names_and_species(tmp_path):
     assert atoms[0] == Atom("OW", "o")
     assert atoms[1] == Atom("h")
     assert atoms[2] == Atom("dum")
+
+
+
+def test_atom_names_as_array(tmp_path):
+    store = write_zarr(
+        str(tmp_path / "traj.zarr"),
+        names=["OW", "h"],
+        species=[8, 1],
+        names_as_array=True,
+    )
+
+    atoms = TrajectoryReader(store).read()[0].topology.atoms
+
+    assert [atom.name for atom in atoms] == ["OW", "h"]
+
+
+
+def test_parameters_without_atom_names(tmp_path):
+    store = write_zarr(str(tmp_path / "traj.zarr"), names=None)
+    zarr.open_group(store, mode="a").create_group("parameters")
+
+    atoms = TrajectoryReader(store).read()[0].topology.atoms
+
+    assert [atom.name for atom in atoms] == ["o", "h", "h", "X"]
 
 
 

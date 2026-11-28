@@ -82,6 +82,19 @@ class ZarrTrajReader(H5MDReader):
         return isinstance(node, self._backend.Array)
 
     @staticmethod
+    def _read_atom_names(file: Any) -> list[str] | None:
+        """
+        Reads the atom names, which PQ stores as an attribute of
+        ``/parameters``.
+        """
+        if "parameters" in file:
+            names = file["parameters"].attrs.get("atom_names")
+            if names is not None:
+                return [str(name) for name in names]
+
+        return H5MDReader._read_atom_names(file)
+
+    @staticmethod
     def _frames(dataset: Any) -> "_ChunkedFrames":
         """
         Returns the array indexed per frame, read one chunk at a time.

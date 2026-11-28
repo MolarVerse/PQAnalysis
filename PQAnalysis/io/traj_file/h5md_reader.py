@@ -362,18 +362,26 @@ class H5MDReader:
 
         return _cell_from_box_vectors(edges)
 
+    @staticmethod
+    def _read_atom_names(file: Any) -> list[str] | None:
+        """
+        Reads ``/parameters/atom_names``, None if it is missing.
+        """
+        if "parameters/atom_names" not in file:
+            return None
+
+        return [
+            name.decode() if isinstance(name, bytes) else str(name)
+            for name in file["parameters/atom_names"][()]
+        ]
+
     def _read_topology(self, file: Any) -> Topology:
         """
         Builds the topology from the atom names and species.
         """
         particles = self._particle_group(file)
 
-        names = None
-        if "parameters/atom_names" in file:
-            names = [
-                name.decode() if isinstance(name, bytes) else str(name)
-                for name in file["parameters/atom_names"][()]
-            ]
+        names = self._read_atom_names(file)
 
         species = None
         if "species" in particles:
