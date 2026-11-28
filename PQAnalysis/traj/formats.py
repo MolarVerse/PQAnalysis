@@ -47,6 +47,9 @@ class TrajectoryFormat(BaseEnumFormat):
     #: The ASE trajectory format (binary .traj files, needs ase).
     ASE = "ASE"
 
+    #: The Zarr trajectory format (.zarr stores in H5MD layout, needs zarr).
+    ZARR = "ZARR"
+
     @classmethod
     def _missing_(cls, values: Any) -> Any:  # pylint: disable=arguments-differ
         """
@@ -117,8 +120,9 @@ class TrajectoryFormat(BaseEnumFormat):
             (cls.CHARGE, (".charge", ".chrg")),
             (cls.H5MD, (".h5md", ".h5")),
             (cls.ASE, (".traj", )),
+            (cls.ZARR, (".zarr", )),
         ):
-            if file_path.endswith(extensions):
+            if file_path.rstrip("/\\").endswith(extensions):
                 return traj_format
 
         logger.error(

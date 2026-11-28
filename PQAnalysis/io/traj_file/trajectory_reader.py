@@ -24,11 +24,13 @@ from .exceptions import TrajectoryReaderError
 from .frame_reader import get_frame_reader, XYZ_FRAME_READER_TRAJ_FORMATS
 from .ase_traj_reader import AseTrajReader
 from .h5md_reader import H5MDReader
+from .zarr_traj_reader import ZarrTrajReader
 
 # formats read by a file reader instead of a frame reader
 _FILE_READERS = {
     TrajectoryFormat.H5MD.value: H5MDReader,
     TrajectoryFormat.ASE.value: AseTrajReader,
+    TrajectoryFormat.ZARR.value: ZarrTrajReader,
 }
 
 
@@ -313,7 +315,7 @@ class TrajectoryReader(BaseReader):
         progress_bar: Any,
     ) -> Generator[AtomicSystem]:
         """
-        A generator that yields the frames of H5MD or ASE trajectory files.
+        A generator that yields the frames of H5MD, ASE or Zarr trajectories.
         """
         frame_index = 0
 
@@ -659,6 +661,7 @@ class TrajectoryReader(BaseReader):
             TrajectoryFormat.EXTXYZ.value: self._extxyz_cell_generator,
             TrajectoryFormat.H5MD.value: self._file_reader_cell_generator,
             TrajectoryFormat.ASE.value: self._file_reader_cell_generator,
+            TrajectoryFormat.ZARR.value: self._file_reader_cell_generator,
         }
         if self.traj_format.value in cell_generators:
             yield from cell_generators[self.traj_format.value]()
@@ -734,7 +737,7 @@ class TrajectoryReader(BaseReader):
 
     def _file_reader_cell_generator(self) -> Generator[Cell]:
         """
-        A generator that yields the cells of H5MD or ASE trajectories.
+        A generator that yields the cells of H5MD, ASE or Zarr trajectories.
         """
         for filename in self.filenames:
             yield from self.file_reader(filename).cell_generator()

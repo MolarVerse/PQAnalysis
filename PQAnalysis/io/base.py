@@ -15,6 +15,9 @@ from PQAnalysis import __package_name__
 from .formats import FileWritingMode
 from .exceptions import FileWritingModeError
 
+#: Files that mark a directory as a Zarr v3 or v2 store.
+_ZARR_STORE_FILES = ("zarr.json", ".zgroup")
+
 
 
 class BaseWriter:
@@ -201,7 +204,7 @@ class BaseReader:
         """
 
         if isinstance(filename, str):
-            if not os.path.isfile(filename):
+            if not _is_readable_path(filename):
                 self.logger.error(
                     f"File {filename} not found.",
                     exception=PQFileNotFoundError
@@ -212,7 +215,7 @@ class BaseReader:
         else:
             filenames = filename
             for _filename in filenames:
-                if not os.path.isfile(_filename):
+                if not _is_readable_path(_filename):
                     self.logger.error(
                         (
                             "At least one of the given files does not exist. "
@@ -223,3 +226,16 @@ class BaseReader:
 
             self.filenames = filenames
             self.multiple_files = True
+
+
+
+def _is_readable_path(path: str) -> bool:
+    """
+    Whether a path is a file or a Zarr store directory.
+    """
+    if os.path.isfile(path):
+        return True
+
+    return os.path.isdir(path) and any(
+        os.path.isfile(os.path.join(path, name)) for name in _ZARR_STORE_FILES
+    )

@@ -1,0 +1,1 @@
+- Add `TrajectoryFormat.ZARR` and `ZarrTrajReader`, an `H5MDReader` subclass with a zarr backend that reads one shard or chunk of frames at a time; `BaseReader` accepts Zarr store directories, and `zarr>=3` is the `zarr` extra and part of the `test` extra (#373).

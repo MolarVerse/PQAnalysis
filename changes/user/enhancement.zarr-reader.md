@@ -1,0 +1,1 @@
+- Read PQ Zarr trajectories (`traj_format = zarr`, `.zarr` directories) with `TrajectoryReader` and the analyses, with the same frames as the H5MD reader; this needs the optional `zarr` package (`pip install PQAnalysis[zarr]`) (#373).

@@ -43,6 +43,11 @@ converted to the PQ units, for example forces from eV Angstrom\ :sup:`-1` to
 kcal mol\ :sup:`-1` Angstrom\ :sup:`-1`. Atoms are named by their element
 symbol.
 
+PQ Zarr trajectories (``traj_format = zarr``, directories ending in
+``.zarr``) use the groups, arrays and units of the PQ H5MD files and are read
+the same way. They need the optional ``zarr`` package:
+``pip install PQAnalysis[zarr]``.
+
 The Python format definitions are documented by
 :class:`PQAnalysis.traj.formats.MDEngineFormat` and
 :class:`PQAnalysis.traj.formats.TrajectoryFormat`.

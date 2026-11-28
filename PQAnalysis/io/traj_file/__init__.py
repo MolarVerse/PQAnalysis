@@ -19,6 +19,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from .raw_frame_reader import RawTrajectoryReader
     from .trajectory_reader import TrajectoryReader
     from .trajectory_writer import TrajectoryWriter
+    from .zarr_traj_reader import ZarrTrajReader
 
 _EXPORTS = {
     "TrajectoryReader": ".trajectory_reader",
@@ -26,6 +27,7 @@ _EXPORTS = {
     "RawTrajectoryReader": ".raw_frame_reader",
     "H5MDReader": ".h5md_reader",
     "AseTrajReader": ".ase_traj_reader",
+    "ZarrTrajReader": ".zarr_traj_reader",
     "BaseFrameReader": ".frame_reader",
     "XYZFrameReader": ".frame_reader",
     "ExtXYZFrameReader": ".frame_reader",
