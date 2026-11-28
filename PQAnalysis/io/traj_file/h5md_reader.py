@@ -82,6 +82,12 @@ class H5MDReader:
     logger = logging.getLogger(__package_name__).getChild(__qualname__)
     logger = setup_logger(logger)
 
+    #: The name of the format in messages.
+    _format_name = "H5MD"
+
+    #: The exception raised for invalid files.
+    _error = H5MDReaderError
+
     @runtime_type_checking
     def __init__(self, filename: str) -> None:
         """
@@ -96,7 +102,7 @@ class H5MDReader:
             If h5py is not installed.
         """
         self.filename = filename
-        self._h5py = _import_h5py()
+        self._backend = self._import_backend()
 
     @property
     def number_of_frames(self) -> int:
@@ -167,7 +173,7 @@ class H5MDReader:
                 if name in particles:
                     dataset = particles[name]["value"]
                     elements[keyword] = (
-                        dataset,
+                        self._frames(dataset),
                         self._unit_factor(dataset, _PARTICLE_UNITS[name]),
                     )
 
@@ -175,7 +181,7 @@ class H5MDReader:
             if _ENERGY_ELEMENT in file:
                 energy_group = file[_ENERGY_ELEMENT]
                 energy = (
-                    energy_group["value"],
+                    self._frames(energy_group["value"]),
                     self._unit_factor(energy_group["value"], ENERGY_UNITS),
                 )
 
@@ -194,12 +200,19 @@ class H5MDReader:
                     **values,
                 )
 
+    @staticmethod
+    def _import_backend() -> Any:
+        """
+        Imports h5py, which is an optional dependency.
+        """
+        return _import_h5py()
+
     def _open(self) -> Any:
         """
         Opens the H5MD file for reading.
         """
         try:
-            return self._h5py.File(self.filename, "r")
+            return self._backend.File(self.filename, "r")
         except OSError:
             self.logger.error(
                 f"Could not open the H5MD file {self.filename}.",
@@ -207,6 +220,25 @@ class H5MDReader:
             )
 
         return None  # pragma: no cover
+
+    def _is_group(self, node: Any) -> bool:
+        """
+        Whether a node of the file is a group.
+        """
+        return isinstance(node, self._backend.Group)
+
+    def _is_dataset(self, node: Any) -> bool:
+        """
+        Whether a node of the file is a dataset.
+        """
+        return isinstance(node, self._backend.Dataset)
+
+    @staticmethod
+    def _frames(dataset: Any) -> Any:
+        """
+        Returns the dataset indexed per frame.
+        """
+        return dataset
 
     def _particle_group(self, file: Any) -> Any:
         """
@@ -222,10 +254,10 @@ class H5MDReader:
 
         self.logger.error(
             (
-                f"The H5MD file {self.filename} needs a single particle "
+                f"The {self._format_name} file {self.filename} needs a single particle "
                 "group or a group named 'all' in /particles."
             ),
-            exception=H5MDReaderError,
+            exception=self._error,
         )
 
         return None  # pragma: no cover
@@ -243,14 +275,14 @@ class H5MDReader:
         if not groups:
             self.logger.error(
                 (
-                    f"The H5MD file {self.filename} has no position, "
+                    f"The {self._format_name} file {self.filename} has no position, "
                     "velocity, force or charge data."
                 ),
-                exception=H5MDReaderError,
+                exception=self._error,
             )
 
         edges = particles.get("box/edges")
-        if isinstance(edges, self._h5py.Group):
+        if self._is_group(edges):
             groups.append(edges)
 
         if _ENERGY_ELEMENT in file:
@@ -261,11 +293,11 @@ class H5MDReader:
             if not np.array_equal(np.asarray(group["step"]), steps):
                 self.logger.error(
                     (
-                        f"The H5MD element {group.name} in {self.filename} "
+                        f"The {self._format_name} element {group.name} in {self.filename} "
                         "has other steps than the positions. Elements "
                         "with different steps are not supported."
                     ),
-                    exception=H5MDReaderError,
+                    exception=self._error,
                 )
 
         return steps
@@ -285,11 +317,11 @@ class H5MDReader:
         if not isinstance(unit, str) or unit not in units:
             self.logger.error(
                 (
-                    f"Unit {unit!r} of the H5MD dataset {dataset.name} in "
+                    f"Unit {unit!r} of the {self._format_name} dataset {dataset.name} in "
                     f"{self.filename} is not supported. Supported units "
                     f"are: {', '.join(units)}."
                 ),
-                exception=H5MDReaderError,
+                exception=self._error,
             )
 
         return units[unit]
@@ -310,14 +342,14 @@ class H5MDReader:
         if any(value != "periodic" for value in boundary):
             self.logger.error(
                 (
-                    f"The H5MD box in {self.filename} is not periodic in "
+                    f"The {self._format_name} box in {self.filename} is not periodic in "
                     f"all dimensions ({boundary}), which is not supported."
                 ),
-                exception=H5MDReaderError,
+                exception=self._error,
             )
 
         edges = particles["box/edges"]
-        if isinstance(edges, self._h5py.Group):
+        if self._is_group(edges):
             edges = edges["value"]
             values = edges[index]
         else:
@@ -345,23 +377,23 @@ class H5MDReader:
 
         species = None
         if "species" in particles:
-            if not isinstance(particles["species"], self._h5py.Dataset):
+            if not self._is_dataset(particles["species"]):
                 self.logger.error(
                     (
                         f"Time-dependent species in {self.filename} are "
                         "not supported."
                     ),
-                    exception=H5MDReaderError,
+                    exception=self._error,
                 )
             species = [int(value) for value in particles["species"][()]]
 
         if names is None and species is None:
             self.logger.error(
                 (
-                    f"The H5MD file {self.filename} has neither "
+                    f"The {self._format_name} file {self.filename} has neither "
                     "/parameters/atom_names nor species."
                 ),
-                exception=H5MDReaderError,
+                exception=self._error,
             )
 
         if names is None:
