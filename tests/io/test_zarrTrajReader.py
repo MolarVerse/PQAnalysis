@@ -162,10 +162,12 @@ def test_same_frames_as_h5md(tmp_path, frames_per_chunk):
 
 
 
-@pytest.mark.parametrize("frames_per_chunk, frames_per_shard", [
-    (3, None),
-    (1, 2),
-])
+@pytest.mark.parametrize(
+    "frames_per_chunk, frames_per_shard", [
+        (3, None),
+        (1, 2),
+    ]
+)
 def test_chunked_frames_out_of_order(
     tmp_path, frames_per_chunk, frames_per_shard
 ):
