@@ -110,12 +110,21 @@ class _ChunkedFrames:
     """
 
     def __init__(self, array: Any) -> None:
+        """
+        Parameters
+        ----------
+        array : zarr.Array
+            The array with the frames along the first axis.
+        """
         self.array = array
         self.chunk_size = int((array.shards or array.chunks)[0])
         self.start = None
         self.values = None
 
     def __getitem__(self, index: int) -> Any:
+        """
+        Returns the frame ``index``, reading its shard or chunk if needed.
+        """
         start = index - index % self.chunk_size
         if start != self.start:
             self.values = self.array[start:start + self.chunk_size]
