@@ -40,6 +40,9 @@ h5md = [
 ase = [
     "ase",
 ]
+zarr = [
+    "zarr>=3",
+]
 ff = [
     "parmed",
 ]
@@ -47,6 +50,7 @@ test = [
     "ase",
     "h5py",
     "parmed",
+    "zarr>=3",
     "pytest",
     "pytest-cov",
     "pylint",

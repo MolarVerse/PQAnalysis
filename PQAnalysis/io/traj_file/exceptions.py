@@ -43,3 +43,11 @@ class AseTrajReaderError(PQException):
     """
     Exception raised for errors related to the AseTrajReader class
     """
+
+
+
+class ZarrTrajReaderError(PQException):
+
+    """
+    Exception raised for errors related to the ZarrTrajReader class
+    """
